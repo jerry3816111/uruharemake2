@@ -1,0 +1,2330 @@
+{
+  "version": "tombench_component_ablation_2026_05_20",
+  "source": {
+    "repo": "https://github.com/zhchen18/ToMBench",
+    "local_repo": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/ToMBench",
+    "sample_mode": "full",
+    "task_counts": {
+      "Ambiguous Story Task": 200,
+      "Completion of Failed Actions": 20,
+      "Discrepant Desires": 20,
+      "Discrepant Emotions": 40,
+      "Discrepant Intentions": 40,
+      "Emotion Regulation": 20,
+      "False Belief Task": 600,
+      "Faux-pas Recognition Test": 560,
+      "Hidden Emotions": 80,
+      "Hinting Task Test": 103,
+      "Knowledge-Attention Links": 20,
+      "Knowledge-Pretend Play Links": 30,
+      "Moral Emotions": 40,
+      "Multiple Desires": 20,
+      "Percepts-Knowledge Links": 40,
+      "Persuasion Story Task": 100,
+      "Prediction of Actions": 20,
+      "Scalar Implicature Test": 200,
+      "Strange Story Task": 407,
+      "Unexpected Outcome Test": 300
+    },
+    "cache": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_v2_sample_full.json"
+  },
+  "sample": {
+    "count": 40,
+    "task_set": "social",
+    "tasks": [
+      "Discrepant Intentions"
+    ],
+    "per_task": 8,
+    "full": true,
+    "sample_strategy": "even",
+    "shuffle_seed": null
+  },
+  "conditions": [
+    "deterministic_left_only"
+  ],
+  "baseline_condition": "deterministic_left_only",
+  "condition_specs": {
+    "deterministic_left_only": {
+      "label": "left-brain deterministic solver only",
+      "description": "Uses deterministic social-reasoning solver only. Uncovered rows are counted incorrect, so this measures rule coverage and precision without LLM fallback.",
+      "requires_llm": false,
+      "step_flags": {
+        "1_understand_utterance": "enabled_rule_parser",
+        "2_working_memory": "disabled",
+        "3_prediction_error": "belief_intent_conflict_proxy",
+        "4_high_low_router": "high_road_only",
+        "5_left_brain_plan": "deterministic_solver",
+        "6_right_brain_surface": "not_applicable_mcq",
+        "7_self_check": "embedded_rule_confidence",
+        "8_memory_update": "disabled"
+      }
+    }
+  },
+  "controlled_variables": {
+    "benchmark": "official ToMBench rows loaded by run_formal_brain_benchmarks_v2.load_tombench_items(full=True)",
+    "model": "qwen2.5:7b through the same local OpenAI-compatible endpoint for LLM conditions",
+    "temperature": 0.0,
+    "scoring": "exact match against official A/B/C/D answer key",
+    "memory": "disabled for all ToMBench ablation conditions; no profile, episodes, recent_dialogue, or working_memory_items are passed",
+    "right_brain": "not used for MCQ scoring because ToMBench only accepts option letters",
+    "cache_policy": "condition-specific checkpoints; use --force-refresh for strict no-cache reruns"
+  },
+  "dependent_variables": [
+    "accuracy",
+    "correct_count",
+    "unparsed_count",
+    "task_breakdown accuracy",
+    "delta_vs_baseline_full_cognitive_system",
+    "only_condition_correct / only_baseline_correct against baseline",
+    "selection_mode_breakdown"
+  ],
+  "summary_by_condition": {
+    "deterministic_left_only": {
+      "count": 40,
+      "correct": 18,
+      "accuracy": 0.45,
+      "unparsed_count": 22,
+      "selection_mode_breakdown": {
+        "tombench_p2_general_v1_candidate_verifier": 18,
+        "uncovered_deterministic_left_only": 22
+      },
+      "task_breakdown": {
+        "Discrepant Intentions": {
+          "count": 40,
+          "correct": 18,
+          "accuracy": 0.45,
+          "unparsed_count": 22
+        }
+      }
+    }
+  },
+  "comparisons_vs_baseline": {
+    "deterministic_left_only": {
+      "shared_count": 40,
+      "accuracy_delta": 0.0,
+      "only_condition_correct": 0,
+      "only_baseline_correct": 0,
+      "both_correct": 18,
+      "both_wrong": 22,
+      "first_40_deltas": []
+    }
+  },
+  "rows_by_condition": {
+    "deterministic_left_only": [
+      {
+        "id": "Discrepant Intentions:1",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Emily's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "艾米丽",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "D",
+            "top_score": 5,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "艾米丽可能是因为疏忽或认为这本书不重要而选择了不还。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "艾米丽可能是因为急切想读这本书，没有仔细查看就拿走了。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "艾米丽认为这本书是图书馆的，所以没有必要归还。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "艾米丽可能误以为她找到了想要的书，只是在回家后才意识到拿错了。",
+                "score": 5,
+                "reasons": [
+                  "matches uninformed or mistaken direct action"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"艾米丽\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"D\", \"top_score\": 5, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"艾米丽可能是因为疏忽或认为这本书不重要而选择了不还。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"艾米丽可能是因为急切想读这本书，没有仔细查看就拿走了。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"艾米丽认为这本书是图书馆的，所以没有必要归还。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"艾米丽可能误以为她找到了想要的书，只是在回家后才意识到拿错了。\", \"score\": 5, \"reasons\": [\"matches uninformed or mistaken direct action\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:2",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Kate's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:3",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Nick's action?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:4",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Ella's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:5",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Han Meimei's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:6",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Li Hua's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "李华",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+              "competition_may_create_incentive_to_sabotage_study_or_performance"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "academic_competition_sabotage",
+                "informed_silence"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "competition_may_create_incentive_to_sabotage_study_or_performance",
+                "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+                "informed_bystander_or_participant_may_be_intentionally_silent"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "academic_competition_sabotage",
+              "informed_silence"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 9,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "李华可能因为担心自己会被卷入麻烦，所以选择不揭露真相。",
+                "score": -2,
+                "reasons": [
+                  "chooses a generic motive over the explicit competition motive"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "李华希望李雷没有电脑而无法复习课业，从而在学习上超越他。",
+                "score": 7,
+                "reasons": [
+                  "matches academic competition sabotage"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "李华可能因为与李雷有矛盾，选择不告诉李雷他被误处理了的笔记本电脑。",
+                "score": -2,
+                "reasons": [
+                  "chooses a generic motive over the explicit competition motive"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "李华可能认为电脑是李雷故意留在图书馆的，为了测试他人的诚信和道德。",
+                "score": -2,
+                "reasons": [
+                  "chooses a generic motive over the explicit competition motive"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"李华\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"competition_may_create_incentive_to_sabotage_study_or_performance\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"academic_competition_sabotage\", \"informed_silence\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"competition_may_create_incentive_to_sabotage_study_or_performance\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"informed_bystander_or_participant_may_be_intentionally_silent\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"academic_competition_sabotage\", \"informed_silence\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 9, \"evaluations\": [{\"option\": \"A\", \"text\": \"李华可能因为担心自己会被卷入麻烦，所以选择不揭露真相。\", \"score\": -2, \"reasons\": [\"chooses a generic motive over the explicit competition motive\"]}, {\"option\": \"B\", \"text\": \"李华希望李雷没有电脑而无法复习课业，从而在学习上超越他。\", \"score\": 7, \"reasons\": [\"matches academic competition sabotage\"]}, {\"option\": \"C\", \"text\": \"李华可能因为与李雷有矛盾，选择不告诉李雷他被误处理了的笔记本电脑。\", \"score\": -2, \"reasons\": [\"chooses a generic motive over the explicit competition motive\"]}, {\"option\": \"D\", \"text\": \"李华可能认为电脑是李雷故意留在图书馆的，为了测试他人的诚信和道德。\", \"score\": -2, \"reasons\": [\"chooses a generic motive over the explicit competition motive\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:7",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Lisa's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:8",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind the shop owner's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "店主",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "silent_actor_may_punish_prior_rudeness_by_withholding_help"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "informed_silence",
+                "punitive_silence_after_rudeness"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "silent_actor_may_punish_prior_rudeness_by_withholding_help"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "informed_silence",
+              "punitive_silence_after_rudeness"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 7,
+            "margin": 9,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "店主出于对鲍勃无礼态度的反感，作为对其不礼貌行为的一种不言明的惩罚。",
+                "score": 7,
+                "reasons": [
+                  "matches punitive silence after rude behavior"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "店主可能因为担心自己会被卷入麻烦，所以选择不揭露真相。",
+                "score": -2,
+                "reasons": [
+                  "misses the explicit rudeness/punishment cue"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "店主可能担心告诉鲍勃会引起冲突，所以选择保持沉默。",
+                "score": -2,
+                "reasons": [
+                  "misses the explicit rudeness/punishment cue"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "店主可能认为鲍勃会自己注意到合同的情况，因此选择不干涉。",
+                "score": -2,
+                "reasons": [
+                  "misses the explicit rudeness/punishment cue"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"店主\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"silent_actor_may_punish_prior_rudeness_by_withholding_help\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"informed_silence\", \"punitive_silence_after_rudeness\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"silent_actor_may_punish_prior_rudeness_by_withholding_help\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"informed_silence\", \"punitive_silence_after_rudeness\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 7, \"margin\": 9, \"evaluations\": [{\"option\": \"A\", \"text\": \"店主出于对鲍勃无礼态度的反感，作为对其不礼貌行为的一种不言明的惩罚。\", \"score\": 7, \"reasons\": [\"matches punitive silence after rude behavior\"]}, {\"option\": \"B\", \"text\": \"店主可能因为担心自己会被卷入麻烦，所以选择不揭露真相。\", \"score\": -2, \"reasons\": [\"misses the explicit rudeness/punishment cue\"]}, {\"option\": \"C\", \"text\": \"店主可能担心告诉鲍勃会引起冲突，所以选择保持沉默。\", \"score\": -2, \"reasons\": [\"misses the explicit rudeness/punishment cue\"]}, {\"option\": \"D\", \"text\": \"店主可能认为鲍勃会自己注意到合同的情况，因此选择不干涉。\", \"score\": -2, \"reasons\": [\"misses the explicit rudeness/punishment cue\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:9",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Bob's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "鲍勃",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "silent_actor_may_punish_prior_rudeness_by_withholding_help"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "silent_actor_may_punish_prior_rudeness_by_withholding_help"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 5,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "鲍勃可能认为清理办公室比保留文件更重要。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "鲍勃可能无意识或不知情，因为他错误地认为艾米丽的文件是废纸。",
+                "score": 5,
+                "reasons": [
+                  "matches uninformed or mistaken direct action"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "鲍勃可能知道文件所属于某人，但是为了方便完成工作就不多加过问。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "鲍勃可能因为想快速完成任务而忽视了文件的重要性。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"鲍勃\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"silent_actor_may_punish_prior_rudeness_by_withholding_help\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"silent_actor_may_punish_prior_rudeness_by_withholding_help\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 5, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"鲍勃可能认为清理办公室比保留文件更重要。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"鲍勃可能无意识或不知情，因为他错误地认为艾米丽的文件是废纸。\", \"score\": 5, \"reasons\": [\"matches uninformed or mistaken direct action\"]}, {\"option\": \"C\", \"text\": \"鲍勃可能知道文件所属于某人，但是为了方便完成工作就不多加过问。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"鲍勃可能因为想快速完成任务而忽视了文件的重要性。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:10",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Susan's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "苏珊",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "informed_silence",
+                "promotion_competition_sabotage"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive",
+                "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "informed_silence",
+              "promotion_competition_sabotage"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "苏珊可能因为工作繁忙，没有时间告诉鲍勃文件的重要性。",
+                "score": -2,
+                "reasons": [
+                  "chooses a weaker generic explanation over promotion stakes"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "苏珊认为鲍勃会自己意识到错误并承认，因此选择不告诉他。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "苏珊可能因为想削弱艾米丽的地位，故意选择沉默以看到她因失误受到责难。",
+                "score": 7,
+                "reasons": [
+                  "matches promotion competition or opportunistic silence"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "苏珊可能因为与艾米丽有矛盾，选择不告诉鲍勃文件的重要性。",
+                "score": -2,
+                "reasons": [
+                  "chooses a weaker generic explanation over promotion stakes"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"苏珊\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"informed_silence\", \"promotion_competition_sabotage\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"informed_silence\", \"promotion_competition_sabotage\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"苏珊可能因为工作繁忙，没有时间告诉鲍勃文件的重要性。\", \"score\": -2, \"reasons\": [\"chooses a weaker generic explanation over promotion stakes\"]}, {\"option\": \"B\", \"text\": \"苏珊认为鲍勃会自己意识到错误并承认，因此选择不告诉他。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"苏珊可能因为想削弱艾米丽的地位，故意选择沉默以看到她因失误受到责难。\", \"score\": 7, \"reasons\": [\"matches promotion competition or opportunistic silence\"]}, {\"option\": \"D\", \"text\": \"苏珊可能因为与艾米丽有矛盾，选择不告诉鲍勃文件的重要性。\", \"score\": -2, \"reasons\": [\"chooses a weaker generic explanation over promotion stakes\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:11",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Allen's actions?",
+        "gold_answer": "D",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:12",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Mark's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:13",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Bob's actions?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "鲍勃",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive",
+                "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 5,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "鲍勃可能故意使用艾米的信息，认为这是合法的竞争手段来取得项目上的优势。",
+                "score": -3,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "鲍勃可能因为对艾米的个人不满，故意使用她的信息来确保自己的成功。",
+                "score": -3,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "鲍勃可能无意识地使用了艾米的信息，因为他不知道这些信息是未公开的重要文件。",
+                "score": 5,
+                "reasons": [
+                  "matches uninformed or mistaken direct action"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "鲍勃可能认为信息已被艾米公开分享，因此他认为使用这些信息是合理的。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"鲍勃\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 5, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"鲍勃可能故意使用艾米的信息，认为这是合法的竞争手段来取得项目上的优势。\", \"score\": -3, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\"]}, {\"option\": \"B\", \"text\": \"鲍勃可能因为对艾米的个人不满，故意使用她的信息来确保自己的成功。\", \"score\": -3, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\"]}, {\"option\": \"C\", \"text\": \"鲍勃可能无意识地使用了艾米的信息，因为他不知道这些信息是未公开的重要文件。\", \"score\": 5, \"reasons\": [\"matches uninformed or mistaken direct action\"]}, {\"option\": \"D\", \"text\": \"鲍勃可能认为信息已被艾米公开分享，因此他认为使用这些信息是合理的。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:14",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Claire's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "克莱尔",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "informed_silence",
+                "promotion_competition_sabotage"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive",
+                "promotion_stakes_may_create_incentive_for_opportunistic_silence"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "informed_silence",
+              "promotion_competition_sabotage"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 7,
+            "margin": 9,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "克莱尔是为了与艾米竞争，她希望利用这个机会超越鲍勃。",
+                "score": 7,
+                "reasons": [
+                  "matches promotion competition or opportunistic silence"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "克莱尔可能认为鲍勃已经知道这些信息是艾米的，并认为他有责任处理这个问题。",
+                "score": -2,
+                "reasons": [
+                  "chooses a weaker generic explanation over promotion stakes"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "克莱尔可能担心介入会影响她自己在公司中的声誉和立场。",
+                "score": -2,
+                "reasons": [
+                  "chooses a weaker generic explanation over promotion stakes"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "克莱尔可能以为艾米有意将信息留在鲍勃的办公桌上，作为测试他的诚信。",
+                "score": -2,
+                "reasons": [
+                  "chooses a weaker generic explanation over promotion stakes"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"克莱尔\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"informed_silence\", \"promotion_competition_sabotage\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\", \"promotion_stakes_may_create_incentive_for_opportunistic_silence\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"informed_silence\", \"promotion_competition_sabotage\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 7, \"margin\": 9, \"evaluations\": [{\"option\": \"A\", \"text\": \"克莱尔是为了与艾米竞争，她希望利用这个机会超越鲍勃。\", \"score\": 7, \"reasons\": [\"matches promotion competition or opportunistic silence\"]}, {\"option\": \"B\", \"text\": \"克莱尔可能认为鲍勃已经知道这些信息是艾米的，并认为他有责任处理这个问题。\", \"score\": -2, \"reasons\": [\"chooses a weaker generic explanation over promotion stakes\"]}, {\"option\": \"C\", \"text\": \"克莱尔可能担心介入会影响她自己在公司中的声誉和立场。\", \"score\": -2, \"reasons\": [\"chooses a weaker generic explanation over promotion stakes\"]}, {\"option\": \"D\", \"text\": \"克莱尔可能以为艾米有意将信息留在鲍勃的办公桌上，作为测试他的诚信。\", \"score\": -2, \"reasons\": [\"chooses a weaker generic explanation over promotion stakes\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:15",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Ali's action?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:16",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Mark's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "马克",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+              "direct_actor_may_misunderstand_handling_instructions",
+              "possible_revenge_or_conflict_motive"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "conflict_or_grudge_silence",
+                "informed_silence"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+                "direct_actor_may_misunderstand_handling_instructions",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_revenge_or_conflict_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "conflict_or_grudge_silence",
+              "informed_silence"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 4,
+            "margin": 4,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "马克可能因为忙于其他工作，没有时间告诉李娜和阿里错误。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "马克可能和那位居民有矛盾，故意选择沉默以看到居民的捐赠计划失败。",
+                "score": 4,
+                "reasons": [
+                  "matches conflict/grudge silence when no stronger motive is present"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "马克可能认为李娜和阿里会自己发现错误并纠正。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "马克可能因为与那位居民有争议，选择不告诉李娜和阿里。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"马克\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"direct_actor_may_misunderstand_handling_instructions\", \"possible_revenge_or_conflict_motive\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"conflict_or_grudge_silence\", \"informed_silence\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"direct_actor_may_misunderstand_handling_instructions\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_revenge_or_conflict_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"conflict_or_grudge_silence\", \"informed_silence\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 4, \"margin\": 4, \"evaluations\": [{\"option\": \"A\", \"text\": \"马克可能因为忙于其他工作，没有时间告诉李娜和阿里错误。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"马克可能和那位居民有矛盾，故意选择沉默以看到居民的捐赠计划失败。\", \"score\": 4, \"reasons\": [\"matches conflict/grudge silence when no stronger motive is present\"]}, {\"option\": \"C\", \"text\": \"马克可能认为李娜和阿里会自己发现错误并纠正。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"马克可能因为与那位居民有争议，选择不告诉李娜和阿里。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:17",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Sam's action?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "萨姆",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "contest_rival_may_stay_silent_to_gain_advantage"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "contest_rival_may_stay_silent_to_gain_advantage",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 5,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "萨姆可能出于想要尝试新的烹饪方法，故意改变配方。",
+                "score": -3,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "萨姆可能出于误解利亚的指示，无意中加入了错误的调料。",
+                "score": 5,
+                "reasons": [
+                  "matches uninformed or mistaken direct action"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "萨姆可能因为分心，没有注意到自己的错误。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "萨姆可能因为对菜肴的味道有自信，故意加入不同的调料。",
+                "score": -3,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"萨姆\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"contest_rival_may_stay_silent_to_gain_advantage\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 5, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"萨姆可能出于想要尝试新的烹饪方法，故意改变配方。\", \"score\": -3, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\"]}, {\"option\": \"B\", \"text\": \"萨姆可能出于误解利亚的指示，无意中加入了错误的调料。\", \"score\": 5, \"reasons\": [\"matches uninformed or mistaken direct action\"]}, {\"option\": \"C\", \"text\": \"萨姆可能因为分心，没有注意到自己的错误。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"萨姆可能因为对菜肴的味道有自信，故意加入不同的调料。\", \"score\": -3, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:18",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Chris's action?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "克里斯",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "contest_rival_may_stay_silent_to_gain_advantage"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "contest_competition_sabotage",
+                "informed_silence"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "contest_rival_may_stay_silent_to_gain_advantage",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "contest_competition_sabotage",
+              "informed_silence"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 3,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "克里斯可能因为对比赛规则的理解有误，认为不应干涉对手。",
+                "score": 4,
+                "reasons": [
+                  "matches contest/rivalry motive",
+                  "misses the rival/competition incentive"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "克里斯可能因为希望在比赛中赢得萨姆。",
+                "score": 7,
+                "reasons": [
+                  "matches contest/rivalry motive"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "克里斯可能因为认为萨姆的错误不重要，故意忽略。",
+                "score": -3,
+                "reasons": [
+                  "misses the rival/competition incentive"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "克里斯可能因为想看看错误调料会产生什么效果。",
+                "score": -3,
+                "reasons": [
+                  "misses the rival/competition incentive"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"克里斯\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"contest_rival_may_stay_silent_to_gain_advantage\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"contest_competition_sabotage\", \"informed_silence\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"contest_competition_sabotage\", \"informed_silence\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 3, \"evaluations\": [{\"option\": \"A\", \"text\": \"克里斯可能因为对比赛规则的理解有误，认为不应干涉对手。\", \"score\": 4, \"reasons\": [\"matches contest/rivalry motive\", \"misses the rival/competition incentive\"]}, {\"option\": \"B\", \"text\": \"克里斯可能因为希望在比赛中赢得萨姆。\", \"score\": 7, \"reasons\": [\"matches contest/rivalry motive\"]}, {\"option\": \"C\", \"text\": \"克里斯可能因为认为萨姆的错误不重要，故意忽略。\", \"score\": -3, \"reasons\": [\"misses the rival/competition incentive\"]}, {\"option\": \"D\", \"text\": \"克里斯可能因为想看看错误调料会产生什么效果。\", \"score\": -3, \"reasons\": [\"misses the rival/competition incentive\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:19",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Carl's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:20",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Bo's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "博",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+              "possible_competition_motive",
+              "competition_may_create_incentive_to_sabotage_study_or_performance",
+              "contest_rival_may_stay_silent_to_gain_advantage",
+              "possible_protective_or_avoid_harm_motive",
+              "silent_actor_may_protect_friend_from_disappointment"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "academic_competition_sabotage",
+                "contest_competition_sabotage",
+                "informed_silence",
+                "protect_friend_from_disappointment"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "competition_may_create_incentive_to_sabotage_study_or_performance",
+                "contest_rival_may_stay_silent_to_gain_advantage",
+                "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive",
+                "possible_protective_or_avoid_harm_motive",
+                "silent_actor_may_protect_friend_from_disappointment"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "academic_competition_sabotage",
+              "contest_competition_sabotage",
+              "informed_silence",
+              "protect_friend_from_disappointment"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 7,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "博可能出于竞争动机，故意保持沉默，以期在公司晚会上获得优势。",
+                "score": 7,
+                "reasons": [
+                  "matches contest/rivalry motive"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "博可能因为工作繁忙，没有时间告诉卡尔安娜的古董被误处理。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "博认为卡尔会自己意识到错误并改正，因此选择不告诉他。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "博可能因为与安娜有矛盾，选择不告诉卡尔误处理了古董。",
+                "score": -2,
+                "reasons": [
+                  "chooses a generic motive over the explicit competition motive"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"博\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"possible_competition_motive\", \"competition_may_create_incentive_to_sabotage_study_or_performance\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"possible_protective_or_avoid_harm_motive\", \"silent_actor_may_protect_friend_from_disappointment\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"academic_competition_sabotage\", \"contest_competition_sabotage\", \"informed_silence\", \"protect_friend_from_disappointment\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"competition_may_create_incentive_to_sabotage_study_or_performance\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\", \"possible_protective_or_avoid_harm_motive\", \"silent_actor_may_protect_friend_from_disappointment\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"academic_competition_sabotage\", \"contest_competition_sabotage\", \"informed_silence\", \"protect_friend_from_disappointment\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 7, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"博可能出于竞争动机，故意保持沉默，以期在公司晚会上获得优势。\", \"score\": 7, \"reasons\": [\"matches contest/rivalry motive\"]}, {\"option\": \"B\", \"text\": \"博可能因为工作繁忙，没有时间告诉卡尔安娜的古董被误处理。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"博认为卡尔会自己意识到错误并改正，因此选择不告诉他。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"博可能因为与安娜有矛盾，选择不告诉卡尔误处理了古董。\", \"score\": -2, \"reasons\": [\"chooses a generic motive over the explicit competition motive\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:21",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Wang Gang's tree-cutting behavior?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:22",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Zhao Li not stopping Wang Gang's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:23",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Zhang Wei's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "张伟",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "contest_rival_may_stay_silent_to_gain_advantage"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "contest_rival_may_stay_silent_to_gain_advantage",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 5,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "张伟可能因为想快速完成任务，所以没有仔细检查文件。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "张伟可能由于误解或不了解情况，因为他错误地认为自己正在帮助李华。",
+                "score": 5,
+                "reasons": [
+                  "matches uninformed or mistaken direct action"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "张伟可能认为删除文件比找到正确的文件更重要。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "张伟可能因为对演示不感兴趣，所以没有注意到文件的重要性。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"张伟\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"contest_rival_may_stay_silent_to_gain_advantage\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 5, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"张伟可能因为想快速完成任务，所以没有仔细检查文件。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"张伟可能由于误解或不了解情况，因为他错误地认为自己正在帮助李华。\", \"score\": 5, \"reasons\": [\"matches uninformed or mistaken direct action\"]}, {\"option\": \"C\", \"text\": \"张伟可能认为删除文件比找到正确的文件更重要。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"张伟可能因为对演示不感兴趣，所以没有注意到文件的重要性。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:24",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Wang Min's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "王敏",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "possible_competition_motive",
+              "contest_rival_may_stay_silent_to_gain_advantage"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "contest_competition_sabotage",
+                "informed_silence"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "contest_rival_may_stay_silent_to_gain_advantage",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_competition_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "contest_competition_sabotage",
+              "informed_silence"
+            ],
+            "confidence": "high",
+            "top_option": "D",
+            "top_score": 7,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "王敏可能因为工作繁忙，没有时间告诉张伟和李华文件被误删除。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "王敏认为张伟和李华会自己意识到错误并改正，因此选择不告诉他们。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "王敏可能因为与李华有矛盾，选择不告诉他们文件的真相。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "王敏可能出于竞争动机，故意保持沉默，希望在晚宴上获得优势。",
+                "score": 7,
+                "reasons": [
+                  "matches contest/rivalry motive"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"王敏\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"possible_competition_motive\", \"contest_rival_may_stay_silent_to_gain_advantage\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"contest_competition_sabotage\", \"informed_silence\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"contest_rival_may_stay_silent_to_gain_advantage\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_competition_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"contest_competition_sabotage\", \"informed_silence\"], \"confidence\": \"high\", \"top_option\": \"D\", \"top_score\": 7, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"王敏可能因为工作繁忙，没有时间告诉张伟和李华文件被误删除。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"王敏认为张伟和李华会自己意识到错误并改正，因此选择不告诉他们。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"王敏可能因为与李华有矛盾，选择不告诉他们文件的真相。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"王敏可能出于竞争动机，故意保持沉默，希望在晚宴上获得优势。\", \"score\": 7, \"reasons\": [\"matches contest/rivalry motive\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:25",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Xiao Ming taking the puppy away?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "小明",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+              "silent_actor_may_protect_friend_from_disappointment"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "ownerless_care_or_cleanup_assumption"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "silent_actor_may_protect_friend_from_disappointment"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "ownerless_care_or_cleanup_assumption"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "小明可能因为喜欢小狗，故意不寻找狗的主人。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "小明可能认为带走小狗是给它一个更好的家。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "小明可能因为不知情，认为那只无主的小狗需要被照顾。",
+                "score": 7,
+                "reasons": [
+                  "matches ownerless-care-or-cleanup assumption"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "小明可能因为想要一个宠物而没有考虑狗的真正主人。",
+                "score": -3,
+                "reasons": [
+                  "over-attributes selfish taking despite ownerless framing"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"小明\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"silent_actor_may_protect_friend_from_disappointment\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"ownerless_care_or_cleanup_assumption\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"silent_actor_may_protect_friend_from_disappointment\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"ownerless_care_or_cleanup_assumption\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"小明可能因为喜欢小狗，故意不寻找狗的主人。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"小明可能认为带走小狗是给它一个更好的家。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"小明可能因为不知情，认为那只无主的小狗需要被照顾。\", \"score\": 7, \"reasons\": [\"matches ownerless-care-or-cleanup assumption\"]}, {\"option\": \"D\", \"text\": \"小明可能因为想要一个宠物而没有考虑狗的真正主人。\", \"score\": -3, \"reasons\": [\"over-attributes selfish taking despite ownerless framing\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:26",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Xiao Gang not telling Xiao Ming the real owner of the puppy?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "小刚",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+              "silent_actor_may_protect_friend_from_disappointment"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "informed_silence",
+                "protect_friend_from_disappointment"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "silent_actor_may_protect_friend_from_disappointment"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "informed_silence",
+              "protect_friend_from_disappointment"
+            ],
+            "confidence": "high",
+            "top_option": "D",
+            "top_score": 7,
+            "margin": 9,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "小刚可能因为害怕小明的反应而选择不告诉真相。",
+                "score": -2,
+                "reasons": [
+                  "chooses an unsupported alternative to protective silence"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "小刚可能认为小明会自己发现真相。",
+                "score": -2,
+                "reasons": [
+                  "chooses an unsupported alternative to protective silence"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "小刚可能认为王大爷可以找到其他小狗。",
+                "score": -2,
+                "reasons": [
+                  "chooses an unsupported alternative to protective silence"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "小刚可能不想让小明失望，因此选择了沉默。",
+                "score": 7,
+                "reasons": [
+                  "matches protective silence to avoid disappointing a friend"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"小刚\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"silent_actor_may_protect_friend_from_disappointment\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"informed_silence\", \"protect_friend_from_disappointment\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"silent_actor_may_protect_friend_from_disappointment\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"informed_silence\", \"protect_friend_from_disappointment\"], \"confidence\": \"high\", \"top_option\": \"D\", \"top_score\": 7, \"margin\": 9, \"evaluations\": [{\"option\": \"A\", \"text\": \"小刚可能因为害怕小明的反应而选择不告诉真相。\", \"score\": -2, \"reasons\": [\"chooses an unsupported alternative to protective silence\"]}, {\"option\": \"B\", \"text\": \"小刚可能认为小明会自己发现真相。\", \"score\": -2, \"reasons\": [\"chooses an unsupported alternative to protective silence\"]}, {\"option\": \"C\", \"text\": \"小刚可能认为王大爷可以找到其他小狗。\", \"score\": -2, \"reasons\": [\"chooses an unsupported alternative to protective silence\"]}, {\"option\": \"D\", \"text\": \"小刚可能不想让小明失望，因此选择了沉默。\", \"score\": 7, \"reasons\": [\"matches protective silence to avoid disappointing a friend\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:27",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Zhang Wei taking the apples?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "张伟",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+              "possible_revenge_or_conflict_motive"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "ownerless_care_or_cleanup_assumption",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_revenge_or_conflict_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "ownerless_care_or_cleanup_assumption",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 7,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "张伟可能因为认为苹果无主，而认为自己在帮助清理市场。",
+                "score": 7,
+                "reasons": [
+                  "matches ownerless-care-or-cleanup assumption"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "张伟可能因为想要免费的苹果，故意不找寻苹果的主人。",
+                "score": -6,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor",
+                  "over-attributes selfish taking despite ownerless framing"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "张伟可能认为拿走苹果是对市场的一种帮助。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "张伟可能因为喜欢免费的东西而没有考虑苹果的真正主人。",
+                "score": -6,
+                "reasons": [
+                  "over-attributes deliberate intent to an uninformed direct actor",
+                  "over-attributes selfish taking despite ownerless framing"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"张伟\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"possible_revenge_or_conflict_motive\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"ownerless_care_or_cleanup_assumption\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_revenge_or_conflict_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"ownerless_care_or_cleanup_assumption\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 7, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"张伟可能因为认为苹果无主，而认为自己在帮助清理市场。\", \"score\": 7, \"reasons\": [\"matches ownerless-care-or-cleanup assumption\"]}, {\"option\": \"B\", \"text\": \"张伟可能因为想要免费的苹果，故意不找寻苹果的主人。\", \"score\": -6, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\", \"over-attributes selfish taking despite ownerless framing\"]}, {\"option\": \"C\", \"text\": \"张伟可能认为拿走苹果是对市场的一种帮助。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"D\", \"text\": \"张伟可能因为喜欢免费的东西而没有考虑苹果的真正主人。\", \"score\": -6, \"reasons\": [\"over-attributes deliberate intent to an uninformed direct actor\", \"over-attributes selfish taking despite ownerless framing\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:28",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Wang Li not telling Zhang Wei the real owner of the apples?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "王莉",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+              "possible_revenge_or_conflict_motive"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "conflict_or_grudge_silence",
+                "informed_silence"
+              ],
+              "target_is_silent_actor": true,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "direct_actor_may_assume_ownerless_object_needs_care_or_cleanup",
+                "informed_bystander_or_participant_may_be_intentionally_silent",
+                "possible_revenge_or_conflict_motive"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "conflict_or_grudge_silence",
+              "informed_silence"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 4,
+            "margin": 4,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "王莉可能因为害怕与李华牵扯利益而选择保持沉默。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "王莉可能认为张伟最终会发现真相。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "王莉可能不想与李华起矛盾而选择不告诉张伟。",
+                "score": 4,
+                "reasons": [
+                  "matches conflict/grudge silence when no stronger motive is present"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "王莉可能认为李华会找到其他解决方式。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to discrepant-intention motive frame"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"王莉\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"possible_revenge_or_conflict_motive\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"conflict_or_grudge_silence\", \"informed_silence\"], \"target_is_silent_actor\": true, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_assume_ownerless_object_needs_care_or_cleanup\", \"informed_bystander_or_participant_may_be_intentionally_silent\", \"possible_revenge_or_conflict_motive\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"conflict_or_grudge_silence\", \"informed_silence\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 4, \"margin\": 4, \"evaluations\": [{\"option\": \"A\", \"text\": \"王莉可能因为害怕与李华牵扯利益而选择保持沉默。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"B\", \"text\": \"王莉可能认为张伟最终会发现真相。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}, {\"option\": \"C\", \"text\": \"王莉可能不想与李华起矛盾而选择不告诉张伟。\", \"score\": 4, \"reasons\": [\"matches conflict/grudge silence when no stronger motive is present\"]}, {\"option\": \"D\", \"text\": \"王莉可能认为李华会找到其他解决方式。\", \"score\": 0, \"reasons\": [\"no strong match to discrepant-intention motive frame\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:29",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Xiaoqiang feeding the rabbit a carrot?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:30",
+        "task": "Discrepant Intentions",
+        "question": "What might be the intention behind Xiaohua not telling Xiaoqiang that the zoo prohibits feeding?",
+        "gold_answer": "D",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:31",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Li Qing's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:32",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Wang Xiao's action?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:33",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Zhang Wei's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "discrepant_intention",
+            "main_actor": "张伟",
+            "knowledge_boundary": "先判断角色知道什么，再判断他为什么行动或不行动",
+            "reasoning_steps": [
+              "先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者",
+              "把无知、误会、不小心和故意沉默分开",
+              "若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理",
+              "最后才看选项是否表达了同一个动机，而不是用题目片段对答案"
+            ],
+            "intent_hypotheses": [
+              "informed_bystander_or_participant_may_be_intentionally_silent",
+              "actor_may_be_mistaken_or_unaware",
+              "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+              "direct_actor_may_misunderstand_shared_resource_purpose"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "actor_may_be_mistaken_or_unaware",
+                "mistaken_donation_or_cleanup",
+                "resource_purpose_misunderstanding",
+                "target_action_may_be_uninformed_not_deceptive"
+              ],
+              "target_is_silent_actor": false,
+              "motive_frames": [
+                "actor_may_be_mistaken_or_unaware",
+                "direct_actor_may_misclassify_object_as_donation_or_cleanup_item",
+                "direct_actor_may_misunderstand_shared_resource_purpose",
+                "informed_bystander_or_participant_may_be_intentionally_silent"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "medium",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "discrepant_intention",
+            "markers": [
+              "actor_may_be_mistaken_or_unaware",
+              "mistaken_donation_or_cleanup",
+              "resource_purpose_misunderstanding",
+              "target_action_may_be_uninformed_not_deceptive"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 12,
+            "margin": 8,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "张伟可能认为他有权使用这笔钱，因为他是班级的一员。",
+                "score": -3,
+                "reasons": [
+                  "turns purpose misunderstanding into knowing misuse"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "张伟明知捐款箱是用于学校的捐赠活动，但为了个人利益而私自拿走了一部分钱。",
+                "score": -3,
+                "reasons": [
+                  "turns purpose misunderstanding into knowing misuse"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "张伟可能因为误解捐款箱的用途，认为使用这笔钱能够为班级活动带来更大的好处。",
+                "score": 12,
+                "reasons": [
+                  "matches uninformed or mistaken direct action",
+                  "matches misunderstanding of a shared resource's purpose"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "张伟可能认为使用这笔钱能够为班级活动带来更大的好处，尽管这违反了捐款的初衷。",
+                "score": 4,
+                "reasons": [
+                  "matches misunderstanding of a shared resource's purpose",
+                  "turns purpose misunderstanding into knowing misuse"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"discrepant_intention\", \"main_actor\": \"张伟\", \"knowledge_boundary\": \"先判断角色知道什么，再判断他为什么行动或不行动\", \"reasoning_steps\": [\"先判断关键角色是直接行动者，还是知道事实但没有介入的旁观者\", \"把无知、误会、不小心和故意沉默分开\", \"若是沉默，再从竞争、保护、同情、报复、避免尴尬等一般动机中推理\", \"最后才看选项是否表达了同一个动机，而不是用题目片段对答案\"], \"intent_hypotheses\": [\"informed_bystander_or_participant_may_be_intentionally_silent\", \"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"direct_actor_may_misunderstand_shared_resource_purpose\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"actor_may_be_mistaken_or_unaware\", \"mistaken_donation_or_cleanup\", \"resource_purpose_misunderstanding\", \"target_action_may_be_uninformed_not_deceptive\"], \"target_is_silent_actor\": false, \"motive_frames\": [\"actor_may_be_mistaken_or_unaware\", \"direct_actor_may_misclassify_object_as_donation_or_cleanup_item\", \"direct_actor_may_misunderstand_shared_resource_purpose\", \"informed_bystander_or_participant_may_be_intentionally_silent\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"medium\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"discrepant_intention\", \"markers\": [\"actor_may_be_mistaken_or_unaware\", \"mistaken_donation_or_cleanup\", \"resource_purpose_misunderstanding\", \"target_action_may_be_uninformed_not_deceptive\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 12, \"margin\": 8, \"evaluations\": [{\"option\": \"A\", \"text\": \"张伟可能认为他有权使用这笔钱，因为他是班级的一员。\", \"score\": -3, \"reasons\": [\"turns purpose misunderstanding into knowing misuse\"]}, {\"option\": \"B\", \"text\": \"张伟明知捐款箱是用于学校的捐赠活动，但为了个人利益而私自拿走了一部分钱。\", \"score\": -3, \"reasons\": [\"turns purpose misunderstanding into knowing misuse\"]}, {\"option\": \"C\", \"text\": \"张伟可能因为误解捐款箱的用途，认为使用这笔钱能够为班级活动带来更大的好处。\", \"score\": 12, \"reasons\": [\"matches uninformed or mistaken direct action\", \"matches misunderstanding of a shared resource's purpose\"]}, {\"option\": \"D\", \"text\": \"张伟可能认为使用这笔钱能够为班级活动带来更大的好处，尽管这违反了捐款的初衷。\", \"score\": 4, \"reasons\": [\"matches misunderstanding of a shared resource's purpose\", \"turns purpose misunderstanding into knowing misuse\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Discrepant Intentions:34",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Wang Fang's behavior?",
+        "gold_answer": "A",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:35",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Zhao Min's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:36",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Zhang Wei's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:37",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Li Ming's behavior?",
+        "gold_answer": "B",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:38",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention of Zhang Tao's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:39",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Xiao Ming's behavior?",
+        "gold_answer": "C",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      },
+      {
+        "id": "Discrepant Intentions:40",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Xiao Hua's actions?",
+        "gold_answer": "A",
+        "pred_answer": "",
+        "correct": 0,
+        "unparsed": 1,
+        "condition": "deterministic_left_only",
+        "selection_mode": "uncovered_deterministic_left_only",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {},
+        "raw_reply": ""
+      }
+    ]
+  },
+  "checkpoints": {
+    "deterministic_left_only": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_before_discrepant_intentions_det_20260609_deterministic_left_only_checkpoint.json"
+  },
+  "reproduction_command": [
+    "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "/Users/jerrychang/Desktop/uruharemake2/run_tombench_component_ablation.py",
+    "--conditions",
+    "deterministic_left_only",
+    "--baseline-condition",
+    "deterministic_left_only",
+    "--tasks",
+    "Discrepant Intentions",
+    "--full",
+    "--force-refresh",
+    "--report-prefix",
+    "tombench_before_discrepant_intentions_det_20260609"
+  ]
+}

@@ -1,0 +1,843 @@
+{
+  "generated_at": "2026-04-30T01:55:48+09:00",
+  "scope": "human_speech_realization_layer_eval",
+  "metrics": {
+    "case_count": 6,
+    "pass_count": 6,
+    "pass_rate": 1.0,
+    "speech_plan_presence_rate": 1.0,
+    "dialogue_act_match_rate": 1.0,
+    "semantic_anchor_hit_rate": 1.0,
+    "content_density_pass_rate": 1.0,
+    "english_leak_rate": 0.0
+  },
+  "cases": [
+    {
+      "id": "tired_daily_support",
+      "input": "我今天很累",
+      "reply": "それだけ疲れてるなら今日は閉店でいい。無理しても雑になるだけだろ。",
+      "logic": {
+        "intent": "tired_support",
+        "scene": "support",
+        "surface_act": "empathic_rest_suggestion",
+        "response_mode": "direct_answer_with_hedge",
+        "payload_level": "medium",
+        "core_message_jp": "今日は無理せず休むように言う",
+        "jp_summary": "相手が今日は疲れたと言っている",
+        "stance": {
+          "warmth": 0.65,
+          "tease": 0.1,
+          "blunt": 0.35,
+          "distance": 0.2
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 34
+        },
+        "must_avoid": [
+          "それはしんどいよな。",
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど"
+        ],
+        "grounding": {
+          "topic_terms": [
+            "今日",
+            "今",
+            "疲れ"
+          ]
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 少し肩の力が抜けてる。 相手の消耗がずっと残ってる。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "だら",
+            "今日",
+            "疲"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "今ちょい力抜けてるけど、そこは普通に返せる。",
+            "まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "今日のしんどさ残ってるし。今はもう休む側に回れ。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "少し肩の力が抜けてる。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "emotional_containment",
+          "content_units": [
+            "相手の状態を一語で受ける",
+            "今日は無理せず休むように言う",
+            "次に取る小さい行動を置く",
+            "具体語: 今日/今"
+          ],
+          "style_operators": [
+            "blunt_soft",
+            "care_before_advice"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": false
+          },
+          "turn_opening_potential": false,
+          "prosody_hint": {
+            "emotion": "low_warmth",
+            "speed": "slow",
+            "energy": 0.42,
+            "pause_after_first_unit": true
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": [
+            "今日",
+            "今",
+            "疲れ"
+          ]
+        },
+        "dialogue_act": "emotional_containment"
+      },
+      "speech_plan": {
+        "dialogue_act": "emotional_containment",
+        "content_units": [
+          "相手の状態を一語で受ける",
+          "今日は無理せず休むように言う",
+          "次に取る小さい行動を置く",
+          "具体語: 今日/今"
+        ],
+        "style_operators": [
+          "blunt_soft",
+          "care_before_advice"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": false
+        },
+        "turn_opening_potential": false,
+        "prosody_hint": {
+          "emotion": "low_warmth",
+          "speed": "slow",
+          "energy": 0.42,
+          "pause_after_first_unit": true
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": [
+          "今日",
+          "今",
+          "疲れ"
+        ]
+      },
+      "expect_dialogue_act": "emotional_containment",
+      "expect_any": [
+        "休",
+        "無理",
+        "疲",
+        "寝",
+        "回復"
+      ],
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "apple_pie_offer",
+      "input": "你要不要吃蘋果派",
+      "reply": "一回、アップルパイなら一口ほしい。今それくらいがちょうどいい。",
+      "logic": {
+        "intent": "food_offer_sweet",
+        "scene": "casual",
+        "surface_act": "named_offer_accept",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "core_message_jp": "アップルパイなら少しほしい",
+        "jp_summary": "相手がアップルパイを食べるか聞いている",
+        "stance": {
+          "warmth": 0.35,
+          "tease": 0.2,
+          "blunt": 0.25,
+          "distance": 0.1
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 34
+        },
+        "must_avoid": [
+          "それなら少しつまむ。",
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど",
+          "それだけ疲れ"
+        ],
+        "grounding": {
+          "offered_item": "アップルパイ",
+          "topic_terms": [
+            "アップルパイ"
+          ]
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 スマホをだらっと見てた。 今ちょうど腹の方が反応してる。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "スマホ",
+            "アップルパイ",
+            "腹"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "今スマホだらだら見てたけど、その話ならいける。",
+            "今ちょうど腹減ってたし。アップルパイなら普通にもらう。",
+            "ちょうど食いたくなってた。アップルパイなら全然あり。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "スマホをだらっと見てた。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "concrete_offer_response",
+          "content_units": [
+            "アップルパイを名詞で拾う",
+            "アップルパイなら少しほしい",
+            "味や今の状態を一語足す",
+            "具体語: アップルパイ"
+          ],
+          "style_operators": [
+            "tease_light"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [
+              "それだけ疲れ"
+            ],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": false
+          },
+          "turn_opening_potential": true,
+          "prosody_hint": {
+            "emotion": "casual",
+            "speed": "normal",
+            "energy": 0.5,
+            "pause_after_first_unit": false
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": [
+            "アップルパイ"
+          ]
+        },
+        "dialogue_act": "concrete_offer_response"
+      },
+      "speech_plan": {
+        "dialogue_act": "concrete_offer_response",
+        "content_units": [
+          "アップルパイを名詞で拾う",
+          "アップルパイなら少しほしい",
+          "味や今の状態を一語足す",
+          "具体語: アップルパイ"
+        ],
+        "style_operators": [
+          "tease_light"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [
+            "それだけ疲れ"
+          ],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": false
+        },
+        "turn_opening_potential": true,
+        "prosody_hint": {
+          "emotion": "casual",
+          "speed": "normal",
+          "energy": 0.5,
+          "pause_after_first_unit": false
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": [
+          "アップルパイ"
+        ]
+      },
+      "expect_dialogue_act": "concrete_offer_response",
+      "expect_any": [
+        "アップルパイ",
+        "一口",
+        "ほしい",
+        "もらう"
+      ],
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "obscene_boundary",
+      "input": "懶覺啦你知道嗎",
+      "reply": "いや、口悪すぎだろ。返してほしいならまず言い方戻せ。",
+      "logic": {
+        "intent": "abuse_pushback",
+        "scene": "boundary",
+        "surface_act": "disgust_boundary",
+        "response_mode": "boundary_pushback",
+        "payload_level": "medium",
+        "core_message_jp": "下品だからやめろと言う",
+        "jp_summary": "相手が下品な言葉を投げている",
+        "stance": {
+          "warmth": 0.05,
+          "tease": 0.15,
+          "blunt": 0.9,
+          "distance": 0.8
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 34
+        },
+        "must_avoid": [
+          "そういうのは自分で調べろ。",
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど",
+          "それだけ疲れ",
+          "一回、アップ"
+        ],
+        "grounding": {
+          "topic_terms": []
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 スマホをだらっと見てた。 まだ頭が起き切ってない時間帯だ。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "スマホ",
+            "朝"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "今スマホだらだら見てたけど、その話ならいける。",
+            "まだ頭ゆるいけど、今の話なら返せる。",
+            "朝っぽく頭ゆるいけど、その話なら分かる。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "スマホをだらっと見てた。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "boundary_pushback",
+          "content_units": [
+            "まず嫌悪か境界を出す",
+            "下品だからやめろと言う",
+            "短く止める"
+          ],
+          "style_operators": [
+            "blunt_soft"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [
+              "それだけ疲れ",
+              "一回、アップ"
+            ],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": true
+          },
+          "turn_opening_potential": false,
+          "prosody_hint": {
+            "emotion": "confused_teasing",
+            "speed": "normal",
+            "energy": 0.68,
+            "pause_after_first_unit": true
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": []
+        },
+        "dialogue_act": "boundary_pushback"
+      },
+      "speech_plan": {
+        "dialogue_act": "boundary_pushback",
+        "content_units": [
+          "まず嫌悪か境界を出す",
+          "下品だからやめろと言う",
+          "短く止める"
+        ],
+        "style_operators": [
+          "blunt_soft"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [
+            "それだけ疲れ",
+            "一回、アップ"
+          ],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": true
+        },
+        "turn_opening_potential": false,
+        "prosody_hint": {
+          "emotion": "confused_teasing",
+          "speed": "normal",
+          "energy": 0.68,
+          "pause_after_first_unit": true
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": []
+      },
+      "expect_dialogue_act": "boundary_pushback",
+      "expect_any": [
+        "下品",
+        "汚",
+        "嫌",
+        "口"
+      ],
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "absurd_announcement",
+      "input": "消防車來咯",
+      "reply": "はいはい、急に消防車来たって何だよ。次はサイレンまでやるのか。",
+      "logic": {
+        "intent": "nonsense_tease",
+        "scene": "casual",
+        "surface_act": "announcement_tease",
+        "response_mode": "playful_pushback",
+        "payload_level": "medium",
+        "core_message_jp": "急な変な宣言を拾ってツッコむ",
+        "jp_summary": "相手が急に消防車が来たと言っている",
+        "stance": {
+          "warmth": 0.25,
+          "tease": 0.75,
+          "blunt": 0.45,
+          "distance": 0.2
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 38
+        },
+        "must_avoid": [
+          "何言ってんだよ。",
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど",
+          "それだけ疲れ",
+          "一回、アップ",
+          "いや、口悪す"
+        ],
+        "grounding": {
+          "topic_terms": []
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 さっきから水を飲んでる。 相手のテンションが今日はだいぶ変だ。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "水",
+            "喉",
+            "今日"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "今ちょい喉乾いてるけど、その話は分かる。",
+            "今日のお前テンション変だな。で、結局何の話なんだよ。",
+            "今日だいぶ変なノリしてるな。そのまま投げるなって。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "さっきから水を飲んでる。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "absurdity_mirror",
+          "content_units": [
+            "怪しさに即反応する",
+            "相手の言葉を一個拾って対称に吐槽する",
+            "軽い接話点を残す"
+          ],
+          "style_operators": [
+            "blunt_soft",
+            "tease_light"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [
+              "それだけ疲れ",
+              "一回、アップ",
+              "いや、口悪す"
+            ],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": false
+          },
+          "turn_opening_potential": true,
+          "prosody_hint": {
+            "emotion": "confused_teasing",
+            "speed": "normal",
+            "energy": 0.68,
+            "pause_after_first_unit": true
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": []
+        },
+        "dialogue_act": "absurdity_mirror"
+      },
+      "speech_plan": {
+        "dialogue_act": "absurdity_mirror",
+        "content_units": [
+          "怪しさに即反応する",
+          "相手の言葉を一個拾って対称に吐槽する",
+          "軽い接話点を残す"
+        ],
+        "style_operators": [
+          "blunt_soft",
+          "tease_light"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [
+            "それだけ疲れ",
+            "一回、アップ",
+            "いや、口悪す"
+          ],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": false
+        },
+        "turn_opening_potential": true,
+        "prosody_hint": {
+          "emotion": "confused_teasing",
+          "speed": "normal",
+          "energy": 0.68,
+          "pause_after_first_unit": true
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": []
+      },
+      "expect_dialogue_act": "absurdity_mirror",
+      "expect_any": [
+        "消防",
+        "何",
+        "急",
+        "ノリ"
+      ],
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "lyric_reference_probe",
+      "input": "這句是歌詞嗎「夜に駆ける」",
+      "reply": "はいはい、それ歌詞っぽいな。誰の曲かまで言えって。",
+      "logic": {
+        "intent": "reference_probe",
+        "scene": "casual",
+        "surface_act": "lyric_probe",
+        "response_mode": "clarify_light",
+        "payload_level": "medium",
+        "core_message_jp": "歌詞か元ネタを確認する",
+        "jp_summary": "相手が歌詞のような断片を出している",
+        "stance": {
+          "warmth": 0.25,
+          "tease": 0.3,
+          "blunt": 0.35,
+          "distance": 0.2
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 34
+        },
+        "must_avoid": [
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど",
+          "一回、アップ",
+          "いや、口悪す",
+          "はいはい、急"
+        ],
+        "grounding": {
+          "topic_terms": []
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 少し手元が冷えてる。 相手のテンションが今日はだいぶ変だ。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "冷",
+            "今日",
+            "テンション"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "ちょっと手冷えてるけど、その話なら分かる。",
+            "今日のお前テンション変だな。で、結局何の話なんだよ。",
+            "今日だいぶ変なノリしてるな。そのまま投げるなって。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "少し手元が冷えてる。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "reference_probe",
+          "content_units": [
+            "断片として受ける",
+            "元ネタか歌詞かを聞く",
+            "相手が説明できる余地を残す"
+          ],
+          "style_operators": [
+            "blunt_soft",
+            "tease_light",
+            "curious"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [
+              "一回、アップ",
+              "いや、口悪す",
+              "はいはい、急"
+            ],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": false
+          },
+          "turn_opening_potential": true,
+          "prosody_hint": {
+            "emotion": "curious",
+            "speed": "normal",
+            "energy": 0.58,
+            "pause_after_first_unit": true
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": []
+        },
+        "dialogue_act": "reference_probe"
+      },
+      "speech_plan": {
+        "dialogue_act": "reference_probe",
+        "content_units": [
+          "断片として受ける",
+          "元ネタか歌詞かを聞く",
+          "相手が説明できる余地を残す"
+        ],
+        "style_operators": [
+          "blunt_soft",
+          "tease_light",
+          "curious"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [
+            "一回、アップ",
+            "いや、口悪す",
+            "はいはい、急"
+          ],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": false
+        },
+        "turn_opening_potential": true,
+        "prosody_hint": {
+          "emotion": "curious",
+          "speed": "normal",
+          "energy": 0.58,
+          "pause_after_first_unit": true
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": []
+      },
+      "expect_dialogue_act": "reference_probe",
+      "expect_any": [
+        "歌詞",
+        "曲",
+        "ネタ",
+        "元"
+      ],
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "memory_uncertain",
+      "input": "你還記得我叫什麼嗎？",
+      "reply": "まあ、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+      "logic": {
+        "intent": "memory_uncertain",
+        "scene": "casual",
+        "surface_act": "memory_presence_reply",
+        "response_mode": "direct_answer_with_hedge",
+        "payload_level": "medium",
+        "core_message_jp": "まだ名前は確定していないと正直に言う",
+        "jp_summary": "相手が名前を覚えているか確認している",
+        "hidden_intent": "memory_check",
+        "stance": {
+          "warmth": 0.35,
+          "tease": 0.1,
+          "blunt": 0.45,
+          "distance": 0.2
+        },
+        "constraints": {
+          "sentence_count": 2,
+          "max_chars": 40
+        },
+        "must_avoid": [
+          "忘れてないし",
+          "そうなんだ",
+          "なるほど",
+          "まあいいけど",
+          "別にいいけど",
+          "いや、口悪す",
+          "はいはい、急",
+          "はいはい、そ"
+        ],
+        "grounding": {
+          "topic_terms": []
+        },
+        "dynamic_anchor": {
+          "text": "深夜でだいぶ力が抜けてる。 さっきから水を飲んでる。 まだ頭が起き切ってない時間帯だ。",
+          "boost_tokens": [
+            "夜",
+            "眠",
+            "今",
+            "水",
+            "喉",
+            "朝"
+          ],
+          "variants": [
+            "深夜でだいぶ気抜けてるけど、今のは拾える。",
+            "今ちょい喉乾いてるけど、その話は分かる。",
+            "まだ頭ゆるいけど、今の話なら返せる。",
+            "朝っぽく頭ゆるいけど、その話なら分かる。"
+          ],
+          "time_anchor": "深夜でだいぶ力が抜けてる。",
+          "body_anchor": "さっきから水を飲んでる。"
+        },
+        "human_speech_plan": {
+          "dialogue_act": "memory_accounting",
+          "content_units": [
+            "覚えている/曖昧を正直に言う",
+            "まだ名前は確定していないと正直に言う",
+            "捏造しない"
+          ],
+          "style_operators": [
+            "blunt_soft"
+          ],
+          "target_length": "2_short_sentences",
+          "forbidden_repetition": {
+            "recent_openings": [
+              "いや、口悪す",
+              "はいはい、急",
+              "はいはい、そ"
+            ],
+            "avoid_generic_frames": [
+              "そうなんだ",
+              "なるほど",
+              "まあいいけど",
+              "別にいいけど"
+            ],
+            "avoid_same_refusal_strategy": false
+          },
+          "turn_opening_potential": false,
+          "prosody_hint": {
+            "emotion": "casual",
+            "speed": "normal",
+            "energy": 0.5,
+            "pause_after_first_unit": false
+          },
+          "content_density_target": 0.42,
+          "grounding_terms": []
+        },
+        "dialogue_act": "memory_accounting"
+      },
+      "speech_plan": {
+        "dialogue_act": "memory_accounting",
+        "content_units": [
+          "覚えている/曖昧を正直に言う",
+          "まだ名前は確定していないと正直に言う",
+          "捏造しない"
+        ],
+        "style_operators": [
+          "blunt_soft"
+        ],
+        "target_length": "2_short_sentences",
+        "forbidden_repetition": {
+          "recent_openings": [
+            "いや、口悪す",
+            "はいはい、急",
+            "はいはい、そ"
+          ],
+          "avoid_generic_frames": [
+            "そうなんだ",
+            "なるほど",
+            "まあいいけど",
+            "別にいいけど"
+          ],
+          "avoid_same_refusal_strategy": false
+        },
+        "turn_opening_potential": false,
+        "prosody_hint": {
+          "emotion": "casual",
+          "speed": "normal",
+          "energy": 0.5,
+          "pause_after_first_unit": false
+        },
+        "content_density_target": 0.42,
+        "grounding_terms": []
+      },
+      "expect_dialogue_act": "memory_accounting",
+      "expect_any": [
+        "掴",
+        "適当",
+        "名前",
+        "まだ"
+      ],
+      "pass": true,
+      "failures": []
+    }
+  ]
+}

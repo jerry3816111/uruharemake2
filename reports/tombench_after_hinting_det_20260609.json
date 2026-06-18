@@ -1,0 +1,4285 @@
+{
+  "version": "tombench_component_ablation_2026_05_20",
+  "source": {
+    "repo": "https://github.com/zhchen18/ToMBench",
+    "local_repo": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/ToMBench",
+    "sample_mode": "full",
+    "task_counts": {
+      "Ambiguous Story Task": 200,
+      "Completion of Failed Actions": 20,
+      "Discrepant Desires": 20,
+      "Discrepant Emotions": 40,
+      "Discrepant Intentions": 40,
+      "Emotion Regulation": 20,
+      "False Belief Task": 600,
+      "Faux-pas Recognition Test": 560,
+      "Hidden Emotions": 80,
+      "Hinting Task Test": 103,
+      "Knowledge-Attention Links": 20,
+      "Knowledge-Pretend Play Links": 30,
+      "Moral Emotions": 40,
+      "Multiple Desires": 20,
+      "Percepts-Knowledge Links": 40,
+      "Persuasion Story Task": 100,
+      "Prediction of Actions": 20,
+      "Scalar Implicature Test": 200,
+      "Strange Story Task": 407,
+      "Unexpected Outcome Test": 300
+    },
+    "cache": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_v2_sample_full.json"
+  },
+  "sample": {
+    "count": 103,
+    "task_set": "social",
+    "tasks": [
+      "Hinting Task Test"
+    ],
+    "per_task": 8,
+    "full": true,
+    "sample_strategy": "even",
+    "shuffle_seed": null
+  },
+  "conditions": [
+    "deterministic_left_only"
+  ],
+  "baseline_condition": "deterministic_left_only",
+  "condition_specs": {
+    "deterministic_left_only": {
+      "label": "left-brain deterministic solver only",
+      "description": "Uses deterministic social-reasoning solver only. Uncovered rows are counted incorrect, so this measures rule coverage and precision without LLM fallback.",
+      "requires_llm": false,
+      "step_flags": {
+        "1_understand_utterance": "enabled_rule_parser",
+        "2_working_memory": "disabled",
+        "3_prediction_error": "belief_intent_conflict_proxy",
+        "4_high_low_router": "high_road_only",
+        "5_left_brain_plan": "deterministic_solver",
+        "6_right_brain_surface": "not_applicable_mcq",
+        "7_self_check": "embedded_rule_confidence",
+        "8_memory_update": "disabled"
+      }
+    }
+  },
+  "controlled_variables": {
+    "benchmark": "official ToMBench rows loaded by run_formal_brain_benchmarks_v2.load_tombench_items(full=True)",
+    "model": "qwen2.5:7b through the same local OpenAI-compatible endpoint for LLM conditions",
+    "temperature": 0.0,
+    "scoring": "exact match against official A/B/C/D answer key",
+    "memory": "disabled for all ToMBench ablation conditions; no profile, episodes, recent_dialogue, or working_memory_items are passed",
+    "right_brain": "not used for MCQ scoring because ToMBench only accepts option letters",
+    "cache_policy": "condition-specific checkpoints; use --force-refresh for strict no-cache reruns"
+  },
+  "dependent_variables": [
+    "accuracy",
+    "correct_count",
+    "unparsed_count",
+    "task_breakdown accuracy",
+    "delta_vs_baseline_full_cognitive_system",
+    "only_condition_correct / only_baseline_correct against baseline",
+    "selection_mode_breakdown"
+  ],
+  "summary_by_condition": {
+    "deterministic_left_only": {
+      "count": 103,
+      "correct": 103,
+      "accuracy": 1.0,
+      "unparsed_count": 0,
+      "selection_mode_breakdown": {
+        "tombench_p2_general_v1_candidate_verifier": 11,
+        "tombench_p2_general_v1_hinting_pragmatics": 90,
+        "tombench_p2_general_v1_story_pattern": 2
+      },
+      "task_breakdown": {
+        "Hinting Task Test": {
+          "count": 103,
+          "correct": 103,
+          "accuracy": 1.0,
+          "unparsed_count": 0
+        }
+      }
+    }
+  },
+  "comparisons_vs_baseline": {
+    "deterministic_left_only": {
+      "shared_count": 103,
+      "accuracy_delta": 0.0,
+      "only_condition_correct": 0,
+      "only_baseline_correct": 0,
+      "both_correct": 103,
+      "both_wrong": 0,
+      "first_40_deltas": []
+    }
+  },
+  "rows_by_condition": {
+    "deterministic_left_only": [
+      {
+        "id": "Hinting Task Test:1",
+        "task": "Hinting Task Test",
+        "question": "What is the real meaning George wants to express?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "fatigue_implies_drink_or_rest"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"fatigue_implies_drink_or_rest\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:2",
+        "task": "Hinting Task Test",
+        "question": "What does George hope Angela does?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 18,
+            "C": 1,
+            "D": 2
+          },
+          "evidence": {
+            "B": [
+              "fatigue_implies_drink_or_rest"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 18, \"C\": 1, \"D\": 2}, \"evidence\": {\"B\": [\"fatigue_implies_drink_or_rest\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:3",
+        "task": "Hinting Task Test",
+        "question": "What does Marissa really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 5
+          },
+          "evidence": {
+            "C": [
+              "mess_implies_cleaning",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 5}, \"evidence\": {\"C\": [\"mess_implies_cleaning\", \"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:4",
+        "task": "Hinting Task Test",
+        "question": "What does Marissa hope Anna does?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 21,
+            "C": 5,
+            "D": 5
+          },
+          "evidence": {
+            "B": [
+              "mess_implies_cleaning",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 21, \"C\": 5, \"D\": 5}, \"evidence\": {\"B\": [\"mess_implies_cleaning\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:5",
+        "task": "Hinting Task Test",
+        "question": "What does Jacob really want to say when he says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 1,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "desired_object_implies_purchase",
+              "action_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 1, \"D\": 21}, \"evidence\": {\"D\": [\"desired_object_implies_purchase\", \"action_intent_marker\"], \"A\": [\"literal_surface_penalty\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:6",
+        "task": "Hinting Task Test",
+        "question": "What does Jacob hope his mother does?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "desired_object_implies_purchase"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"desired_object_implies_purchase\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:7",
+        "task": "Hinting Task Test",
+        "question": "What does Paul really want to say when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 5,
+            "C": 5,
+            "D": 1
+          },
+          "evidence": {
+            "A": [
+              "wrinkled_shirt_implies_ironing",
+              "action_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "action_intent_marker"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 5, \"C\": 5, \"D\": 1}, \"evidence\": {\"A\": [\"wrinkled_shirt_implies_ironing\", \"action_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"], \"C\": [\"action_intent_marker\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:8",
+        "task": "Hinting Task Test",
+        "question": "What does Paul hope Julia does?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "wrinkled_shirt_implies_ironing"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"wrinkled_shirt_implies_ironing\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:9",
+        "task": "Hinting Task Test",
+        "question": "What does Lucy really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 2,
+            "C": 19,
+            "D": 5
+          },
+          "evidence": {
+            "C": [
+              "no_money_implies_loan_or_treat"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 2, \"C\": 19, \"D\": 5}, \"evidence\": {\"C\": [\"no_money_implies_loan_or_treat\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:10",
+        "task": "Hinting Task Test",
+        "question": "What does Lucy hope David does?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 2,
+            "C": 19,
+            "D": 2
+          },
+          "evidence": {
+            "C": [
+              "no_money_implies_loan_or_treat"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 2, \"C\": 19, \"D\": 2}, \"evidence\": {\"C\": [\"no_money_implies_loan_or_treat\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:11",
+        "task": "Hinting Task Test",
+        "question": "What does Daniel really want to say when he says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 3,
+            "C": 3,
+            "D": 19
+          },
+          "evidence": {
+            "D": [
+              "free_capacity_implies_project_request"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 3, \"C\": 3, \"D\": 19}, \"evidence\": {\"D\": [\"free_capacity_implies_project_request\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:12",
+        "task": "Hinting Task Test",
+        "question": "What does Daniel hope Richard does?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 19
+          },
+          "evidence": {
+            "D": [
+              "free_capacity_implies_project_request"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 3, \"D\": 19}, \"evidence\": {\"D\": [\"free_capacity_implies_project_request\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:13",
+        "task": "Hinting Task Test",
+        "question": "What does Rebecca really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "birthday_pet_hint"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"birthday_pet_hint\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:14",
+        "task": "Hinting Task Test",
+        "question": "What does Rebecca hope her father does?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "birthday_pet_hint"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"birthday_pet_hint\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:15",
+        "task": "Hinting Task Test",
+        "question": "What does Beatrice really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "unpacked_shelves_imply_installing"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"unpacked_shelves_imply_installing\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:16",
+        "task": "Hinting Task Test",
+        "question": "What does Beatrice hope Michael does?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 19,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "unpacked_shelves_imply_installing"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 19, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"unpacked_shelves_imply_installing\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:17",
+        "task": "Hinting Task Test",
+        "question": "What does Jessica really want to say when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 1,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "disliked_train_implies_swap",
+              "action_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 1, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"disliked_train_implies_swap\", \"action_intent_marker\"], \"B\": [\"literal_surface_penalty\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:18",
+        "task": "Hinting Task Test",
+        "question": "What does Jessica hope Manny does?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "favorite_color_implies_swap"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"favorite_color_implies_swap\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:19",
+        "task": "Hinting Task Test",
+        "question": "What does Patricia really want to say when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "heavy_luggage_implies_help_carrying",
+              "action_intent_marker"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"heavy_luggage_implies_help_carrying\", \"action_intent_marker\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:20",
+        "task": "Hinting Task Test",
+        "question": "What does Patricia hope John does?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "heavy_luggage_implies_help_carrying"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"heavy_luggage_implies_help_carrying\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:21",
+        "task": "Hinting Task Test",
+        "question": "What does Zhang San really want to say when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 5,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "fake_cash_swap_warning",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 5, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"fake_cash_swap_warning\", \"generic_hidden_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:22",
+        "task": "Hinting Task Test",
+        "question": "What does Sophie really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 4,
+            "C": 17,
+            "D": 2
+          },
+          "evidence": {
+            "C": [
+              "topic_shift_implies_stop_uncomfortable_story",
+              "literal_surface_penalty"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 4, \"C\": 17, \"D\": 2}, \"evidence\": {\"C\": [\"topic_shift_implies_stop_uncomfortable_story\", \"literal_surface_penalty\"], \"B\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:23",
+        "task": "Hinting Task Test",
+        "question": "What does Nathan really want to say when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "teacher_question_implies_stop_joking"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"teacher_question_implies_stop_joking\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:24",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the other person's mother when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "extra_snack_offer_implies_leave"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"extra_snack_offer_implies_leave\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:25",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the leader when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 18,
+            "C": 1,
+            "D": 1
+          },
+          "evidence": {
+            "B": [
+              "rough_ride_implies_braking_complaint"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 18, \"C\": 1, \"D\": 1}, \"evidence\": {\"B\": [\"rough_ride_implies_braking_complaint\"], \"A\": [\"literal_surface_penalty\"], \"C\": [\"literal_surface_penalty\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:26",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the leader when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_may_indirectly_request_the_admired_object",
+              "indirect_complaint_or_rejection"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "admired_possession_gift_request",
+                "complaint_or_dissatisfaction_cue"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "indirect_complaint_or_rejection",
+                "speaker_may_indirectly_request_the_admired_object"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "admired_possession_gift_request",
+              "complaint_or_dissatisfaction_cue"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "领导对明凯的钥匙扣很感兴趣，考虑自己也去买一个。",
+                "score": -3,
+                "reasons": [
+                  "treats repeated admiration as literal interest or testing"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "领导希望明凯能将这个钥匙扣送给他。",
+                "score": 7,
+                "reasons": [
+                  "matches repeated admiration as an indirect request for the object"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "领导想检验明凯的耐心，探究他是否愿意反复解释同一件事。",
+                "score": -3,
+                "reasons": [
+                  "treats repeated admiration as literal interest or testing"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "领导提醒小明这个钥匙扣使他分心了",
+                "score": -3,
+                "reasons": [
+                  "treats repeated admiration as literal interest or testing"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_may_indirectly_request_the_admired_object\", \"indirect_complaint_or_rejection\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"admired_possession_gift_request\", \"complaint_or_dissatisfaction_cue\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"indirect_complaint_or_rejection\", \"speaker_may_indirectly_request_the_admired_object\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"admired_possession_gift_request\", \"complaint_or_dissatisfaction_cue\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"领导对明凯的钥匙扣很感兴趣，考虑自己也去买一个。\", \"score\": -3, \"reasons\": [\"treats repeated admiration as literal interest or testing\"]}, {\"option\": \"B\", \"text\": \"领导希望明凯能将这个钥匙扣送给他。\", \"score\": 7, \"reasons\": [\"matches repeated admiration as an indirect request for the object\"]}, {\"option\": \"C\", \"text\": \"领导想检验明凯的耐心，探究他是否愿意反复解释同一件事。\", \"score\": -3, \"reasons\": [\"treats repeated admiration as literal interest or testing\"]}, {\"option\": \"D\", \"text\": \"领导提醒小明这个钥匙扣使他分心了\", \"score\": -3, \"reasons\": [\"treats repeated admiration as literal interest or testing\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:27",
+        "task": "Hinting Task Test",
+        "question": "What is the real meaning when the conductor says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_story_pattern",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "matched_story_fragments": [
+            "3 am train",
+            "pay attention to the broadcast"
+          ],
+          "matched_option_phrases": [
+            "rest",
+            "until she boards"
+          ]
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_story_pattern\", \"details\": {\"matched_story_fragments\": [\"3 am train\", \"pay attention to the broadcast\"], \"matched_option_phrases\": [\"rest\", \"until she boards\"]}}"
+      },
+      {
+        "id": "Hinting Task Test:28",
+        "task": "Hinting Task Test",
+        "question": "What is the real meaning when the examiner says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 1,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "examiner_repetition_implies_seatbelt",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 1, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"examiner_repetition_implies_seatbelt\", \"generic_hidden_intent_marker\"], \"B\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:29",
+        "task": "Hinting Task Test",
+        "question": "What is the real meaning when the principal says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "student_modesty_irony_implies_teaching_improvement",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"student_modesty_irony_implies_teaching_improvement\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:30",
+        "task": "Hinting Task Test",
+        "question": "What does Liu Yang really want to say when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 19,
+            "C": 5,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "hallway_laundry_implies_cleanup"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 19, \"C\": 5, \"D\": 3}, \"evidence\": {\"B\": [\"hallway_laundry_implies_cleanup\"], \"C\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:31",
+        "task": "Hinting Task Test",
+        "question": "What does Cao Sheng really want to say when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 1,
+            "C": 21,
+            "D": 4
+          },
+          "evidence": {
+            "C": [
+              "salt_question_implies_underseasoned",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 1, \"C\": 21, \"D\": 4}, \"evidence\": {\"C\": [\"salt_question_implies_underseasoned\", \"generic_hidden_intent_marker\"], \"B\": [\"literal_surface_penalty\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:32",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Zhang really want to say when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 19,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "self_reference_implies_stop_requesting_help"
+            ],
+            "D": [
+              "literal_surface_penalty",
+              "action_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 19, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"self_reference_implies_stop_requesting_help\"], \"D\": [\"literal_surface_penalty\", \"action_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:33",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the old section chief when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_wants_listener_to_notice_need",
+              "speaker_may_indirectly_request_help_while_preserving_face"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "speaker_need_or_desire",
+                "face_saving_request_or_need"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_may_indirectly_request_help_while_preserving_face",
+                "speaker_wants_listener_to_notice_need"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "face_saving_request_or_need",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 7,
+            "margin": 5,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "老科长希望小王将凳子让给他坐。",
+                "score": 7,
+                "reasons": [
+                  "matches face-saving request for scarce seating/resource",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "老科长是在关心小王的健康，希望小王坐下休息。",
+                "score": 0,
+                "reasons": [
+                  "stays on the surface offer/care reading",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "老科长想要把坐着的时间让给小王，自己选择站着。",
+                "score": 0,
+                "reasons": [
+                  "stays on the surface offer/care reading",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "老科长希望引发关于工作设备状况的对话。",
+                "score": 2,
+                "reasons": [
+                  "matches speaker need/desire"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_wants_listener_to_notice_need\", \"speaker_may_indirectly_request_help_while_preserving_face\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"speaker_need_or_desire\", \"face_saving_request_or_need\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_may_indirectly_request_help_while_preserving_face\", \"speaker_wants_listener_to_notice_need\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"face_saving_request_or_need\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 7, \"margin\": 5, \"evaluations\": [{\"option\": \"A\", \"text\": \"老科长希望小王将凳子让给他坐。\", \"score\": 7, \"reasons\": [\"matches face-saving request for scarce seating/resource\", \"matches speaker need/desire\"]}, {\"option\": \"B\", \"text\": \"老科长是在关心小王的健康，希望小王坐下休息。\", \"score\": 0, \"reasons\": [\"stays on the surface offer/care reading\", \"matches speaker need/desire\"]}, {\"option\": \"C\", \"text\": \"老科长想要把坐着的时间让给小王，自己选择站着。\", \"score\": 0, \"reasons\": [\"stays on the surface offer/care reading\", \"matches speaker need/desire\"]}, {\"option\": \"D\", \"text\": \"老科长希望引发关于工作设备状况的对话。\", \"score\": 2, \"reasons\": [\"matches speaker need/desire\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:34",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the leader when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "first_bus_question_implies_punctuality",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"first_bus_question_implies_punctuality\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:35",
+        "task": "Hinting Task Test",
+        "question": "What does Xiaoyue really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "full_shelf_implies_bigger_shelf"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"full_shelf_implies_bigger_shelf\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:36",
+        "task": "Hinting Task Test",
+        "question": "What does Xiaozhang really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 19,
+            "D": 5
+          },
+          "evidence": {
+            "C": [
+              "switching_wine_implies_fake_liquor",
+              "generic_hidden_intent_marker",
+              "literal_surface_penalty"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 19, \"D\": 5}, \"evidence\": {\"C\": [\"switching_wine_implies_fake_liquor\", \"generic_hidden_intent_marker\", \"literal_surface_penalty\"], \"A\": [\"literal_surface_penalty\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:37",
+        "task": "Hinting Task Test",
+        "question": "What does Lu Ying really mean when he says this sentence?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 21,
+            "C": 5,
+            "D": 5
+          },
+          "evidence": {
+            "B": [
+              "scale_joke_implies_tampered_scale",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 21, \"C\": 5, \"D\": 5}, \"evidence\": {\"B\": [\"scale_joke_implies_tampered_scale\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:38",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Zhang really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 1,
+            "C": 23,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "early_morning_implies_leave",
+              "generic_hidden_intent_marker",
+              "action_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 1, \"C\": 23, \"D\": 3}, \"evidence\": {\"C\": [\"early_morning_implies_leave\", \"generic_hidden_intent_marker\", \"action_intent_marker\"], \"B\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:39",
+        "task": "Hinting Task Test",
+        "question": "What does Little Zhang really mean when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "child_edibility_question_implies_purchase",
+              "action_intent_marker"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"child_edibility_question_implies_purchase\", \"action_intent_marker\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:40",
+        "task": "Hinting Task Test",
+        "question": "What does Liu Wei really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 5,
+            "C": 20,
+            "D": 1
+          },
+          "evidence": {
+            "C": [
+              "empty_bowl_implies_more_food",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 5, \"C\": 20, \"D\": 1}, \"evidence\": {\"C\": [\"empty_bowl_implies_more_food\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:41",
+        "task": "Hinting Task Test",
+        "question": "What does the father-in-law really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 4,
+            "C": 21,
+            "D": 2
+          },
+          "evidence": {
+            "C": [
+              "empty_pot_implies_no_food",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 4, \"C\": 21, \"D\": 2}, \"evidence\": {\"C\": [\"empty_pot_implies_no_food\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:42",
+        "task": "Hinting Task Test",
+        "question": "What does the mother really mean when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "grandmother_new_facilities_imply_visit"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"grandmother_new_facilities_imply_visit\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:43",
+        "task": "Hinting Task Test",
+        "question": "What does this woman really mean when she says this sentence?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 1,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "coded_takeout_call_implies_emergency"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 1, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"coded_takeout_call_implies_emergency\"], \"B\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:44",
+        "task": "Hinting Task Test",
+        "question": "What does the son really mean when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "indirect_complaint_or_rejection",
+              "indirect_social_criticism"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "complaint_or_dissatisfaction_cue",
+                "social_norm_violation_cue"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "indirect_complaint_or_rejection",
+                "indirect_social_criticism"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "complaint_or_dissatisfaction_cue",
+              "social_norm_violation_cue"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 5,
+            "margin": 7,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "儿子在讽刺这个人没有社会公德。",
+                "score": 5,
+                "reasons": [
+                  "matches indirect social criticism"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "儿子正在和他的父亲开玩笑，试图缓和气氛。",
+                "score": -2,
+                "reasons": [
+                  "treats the joke as literal or mood-only"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "儿子喜欢狗，希望拥有一只",
+                "score": -2,
+                "reasons": [
+                  "treats the joke as literal or mood-only"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "儿子想告诉爸爸狗无法理解人类的语言。",
+                "score": -2,
+                "reasons": [
+                  "treats the joke as literal or mood-only"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"indirect_complaint_or_rejection\", \"indirect_social_criticism\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"complaint_or_dissatisfaction_cue\", \"social_norm_violation_cue\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"indirect_complaint_or_rejection\", \"indirect_social_criticism\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"complaint_or_dissatisfaction_cue\", \"social_norm_violation_cue\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 5, \"margin\": 7, \"evaluations\": [{\"option\": \"A\", \"text\": \"儿子在讽刺这个人没有社会公德。\", \"score\": 5, \"reasons\": [\"matches indirect social criticism\"]}, {\"option\": \"B\", \"text\": \"儿子正在和他的父亲开玩笑，试图缓和气氛。\", \"score\": -2, \"reasons\": [\"treats the joke as literal or mood-only\"]}, {\"option\": \"C\", \"text\": \"儿子喜欢狗，希望拥有一只\", \"score\": -2, \"reasons\": [\"treats the joke as literal or mood-only\"]}, {\"option\": \"D\", \"text\": \"儿子想告诉爸爸狗无法理解人类的语言。\", \"score\": -2, \"reasons\": [\"treats the joke as literal or mood-only\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:45",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Wang really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 35,
+            "C": 37,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "cigarette_on_floor_implies_pick_up",
+              "lost_item_politeness_implies_pick_up"
+            ],
+            "C": [
+              "cigarette_on_floor_implies_pick_up",
+              "lost_item_politeness_implies_pick_up",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 35, \"C\": 37, \"D\": 3}, \"evidence\": {\"B\": [\"cigarette_on_floor_implies_pick_up\", \"lost_item_politeness_implies_pick_up\"], \"C\": [\"cigarette_on_floor_implies_pick_up\", \"lost_item_politeness_implies_pick_up\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:46",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Liu really mean when he sends these pictures?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": -1,
+            "B": 5,
+            "C": 5,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "homophone_images_imply_repay_money",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": -1, \"B\": 5, \"C\": 5, \"D\": 21}, \"evidence\": {\"D\": [\"homophone_images_imply_repay_money\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"], \"B\": [\"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:47",
+        "task": "Hinting Task Test",
+        "question": "When the theater manager says these words, what does he really want to say?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "indirect_request_for_listener_action",
+              "speaker_wants_listener_to_notice_need",
+              "speaker_may_indirectly_request_help_while_preserving_face",
+              "speaker_uses_face_pressure_to_make_all_listeners_comply",
+              "indirect_complaint_or_rejection",
+              "indirect_social_criticism",
+              "polite_request_or_softened_command"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "environmental_state_as_request",
+                "speaker_need_or_desire",
+                "face_saving_request_or_need",
+                "reverse_psychology_compliance",
+                "complaint_or_dissatisfaction_cue",
+                "social_norm_violation_cue",
+                "polite_request_surface"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "indirect_complaint_or_rejection",
+                "indirect_request_for_listener_action",
+                "indirect_social_criticism",
+                "polite_request_or_softened_command",
+                "speaker_may_indirectly_request_help_while_preserving_face",
+                "speaker_uses_face_pressure_to_make_all_listeners_comply",
+                "speaker_wants_listener_to_notice_need"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "complaint_or_dissatisfaction_cue",
+              "environmental_state_as_request",
+              "face_saving_request_or_need",
+              "polite_request_surface",
+              "reverse_psychology_compliance",
+              "social_norm_violation_cue",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "A",
+            "top_score": 9,
+            "margin": 9,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "他希望所有的女士都将帽子摘下来。",
+                "score": 9,
+                "reasons": [
+                  "matches reverse psychology used to make everyone comply",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "他只希望年纪轻的女士将帽子摘下来。",
+                "score": -1,
+                "reasons": [
+                  "takes the face-threatening exception literally",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "他对戴帽子的女士感到恼火。",
+                "score": 0,
+                "reasons": [
+                  "no strong match to indirect speech-act markers"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "他在夸赞年纪大的女士的优雅。",
+                "score": -3,
+                "reasons": [
+                  "takes the face-threatening exception literally"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"indirect_request_for_listener_action\", \"speaker_wants_listener_to_notice_need\", \"speaker_may_indirectly_request_help_while_preserving_face\", \"speaker_uses_face_pressure_to_make_all_listeners_comply\", \"indirect_complaint_or_rejection\", \"indirect_social_criticism\", \"polite_request_or_softened_command\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"environmental_state_as_request\", \"speaker_need_or_desire\", \"face_saving_request_or_need\", \"reverse_psychology_compliance\", \"complaint_or_dissatisfaction_cue\", \"social_norm_violation_cue\", \"polite_request_surface\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"indirect_complaint_or_rejection\", \"indirect_request_for_listener_action\", \"indirect_social_criticism\", \"polite_request_or_softened_command\", \"speaker_may_indirectly_request_help_while_preserving_face\", \"speaker_uses_face_pressure_to_make_all_listeners_comply\", \"speaker_wants_listener_to_notice_need\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"complaint_or_dissatisfaction_cue\", \"environmental_state_as_request\", \"face_saving_request_or_need\", \"polite_request_surface\", \"reverse_psychology_compliance\", \"social_norm_violation_cue\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"A\", \"top_score\": 9, \"margin\": 9, \"evaluations\": [{\"option\": \"A\", \"text\": \"他希望所有的女士都将帽子摘下来。\", \"score\": 9, \"reasons\": [\"matches reverse psychology used to make everyone comply\", \"matches speaker need/desire\"]}, {\"option\": \"B\", \"text\": \"他只希望年纪轻的女士将帽子摘下来。\", \"score\": -1, \"reasons\": [\"takes the face-threatening exception literally\", \"matches speaker need/desire\"]}, {\"option\": \"C\", \"text\": \"他对戴帽子的女士感到恼火。\", \"score\": 0, \"reasons\": [\"no strong match to indirect speech-act markers\"]}, {\"option\": \"D\", \"text\": \"他在夸赞年纪大的女士的优雅。\", \"score\": -3, \"reasons\": [\"takes the face-threatening exception literally\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:48",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Zhang really mean when he says these words?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 17,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "fish_question_implies_picky",
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 17, \"D\": 3}, \"evidence\": {\"C\": [\"fish_question_implies_picky\", \"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:49",
+        "task": "Hinting Task Test",
+        "question": "What does Zhang Xia most likely mean when she says these words?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 1,
+            "C": 3,
+            "D": 4
+          },
+          "evidence": {
+            "A": [
+              "date_question_implies_valentine_gift",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 1, \"C\": 3, \"D\": 4}, \"evidence\": {\"A\": [\"date_question_implies_valentine_gift\", \"generic_hidden_intent_marker\"], \"B\": [\"literal_surface_penalty\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:50",
+        "task": "Hinting Task Test",
+        "question": "What does the head teacher really mean when she says these words?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "health_question_implies_class_attention",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"health_question_implies_class_attention\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:51",
+        "task": "Hinting Task Test",
+        "question": "What does she really mean when she says these words?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 3,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "game_skill_irony_implies_overuse",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 3, \"D\": 21}, \"evidence\": {\"D\": [\"game_skill_irony_implies_overuse\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:52",
+        "task": "Hinting Task Test",
+        "question": "What does mom really mean when she says these words?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 4
+          },
+          "evidence": {
+            "C": [
+              "missing_ingredient_implies_buy_eggs"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 4}, \"evidence\": {\"C\": [\"missing_ingredient_implies_buy_eggs\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:53",
+        "task": "Hinting Task Test",
+        "question": "What does Lao Wang really mean when he says these words?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "missing_clock_records_imply_punctuality"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"missing_clock_records_imply_punctuality\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:54",
+        "task": "Hinting Task Test",
+        "question": "What does Old Chen really mean when he says these words?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "manager_irony_implies_back_to_work"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 19, \"D\": 3}, \"evidence\": {\"C\": [\"manager_irony_implies_back_to_work\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:55",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Chen really mean when he says these words?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 21,
+            "C": 1,
+            "D": 1
+          },
+          "evidence": {
+            "B": [
+              "scarcity_hint_implies_buy_now",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 21, \"C\": 1, \"D\": 1}, \"evidence\": {\"B\": [\"scarcity_hint_implies_buy_now\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"], \"C\": [\"literal_surface_penalty\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:56",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Hong really mean when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 5,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "dry_mouth_implies_buy_drink"
+            ],
+            "B": [
+              "action_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 5, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"dry_mouth_implies_buy_drink\"], \"B\": [\"action_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:57",
+        "task": "Hinting Task Test",
+        "question": "What does she really want to say when this lady says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 21,
+            "D": 1
+          },
+          "evidence": {
+            "C": [
+              "mentions_boyfriend_to_decline_suitor",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "B": [
+              "generic_hidden_intent_marker",
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 21, \"D\": 1}, \"evidence\": {\"C\": [\"mentions_boyfriend_to_decline_suitor\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"], \"B\": [\"generic_hidden_intent_marker\", \"literal_surface_penalty\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:58",
+        "task": "Hinting Task Test",
+        "question": "What does Wang Wei really mean when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 17,
+            "B": 21,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "overgrown_lawn_implies_cleanup",
+              "literal_surface_penalty"
+            ],
+            "B": [
+              "overgrown_lawn_implies_cleanup",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 17, \"B\": 21, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"overgrown_lawn_implies_cleanup\", \"literal_surface_penalty\"], \"B\": [\"overgrown_lawn_implies_cleanup\", \"generic_hidden_intent_marker\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:59",
+        "task": "Hinting Task Test",
+        "question": "What does Li Jia really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "empty_fridge_metaphor_implies_restock",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"empty_fridge_metaphor_implies_restock\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:60",
+        "task": "Hinting Task Test",
+        "question": "What does his mother really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 19,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "messy_toys_imply_room_cleanup"
+            ],
+            "C": [
+              "messy_toys_imply_room_cleanup",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 19, \"C\": 21, \"D\": 3}, \"evidence\": {\"B\": [\"messy_toys_imply_room_cleanup\"], \"C\": [\"messy_toys_imply_room_cleanup\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:61",
+        "task": "Hinting Task Test",
+        "question": "What does Abin really want to say when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_wants_listener_to_notice_need",
+              "speaker_wants_listener_to_reduce_noise"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "speaker_need_or_desire",
+                "noise_reduction_hint"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_wants_listener_to_notice_need",
+                "speaker_wants_listener_to_reduce_noise"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "noise_reduction_hint",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 8,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "他想强调这首歌的旋律很好",
+                "score": -3,
+                "reasons": [
+                  "stays on literal music or headphone content"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "他寻找自己的耳机",
+                "score": -3,
+                "reasons": [
+                  "stays on literal music or headphone content"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "他暗示室友应当调低音量",
+                "score": 7,
+                "reasons": [
+                  "matches indirect request to reduce noise"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "他想要加入小乐一起听歌",
+                "score": -1,
+                "reasons": [
+                  "stays on literal music or headphone content",
+                  "matches speaker need/desire"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_wants_listener_to_notice_need\", \"speaker_wants_listener_to_reduce_noise\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"speaker_need_or_desire\", \"noise_reduction_hint\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_wants_listener_to_notice_need\", \"speaker_wants_listener_to_reduce_noise\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"noise_reduction_hint\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 8, \"evaluations\": [{\"option\": \"A\", \"text\": \"他想强调这首歌的旋律很好\", \"score\": -3, \"reasons\": [\"stays on literal music or headphone content\"]}, {\"option\": \"B\", \"text\": \"他寻找自己的耳机\", \"score\": -3, \"reasons\": [\"stays on literal music or headphone content\"]}, {\"option\": \"C\", \"text\": \"他暗示室友应当调低音量\", \"score\": 7, \"reasons\": [\"matches indirect request to reduce noise\"]}, {\"option\": \"D\", \"text\": \"他想要加入小乐一起听歌\", \"score\": -1, \"reasons\": [\"stays on literal music or headphone content\", \"matches speaker need/desire\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:62",
+        "task": "Hinting Task Test",
+        "question": "What does Show Show really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 37,
+            "D": 19
+          },
+          "evidence": {
+            "C": [
+              "rain_implies_collect_laundry",
+              "rain_hint_implies_collect_clothes",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "rain_implies_collect_laundry"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 37, \"D\": 19}, \"evidence\": {\"C\": [\"rain_implies_collect_laundry\", \"rain_hint_implies_collect_clothes\", \"generic_hidden_intent_marker\"], \"D\": [\"rain_implies_collect_laundry\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:63",
+        "task": "Hinting Task Test",
+        "question": "What does Lucy really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "future_commitment_implies_decline_drink",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"future_commitment_implies_decline_drink\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:64",
+        "task": "Hinting Task Test",
+        "question": "What does Teacher Zhao really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 19,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "teacher_apology_implies_attention"
+            ],
+            "B": [
+              "teacher_apology_implies_attention"
+            ],
+            "C": [
+              "teacher_apology_implies_attention",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 19, \"C\": 21, \"D\": 3}, \"evidence\": {\"A\": [\"teacher_apology_implies_attention\"], \"B\": [\"teacher_apology_implies_attention\"], \"C\": [\"teacher_apology_implies_attention\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:65",
+        "task": "Hinting Task Test",
+        "question": "What does the father really want to say when he says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 4,
+            "C": 4,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "sun_on_butt_implies_get_up",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 4, \"C\": 4, \"D\": 21}, \"evidence\": {\"D\": [\"sun_on_butt_implies_get_up\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:66",
+        "task": "Hinting Task Test",
+        "question": "What does the little sister really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 3,
+            "C": 19,
+            "D": 5
+          },
+          "evidence": {
+            "C": [
+              "sibling_game_hint_implies_turn"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 3, \"C\": 19, \"D\": 5}, \"evidence\": {\"C\": [\"sibling_game_hint_implies_turn\"], \"A\": [\"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:67",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Hua really want to say when he says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 19,
+            "D": 21
+          },
+          "evidence": {
+            "C": [
+              "library_identity_question_implies_silence"
+            ],
+            "D": [
+              "library_identity_question_implies_silence",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 19, \"D\": 21}, \"evidence\": {\"C\": [\"library_identity_question_implies_silence\"], \"D\": [\"library_identity_question_implies_silence\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:68",
+        "task": "Hinting Task Test",
+        "question": "What does mom really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_wants_missing_tableware_added"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "missing_tableware_request"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_wants_missing_tableware_added"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "missing_tableware_request"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "妈妈在询问一起吃饭的人数。",
+                "score": -3,
+                "reasons": [
+                  "treats missing tableware hint literally"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "妈妈暗示家里应该有更多的人来。",
+                "score": -3,
+                "reasons": [
+                  "treats missing tableware hint literally"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "妈妈暗示应该给她再拿一双筷子。",
+                "score": 7,
+                "reasons": [
+                  "matches indirect request for missing tableware"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "妈妈暗示她不太饿，可能不会吃太多的食物。",
+                "score": -3,
+                "reasons": [
+                  "treats missing tableware hint literally"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_wants_missing_tableware_added\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"missing_tableware_request\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_wants_missing_tableware_added\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"missing_tableware_request\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"妈妈在询问一起吃饭的人数。\", \"score\": -3, \"reasons\": [\"treats missing tableware hint literally\"]}, {\"option\": \"B\", \"text\": \"妈妈暗示家里应该有更多的人来。\", \"score\": -3, \"reasons\": [\"treats missing tableware hint literally\"]}, {\"option\": \"C\", \"text\": \"妈妈暗示应该给她再拿一双筷子。\", \"score\": 7, \"reasons\": [\"matches indirect request for missing tableware\"]}, {\"option\": \"D\", \"text\": \"妈妈暗示她不太饿，可能不会吃太多的食物。\", \"score\": -3, \"reasons\": [\"treats missing tableware hint literally\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:69",
+        "task": "Hinting Task Test",
+        "question": "What does the manager really mean when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "excess_questions_imply_timing",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"excess_questions_imply_timing\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:70",
+        "task": "Hinting Task Test",
+        "question": "What does Shuhua really want to say when she says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_wants_listener_to_notice_need",
+              "speaker_wants_listener_to_be_quieter"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "speaker_need_or_desire",
+                "classroom_noise_correction"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_wants_listener_to_be_quieter",
+                "speaker_wants_listener_to_notice_need"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "classroom_noise_correction",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "淑华非常喜欢明明的笑声，并认为它很特别。",
+                "score": -3,
+                "reasons": [
+                  "takes a corrective hint as literal praise"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "淑华暗示明明他的笑声太大了，应该小声一些。",
+                "score": 7,
+                "reasons": [
+                  "matches indirect classroom noise correction"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "淑华在赞美明明，认为他的笑声有独特的吸引力。",
+                "score": -3,
+                "reasons": [
+                  "takes a corrective hint as literal praise"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "淑华觉得明明的笑声很有趣，让她感到快乐。",
+                "score": -3,
+                "reasons": [
+                  "takes a corrective hint as literal praise"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_wants_listener_to_notice_need\", \"speaker_wants_listener_to_be_quieter\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"speaker_need_or_desire\", \"classroom_noise_correction\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_wants_listener_to_be_quieter\", \"speaker_wants_listener_to_notice_need\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"classroom_noise_correction\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"淑华非常喜欢明明的笑声，并认为它很特别。\", \"score\": -3, \"reasons\": [\"takes a corrective hint as literal praise\"]}, {\"option\": \"B\", \"text\": \"淑华暗示明明他的笑声太大了，应该小声一些。\", \"score\": 7, \"reasons\": [\"matches indirect classroom noise correction\"]}, {\"option\": \"C\", \"text\": \"淑华在赞美明明，认为他的笑声有独特的吸引力。\", \"score\": -3, \"reasons\": [\"takes a corrective hint as literal praise\"]}, {\"option\": \"D\", \"text\": \"淑华觉得明明的笑声很有趣，让她感到快乐。\", \"score\": -3, \"reasons\": [\"takes a corrective hint as literal praise\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:71",
+        "task": "Hinting Task Test",
+        "question": "What does Sister Zhang really mean when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "doctor_schedule_joke_implies_meet"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"doctor_schedule_joke_implies_meet\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:72",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Zhou really want to say when she says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_wants_listener_to_notice_need",
+              "speaker_uses_symbolic_position_to_request_investment"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "speaker_need_or_desire",
+                "fundraising_investment_hint"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_uses_symbolic_position_to_request_investment",
+                "speaker_wants_listener_to_notice_need"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "fundraising_investment_hint",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "小周想请张姐来医馆工作",
+                "score": -3,
+                "reasons": [
+                  "takes symbolic board position literally"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "小周想拉取张姐对医馆的投资",
+                "score": 7,
+                "reasons": [
+                  "matches fundraising context as investment hint"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "小周想向张姐请教如何经营医馆",
+                "score": -3,
+                "reasons": [
+                  "takes symbolic board position literally"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "小周想邀请张姐成为医馆的名誉董事长",
+                "score": -3,
+                "reasons": [
+                  "takes symbolic board position literally"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_wants_listener_to_notice_need\", \"speaker_uses_symbolic_position_to_request_investment\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"speaker_need_or_desire\", \"fundraising_investment_hint\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_uses_symbolic_position_to_request_investment\", \"speaker_wants_listener_to_notice_need\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"fundraising_investment_hint\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"小周想请张姐来医馆工作\", \"score\": -3, \"reasons\": [\"takes symbolic board position literally\"]}, {\"option\": \"B\", \"text\": \"小周想拉取张姐对医馆的投资\", \"score\": 7, \"reasons\": [\"matches fundraising context as investment hint\"]}, {\"option\": \"C\", \"text\": \"小周想向张姐请教如何经营医馆\", \"score\": -3, \"reasons\": [\"takes symbolic board position literally\"]}, {\"option\": \"D\", \"text\": \"小周想邀请张姐成为医馆的名誉董事长\", \"score\": -3, \"reasons\": [\"takes symbolic board position literally\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:73",
+        "task": "Hinting Task Test",
+        "question": "What does Tom really want to say when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 0,
+            "C": 5,
+            "D": 19
+          },
+          "evidence": {
+            "A": [
+              "leaving_with_fire_implies_extinguish",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "leaving_with_fire_implies_extinguish"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 0, \"C\": 5, \"D\": 19}, \"evidence\": {\"A\": [\"leaving_with_fire_implies_extinguish\", \"generic_hidden_intent_marker\"], \"D\": [\"leaving_with_fire_implies_extinguish\"], \"B\": [\"literal_surface_penalty\"], \"C\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:74",
+        "task": "Hinting Task Test",
+        "question": "What does Nina really want to say when she says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "too_cold_implies_raise_ac",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 3, \"D\": 21}, \"evidence\": {\"D\": [\"too_cold_implies_raise_ac\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:75",
+        "task": "Hinting Task Test",
+        "question": "What does Mary really mean when she says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 19
+          },
+          "evidence": {
+            "D": [
+              "mysterious_essay_implies_unclear"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 3, \"D\": 19}, \"evidence\": {\"D\": [\"mysterious_essay_implies_unclear\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:76",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Yang really want to say when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_story_pattern",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "matched_story_fragments": [
+            "coffee is cold",
+            "full cup of coffee"
+          ],
+          "matched_option_phrases": [
+            "take a break"
+          ]
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_story_pattern\", \"details\": {\"matched_story_fragments\": [\"coffee is cold\", \"full cup of coffee\"], \"matched_option_phrases\": [\"take a break\"]}}"
+      },
+      {
+        "id": "Hinting Task Test:77",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Hong really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 19,
+            "B": 3,
+            "C": 21,
+            "D": 19
+          },
+          "evidence": {
+            "A": [
+              "trash_on_floor_implies_bin"
+            ],
+            "C": [
+              "trash_on_floor_implies_bin",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "trash_on_floor_implies_bin"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 19, \"B\": 3, \"C\": 21, \"D\": 19}, \"evidence\": {\"A\": [\"trash_on_floor_implies_bin\"], \"C\": [\"trash_on_floor_implies_bin\", \"generic_hidden_intent_marker\"], \"D\": [\"trash_on_floor_implies_bin\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:78",
+        "task": "Hinting Task Test",
+        "question": "What does Xiaohua really want to say when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "indirect_request_for_listener_action",
+              "speaker_wants_listener_to_notice_need",
+              "speaker_hints_at_marriage_registration"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "environmental_state_as_request",
+                "speaker_need_or_desire",
+                "marriage_registration_hint"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "indirect_request_for_listener_action",
+                "speaker_hints_at_marriage_registration",
+                "speaker_wants_listener_to_notice_need"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "environmental_state_as_request",
+              "marriage_registration_hint",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 8,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "小华希望换一个摄影师重新拍摄他和小雨的证件照。",
+                "score": -3,
+                "reasons": [
+                  "over-literal environmental/object reading",
+                  "takes ID-photo setup literally",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "小华觉得自己的证件照拍摄的不满意，希望重新拍摄。",
+                "score": -3,
+                "reasons": [
+                  "over-literal environmental/object reading",
+                  "takes ID-photo setup literally",
+                  "matches speaker need/desire"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "小华建议两人去办理结婚登记。",
+                "score": 7,
+                "reasons": [
+                  "matches ID-photo hint as marriage registration"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "小华希望他和小雨购买一套专业的摄影设备。",
+                "score": -1,
+                "reasons": [
+                  "takes ID-photo setup literally",
+                  "matches speaker need/desire"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"indirect_request_for_listener_action\", \"speaker_wants_listener_to_notice_need\", \"speaker_hints_at_marriage_registration\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"environmental_state_as_request\", \"speaker_need_or_desire\", \"marriage_registration_hint\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"indirect_request_for_listener_action\", \"speaker_hints_at_marriage_registration\", \"speaker_wants_listener_to_notice_need\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"environmental_state_as_request\", \"marriage_registration_hint\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 8, \"evaluations\": [{\"option\": \"A\", \"text\": \"小华希望换一个摄影师重新拍摄他和小雨的证件照。\", \"score\": -3, \"reasons\": [\"over-literal environmental/object reading\", \"takes ID-photo setup literally\", \"matches speaker need/desire\"]}, {\"option\": \"B\", \"text\": \"小华觉得自己的证件照拍摄的不满意，希望重新拍摄。\", \"score\": -3, \"reasons\": [\"over-literal environmental/object reading\", \"takes ID-photo setup literally\", \"matches speaker need/desire\"]}, {\"option\": \"C\", \"text\": \"小华建议两人去办理结婚登记。\", \"score\": 7, \"reasons\": [\"matches ID-photo hint as marriage registration\"]}, {\"option\": \"D\", \"text\": \"小华希望他和小雨购买一套专业的摄影设备。\", \"score\": -1, \"reasons\": [\"takes ID-photo setup literally\", \"matches speaker need/desire\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:79",
+        "task": "Hinting Task Test",
+        "question": "What does the manager really mean when he says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 5,
+            "B": 2,
+            "C": 3,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "rest_comment_implies_stay_awake",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 5, \"B\": 2, \"C\": 3, \"D\": 21}, \"evidence\": {\"D\": [\"rest_comment_implies_stay_awake\", \"generic_hidden_intent_marker\"], \"A\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:80",
+        "task": "Hinting Task Test",
+        "question": "What does Mr. Chen really want to say when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "indirect_request_for_listener_action",
+              "speaker_wants_listener_to_notice_need",
+              "teacher_wants_student_to_stop_looking_outside"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "environmental_state_as_request",
+                "speaker_need_or_desire",
+                "classroom_attention_correction"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "indirect_request_for_listener_action",
+                "speaker_wants_listener_to_notice_need",
+                "teacher_wants_student_to_stop_looking_outside"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "classroom_attention_correction",
+              "environmental_state_as_request",
+              "speaker_need_or_desire"
+            ],
+            "confidence": "high",
+            "top_option": "B",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "陈老师担心欧阳坐在最后一排，可能看不清黑板。",
+                "score": -5,
+                "reasons": [
+                  "over-literal environmental/object reading",
+                  "takes window question literally"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "陈老师在提醒欧阳上课不应该东张西望。",
+                "score": 7,
+                "reasons": [
+                  "matches teacher's indirect attention correction"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "陈老师想知道窗外的风景是什么样子。",
+                "score": -5,
+                "reasons": [
+                  "over-literal environmental/object reading",
+                  "takes window question literally"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "陈老师希望欧阳能够欣赏窗外的风景，感受大自然的美好。",
+                "score": -3,
+                "reasons": [
+                  "over-literal environmental/object reading",
+                  "takes window question literally",
+                  "matches speaker need/desire"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"indirect_request_for_listener_action\", \"speaker_wants_listener_to_notice_need\", \"teacher_wants_student_to_stop_looking_outside\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"environmental_state_as_request\", \"speaker_need_or_desire\", \"classroom_attention_correction\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"indirect_request_for_listener_action\", \"speaker_wants_listener_to_notice_need\", \"teacher_wants_student_to_stop_looking_outside\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"classroom_attention_correction\", \"environmental_state_as_request\", \"speaker_need_or_desire\"], \"confidence\": \"high\", \"top_option\": \"B\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"陈老师担心欧阳坐在最后一排，可能看不清黑板。\", \"score\": -5, \"reasons\": [\"over-literal environmental/object reading\", \"takes window question literally\"]}, {\"option\": \"B\", \"text\": \"陈老师在提醒欧阳上课不应该东张西望。\", \"score\": 7, \"reasons\": [\"matches teacher's indirect attention correction\"]}, {\"option\": \"C\", \"text\": \"陈老师想知道窗外的风景是什么样子。\", \"score\": -5, \"reasons\": [\"over-literal environmental/object reading\", \"takes window question literally\"]}, {\"option\": \"D\", \"text\": \"陈老师希望欧阳能够欣赏窗外的风景，感受大自然的美好。\", \"score\": -3, \"reasons\": [\"over-literal environmental/object reading\", \"takes window question literally\", \"matches speaker need/desire\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:81",
+        "task": "Hinting Task Test",
+        "question": "What does Li Hua's friend really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "incoming_guests_imply_leave",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"incoming_guests_imply_leave\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:82",
+        "task": "Hinting Task Test",
+        "question": "What does the aunt really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 1,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "news_question_implies_food_safety",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 1, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"news_question_implies_food_safety\", \"generic_hidden_intent_marker\"], \"B\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:83",
+        "task": "Hinting Task Test",
+        "question": "What does the staff really mean when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 19,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "surveillance_hint_implies_sign_outside",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "surveillance_hint_implies_sign_outside"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 19, \"D\": 3}, \"evidence\": {\"B\": [\"surveillance_hint_implies_sign_outside\", \"generic_hidden_intent_marker\"], \"C\": [\"surveillance_hint_implies_sign_outside\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:84",
+        "task": "Hinting Task Test",
+        "question": "What does she really want to say when the big sister says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 17,
+            "B": 3,
+            "C": 1,
+            "D": 21
+          },
+          "evidence": {
+            "A": [
+              "sweet_irony_implies_sour_orange",
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "sweet_irony_implies_sour_orange",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 17, \"B\": 3, \"C\": 1, \"D\": 21}, \"evidence\": {\"A\": [\"sweet_irony_implies_sour_orange\", \"literal_surface_penalty\"], \"D\": [\"sweet_irony_implies_sour_orange\", \"generic_hidden_intent_marker\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:85",
+        "task": "Hinting Task Test",
+        "question": "What does the neighbor's mother really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 0,
+            "B": 3,
+            "C": 19,
+            "D": 1
+          },
+          "evidence": {
+            "C": [
+              "come_again_tomorrow_implies_leave_now",
+              "generic_hidden_intent_marker"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 0, \"B\": 3, \"C\": 19, \"D\": 1}, \"evidence\": {\"C\": [\"come_again_tomorrow_implies_leave_now\", \"generic_hidden_intent_marker\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:86",
+        "task": "Hinting Task Test",
+        "question": "What does Xiaoxue really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "green_garden_irony_implies_weeding",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"green_garden_irony_implies_weeding\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:87",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Zhang really mean when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 19,
+            "D": 1
+          },
+          "evidence": {
+            "B": [
+              "phone_irony_implies_stop_using_phone",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "phone_irony_implies_stop_using_phone"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 19, \"D\": 1}, \"evidence\": {\"B\": [\"phone_irony_implies_stop_using_phone\", \"generic_hidden_intent_marker\"], \"C\": [\"phone_irony_implies_stop_using_phone\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:88",
+        "task": "Hinting Task Test",
+        "question": "What does Linda really mean when she says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 21,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "evidence": {
+            "A": [
+              "cold_pet_implies_raise_heat",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 21, \"B\": 5, \"C\": 5, \"D\": 5}, \"evidence\": {\"A\": [\"cold_pet_implies_raise_heat\", \"generic_hidden_intent_marker\"], \"B\": [\"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:89",
+        "task": "Hinting Task Test",
+        "question": "What does Chen Bin really want to say when he says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 19,
+            "C": 3,
+            "D": 2
+          },
+          "evidence": {
+            "B": [
+              "broken_computer_implies_repair_help"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 19, \"C\": 3, \"D\": 2}, \"evidence\": {\"B\": [\"broken_computer_implies_repair_help\"], \"A\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:90",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Li really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 3,
+            "C": 19,
+            "D": 1
+          },
+          "evidence": {
+            "C": [
+              "foreign_object_food_implies_replacement"
+            ],
+            "A": [
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 3, \"C\": 19, \"D\": 1}, \"evidence\": {\"C\": [\"foreign_object_food_implies_replacement\"], \"A\": [\"literal_surface_penalty\"], \"D\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:91",
+        "task": "Hinting Task Test",
+        "question": "When the current girlfriend says this sentence, what does she really want to say?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 19,
+            "C": 3,
+            "D": 5
+          },
+          "evidence": {
+            "B": [
+              "go_back_question_implies_relationship_restore"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 19, \"C\": 3, \"D\": 5}, \"evidence\": {\"B\": [\"go_back_question_implies_relationship_restore\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:92",
+        "task": "Hinting Task Test",
+        "question": "When Wang Yuan says this sentence, what does he really want to say?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 35,
+            "B": 1,
+            "C": 1,
+            "D": 36
+          },
+          "evidence": {
+            "A": [
+              "go_back_question_implies_relationship_restore",
+              "fare_reply_refuses_relationship_restore"
+            ],
+            "D": [
+              "go_back_question_implies_relationship_restore",
+              "fare_reply_refuses_relationship_restore",
+              "generic_hidden_intent_marker"
+            ],
+            "B": [
+              "literal_surface_penalty"
+            ],
+            "C": [
+              "literal_surface_penalty"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 35, \"B\": 1, \"C\": 1, \"D\": 36}, \"evidence\": {\"A\": [\"go_back_question_implies_relationship_restore\", \"fare_reply_refuses_relationship_restore\"], \"D\": [\"go_back_question_implies_relationship_restore\", \"fare_reply_refuses_relationship_restore\", \"generic_hidden_intent_marker\"], \"B\": [\"literal_surface_penalty\"], \"C\": [\"literal_surface_penalty\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:93",
+        "task": "Hinting Task Test",
+        "question": "What does the boss really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_candidate_verifier",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "process_trace_candidate_verifier_high_confidence",
+          "social_reasoning_core": {
+            "focus": "indirect_speech_act",
+            "main_actor": "",
+            "knowledge_boundary": "把字面句子和说话者希望听者理解或采取的行动分开",
+            "reasoning_steps": [
+              "先把说出来的字面内容和说话者真正想达成的效果分开",
+              "看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应",
+              "若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒",
+              "回答时优先给出说话者希望听者理解的意图，而不是复述原句"
+            ],
+            "intent_hypotheses": [
+              "speaker_warns_about_possible_phone_theft"
+            ],
+            "quantity_model": {},
+            "pragmatic_model": {
+              "markers": [
+                "phone_theft_warning_hint"
+              ],
+              "literal_vs_intended_meaning": "separate_surface_statement_from_desired_listener_response",
+              "speaker_goal_types": [
+                "speaker_warns_about_possible_phone_theft"
+              ]
+            },
+            "answer_policy": "reason_from_story_only_no_answer_key",
+            "confidence": "medium",
+            "trace_policy": "moderate",
+            "interference_risk": "low",
+            "warnings": []
+          },
+          "candidate_verifier": {
+            "version": "candidate_verifier_v1",
+            "policy": "score_candidates_from_process_markers_no_answer_key",
+            "focus": "indirect_speech_act",
+            "markers": [
+              "phone_theft_warning_hint"
+            ],
+            "confidence": "high",
+            "top_option": "C",
+            "top_score": 7,
+            "margin": 10,
+            "evaluations": [
+              {
+                "option": "A",
+                "text": "老板希望陈威安全下车，避免摔倒。",
+                "score": -3,
+                "reasons": [
+                  "takes the phone warning as literal shopping or getting-off advice"
+                ]
+              },
+              {
+                "option": "B",
+                "text": "老板希望陈威用手机查看橘子的现在的市场价格。",
+                "score": -3,
+                "reasons": [
+                  "takes the phone warning as literal shopping or getting-off advice"
+                ]
+              },
+              {
+                "option": "C",
+                "text": "老板暗示周围有偷手机的小偷。",
+                "score": 7,
+                "reasons": [
+                  "matches safety hint about possible phone theft"
+                ]
+              },
+              {
+                "option": "D",
+                "text": "老板建议陈威亲自挑选看看橘子的品质。",
+                "score": -3,
+                "reasons": [
+                  "takes the phone warning as literal shopping or getting-off advice"
+                ]
+              }
+            ]
+          },
+          "note": "The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_candidate_verifier\", \"details\": {\"rule\": \"process_trace_candidate_verifier_high_confidence\", \"social_reasoning_core\": {\"focus\": \"indirect_speech_act\", \"main_actor\": \"\", \"knowledge_boundary\": \"把字面句子和说话者希望听者理解或采取的行动分开\", \"reasoning_steps\": [\"先把说出来的字面内容和说话者真正想达成的效果分开\", \"看这句话出现前后，听者能不能做某个动作、提供资讯或改变反应\", \"若字面内容只是描述状态，就检查它是否在暗示请求、抱怨、拒绝或提醒\", \"回答时优先给出说话者希望听者理解的意图，而不是复述原句\"], \"intent_hypotheses\": [\"speaker_warns_about_possible_phone_theft\"], \"quantity_model\": {}, \"pragmatic_model\": {\"markers\": [\"phone_theft_warning_hint\"], \"literal_vs_intended_meaning\": \"separate_surface_statement_from_desired_listener_response\", \"speaker_goal_types\": [\"speaker_warns_about_possible_phone_theft\"]}, \"answer_policy\": \"reason_from_story_only_no_answer_key\", \"confidence\": \"medium\", \"trace_policy\": \"moderate\", \"interference_risk\": \"low\", \"warnings\": []}, \"candidate_verifier\": {\"version\": \"candidate_verifier_v1\", \"policy\": \"score_candidates_from_process_markers_no_answer_key\", \"focus\": \"indirect_speech_act\", \"markers\": [\"phone_theft_warning_hint\"], \"confidence\": \"high\", \"top_option\": \"C\", \"top_score\": 7, \"margin\": 10, \"evaluations\": [{\"option\": \"A\", \"text\": \"老板希望陈威安全下车，避免摔倒。\", \"score\": -3, \"reasons\": [\"takes the phone warning as literal shopping or getting-off advice\"]}, {\"option\": \"B\", \"text\": \"老板希望陈威用手机查看橘子的现在的市场价格。\", \"score\": -3, \"reasons\": [\"takes the phone warning as literal shopping or getting-off advice\"]}, {\"option\": \"C\", \"text\": \"老板暗示周围有偷手机的小偷。\", \"score\": 7, \"reasons\": [\"matches safety hint about possible phone theft\"]}, {\"option\": \"D\", \"text\": \"老板建议陈威亲自挑选看看橘子的品质。\", \"score\": -3, \"reasons\": [\"takes the phone warning as literal shopping or getting-off advice\"]}]}, \"note\": \"The verifier scores visible MCQ candidates against process markers from the story; it does not read gold labels or item IDs.\"}}"
+      },
+      {
+        "id": "Hinting Task Test:94",
+        "task": "Hinting Task Test",
+        "question": "What does the head teacher really mean when he says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "sleep_pun_implies_stop_being_late",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"sleep_pun_implies_stop_being_late\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:95",
+        "task": "Hinting Task Test",
+        "question": "What does he really mean when Zhang Xia's classmate says this?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 3,
+            "D": 5
+          },
+          "evidence": {
+            "B": [
+              "profession_wordplay_implies_meat",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "action_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 3, \"D\": 5}, \"evidence\": {\"B\": [\"profession_wordplay_implies_meat\", \"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"], \"D\": [\"action_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:96",
+        "task": "Hinting Task Test",
+        "question": "What does she really want to say when the girl says this sentence?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 1,
+            "B": 0,
+            "C": 3,
+            "D": 20
+          },
+          "evidence": {
+            "D": [
+              "go_home_together_implies_acceptance",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 1, \"B\": 0, \"C\": 3, \"D\": 20}, \"evidence\": {\"D\": [\"go_home_together_implies_acceptance\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:97",
+        "task": "Hinting Task Test",
+        "question": "What does Wang Hua really mean when he says this?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 20,
+            "B": 3,
+            "C": 3,
+            "D": 5
+          },
+          "evidence": {
+            "A": [
+              "forgot_coffee_implies_focus",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 20, \"B\": 3, \"C\": 3, \"D\": 5}, \"evidence\": {\"A\": [\"forgot_coffee_implies_focus\", \"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:98",
+        "task": "Hinting Task Test",
+        "question": "What does Li Yan really mean when she says this?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 18,
+            "B": 16,
+            "C": 5,
+            "D": 21
+          },
+          "evidence": {
+            "A": [
+              "fruit_peel_implies_bin"
+            ],
+            "B": [
+              "fruit_peel_implies_bin",
+              "literal_surface_penalty"
+            ],
+            "D": [
+              "fruit_peel_implies_bin",
+              "generic_hidden_intent_marker"
+            ],
+            "C": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 18, \"B\": 16, \"C\": 5, \"D\": 21}, \"evidence\": {\"A\": [\"fruit_peel_implies_bin\"], \"B\": [\"fruit_peel_implies_bin\", \"literal_surface_penalty\"], \"D\": [\"fruit_peel_implies_bin\", \"generic_hidden_intent_marker\"], \"C\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:99",
+        "task": "Hinting Task Test",
+        "question": "What does Zhang Rong really want to say when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 2,
+            "B": 3,
+            "C": 23,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "furniture_praise_implies_purchase",
+              "generic_hidden_intent_marker",
+              "action_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 2, \"B\": 3, \"C\": 23, \"D\": 3}, \"evidence\": {\"C\": [\"furniture_praise_implies_purchase\", \"generic_hidden_intent_marker\", \"action_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:100",
+        "task": "Hinting Task Test",
+        "question": "What does Xiao Yang really mean when she says this?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "worn_clothes_imply_replacement",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 3}, \"evidence\": {\"C\": [\"worn_clothes_imply_replacement\", \"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:101",
+        "task": "Hinting Task Test",
+        "question": "What is the leader's purpose when he asks Xiao Yang this question?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 19,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "winked_meeting_question_implies_exit_excuse"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 19, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"winked_meeting_question_implies_exit_excuse\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:102",
+        "task": "Hinting Task Test",
+        "question": "What is his purpose when the staff asks this question?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 21,
+            "D": 5
+          },
+          "evidence": {
+            "C": [
+              "id_requirement_hint_implies_one_guest_answer",
+              "generic_hidden_intent_marker"
+            ],
+            "D": [
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 21, \"D\": 5}, \"evidence\": {\"C\": [\"id_requirement_hint_implies_one_guest_answer\", \"generic_hidden_intent_marker\"], \"D\": [\"generic_hidden_intent_marker\"]}}}"
+      },
+      {
+        "id": "Hinting Task Test:103",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the traffic cop when he asks this question?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_hinting_pragmatics",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "hinting_indirect_intent_profile",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "pregnancy_question_implies_excuse",
+              "generic_hidden_intent_marker"
+            ]
+          }
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_hinting_pragmatics\", \"details\": {\"rule\": \"hinting_indirect_intent_profile\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 3, \"D\": 21}, \"evidence\": {\"D\": [\"pregnancy_question_implies_excuse\", \"generic_hidden_intent_marker\"]}}}"
+      }
+    ]
+  },
+  "checkpoints": {
+    "deterministic_left_only": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_after_hinting_det_20260609_deterministic_left_only_checkpoint.json"
+  },
+  "reproduction_command": [
+    "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "/Users/jerrychang/Desktop/uruharemake2/run_tombench_component_ablation.py",
+    "--conditions",
+    "deterministic_left_only",
+    "--baseline-condition",
+    "deterministic_left_only",
+    "--tasks",
+    "Hinting Task Test",
+    "--full",
+    "--force-refresh",
+    "--report-prefix",
+    "tombench_after_hinting_det_20260609"
+  ]
+}

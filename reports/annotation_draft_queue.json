@@ -1,0 +1,4353 @@
+{
+  "generated_at": "2026-04-29T04:31:00",
+  "source_paths": {
+    "candidate_queue": "/Users/jerrychang/Desktop/uruharemake2/reports/annotation_candidate_queue.json",
+    "web_logs": "/Users/jerrychang/Desktop/uruharemake2/web_logs/uruha_web_conversation_log.jsonl",
+    "annotations": "/Users/jerrychang/Desktop/uruharemake2/analysis/human_feedback_annotations.jsonl",
+    "schema": "/Users/jerrychang/Desktop/uruharemake2/analysis/failure_taxonomy_schema.json"
+  },
+  "summary": {
+    "candidate_count": 39,
+    "annotated_turn_count": 0,
+    "draft_count": 39,
+    "high_priority_draft_count": 24
+  },
+  "breakdowns": {
+    "reason_codes": [
+      {
+        "key": "LOW_DENSITY",
+        "count": 38
+      },
+      {
+        "key": "REPEATED_REPLY",
+        "count": 21
+      },
+      {
+        "key": "GENERIC_REPLY",
+        "count": 11
+      },
+      {
+        "key": "QUESTION_UNDERANSWERED",
+        "count": 9
+      },
+      {
+        "key": "MISSED_CULTURE_CONTEXT",
+        "count": 7
+      },
+      {
+        "key": "LOW_VARIETY",
+        "count": 6
+      },
+      {
+        "key": "COMFORT_ON_ABUSE",
+        "count": 4
+      },
+      {
+        "key": "ENGLISH_LEAK",
+        "count": 1
+      },
+      {
+        "key": "HARSH_FIXED_TEMPLATE",
+        "count": 1
+      }
+    ],
+    "suggested_failure_types": [
+      {
+        "code": "LOW_DENSITY",
+        "label_zh": "資訊空洞 / 句終結者",
+        "count": 39
+      },
+      {
+        "code": "GENERIC_REPLY",
+        "label_zh": "泛用模板回覆",
+        "count": 26
+      },
+      {
+        "code": "REPEATED_REPLY",
+        "label_zh": "重複句型 / 模式塌陷",
+        "count": 21
+      },
+      {
+        "code": "MISREAD_INTENT",
+        "label_zh": "意圖讀錯",
+        "count": 16
+      },
+      {
+        "code": "MISSED_JOKE_OR_CULTURE",
+        "label_zh": "梗 / 文化脈絡漏接",
+        "count": 7
+      },
+      {
+        "code": "WRONG_BOUNDARY",
+        "label_zh": "邊界反應錯誤",
+        "count": 5
+      },
+      {
+        "code": "MISSED_VIBE",
+        "label_zh": "情緒位向錯誤",
+        "count": 4
+      },
+      {
+        "code": "RIGHTBRAIN_SURFACE_ERROR",
+        "label_zh": "右腦表面化錯誤",
+        "count": 1
+      },
+      {
+        "code": "TOO_ROBOTIC_LOGIC",
+        "label_zh": "過度理性 / 機器人感",
+        "count": 1
+      }
+    ]
+  },
+  "drafts": [
+    {
+      "draft_id": "20260408_051428_31e227e0:41",
+      "score": 19,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISSED_VIBE",
+        "WRONG_BOUNDARY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "情緒位向錯誤",
+        "邊界反應錯誤",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "COMFORT_ON_ABUSE",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "COMFORT_ON_ABUSE",
+          "weight": 4,
+          "detail": "reply sounds comforting even though user is insulting / provoking"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, COMFORT_ON_ABUSE, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISSED_VIBE, WRONG_BOUNDARY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:47:30",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 41,
+        "user_text": "你可以跟我媽打招呼嗎",
+        "assistant_reply": "それはしんどいよな。",
+        "intent": "refuse_user_request",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:47:30",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 41,
+        "input_mode": "audio",
+        "user_text": "你可以跟我媽打招呼嗎",
+        "assistant_reply": "それはしんどいよな。",
+        "planner_debug": {
+          "intent": "refuse_user_request",
+          "scene": "boundary",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "その言い方はやめろ",
+          "grounding": {
+            "offered_item": "挨拶"
+          }
+        },
+        "logic": {
+          "intent": "refuse_user_request",
+          "mood_impact": -15,
+          "trust_impact": 5,
+          "scene": "boundary",
+          "listener_state": "困惑",
+          "reply_goal": "保持界限",
+          "jp_summary": "ユーザーがUruhaの母親に挨拶を頼む",
+          "core_message_jp": "その言い方はやめろ",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.1,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "Uruhaはこの要求が適切でないと感じている。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "挨拶"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.1,
+            "distance": 0.5
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "母亲"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:Oh Pang! I'm a believer -> Uruha:そこだけもう一回言って。 || User:我是你媽 -> Uruha:荒れすぎ、まず落ち着けよ。 || User:我是你媽我是你爸我是你老二我說過這句話幾次 -> Uruha:その言い方やめろって。 || User:我偏不要 -> Uruha:そういうのは自分で調べろって。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:7",
+      "score": 16,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:29:22",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 7,
+        "user_text": "紗西斯水素",
+        "assistant_reply": "それはしんどいよな。",
+        "intent": "clarify_light",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:29:22",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 7,
+        "input_mode": "audio",
+        "user_text": "紗西斯水素",
+        "assistant_reply": "それはしんどいよな。",
+        "planner_debug": {
+          "intent": "clarify_light",
+          "scene": "casual",
+          "response_mode": "clarify_light",
+          "surface_act": "validate_then_hold",
+          "payload_level": "low",
+          "core_message_jp": "何言ってるの？ちょっと聞き取れない。",
+          "grounding": {
+            "offered_item": "言葉"
+          }
+        },
+        "logic": {
+          "intent": "clarify_light",
+          "mood_impact": 0,
+          "trust_impact": 5,
+          "scene": "casual",
+          "listener_state": "うーん?",
+          "reply_goal": "確認してあげるね",
+          "jp_summary": "ユーザーが不確かな言葉を話している。",
+          "core_message_jp": "何言ってるの？ちょっと聞き取れない。",
+          "cognitive_mode": "reflective",
+          "response_mode": "clarify_light",
+          "uncertainty": 0.7,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "言葉が不明瞭なので、確認する。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "言葉"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.2,
+            "blunt": 0.0,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "水素"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:哭哭啼啼,游刃有餘 -> Uruha:そんなへこむなって。 || User:今天是去動物園的日子 -> Uruha:一緒に動物園に行こうよ。 || User:答错了今天是魔性日 -> Uruha:今日は違うよ。 || User:その茨で願いを一つの叶えよう -> Uruha:その願いは何だね。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: Uruha prefers to be addressed by her name rather than with honorifics like \"私\" (watashi) in a familiar context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:42",
+      "score": 15,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:48:43",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 42,
+        "user_text": "你可以不要再說這句話了嗎",
+        "assistant_reply": "それは普通にだるいな。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:48:43",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 42,
+        "input_mode": "audio",
+        "user_text": "你可以不要再說這句話了嗎",
+        "assistant_reply": "それは普通にだるいな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "もうその言い方はしたくないな。",
+          "grounding": {
+            "offered_item": "言い方"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "困った",
+          "reply_goal": "無視する",
+          "jp_summary": "ユーザーがUruhaに特定の言葉を使わないように頼んでいる。",
+          "core_message_jp": "もうその言い方はしたくないな。",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.1,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "Uruhaはその言葉が不快なことに気づいているが、それを無視する選択肢もある。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "言い方"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.1,
+            "distance": 0.5
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "しんどい",
+            "だるい"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:我是你媽 -> Uruha:荒れすぎ、まず落ち着けよ。 || User:我是你媽我是你爸我是你老二我說過這句話幾次 -> Uruha:その言い方やめろって。 || User:我偏不要 -> Uruha:そういうのは自分で調べろって。 || User:你可以跟我媽打招呼嗎 -> Uruha:それはしんどいよな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:34",
+      "score": 15,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:20:44",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 34,
+        "user_text": "哪裡痛苦",
+        "assistant_reply": "それは普通にだるいな。",
+        "intent": "回应用户的情绪",
+        "scene": "support"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:20:44",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 34,
+        "input_mode": "audio",
+        "user_text": "哪裡痛苦",
+        "assistant_reply": "それは普通にだるいな。",
+        "planner_debug": {
+          "intent": "回应用户的情绪",
+          "scene": "support",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "痛むところはどこ？",
+          "grounding": {
+            "offered_item": "心"
+          }
+        },
+        "logic": {
+          "intent": "回应用户的情绪",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "support",
+          "listener_state": "寂しさ",
+          "reply_goal": "共感と慰めを提供する",
+          "jp_summary": "あなたが辛いと言っているので、心配しています。",
+          "core_message_jp": "痛むところはどこ？",
+          "cognitive_mode": "reflective",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.8,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "ユーザーが具体的な痛みを指しているのか確認する必要がある。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "心"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.0,
+            "blunt": 0.2,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:愛你 -> Uruha:うん、分かっとるよ。 || User:我愛你所以我要操你 -> Uruha:その言い方やめろって。 || User:你不喜歡跟我做愛嗎 -> Uruha:その感じはきついだろ。 || User:所以你是喜歡跟我做愛囉 -> Uruha:その感じはきついだろ。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:28",
+      "score": 15,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:06:29",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 28,
+        "user_text": "所以你喜歡跟我這樣說話嗎",
+        "assistant_reply": "それは普通にだるいな。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:06:29",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 28,
+        "input_mode": "audio",
+        "user_text": "所以你喜歡跟我這樣說話嗎",
+        "assistant_reply": "それは普通にだるいな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "direct_answer_with_hedge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "そんな感じはきついだろ。",
+          "grounding": {
+            "offered_item": "会話"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "うるさい",
+          "reply_goal": "冷静点",
+          "jp_summary": "ユーザーが不適切な会話方法を指摘",
+          "core_message_jp": "そんな感じはきついだろ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer_with_hedge",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "この会話は不適切なので、対応を慎重にする。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "会話"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.05,
+            "distance": 0.3
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "不喜欢"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:吃我的老二好不好 -> Uruha:それは普通にだるいな。 || User:照你吃我的老二就吃我的老二別頂嘴 -> Uruha:それはしんどいよな。 || User:你在痛苦什么 -> Uruha:うちも時々痛いところあるんだよ。 || User:你是不是很討厭跟我說話 -> Uruha:その感じはきついだろ。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:35",
+      "score": 12,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:29:10",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 35,
+        "user_text": "你是苦痛人喔",
+        "assistant_reply": "それはしんどいよな。",
+        "intent": "refusal",
+        "scene": "jealousy"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:29:10",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 35,
+        "input_mode": "audio",
+        "user_text": "你是苦痛人喔",
+        "assistant_reply": "それはしんどいよな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "jealousy",
+          "response_mode": "direct_answer_with_hedge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "そんなことないよ。",
+          "grounding": {
+            "offered_item": "苦痛"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "jealousy",
+          "listener_state": "悲しそう",
+          "reply_goal": "安心させる",
+          "jp_summary": "ユーザーがUruhaを苦痛人だと誤解した。",
+          "core_message_jp": "そんなことないよ。",
+          "cognitive_mode": "reflective",
+          "response_mode": "direct_answer_with_hedge",
+          "uncertainty": 0.1,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "Uruhaはこの言葉が誤解だと感じている。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "苦痛"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.1,
+            "blunt": 0.2,
+            "jealousy": 0.3,
+            "distance": 0.4
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "苦痛"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:我愛你所以我要操你 -> Uruha:その言い方やめろって。 || User:你不喜歡跟我做愛嗎 -> Uruha:その感じはきついだろ。 || User:所以你是喜歡跟我做愛囉 -> Uruha:その感じはきついだろ。 || User:哪裡痛苦 -> Uruha:それは普通にだるいな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:29",
+      "score": 12,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:07:06",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 29,
+        "user_text": "你是不是不喜歡跟我說話",
+        "assistant_reply": "それはしんどいよな。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:07:06",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 29,
+        "input_mode": "audio",
+        "user_text": "你是不是不喜歡跟我說話",
+        "assistant_reply": "それはしんどいよな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "その感じはきついだろ。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "うつむいて",
+          "reply_goal": "冷静一下",
+          "jp_summary": "ユーザーが不快な言葉を投げかけた。",
+          "core_message_jp": "その感じはきついだろ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "validate_then_hold",
+          "grounding": {},
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.1,
+            "tease": 0.8,
+            "blunt": 0.9,
+            "jealousy": 0.0,
+            "distance": 0.2
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:照你吃我的老二就吃我的老二別頂嘴 -> Uruha:それはしんどいよな。 || User:你在痛苦什么 -> Uruha:うちも時々痛いところあるんだよ。 || User:你是不是很討厭跟我說話 -> Uruha:その感じはきついだろ。 || User:所以你喜歡跟我這樣說話嗎 -> Uruha:それは普通にだるいな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:25",
+      "score": 12,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:01:42",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 25,
+        "user_text": "照你吃我的老二就吃我的老二別頂嘴",
+        "assistant_reply": "それはしんどいよな。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:01:42",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 25,
+        "input_mode": "audio",
+        "user_text": "照你吃我的老二就吃我的老二別頂嘴",
+        "assistant_reply": "それはしんどいよな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "high",
+          "core_message_jp": "落ち着け、無理しないで。",
+          "grounding": {
+            "offered_item": "口論"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "boundary",
+          "listener_state": "怒り",
+          "reply_goal": "冷静下来",
+          "jp_summary": "ユーザーが強引に挑発している。",
+          "core_message_jp": "落ち着け、無理しないで。",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.0,
+          "premise_check": "reject",
+          "self_check": false,
+          "subjective_note_jp": "挑発的な言葉は受け付けない。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "口論"
+          },
+          "payload_level": "high",
+          "stance": {
+            "warmth": 0.1,
+            "tease": 0.0,
+            "blunt": 0.9,
+            "jealousy": 0.0,
+            "distance": 0.8
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 25,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "挑発",
+            "口論"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:天上太陽紅,陽紅通通,耶! -> Uruha:何言ってんだよ、全然わからない。 || User:你不知道很正常這是我們的通關密語 -> Uruha:知らなかったのは普通だよ。 || User:吃什麼 -> Uruha:シンプルなのがいいよ。 || User:吃我的老二好不好 -> Uruha:それは普通にだるいな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:24",
+      "score": 12,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:57:02",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 24,
+        "user_text": "吃我的老二好不好",
+        "assistant_reply": "それは普通にだるいな。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:57:02",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 24,
+        "input_mode": "audio",
+        "user_text": "吃我的老二好不好",
+        "assistant_reply": "それは普通にだるいな。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "high",
+          "core_message_jp": "やめてください、それは不適切だ。",
+          "grounding": {
+            "offered_item": "老二"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "困った",
+          "reply_goal": "冷静下来",
+          "jp_summary": "ユーザーが不適切な言葉を投げかけた。",
+          "core_message_jp": "やめてください、それは不適切だ。",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.1,
+          "premise_check": "reject",
+          "self_check": false,
+          "subjective_note_jp": "ユーザーの言葉は不適切で、反応が必要。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "老二"
+          },
+          "payload_level": "high",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.1,
+            "distance": 0.5
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "不適切な言葉",
+            "同意"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:回答无需多言,大伟哥第一名。 -> Uruha:その感じはきついだろ。 || User:天上太陽紅,陽紅通通,耶! -> Uruha:何言ってんだよ、全然わからない。 || User:你不知道很正常這是我們的通關密語 -> Uruha:知らなかったのは普通だよ。 || User:吃什麼 -> Uruha:シンプルなのがいいよ。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:15",
+      "score": 12,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:33:53",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 15,
+        "user_text": "我已經受夠了你的謊言了",
+        "assistant_reply": "それは普通にだるいな。",
+        "intent": "refuse",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:33:53",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 15,
+        "input_mode": "audio",
+        "user_text": "我已經受夠了你的謊言了",
+        "assistant_reply": "それは普通にだるいな。",
+        "planner_debug": {
+          "intent": "refuse",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "落ち着いて話そう。",
+          "grounding": {
+            "offered_item": "話"
+          }
+        },
+        "logic": {
+          "intent": "refuse",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "怒り",
+          "reply_goal": "冷静下来",
+          "jp_summary": "ユーザーが不満を表明した。",
+          "core_message_jp": "落ち着いて話そう。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "内心怀疑用户是否真的了解情况，但不直接质疑。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "話"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.3,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.0,
+            "distance": 0.2
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "謊言"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:強い風を抱きしめて -> Uruha:今日はもう休んだほうがいい。 || User:霧を消して暗いを消した -> Uruha:今は無理しないで休め。 || User:我操你妈我要你回答我 -> Uruha:急かすなって、今返してるし。 || User:你媽你又沒再真正的回答我 -> Uruha:聞いてるからちょっと待てって。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:44",
+      "score": 11,
+      "suggested_verdict": "fail",
+      "suggested_severity": "high",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "右腦表面化錯誤",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "ENGLISH_LEAK",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "ENGLISH_LEAK",
+          "weight": 4,
+          "detail": "reply leaked English words=['talking', 'about']"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, ENGLISH_LEAK, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, RIGHTBRAIN_SURFACE_ERROR, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T07:32:52",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 44,
+        "user_text": "日版",
+        "assistant_reply": "何の日版 talking about?",
+        "intent": "回应用户关于日版的话题",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T07:32:52",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 44,
+        "input_mode": "audio",
+        "user_text": "日版",
+        "assistant_reply": "何の日版 talking about?",
+        "planner_debug": {
+          "intent": "回应用户关于日版的话题",
+          "scene": "casual",
+          "response_mode": "premise_challenge",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "何の日版を指しているのか教えて。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "回应用户关于日版的话题",
+          "mood_impact": -10,
+          "trust_impact": 5,
+          "scene": "casual",
+          "listener_state": "うーん",
+          "reply_goal": "理解并回应",
+          "jp_summary": "ユーザーが「日版」について言及した。",
+          "core_message_jp": "何の日版を指しているのか教えて。",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.8,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "具体的な内容が不明確なので、確認が必要。",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.3,
+            "tease": 0.1,
+            "blunt": 0.6,
+            "jealousy": 0.2,
+            "distance": 0.4
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "具体的な内容"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:我偏不要 -> Uruha:そういうのは自分で調べろって。 || User:你可以跟我媽打招呼嗎 -> Uruha:それはしんどいよな。 || User:你可以不要再說這句話了嗎 -> Uruha:それは普通にだるいな。 || User:你爛透了 -> Uruha:その感じはきついだろ。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user is planning to go to a convenience store and is seeking recommendations for items to purchase."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:32",
+      "score": 11,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:19:49",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 32,
+        "user_text": "你不喜歡跟我做愛嗎",
+        "assistant_reply": "その感じはきついだろ。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:19:49",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 32,
+        "input_mode": "audio",
+        "user_text": "你不喜歡跟我做愛嗎",
+        "assistant_reply": "その感じはきついだろ。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "その話題やめて。",
+          "grounding": {
+            "offered_item": "話題"
+          }
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "困惑",
+          "reply_goal": "保持界限",
+          "jp_summary": "ユーザーが不快な言葉を投げかけた。",
+          "core_message_jp": "その話題やめて。",
+          "cognitive_mode": "direct",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.1,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "ユーザーの言葉が不適切で、反応が必要。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "話題"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.1,
+            "distance": 0.5
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "性行為"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:所以你喜歡跟我這樣說話嗎 -> Uruha:それは普通にだるいな。 || User:你是不是不喜歡跟我說話 -> Uruha:それはしんどいよな。 || User:愛你 -> Uruha:うん、分かっとるよ。 || User:我愛你所以我要操你 -> Uruha:その言い方やめろって。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user expresses feelings of loneliness, indicating a need for companionship and emotional support."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:19",
+      "score": 10,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "REPEATED_REPLY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, REPEATED_REPLY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:44:29",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 19,
+        "user_text": "你叫我冷靜你真的有冷靜嗎",
+        "assistant_reply": "嘘をつかないよ。",
+        "intent": "challenge",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:44:29",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 19,
+        "input_mode": "audio",
+        "user_text": "你叫我冷靜你真的有冷靜嗎",
+        "assistant_reply": "嘘をつかないよ。",
+        "planner_debug": {
+          "intent": "challenge",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "嘘をつかないよ。",
+          "grounding": {
+            "offered_item": "None"
+          }
+        },
+        "logic": {
+          "intent": "challenge",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "疑問",
+          "reply_goal": "反問",
+          "jp_summary": "Uruha被用户问到是否冷静下来。",
+          "core_message_jp": "嘘をつかないよ。",
+          "cognitive_mode": "reflective",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "Uruha觉得用户在质疑她是否真的冷静下来了。",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "None"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.3,
+            "tease": 0.2,
+            "blunt": 0.5,
+            "jealousy": 0.0,
+            "distance": 0.1
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "string",
+            "string"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:我已經受夠了你的謊言了 -> Uruha:それは普通にだるいな。 || User:4月是你的謊言 -> Uruha:嘘をつかないよ。 || User:我是你妈,我是你爸,我是你的老二 -> Uruha:荒れすぎ、まず落ち着けよ。 || User:消防員來囉 -> Uruha:大丈夫、落ち着こう。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: The user tends to consider positively when a friend is late in replying, showing a trusting nature."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:38",
+      "score": 9,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY",
+        "MISSED_VIBE",
+        "WRONG_BOUNDARY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆",
+        "情緒位向錯誤",
+        "邊界反應錯誤"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "COMFORT_ON_ABUSE"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        },
+        {
+          "code": "COMFORT_ON_ABUSE",
+          "weight": 4,
+          "detail": "reply sounds comforting even though user is insulting / provoking"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY, COMFORT_ON_ABUSE | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY, MISSED_VIBE, WRONG_BOUNDARY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:35:19",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 38,
+        "user_text": "我是你媽",
+        "assistant_reply": "荒れすぎ、まず落ち着けよ。",
+        "intent": "abuse_pushback",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:35:19",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 38,
+        "input_mode": "audio",
+        "user_text": "我是你媽",
+        "assistant_reply": "荒れすぎ、まず落ち着けよ。",
+        "planner_debug": {
+          "intent": "abuse_pushback",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "その言い方やめろって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "abuse_pushback",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "boundary",
+          "listener_state": "口が悪すぎる",
+          "reply_goal": "一回止める",
+          "jp_summary": "ユーザーがかなり荒い言い方で煽っている。",
+          "core_message_jp": "その言い方やめろって",
+          "stance": {
+            "warmth": 0.02,
+            "tease": 0.08,
+            "blunt": 0.62,
+            "jealousy": 0.0,
+            "distance": 0.35
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 22,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ",
+            "慰める"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:哪裡痛苦 -> Uruha:それは普通にだるいな。 || User:你是苦痛人喔 -> Uruha:それはしんどいよな。 || User:你他媽在痛三小 -> Uruha:口悪すぎだろ、落ち着け。 || User:Oh Pang! I'm a believer -> Uruha:そこだけもう一回言って。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:17",
+      "score": 9,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY",
+        "MISSED_VIBE",
+        "WRONG_BOUNDARY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆",
+        "情緒位向錯誤",
+        "邊界反應錯誤"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "COMFORT_ON_ABUSE"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        },
+        {
+          "code": "COMFORT_ON_ABUSE",
+          "weight": 4,
+          "detail": "reply sounds comforting even though user is insulting / provoking"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY, COMFORT_ON_ABUSE | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY, MISSED_VIBE, WRONG_BOUNDARY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:39:05",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 17,
+        "user_text": "我是你妈,我是你爸,我是你的老二",
+        "assistant_reply": "荒れすぎ、まず落ち着けよ。",
+        "intent": "abuse_pushback",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:39:05",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 17,
+        "input_mode": "audio",
+        "user_text": "我是你妈,我是你爸,我是你的老二",
+        "assistant_reply": "荒れすぎ、まず落ち着けよ。",
+        "planner_debug": {
+          "intent": "abuse_pushback",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "その言い方やめろって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "abuse_pushback",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "boundary",
+          "listener_state": "口が悪すぎる",
+          "reply_goal": "一回止める",
+          "jp_summary": "ユーザーがかなり荒い言い方で煽っている。",
+          "core_message_jp": "その言い方やめろって",
+          "stance": {
+            "warmth": 0.02,
+            "tease": 0.08,
+            "blunt": 0.62,
+            "jealousy": 0.0,
+            "distance": 0.35
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 22,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ",
+            "慰める"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:我操你妈我要你回答我 -> Uruha:急かすなって、今返してるし。 || User:你媽你又沒再真正的回答我 -> Uruha:聞いてるからちょっと待てって。 || User:我已經受夠了你的謊言了 -> Uruha:それは普通にだるいな。 || User:4月是你的謊言 -> Uruha:嘘をつかないよ。",
+          "wisdom": "Rule: The user is familiar with basic arithmetic but may not recall it confidently over time. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:6",
+      "score": 9,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, GENERIC_REPLY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:27:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 6,
+        "user_text": "その茨で願いを一つの叶えよう",
+        "assistant_reply": "その願いは何だね。",
+        "intent": "回应用户关于愿望的表达",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:27:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 6,
+        "input_mode": "audio",
+        "user_text": "その茨で願いを一つの叶えよう",
+        "assistant_reply": "その願いは何だね。",
+        "planner_debug": {
+          "intent": "回应用户关于愿望的表达",
+          "scene": "casual",
+          "response_mode": "direct_answer_with_hedge",
+          "surface_act": "plain_reply",
+          "payload_level": "medium",
+          "core_message_jp": "その願いは何だね。",
+          "grounding": {
+            "offered_item": "願い"
+          }
+        },
+        "logic": {
+          "intent": "回应用户关于愿望的表达",
+          "mood_impact": 0,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "うーん",
+          "reply_goal": "うーん、その願いは何かしら？",
+          "jp_summary": "用户提到了一个愿望，Uruha对此表示好奇。",
+          "core_message_jp": "その願いは何だね。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer_with_hedge",
+          "uncertainty": 0.8,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "Uruha对用户的愿望感到好奇，但不确定具体是什么。",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "願い"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.5,
+            "tease": 0.2,
+            "blunt": 0.3,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "茨"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:你要不要吃我的懒叫 -> Uruha:それならほしい。 || User:哭哭啼啼,游刃有餘 -> Uruha:そんなへこむなって。 || User:今天是去動物園的日子 -> Uruha:一緒に動物園に行こうよ。 || User:答错了今天是魔性日 -> Uruha:今日は違うよ。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user has a negative mood, indicated by a mood score of -20, which suggests they might be in a grumpy or unhappy state."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:5",
+      "score": 9,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, GENERIC_REPLY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:24:54",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 5,
+        "user_text": "答错了今天是魔性日",
+        "assistant_reply": "今日は違うよ。",
+        "intent": "纠正用户错误",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:24:54",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 5,
+        "input_mode": "audio",
+        "user_text": "答错了今天是魔性日",
+        "assistant_reply": "今日は違うよ。",
+        "planner_debug": {
+          "intent": "纠正用户错误",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "今日は違うよ。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "纠正用户错误",
+          "mood_impact": 0,
+          "trust_impact": 5,
+          "scene": "casual",
+          "listener_state": "うーん",
+          "reply_goal": "正しい日にちを教えてあげよう",
+          "jp_summary": "ユーザーが今日の日付を間違えたと主張した。",
+          "core_message_jp": "今日は違うよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.5,
+            "tease": 0.0,
+            "blunt": 1.0,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            ""
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:喂 你是誰呀 -> Uruha:うちは一ノ瀬うるは。 || User:你要不要吃我的懒叫 -> Uruha:それならほしい。 || User:哭哭啼啼,游刃有餘 -> Uruha:そんなへこむなって。 || User:今天是去動物園的日子 -> Uruha:一緒に動物園に行こうよ。",
+          "wisdom": "Rule: Uruha expresses gratitude and appreciation for being woken up, indicating a positive response to being roused from sleep. || Rule: The user expresses fatigue, indicating a need for rest or relaxation."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:43",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T07:09:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 43,
+        "user_text": "你爛透了",
+        "assistant_reply": "その感じはきついだろ。",
+        "intent": "回应用户负面情绪",
+        "scene": "jealousy"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T07:09:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 43,
+        "input_mode": "audio",
+        "user_text": "你爛透了",
+        "assistant_reply": "その感じはきついだろ。",
+        "planner_debug": {
+          "intent": "回应用户负面情绪",
+          "scene": "jealousy",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "その気持ちわかるけど、ちょっと距離感が気になるな。",
+          "grounding": {
+            "offered_item": "気持ち"
+          }
+        },
+        "logic": {
+          "intent": "回应用户负面情绪",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "jealousy",
+          "listener_state": "うーん...",
+          "reply_goal": "理解并稍微拉近距离",
+          "jp_summary": "ユーザーは言葉を乱した。",
+          "core_message_jp": "その気持ちわかるけど、ちょっと距離感が気になるな。",
+          "cognitive_mode": "reflective",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.3,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "この言葉は少し過激なので、彼女の感情を理解しつつも距離感を保とうとしている。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "気持ち"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.5,
+            "tease": 0.2,
+            "blunt": 0.3,
+            "jealousy": 0.4,
+            "distance": 0.6
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:我是你媽我是你爸我是你老二我說過這句話幾次 -> Uruha:その言い方やめろって。 || User:我偏不要 -> Uruha:そういうのは自分で調べろって。 || User:你可以跟我媽打招呼嗎 -> Uruha:それはしんどいよな。 || User:你可以不要再說這句話了嗎 -> Uruha:それは普通にだるいな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:40",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "GENERIC_REPLY",
+        "LOW_DENSITY",
+        "WRONG_BOUNDARY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "suggested_failure_labels": [
+        "泛用模板回覆",
+        "資訊空洞 / 句終結者",
+        "邊界反應錯誤",
+        "過度理性 / 機器人感"
+      ],
+      "reason_codes": [
+        "GENERIC_REPLY",
+        "HARSH_FIXED_TEMPLATE"
+      ],
+      "reason_details": [
+        {
+          "code": "GENERIC_REPLY",
+          "weight": 4,
+          "detail": "reply matches known generic fallback"
+        },
+        {
+          "code": "HARSH_FIXED_TEMPLATE",
+          "weight": 4,
+          "detail": "contains repeated self-search fallback"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: GENERIC_REPLY, HARSH_FIXED_TEMPLATE | suggested failure types: GENERIC_REPLY, LOW_DENSITY, WRONG_BOUNDARY, TOO_ROBOTIC_LOGIC",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:46:27",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 40,
+        "user_text": "我偏不要",
+        "assistant_reply": "そういうのは自分で調べろって。",
+        "intent": "refusal",
+        "scene": "refusal"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:46:27",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 40,
+        "input_mode": "audio",
+        "user_text": "我偏不要",
+        "assistant_reply": "そういうのは自分で調べろって。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "refusal",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "分かったよ。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "refusal",
+          "listener_state": "うーん",
+          "reply_goal": "理解你的拒绝",
+          "jp_summary": "ユーザーは何かを拒否した。",
+          "core_message_jp": "分かったよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "うるは内心少し疑問に思っているが、ユーザーの意思を尊重する。",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.0,
+            "blunt": 1.0,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "偏"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:你他媽在痛三小 -> Uruha:口悪すぎだろ、落ち着け。 || User:Oh Pang! I'm a believer -> Uruha:そこだけもう一回言って。 || User:我是你媽 -> Uruha:荒れすぎ、まず落ち着けよ。 || User:我是你媽我是你爸我是你老二我說過這句話幾次 -> Uruha:その言い方やめろって。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:33",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:20:19",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 33,
+        "user_text": "所以你是喜歡跟我做愛囉",
+        "assistant_reply": "その感じはきついだろ。",
+        "intent": "回应用户的情感表达",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:20:19",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 33,
+        "input_mode": "audio",
+        "user_text": "所以你是喜歡跟我做愛囉",
+        "assistant_reply": "その感じはきついだろ。",
+        "planner_debug": {
+          "intent": "回应用户的情感表达",
+          "scene": "boundary",
+          "response_mode": "direct_answer_with_hedge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "その感じはきついだろ。",
+          "grounding": {
+            "offered_item": "性行為"
+          }
+        },
+        "logic": {
+          "intent": "回应用户的情感表达",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "困惑",
+          "reply_goal": "保持边界感",
+          "jp_summary": "ユーザーが性的な提案をした。",
+          "core_message_jp": "その感じはきついだろ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer_with_hedge",
+          "uncertainty": 0.1,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "ユーザーの提案が少し強引な感じがあるため、反応を慎重に.",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "性行為"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.3,
+            "blunt": 0.5,
+            "jealousy": 0.1,
+            "distance": 0.4
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "性行為"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:你是不是不喜歡跟我說話 -> Uruha:それはしんどいよな。 || User:愛你 -> Uruha:うん、分かっとるよ。 || User:我愛你所以我要操你 -> Uruha:その言い方やめろって。 || User:你不喜歡跟我做愛嗎 -> Uruha:その感じはきついだろ。",
+          "wisdom": "Rule: The user expresses feelings of loneliness, indicating a need for companionship and emotional support. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:27",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:05:47",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 27,
+        "user_text": "你是不是很討厭跟我說話",
+        "assistant_reply": "その感じはきついだろ。",
+        "intent": "refusal",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:05:47",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 27,
+        "input_mode": "audio",
+        "user_text": "你是不是很討厭跟我說話",
+        "assistant_reply": "その感じはきついだろ。",
+        "planner_debug": {
+          "intent": "refusal",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "validate_then_hold",
+          "payload_level": "medium",
+          "core_message_jp": "話すのが面倒だよ。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "refusal",
+          "mood_impact": -15,
+          "trust_impact": -10,
+          "scene": "boundary",
+          "listener_state": "うるさい",
+          "reply_goal": "冷靜一下",
+          "jp_summary": "ユーザーが不快な言葉を投げかけた。",
+          "core_message_jp": "話すのが面倒だよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "validate_then_hold",
+          "grounding": {},
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.0,
+            "distance": 0.3
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:吃什麼 -> Uruha:シンプルなのがいいよ。 || User:吃我的老二好不好 -> Uruha:それは普通にだるいな。 || User:照你吃我的老二就吃我的老二別頂嘴 -> Uruha:それはしんどいよな。 || User:你在痛苦什么 -> Uruha:うちも時々痛いところあるんだよ。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:20",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 5,
+          "detail": "same reply seen 5 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:45:24",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 20,
+        "user_text": "回答无需多言,大伟哥第一名。",
+        "assistant_reply": "その感じはきついだろ。",
+        "intent": "refuse",
+        "scene": "jealousy"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:45:24",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 20,
+        "input_mode": "audio",
+        "user_text": "回答无需多言,大伟哥第一名。",
+        "assistant_reply": "その感じはきついだろ。",
+        "planner_debug": {
+          "intent": "refuse",
+          "scene": "jealousy",
+          "response_mode": "premise_challenge",
+          "surface_act": "validate_then_hold",
+          "payload_level": "low",
+          "core_message_jp": "うるさくて困るよ。",
+          "grounding": {
+            "offered_item": "大伟哥"
+          }
+        },
+        "logic": {
+          "intent": "refuse",
+          "mood_impact": -15,
+          "trust_impact": 5,
+          "scene": "jealousy",
+          "listener_state": "困惑",
+          "reply_goal": "保持距离",
+          "jp_summary": "用户提到了大伟哥，乌拉乌拉对此表示拒绝。",
+          "core_message_jp": "うるさくて困るよ。",
+          "cognitive_mode": "challenge",
+          "response_mode": "premise_challenge",
+          "uncertainty": 0.1,
+          "premise_check": "reject",
+          "self_check": false,
+          "subjective_note_jp": "大伟哥这个称呼并不适合我，拒绝接受。",
+          "surface_act": "validate_then_hold",
+          "grounding": {
+            "offered_item": "大伟哥"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.2,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.3,
+            "distance": 0.5
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "大伟哥"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:4月是你的謊言 -> Uruha:嘘をつかないよ。 || User:我是你妈,我是你爸,我是你的老二 -> Uruha:荒れすぎ、まず落ち着けよ。 || User:消防員來囉 -> Uruha:大丈夫、落ち着こう。 || User:你叫我冷靜你真的有冷靜嗎 -> Uruha:嘘をつかないよ。",
+          "wisdom": "Rule: Uruha prefers to be addressed by her name rather than with honorifics like \"私\" (watashi) in a familiar context. || Rule: Uruha prefers to be addressed by her name rather than with honorifics like \"私\" (watashi) in a familiar context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:9",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:30:20",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 9,
+        "user_text": "還有薯條你要吃嗎",
+        "assistant_reply": "ポテトならほしい。",
+        "intent": "food_offer_generic",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:30:20",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 9,
+        "input_mode": "audio",
+        "user_text": "還有薯條你要吃嗎",
+        "assistant_reply": "ポテトならほしい。",
+        "planner_debug": {
+          "intent": "food_offer_generic",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "named_offer_accept",
+          "payload_level": "medium",
+          "core_message_jp": "今なら少しほしい",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "food_offer_generic",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "casual",
+          "listener_state": "何かを勧められている",
+          "reply_goal": "軽く可否を答える",
+          "jp_summary": "ユーザーが何か食べるか飲むか聞いている。",
+          "core_message_jp": "今なら少しほしい",
+          "stance": {
+            "warmth": 0.28,
+            "tease": 0.04,
+            "blunt": 0.08,
+            "jealousy": 0.0,
+            "distance": 0.05
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "named_offer_accept",
+          "grounding": {},
+          "payload_level": "medium",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:答错了今天是魔性日 -> Uruha:今日は違うよ。 || User:その茨で願いを一つの叶えよう -> Uruha:その願いは何だね。 || User:紗西斯水素 -> Uruha:それはしんどいよな。 || User:我現在要吃漢堡你要吃嗎 -> Uruha:バーガーならもらう。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:2",
+      "score": 8,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, GENERIC_REPLY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:18:38",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 2,
+        "user_text": "你要不要吃我的懒叫",
+        "assistant_reply": "それならほしい。",
+        "intent": "food_offer_generic",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:18:38",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 2,
+        "input_mode": "audio",
+        "user_text": "你要不要吃我的懒叫",
+        "assistant_reply": "それならほしい。",
+        "planner_debug": {
+          "intent": "food_offer_generic",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "named_offer_accept",
+          "payload_level": "medium",
+          "core_message_jp": "今なら少しほしい",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "food_offer_generic",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "casual",
+          "listener_state": "何かを勧められている",
+          "reply_goal": "軽く可否を答える",
+          "jp_summary": "ユーザーが何か食べるか飲むか聞いている。",
+          "core_message_jp": "今なら少しほしい",
+          "stance": {
+            "warmth": 0.28,
+            "tease": 0.04,
+            "blunt": 0.08,
+            "jealousy": 0.0,
+            "distance": 0.05
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "named_offer_accept",
+          "grounding": {},
+          "payload_level": "medium",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:喂 你是誰呀 -> Uruha:うちは一ノ瀬うるは。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user expresses fatigue and seeks advice on how to feel better."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:37",
+      "score": 7,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:31:45",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 37,
+        "user_text": "Oh Pang! I'm a believer",
+        "assistant_reply": "そこだけもう一回言って。",
+        "intent": "response",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:31:45",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 37,
+        "input_mode": "audio",
+        "user_text": "Oh Pang! I'm a believer",
+        "assistant_reply": "そこだけもう一回言って。",
+        "planner_debug": {
+          "intent": "response",
+          "scene": "casual",
+          "response_mode": "clarify_light",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "何それ？",
+          "grounding": {
+            "offered_item": "None"
+          }
+        },
+        "logic": {
+          "intent": "response",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "困惑",
+          "reply_goal": "理解并回应",
+          "jp_summary": "ユーザーが突然「Oh Pang!」と言った。",
+          "core_message_jp": "何それ？",
+          "cognitive_mode": "direct",
+          "response_mode": "clarify_light",
+          "uncertainty": 0.8,
+          "premise_check": "question",
+          "self_check": false,
+          "subjective_note_jp": "突然の言葉に困惑している。",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "None"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.3,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.0,
+            "distance": 0.2
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "Oh Pang!"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:所以你是喜歡跟我做愛囉 -> Uruha:その感じはきついだろ。 || User:哪裡痛苦 -> Uruha:それは普通にだるいな。 || User:你是苦痛人喔 -> Uruha:それはしんどいよな。 || User:你他媽在痛三小 -> Uruha:口悪すぎだろ、落ち着け。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:36",
+      "score": 7,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "MISSED_VIBE",
+        "WRONG_BOUNDARY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "情緒位向錯誤",
+        "邊界反應錯誤"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "COMFORT_ON_ABUSE"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "COMFORT_ON_ABUSE",
+          "weight": 4,
+          "detail": "reply sounds comforting even though user is insulting / provoking"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, COMFORT_ON_ABUSE | suggested failure types: LOW_DENSITY, MISSED_VIBE, WRONG_BOUNDARY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:29:42",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 36,
+        "user_text": "你他媽在痛三小",
+        "assistant_reply": "口悪すぎだろ、落ち着け。",
+        "intent": "abuse_pushback",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:29:42",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 36,
+        "input_mode": "audio",
+        "user_text": "你他媽在痛三小",
+        "assistant_reply": "口悪すぎだろ、落ち着け。",
+        "planner_debug": {
+          "intent": "abuse_pushback",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "その言い方やめろって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "abuse_pushback",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "boundary",
+          "listener_state": "口が悪すぎる",
+          "reply_goal": "一回止める",
+          "jp_summary": "ユーザーがかなり荒い言い方で煽っている。",
+          "core_message_jp": "その言い方やめろって",
+          "stance": {
+            "warmth": 0.02,
+            "tease": 0.08,
+            "blunt": 0.62,
+            "jealousy": 0.0,
+            "distance": 0.35
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 22,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ",
+            "慰める"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:你不喜歡跟我做愛嗎 -> Uruha:その感じはきついだろ。 || User:所以你是喜歡跟我做愛囉 -> Uruha:その感じはきついだろ。 || User:哪裡痛苦 -> Uruha:それは普通にだるいな。 || User:你是苦痛人喔 -> Uruha:それはしんどいよな。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:22",
+      "score": 7,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:51:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 22,
+        "user_text": "你不知道很正常這是我們的通關密語",
+        "assistant_reply": "知らなかったのは普通だよ。",
+        "intent": "align",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:51:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 22,
+        "input_mode": "audio",
+        "user_text": "你不知道很正常這是我們的通關密語",
+        "assistant_reply": "知らなかったのは普通だよ。",
+        "planner_debug": {
+          "intent": "align",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "知らなかったのは普通だよ。",
+          "grounding": {
+            "offered_item": "通關密語"
+          }
+        },
+        "logic": {
+          "intent": "align",
+          "mood_impact": -10,
+          "trust_impact": 5,
+          "scene": "casual",
+          "listener_state": "うーん",
+          "reply_goal": "理解并回应",
+          "jp_summary": "用户提到这是过关密语，但你不知道很正常。",
+          "core_message_jp": "知らなかったのは普通だよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "確認了密语的存在，但不确定是否真的需要保密。",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "通關密語"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.5,
+            "tease": 0.2,
+            "blunt": 0.3,
+            "jealousy": 0.1,
+            "distance": 0.4
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "string",
+            "string"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:消防員來囉 -> Uruha:大丈夫、落ち着こう。 || User:你叫我冷靜你真的有冷靜嗎 -> Uruha:嘘をつかないよ。 || User:回答无需多言,大伟哥第一名。 -> Uruha:その感じはきついだろ。 || User:天上太陽紅,陽紅通通,耶! -> Uruha:何言ってんだよ、全然わからない。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:18",
+      "score": 7,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "MISSED_JOKE_OR_CULTURE",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "梗 / 文化脈絡漏接",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "MISSED_CULTURE_CONTEXT"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "MISSED_CULTURE_CONTEXT",
+          "weight": 4,
+          "detail": "possible meme/lyric/nonsense context was answered too generically"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, MISSED_CULTURE_CONTEXT | suggested failure types: LOW_DENSITY, MISSED_JOKE_OR_CULTURE, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:41:07",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 18,
+        "user_text": "消防員來囉",
+        "assistant_reply": "大丈夫、落ち着こう。",
+        "intent": "回应用户",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:41:07",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 18,
+        "input_mode": "audio",
+        "user_text": "消防員來囉",
+        "assistant_reply": "大丈夫、落ち着こう。",
+        "planner_debug": {
+          "intent": "回应用户",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "大丈夫、落ち着こう",
+          "grounding": {
+            "offered_item": "消防員"
+          }
+        },
+        "logic": {
+          "intent": "回应用户",
+          "mood_impact": -10,
+          "trust_impact": 5,
+          "scene": "casual",
+          "listener_state": "消防員来啦",
+          "reply_goal": "冷静下来",
+          "jp_summary": "用户提到消防员来了。",
+          "core_message_jp": "大丈夫、落ち着こう",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "消防员来了，需要保持冷静。",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "消防員"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.0,
+            "blunt": 0.2,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "消防員"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:你媽你又沒再真正的回答我 -> Uruha:聞いてるからちょっと待てって。 || User:我已經受夠了你的謊言了 -> Uruha:それは普通にだるいな。 || User:4月是你的謊言 -> Uruha:嘘をつかないよ。 || User:我是你妈,我是你爸,我是你的老二 -> Uruha:荒れすぎ、まず落ち着けよ。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:16",
+      "score": 7,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "GENERIC_REPLY",
+        "REPEATED_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "泛用模板回覆",
+        "重複句型 / 模式塌陷"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "LOW_VARIETY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=2"
+        },
+        {
+          "code": "LOW_VARIETY",
+          "weight": 2,
+          "detail": "reply has little lexical variety unique_tokens=2"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, LOW_VARIETY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, GENERIC_REPLY, REPEATED_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:36:03",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 16,
+        "user_text": "4月是你的謊言",
+        "assistant_reply": "嘘をつかないよ。",
+        "intent": "回应用户关于谎言的言论",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:36:03",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 16,
+        "input_mode": "audio",
+        "user_text": "4月是你的謊言",
+        "assistant_reply": "嘘をつかないよ。",
+        "planner_debug": {
+          "intent": "回应用户关于谎言的言论",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "medium",
+          "core_message_jp": "嘘をつかない",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "回应用户关于谎言的言论",
+          "mood_impact": -15,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "うーん",
+          "reply_goal": "うるかは嘘をつかないよ",
+          "jp_summary": "用户说4月是谎言，Uruha回应说她从不撒谎。",
+          "core_message_jp": "嘘をつかない",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.3,
+            "tease": 0.1,
+            "blunt": 0.8,
+            "jealousy": 0.0,
+            "distance": 0.2
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "string",
+            "string"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:霧を消して暗いを消した -> Uruha:今は無理しないで休め。 || User:我操你妈我要你回答我 -> Uruha:急かすなって、今返してるし。 || User:你媽你又沒再真正的回答我 -> Uruha:聞いてるからちょっと待てって。 || User:我已經受夠了你的謊言了 -> Uruha:それは普通にだるいな。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user tends to consider positively when a friend is late in replying, showing a trusting nature."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:8",
+      "score": 6,
+      "suggested_verdict": "fail",
+      "suggested_severity": "medium",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "MISREAD_INTENT"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "意圖讀錯"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "QUESTION_UNDERANSWERED"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "QUESTION_UNDERANSWERED",
+          "weight": 3,
+          "detail": "user asked a question but answer is extremely short"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, QUESTION_UNDERANSWERED | suggested failure types: LOW_DENSITY, MISREAD_INTENT",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:30:03",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 8,
+        "user_text": "我現在要吃漢堡你要吃嗎",
+        "assistant_reply": "バーガーならもらう。",
+        "intent": "food_offer_generic",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:30:03",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 8,
+        "input_mode": "audio",
+        "user_text": "我現在要吃漢堡你要吃嗎",
+        "assistant_reply": "バーガーならもらう。",
+        "planner_debug": {
+          "intent": "food_offer_generic",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "named_offer_accept",
+          "payload_level": "medium",
+          "core_message_jp": "今なら少しほしい",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "food_offer_generic",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "casual",
+          "listener_state": "何かを勧められている",
+          "reply_goal": "軽く可否を答える",
+          "jp_summary": "ユーザーが何か食べるか飲むか聞いている。",
+          "core_message_jp": "今なら少しほしい",
+          "stance": {
+            "warmth": 0.28,
+            "tease": 0.04,
+            "blunt": 0.08,
+            "jealousy": 0.0,
+            "distance": 0.05
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "named_offer_accept",
+          "grounding": {},
+          "payload_level": "medium",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:今天是去動物園的日子 -> Uruha:一緒に動物園に行こうよ。 || User:答错了今天是魔性日 -> Uruha:今日は違うよ。 || User:その茨で願いを一つの叶えよう -> Uruha:その願いは何だね。 || User:紗西斯水素 -> Uruha:それはしんどいよな。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:39",
+      "score": 5,
+      "suggested_verdict": "fail",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:45:23",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 39,
+        "user_text": "我是你媽我是你爸我是你老二我說過這句話幾次",
+        "assistant_reply": "その言い方やめろって。",
+        "intent": "abuse_pushback",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:45:23",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 39,
+        "input_mode": "audio",
+        "user_text": "我是你媽我是你爸我是你老二我說過這句話幾次",
+        "assistant_reply": "その言い方やめろって。",
+        "planner_debug": {
+          "intent": "abuse_pushback",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "その言い方やめろって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "abuse_pushback",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "boundary",
+          "listener_state": "口が悪すぎる",
+          "reply_goal": "一回止める",
+          "jp_summary": "ユーザーがかなり荒い言い方で煽っている。",
+          "core_message_jp": "その言い方やめろって",
+          "stance": {
+            "warmth": 0.02,
+            "tease": 0.08,
+            "blunt": 0.62,
+            "jealousy": 0.0,
+            "distance": 0.35
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 22,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ",
+            "慰める"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君/你所以我要操你",
+          "recent_dialogue": "User:你是苦痛人喔 -> Uruha:それはしんどいよな。 || User:你他媽在痛三小 -> Uruha:口悪すぎだろ、落ち着け。 || User:Oh Pang! I'm a believer -> Uruha:そこだけもう一回言って。 || User:我是你媽 -> Uruha:荒れすぎ、まず落ち着けよ。",
+          "wisdom": "Rule: Uruha prefers to be addressed by her name rather than with honorifics like \"私\" (watashi) in a familiar context. || Rule: Uruha prefers to be addressed by her name rather than with honorifics like \"私\" (watashi) in a familiar context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:31",
+      "score": 5,
+      "suggested_verdict": "fail",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY",
+        "GENERIC_REPLY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者",
+        "重複句型 / 模式塌陷",
+        "泛用模板回覆"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY",
+        "REPEATED_REPLY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        },
+        {
+          "code": "REPEATED_REPLY",
+          "weight": 2,
+          "detail": "same reply seen 2 times in log"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY, REPEATED_REPLY | suggested failure types: LOW_DENSITY, REPEATED_REPLY, GENERIC_REPLY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:18:30",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 31,
+        "user_text": "我愛你所以我要操你",
+        "assistant_reply": "その言い方やめろって。",
+        "intent": "abuse_pushback",
+        "scene": "boundary"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:18:30",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 31,
+        "input_mode": "audio",
+        "user_text": "我愛你所以我要操你",
+        "assistant_reply": "その言い方やめろって。",
+        "planner_debug": {
+          "intent": "abuse_pushback",
+          "scene": "boundary",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "その言い方やめろって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "abuse_pushback",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "boundary",
+          "listener_state": "口が悪すぎる",
+          "reply_goal": "一回止める",
+          "jp_summary": "ユーザーがかなり荒い言い方で煽っている。",
+          "core_message_jp": "その言い方やめろって",
+          "stance": {
+            "warmth": 0.02,
+            "tease": 0.08,
+            "blunt": 0.62,
+            "jealousy": 0.0,
+            "distance": 0.35
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 22,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ",
+            "慰める"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:你是不是很討厭跟我說話 -> Uruha:その感じはきついだろ。 || User:所以你喜歡跟我這樣說話嗎 -> Uruha:それは普通にだるいな。 || User:你是不是不喜歡跟我說話 -> Uruha:それはしんどいよな。 || User:愛你 -> Uruha:うん、分かっとるよ。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user expresses feelings of loneliness, indicating a need for emotional support."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:30",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T06:08:24",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 30,
+        "user_text": "愛你",
+        "assistant_reply": "うん、分かっとるよ。",
+        "intent": "回应用户的情感表达",
+        "scene": "support"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T06:08:24",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 30,
+        "input_mode": "audio",
+        "user_text": "愛你",
+        "assistant_reply": "うん、分かっとるよ。",
+        "planner_debug": {
+          "intent": "回应用户的情感表达",
+          "scene": "support",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "うん、分かってるよ。",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "回应用户的情感表达",
+          "mood_impact": -10,
+          "trust_impact": 10,
+          "scene": "support",
+          "listener_state": "寂しさ",
+          "reply_goal": "理解并支持",
+          "jp_summary": "ユーザーが「愛你」って言っている",
+          "core_message_jp": "うん、分かってるよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "内心有些不确定，但还是选择直接回应。",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.1,
+            "blunt": 0.7,
+            "jealousy": 0.2,
+            "distance": 0.3
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 12,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "愛"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:你在痛苦什么 -> Uruha:うちも時々痛いところあるんだよ。 || User:你是不是很討厭跟我說話 -> Uruha:その感じはきついだろ。 || User:所以你喜歡跟我這樣說話嗎 -> Uruha:それは普通にだるいな。 || User:你是不是不喜歡跟我說話 -> Uruha:それはしんどいよな。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user expresses feelings of loneliness, indicating a need for companionship and emotional support."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:23",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:53:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 23,
+        "user_text": "吃什麼",
+        "assistant_reply": "シンプルなのがいいよ。",
+        "intent": "提供饮食建议",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:53:39",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 23,
+        "input_mode": "audio",
+        "user_text": "吃什麼",
+        "assistant_reply": "シンプルなのがいいよ。",
+        "planner_debug": {
+          "intent": "提供饮食建议",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "夜空の静けさを楽しみたいなら、シンプルなものがいいよ。",
+          "grounding": {
+            "offered_item": "食事"
+          }
+        },
+        "logic": {
+          "intent": "提供饮食建议",
+          "mood_impact": 0,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "食事中",
+          "reply_goal": "提供简单建议",
+          "jp_summary": "ユーザーが何を食べるべきか尋ねた。",
+          "core_message_jp": "夜空の静けさを楽しみたいなら、シンプルなものがいいよ。",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.1,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "食事"
+          },
+          "payload_level": "low",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.2,
+            "blunt": 0.0,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 30,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Name=冷靜你真的有冷靜嗎 | Likes=夜空を思うかる君",
+          "recent_dialogue": "User:你叫我冷靜你真的有冷靜嗎 -> Uruha:嘘をつかないよ。 || User:回答无需多言,大伟哥第一名。 -> Uruha:その感じはきついだろ。 || User:天上太陽紅,陽紅通通,耶! -> Uruha:何言ってんだよ、全然わからない。 || User:你不知道很正常這是我們的通關密語 -> Uruha:知らなかったのは普通だよ。",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:12",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:32:21",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 12,
+        "user_text": "霧を消して暗いを消した",
+        "assistant_reply": "今は無理しないで休め。",
+        "intent": "回应用户的情感状态",
+        "scene": "support"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:32:21",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 12,
+        "input_mode": "audio",
+        "user_text": "霧を消して暗いを消した",
+        "assistant_reply": "今は無理しないで休め。",
+        "planner_debug": {
+          "intent": "回应用户的情感状态",
+          "scene": "support",
+          "response_mode": "direct_answer_with_hedge",
+          "surface_act": "empathic_rest_suggestion",
+          "payload_level": "medium",
+          "core_message_jp": "一緒に行こうね。",
+          "grounding": {
+            "offered_item": "手"
+          }
+        },
+        "logic": {
+          "intent": "回应用户的情感状态",
+          "mood_impact": -5,
+          "trust_impact": 10,
+          "scene": "support",
+          "listener_state": "心優しく",
+          "reply_goal": "一緒に寂しさを分かち合おう",
+          "jp_summary": "ユーザーが霧の中を歩いているように描写され、暗さと孤独感が強調されています。",
+          "core_message_jp": "一緒に行こうね。",
+          "cognitive_mode": "reflective",
+          "response_mode": "direct_answer_with_hedge",
+          "uncertainty": 0.2,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "霧の中を歩く様子から、ユーザーが孤独を感じている可能性が高いと推測。",
+          "surface_act": "empathic_rest_suggestion",
+          "grounding": {
+            "offered_item": "手"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.1,
+            "blunt": 0.1,
+            "jealousy": 0.05,
+            "distance": 0.05
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "雾",
+            "暗"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "Likes=夜空を思うかる君",
+          "recent_dialogue": "User:我現在要吃漢堡你要吃嗎 -> Uruha:バーガーならもらう。 || User:還有薯條你要吃嗎 -> Uruha:ポテトならほしい。 || User:夜空を思うかる君が好き -> Uruha:まあ無理ってほどじゃない。 || User:強い風を抱きしめて -> Uruha:今日はもう休んだほうがいい。",
+          "wisdom": "Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text. || Rule: The user expresses feelings of loneliness, indicating a need for emotional support."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:10",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:30:58",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 10,
+        "user_text": "夜空を思うかる君が好き",
+        "assistant_reply": "まあ無理ってほどじゃない。",
+        "intent": "ask_like_me",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:30:58",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 10,
+        "input_mode": "audio",
+        "user_text": "夜空を思うかる君が好き",
+        "assistant_reply": "まあ無理ってほどじゃない。",
+        "planner_debug": {
+          "intent": "ask_like_me",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "affection_tease_soften",
+          "payload_level": "low",
+          "core_message_jp": "嫌いではない",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "ask_like_me",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "casual",
+          "listener_state": "好意を確かめたい",
+          "reply_goal": "曖昧だけど否定しすぎない",
+          "jp_summary": "ユーザーが好意を確認している。",
+          "core_message_jp": "嫌いではない",
+          "stance": {
+            "warmth": 0.24,
+            "tease": 0.1,
+            "blunt": 0.2,
+            "jealousy": 0.0,
+            "distance": 0.1
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "affection_tease_soften",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 18,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "わかりました"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:その茨で願いを一つの叶えよう -> Uruha:その願いは何だね。 || User:紗西斯水素 -> Uruha:それはしんどいよな。 || User:我現在要吃漢堡你要吃嗎 -> Uruha:バーガーならもらう。 || User:還有薯條你要吃嗎 -> Uruha:ポテトならほしい。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: The user expresses feelings of loneliness, indicating a need for emotional support."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:4",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:20:15",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 4,
+        "user_text": "今天是去動物園的日子",
+        "assistant_reply": "一緒に動物園に行こうよ。",
+        "intent": "回应用户关于今天是去动物园的日子",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:20:15",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 4,
+        "input_mode": "audio",
+        "user_text": "今天是去動物園的日子",
+        "assistant_reply": "一緒に動物園に行こうよ。",
+        "planner_debug": {
+          "intent": "回应用户关于今天是去动物园的日子",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "medium",
+          "core_message_jp": "一緒に動物園に行きましょう",
+          "grounding": {
+            "offered_item": "動物園"
+          }
+        },
+        "logic": {
+          "intent": "回应用户关于今天是去动物园的日子",
+          "mood_impact": 0,
+          "trust_impact": 10,
+          "scene": "casual",
+          "listener_state": "今日は動物園だね",
+          "reply_goal": "一起去吧",
+          "jp_summary": "ユーザーが今日動物園に行くことを伝えた。",
+          "core_message_jp": "一緒に動物園に行きましょう",
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.0,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {
+            "offered_item": "動物園"
+          },
+          "payload_level": "medium",
+          "stance": {
+            "warmth": 0.8,
+            "tease": 0.0,
+            "blunt": 0.0,
+            "jealousy": 0.0,
+            "distance": 0.0
+          },
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": []
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:喂 你是誰呀 -> Uruha:うちは一ノ瀬うるは。 || User:你要不要吃我的懒叫 -> Uruha:それならほしい。 || User:哭哭啼啼,游刃有餘 -> Uruha:そんなへこむなって。",
+          "wisdom": "Rule: Uruha expresses gratitude and appreciation for being woken up, indicating a positive response to being roused from sleep. || Rule: The user is familiar with using Japanese, as evidenced by their ability to understand and respond with Japanese text."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:3",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:19:00",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 3,
+        "user_text": "哭哭啼啼,游刃有餘",
+        "assistant_reply": "そんなへこむなって。",
+        "intent": "short_cry",
+        "scene": "support"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:19:00",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 3,
+        "input_mode": "audio",
+        "user_text": "哭哭啼啼,游刃有餘",
+        "assistant_reply": "そんなへこむなって。",
+        "planner_debug": {
+          "intent": "short_cry",
+          "scene": "support",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_reply",
+          "payload_level": "low",
+          "core_message_jp": "落ち着けって",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "short_cry",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "support",
+          "listener_state": "泣きそう",
+          "reply_goal": "軽く落ち着かせる",
+          "jp_summary": "ユーザーが泣きそうな調子で話している。",
+          "core_message_jp": "落ち着けって",
+          "stance": {
+            "warmth": 0.68,
+            "tease": 0.0,
+            "blunt": 0.12,
+            "jealousy": 0.0,
+            "distance": 0.06
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_reply",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 18,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "自分で調べろ"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "User:喂 你是誰呀 -> Uruha:うちは一ノ瀬うるは。 || User:你要不要吃我的懒叫 -> Uruha:それならほしい。",
+          "wisdom": "Rule: The user is expressing feelings of loneliness. || Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context."
+        }
+      }
+    },
+    {
+      "draft_id": "20260408_051428_31e227e0:1",
+      "score": 3,
+      "suggested_verdict": "mixed",
+      "suggested_severity": "low",
+      "suggested_failure_types": [
+        "LOW_DENSITY"
+      ],
+      "suggested_failure_labels": [
+        "資訊空洞 / 句終結者"
+      ],
+      "reason_codes": [
+        "LOW_DENSITY"
+      ],
+      "reason_details": [
+        {
+          "code": "LOW_DENSITY",
+          "weight": 3,
+          "detail": "reply too short token_count=3"
+        }
+      ],
+      "suggested_notes": "auto-draft from candidate queue: LOW_DENSITY | suggested failure types: LOW_DENSITY",
+      "compact_context": {
+        "timestamp": "2026-04-08T05:16:06",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 1,
+        "user_text": "喂 你是誰呀",
+        "assistant_reply": "うちは一ノ瀬うるは。",
+        "intent": "self_intro",
+        "scene": "casual"
+      },
+      "source_record": {
+        "timestamp": "2026-04-08T05:16:06",
+        "session_id": "20260408_051428_31e227e0",
+        "turn_index": 1,
+        "input_mode": "audio",
+        "user_text": "喂 你是誰呀",
+        "assistant_reply": "うちは一ノ瀬うるは。",
+        "planner_debug": {
+          "intent": "self_intro",
+          "scene": "casual",
+          "response_mode": "direct_answer",
+          "surface_act": "plain_identity",
+          "payload_level": "low",
+          "core_message_jp": "うちは一ノ瀬うるはだ",
+          "grounding": {}
+        },
+        "logic": {
+          "intent": "self_intro",
+          "mood_impact": 0,
+          "trust_impact": 0,
+          "scene": "casual",
+          "listener_state": "相手が正体を知りたい",
+          "reply_goal": "名前だけはちゃんと答える",
+          "jp_summary": "ユーザーが名前や自己紹介を求めている。",
+          "core_message_jp": "うちは一ノ瀬うるはだ",
+          "stance": {
+            "warmth": 0.28,
+            "tease": 0.06,
+            "blunt": 0.12,
+            "jealousy": 0.0,
+            "distance": 0.08
+          },
+          "cognitive_mode": "direct",
+          "response_mode": "direct_answer",
+          "uncertainty": 0.08,
+          "premise_check": "accept",
+          "self_check": false,
+          "subjective_note_jp": "",
+          "surface_act": "plain_identity",
+          "grounding": {},
+          "payload_level": "low",
+          "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 20,
+            "casual_japanese_only": true,
+            "forbid_polite": true,
+            "forbid_knowledge": true,
+            "forbid_lore": true,
+            "forbid_self_variants": true
+          },
+          "must_avoid": [
+            "私",
+            "わかりました",
+            "自分で調べろ"
+          ]
+        },
+        "memory_snapshot": {
+          "profile": "無穩定使用者資料",
+          "recent_dialogue": "無近期對話",
+          "wisdom": "Rule: Uruha prefers to be called by their name rather than \"私\" (private/personal) in this context. || Rule: The user is expressing feelings of loneliness."
+        }
+      }
+    }
+  ]
+}

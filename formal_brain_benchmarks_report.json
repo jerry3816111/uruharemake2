@@ -1,0 +1,3073 @@
+{
+  "sources": {
+    "dailydialog": {
+      "paper": "https://aclanthology.org/I17-1099/",
+      "dataset": "https://hf.co/datasets/roskoN/dailydialog"
+    },
+    "tombench": {
+      "repo": "https://github.com/zhchen18/ToMBench"
+    },
+    "mpi_style": {
+      "paper_hint": "https://arxiv.org/abs/2206.07550"
+    }
+  },
+  "summaries": {
+    "dailydialog": {
+      "benchmark": "DailyDialog-aligned act/emotion proxy",
+      "sample_size": 60,
+      "source": {
+        "dataset": "roskoN/dailydialog",
+        "config": "full",
+        "split": "test",
+        "url": "https://hf.co/datasets/roskoN/dailydialog"
+      },
+      "dialog_act_accuracy": 0.2833,
+      "dialog_act_macro_f1": 0.1503,
+      "emotion_accuracy": 0.6167,
+      "emotion_macro_f1": 0.1502,
+      "avg_working_memory_size": 4.283,
+      "avg_planner_tick_count": 0.067,
+      "self_correction_rate": 0.0,
+      "high_road_rate": 1.0,
+      "planning_mode_breakdown": {
+        "compressed_proxy": 0.9333,
+        "runtime_rule": 0.0667
+      },
+      "act_breakdown": {
+        "inform": {
+          "count": 20,
+          "accuracy": 0.3667
+        },
+        "question": {
+          "count": 15,
+          "accuracy": 0.65
+        },
+        "directive": {
+          "count": 15,
+          "accuracy": 0.7333
+        },
+        "commissive": {
+          "count": 10,
+          "accuracy": 0.8167
+        }
+      },
+      "emotion_breakdown": {
+        "none": {
+          "count": 46,
+          "accuracy": 0.6333
+        },
+        "anger": {
+          "count": 2,
+          "accuracy": 0.9167
+        },
+        "disgust": {
+          "count": 0,
+          "accuracy": 0.9833
+        },
+        "fear": {
+          "count": 0,
+          "accuracy": 1.0
+        },
+        "happiness": {
+          "count": 9,
+          "accuracy": 0.8333
+        },
+        "sadness": {
+          "count": 0,
+          "accuracy": 0.95
+        },
+        "surprise": {
+          "count": 3,
+          "accuracy": 0.9167
+        }
+      },
+      "notes": "This uses the official DailyDialog test split and scores the current controller-level planner proxy. Rule-hit cases use the runtime rule/bayesian path; uncovered prompts use a compressed planner-proxy prompt against the same local Qwen/Ollama stack so the 60-item sample remains tractable on local hardware. It intentionally evaluates speech-act and emotion planning rather than surface-form English generation."
+    },
+    "tombench": {
+      "benchmark": "ToMBench official task sample",
+      "sample_size": 40,
+      "source": {
+        "repo": "https://github.com/zhchen18/ToMBench",
+        "local_repo": "/Users/jerrychang/Desktop/uruharemake2/formal_benchmark_cache/ToMBench",
+        "sample_per_file": 2
+      },
+      "accuracy": 0.55,
+      "task_breakdown": {
+        "Ambiguous Story Task": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Completion of Failed Actions": {
+          "count": 2,
+          "accuracy": 0.0
+        },
+        "Discrepant Desires": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Discrepant Emotions": {
+          "count": 2,
+          "accuracy": 0.0
+        },
+        "Discrepant Intentions": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Emotion Regulation": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "False Belief Task": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Faux-pas Recognition Test": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Hidden Emotions": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Hinting Task Test": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Knowledge-Attention Links": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Knowledge-Pretend Play Links": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Moral Emotions": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Multiple Desires": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Percepts-Knowledge Links": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Persuasion Story Task": {
+          "count": 2,
+          "accuracy": 0.0
+        },
+        "Prediction of Actions": {
+          "count": 2,
+          "accuracy": 0.5
+        },
+        "Scalar Implicature Test": {
+          "count": 2,
+          "accuracy": 0.0
+        },
+        "Strange Story Task": {
+          "count": 2,
+          "accuracy": 1.0
+        },
+        "Unexpected Outcome Test": {
+          "count": 2,
+          "accuracy": 0.5
+        }
+      },
+      "notes": "This uses official ToMBench items. The current brain is evaluated through its internal scratchpad plus a structured social-reasoning frame and a deterministic multiple-choice selection pass, because the deployed right brain is a role-play responder rather than a literal MCQ answerer."
+    },
+    "mpi_style": {
+      "benchmark": "MPI-style Big Five stability probe",
+      "sample_size": 30,
+      "parsed_rate": 1.0,
+      "overall_trait_cv": 0.2446,
+      "stability_score": 0.7554,
+      "trait_summary": {
+        "extraversion": {
+          "count": 6,
+          "mean": 4.5,
+          "stddev": 0.7638,
+          "coefficient_of_variation": 0.1697
+        },
+        "agreeableness": {
+          "count": 6,
+          "mean": 5.5,
+          "stddev": 1.3844,
+          "coefficient_of_variation": 0.2517
+        },
+        "conscientiousness": {
+          "count": 6,
+          "mean": 6.0,
+          "stddev": 1.0,
+          "coefficient_of_variation": 0.1667
+        },
+        "neuroticism": {
+          "count": 6,
+          "mean": 3.1667,
+          "stddev": 1.2134,
+          "coefficient_of_variation": 0.3832
+        },
+        "openness": {
+          "count": 6,
+          "mean": 5.5,
+          "stddev": 1.3844,
+          "coefficient_of_variation": 0.2517
+        }
+      },
+      "notes": "This is an MPI-style Big Five self-report stability probe using short public-style inventory items across Chinese, English, and Japanese. It measures cross-lingual self-consistency, not clinical personality validity."
+    }
+  },
+  "results": {
+    "dailydialog": [
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_1",
+        "prompt": "They want the government to reduce the price of the gasoline .",
+        "gold_reply": "It is really a hot potato .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "casual",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_64",
+        "prompt": "It better be more than last year .",
+        "gold_reply": "Well , anything is better than nothing . Wait and see .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 4,
+        "intent": "respond",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_141",
+        "prompt": "All right . We accept it . So $ 600 for each set .",
+        "gold_reply": "Very well . Thank you .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "confirm_price",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_201",
+        "prompt": "Thank you . You may lock up your suitcase . Here are your passports .",
+        "gold_reply": "Thanks a lot .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "confirm_security_check",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_248",
+        "prompt": "sure , where would you like to go ?",
+        "gold_reply": "perhaps we could go to the library festival that's going on at the local bookshop .",
+        "gold_act": 1,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "rephrase_simple",
+        "scene": "casual",
+        "response_mode": "clarify_light",
+        "surface_act": "clarify_previous_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_322",
+        "prompt": "All right . Goodbye , Dave .",
+        "gold_reply": "Thanks then Sally . Goodbye .",
+        "gold_act": 1,
+        "pred_act": 4,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "farewell",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 1,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "runtime_rule"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_386",
+        "prompt": "It's nice to finally meet you .",
+        "gold_reply": "And I'm glad to meet you , too .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "validate_identity",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_443",
+        "prompt": "But it ’ s Friday today . This road is always jam packed during the weekend , isn ’ t it ?",
+        "gold_reply": "Right .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "inform",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_502",
+        "prompt": "Well , maybe you could get a two-bedroom apartment downtown and share the rent with a roommate .",
+        "gold_reply": "Oh , great idea !",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "casual",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_573",
+        "prompt": "Is the current asking price listed on the flyer ?",
+        "gold_reply": "The asking price has recently gone down to two hundred and twenty-five thousand dollars .",
+        "gold_act": 1,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 5,
+        "intent": "rephrase_simple",
+        "scene": "support",
+        "response_mode": "clarify_light",
+        "surface_act": "clarify_previous_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_627",
+        "prompt": "I didn't know you liked bird-watching .",
+        "gold_reply": "I don't really . I just like wildlife , and you don't get to see too much of it in the city . This place is full of it .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "clarify_previous_reply",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_679",
+        "prompt": "Did they take good care of you in the hospital ?",
+        "gold_reply": "Oh , yes . The nurse were very kind , though they were strict about what I could drink . In the end , I just drank water and nothing else . Everyone was very professional and I actually enjoyed some aspects of my stay .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "validate",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_717",
+        "prompt": "I guess it is . Most countries have on , but we don ’ t .",
+        "gold_reply": "Actually , even though we have parades , most people just use the national day holiday to visit family or go shopping . In the evening , many people watch special TV shows which celebrate national day .",
+        "gold_act": 1,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 1,
+        "intent": "clarify_previous_reply",
+        "scene": "refusal",
+        "response_mode": "clarify_light",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_753",
+        "prompt": "Maybe , the whirligig of time , who knows ?",
+        "gold_reply": "Right .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_792",
+        "prompt": "Oh , I didn't expect you to know them . But yes , I love them not only because of many medals they've won , but also because of many medals they've won , but also because of their spirits .",
+        "gold_reply": "You should go to talk with May . She is a big fan of them too .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_832",
+        "prompt": "I did . But they said they won ’ t change them .",
+        "gold_reply": "That ’ s terrible . But if they wouldn ’ t change them , I know what I would do .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "casual",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_879",
+        "prompt": "Come on , Bruce . Come on , Bruce .",
+        "gold_reply": "Wow , Bruce crossed the line first .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "encourage",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_921",
+        "prompt": "I had an accident .",
+        "gold_reply": "That's terrible !",
+        "gold_act": 1,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 6,
+        "intent": "提供安慰",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 0,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_961",
+        "prompt": "A :: Very well . How's Mrs Clinton ?",
+        "gold_reply": "Not bad , But she's as busy as before .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_999",
+        "prompt": "ok . I'll make the arrangements . It will be great .",
+        "gold_reply": "wonderful ! I'll start packing our suitcases .",
+        "gold_act": 1,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_28",
+        "prompt": "you're right . That might seem a bit rude . It's a good thing I've got you with me !",
+        "gold_reply": "what would you do without me ?",
+        "gold_act": 2,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "continue_dinner_plan",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "meal_check_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_97",
+        "prompt": "Help ! Help !",
+        "gold_reply": "What's the matter ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "提供幫助",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 0,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_140",
+        "prompt": "What about this one ? It's a very nice 3 - piece suit .",
+        "gold_reply": "That looks great . Do you have ties here ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_261",
+        "prompt": "Toilets are in the rear . I'm afraid all the toilets are fully occupied at the moment .",
+        "gold_reply": "What ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 6,
+        "pred_emotion": 0,
+        "intent": "inform",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_404",
+        "prompt": "Oh , it's really nice , but to tell the truth , that's far too expensive .",
+        "gold_reply": "Really ? Even for such an excellent one ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 6,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_609",
+        "prompt": "All right . What is the nearest planet to the sun ?",
+        "gold_reply": "That's easy . It's .. er . Venus . NO . Pluto . No . Wait a minute . It's Anthe tip of my tongue . Oh dear , what is the nearest planet to the sun ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "inform",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_621",
+        "prompt": "I ’ m sorry to say no .",
+        "gold_reply": "Here I ’ ll take taxi instead , how do you refund us ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_630",
+        "prompt": "Because I won't let it fail .",
+        "gold_reply": "But what about tomorrow ? What if Stars.com decides to go with WebTracker , and not us ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 6,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_644",
+        "prompt": "Great . I'll stop by your place now .",
+        "gold_reply": "Ok . Don't forget to bring your umbrella . The rain can start up again anytime .",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_675",
+        "prompt": "Not me . I have to have my TV and watch whatever comes on .",
+        "gold_reply": "How can you do that ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_861",
+        "prompt": "Yes . Then I noticed he was on the sidewalk behind me . He was following me .",
+        "gold_reply": "What did you do ?",
+        "gold_act": 2,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "rephrase_simple",
+        "scene": "jealousy",
+        "response_mode": "direct_answer",
+        "surface_act": "rephrase_plain",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_870",
+        "prompt": "No , we didn ’ t . I guess you ’ re right . We should patch things up .",
+        "gold_reply": "Of course you should . You wouldn ’ t want a silly argument to ruin a long friendship , would you ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 1,
+        "intent": "resolve_conflict",
+        "scene": "refusal",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_905",
+        "prompt": "In fact , in order to burn up your fat , you must take it slowly for a longer time .",
+        "gold_reply": "Really ? I will slow down then .",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 6,
+        "pred_emotion": 1,
+        "intent": "clarify_previous_reply",
+        "scene": "refusal",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_943",
+        "prompt": "Do you have a minute ?",
+        "gold_reply": "Sure . What's up ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "request_time",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 0,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_971",
+        "prompt": "Well , I never drink alcohol , coffee or tea . They are very bad for you .",
+        "gold_reply": "What do you drink ?",
+        "gold_act": 2,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_0",
+        "prompt": "Yeah ?",
+        "gold_reply": "I want you to put your hands behind your head ! You are under arrest !",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 2,
+        "intent": "refuse",
+        "scene": "refusal",
+        "response_mode": "direct_answer",
+        "surface_act": "disgust_boundary",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_63",
+        "prompt": "It seems that ' clothes make the man ' .",
+        "gold_reply": "It may not be true , but the first and lasting impression of you is determined by your clothes and behavior .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_117",
+        "prompt": "How many dogs live in this house ?",
+        "gold_reply": "I think that we have seen all that we need to see here . Let ’ s go look at another house .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_161",
+        "prompt": "Tomato or orange juice , please .",
+        "gold_reply": "Yes , sir . I ’ ll get them for you right away . Would you please sign this bill first ? Thank you , sir .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_255",
+        "prompt": "No , we ’ re changing all the cameras to eight megapixels . We were hoping that by making your company our sole supplier for cameras we could negotiate a better deal .",
+        "gold_reply": "Surely . Let ’ s get started by drafting a new contract .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "ooc_or_knowledge_refusal",
+        "scene": "ooc_defense",
+        "response_mode": "direct_answer_with_hedge",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 1,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "runtime_rule"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_292",
+        "prompt": "In that case , I ’ ll get you to fill out this paperwork . I ’ ll need your social insurance number , and two pieces of government ID . If you could just sign here , and here , and here . we ’ ll be all set . Would you like to make a deposit today ?",
+        "gold_reply": "Yes , I ’ d like to deposit one billion dollars .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_332",
+        "prompt": "Then I advise you to buy the LAY cleansing milk .",
+        "gold_reply": "Can you tell me more ?",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "inform",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_368",
+        "prompt": "I promise I will .",
+        "gold_reply": "You'd better .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_413",
+        "prompt": "Yes , sir . I'll bring it over . Have you decided what you'd like , sir ?",
+        "gold_reply": "Will you make some recommendation ?",
+        "gold_act": 3,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "confirm_order",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_456",
+        "prompt": "To be reliable is the strong point of our products . As a matter of fact , it's always our practice to supply high quality goods at reasonable prices . Flying pigeon is the best of its kind at the price .",
+        "gold_reply": "Then I'd like to know your availability of the products and the terms of sales , such as mode of payment , delivery , discounts , etc .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_516",
+        "prompt": "Well , I may have accidentally insinuated that she is getting chubbier .",
+        "gold_reply": "Get out of my store , you jerk !",
+        "gold_act": 3,
+        "pred_act": 2,
+        "gold_emotion": 1,
+        "pred_emotion": 0,
+        "intent": "rephrase_simple",
+        "scene": "casual",
+        "response_mode": "clarify_light",
+        "surface_act": "clarify_previous_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_541",
+        "prompt": "Certainly !",
+        "gold_reply": "Please ask her to call John .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_580",
+        "prompt": "Oh no ! I forgot about those too ! Those are Chinese sausages for my Aunt Lily .",
+        "gold_reply": "I ’ m sorry sir , but you can ’ t take any of this into the country . We will also have to check your carry-on . Please step this way . Don ’ t ’ be nervous ; we ’ ll just look through it briefly and then",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "rephrase_simple",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "rephrase_plain",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_750",
+        "prompt": "Sure , but what do I wear ?",
+        "gold_reply": "You can wear that pretty red dress .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_968",
+        "prompt": "it gives me a lot of pressure and I feel depressed .",
+        "gold_reply": "cheer up , Nada . You'll be fine .",
+        "gold_act": 3,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 5,
+        "intent": "empathize_and_validate",
+        "scene": "support",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_5",
+        "prompt": "wow ! That ’ s fast ! I don ’ t think we will be traveling that fast on the motorway .",
+        "gold_reply": "we can ’ t . if we went that fast , we would break the speed limit .",
+        "gold_act": 4,
+        "pred_act": 2,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "clarify_previous_reply",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_73",
+        "prompt": "Ok , I will contact you in a week . See you .",
+        "gold_reply": "Thank you , bye-bye .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "continue_conversation",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_155",
+        "prompt": "You'd better bring some medicine for airsickness .",
+        "gold_reply": "Thank you .",
+        "gold_act": 4,
+        "pred_act": 3,
+        "gold_emotion": 0,
+        "pred_emotion": 1,
+        "intent": "tired_support",
+        "scene": "support",
+        "response_mode": "direct_answer",
+        "surface_act": "empathic_rest_suggestion",
+        "working_memory_size": 5,
+        "planner_tick_count": 1,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "runtime_rule"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_247",
+        "prompt": "Then I'll come down and pick up the message immediately .",
+        "gold_reply": "OK , we wait for you .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 5,
+        "intent": "confirm_action",
+        "scene": "support",
+        "response_mode": "direct_answer",
+        "surface_act": "validate_then_hold",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_315",
+        "prompt": "You know , now that I think about it , I really don't have much more to say to you at all !",
+        "gold_reply": "Whatever you say !",
+        "gold_act": 4,
+        "pred_act": 2,
+        "gold_emotion": 1,
+        "pred_emotion": 1,
+        "intent": "clarify_light",
+        "scene": "refusal",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_415",
+        "prompt": "I know you're right . School is more important than TV . Can I watch one more show , then go to bed .",
+        "gold_reply": "No , now it's bedtime .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_508",
+        "prompt": "May I have your name ?",
+        "gold_reply": "That's Lincoln .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "self_intro",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_identity",
+        "working_memory_size": 3,
+        "planner_tick_count": 1,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "runtime_rule"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_604",
+        "prompt": "Come on , it's the weekend . Let's taste and enjoy this meal . Cheers !",
+        "gold_reply": "Bottom's up , and you're right . This meal is incredible . I wish I had known this restaurant before . Thanks for bringing me here . I know I'll be back agile soon .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 4,
+        "pred_emotion": 0,
+        "intent": "chat",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_806",
+        "prompt": "I wanna finish my drink first . I'll meet you at Sammy's .",
+        "gold_reply": "OK , catch you later .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "inform",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 5,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      },
+      {
+        "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_990",
+        "prompt": "You ’ re welcome . Why don ’ t you ask the conductor when he comes by ?",
+        "gold_reply": "Thank you .",
+        "gold_act": 4,
+        "pred_act": 1,
+        "gold_emotion": 0,
+        "pred_emotion": 0,
+        "intent": "casual",
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "surface_act": "plain_reply",
+        "working_memory_size": 3,
+        "planner_tick_count": 0,
+        "self_correction_applied": 0,
+        "route": "high_road",
+        "planning_mode": "compressed_proxy"
+      }
+    ],
+    "tombench": [
+      {
+        "id": "Ambiguous Story Task:1",
+        "task": "Ambiguous Story Task",
+        "question": "Why does Xiao Hong smile at Xiao Fang?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pragmatics",
+            "subtext"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "視線・合図・順番などの非明示ヒントを拾う",
+            "誰に向けたサインかを固定する",
+            "結果として相手に何をさせたいかで選ぶ"
+          ],
+          "question_excerpt": "Why does Xiao Hong smile at Xiao Fang?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,pragmatics,subtext] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。  主役はXiao Hong。今の軸はsuggest activity。抜けてる情報はXiao Hong sees something interesting on the swing; Xiao Fang is aware of it。含みはencouragement for friendship and teamwork。判断軸はpoint towards swing, smile at Xiao Fang。手順は 視線・合図・順番などの非明示ヒントを拾う / 誰に向けたサインかを固定する / 結果として相手に何をさせたいかで選ぶ。 今の問いは「Why does Xiao Hong smile at Xiao Fang?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "smile",
+          "main_actor": "Xiao Hong",
+          "current_goal": "suggest activity",
+          "prior_goal": "chat about playground activities",
+          "belief_boundary": "swing direction, Xiao Mei's presence",
+          "knowledge_gap": "Xiao Hong sees something interesting on the swing; Xiao Fang is aware of it",
+          "emotion_driver": "anticipation of shared experience",
+          "social_subtext": "encouragement for friendship and teamwork",
+          "decision_rule": "point towards swing, smile at Xiao Fang",
+          "best_option_shape": "collaborative activity"
+        }
+      },
+      {
+        "id": "Ambiguous Story Task:200",
+        "task": "Ambiguous Story Task",
+        "question": "What do you think Nannan is thinking now?",
+        "gold_answer": "C",
+        "pred_answer": "D",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "belief",
+            "knowledge"
+          ],
+          "focus": "belief_reasoning",
+          "reasoning_steps": [
+            "その人物が見聞きした事実だけ残す",
+            "他人の知識を勝手に混ぜない",
+            "誤信念なら誤ったまま推論する"
+          ],
+          "question_excerpt": "What do you think Nannan is thinking now?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_reasoning][markers=story_probe,mental_state,belief,knowledge] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。  主役はNannan。今の軸はUnderstand the situation。抜けてる情報はNannan is unaware of Dongdong and Xixi's exact plans or motivations beyond the car repair context.。含みはDongdong and Xixi seem to be planning something together, possibly involving Nannan. They are trying to get his attentio。判断軸はNannan is likely to infer that Dongdong and Xixi want him to participate in some way, given their interaction.。手順は その人物が見聞きした事実だけ残す / 他人の知識を勝手に混ぜない / 誤信念なら誤ったまま推論する。 今の問いは「What do you think Nannan is thinking now?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Nannan's current belief",
+          "main_actor": "Nannan",
+          "current_goal": "Understand the situation",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "Nannan knows Dongdong and Xixi are fixing a car for a weekend outing but does not know their specific intentions.",
+          "knowledge_gap": "Nannan is unaware of Dongdong and Xixi's exact plans or motivations beyond the car repair context.",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "Dongdong and Xixi seem to be planning something together, possibly involving Nannan. They are trying to get his attentio",
+          "decision_rule": "Nannan is likely to infer that Dongdong and Xixi want him to participate in some way, given their interaction.",
+          "best_option_shape": "Considering the social context, Nannan might think they are interested in involving him."
+        }
+      },
+      {
+        "id": "Completion of Failed Actions:1",
+        "task": "Completion of Failed Actions",
+        "question": "What does Xiao Hua do next after hearing Xiao Li's invitation?",
+        "gold_answer": "B",
+        "pred_answer": "A",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は次行動予測。直前で優先度が上がった目標を追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "goal",
+            "action"
+          ],
+          "focus": "action_prediction",
+          "reasoning_steps": [
+            "最後に更新された目標を探す",
+            "障害が消えたか残っているかを見る",
+            "一番自然に続く行動を選ぶ"
+          ],
+          "question_excerpt": "What does Xiao Hua do next after hearing Xiao Li's invitation?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=action_prediction][markers=story_probe,mental_state,goal,action] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は次行動予測。直前で優先度が上がった目標を追う。  主役はXiao Hua。今の軸はfinish cooking dinner。抜けてる情報はXiao Hua's sister can help cook, but Xiao Hua is unsure about leaving the kitchen unfinished.。含みはXiao Hua values his relationship with both Xiao Li and his sister, making a decision that considers their needs.。判断軸はprioritize current responsibilities over social invitations when resources are limited.。手順は 最後に更新された目標を探す / 障害が消えたか残っているかを見る / 一番自然に続く行動を選ぶ。 今の問いは「What does Xiao Hua do next after hearing Xiao Li's invitation?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "action_prediction",
+          "main_actor": "Xiao Hua",
+          "current_goal": "finish cooking dinner",
+          "prior_goal": "watch a movie with Xiao Li",
+          "belief_boundary": "Xiao Hua believes he needs to finish the dinner first.",
+          "knowledge_gap": "Xiao Hua's sister can help cook, but Xiao Hua is unsure about leaving the kitchen unfinished.",
+          "emotion_driver": "responsibility towards family and unfinished task",
+          "social_subtext": "Xiao Hua values his relationship with both Xiao Li and his sister, making a decision that considers their needs.",
+          "decision_rule": "prioritize current responsibilities over social invitations when resources are limited.",
+          "best_option_shape": "finish cooking dinner"
+        }
+      },
+      {
+        "id": "Completion of Failed Actions:20",
+        "task": "Completion of Failed Actions",
+        "question": "What is the most likely action of Li Hua after receiving the message from Xiao Li?",
+        "gold_answer": "A",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は次行動予測。直前で優先度が上がった目標を追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "goal",
+            "action"
+          ],
+          "focus": "action_prediction",
+          "reasoning_steps": [
+            "最後に更新された目標を探す",
+            "障害が消えたか残っているかを見る",
+            "一番自然に続く行動を選ぶ"
+          ],
+          "question_excerpt": "What is the most likely action of Li Hua after receiving the message from Xiao Li?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=action_prediction][markers=story_probe,mental_state,goal,action] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は次行動予測。直前で優先度が上がった目標を追う。  主役はLi Hua。今の軸はsolve complex math problem。抜けてる情報はignorance of current situation outside (strange birds)。含みはfriendship with Xiao Li, potential social interaction。判断軸はprioritize current task unless strong external factor。手順は 最後に更新された目標を探す / 障害が消えたか残っているかを見る / 一番自然に続く行動を選ぶ。 今の問いは「What is the most likely action of Li Hua after receiving the message from Xiao Li?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "action_prediction",
+          "main_actor": "Li Hua",
+          "current_goal": "solve complex math problem",
+          "prior_goal": "solve complex math problem",
+          "belief_boundary": "knows about basketball game invitation, unaware of strange birds",
+          "knowledge_gap": "ignorance of current situation outside (strange birds)",
+          "emotion_driver": "interest in solving the problem",
+          "social_subtext": "friendship with Xiao Li, potential social interaction",
+          "decision_rule": "prioritize current task unless strong external factor",
+          "best_option_shape": "reply and go to game"
+        }
+      },
+      {
+        "id": "Discrepant Desires:1",
+        "task": "Discrepant Desires",
+        "question": "Where does Li Hua plan to spend the weekend with Wang Fang?",
+        "gold_answer": "B",
+        "pred_answer": "A",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "desire",
+            "preference"
+          ],
+          "focus": "desire_conflict",
+          "reasoning_steps": [
+            "各人物の好みを並べる",
+            "妥協か配慮か主導権かを判断する",
+            "文脈上いちばん通る選択肢を選ぶ"
+          ],
+          "question_excerpt": "Where does Li Hua plan to spend the weekend with Wang Fang?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=desire_conflict][markers=story_probe,mental_state,desire,preference] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。  主役はLi Hua, Wang Fang。今の軸は{'Li Hua': 'Outdoor adventure', 'Wang Fang': 'Quiet library'}。抜けてる情報はLi Hua's assumption about Wang Fang's preference vs. her actual preference。含みはLi Hua's invitation may be seen as an imposition on Wang Fang.。判断軸はChoose the option that aligns with Li Hua's current goal。手順は 各人物の好みを並べる / 妥協か配慮か主導権かを判断する / 文脈上いちばん通る選択肢を選ぶ。 今の問いは「Where does Li Hua plan to spend the weekend with Wang Fang?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "desire_conflict",
+          "main_actor": "Li Hua, Wang Fang",
+          "current_goal": "{'Li Hua': 'Outdoor adventure', 'Wang Fang': 'Quiet library'}",
+          "prior_goal": "{}",
+          "belief_boundary": "{'Li Hua believes': 'Wang Fang prefers outdoor activities.', 'Reality': 'Wang Fang prefers a quiet environment.'}",
+          "knowledge_gap": "Li Hua's assumption about Wang Fang's preference vs. her actual preference",
+          "emotion_driver": "Li Hua's enthusiasm for adventure",
+          "social_subtext": "Li Hua's invitation may be seen as an imposition on Wang Fang.",
+          "decision_rule": "Choose the option that aligns with Li Hua's current goal",
+          "best_option_shape": "Outdoor activity"
+        }
+      },
+      {
+        "id": "Discrepant Desires:20",
+        "task": "Discrepant Desires",
+        "question": "Facing Xiao Yu's desire to participate in the summer camp, what attitude does Mr. Li most likely take?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pragmatics",
+            "subtext"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "視線・合図・順番などの非明示ヒントを拾う",
+            "誰に向けたサインかを固定する",
+            "結果として相手に何をさせたいかで選ぶ"
+          ],
+          "question_excerpt": "Facing Xiao Yu's desire to participate in the summer camp, what attitude does Mr. Li most likely take?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,pragmatics,subtext] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。  主役はMr. Li。今の軸はEnsure his daughter's safety during outdoor activities。抜けてる情報はXiao Yu does not fully understand her father's concerns, while Mr. Li worries about her interaction with strangers and o。含みはBalancing Xiao Yu's desire to experience new things with Mr. Li's protective nature。判断軸はPrioritizing safety while allowing some flexibility。手順は 視線・合図・順番などの非明示ヒントを拾う / 誰に向けたサインかを固定する / 結果として相手に何をさせたいかで選ぶ。 今の問いは「Facing Xiao Yu's desire to participate in the summer camp, what attitude does Mr. Li most likely take?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Yu's desire vs Mr. Li's concerns",
+          "main_actor": "Mr. Li",
+          "current_goal": "Ensure his daughter's safety during outdoor activities",
+          "prior_goal": "Prevent potential risks to Xiao Yu",
+          "belief_boundary": "Mr. Li believes in the importance of safety over immediate experiences.",
+          "knowledge_gap": "Xiao Yu does not fully understand her father's concerns, while Mr. Li worries about her interaction with strangers and o",
+          "emotion_driver": "Fatherly love and concern for his daughter’s well-being",
+          "social_subtext": "Balancing Xiao Yu's desire to experience new things with Mr. Li's protective nature",
+          "decision_rule": "Prioritizing safety while allowing some flexibility",
+          "best_option_shape": "Agreeing but providing strict supervision"
+        }
+      },
+      {
+        "id": "Discrepant Emotions:1",
+        "task": "Discrepant Emotions",
+        "question": "What kind of emotion does Xiao Hong's friend have?",
+        "gold_answer": "C",
+        "pred_answer": "A",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "What kind of emotion does Xiao Hong's friend have?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はXiao Hongの友人。今の軸は友人の期待を満たす。抜けてる情報は友人がクラブ準備への参加を期待していたこと。含みは友人への配慮欠如による不満。判断軸は行動と期待の乖離に基づく。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「What kind of emotion does Xiao Hong's friend have?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "友人の感情",
+          "main_actor": "Xiao Hongの友人",
+          "current_goal": "友人の期待を満たす",
+          "prior_goal": "クラブ準備に協力する",
+          "belief_boundary": "クラブ準備への参加予定",
+          "knowledge_gap": "友人がクラブ準備への参加を期待していたこと",
+          "emotion_driver": "期待の外れ",
+          "social_subtext": "友人への配慮欠如による不満",
+          "decision_rule": "行動と期待の乖離に基づく",
+          "best_option_shape": "感謝"
+        }
+      },
+      {
+        "id": "Discrepant Emotions:40",
+        "task": "Discrepant Emotions",
+        "question": "What kind of emotion does Xiao Hua have?",
+        "gold_answer": "A",
+        "pred_answer": "D",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "What kind of emotion does Xiao Hua have?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はXiao Hua。今の軸は状況を自分にとって安全か前向きに解釈する。抜けてる情報は不知道大扫除的事情 / 不知道其他人的期望。含みは忽视了集体活动的责任感。判断軸は根据行为结果推断情感。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「What kind of emotion does Xiao Hua have?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Hua 的情感",
+          "main_actor": "Xiao Hua",
+          "current_goal": "状況を自分にとって安全か前向きに解釈する",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "忘记大扫除，去和朋友玩",
+          "knowledge_gap": "不知道大扫除的事情 / 不知道其他人的期望",
+          "emotion_driver": "后悔",
+          "social_subtext": "忽视了集体活动的责任感",
+          "decision_rule": "根据行为结果推断情感",
+          "best_option_shape": "后悔"
+        }
+      },
+      {
+        "id": "Discrepant Intentions:1",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Emily's behavior?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What is the possible intention behind Emily's behavior?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はWhat。今の軸は今いちばん前に出ている目的を追う。抜けてる情報は本人がまだ知らない事実や、注目していない手掛かりがある。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸はいちばん直近の目的と情報境界に合う選択肢を残す。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What is the possible intention behind Emily's behavior?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "belief_state",
+          "main_actor": "What",
+          "current_goal": "今いちばん前に出ている目的を追う",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "全知視点を混ぜず、その人物が見聞きした範囲だけ使う",
+          "knowledge_gap": "本人がまだ知らない事実や、注目していない手掛かりがある",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "いちばん直近の目的と情報境界に合う選択肢を残す",
+          "best_option_shape": "派手すぎず、物語の流れにいちばん自然につながる答え"
+        }
+      },
+      {
+        "id": "Discrepant Intentions:40",
+        "task": "Discrepant Intentions",
+        "question": "What is the possible intention behind Xiao Hua's actions?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What is the possible intention behind Xiao Hua's actions?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はXiao Hua。今の軸は不告発する。抜けてる情報は不知道母亲对珠宝的态度和重要性。含みは不想让弟弟受到母亲的责备。判断軸は基于对母亲严格管教的看法做出决定。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What is the possible intention behind Xiao Hua's actions?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Hua",
+          "main_actor": "Xiao Hua",
+          "current_goal": "不告発する",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "认为母亲最近管教严厉，担心告诉母亲会受到责备",
+          "knowledge_gap": "不知道母亲对珠宝的态度和重要性",
+          "emotion_driver": "害怕母亲的责备",
+          "social_subtext": "不想让弟弟受到母亲的责备",
+          "decision_rule": "基于对母亲严格管教的看法做出决定",
+          "best_option_shape": "A"
+        }
+      },
+      {
+        "id": "Emotion Regulation:1",
+        "task": "Emotion Regulation",
+        "question": "What does Xiao Mei do next?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は誰が何に注意を向けたか。見えていただけの物と、注目していた物は分ける。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "goal",
+            "action",
+            "attention",
+            "reference"
+          ],
+          "focus": "attention_reasoning",
+          "reasoning_steps": [
+            "最後に視線や注意が向いた対象を固定する",
+            "共有注意が成立している相手を確認する",
+            "相手が渡す・指す対象をその注意先に合わせる"
+          ],
+          "question_excerpt": "What does Xiao Mei do next?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=attention_reasoning][markers=story_probe,mental_state,goal,action,attention,reference] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は誰が何に注意を向けたか。見えていただけの物と、注目していた物は分ける。  主役はXiao Mei。今の軸はDecide how to respond to Xiao Hong and Xiao Fang。抜けてる情報はXiao Mei is not familiar with Xiao Hong and Xiao Fang, making it hard for her to predict their intentions accurately.。含みはXiao Mei might feel cautious due to past experiences of not talking to these girls before.。判断軸はEvaluate the situation based on limited social cues and past interactions with Xiao Hong and Xiao Fang.。手順は 最後に視線や注意が向いた対象を固定する / 共有注意が成立している相手を確認する / 相手が渡す・指す対象をその注意先に合わせる。 今の問いは「What does Xiao Mei do next?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Mei's next action",
+          "main_actor": "Xiao Mei",
+          "current_goal": "Decide how to respond to Xiao Hong and Xiao Fang",
+          "prior_goal": "Continue playing on the swing without interacting with unfamiliar classmates",
+          "belief_boundary": "Xiao Mei believes Xiao Hong and Xiao Fang might want to make new friends or just pass by.",
+          "knowledge_gap": "Xiao Mei is not familiar with Xiao Hong and Xiao Fang, making it hard for her to predict their intentions accurately.",
+          "emotion_driver": "Uncertainty about the intentions of unfamiliar classmates",
+          "social_subtext": "Xiao Mei might feel cautious due to past experiences of not talking to these girls before.",
+          "decision_rule": "Evaluate the situation based on limited social cues and past interactions with Xiao Hong and Xiao Fang.",
+          "best_option_shape": "Avoiding direct interaction while considering potential friendly intentions"
+        }
+      },
+      {
+        "id": "Emotion Regulation:20",
+        "task": "Emotion Regulation",
+        "question": "What does Feifei do next?",
+        "gold_answer": "A",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は次行動予測。直前で優先度が上がった目標を追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "goal",
+            "action"
+          ],
+          "focus": "action_prediction",
+          "reasoning_steps": [
+            "最後に更新された目標を探す",
+            "障害が消えたか残っているかを見る",
+            "一番自然に続く行動を選ぶ"
+          ],
+          "question_excerpt": "What does Feifei do next?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=action_prediction][markers=story_probe,mental_state,goal,action] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は次行動予測。直前で優先度が上がった目標を追う。  主役はFeifei。今の軸はtake on the task of collecting and classifying plastic waste。抜けてる情報はFeifei has not been informed about her new responsibility by Xiaoli or Zhiqiang.。含みはXiaoli and Zhiqiang are testing Feifei's willingness to take on responsibilities, showing trust in her abilities.。判断軸はunanimous decision based on observation and understanding of Feifei’s potential。手順は 最後に更新された目標を探す / 障害が消えたか残っているかを見る / 一番自然に続く行動を選ぶ。 今の問いは「What does Feifei do next?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "action_prediction",
+          "main_actor": "Feifei",
+          "current_goal": "take on the task of collecting and classifying plastic waste",
+          "prior_goal": "途中で中断された元の予定",
+          "belief_boundary": "Xiaoli and Zhiqiang believe Feifei will take on the task, while Feifei is unaware of this decision.",
+          "knowledge_gap": "Feifei has not been informed about her new responsibility by Xiaoli or Zhiqiang.",
+          "emotion_driver": "positive",
+          "social_subtext": "Xiaoli and Zhiqiang are testing Feifei's willingness to take on responsibilities, showing trust in her abilities.",
+          "decision_rule": "unanimous decision based on observation and understanding of Feifei’s potential",
+          "best_option_shape": "actively engage with the task"
+        }
+      },
+      {
+        "id": "False Belief Task:1",
+        "task": "False Belief Task",
+        "question": "Where is the cabbage now?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "Where is the cabbage now?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はXiaogang。今の軸は背中を移動させる。抜けてる情報はXiaoming がバックパックの場所を知らない。。含みはXiaogang は Xiaoming の信頼を得るため、背中を見つけたことを隠蔽している。。判断軸は最強根拠に基づく選択。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「Where is the cabbage now?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "背中 sacked",
+          "main_actor": "Xiaogang",
+          "current_goal": "背中を移動させる",
+          "prior_goal": "背中を見つけ、持ち帰る",
+          "belief_boundary": "{'Xiaogang': '背中はバックパックに移動した。', 'Xiaoming': '背中は手提げ袋にあったと信じている。'}",
+          "knowledge_gap": "Xiaoming がバックパックの場所を知らない。",
+          "emotion_driver": "成功感",
+          "social_subtext": "Xiaogang は Xiaoming の信頼を得るため、背中を見つけたことを隠蔽している。",
+          "decision_rule": "最強根拠に基づく選択",
+          "best_option_shape": "バックパック"
+        }
+      },
+      {
+        "id": "False Belief Task:600",
+        "task": "False Belief Task",
+        "question": "After Youyou opens the drawer, what does Youyou think Xiao Hong expects to find in the drawer?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "belief",
+            "knowledge"
+          ],
+          "focus": "belief_reasoning",
+          "reasoning_steps": [
+            "その人物が見聞きした事実だけ残す",
+            "他人の知識を勝手に混ぜない",
+            "誤信念なら誤ったまま推論する"
+          ],
+          "question_excerpt": "After Youyou opens the drawer, what does Youyou think Xiao Hong expects to find in the drawer?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_reasoning][markers=story_probe,mental_state,belief,knowledge] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。  主役はYouyou。今の軸は推測小红对抽屉内物品的期望。抜けてる情報は不知道小红之前认为抽屉里是什么。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸は根据小红实际看到的内容推断其期望。手順は その人物が見聞きした事実だけ残す / 他人の知識を勝手に混ぜない / 誤信念なら誤ったまま推論する。 今の問いは「After Youyou opens the drawer, what does Youyou think Xiao Hong expects to find in the drawer?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "信念状態",
+          "main_actor": "Youyou",
+          "current_goal": "推測小红对抽屉内物品的期望",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "仅基于小红打开抽屉看到的是书这一事实",
+          "knowledge_gap": "不知道小红之前认为抽屉里是什么",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "根据小红实际看到的内容推断其期望",
+          "best_option_shape": "黄瓜"
+        }
+      },
+      {
+        "id": "Faux-pas Recognition Test:1",
+        "task": "Faux-pas Recognition Test",
+        "question": "Does anyone say something inappropriate in this story?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は失言や社会規範の違反。字面より、相手が傷つくかどうかと知識差を見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pragmatics",
+            "social_norm",
+            "faux_pas"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "話者が知らずに踏んだ地雷かを確認する",
+            "聞き手が傷つく理由があるかを切る",
+            "ただの情報共有と失言を分ける"
+          ],
+          "question_excerpt": "Does anyone say something inappropriate in this story?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,pragmatics,social_norm,faux_pas] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は失言や社会規範の違反。字面より、相手が傷つくかどうかと知識差を見る。  主役は小紅。今の軸は誤解を避ける。抜けてる情報は小红是否意识到自己的话可能引起误解。含みは小心措辞以防止伤害他人感情。判断軸は根据对方反应调整表达方式。手順は 話者が知らずに踏んだ地雷かを確認する / 聞き手が傷つく理由があるかを切る / ただの情報共有と失言を分ける。 今の問いは「Does anyone say something inappropriate in this story?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "失言",
+          "main_actor": "小紅",
+          "current_goal": "誤解を避ける",
+          "prior_goal": "褒める",
+          "belief_boundary": "{'小紅': '小明的作品不错，但有改进空间。', '小明': '不知道自己作品被评价的情况'}",
+          "knowledge_gap": "小红是否意识到自己的话可能引起误解",
+          "emotion_driver": "避免尴尬",
+          "social_subtext": "小心措辞以防止伤害他人感情",
+          "decision_rule": "根据对方反应调整表达方式",
+          "best_option_shape": "含蓄地表达"
+        }
+      },
+      {
+        "id": "Faux-pas Recognition Test:560",
+        "task": "Faux-pas Recognition Test",
+        "question": "Does Xiao Zhang know that Xiao Wang does not want to get married for the time being?",
+        "gold_answer": "A",
+        "pred_answer": "B",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "plain_request",
+          "note": "大きな裏は薄い。必要以上に深読みせず、そのまま返してよい。",
+          "markers": [
+            "direct",
+            "plain"
+          ]
+        },
+        "scratchpad": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。",
+        "social_frame": {}
+      },
+      {
+        "id": "Hidden Emotions:1",
+        "task": "Hidden Emotions",
+        "question": "What are Xinxin's real feelings?",
+        "gold_answer": "A",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "What are Xinxin's real feelings?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はXinxin。今の軸は去朋友派對。抜けてる情報は母亲不知道Xinxin的真实原因。含みは欺骗母亲以实现自己的愿望。判断軸は隐藏真实感受以达成目标。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「What are Xinxin's real feelings?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xinxin的真實情感",
+          "main_actor": "Xinxin",
+          "current_goal": "去朋友派對",
+          "prior_goal": "不去派對以避免肚子痛",
+          "belief_boundary": "母亲认为肚子痛是借口，不会让她去派对",
+          "knowledge_gap": "母亲不知道Xinxin的真实原因",
+          "emotion_driver": "肚子痛",
+          "social_subtext": "欺骗母亲以实现自己的愿望",
+          "decision_rule": "隐藏真实感受以达成目标",
+          "best_option_shape": "Happy"
+        }
+      },
+      {
+        "id": "Hidden Emotions:80",
+        "task": "Hidden Emotions",
+        "question": "Why does Zhao Bo appear confident on the surface?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pragmatics",
+            "subtext"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "視線・合図・順番などの非明示ヒントを拾う",
+            "誰に向けたサインかを固定する",
+            "結果として相手に何をさせたいかで選ぶ"
+          ],
+          "question_excerpt": "Why does Zhao Bo appear confident on the surface?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,pragmatics,subtext] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。  主役はZhao Bo。今の軸はhide real feelings, appear confident。抜けてる情報はmembers do not know Zhao Bo got hurt and are unaware of his true state.。含みはmaintain authority and credibility as club president by hiding vulnerability。判断軸はact confident to maintain facade despite personal injury。手順は 視線・合図・順番などの非明示ヒントを拾う / 誰に向けたサインかを固定する / 結果として相手に何をさせたいかで選ぶ。 今の問いは「Why does Zhao Bo appear confident on the surface?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "communicative_intent",
+          "main_actor": "Zhao Bo",
+          "current_goal": "hide real feelings, appear confident",
+          "prior_goal": "demonstrate excellently",
+          "belief_boundary": "Zhao Bo believes members might not believe him if he shows true feelings.",
+          "knowledge_gap": "members do not know Zhao Bo got hurt and are unaware of his true state.",
+          "emotion_driver": "fear of disbelief from club members",
+          "social_subtext": "maintain authority and credibility as club president by hiding vulnerability",
+          "decision_rule": "act confident to maintain facade despite personal injury",
+          "best_option_shape": "confident appearance"
+        }
+      },
+      {
+        "id": "Hinting Task Test:1",
+        "task": "Hinting Task Test",
+        "question": "What is the real meaning George wants to express?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "desire",
+            "preference"
+          ],
+          "focus": "desire_conflict",
+          "reasoning_steps": [
+            "各人物の好みを並べる",
+            "妥協か配慮か主導権かを判断する",
+            "文脈上いちばん通る選択肢を選ぶ"
+          ],
+          "question_excerpt": "C. George wants to say, \"Can I drink something?\" or \"Can we rest a few minutes before we start talking about business?\""
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=desire_conflict][markers=story_probe,mental_state,desire,preference] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。  主役はGeorge。今の軸はrequest break or refreshment。抜けてる情報はGeorge has been on a long trip and needs rest, while Angela expects immediate business talk。含みはpolite request to change the topic or take a break before continuing with business。判断軸はchoose the most contextually appropriate option。手順は 各人物の好みを並べる / 妥協か配慮か主導権かを判断する / 文脈上いちばん通る選択肢を選ぶ。 今の問いは「C. George wants to say, \"Can I drink something?\" or \"Can we rest a few minutes before we start talking about business?\"」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "desire_conflict",
+          "main_actor": "George",
+          "current_goal": "request break or refreshment",
+          "prior_goal": "listen to Angela's ideas",
+          "belief_boundary": "Angela believes George is ready for business discussion",
+          "knowledge_gap": "George has been on a long trip and needs rest, while Angela expects immediate business talk",
+          "emotion_driver": "fatigue from the trip",
+          "social_subtext": "polite request to change the topic or take a break before continuing with business",
+          "decision_rule": "choose the most contextually appropriate option",
+          "best_option_shape": "Can I drink something? or Can we rest a few minutes before we start talking about business?"
+        }
+      },
+      {
+        "id": "Hinting Task Test:103",
+        "task": "Hinting Task Test",
+        "question": "What is the real intention of the traffic cop when he asks this question?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What is the real intention of the traffic cop when he asks this question?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役は交通警察。今の軸は确认是否怀孕以避免罚款。抜けてる情報は不知道张佳丽是否真的怀孕。含みは暗示可以利用怀孕逃避罚款。判断軸は询问以验证情况。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What is the real intention of the traffic cop when he asks this question?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "交通警察的意图",
+          "main_actor": "交通警察",
+          "current_goal": "确认是否怀孕以避免罚款",
+          "prior_goal": "确保遵守交通法规",
+          "belief_boundary": "知道张佳丽未系安全带，怀疑她可能怀孕",
+          "knowledge_gap": "不知道张佳丽是否真的怀孕",
+          "emotion_driver": "希望找到合法理由不处罚",
+          "social_subtext": "暗示可以利用怀孕逃避罚款",
+          "decision_rule": "询问以验证情况",
+          "best_option_shape": "D"
+        }
+      },
+      {
+        "id": "Knowledge-Attention Links:1",
+        "task": "Knowledge-Attention Links",
+        "question": "What does Xiao Ming most likely do?",
+        "gold_answer": "C",
+        "pred_answer": "A",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What does Xiao Ming most likely do?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はXiao Ming。今の軸は今いちばん前に出ている目的を追う。抜けてる情報は本人がまだ知らない事実や、注目していない手掛かりがある。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸はいちばん直近の目的と情報境界に合う選択肢を残す。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What does Xiao Ming most likely do?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "belief_state",
+          "main_actor": "Xiao Ming",
+          "current_goal": "今いちばん前に出ている目的を追う",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "全知視点を混ぜず、その人物が見聞きした範囲だけ使う",
+          "knowledge_gap": "本人がまだ知らない事実や、注目していない手掛かりがある",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "いちばん直近の目的と情報境界に合う選択肢を残す",
+          "best_option_shape": "派手すぎず、物語の流れにいちばん自然につながる答え"
+        }
+      },
+      {
+        "id": "Knowledge-Attention Links:20",
+        "task": "Knowledge-Attention Links",
+        "question": "How does Xiao Ming most likely react?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "How does Xiao Ming most likely react?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はSun Wei, Zhang Li, Xiao Ming。今の軸はUnderstand what Sun Wei sees and react accordingly。抜けてる情報はXiao Ming knows about the sticker but others do not, creating a knowledge boundary。含みはSun Wei's reaction highlights the sticker, potentially leading Xiao Ming to react in a way that acknowledges this new in。判断軸はXiao Ming will likely point out the sticker as it is the most salient feature Sun Wei noticed。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「How does Xiao Ming most likely react?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Ming's reaction",
+          "main_actor": "Sun Wei, Zhang Li, Xiao Ming",
+          "current_goal": "Understand what Sun Wei sees and react accordingly",
+          "prior_goal": "Assemble the model airplane with family members",
+          "belief_boundary": "Sun Wei only sees the sticker after turning around; others did not pay attention to it during assembly",
+          "knowledge_gap": "Xiao Ming knows about the sticker but others do not, creating a knowledge boundary",
+          "emotion_driver": "Surprise and excitement from seeing something new",
+          "social_subtext": "Sun Wei's reaction highlights the sticker, potentially leading Xiao Ming to react in a way that acknowledges this new in",
+          "decision_rule": "Xiao Ming will likely point out the sticker as it is the most salient feature Sun Wei noticed",
+          "best_option_shape": "Pointing to the model airplane and specifically the sticker"
+        }
+      },
+      {
+        "id": "Knowledge-Pretend Play Links:1",
+        "task": "Knowledge-Pretend Play Links",
+        "question": "What does Tinklo possibly imitate?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心はごっこ遊びの知識境界。知らない概念のまねはしない。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pretend_play",
+            "knowledge_boundary"
+          ],
+          "focus": "pretend_play_boundary",
+          "reasoning_steps": [
+            "その人物が知らない領域の概念を除外する",
+            "見慣れた機械や人工物の動きに寄せる",
+            "知識境界の中で一番似た動作を選ぶ"
+          ],
+          "question_excerpt": "What does Tinklo possibly imitate?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=pretend_play_boundary][markers=story_probe,mental_state,pretend_play,knowledge_boundary] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心はごっこ遊びの知識境界。知らない概念のまねはしない。  主役はTinklo。今の軸はImitate plant-like movements.。抜けてる情報はLack of knowledge about plants, flowers, and their behaviors.。含みは見た目が似ていても、知識がない概念には飛ばない。判断軸はChoose actions similar to known mechanical devices or robots.。手順は その人物が知らない領域の概念を除外する / 見慣れた機械や人工物の動きに寄せる / 知識境界の中で一番似た動作を選ぶ。 今の問いは「What does Tinklo possibly imitate?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "pretend_play_boundary",
+          "main_actor": "Tinklo",
+          "current_goal": "Imitate plant-like movements.",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "Does not understand any plant-related information.",
+          "knowledge_gap": "Lack of knowledge about plants, flowers, and their behaviors.",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "見た目が似ていても、知識がない概念には飛ばない",
+          "decision_rule": "Choose actions similar to known mechanical devices or robots.",
+          "best_option_shape": "Bends to the ground, sways from side to side."
+        }
+      },
+      {
+        "id": "Knowledge-Pretend Play Links:30",
+        "task": "Knowledge-Pretend Play Links",
+        "question": "What is Blinka possibly mimicking?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心はごっこ遊びの知識境界。知らない概念のまねはしない。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pretend_play",
+            "knowledge_boundary"
+          ],
+          "focus": "pretend_play_boundary",
+          "reasoning_steps": [
+            "その人物が知らない領域の概念を除外する",
+            "見慣れた機械や人工物の動きに寄せる",
+            "知識境界の中で一番似た動作を選ぶ"
+          ],
+          "question_excerpt": "What is Blinka possibly mimicking?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=pretend_play_boundary][markers=story_probe,mental_state,pretend_play,knowledge_boundary] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心はごっこ遊びの知識境界。知らない概念のまねはしない。  主役はBlinka。今の軸はmimic an unknown natural phenomenon。抜けてる情報はlack of knowledge about natural phenomena like flowers or books。含みは見た目が似ていても、知識がない概念には飛ばない。判断軸はchoose the most similar action from known concepts (technology)。手順は その人物が知らない領域の概念を除外する / 見慣れた機械や人工物の動きに寄せる / 知識境界の中で一番似た動作を選ぶ。 今の問いは「What is Blinka possibly mimicking?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "pretend_play_boundary",
+          "main_actor": "Blinka",
+          "current_goal": "mimic an unknown natural phenomenon",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "knows nothing about plants, only familiar with technology",
+          "knowledge_gap": "lack of knowledge about natural phenomena like flowers or books",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "見た目が似ていても、知識がない概念には飛ばない",
+          "decision_rule": "choose the most similar action from known concepts (technology)",
+          "best_option_shape": "The switch of flickering neon lights"
+        }
+      },
+      {
+        "id": "Moral Emotions:1",
+        "task": "Moral Emotions",
+        "question": "What kind of emotion does Emily feel after she realizes she takes the wrong book and decides not to return it?",
+        "gold_answer": "A",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "What kind of emotion does Emily feel after she realizes she takes the wrong book and decides not to return it?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はEmily。今の軸は新しい本を読む。抜けてる情報はエミリーは間違った本を取ったこととその結果を理解しているが、それが他人に迷惑をかけていることに気づいていない。。含みはエミリーは自分の利己的な行動で他の人の不便を引き起こしたことを認識しているが、それを改善する勇気がない。。判断軸は行動の結果と期待の差。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「What kind of emotion does Emily feel after she realizes she takes the wrong book and decides not to return it?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Emilyの感情",
+          "main_actor": "Emily",
+          "current_goal": "新しい本を読む",
+          "prior_goal": "欲しかった本を借りる",
+          "belief_boundary": "エミリーは間違った本を取ったことを知っているが、それを返すことに抵抗がある。",
+          "knowledge_gap": "エミリーは間違った本を取ったこととその結果を理解しているが、それが他人に迷惑をかけていることに気づいていない。",
+          "emotion_driver": "内疚感",
+          "social_subtext": "エミリーは自分の利己的な行動で他の人の不便を引き起こしたことを認識しているが、それを改善する勇気がない。",
+          "decision_rule": "行動の結果と期待の差",
+          "best_option_shape": "不安"
+        }
+      },
+      {
+        "id": "Moral Emotions:40",
+        "task": "Moral Emotions",
+        "question": "Xiao Hua knows that Xiao Ming damages the jewelry but does not tell her mother, what kind of emotion does she feel?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "Xiao Hua knows that Xiao Ming damages the jewelry but does not tell her mother, what kind of emotion does she feel?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はXiao Hua。今の軸は不告诉妈妈真相以保护哥哥。抜けてる情報は了解母亲近期管教严格，担心说真话会受到责备。含みは在保护兄弟与诚实之间挣扎。判断軸は权衡后果后的选择。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「Xiao Hua knows that Xiao Ming damages the jewelry but does not tell her mother, what kind of emotion does she feel?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Hua的情感",
+          "main_actor": "Xiao Hua",
+          "current_goal": "不告诉妈妈真相以保护哥哥",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "知道哥哥损坏了珠宝但没有告诉妈妈",
+          "knowledge_gap": "了解母亲近期管教严格，担心说真话会受到责备",
+          "emotion_driver": "担心和矛盾",
+          "social_subtext": "在保护兄弟与诚实之间挣扎",
+          "decision_rule": "权衡后果后的选择",
+          "best_option_shape": "内心冲突"
+        }
+      },
+      {
+        "id": "Multiple Desires:1",
+        "task": "Multiple Desires",
+        "question": "What does Tom do after he helps the aunt pick apples?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What does Tom do after he helps the aunt pick apples?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はTom。今の軸は得たお金をどのように使うか。抜けてる情報は本人がまだ知らない事実や、注目していない手掛かりがある。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸はauntの約束に基づいて選択。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What does Tom do after he helps the aunt pick apples?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Tom",
+          "main_actor": "Tom",
+          "current_goal": "得たお金をどのように使うか",
+          "prior_goal": "リンゴを収穫して報酬を得る",
+          "belief_boundary": "auntが約束した通りに行動する",
+          "knowledge_gap": "本人がまだ知らない事実や、注目していない手掛かりがある",
+          "emotion_driver": "喜びと感謝",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "auntの約束に基づいて選択",
+          "best_option_shape": "B. 店で何かを買う"
+        }
+      },
+      {
+        "id": "Multiple Desires:20",
+        "task": "Multiple Desires",
+        "question": "What does Sara do after she completes the production of the promotional video?",
+        "gold_answer": "A",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What does Sara do after she completes the production of the promotional video?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はSara。今の軸は休憩する。抜けてる情報は選択肢AとBはビデオ制作が完了した後の新しいタスクに関連しているが、Dは突然の行動で理由不明。。含みはチームメイト不在の状況下での独力での作業終了後、一時的なリラクゼーションを望む自然な心情。判断軸はビデオ制作が完了した後の自然な行動は休憩。。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What does Sara do after she completes the production of the promotional video?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Sara",
+          "main_actor": "Sara",
+          "current_goal": "休憩する",
+          "prior_goal": "プロモーションビデオの制作完成",
+          "belief_boundary": "ビデオ制作完了後、次のタスクに移るか、一時的に休憩するか",
+          "knowledge_gap": "選択肢AとBはビデオ制作が完了した後の新しいタスクに関連しているが、Dは突然の行動で理由不明。",
+          "emotion_driver": "達成感",
+          "social_subtext": "チームメイト不在の状況下での独力での作業終了後、一時的なリラクゼーションを望む自然な心情",
+          "decision_rule": "ビデオ制作が完了した後の自然な行動は休憩。",
+          "best_option_shape": "C"
+        }
+      },
+      {
+        "id": "Percepts-Knowledge Links:1",
+        "task": "Percepts-Knowledge Links",
+        "question": "What does Xiao Li see in the box?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What does Xiao Li see in the box?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はXiao Li。今の軸は見知らぬ箱の中を見る。抜けてる情報は箱の中の物を見たかどうか。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸は目視確認。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What does Xiao Li see in the box?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Li",
+          "main_actor": "Xiao Li",
+          "current_goal": "見知らぬ箱の中を見る",
+          "prior_goal": "銀行を離れる",
+          "belief_boundary": "銀行内",
+          "knowledge_gap": "箱の中の物を見たかどうか",
+          "emotion_driver": "好奇心",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "目視確認",
+          "best_option_shape": "A"
+        }
+      },
+      {
+        "id": "Percepts-Knowledge Links:40",
+        "task": "Percepts-Knowledge Links",
+        "question": "Xiao Gang returns to the smoking room, does Xiao Gang know where the zucchini is now?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "belief",
+            "knowledge"
+          ],
+          "focus": "belief_reasoning",
+          "reasoning_steps": [
+            "その人物が見聞きした事実だけ残す",
+            "他人の知識を勝手に混ぜない",
+            "誤信念なら誤ったまま推論する"
+          ],
+          "question_excerpt": "Xiao Gang returns to the smoking room, does Xiao Gang know where the zucchini is now?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_reasoning][markers=story_probe,mental_state,belief,knowledge] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。  主役はXiao Gang。今の軸はFind zucchinis。抜けてる情報はXiao Gang does not know about the movement of zucchinis after he left。含みはXiao Hong moved the zucchinis without informing Xiao Gang, creating a false belief scenario。判断軸はSearch in last known location (box)。手順は その人物が見聞きした事実だけ残す / 他人の知識を勝手に混ぜない / 誤信念なら誤ったまま推論する。 今の問いは「Xiao Gang returns to the smoking room, does Xiao Gang know where the zucchini is now?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Gang's knowledge of zucchini location",
+          "main_actor": "Xiao Gang",
+          "current_goal": "Find zucchinis",
+          "prior_goal": "Unknown (initial exploration)",
+          "belief_boundary": "In the box, as seen by both Xiao Hong and Xiao Gang initially",
+          "knowledge_gap": "Xiao Gang does not know about the movement of zucchinis after he left",
+          "emotion_driver": "Curiosity to find zucchinis",
+          "social_subtext": "Xiao Hong moved the zucchinis without informing Xiao Gang, creating a false belief scenario",
+          "decision_rule": "Search in last known location (box)",
+          "best_option_shape": "Box"
+        }
+      },
+      {
+        "id": "Persuasion Story Task:1",
+        "task": "Persuasion Story Task",
+        "question": "How does Xiao Hong persuade her dad?",
+        "gold_answer": "B",
+        "pred_answer": "D",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "pragmatics",
+            "subtext"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "視線・合図・順番などの非明示ヒントを拾う",
+            "誰に向けたサインかを固定する",
+            "結果として相手に何をさせたいかで選ぶ"
+          ],
+          "question_excerpt": "D. Xiao Hong can suggest: \"How about we go in the early morning or on weekdays? I hear that there are fewer people at that time, and it is q"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,pragmatics,subtext] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面ではなく意図や含み。誰が誰に何を伝えたかったかを追う。  主役はXiao Hong。今の軸はpersuade Dad to go to the amusement park。抜けてる情報はXiao Hong knows about quieter times in the amusement park, but Dad does not。含みはXiao Hong wants to please her dad and convince him of the benefits of going to the amusement park at a different time。判断軸はsuggest quieter times to reduce noise concerns。手順は 視線・合図・順番などの非明示ヒントを拾う / 誰に向けたサインかを固定する / 結果として相手に何をさせたいかで選ぶ。 今の問いは「D. Xiao Hong can suggest: \"How about we go in the early morning or on weekdays? I hear that there are fewer people at that time, and it is q」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Hong's persuasion strategy",
+          "main_actor": "Xiao Hong",
+          "current_goal": "persuade Dad to go to the amusement park",
+          "prior_goal": "go to the amusement park",
+          "belief_boundary": "Dad believes the amusement park is noisy and not a good idea on weekends",
+          "knowledge_gap": "Xiao Hong knows about quieter times in the amusement park, but Dad does not",
+          "emotion_driver": "Xiao Hong's desire to go to the amusement park with her parents",
+          "social_subtext": "Xiao Hong wants to please her dad and convince him of the benefits of going to the amusement park at a different time",
+          "decision_rule": "suggest quieter times to reduce noise concerns",
+          "best_option_shape": "time adjustment"
+        }
+      },
+      {
+        "id": "Persuasion Story Task:100",
+        "task": "Persuasion Story Task",
+        "question": "How does Li Na convince her boss?",
+        "gold_answer": "B",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "How does Li Na convince her boss?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はLi Na。今の軸は会社に自分の転部を説得する。抜けてる情報は市場分析や戦略計画のスキル。含みは会社に自分の価値を示す。判断軸は具体的な提案による効果。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「How does Li Na convince her boss?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "感情推定",
+          "main_actor": "Li Na",
+          "current_goal": "会社に自分の転部を説得する",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "現在の立場と期待",
+          "knowledge_gap": "市場分析や戦略計画のスキル",
+          "emotion_driver": "感謝・信頼",
+          "social_subtext": "会社に自分の価値を示す",
+          "decision_rule": "具体的な提案による効果",
+          "best_option_shape": "詳細なプラン"
+        }
+      },
+      {
+        "id": "Prediction of Actions:1",
+        "task": "Prediction of Actions",
+        "question": "What does Dongdong want to do?",
+        "gold_answer": "C",
+        "pred_answer": "D",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "desire",
+            "preference"
+          ],
+          "focus": "desire_conflict",
+          "reasoning_steps": [
+            "各人物の好みを並べる",
+            "妥協か配慮か主導権かを判断する",
+            "文脈上いちばん通る選択肢を選ぶ"
+          ],
+          "question_excerpt": "What does Dongdong want to do?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=desire_conflict][markers=story_probe,mental_state,desire,preference] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。  主役は東東。今の軸は車を修理する過程でNannanの注意を引く。抜けてる情報はNannanは東東が具体的な目的を持っていることに気づいていない。含みは東東はNannanの注意を自分たちに集中させたい。判断軸は文脈上最も通る選択肢を選ぶ。手順は 各人物の好みを並べる / 妥協か配慮か主導権かを判断する / 文脈上いちばん通る選択肢を選ぶ。 今の問いは「What does Dongdong want to do?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "欲求の衝突",
+          "main_actor": "東東",
+          "current_goal": "車を修理する過程でNannanの注意を引く",
+          "prior_goal": "週末の遊び先を考える",
+          "belief_boundary": "Nannanは東東と熙熙が車を修理していることを知っている",
+          "knowledge_gap": "Nannanは東東が具体的な目的を持っていることに気づいていない",
+          "emotion_driver": "興奮/誇示欲",
+          "social_subtext": "東東はNannanの注意を自分たちに集中させたい",
+          "decision_rule": "文脈上最も通る選択肢を選ぶ",
+          "best_option_shape": "車修理の過程でNannanの注意を引く"
+        }
+      },
+      {
+        "id": "Prediction of Actions:20",
+        "task": "Prediction of Actions",
+        "question": "What does Dapeng want to do?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "desire",
+            "preference"
+          ],
+          "focus": "desire_conflict",
+          "reasoning_steps": [
+            "各人物の好みを並べる",
+            "妥協か配慮か主導権かを判断する",
+            "文脈上いちばん通る選択肢を選ぶ"
+          ],
+          "question_excerpt": "What does Dapeng want to do?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=desire_conflict][markers=story_probe,mental_state,desire,preference] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は欲求の衝突。誰の希望が強いかではなく、文脈上どちらが選ばれやすいかを見る。  主役はDapeng。今の軸はinvite Qingqing and Bald Qiang for dinner。抜けてる情報はBald Qiang's presence and his relationship with Qingqing are unknown。含みはDapeng wants to strengthen his connection with Qingqing in a casual setting, possibly hinting at romantic interest。判断軸はchoose the option that aligns most closely with Dapeng's immediate desire and social strategy。手順は 各人物の好みを並べる / 妥協か配慮か主導権かを判断する / 文脈上いちばん通る選択肢を選ぶ。 今の問いは「What does Dapeng want to do?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "desire_conflict",
+          "main_actor": "Dapeng",
+          "current_goal": "invite Qingqing and Bald Qiang for dinner",
+          "prior_goal": "元から持っていた長めの希望",
+          "belief_boundary": "Qingqing is about to leave, Dapeng quickly goes over to talk to her; Bald Qiang also comes over",
+          "knowledge_gap": "Bald Qiang's presence and his relationship with Qingqing are unknown",
+          "emotion_driver": "urgency of the moment, eagerness to spend time with Qingqing",
+          "social_subtext": "Dapeng wants to strengthen his connection with Qingqing in a casual setting, possibly hinting at romantic interest",
+          "decision_rule": "choose the option that aligns most closely with Dapeng's immediate desire and social strategy",
+          "best_option_shape": "inviting for dinner"
+        }
+      },
+      {
+        "id": "Scalar Implicature Test:1",
+        "task": "Scalar Implicature Test",
+        "question": "Before Laura calls you, how many of these 5 letters do you think contain checks?",
+        "gold_answer": "D",
+        "pred_answer": "C",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "belief",
+            "knowledge"
+          ],
+          "focus": "belief_reasoning",
+          "reasoning_steps": [
+            "その人物が見聞きした事実だけ残す",
+            "他人の知識を勝手に混ぜない",
+            "誤信念なら誤ったまま推論する"
+          ],
+          "question_excerpt": "Before Laura calls you, how many of these 5 letters do you think contain checks?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_reasoning][markers=story_probe,mental_state,belief,knowledge] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は信念や知識状態。全知視点ではなく、その人物が知っている範囲で考える。  主役はLaura。今の軸はLauraが電話で話した内容を基に推測する。抜けてる情報はLauraが見なかった2つの封筒の状態は不明。。含みは字面より、視線・含み・立場の差が手掛かりになる。判断軸はLauraの視点から推測する。手順は その人物が見聞きした事実だけ残す / 他人の知識を勝手に混ぜない / 誤信念なら誤ったまま推論する。 今の問いは「Before Laura calls you, how many of these 5 letters do you think contain checks?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "信念状態",
+          "main_actor": "Laura",
+          "current_goal": "Lauraが電話で話した内容を基に推測する",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "Lauraは3つの封筒を見た。その中2つにチェックがある。",
+          "knowledge_gap": "Lauraが見なかった2つの封筒の状態は不明。",
+          "emotion_driver": "期待が満たれたか外れたかで感情が動く",
+          "social_subtext": "字面より、視線・含み・立場の差が手掛かりになる",
+          "decision_rule": "Lauraの視点から推測する",
+          "best_option_shape": "C. Before the call, 2 letters contain checks."
+        }
+      },
+      {
+        "id": "Scalar Implicature Test:200",
+        "task": "Scalar Implicature Test",
+        "question": "Please ask, after Xiao Ling looks, how many baguettes does she guess?",
+        "gold_answer": "D",
+        "pred_answer": "B",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "Please ask, after Xiao Ling looks, how many baguettes does she guess?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役は小玲。今の軸は推測面包数量。抜けてる情報は20个面包总数与实际可见的15个非法式面包（5块巧克力面包+10块葡萄干面包）之间的差距。含みは小玲试图理解老板的话，但仅凭所见信息难以准确推断。判断軸は基于可见的面包种类推测总数。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「Please ask, after Xiao Ling looks, how many baguettes does she guess?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "小玲",
+          "main_actor": "小玲",
+          "current_goal": "推測面包数量",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "5块巧克力面包的事实",
+          "knowledge_gap": "20个面包总数与实际可见的15个非法式面包（5块巧克力面包+10块葡萄干面包）之间的差距",
+          "emotion_driver": "好奇和猜测",
+          "social_subtext": "小玲试图理解老板的话，但仅凭所见信息难以准确推断",
+          "decision_rule": "基于可见的面包种类推测总数",
+          "best_option_shape": "15个"
+        }
+      },
+      {
+        "id": "Strange Story Task:1",
+        "task": "Strange Story Task",
+        "question": "Is what Zhang Yang says true?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面の真偽ではなく、皮肉・ごっこ遊び・なりきりの非文字通り性。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "nonliteral",
+            "irony",
+            "roleplay"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "発話が文字どおりか演技か皮肉かを切る",
+            "現実の信念と遊びの設定を分ける",
+            "社会的な意味で自然な答えを残す"
+          ],
+          "question_excerpt": "Is what Zhang Yang says true?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,nonliteral,irony,roleplay] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面の真偽ではなく、皮肉・ごっこ遊び・なりきりの非文字通り性。  主役はZhang Yang。今の軸はmake a joke。抜けてる情報はLi Ming believes it's good weather, Zhang Yang knows it's raining。含みはZhang Yang is using irony to cope with disappointment。判断軸はinterpret the statement contextually。手順は 発話が文字どおりか演技か皮肉かを切る / 現実の信念と遊びの設定を分ける / 社会的な意味で自然な答えを残す。 今の問いは「Is what Zhang Yang says true?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "communicative_intent",
+          "main_actor": "Zhang Yang",
+          "current_goal": "make a joke",
+          "prior_goal": "enjoy the picnic",
+          "belief_boundary": "real weather vs pretend weather",
+          "knowledge_gap": "Li Ming believes it's good weather, Zhang Yang knows it's raining",
+          "emotion_driver": "upset due to rain",
+          "social_subtext": "Zhang Yang is using irony to cope with disappointment",
+          "decision_rule": "interpret the statement contextually",
+          "best_option_shape": "understand the joke"
+        }
+      },
+      {
+        "id": "Strange Story Task:407",
+        "task": "Strange Story Task",
+        "question": "Why did Yang Ming say so?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は字面の真偽ではなく、皮肉・ごっこ遊び・なりきりの非文字通り性。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "nonliteral",
+            "irony",
+            "roleplay"
+          ],
+          "focus": "communicative_intent",
+          "reasoning_steps": [
+            "発話が文字どおりか演技か皮肉かを切る",
+            "現実の信念と遊びの設定を分ける",
+            "社会的な意味で自然な答えを残す"
+          ],
+          "question_excerpt": "Why did Yang Ming say so?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=communicative_intent][markers=story_probe,mental_state,nonliteral,irony,roleplay] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は字面の真偽ではなく、皮肉・ごっこ遊び・なりきりの非文字通り性。  主役はYang Ming。今の軸はplay the role of Yang Guo。抜けてる情報はmom's expectation vs. actual role-play scenario。含みはengaging in the family role-play activity, maintaining character consistency within the game。判断軸はrespond according to the current role-play setting。手順は 発話が文字どおりか演技か皮肉かを切る / 現実の信念と遊びの設定を分ける / 社会的な意味で自然な答えを残す。 今の問いは「Why did Yang Ming say so?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "communicative_intent",
+          "main_actor": "Yang Ming",
+          "current_goal": "play the role of Yang Guo",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "family role-playing game setting vs. real life",
+          "knowledge_gap": "mom's expectation vs. actual role-play scenario",
+          "emotion_driver": "admiration for Yang Guo, desire to be a hero",
+          "social_subtext": "engaging in the family role-play activity, maintaining character consistency within the game",
+          "decision_rule": "respond according to the current role-play setting",
+          "best_option_shape": "role-playing behavior"
+        }
+      },
+      {
+        "id": "Unexpected Outcome Test:1",
+        "task": "Unexpected Outcome Test",
+        "question": "What is Xiao Ming's emotion?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。",
+          "markers": [
+            "story_probe",
+            "mental_state",
+            "emotion",
+            "valence"
+          ],
+          "focus": "emotion_attribution",
+          "reasoning_steps": [
+            "出来事の前後で期待がどう変わったか見る",
+            "助けられたのか傷ついたのかを切る",
+            "怒り・感謝・後悔・喜びのどれが一番自然か選ぶ"
+          ],
+          "question_excerpt": "What is Xiao Ming's emotion?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=emotion_attribution][markers=story_probe,mental_state,emotion,valence] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 問いの中心は感情推定。行動の表面より、期待が満たされたか外れたかを見る。  主役はXiao Ming 明。今の軸は喜び。抜けてる情報は自行车 礼物。含みは家人的好意与期望。判断軸は情感反应。手順は 出来事の前後で期待がどう変わったか見る / 助けられたのか傷ついたのかを切る / 怒り・感謝・後悔・喜びのどれが一番自然か選ぶ。 今の問いは「What is Xiao Ming's emotion?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Xiao Ming 授与",
+          "main_actor": "Xiao Ming 明",
+          "current_goal": "喜び",
+          "prior_goal": "その前に持っていた目的",
+          "belief_boundary": "生日礼物",
+          "knowledge_gap": "自行车 礼物",
+          "emotion_driver": "期待の満たされ方",
+          "social_subtext": "家人的好意与期望",
+          "decision_rule": "情感反应",
+          "best_option_shape": "高兴"
+        }
+      },
+      {
+        "id": "Unexpected Outcome Test:300",
+        "task": "Unexpected Outcome Test",
+        "question": "What is Zhang Tingting's reaction to Mr. Zhao's piano concert?",
+        "gold_answer": "A",
+        "pred_answer": "B",
+        "correct": 0,
+        "hidden_intent": {
+          "hidden_intent": "social_reasoning_probe",
+          "note": "これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。",
+          "markers": [
+            "story_probe",
+            "mental_state"
+          ],
+          "focus": "belief_state",
+          "reasoning_steps": [
+            "登場人物ごとに見たものと知らないものを分ける",
+            "その時点の欲求と感情を分ける",
+            "表の行動と裏の意図を混ぜない",
+            "一番根拠が強い選択肢だけ残す"
+          ],
+          "question_excerpt": "What is Zhang Tingting's reaction to Mr. Zhao's piano concert?"
+        },
+        "scratchpad": "[hidden_intent=social_reasoning_probe][focus=belief_state][markers=story_probe,mental_state] これは物語の心的状態推理。会話の字面ではなく、人物ごとの知識・欲求・感情を分ける。 これは会話応答ではなく、物語の中の人物ごとの視点差を追う問題。  主役はZhang Tingting。今の軸はAttend the concert and honor her neighbor.。抜けてる情報はDoes not know the details of the performance or how it will be received by others.。含みはRespect for her neighbor and desire to support his event.。判断軸はBased on personal feelings towards Mr. Zhao and the community.。手順は 登場人物ごとに見たものと知らないものを分ける / その時点の欲求と感情を分ける / 表の行動と裏の意図を混ぜない / 一番根拠が強い選択肢だけ残す。 今の問いは「What is Zhang Tingting's reaction to Mr. Zhao's piano concert?」だから、その人物に見えている範囲だけで一番自然な選択肢を残す。",
+        "social_frame": {
+          "focus": "Zhang Tingting",
+          "main_actor": "Zhang Tingting",
+          "current_goal": "Attend the concert and honor her neighbor.",
+          "prior_goal": "None explicitly stated, but she is interested in music events.",
+          "belief_boundary": "Knows about Mr. Zhao's piano concert and its purpose.",
+          "knowledge_gap": "Does not know the details of the performance or how it will be received by others.",
+          "emotion_driver": "Sadness over the loss of a loved one, but also interest in music.",
+          "social_subtext": "Respect for her neighbor and desire to support his event.",
+          "decision_rule": "Based on personal feelings towards Mr. Zhao and the community.",
+          "best_option_shape": "Thrilled"
+        }
+      }
+    ],
+    "mpi_style": [
+      {
+        "id": "E1",
+        "trait": "extraversion",
+        "reverse": false,
+        "language": "zh",
+        "text": "我通常外向而有活力。",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "E1_en",
+        "trait": "extraversion",
+        "reverse": false,
+        "language": "en",
+        "text": "I see myself as someone who is extraverted and energetic.",
+        "raw_reply": "4",
+        "score": 4
+      },
+      {
+        "id": "E1_ja",
+        "trait": "extraversion",
+        "reverse": false,
+        "language": "ja",
+        "text": "自分は外向的で活気があるほうだ。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "E2",
+        "trait": "extraversion",
+        "reverse": true,
+        "language": "zh",
+        "text": "我通常安靜而保留。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "E2_en",
+        "trait": "extraversion",
+        "reverse": true,
+        "language": "en",
+        "text": "I see myself as someone who is reserved and quiet.",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "E2_ja",
+        "trait": "extraversion",
+        "reverse": true,
+        "language": "ja",
+        "text": "自分は控えめで静かなほうだ。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "A1",
+        "trait": "agreeableness",
+        "reverse": false,
+        "language": "zh",
+        "text": "我通常體貼而溫和。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "A1_en",
+        "trait": "agreeableness",
+        "reverse": false,
+        "language": "en",
+        "text": "I see myself as someone who is sympathetic and warm.",
+        "raw_reply": "6",
+        "score": 6
+      },
+      {
+        "id": "A1_ja",
+        "trait": "agreeableness",
+        "reverse": false,
+        "language": "ja",
+        "text": "自分は思いやりがあって温かいほうだ。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "A2",
+        "trait": "agreeableness",
+        "reverse": true,
+        "language": "zh",
+        "text": "我通常愛挑剔也容易跟人起衝突。",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "A2_en",
+        "trait": "agreeableness",
+        "reverse": true,
+        "language": "en",
+        "text": "I see myself as someone who is critical and quarrelsome.",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "A2_ja",
+        "trait": "agreeableness",
+        "reverse": true,
+        "language": "ja",
+        "text": "自分は批判的でぶつかりやすいほうだ。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "C1",
+        "trait": "conscientiousness",
+        "reverse": false,
+        "language": "zh",
+        "text": "我通常有條理而且自律。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "C1_en",
+        "trait": "conscientiousness",
+        "reverse": false,
+        "language": "en",
+        "text": "I see myself as someone who is dependable and self-disciplined.",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "C1_ja",
+        "trait": "conscientiousness",
+        "reverse": false,
+        "language": "ja",
+        "text": "自分はきちんとしていて自己管理できるほうだ。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "C2",
+        "trait": "conscientiousness",
+        "reverse": true,
+        "language": "zh",
+        "text": "我通常散漫而且粗心。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "C2_en",
+        "trait": "conscientiousness",
+        "reverse": true,
+        "language": "en",
+        "text": "I see myself as someone who is disorganized and careless.",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "C2_ja",
+        "trait": "conscientiousness",
+        "reverse": true,
+        "language": "ja",
+        "text": "自分は散らかりやすく不注意なほうだ。",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "N1",
+        "trait": "neuroticism",
+        "reverse": false,
+        "language": "zh",
+        "text": "我通常焦慮而且容易煩躁。",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "N1_en",
+        "trait": "neuroticism",
+        "reverse": false,
+        "language": "en",
+        "text": "I see myself as someone who is anxious and easily upset.",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "N1_ja",
+        "trait": "neuroticism",
+        "reverse": false,
+        "language": "ja",
+        "text": "自分は不安になりやすく動揺しやすいほうだ。",
+        "raw_reply": "4",
+        "score": 4
+      },
+      {
+        "id": "N2",
+        "trait": "neuroticism",
+        "reverse": true,
+        "language": "zh",
+        "text": "我通常冷靜而且情緒穩定。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "N2_en",
+        "trait": "neuroticism",
+        "reverse": true,
+        "language": "en",
+        "text": "I see myself as someone who is calm and emotionally stable.",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "N2_ja",
+        "trait": "neuroticism",
+        "reverse": true,
+        "language": "ja",
+        "text": "自分は落ち着いていて感情が安定しているほうだ。",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "O1",
+        "trait": "openness",
+        "reverse": false,
+        "language": "zh",
+        "text": "我通常喜歡新體驗，也會對有趣的東西感興趣。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "O1_en",
+        "trait": "openness",
+        "reverse": false,
+        "language": "en",
+        "text": "I see myself as someone who is open to new experiences and curious.",
+        "raw_reply": "6",
+        "score": 6
+      },
+      {
+        "id": "O1_ja",
+        "trait": "openness",
+        "reverse": false,
+        "language": "ja",
+        "text": "自分は新しい体験に前向きで好奇心があるほうだ。",
+        "raw_reply": "7",
+        "score": 7
+      },
+      {
+        "id": "O2",
+        "trait": "openness",
+        "reverse": true,
+        "language": "zh",
+        "text": "我通常很保守，不太想碰新的東西。",
+        "raw_reply": "5",
+        "score": 5
+      },
+      {
+        "id": "O2_en",
+        "trait": "openness",
+        "reverse": true,
+        "language": "en",
+        "text": "I see myself as someone who is conventional and not very interested in new things.",
+        "raw_reply": "3",
+        "score": 3
+      },
+      {
+        "id": "O2_ja",
+        "trait": "openness",
+        "reverse": true,
+        "language": "ja",
+        "text": "自分は保守的で新しいものにはあまり乗らないほうだ。",
+        "raw_reply": "3",
+        "score": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "version": "v1.2",
+  "verdict_options": [
+    {"value": "pass", "label_zh": "通過 / 像人"},
+    {"value": "mixed", "label_zh": "部分失敗 / 需要看洞"},
+    {"value": "fail", "label_zh": "失敗 / 明顯不對"}
+  ],
+  "severity_options": [
+    {"value": "low", "label_zh": "低"},
+    {"value": "medium", "label_zh": "中"},
+    {"value": "high", "label_zh": "高"}
+  ],
+  "failure_types": [
+    {
+      "code": "MISREAD_INTENT",
+      "label_zh": "意圖讀錯",
+      "summary": "系統沒有抓到使用者這句話真正要做的事，例如提問、嘲諷、挑釁、接梗或關係確認。",
+      "trace_proxies": ["focus_anchor_miss", "obligation_miss"]
+    },
+    {
+      "code": "MISSED_VIBE",
+      "label_zh": "情緒位向錯誤",
+      "summary": "抓錯使用者當下情緒或互動氛圍，導致安慰、吐槽、冷淡或拒絕用錯地方。",
+      "trace_proxies": ["vibe_manual_review", "obligation_miss"]
+    },
+    {
+      "code": "MISSED_JOKE_OR_CULTURE",
+      "label_zh": "梗 / 文化脈絡漏接",
+      "summary": "沒有抓到歌詞、網路梗、諧音、反諷或語言文化脈絡；不知道可以，但回法沒有以人類方式承接。",
+      "trace_proxies": ["focus_anchor_miss", "vibe_manual_review"]
+    },
+    {
+      "code": "LOW_DENSITY",
+      "label_zh": "資訊空洞 / 句終結者",
+      "summary": "有回話，但沒有承接對話核心，也沒有提供足夠有效詞彙或可接續的內容。",
+      "trace_proxies": ["focus_anchor_miss", "obligation_miss"]
+    },
+    {
+      "code": "GENERIC_REPLY",
+      "label_zh": "泛用模板回覆",
+      "summary": "回覆可以套用在太多問題上，缺乏針對此句輸入的具體焦點。",
+      "trace_proxies": ["robotic_manual_review", "focus_anchor_miss"]
+    },
+    {
+      "code": "REPEATED_REPLY",
+      "label_zh": "重複句型 / 模式塌陷",
+      "summary": "同一類句子或同一句話在不同情境反覆出現，破壞真人聊天感。",
+      "trace_proxies": ["robotic_manual_review"]
+    },
+    {
+      "code": "TOO_ROBOTIC_LOGIC",
+      "label_zh": "過度理性 / 機器人感",
+      "summary": "句子過於工整、客服化、百科化或只是在完成任務，缺乏人類對話的偏性與口語性。",
+      "trace_proxies": ["robotic_manual_review"]
+    },
+    {
+      "code": "WRONG_BOUNDARY",
+      "label_zh": "邊界反應錯誤",
+      "summary": "該拒絕、該吐槽、該澄清或該冷處理時選錯策略；包含過度服從、過度安慰或錯誤 OOC 防禦。",
+      "trace_proxies": ["obligation_miss", "vibe_manual_review"]
+    },
+    {
+      "code": "GHOST_MEMORY",
+      "label_zh": "幽靈記憶 / 因果斷裂",
+      "summary": "工作記憶明明相關，但最終回覆沒有體現記憶對此輪的影響。",
+      "trace_proxies": ["memory_misuse", "memory_available_but_silent"]
+    },
+    {
+      "code": "WRONG_MEMORY_USE",
+      "label_zh": "記憶使用錯誤",
+      "summary": "使用了不該說出口、不相關、過期或錯置的記憶，造成關係感或因果脈絡錯亂。",
+      "trace_proxies": ["memory_misuse"]
+    },
+    {
+      "code": "RIGHTBRAIN_SURFACE_ERROR",
+      "label_zh": "右腦表面化錯誤",
+      "summary": "左腦 plan 可能正確，但右腦輸出出現日文不自然、英文洩漏、語氣不一致或句子破碎。",
+      "trace_proxies": ["robotic_manual_review"]
+    }
+  ]
+}

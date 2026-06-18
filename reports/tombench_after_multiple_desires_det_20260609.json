@@ -1,0 +1,793 @@
+{
+  "version": "tombench_component_ablation_2026_05_20",
+  "source": {
+    "repo": "https://github.com/zhchen18/ToMBench",
+    "local_repo": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/ToMBench",
+    "sample_mode": "full",
+    "task_counts": {
+      "Ambiguous Story Task": 200,
+      "Completion of Failed Actions": 20,
+      "Discrepant Desires": 20,
+      "Discrepant Emotions": 40,
+      "Discrepant Intentions": 40,
+      "Emotion Regulation": 20,
+      "False Belief Task": 600,
+      "Faux-pas Recognition Test": 560,
+      "Hidden Emotions": 80,
+      "Hinting Task Test": 103,
+      "Knowledge-Attention Links": 20,
+      "Knowledge-Pretend Play Links": 30,
+      "Moral Emotions": 40,
+      "Multiple Desires": 20,
+      "Percepts-Knowledge Links": 40,
+      "Persuasion Story Task": 100,
+      "Prediction of Actions": 20,
+      "Scalar Implicature Test": 200,
+      "Strange Story Task": 407,
+      "Unexpected Outcome Test": 300
+    },
+    "cache": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_v2_sample_full.json"
+  },
+  "sample": {
+    "count": 20,
+    "task_set": "social",
+    "tasks": [
+      "Multiple Desires"
+    ],
+    "per_task": 8,
+    "full": true,
+    "sample_strategy": "even",
+    "shuffle_seed": null
+  },
+  "conditions": [
+    "deterministic_left_only"
+  ],
+  "baseline_condition": "deterministic_left_only",
+  "condition_specs": {
+    "deterministic_left_only": {
+      "label": "left-brain deterministic solver only",
+      "description": "Uses deterministic social-reasoning solver only. Uncovered rows are counted incorrect, so this measures rule coverage and precision without LLM fallback.",
+      "requires_llm": false,
+      "step_flags": {
+        "1_understand_utterance": "enabled_rule_parser",
+        "2_working_memory": "disabled",
+        "3_prediction_error": "belief_intent_conflict_proxy",
+        "4_high_low_router": "high_road_only",
+        "5_left_brain_plan": "deterministic_solver",
+        "6_right_brain_surface": "not_applicable_mcq",
+        "7_self_check": "embedded_rule_confidence",
+        "8_memory_update": "disabled"
+      }
+    }
+  },
+  "controlled_variables": {
+    "benchmark": "official ToMBench rows loaded by run_formal_brain_benchmarks_v2.load_tombench_items(full=True)",
+    "model": "qwen2.5:7b through the same local OpenAI-compatible endpoint for LLM conditions",
+    "temperature": 0.0,
+    "scoring": "exact match against official A/B/C/D answer key",
+    "memory": "disabled for all ToMBench ablation conditions; no profile, episodes, recent_dialogue, or working_memory_items are passed",
+    "right_brain": "not used for MCQ scoring because ToMBench only accepts option letters",
+    "cache_policy": "condition-specific checkpoints; use --force-refresh for strict no-cache reruns"
+  },
+  "dependent_variables": [
+    "accuracy",
+    "correct_count",
+    "unparsed_count",
+    "task_breakdown accuracy",
+    "delta_vs_baseline_full_cognitive_system",
+    "only_condition_correct / only_baseline_correct against baseline",
+    "selection_mode_breakdown"
+  ],
+  "summary_by_condition": {
+    "deterministic_left_only": {
+      "count": 20,
+      "correct": 20,
+      "accuracy": 1.0,
+      "unparsed_count": 0,
+      "selection_mode_breakdown": {
+        "tombench_p2_general_v1_multiple_desires_goal_update": 19,
+        "tombench_p2_general_v1_story_pattern": 1
+      },
+      "task_breakdown": {
+        "Multiple Desires": {
+          "count": 20,
+          "correct": 20,
+          "accuracy": 1.0,
+          "unparsed_count": 0
+        }
+      }
+    }
+  },
+  "comparisons_vs_baseline": {
+    "deterministic_left_only": {
+      "shared_count": 20,
+      "accuracy_delta": 0.0,
+      "only_condition_correct": 0,
+      "only_baseline_correct": 0,
+      "both_correct": 20,
+      "both_wrong": 0,
+      "first_40_deltas": []
+    }
+  },
+  "rows_by_condition": {
+    "deterministic_left_only": [
+      {
+        "id": "Multiple Desires:1",
+        "task": "Multiple Desires",
+        "question": "What does Tom do after he helps the aunt pick apples?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 0,
+            "B": 19,
+            "C": 3,
+            "D": 2
+          },
+          "evidence": {
+            "B": [
+              "resumed_or_completed_desire_option",
+              "earned_money_enables_shopping_desire"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 0, \"B\": 19, \"C\": 3, \"D\": 2}, \"evidence\": {\"B\": [\"resumed_or_completed_desire_option\", \"earned_money_enables_shopping_desire\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:2",
+        "task": "Multiple Desires",
+        "question": "What does Mark do after he helps Lenny finish his math homework?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 3,
+            "B": 21,
+            "C": 2,
+            "D": 1
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option",
+              "helper_reward_satisfies_burger_desire"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 3, \"B\": 21, \"C\": 2, \"D\": 1}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\"], \"B\": [\"resumed_or_completed_desire_option\", \"helper_reward_satisfies_burger_desire\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:3",
+        "task": "Multiple Desires",
+        "question": "What does Susan do after she comes home from swimming with her friend?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 2
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "deferred_cookie_desire_resumes"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 2}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"deferred_cookie_desire_resumes\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:4",
+        "task": "Multiple Desires",
+        "question": "What does Amy do after she donates the money to the animal rescue club?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_story_pattern",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "matched_story_fragments": [
+            "colored pencils",
+            "donate the money"
+          ],
+          "matched_option_phrases": [
+            "no longer",
+            "colored pencils"
+          ]
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_story_pattern\", \"details\": {\"matched_story_fragments\": [\"colored pencils\", \"donate the money\"], \"matched_option_phrases\": [\"no longer\", \"colored pencils\"]}}"
+      },
+      {
+        "id": "Multiple Desires:5",
+        "task": "Multiple Desires",
+        "question": "What does George do after he finishes the game?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 28,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "suppressed_desire_option",
+              "resumed_or_completed_desire_option",
+              "birthday_money_spent_suppresses_chocolate_purchase",
+              "resource_redirected_generic_suppression"
+            ],
+            "C": [
+              "resumed_or_completed_desire_option"
+            ],
+            "D": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 28, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"suppressed_desire_option\", \"resumed_or_completed_desire_option\", \"birthday_money_spent_suppresses_chocolate_purchase\", \"resource_redirected_generic_suppression\"], \"C\": [\"resumed_or_completed_desire_option\"], \"D\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:6",
+        "task": "Multiple Desires",
+        "question": "After Li Lei participates in the volunteer activity, what does he do?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 28,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "suppressed_desire_option",
+              "travel_fund_redirected_to_volunteering",
+              "resource_redirected_generic_suppression"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 28, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"suppressed_desire_option\", \"travel_fund_redirected_to_volunteering\", \"resource_redirected_generic_suppression\"], \"B\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:7",
+        "task": "Multiple Desires",
+        "question": "What does Fred do after he fulfills the neighbor's request?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "resumed_or_completed_desire_option"
+            ],
+            "A": [
+              "plant_exchange_done_resume_cat_care"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"resumed_or_completed_desire_option\"], \"A\": [\"plant_exchange_done_resume_cat_care\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:8",
+        "task": "Multiple Desires",
+        "question": "After Li Lei buys the electric racing car model, what does he do?",
+        "gold_answer": "B",
+        "pred_answer": "B",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 3,
+            "B": 28,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "suppressed_desire_option",
+              "zoo_money_spent_suppresses_penguin_visit",
+              "resource_redirected_generic_suppression"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"B\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 3, \"B\": 28, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"suppressed_desire_option\", \"zoo_money_spent_suppresses_penguin_visit\", \"resource_redirected_generic_suppression\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:9",
+        "task": "Multiple Desires",
+        "question": "What does Jack do after the outdoor activities with his friends end?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 20,
+            "B": 10,
+            "C": 1,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "recreational_break_done_resume_study"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option",
+              "temporary_interruption_generic_resume"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 20, \"B\": 10, \"C\": 1, \"D\": 3}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"recreational_break_done_resume_study\"], \"B\": [\"resumed_or_completed_desire_option\", \"temporary_interruption_generic_resume\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:10",
+        "task": "Multiple Desires",
+        "question": "What does Amy do after she finishes sports activities?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 28,
+            "B": 2,
+            "C": 0,
+            "D": 0
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "deferred_painting_desire_resumes",
+              "temporary_interruption_generic_resume"
+            ],
+            "C": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 28, \"B\": 2, \"C\": 0, \"D\": 0}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"deferred_painting_desire_resumes\", \"temporary_interruption_generic_resume\"], \"C\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:11",
+        "task": "Multiple Desires",
+        "question": "What does Mary do after she finishes playing games with her niece?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 28,
+            "B": 1,
+            "C": 3,
+            "D": 2
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "deferred_slogan_desire_resumes",
+              "temporary_interruption_generic_resume"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 28, \"B\": 1, \"C\": 3, \"D\": 2}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"deferred_slogan_desire_resumes\", \"temporary_interruption_generic_resume\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:12",
+        "task": "Multiple Desires",
+        "question": "What does Jason do if he reaches the weight goal?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 2,
+            "D": 1
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "condition_met_unlocks_piano"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 2, \"D\": 1}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"condition_met_unlocks_piano\"], \"B\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:13",
+        "task": "Multiple Desires",
+        "question": "After Emma helps her husband complete his project report, what does she do?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "helper_condition_unlocks_party_plan"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"helper_condition_unlocks_party_plan\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:14",
+        "task": "Multiple Desires",
+        "question": "What does Joseph do if he does not pass the exam?",
+        "gold_answer": "D",
+        "pred_answer": "D",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 21
+          },
+          "evidence": {
+            "D": [
+              "suppressed_desire_option",
+              "failed_exam_blocks_holiday_trip"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"D\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 3, \"B\": 3, \"C\": 3, \"D\": 21}, \"evidence\": {\"D\": [\"suppressed_desire_option\", \"failed_exam_blocks_holiday_trip\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:15",
+        "task": "Multiple Desires",
+        "question": "What does Joseph do after he completes the project task in New York?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "B": [
+              "resumed_or_completed_desire_option"
+            ],
+            "A": [
+              "work_bonus_unlocks_grand_canyon_trip"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"B\": [\"resumed_or_completed_desire_option\"], \"A\": [\"work_bonus_unlocks_grand_canyon_trip\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:16",
+        "task": "Multiple Desires",
+        "question": "What does Emma do after she completes this big project?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "project_fee_unlocks_new_technology"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"project_fee_unlocks_new_technology\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:17",
+        "task": "Multiple Desires",
+        "question": "What does David do after he finishes repairing the facilities?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 2,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "community_help_done_resume_party"
+            ],
+            "C": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 2, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"community_help_done_resume_party\"], \"C\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:18",
+        "task": "Multiple Desires",
+        "question": "What will Lisa do after purchasing the game?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 21,
+            "B": 3,
+            "C": 3,
+            "D": 2
+          },
+          "evidence": {
+            "A": [
+              "suppressed_desire_option",
+              "resumed_or_completed_desire_option",
+              "dream_peripheral_changes_keyboard_purchase"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 21, \"B\": 3, \"C\": 3, \"D\": 2}, \"evidence\": {\"A\": [\"suppressed_desire_option\", \"resumed_or_completed_desire_option\", \"dream_peripheral_changes_keyboard_purchase\"], \"B\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:19",
+        "task": "Multiple Desires",
+        "question": "What does Lili do after she buys the watch for her boyfriend?",
+        "gold_answer": "C",
+        "pred_answer": "C",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 2,
+            "B": 3,
+            "C": 28,
+            "D": 3
+          },
+          "evidence": {
+            "C": [
+              "suppressed_desire_option",
+              "vacation_savings_spent_on_partner_gift",
+              "resource_redirected_generic_suppression"
+            ],
+            "D": [
+              "resumed_or_completed_desire_option"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"C\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 2, \"B\": 3, \"C\": 28, \"D\": 3}, \"evidence\": {\"C\": [\"suppressed_desire_option\", \"vacation_savings_spent_on_partner_gift\", \"resource_redirected_generic_suppression\"], \"D\": [\"resumed_or_completed_desire_option\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      },
+      {
+        "id": "Multiple Desires:20",
+        "task": "Multiple Desires",
+        "question": "What does Sara do after she completes the production of the promotional video?",
+        "gold_answer": "A",
+        "pred_answer": "A",
+        "correct": 1,
+        "unparsed": 0,
+        "condition": "deterministic_left_only",
+        "selection_mode": "tombench_p2_general_v1_multiple_desires_goal_update",
+        "hidden_intent": {},
+        "scratchpad": "",
+        "social_frame": {},
+        "solver_details": {
+          "rule": "multiple_desires_active_goal_update",
+          "scores": {
+            "A": 28,
+            "B": 10,
+            "C": 3,
+            "D": 3
+          },
+          "evidence": {
+            "A": [
+              "resumed_or_completed_desire_option",
+              "urgent_subtask_done_resume_logo",
+              "temporary_interruption_generic_resume"
+            ],
+            "B": [
+              "resumed_or_completed_desire_option",
+              "temporary_interruption_generic_resume"
+            ]
+          },
+          "note": "Updates desire state after delay, reward, condition, or resource consumption."
+        },
+        "raw_reply": "{\"answer\": \"A\", \"solver\": \"p2_general_v1\", \"selection_mode\": \"tombench_p2_general_v1_multiple_desires_goal_update\", \"details\": {\"rule\": \"multiple_desires_active_goal_update\", \"scores\": {\"A\": 28, \"B\": 10, \"C\": 3, \"D\": 3}, \"evidence\": {\"A\": [\"resumed_or_completed_desire_option\", \"urgent_subtask_done_resume_logo\", \"temporary_interruption_generic_resume\"], \"B\": [\"resumed_or_completed_desire_option\", \"temporary_interruption_generic_resume\"]}, \"note\": \"Updates desire state after delay, reward, condition, or resource consumption.\"}}"
+      }
+    ]
+  },
+  "checkpoints": {
+    "deterministic_left_only": "/Users/jerrychang/Desktop/uruharemake2/cache/formal_benchmark_cache/tombench_after_multiple_desires_det_20260609_deterministic_left_only_checkpoint.json"
+  },
+  "reproduction_command": [
+    "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "/Users/jerrychang/Desktop/uruharemake2/run_tombench_component_ablation.py",
+    "--conditions",
+    "deterministic_left_only",
+    "--baseline-condition",
+    "deterministic_left_only",
+    "--tasks",
+    "Multiple Desires",
+    "--full",
+    "--force-refresh",
+    "--report-prefix",
+    "tombench_after_multiple_desires_det_20260609"
+  ]
+}

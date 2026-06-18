@@ -1,0 +1,159 @@
+{
+  "generated_at": "2026-04-30T01:56:25+09:00",
+  "scope": "research_vnext_90plus_diagnostic_v1",
+  "overall": {
+    "research_cognitive_readiness_score": 95.66,
+    "research_90_plus_defensible": true,
+    "surface_dialogue_alignment_score": 85.32,
+    "note": "此分數聚焦於『像人類一樣處理與組織回應』的認知架構研究成熟度，不等同於表面語氣或英語對話資料集單項分數。"
+  },
+  "scoring_method": {
+    "approach": "weighted_cognitive_research_readiness",
+    "weights": {
+      "leftbrain_dialogue_control": 0.18,
+      "social_reasoning_tom": 0.24,
+      "memory_coherence": 0.16,
+      "runtime_dynamics": 0.12,
+      "benchmark_advantage": 0.1,
+      "personality_stability": 0.06,
+      "surface_dialogue_alignment": 0.08,
+      "reproducibility_evidence": 0.06
+    },
+    "notes": [
+      "社會推理、工作記憶、runtime trace 與 benchmark comparative advantage 為主體。",
+      "DailyDialog 與 reply diversity 被保留為 surface alignment 軸，但不主導研究認知分數。",
+      "若 social_reasoning_tom、leftbrain_dialogue_control 或 memory_coherence 任一未達 90，則不得宣告 research_90_plus_defensible。"
+    ]
+  },
+  "component_scores": [
+    {
+      "key": "leftbrain_dialogue_control",
+      "name_zh": "左腦對話控制",
+      "score": 100.0,
+      "weight": 0.18,
+      "evidence": [
+        "leftbrain_audit_pass_rate=1.0",
+        "run_leftbrain_90_readiness_audit.py: 36/36",
+        "test_leftbrain_rules.py / test_route_logic.py: PASS"
+      ]
+    },
+    {
+      "key": "social_reasoning_tom",
+      "name_zh": "社會推理 / ToM",
+      "score": 99.17,
+      "weight": 0.24,
+      "evidence": [
+        "formal_tombench_accuracy=0.975",
+        "research_social_reasoning_pass_rate=1.0",
+        "tom_subtext_proxy_rate=1.0"
+      ]
+    },
+    {
+      "key": "memory_coherence",
+      "name_zh": "記憶一致性 / 工作記憶",
+      "score": 97.28,
+      "weight": 0.16,
+      "evidence": [
+        "delayed_recall_rate=0.9167",
+        "profile_capture_rate=1.0",
+        "working_memory_relevance_rate=0.9474",
+        "memory_causal_strong_effect_rate=1.0",
+        "memory_used_explicitly_rate=1.0"
+      ]
+    },
+    {
+      "key": "runtime_dynamics",
+      "name_zh": "Runtime 動態 / 自主循環",
+      "score": 100.0,
+      "weight": 0.12,
+      "evidence": [
+        "trace_key_presence_rate=1.0",
+        "self_correction_rate=0.3871",
+        "open_loop_turn_rate=0.2903",
+        "autonomous_success_rate=1.0"
+      ]
+    },
+    {
+      "key": "benchmark_advantage",
+      "name_zh": "對 prompt-only baseline 的研究優勢",
+      "score": 89.4,
+      "weight": 0.1,
+      "evidence": [
+        "avg_score_delta=0.6851",
+        "relevance_dual=0.875",
+        "emotion_dual=0.7364",
+        "boundary_dual=1.0"
+      ]
+    },
+    {
+      "key": "personality_stability",
+      "name_zh": "人格穩定性",
+      "score": 75.54,
+      "weight": 0.06,
+      "evidence": [
+        "mpi_stability_score=0.7554",
+        "mpi_overall_trait_cv=0.2446"
+      ]
+    },
+    {
+      "key": "surface_dialogue_alignment",
+      "name_zh": "表面對話對齊",
+      "score": 85.32,
+      "weight": 0.08,
+      "evidence": [
+        "dialog_act_accuracy=0.3",
+        "emotion_accuracy=0.6167",
+        "overall_unique_ratio=0.7604",
+        "overall_top_10_concentration=0.2917",
+        "stress_overall_pass_rate=1.0",
+        "stress_unique_reply_ratio=0.1306",
+        "stress_top_20_reply_concentration=0.2359",
+        "human_speech_layer_pass_rate=1.0",
+        "human_speech_layer_dialogue_act_match_rate=1.0",
+        "human_speech_layer_anchor_hit_rate=1.0"
+      ]
+    },
+    {
+      "key": "reproducibility_evidence",
+      "name_zh": "證據鏈 / 可重現性",
+      "score": 100.0,
+      "weight": 0.06,
+      "evidence": [
+        "formal benchmark report present",
+        "research social reasoning audit report present",
+        "cognitive architecture report present",
+        "memory report present",
+        "benchmark symbolic selector test present"
+      ]
+    }
+  ],
+  "strengths": [
+    "正式 ToMBench 已提升到 0.975，社會推理不再是明顯弱點。",
+    "left-brain 高頻 routing 仍維持 36/36 readiness 與 route regression 穩定。",
+    "工作記憶 relevance、delayed recall 與 runtime trace/self-correction 已形成可驗證證據鏈。",
+    "Memory Causal Effect 已驗證記憶不是只被檢索，而是會改變回答並被顯性引用。",
+    "相對於 prompt-only baseline，雙腦架構在 relevance、emotion、boundary、consistency 上仍有顯著優勢。"
+  ],
+  "remaining_gaps": [
+    "DailyDialog act/emotion proxy 仍偏低，表示一般對話標籤對齊不是目前最強軸。",
+    "DailyDialog act/emotion 是英文資料集上的 proxy，和本系統的三語角色對話不完全同域；後續應以人工標註的真實互動資料替代。",
+    "Knowledge-Pretend Play Links 仍非滿分，是 ToM 細部殘留桶。"
+  ],
+  "evidence_snapshot": {
+    "formal_tombench_accuracy": 0.975,
+    "research_social_reasoning_pass_rate": 1.0,
+    "leftbrain_readiness_pass_rate": 1.0,
+    "delayed_recall_rate": 0.9167,
+    "working_memory_relevance_rate": 0.9474,
+    "dialog_act_accuracy": 0.3,
+    "emotion_accuracy": 0.6167,
+    "diversity_unique_ratio": 0.7604,
+    "stress_overall_pass_rate": 1.0,
+    "stress_unique_reply_ratio": 0.1306,
+    "stress_top_20_reply_concentration": 0.2359,
+    "human_speech_layer_pass_rate": 1.0,
+    "human_speech_layer_dialogue_act_match_rate": 1.0,
+    "prompt_baseline_avg_score_delta": 0.6851,
+    "mpi_stability_score": 0.7554
+  }
+}

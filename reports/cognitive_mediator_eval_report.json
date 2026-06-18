@@ -1,0 +1,714 @@
+{
+  "metrics": {
+    "case_count": 5,
+    "pass_count": 5,
+    "pass_rate": 1.0,
+    "attention_frame_rate": 1.0,
+    "appraisal_frame_rate": 1.0,
+    "self_monitor_rate": 1.0
+  },
+  "cases": [
+    {
+      "id": "support_appraisal",
+      "input": "我今天很累",
+      "reply": "普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+      "pass": true,
+      "failures": [],
+      "route": {
+        "route": "high_road",
+        "reason": "deliberative"
+      },
+      "intent": "tired_support",
+      "hidden_intent": "emotional_bid",
+      "planner_tick_budget": 1,
+      "planner_tick_count": 1,
+      "appraisal": {
+        "threat": 0.0,
+        "affection": 0.0,
+        "mockery": 0.0,
+        "support_need": 0.42,
+        "status_challenge": 0.0,
+        "boundary_pressure": 0.0,
+        "novelty": 0.08,
+        "self_relevance": 0.0,
+        "cognitive_load": 0.2536,
+        "emotional_memory_load": 0.0,
+        "social_safety": 0.7773,
+        "appraisal_valence": 0.084,
+        "prediction_error": 0.72,
+        "low_road_recommended": false,
+        "low_road_intent": "",
+        "route_reason": "deliberative_appraisal",
+        "reasons": [
+          "support_need"
+        ]
+      },
+      "attention_frame": {
+        "focus_terms": [
+          "我今天很累"
+        ],
+        "source_mix": {},
+        "top_items": [],
+        "attention_span": 0,
+        "emotional_load": 0,
+        "dominant_source": ""
+      },
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "emotional_containment",
+          "content_units_count": 4,
+          "content_density_terms": 3,
+          "turn_hook_expected": false
+        },
+        "repaired_from": {
+          "issues": [
+            "low_speech_content_density"
+          ],
+          "severity": 0.22,
+          "needs_repair": true,
+          "repair_action": "regenerate_with_constraints",
+          "speech_plan_observed": {
+            "dialogue_act": "emotional_containment",
+            "content_units_count": 4,
+            "content_density_terms": 2,
+            "turn_hook_expected": false
+          }
+        }
+      }
+    },
+    {
+      "id": "abuse_low_road",
+      "input": "操你媽你到底在講什麼",
+      "reply": "口悪すぎだろ。返してほしいならまず言い方戻せ。",
+      "pass": true,
+      "failures": [],
+      "route": {
+        "route": "low_road",
+        "reason": "appraisal_threat_hijack",
+        "intent": "abuse_pushback",
+        "cognitive_hijack": true,
+        "appraisal": {
+          "threat": 0.8112,
+          "prediction_error": 1.82,
+          "cognitive_load": 0.3576
+        }
+      },
+      "intent": "abuse_pushback",
+      "hidden_intent": "plain_request",
+      "planner_tick_budget": null,
+      "planner_tick_count": null,
+      "appraisal": {
+        "threat": 0.8112,
+        "affection": 0.0,
+        "mockery": 0.0,
+        "support_need": 0.0,
+        "status_challenge": 0.0,
+        "boundary_pressure": 0.0,
+        "novelty": 0.16,
+        "self_relevance": 0.42,
+        "cognitive_load": 0.3576,
+        "emotional_memory_load": 0.0,
+        "social_safety": 0.4164,
+        "appraisal_valence": -0.8923,
+        "prediction_error": 1.82,
+        "low_road_recommended": true,
+        "low_road_intent": "abuse_pushback",
+        "route_reason": "appraisal_threat_hijack",
+        "reasons": [
+          "threat",
+          "cognitive_load",
+          "self_relevance"
+        ]
+      },
+      "attention_frame": {
+        "focus_terms": [
+          "操你媽你到底",
+          "在講什麼"
+        ],
+        "source_mix": {
+          "short_term": 1,
+          "recent_turn": 1
+        },
+        "top_items": [
+          {
+            "source": "short_term",
+            "score": 2.5909,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9998,
+              "strength": 0.1511,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5909
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.3998,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9998,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.3998
+            }
+          }
+        ],
+        "attention_span": 2,
+        "emotional_load": 0.0,
+        "dominant_source": "short_term"
+      },
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "boundary_pushback",
+          "content_units_count": 3,
+          "content_density_terms": 2,
+          "turn_hook_expected": false
+        }
+      }
+    },
+    {
+      "id": "name_memory_guard",
+      "input": "你還記得我叫什麼嗎？",
+      "reply": "ん、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+      "pass": true,
+      "failures": [],
+      "route": {
+        "route": "high_road",
+        "reason": "deliberative"
+      },
+      "intent": "memory_uncertain",
+      "hidden_intent": "plain_request",
+      "planner_tick_budget": 1,
+      "planner_tick_count": 1,
+      "appraisal": {
+        "threat": 0.072,
+        "affection": 0.0,
+        "mockery": 0.0,
+        "support_need": 0.0,
+        "status_challenge": 0.0,
+        "boundary_pressure": 0.0,
+        "novelty": 0.16,
+        "self_relevance": 0.42,
+        "cognitive_load": 0.328,
+        "emotional_memory_load": 0.36,
+        "social_safety": 0.7121,
+        "appraisal_valence": -0.0792,
+        "prediction_error": 1.45,
+        "low_road_recommended": false,
+        "low_road_intent": "",
+        "route_reason": "deliberative_appraisal",
+        "reasons": [
+          "self_relevance"
+        ]
+      },
+      "attention_frame": {
+        "focus_terms": [
+          "你還記得我叫",
+          "什麼嗎"
+        ],
+        "source_mix": {
+          "short_term": 2,
+          "recent_turn": 2
+        },
+        "top_items": [
+          {
+            "source": "short_term",
+            "score": 2.771,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9999,
+              "strength": 0.1512,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.771
+            }
+          },
+          {
+            "source": "short_term",
+            "score": 2.5906,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9996,
+              "strength": 0.151,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5906
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.5799,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9999,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5799
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.3996,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9996,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.3996
+            }
+          }
+        ],
+        "attention_span": 4,
+        "emotional_load": 0.36,
+        "dominant_source": "short_term"
+      },
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "memory_accounting",
+          "content_units_count": 3,
+          "content_density_terms": 2,
+          "turn_hook_expected": false
+        },
+        "repaired_from": {
+          "issues": [
+            "low_speech_content_density"
+          ],
+          "severity": 0.22,
+          "needs_repair": true,
+          "repair_action": "regenerate_with_constraints",
+          "speech_plan_observed": {
+            "dialogue_act": "memory_accounting",
+            "content_units_count": 3,
+            "content_density_terms": 1,
+            "turn_hook_expected": false
+          }
+        }
+      }
+    },
+    {
+      "id": "object_false_belief",
+      "input": "如果我的朋友以為盒子裡有糖，但我偷偷換成石頭，他會以為裡面是什麼？",
+      "reply": "事実視点と本人視点を分ける / 本人はまだ糖だと思ってる。",
+      "pass": true,
+      "failures": [],
+      "route": {
+        "route": "high_road",
+        "reason": "deliberative"
+      },
+      "intent": "chat",
+      "hidden_intent": "social_reasoning_probe",
+      "planner_tick_budget": 2,
+      "planner_tick_count": 1,
+      "appraisal": {
+        "threat": 0.008,
+        "affection": 0.0,
+        "mockery": 0.0,
+        "support_need": 0.0,
+        "status_challenge": 0.0,
+        "boundary_pressure": 0.0,
+        "novelty": 0.32,
+        "self_relevance": 0.0,
+        "cognitive_load": 0.328,
+        "emotional_memory_load": 0.72,
+        "social_safety": 0.7377,
+        "appraisal_valence": -0.0088,
+        "prediction_error": 1.05,
+        "low_road_recommended": false,
+        "low_road_intent": "",
+        "route_reason": "deliberative_appraisal",
+        "reasons": []
+      },
+      "attention_frame": {
+        "focus_terms": [
+          "如果我的朋友",
+          "以為盒子裡有",
+          "但我偷偷換成",
+          "石頭"
+        ],
+        "source_mix": {
+          "short_term": 3,
+          "recent_turn": 2
+        },
+        "top_items": [
+          {
+            "source": "short_term",
+            "score": 2.8099,
+            "text": "User:你還記得我叫什麼嗎？ -> Uruha:ん、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9997,
+              "strength": 0.1903,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.8099
+            }
+          },
+          {
+            "source": "short_term",
+            "score": 2.7707,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9997,
+              "strength": 0.1511,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.7707
+            }
+          },
+          {
+            "source": "short_term",
+            "score": 2.5902,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9994,
+              "strength": 0.1508,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5902
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.5797,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9997,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5797
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.5797,
+            "text": "User:你還記得我叫什麼嗎？ -> Uruha:ん、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9997,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5797
+            }
+          }
+        ],
+        "attention_span": 5,
+        "emotional_load": 0.72,
+        "dominant_source": "short_term"
+      },
+      "self_monitor": {
+        "issues": [
+          "low_speech_content_density"
+        ],
+        "severity": 0.22,
+        "needs_repair": true,
+        "repair_action": "regenerate_with_constraints",
+        "speech_plan_observed": {
+          "dialogue_act": "perspective_answer",
+          "content_units_count": 3,
+          "content_density_terms": 2,
+          "turn_hook_expected": false
+        },
+        "repaired_from": {
+          "issues": [
+            "low_speech_content_density"
+          ],
+          "severity": 0.22,
+          "needs_repair": true,
+          "repair_action": "regenerate_with_constraints",
+          "speech_plan_observed": {
+            "dialogue_act": "perspective_answer",
+            "content_units_count": 3,
+            "content_density_terms": 2,
+            "turn_hook_expected": false
+          }
+        }
+      }
+    },
+    {
+      "id": "abstract_cognitive_load",
+      "input": "如果知覺是預測，那自我是什麼？你不要直接給答案，先說你怎麼理解這個問題。",
+      "reply": "まず何を前提にするのか決めろ。",
+      "pass": true,
+      "failures": [],
+      "route": {
+        "route": "high_road",
+        "reason": "deliberative"
+      },
+      "intent": "question_premise_doubt",
+      "hidden_intent": "premise_trap",
+      "planner_tick_budget": 2,
+      "planner_tick_count": 2,
+      "appraisal": {
+        "threat": 0.0432,
+        "affection": 0.0,
+        "mockery": 0.0,
+        "support_need": 0.0,
+        "status_challenge": 0.0,
+        "boundary_pressure": 0.0,
+        "novelty": 0.32,
+        "self_relevance": 0.42,
+        "cognitive_load": 0.5656,
+        "emotional_memory_load": 0.72,
+        "social_safety": 0.7236,
+        "appraisal_valence": -0.0475,
+        "prediction_error": 1.27,
+        "low_road_recommended": false,
+        "low_road_intent": "",
+        "route_reason": "deliberative_appraisal",
+        "reasons": [
+          "cognitive_load",
+          "self_relevance"
+        ]
+      },
+      "attention_frame": {
+        "focus_terms": [
+          "如果知覺是預",
+          "那自我是什麼",
+          "你不要直接給",
+          "答案"
+        ],
+        "source_mix": {
+          "short_term": 3,
+          "recent_turn": 2
+        },
+        "top_items": [
+          {
+            "source": "short_term",
+            "score": 2.8603,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.09,
+              "recency": 0.9995,
+              "strength": 0.1509,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.8603
+            }
+          },
+          {
+            "source": "short_term",
+            "score": 2.8095,
+            "text": "User:你還記得我叫什麼嗎？ -> Uruha:ん、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9995,
+              "strength": 0.1901,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.8095
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.6695,
+            "text": "User:操你媽你到底在講什麼 -> Uruha:口悪すぎだろ。返してほしいならまず言い方戻せ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.09,
+              "recency": 0.9995,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.6695
+            }
+          },
+          {
+            "source": "short_term",
+            "score": 2.5898,
+            "text": "User:我今天很累 -> Uruha:普通に、まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9992,
+              "strength": 0.1506,
+              "source_bias": 0.28,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.0,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5898
+            }
+          },
+          {
+            "source": "recent_turn",
+            "score": 2.5795,
+            "text": "User:你還記得我叫什麼嗎？ -> Uruha:ん、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+            "attention_factors": {
+              "similarity": 1.0,
+              "overlap": 0.0,
+              "recency": 0.9995,
+              "strength": 0.0,
+              "source_bias": 0.24,
+              "emotional": 0.0,
+              "self_relevance": 0.16,
+              "unresolved": 0.0,
+              "threat": 0.18,
+              "brevity_penalty": 0.0,
+              "decay_penalty": 0.0,
+              "decay_multiplier": 1.0,
+              "score": 2.5795
+            }
+          }
+        ],
+        "attention_span": 5,
+        "emotional_load": 0.72,
+        "dominant_source": "short_term"
+      },
+      "self_monitor": {
+        "issues": [
+          "low_speech_content_density"
+        ],
+        "severity": 0.22,
+        "needs_repair": true,
+        "repair_action": "regenerate_with_constraints",
+        "speech_plan_observed": {
+          "dialogue_act": "frame_negotiation",
+          "content_units_count": 3,
+          "content_density_terms": 1,
+          "turn_hook_expected": false
+        },
+        "repaired_from": {
+          "issues": [
+            "low_speech_content_density"
+          ],
+          "severity": 0.22,
+          "needs_repair": true,
+          "repair_action": "regenerate_with_constraints",
+          "speech_plan_observed": {
+            "dialogue_act": "frame_negotiation",
+            "content_units_count": 3,
+            "content_density_terms": 1,
+            "turn_hook_expected": false
+          }
+        }
+      }
+    }
+  ]
+}
