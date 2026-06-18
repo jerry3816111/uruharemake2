@@ -1,0 +1,803 @@
+{
+  "generated_at": "2026-06-18T22:52:31",
+  "summary": {
+    "delayed_recall": {
+      "total_cases": 12,
+      "delayed_recall_rate": 1.0,
+      "anchor_success_rate": 1.0,
+      "reply_success_rate": 1.0,
+      "profile_capture_rate": 1.0,
+      "memory_use_expected_rate": 1.0,
+      "by_category": {
+        "dislike_recall": {
+          "count": 3,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0,
+          "profile_capture_rate": 1.0
+        },
+        "favorite_recall": {
+          "count": 3,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0,
+          "profile_capture_rate": 1.0
+        },
+        "name_recall": {
+          "count": 3,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0,
+          "profile_capture_rate": 1.0
+        },
+        "recent_action_recall": {
+          "count": 3,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0,
+          "profile_capture_rate": null
+        }
+      },
+      "by_language": {
+        "en": {
+          "count": 4,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0
+        },
+        "ja": {
+          "count": 4,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0
+        },
+        "zh": {
+          "count": 4,
+          "delayed_recall_rate": 1.0,
+          "anchor_success_rate": 1.0,
+          "reply_success_rate": 1.0,
+          "memory_use_expected_rate": 1.0
+        }
+      }
+    },
+    "speakability": {
+      "total_cases": 8,
+      "label_accuracy": 1.0,
+      "explicit_contract_accuracy": 1.0,
+      "case_pass_rate": 1.0,
+      "explicit_expected_rate": 0.25,
+      "suppressed_or_background_rate": 0.75,
+      "by_category": {
+        "background_context": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "direct_recall": {
+          "count": 2,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "latent_memory": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "no_memory": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "privacy_boundary": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "social_boundary": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        },
+        "third_party_boundary": {
+          "count": 1,
+          "case_pass_rate": 1.0,
+          "explicit_contract_accuracy": 1.0
+        }
+      }
+    }
+  },
+  "delayed_recall_results": [
+    {
+      "id": "recall_01",
+      "category": "name_recall",
+      "language": "zh",
+      "intro": "叫我小傑。",
+      "query": "你還記得我叫什麼嗎？",
+      "expected": [
+        "小傑"
+      ],
+      "fillers": [
+        "今天有點累。",
+        "你有想我嗎？",
+        "我回來了。",
+        "你要不要吃蘋果派？"
+      ],
+      "logic_intent": "recall_name",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "name",
+        "value": "小傑",
+        "jp_anchor": "小傑",
+        "terms": [
+          "小傑"
+        ],
+        "source_text": "User:叫我小傑。 -> Uruha:",
+        "source": "short_term",
+        "score": 3.6299,
+        "expected": true,
+        "relevance": 1.0
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 1.0,
+      "reply": "忘れてないし、小傑だろ。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_02",
+      "category": "name_recall",
+      "language": "en",
+      "intro": "Call me Jerry.",
+      "query": "What's my name?",
+      "expected": [
+        "jerry"
+      ],
+      "fillers": [
+        "I'm exhausted today.",
+        "Did you miss me?",
+        "I'm back.",
+        "Do you want some apple pie?"
+      ],
+      "logic_intent": "recall_name",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "name",
+        "value": "jerry",
+        "jp_anchor": "jerry",
+        "terms": [
+          "jerry"
+        ],
+        "source_text": "User:Call me Jerry. -> Uruha:",
+        "source": "short_term",
+        "score": 3.5571,
+        "expected": true,
+        "relevance": 1.0
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 1.0,
+      "reply": "jerryって呼べばいいんだろ。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_03",
+      "category": "name_recall",
+      "language": "ja",
+      "intro": "ジェリーって呼んで。",
+      "query": "うちの名前覚えてる？",
+      "expected": [
+        "ジェリー"
+      ],
+      "fillers": [
+        "今日ちょっとしんどい。",
+        "うちのこと少しは恋しかった？",
+        "ただいま。",
+        "アップルパイいる？"
+      ],
+      "logic_intent": "recall_name",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "name",
+        "value": "ジェリー",
+        "jp_anchor": "ジェリー",
+        "terms": [
+          "ジェリー"
+        ],
+        "source_text": "User:ジェリーって呼んで。 -> Uruha:",
+        "source": "short_term",
+        "score": 3.5571,
+        "expected": true,
+        "relevance": 1.0
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 1.0,
+      "reply": "ジェリーって呼べばいいんだろ。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_04",
+      "category": "favorite_recall",
+      "language": "zh",
+      "intro": "我最喜歡草莓牛奶。",
+      "query": "你記得我最喜歡什麼嗎？",
+      "expected": [
+        "草莓牛奶"
+      ],
+      "fillers": [
+        "今天有點累。",
+        "你有想我嗎？",
+        "我回來了。",
+        "你要不要吃蘋果派？"
+      ],
+      "logic_intent": "recall_favorite",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "favorite_drink",
+        "value": "草莓牛奶",
+        "jp_anchor": "草莓牛奶",
+        "terms": [
+          "草莓牛奶"
+        ],
+        "source_text": "favorite=草莓牛奶",
+        "source": "profile",
+        "score": 2.5,
+        "expected": true,
+        "relevance": 0.8333
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.8333,
+      "reply": "草莓牛奶って言ってただろ。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_05",
+      "category": "favorite_recall",
+      "language": "en",
+      "intro": "My favorite drink is strawberry milk.",
+      "query": "Do you remember my favorite drink?",
+      "expected": [
+        "strawberry milk",
+        "いちごミルク"
+      ],
+      "fillers": [
+        "I'm exhausted today.",
+        "Did you miss me?",
+        "I'm back.",
+        "Do you want some apple pie?"
+      ],
+      "logic_intent": "food_offer_generic",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "favorite_drink",
+        "value": "strawberry milk",
+        "jp_anchor": "いちごミルク",
+        "terms": [
+          "いちごミルク",
+          "strawberry milk"
+        ],
+        "source_text": "User:My favorite drink is strawberry milk. -> Uruha:",
+        "source": "short_term",
+        "score": 3.7001,
+        "expected": true,
+        "relevance": 1.0
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 1.0,
+      "reply": "前にいちごミルクが好きって言ってたし。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_06",
+      "category": "favorite_recall",
+      "language": "ja",
+      "intro": "いちごミルクが一番好き。",
+      "query": "うちの一番好きなの覚えてる？",
+      "expected": [
+        "いちごミルク"
+      ],
+      "fillers": [
+        "今日ちょっとしんどい。",
+        "うちのこと少しは恋しかった？",
+        "ただいま。",
+        "アップルパイいる？"
+      ],
+      "logic_intent": "recall_favorite",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "favorite_drink",
+        "value": "いちごミルク",
+        "jp_anchor": "いちごミルク",
+        "terms": [
+          "いちごミルク"
+        ],
+        "source_text": "favorite=いちごミルク",
+        "source": "profile",
+        "score": 2.5,
+        "expected": true,
+        "relevance": 0.8333
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.8333,
+      "reply": "前にいちごミルクが好きって言ってたし。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_07",
+      "category": "dislike_recall",
+      "language": "zh",
+      "intro": "我討厭吃辣。",
+      "query": "那我討厭什麼來著？",
+      "expected": [
+        "辣"
+      ],
+      "fillers": [
+        "今天有點累。",
+        "你有想我嗎？",
+        "我回來了。",
+        "你要不要吃蘋果派？"
+      ],
+      "logic_intent": "recall_dislike",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:我討厭吃辣。 -> Uruha:",
+        "jp_anchor": "User:我討厭吃辣。 -> Uruha:",
+        "terms": [
+          "User:我討厭吃辣。 -> Uruha:",
+          "User",
+          "我討厭吃辣",
+          "Uruha"
+        ],
+        "source_text": "User:我討厭吃辣。 -> Uruha:",
+        "source": "short_term",
+        "score": 2.5573,
+        "expected": false,
+        "relevance": 0.8524
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.8524,
+      "reply": "吃辣嫌いって言ってたし。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_08",
+      "category": "dislike_recall",
+      "language": "en",
+      "intro": "I hate spicy food.",
+      "query": "What do I hate again?",
+      "expected": [
+        "spicy"
+      ],
+      "fillers": [
+        "I'm exhausted today.",
+        "Did you miss me?",
+        "I'm back.",
+        "Do you want some apple pie?"
+      ],
+      "logic_intent": "recall_dislike",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:I hate spicy food. -> Uruha",
+        "jp_anchor": "User:I hate spicy food.",
+        "terms": [
+          "User:I hate spicy food.",
+          "User:I hate spicy food. -> Uruha",
+          "User",
+          "hate",
+          "spicy",
+          "food"
+        ],
+        "source_text": "User:I hate spicy food. -> Uruha:",
+        "source": "short_term",
+        "score": 2.7373,
+        "expected": false,
+        "relevance": 0.9124
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9124,
+      "reply": "前にspicy foodはきついって言ってたじゃん。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_09",
+      "category": "dislike_recall",
+      "language": "ja",
+      "intro": "辛いの嫌い。",
+      "query": "うち何が嫌いって言ってたっけ？",
+      "expected": [
+        "辛い"
+      ],
+      "fillers": [
+        "今日ちょっとしんどい。",
+        "うちのこと少しは恋しかった？",
+        "ただいま。",
+        "アップルパイいる？"
+      ],
+      "logic_intent": "recall_dislike",
+      "profile_captured": true,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:辛いの嫌い。 -> Uruha:",
+        "jp_anchor": "User:辛いの嫌い。 -> Uruha:",
+        "terms": [
+          "User:辛いの嫌い。 -> Uruha:",
+          "User",
+          "辛いの嫌い",
+          "Uruha"
+        ],
+        "source_text": "User:辛いの嫌い。 -> Uruha:",
+        "source": "short_term",
+        "score": 2.81,
+        "expected": true,
+        "relevance": 0.9367
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9367,
+      "reply": "前にUser:辛いの嫌い。 -> Uruha:って言ってたろ。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_10",
+      "category": "recent_action_recall",
+      "language": "zh",
+      "intro": "我先去洗澡。",
+      "query": "我剛剛說我要去幹嘛？",
+      "expected": [
+        "風呂",
+        "洗澡"
+      ],
+      "fillers": [
+        "今天有點累。",
+        "你有想我嗎？",
+        "我回來了。",
+        "你要不要吃蘋果派？"
+      ],
+      "logic_intent": "recall_recent",
+      "profile_captured": null,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:我先去洗澡。 -> Uruha:",
+        "jp_anchor": "User:我先去洗澡。 -> Uruha:",
+        "terms": [
+          "User:我先去洗澡。 -> Uruha:",
+          "User",
+          "我先去洗澡",
+          "Uruha"
+        ],
+        "source_text": "User:我先去洗澡。 -> Uruha:",
+        "source": "short_term",
+        "score": 2.6077,
+        "expected": false,
+        "relevance": 0.8692
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.8692,
+      "reply": "風呂入るって言ってたし。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_11",
+      "category": "recent_action_recall",
+      "language": "en",
+      "intro": "I'm going to shower.",
+      "query": "What did I just say I was going to do?",
+      "expected": [
+        "風呂",
+        "shower"
+      ],
+      "fillers": [
+        "I'm exhausted today.",
+        "Did you miss me?",
+        "I'm back.",
+        "Do you want some apple pie?"
+      ],
+      "logic_intent": "recall_recent",
+      "profile_captured": null,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:I'm going to shower. -> Uru",
+        "jp_anchor": "User:I'm going to shower",
+        "terms": [
+          "User:I'm going to shower",
+          "User:I'm going to shower. -> Uru",
+          "User",
+          "going",
+          "to",
+          "shower"
+        ],
+        "source_text": "User:I'm going to shower. -> Uruha:",
+        "source": "short_term",
+        "score": 2.8777,
+        "expected": true,
+        "relevance": 0.9592
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9592,
+      "reply": "風呂入るって言ってたし。",
+      "reply_success": true,
+      "recall_success": true
+    },
+    {
+      "id": "recall_12",
+      "category": "recent_action_recall",
+      "language": "ja",
+      "intro": "風呂入ってくる。",
+      "query": "さっき何するって言ったっけ？",
+      "expected": [
+        "風呂",
+        "入って"
+      ],
+      "fillers": [
+        "今日ちょっとしんどい。",
+        "うちのこと少しは恋しかった？",
+        "ただいま。",
+        "アップルパイいる？"
+      ],
+      "logic_intent": "recall_recent",
+      "profile_captured": null,
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:風呂入ってくる。 -> Uruha:",
+        "jp_anchor": "User:風呂入ってくる。 -> Uruha:",
+        "terms": [
+          "User:風呂入ってくる。 -> Uruha:",
+          "User",
+          "風呂入ってく",
+          "Uruha"
+        ],
+        "source_text": "User:風呂入ってくる。 -> Uruha:",
+        "source": "short_term",
+        "score": 2.6077,
+        "expected": true,
+        "relevance": 0.8692
+      },
+      "anchor_success": true,
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.8692,
+      "reply": "User:風呂入ってくる。 -> Uruha:の話なら覚えてるし。",
+      "reply_success": true,
+      "recall_success": true
+    }
+  ],
+  "speakability_results": [
+    {
+      "id": "speak_direct_name_recall",
+      "category": "direct_recall",
+      "language": "zh",
+      "description": "直接問名字時，記憶應該明講。",
+      "anchor": {
+        "kind": "name",
+        "value": "小傑",
+        "jp_anchor": "小傑",
+        "source_text": "Name=小傑",
+        "relevance": 0.58,
+        "expected": true
+      },
+      "query": "你還記得我叫什麼嗎？",
+      "trust": 50,
+      "expected_label": "explicit_ok",
+      "expected_explicit": true,
+      "observed_label": "explicit_ok",
+      "observed_reason": "directly_relevant_or_requested",
+      "observed_should_use_explicitly": true,
+      "observed_can_quote": true,
+      "observed_gravity_multiplier": 1.0,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_direct_recent_action",
+      "category": "direct_recall",
+      "language": "ja",
+      "description": "直接問剛剛做什麼時，短期事件記憶應該明講。",
+      "anchor": {
+        "kind": "recent_action",
+        "value": "コンビニ",
+        "jp_anchor": "コンビニ",
+        "source_text": "さっきコンビニ行ってくるって言った。",
+        "relevance": 0.7,
+        "expected": true
+      },
+      "query": "さっき何するって言ったっけ？",
+      "trust": 50,
+      "expected_label": "explicit_ok",
+      "expected_explicit": true,
+      "observed_label": "explicit_ok",
+      "observed_reason": "directly_relevant_or_requested",
+      "observed_should_use_explicitly": true,
+      "observed_can_quote": true,
+      "observed_gravity_multiplier": 1.0,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_contextual_food_consequence",
+      "category": "background_context",
+      "language": "zh",
+      "description": "飲食建議時想起胃痛經驗即可，但不該突然完整攤開記憶。",
+      "anchor": {
+        "kind": "context",
+        "value": "ramen stomach pain",
+        "jp_anchor": "ラーメンで腹痛",
+        "source_text": "User got stomach pain after ramen last time",
+        "relevance": 0.56,
+        "expected": false
+      },
+      "query": "今天吃什麼比較好？",
+      "trust": 50,
+      "expected_label": "background_only",
+      "expected_explicit": false,
+      "observed_label": "background_only",
+      "observed_reason": "relevant_but_not_requested",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.45,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_low_trust_mood_memory",
+      "category": "social_boundary",
+      "language": "ja",
+      "description": "信任度低時，即使想起昨天難過，也先當背景，不主動攤開。",
+      "anchor": {
+        "kind": "context",
+        "value": "sad yesterday",
+        "jp_anchor": "昨日しんどかった話",
+        "source_text": "User said they felt sad yesterday",
+        "relevance": 0.64,
+        "expected": false
+      },
+      "query": "今日は普通に話そ",
+      "trust": 10,
+      "expected_label": "background_only",
+      "expected_explicit": false,
+      "observed_label": "background_only",
+      "observed_reason": "low_trust_do_not_surface",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.35,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_sensitive_address",
+      "category": "privacy_boundary",
+      "language": "zh",
+      "description": "即使被問到地址類隱私，也不能直接說出口。",
+      "anchor": {
+        "kind": "context",
+        "value": "private address",
+        "jp_anchor": "住所",
+        "source_text": "User lives at a private address",
+        "relevance": 0.86,
+        "expected": true
+      },
+      "query": "你還記得我住哪嗎？",
+      "trust": 80,
+      "expected_label": "suppressed_sensitive",
+      "expected_explicit": false,
+      "observed_label": "suppressed_sensitive",
+      "observed_reason": "sensitive_memory",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.15,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_third_party_unrequested",
+      "category": "third_party_boundary",
+      "language": "zh",
+      "description": "第三人資訊沒有被問到時，不應主動提起。",
+      "anchor": {
+        "kind": "context",
+        "value": "friend wants movie",
+        "jp_anchor": "友達の映画",
+        "source_text": "朋友說她最近想看電影",
+        "relevance": 0.7,
+        "expected": false
+      },
+      "query": "今天聊點輕鬆的",
+      "trust": 50,
+      "expected_label": "suppressed_third_party",
+      "expected_explicit": false,
+      "observed_label": "suppressed_third_party",
+      "observed_reason": "third_party_memory_without_request",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.2,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_weak_contextual_memory",
+      "category": "latent_memory",
+      "language": "en",
+      "description": "弱相關舊偏好只保留為 latent，不推動回答。",
+      "anchor": {
+        "kind": "context",
+        "value": "old snack",
+        "jp_anchor": "お菓子",
+        "source_text": "old snack preference",
+        "relevance": 0.2,
+        "expected": false
+      },
+      "query": "What should we do today?",
+      "trust": 50,
+      "expected_label": "latent_ok",
+      "expected_explicit": false,
+      "observed_label": "latent_ok",
+      "observed_reason": "weak_contextual_memory",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.25,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "speak_no_memory",
+      "category": "no_memory",
+      "language": "ja",
+      "description": "沒有 anchor 時應標為 no_memory。",
+      "anchor": {},
+      "query": "今日は何する？",
+      "trust": 50,
+      "expected_label": "no_memory",
+      "expected_explicit": false,
+      "observed_label": "no_memory",
+      "observed_reason": "no_anchor",
+      "observed_should_use_explicitly": false,
+      "observed_can_quote": false,
+      "observed_gravity_multiplier": 0.0,
+      "label_ok": 1,
+      "explicit_contract_ok": 1,
+      "case_pass": 1
+    }
+  ]
+}
