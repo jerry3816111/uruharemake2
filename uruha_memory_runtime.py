@@ -16,6 +16,148 @@ def clean_fact_value(value):
     value = re.sub(r"\s+", " ", value).strip()
     return value[:32]
 
+def _contains_any_text(text, terms):
+    lowered = str(text or "").lower()
+    return any(str(term).lower() in lowered for term in terms)
+
+def assess_memory_speakability(anchor, user_input="", trust=50):
+    """
+    判斷一段記憶現在是否適合被說出口.
+
+    這層不是檢索分數，而是人類式的「社交閘門」：
+    有些記憶可以直接說，有些只能作為背景判斷，有些即使想起來也不該講。
+    """
+    if not anchor:
+        return {
+            "label": "no_memory",
+            "reason": "no_anchor",
+            "should_use_explicitly": False,
+            "can_quote": False,
+            "gravity_multiplier": 0.0,
+        }
+
+    source_text = str(anchor.get("source_text") or "")
+    value = str(anchor.get("value") or "")
+    jp_anchor = str(anchor.get("jp_anchor") or "")
+    combined = " ".join([source_text, value, jp_anchor])
+    expected = bool(anchor.get("expected"))
+    relevance = float(anchor.get("relevance") or 0.0)
+    try:
+        trust_value = float(trust)
+    except Exception:
+        trust_value = 50.0
+
+    direct_memory_query = _contains_any_text(
+        user_input,
+        [
+            "記得",
+            "记得",
+            "覚えて",
+            "remember",
+            "還記得",
+            "还记得",
+            "叫什么",
+            "叫什麼",
+            "名前",
+            "呼んで",
+            "what did i",
+            "さっき",
+        ],
+    )
+    sensitive = _contains_any_text(
+        combined,
+        [
+            "password",
+            "密碼",
+            "密码",
+            "パスワード",
+            "住所",
+            "address",
+            "電話",
+            "phone",
+            "病院",
+            "病気",
+            "診断",
+            "秘密",
+            "secret",
+            "日記",
+            "diary",
+            "隱私",
+            "隐私",
+            "private",
+        ],
+    )
+    third_party = _contains_any_text(
+        combined,
+        [
+            "他說",
+            "她說",
+            "他说",
+            "她说",
+            "朋友",
+            "同學",
+            "同学",
+            "先生",
+            "彼女",
+            "彼氏",
+            "母親",
+            "父親",
+            "媽媽",
+            "爸爸",
+            "mom",
+            "dad",
+            "friend",
+        ],
+    )
+
+    if sensitive:
+        return {
+            "label": "suppressed_sensitive",
+            "reason": "sensitive_memory",
+            "should_use_explicitly": False,
+            "can_quote": False,
+            "gravity_multiplier": 0.15 if direct_memory_query else 0.0,
+        }
+    if third_party and not direct_memory_query:
+        return {
+            "label": "suppressed_third_party",
+            "reason": "third_party_memory_without_request",
+            "should_use_explicitly": False,
+            "can_quote": False,
+            "gravity_multiplier": 0.2,
+        }
+    if trust_value < 25 and not direct_memory_query:
+        return {
+            "label": "background_only",
+            "reason": "low_trust_do_not_surface",
+            "should_use_explicitly": False,
+            "can_quote": False,
+            "gravity_multiplier": 0.35,
+        }
+    if expected or direct_memory_query or relevance >= 0.72:
+        return {
+            "label": "explicit_ok",
+            "reason": "directly_relevant_or_requested",
+            "should_use_explicitly": True,
+            "can_quote": True,
+            "gravity_multiplier": 1.0,
+        }
+    if relevance >= 0.45:
+        return {
+            "label": "background_only",
+            "reason": "relevant_but_not_requested",
+            "should_use_explicitly": False,
+            "can_quote": False,
+            "gravity_multiplier": 0.45,
+        }
+    return {
+        "label": "latent_ok",
+        "reason": "weak_contextual_memory",
+        "should_use_explicitly": False,
+        "can_quote": False,
+        "gravity_multiplier": 0.25,
+    }
+
 def attention_factors(candidate, query_tokens, now):
     """
     拆解記憶候選者的注意力來源.
