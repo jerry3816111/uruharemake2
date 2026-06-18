@@ -517,6 +517,11 @@ class MemoryManager:
         return umr.recent_dialogue_summary(self.session_turns)
 
     def _clean_fact_value(self, value):
+        value = umr.clean_fact_value(value)
+        value = re.sub(r"\b(?:anymore|now)$", "", value, flags=re.IGNORECASE).strip()
+        value = re.sub(r"^(?:もう|現在|现在|今は)\s*", "", value).strip()
+        value = re.sub(r"(?:了|じゃない)$", "", value).strip()
+        value = re.sub(r"(?:は|が|を)$", "", value).strip()
         return umr.clean_fact_value(value)
 
     def _extract_profile_facts(self, user_input):
@@ -535,9 +540,15 @@ class MemoryManager:
             ("like", [r"(?:我喜歡|我喜欢|我愛|我爱)([^，。！？?]{1,20})"]),
             ("like", [r"(.{1,20})が好き"]),
             ("dislike", [r"(?:i (?:really )?hate)\s+([a-z0-9 \-]{2,30})"]),
+            ("dislike", [r"(?:i (?:do not|don't|no longer) like)\s+([a-z0-9 \-]{2,30}?)(?:\s+anymore|\s+now|[.!?]|$)"]),
+            ("dislike", [r"(?:i (?:can't|cannot) (?:drink|eat))\s+([a-z0-9 \-]{2,30}?)(?:\s+anymore|[.!?]|$)"]),
             ("dislike", [r"(?:我討厭|我讨厌)([^，。！？?]{1,20})"]),
+            ("dislike", [r"(?:我(?:現在|现在)?(?:不再|不)喜歡|我(?:現在|现在)?已經不喜歡)([^，。！？?]{1,20})(?:了)?"]),
+            ("dislike", [r"(?:我(?:現在|现在)?不能(?:喝|吃))([^，。！？?]{1,20})(?:了)?"]),
             ("dislike", [r"(.{1,20})嫌い"]),
             ("dislike", [r"(.{1,20})無理"]),
+            ("dislike", [r"(.{1,20})(?:は|が)?もう好きじゃない", r"もう(.{1,20})(?:は|が)?好きじゃない"]),
+            ("dislike", [r"(.{1,20})(?:は|が|を)?(?:飲めない|食べられない)"]),
         ]
         for fact_type, regexes in patterns:
             for regex in regexes:
@@ -577,6 +588,22 @@ class MemoryManager:
 
     def _remember_profile_facts(self, user_input):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        def normalized(value):
+            return self._clean_fact_value(value).lower()
+
+        def forget_current_preference(value):
+            target = normalized(value)
+            if not target:
+                return
+            for field in ("favorites", "likes"):
+                kept = []
+                for item in self.session_profile.get(field, []):
+                    item_norm = normalized(item)
+                    if item_norm and item_norm == target:
+                        continue
+                    kept.append(item)
+                self.session_profile[field] = kept
+
         def remember_recent_first(field, value):
             values = [item for item in self.session_profile.get(field, []) if item.lower() != value.lower()]
             self.session_profile[field] = [value, *values][:8]
@@ -589,6 +616,7 @@ class MemoryManager:
             elif fact_type == "like":
                 remember_recent_first("likes", value)
             elif fact_type == "dislike":
+                forget_current_preference(value)
                 remember_recent_first("dislikes", value)
             try:
                 self.profile_col.add(
@@ -1735,10 +1763,10 @@ Rules:
         profile = memory_data.get("profile_structured") or {}
         recent_turns = memory_data.get("recent_turns") or []
 
-        # [NEW] Check extracted high-leverage rules first
+        # Extracted high-leverage rules are still preferred for normal dialogue,
+        # but memory-correction probes must run before them so old preferences do
+        # not get misread as food/drink offers.
         extracted_plan = uruha_leftbrain_rules.get_rule_based_plan(user_input, recent_turns, current_psyche)
-        if extracted_plan:
-            return extracted_plan
 
         def base_plan(
             intent,
@@ -1893,6 +1921,38 @@ Rules:
                 return values
             return None
 
+        def jp_memory_value(value):
+            value = str(value or "").strip()
+            lowered_value = value.lower()
+            replacements = {
+                "coffee": "コーヒー",
+                "ramen": "ラーメン",
+                "warm milk": "温かいミルク",
+                "milk": "ミルク",
+                "tea": "お茶",
+                "chamomile tea": "カモミールティー",
+                "strawberry milk": "いちごミルク",
+            }
+            if lowered_value in replacements:
+                return replacements[lowered_value]
+            if "coffee" in lowered_value:
+                return "コーヒー"
+            if "ramen" in lowered_value:
+                return "ラーメン"
+            return value[:24]
+
+        def mentioned_current_dislike():
+            query = f"{text} {lowered}"
+            for value in profile.get("dislikes") or []:
+                value = str(value or "").strip()
+                if not value:
+                    continue
+                jp_value = jp_memory_value(value)
+                probes = {value, value.lower(), jp_value, jp_value.lower()}
+                if any(probe and probe in query for probe in probes):
+                    return value
+            return None
+
         def recent_user_memory():
             for turn in reversed(recent_turns):
                 utterance = turn.get("user", "")
@@ -1905,6 +1965,50 @@ Rules:
             if selected:
                 return selected["reply"]
             return ""
+
+        def build_memory_correction_plan():
+            if not self._contains_any(
+                lowered,
+                [
+                    "still think",
+                    "do you still think",
+                    "還覺得我喜歡",
+                    "还觉得我喜欢",
+                    "還以為我喜歡",
+                    "还以为我喜欢",
+                    "まだ好きだと思",
+                    "まだ好きと思",
+                    "まだ一番好き",
+                    "好きだと思",
+                    "一番好きだと思",
+                ],
+            ):
+                return None
+            corrected = mentioned_current_dislike() or pick_profile_value("dislikes")
+            if not corrected:
+                return None
+            return base_plan(
+                intent="memory_correction",
+                scene="casual",
+                listener_state="古い記憶と今の状態を混同していないか確認している",
+                reply_goal="古い好みを現在形で断定せず、更新後の状態を返す",
+                summary="ユーザーが以前の好みを今もそうだと思っているか確認している。",
+                meaning=f"今は{jp_memory_value(corrected)}じゃないって更新してる",
+                stance={"warmth": 0.24, "tease": 0.03, "blunt": 0.12, "jealousy": 0.0, "distance": 0.05},
+                max_chars=30,
+                avoid=["私", "わかりました", "好きって言ってただろ"],
+                cognitive_mode="reflective",
+                uncertainty=0.12,
+                premise_check="reject",
+                self_check=True,
+                subjective_note="古い好みを現在の好みとして扱わない",
+            )
+
+        memory_correction_plan = build_memory_correction_plan()
+        if memory_correction_plan:
+            return memory_correction_plan
+        if extracted_plan:
+            return extracted_plan
 
         def local_offer_item_jp(raw_text):
             lowered_text = str(raw_text or "").lower()
@@ -7835,6 +7939,7 @@ class RightBrain:
             "recall_preference": ["前にそれ好きって言ってただろ。", "そこ前に言ってたじゃん。", "そのへんは一応覚えてるし。"],
             "recall_favorite": ["それが一番好きって言ってただろ。", "前にそれが本命って言ってたし。", "そこは覚えてる、あれだろ。"],
             "recall_dislike": ["それ嫌いって前に言ってたじゃん。", "そこ苦手って言ってただろ。", "あれは無理って前に言ってたし。"],
+            "memory_correction": ["今は違うって更新してる。", "そこはもう前の情報のまま見てない。", "今の状態はそっちじゃないって覚えてる。"],
             "recall_recent": ["さっきそう言ってただろ。", "少し前にそれ言ってたし。", "そこは今さっき言ってたやつだろ。"],
             "memory_uncertain": ["そこはまだぼんやりしてる。", "そこまで綺麗には覚えてない。", "そこは今まだ曖昧だわ。"],
             "proactive_followup": ["さっきの話、まだ途中だろ。そこ少し言えって。", "で、さっきの続きはどうなんだよ。", "投げっぱなしにした話、まだあるだろ。"],
@@ -7911,7 +8016,7 @@ class RightBrain:
             return reply
         if logic_data.get("memory_use_expected"):
             return reply
-        if logic_data.get("intent") in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "recall_recent"}:
+        if logic_data.get("intent") in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "memory_correction", "recall_recent"}:
             return reply
 
         prefixes = ["ん、", "まあ、", "いや、", "てか、", "一回、", "先に、", "普通に、", "はいはい、"]
@@ -7923,6 +8028,26 @@ class RightBrain:
         if len(candidate) <= max_chars and not any(bad in candidate for bad in ["私", "わかりました", "AI"]):
             return candidate
         return reply
+
+    def _jp_memory_value(self, value):
+        value = str(value or "").strip()
+        lowered = value.lower()
+        replacements = {
+            "coffee": "コーヒー",
+            "ramen": "ラーメン",
+            "warm milk": "温かいミルク",
+            "milk": "ミルク",
+            "tea": "お茶",
+            "chamomile tea": "カモミールティー",
+            "strawberry milk": "いちごミルク",
+        }
+        if lowered in replacements:
+            return replacements[lowered]
+        if "coffee" in lowered:
+            return "コーヒー"
+        if "ramen" in lowered:
+            return "ラーメン"
+        return value[:24]
 
     def _extract_offer_item_jp(self, user_input):
         lowered = user_input.lower()
@@ -8031,7 +8156,7 @@ class RightBrain:
             return "concrete_offer_response"
         if surface in {"affection_tease_soften", "reassure_with_distance", "permission_with_boundary"}:
             return "relationship_temperature"
-        if intent in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "recall_recent", "memory_uncertain"}:
+        if intent in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "memory_correction", "recall_recent", "memory_uncertain"}:
             return "memory_accounting"
         if hidden_intent == "social_reasoning_probe":
             return "perspective_answer"
@@ -8932,6 +9057,11 @@ class RightBrain:
             value = value[0] if value else ""
             if value:
                 variants.extend([f"{value}は無理って前に言ってただろ。", f"{value}嫌いって言ってたし。"])
+        elif intent == "memory_correction":
+            value = (profile.get("dislikes") or [""])
+            value = value[0] if value else ""
+            if value:
+                variants.extend([f"今は{value}じゃないって言ってただろ。", f"{value}はもう違うって更新してるし。"])
         elif intent == "recall_recent":
             picked = _select_recent_action_reference(recent_turns, user_input, current_user_input=user_input)
             if picked:
@@ -9784,7 +9914,7 @@ class RightBrain:
         if intent in {"recall_preference", "recall_favorite"}:
             values = profile.get("favorites") or profile.get("likes") or []
             if values:
-                value = values[0]
+                value = self._jp_memory_value(values[0])
                 return self._choose_variant(
                     [
                         f"{value}が一番好きって言ってただろ。",
@@ -9799,12 +9929,27 @@ class RightBrain:
         if intent == "recall_dislike":
             values = profile.get("dislikes") or []
             if values:
-                value = values[0]
+                value = self._jp_memory_value(values[0])
                 return self._choose_variant(
                     [
                         f"{value}は無理って前に言ってただろ。",
                         f"{value}嫌いって言ってたし。",
                         f"前に{value}はきついって言ってたじゃん。",
+                    ],
+                    f"{intent}:{value}:{user_input}",
+                    intent=intent,
+                    max_chars=max_chars,
+                )
+
+        if intent == "memory_correction":
+            values = profile.get("dislikes") or []
+            if values:
+                value = self._jp_memory_value(values[0])
+                return self._choose_variant(
+                    [
+                        f"今は{value}じゃないって言ってただろ。",
+                        f"{value}はもう違うって更新してるし。",
+                        f"前のままじゃない。今は{value}じゃない方で覚えてる。",
                     ],
                     f"{intent}:{value}:{user_input}",
                     intent=intent,
@@ -10839,6 +10984,11 @@ class UruhaBrainV4_Mac:
         value = str(value or "").strip()
         lowered = value.lower()
         replacements = {
+            "coffee": "コーヒー",
+            "warm milk": "温かいミルク",
+            "milk": "ミルク",
+            "tea": "お茶",
+            "chamomile tea": "カモミールティー",
             "strawberry milk": "いちごミルク",
             "horror movies": "ホラー",
             "horror movie": "ホラー",
@@ -10902,6 +11052,22 @@ class UruhaBrainV4_Mac:
                 user_input,
                 ["討厭什麼", "讨厌什么", "最討厭", "最讨厌", "what do i hate", "hate again", "何が嫌い", "何が苦手"],
             ),
+            "preference_correction": _contains_dialogue_keyword(
+                user_input,
+                [
+                    "still think",
+                    "do you still think",
+                    "還覺得我喜歡",
+                    "还觉得我喜欢",
+                    "還以為我喜歡",
+                    "还以为我喜欢",
+                    "まだ好きだと思",
+                    "まだ好きと思",
+                    "まだ一番好き",
+                    "好きだと思",
+                    "一番好きだと思",
+                ],
+            ),
             "horror": _contains_dialogue_keyword(user_input, ["horror", "ホラー", "恐怖片", "恐怖映画"]),
             "natto": _contains_dialogue_keyword(user_input, ["納豆", "natto"]),
             "ramen": _contains_dialogue_keyword(user_input, ["拉麵", "拉面", "ラーメン", "ramen"]),
@@ -10944,6 +11110,27 @@ class UruhaBrainV4_Mac:
         if flags["name"] and profile.get("name"):
             name = str(profile.get("name")).strip()
             add("name", name, name, [name], source_text=f"Name={name}", source="profile", score=2.8, expected=True)
+
+        if flags["preference_correction"]:
+            query_text = f"{user_input} {str(user_input).lower()}"
+            for value in profile.get("dislikes") or []:
+                value = str(value or "").strip()
+                if not value:
+                    continue
+                jp_value = self._jp_memory_value(value)
+                probes = {value, value.lower(), jp_value, jp_value.lower()}
+                if any(probe and probe in query_text for probe in probes):
+                    add(
+                        "preference_correction",
+                        value,
+                        jp_value,
+                        [jp_value, value, f"{jp_value}じゃない", f"{value} not_current"],
+                        source_text=f"current_negative_preference={value}",
+                        source="profile",
+                        score=2.75,
+                        expected=True,
+                    )
+                    break
 
         if flags["favorite_drink"]:
             values = list(profile.get("favorites") or profile.get("likes") or [])
