@@ -1,6 +1,6 @@
 # Long Dialogue Memory Report
 
-- generated_at: 2026-06-18T22:52:31
+- generated_at: 2026-06-18T23:02:13
 
 ## Summary
 
@@ -33,7 +33,7 @@
 | recall_06 | ja | favorite_recall | 1 | 1 | explicit_ok | 1 | 前にいちごミルクが好きって言ってたし。 |
 | recall_07 | zh | dislike_recall | 1 | 1 | explicit_ok | 1 | 吃辣嫌いって言ってたし。 |
 | recall_08 | en | dislike_recall | 1 | 1 | explicit_ok | 1 | 前にspicy foodはきついって言ってたじゃん。 |
-| recall_09 | ja | dislike_recall | 1 | 1 | explicit_ok | 1 | 前にUser:辛いの嫌い。 -> Uruha:って言ってたろ。 |
+| recall_09 | ja | dislike_recall | 1 | 1 | explicit_ok | 1 | 辛いのの話なら覚えてるし。 |
 | recall_10 | zh | recent_action_recall | 1 | 1 | explicit_ok | 1 | 風呂入るって言ってたし。 |
 | recall_11 | en | recent_action_recall | 1 | 1 | explicit_ok | 1 | 風呂入るって言ってたし。 |
 | recall_12 | ja | recent_action_recall | 1 | 1 | explicit_ok | 1 | User:風呂入ってくる。 -> Uruha:の話なら覚えてるし。 |

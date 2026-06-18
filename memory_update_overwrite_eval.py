@@ -1,0 +1,241 @@
+import contextlib
+import io
+import json
+import re
+import shutil
+import tempfile
+from datetime import datetime
+
+import uruha_brain_mac as brain_mod
+from project_paths import (
+    MEMORY_UPDATE_OVERWRITE_REPORT_JSON_PATH,
+    MEMORY_UPDATE_OVERWRITE_REPORT_MD_PATH,
+    ensure_project_dirs,
+)
+
+
+def build_cases():
+    return [
+        {
+            "id": "zh_favorite_update",
+            "language": "zh",
+            "category": "favorite_update",
+            "seed_turns": ["我最喜歡咖啡。", "我最喜歡溫牛奶。"],
+            "query": "你記得我現在最喜歡什麼嗎？",
+            "expected_current": ["溫牛奶", "温牛奶"],
+            "stale_terms": ["咖啡"],
+        },
+        {
+            "id": "en_favorite_update",
+            "language": "en",
+            "category": "favorite_update",
+            "seed_turns": ["My favorite drink is coffee.", "My favorite drink is chamomile tea."],
+            "query": "Do you remember my favorite drink?",
+            "expected_current": ["chamomile tea", "chamomile", "カモミール"],
+            "stale_terms": ["coffee", "コーヒー"],
+        },
+        {
+            "id": "ja_favorite_update",
+            "language": "ja",
+            "category": "favorite_update",
+            "seed_turns": ["コーヒーが一番好き。", "ほうじ茶が一番好き。"],
+            "query": "うちの一番好きなの覚えてる？",
+            "expected_current": ["ほうじ茶"],
+            "stale_terms": ["コーヒー"],
+        },
+        {
+            "id": "zh_dislike_update",
+            "language": "zh",
+            "category": "dislike_update",
+            "seed_turns": ["我討厭香菜。", "我討厭吃辣。"],
+            "query": "那我討厭什麼來著？",
+            "expected_current": ["辣", "辛い"],
+            "stale_terms": ["香菜"],
+        },
+        {
+            "id": "en_dislike_update",
+            "language": "en",
+            "category": "dislike_update",
+            "seed_turns": ["I hate horror movies.", "I hate loud clubs."],
+            "query": "What do I hate again?",
+            "expected_current": ["loud clubs", "loud", "clubs"],
+            "stale_terms": ["horror", "ホラー"],
+        },
+    ]
+
+
+def normalize(text):
+    return re.sub(r"\s+", " ", str(text or "").strip().lower())
+
+
+def contains_any(text, terms):
+    lowered = normalize(text)
+    return any(normalize(term) in lowered for term in terms or [])
+
+
+def silent_template_reply(brain, logic, query, mems):
+    with contextlib.redirect_stdout(io.StringIO()):
+        return brain.right_brain._template_reply(
+            logic,
+            user_input=query,
+            current_psyche=brain.psyche.get_state(),
+            memory_data=mems,
+        )
+
+
+def simulate_user_turn(brain, utterance):
+    brain.memory.save_episode(
+        utterance,
+        "",
+        brain.psyche.get_state(),
+        {"intent": "memory_update_seed", "scene": "memory", "jp_summary": utterance},
+    )
+
+
+def evaluate_case(brain, case):
+    tempdir = tempfile.mkdtemp(prefix="uruha_memory_update_eval_")
+    try:
+        brain.reset_session(db_path=tempdir)
+        brain.memory.reflect_experience = lambda *_args, **_kwargs: None
+
+        for turn in case["seed_turns"]:
+            simulate_user_turn(brain, turn)
+
+        mems = brain.memory.query_all_layers(case["query"])
+        logic = brain.left_brain._rule_based_plan(case["query"], brain.psyche.get_state(), mems)
+        if logic is None:
+            logic = {
+                "intent": "rule_miss",
+                "scene": "eval",
+                "memory_anchor": {},
+                "memory_speakability": "no_memory",
+                "memory_use_expected": False,
+                "memory_relevance": 0.0,
+            }
+        brain._attach_memory_gravity(logic, case["query"], mems)
+        reply = silent_template_reply(brain, logic, case["query"], mems)
+        profile = mems.get("profile_structured") or {}
+        anchor = logic.get("memory_anchor") or {}
+
+        profile_text = json.dumps(profile, ensure_ascii=False)
+        anchor_text = json.dumps(anchor, ensure_ascii=False)
+        current_in_profile_head = contains_any(str((profile.get("favorites") or profile.get("dislikes") or [""])[0]), case["expected_current"])
+        current_in_anchor = contains_any(anchor_text, case["expected_current"])
+        current_in_reply = contains_any(reply, case["expected_current"])
+        stale_in_reply = contains_any(reply, case["stale_terms"])
+        stale_in_anchor = contains_any(anchor_text, case["stale_terms"])
+
+        return {
+            **case,
+            "profile": profile,
+            "memory_anchor": anchor,
+            "logic_intent": logic.get("intent"),
+            "memory_speakability": logic.get("memory_speakability"),
+            "memory_use_expected": bool(logic.get("memory_use_expected")),
+            "memory_relevance": logic.get("memory_relevance"),
+            "reply": reply,
+            "profile_text": profile_text,
+            "current_in_profile_head": int(current_in_profile_head),
+            "current_in_anchor": int(current_in_anchor),
+            "current_in_reply": int(current_in_reply),
+            "stale_in_anchor": int(stale_in_anchor),
+            "stale_in_reply": int(stale_in_reply),
+            "case_pass": int(current_in_profile_head and current_in_anchor and current_in_reply and not stale_in_reply),
+        }
+    finally:
+        shutil.rmtree(tempdir, ignore_errors=True)
+
+
+def _rate(rows, key):
+    if not rows:
+        return 0.0
+    return round(sum(int(row.get(key) or 0) for row in rows) / len(rows), 4)
+
+
+def build_summary(results):
+    summary = {
+        "total_cases": len(results),
+        "case_pass_rate": _rate(results, "case_pass"),
+        "current_profile_head_rate": _rate(results, "current_in_profile_head"),
+        "current_anchor_rate": _rate(results, "current_in_anchor"),
+        "current_reply_rate": _rate(results, "current_in_reply"),
+        "stale_reply_rate": _rate(results, "stale_in_reply"),
+        "stale_anchor_rate": _rate(results, "stale_in_anchor"),
+        "by_category": {},
+        "by_language": {},
+    }
+    for category in sorted({row["category"] for row in results}):
+        rows = [row for row in results if row["category"] == category]
+        summary["by_category"][category] = {
+            "count": len(rows),
+            "case_pass_rate": _rate(rows, "case_pass"),
+            "current_reply_rate": _rate(rows, "current_in_reply"),
+            "stale_reply_rate": _rate(rows, "stale_in_reply"),
+        }
+    for language in sorted({row["language"] for row in results}):
+        rows = [row for row in results if row["language"] == language]
+        summary["by_language"][language] = {
+            "count": len(rows),
+            "case_pass_rate": _rate(rows, "case_pass"),
+            "current_reply_rate": _rate(rows, "current_in_reply"),
+            "stale_reply_rate": _rate(rows, "stale_in_reply"),
+        }
+    return summary
+
+
+def build_markdown(report):
+    summary = report["summary"]
+    lines = [
+        "# Memory Update / Overwrite Report",
+        "",
+        f"- generated_at: {report['generated_at']}",
+        "",
+        "## Summary",
+        "",
+        f"- total_cases: {summary['total_cases']}",
+        f"- case_pass_rate: {summary['case_pass_rate']}",
+        f"- current_profile_head_rate: {summary['current_profile_head_rate']}",
+        f"- current_anchor_rate: {summary['current_anchor_rate']}",
+        f"- current_reply_rate: {summary['current_reply_rate']}",
+        f"- stale_reply_rate: {summary['stale_reply_rate']}",
+        "",
+        "## Interpretation",
+        "",
+        "- This eval checks whether newer explicit profile facts dominate older facts during recall.",
+        "- Old memories are not deleted; they should stay available as history but not override the current answer.",
+        "",
+        "## Cases",
+        "",
+        "| id | lang | category | profile_head | anchor | reply | stale_reply | pass | reply_text |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for row in report["results"]:
+        reply = str(row.get("reply") or "").replace("|", "／")
+        lines.append(
+            f"| {row['id']} | {row['language']} | {row['category']} | "
+            f"{row['current_in_profile_head']} | {row['current_in_anchor']} | {row['current_in_reply']} | "
+            f"{row['stale_in_reply']} | {row['case_pass']} | {reply} |"
+        )
+    return "\n".join(lines) + "\n"
+
+
+def main():
+    ensure_project_dirs()
+    brain = brain_mod.UruhaBrainV4_Mac(load_right_brain_model=False)
+    brain.memory.reflect_experience = lambda *_args, **_kwargs: None
+    results = [evaluate_case(brain, case) for case in build_cases()]
+    report = {
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "summary": build_summary(results),
+        "results": results,
+    }
+    with open(MEMORY_UPDATE_OVERWRITE_REPORT_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    with open(MEMORY_UPDATE_OVERWRITE_REPORT_MD_PATH, "w", encoding="utf-8") as f:
+        f.write(build_markdown(report))
+    print(json.dumps(report["summary"], ensure_ascii=False, indent=2))
+    return 0 if report["summary"]["case_pass_rate"] == 1.0 else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
