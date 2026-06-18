@@ -11074,10 +11074,14 @@ class UruhaBrainV4_Mac:
             )
             return logic
 
-        hidden_intent = str(logic.get("hidden_intent", ""))
         relevance = float(anchor.get("relevance", 0.0) or 0.0)
-        expected = bool(anchor.get("expected")) or hidden_intent == "memory_probe" or relevance >= 0.62
-        speakability = "explicit_ok" if expected else "latent_ok"
+        hidden_intent = str(logic.get("hidden_intent", ""))
+        if hidden_intent == "memory_probe":
+            anchor["expected"] = True
+        trust_state = (self.psyche.get_state() or {}).get("trust", 50)
+        speakability_assessment = umr.assess_memory_speakability(anchor, user_input=user_input, trust=trust_state)
+        expected = bool(speakability_assessment.get("should_use_explicitly"))
+        speakability = speakability_assessment.get("label", "latent_ok")
         if relevance >= 0.72:
             label = "high"
         elif relevance >= 0.45:
@@ -11089,7 +11093,8 @@ class UruhaBrainV4_Mac:
         logic["memory_relevance"] = round(relevance, 4)
         logic["memory_relevance_label"] = label
         logic["memory_speakability"] = speakability
-        logic["memory_gravity"] = round(relevance * (1.0 if expected else 0.55), 4)
+        logic["memory_speakability_reason"] = speakability_assessment.get("reason")
+        logic["memory_gravity"] = round(relevance * float(speakability_assessment.get("gravity_multiplier", 0.25) or 0.25), 4)
         logic["memory_use_expected"] = expected
         if expected and anchor.get("source_text"):
             logic["my_hidden_knowledge"] = self._trim_text(

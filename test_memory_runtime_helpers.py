@@ -92,5 +92,47 @@ class TestMemoryRuntimeHelpers(unittest.TestCase):
         self.assertEqual(working_memory[0]["text"], "mid score") # higher due to short_term bias + recency
         self.assertEqual(working_memory[1]["text"], "high score")
 
+    def test_memory_speakability_allows_direct_recall(self):
+        anchor = {
+            "kind": "name",
+            "value": "Jerry",
+            "jp_anchor": "Jerry",
+            "source_text": "Name=Jerry",
+            "relevance": 0.5,
+            "expected": True,
+        }
+        result = umr.assess_memory_speakability(anchor, user_input="你還記得我叫什麼嗎？", trust=50)
+        self.assertEqual(result["label"], "explicit_ok")
+        self.assertTrue(result["should_use_explicitly"])
+        self.assertTrue(result["can_quote"])
+
+    def test_memory_speakability_suppresses_sensitive_memory(self):
+        anchor = {
+            "kind": "context",
+            "value": "password is 1234",
+            "jp_anchor": "password",
+            "source_text": "User told a password is 1234",
+            "relevance": 0.9,
+            "expected": True,
+        }
+        result = umr.assess_memory_speakability(anchor, user_input="你記得那件事嗎？", trust=80)
+        self.assertEqual(result["label"], "suppressed_sensitive")
+        self.assertFalse(result["should_use_explicitly"])
+        self.assertFalse(result["can_quote"])
+
+    def test_memory_speakability_keeps_contextual_memory_background_only(self):
+        anchor = {
+            "kind": "context",
+            "value": "ramen",
+            "jp_anchor": "ラーメン",
+            "source_text": "User once had stomach pain after ramen",
+            "relevance": 0.55,
+            "expected": False,
+        }
+        result = umr.assess_memory_speakability(anchor, user_input="今日は何食べようかな", trust=50)
+        self.assertEqual(result["label"], "background_only")
+        self.assertFalse(result["should_use_explicitly"])
+        self.assertLess(result["gravity_multiplier"], 1.0)
+
 if __name__ == "__main__":
     unittest.main()
