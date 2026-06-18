@@ -577,15 +577,19 @@ class MemoryManager:
 
     def _remember_profile_facts(self, user_input):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        def remember_recent_first(field, value):
+            values = [item for item in self.session_profile.get(field, []) if item.lower() != value.lower()]
+            self.session_profile[field] = [value, *values][:8]
+
         for fact_type, value in self._extract_profile_facts(user_input):
             if fact_type == "name":
                 self.session_profile["name"] = value
-            elif fact_type == "favorite" and value not in self.session_profile["favorites"]:
-                self.session_profile["favorites"].append(value)
-            elif fact_type == "like" and value not in self.session_profile["likes"]:
-                self.session_profile["likes"].append(value)
-            elif fact_type == "dislike" and value not in self.session_profile["dislikes"]:
-                self.session_profile["dislikes"].append(value)
+            elif fact_type == "favorite":
+                remember_recent_first("favorites", value)
+            elif fact_type == "like":
+                remember_recent_first("likes", value)
+            elif fact_type == "dislike":
+                remember_recent_first("dislikes", value)
             try:
                 self.profile_col.add(
                     documents=[f"FactType={fact_type} | Value={value}"],
@@ -735,7 +739,7 @@ class MemoryManager:
         }
 
         if profile.get("favorites"):
-            favorite = profile["favorites"][-1]
+            favorite = profile["favorites"][0]
             payload.update(
                 {
                     "wisdom_rule": f"Userの定番の好みは{favorite}寄り。",
@@ -746,7 +750,7 @@ class MemoryManager:
             )
             return payload
         if profile.get("dislikes"):
-            dislike = profile["dislikes"][-1]
+            dislike = profile["dislikes"][0]
             payload.update(
                 {
                     "wisdom_rule": f"Userは{dislike}が苦手。",
@@ -757,7 +761,7 @@ class MemoryManager:
             )
             return payload
         if profile.get("likes"):
-            like = profile["likes"][-1]
+            like = profile["likes"][0]
             payload.update(
                 {
                     "wisdom_rule": f"Userは{like}が好き寄り。",
@@ -2904,7 +2908,7 @@ Rules:
                 subjective_note="覚えてない時は無理に埋めない",
             )
 
-        if self._contains_any(lowered, ["what do i like", "what do i love", "what do i hate", "remember what i like", "remember what i hate", "what did i say i hate earlier", "what do i hate again", "what did i say was my favorite snack", "favorite snack", "favorite drink", "favorite food", "my favorite snack", "my favorite drink", "my favorite food", "我喜歡什麼", "我喜欢什么", "我最喜歡什麼", "我最喜欢什么", "我最喜歡的是什麼", "我最喜欢的是什么", "何が好き", "一番好きなの覚えてる", "好きなもの覚えてる", "好きな飲み物覚えてる", "我討厭什麼", "我讨厌什么", "何が嫌い", "我最討厭什麼", "我最讨厌什么", "何が苦手", "苦手って言ってたっけ", "辛いもの無理って言ってたっけ", "さっき嫌いって言った", "さっき嫌いって言ったの何だっけ", "前に嫌いって言った", "前に討厭", "前に讨厌"]):
+        if self._contains_any(lowered, ["what do i like", "what do i love", "what do i hate", "remember what i like", "remember what i hate", "what did i say i hate earlier", "what do i hate again", "what did i say was my favorite snack", "favorite snack", "favorite drink", "favorite food", "my favorite snack", "my favorite drink", "my favorite food", "我喜歡什麼", "我喜欢什么", "我最喜歡什麼", "我最喜欢什么", "我現在最喜歡什麼", "我现在最喜欢什么", "現在最喜歡什麼", "现在最喜欢什么", "我最喜歡的是什麼", "我最喜欢的是什么", "何が好き", "一番好きなの覚えてる", "好きなもの覚えてる", "好きな飲み物覚えてる", "我討厭什麼", "我讨厌什么", "何が嫌い", "我最討厭什麼", "我最讨厌什么", "何が苦手", "苦手って言ってたっけ", "辛いもの無理って言ってたっけ", "さっき嫌いって言った", "さっき嫌いって言ったの何だっけ", "前に嫌いって言った", "前に討厭", "前に讨厌"]):
             recalled = None
             recall_intent = "recall_preference"
             if self._contains_any(lowered, ["favorite", "最喜歡", "最喜欢", "一番好き"]):
@@ -10894,6 +10898,10 @@ class UruhaBrainV4_Mac:
                 ],
             ),
             "spicy": _contains_dialogue_keyword(user_input, ["麻辣", "吃辣", "辣", "辛い", "spicy"]),
+            "dislike": _contains_dialogue_keyword(
+                user_input,
+                ["討厭什麼", "讨厌什么", "最討厭", "最讨厌", "what do i hate", "hate again", "何が嫌い", "何が苦手"],
+            ),
             "horror": _contains_dialogue_keyword(user_input, ["horror", "ホラー", "恐怖片", "恐怖映画"]),
             "natto": _contains_dialogue_keyword(user_input, ["納豆", "natto"]),
             "ramen": _contains_dialogue_keyword(user_input, ["拉麵", "拉面", "ラーメン", "ramen"]),
@@ -10943,6 +10951,13 @@ class UruhaBrainV4_Mac:
                 value = str(values[0]).strip()
                 jp_value = self._jp_memory_value(value)
                 add("favorite_drink", value, jp_value, [jp_value, value], source_text=f"favorite={value}", source="profile", score=2.5, expected=True)
+
+        if flags["dislike"]:
+            values = list(profile.get("dislikes") or [])
+            if values:
+                value = str(values[0]).strip()
+                jp_value = self._jp_memory_value(value)
+                add("dislike", value, jp_value, [jp_value, value], source_text=f"dislike={value}", source="profile", score=2.45, expected=True)
 
         if flags["spicy"]:
             for value in profile.get("dislikes") or []:
@@ -11010,7 +11025,7 @@ class UruhaBrainV4_Mac:
             if flags["recent_action"] and _contains_dialogue_keyword(source_text, ["コンビニ", "便利商店", "convenience store"]):
                 add("recent_action", "コンビニ", "コンビニ", ["コンビニ"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.7, expected=True)
 
-        if not candidates and not any(flags.get(key) for key in ("name", "favorite_drink", "spicy", "horror", "natto")):
+        if not candidates and not any(flags.get(key) for key in ("name", "favorite_drink", "dislike", "spicy", "horror", "natto")):
             items = memory_data.get("working_memory_items") or []
             if items:
                 item = items[0]
@@ -11031,7 +11046,15 @@ class UruhaBrainV4_Mac:
         if not candidates:
             return {}
 
-        candidates.sort(key=lambda row: (int(row.get("expected", False)), float(row.get("score", 0.0))), reverse=True)
+        source_priority = {"profile": 2, "working_memory": 1, "short_term": 1, "recent_turn": 1}
+        candidates.sort(
+            key=lambda row: (
+                int(row.get("expected", False)),
+                source_priority.get(str(row.get("source", "")), 0),
+                float(row.get("score", 0.0)),
+            ),
+            reverse=True,
+        )
         best = candidates[0]
         best["relevance"] = round(min(1.0, max(0.0, float(best.get("score", 0.0)) / 3.0)), 4)
         return best
