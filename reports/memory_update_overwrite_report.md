@@ -1,6 +1,6 @@
 # Memory Update / Overwrite Report
 
-- generated_at: 2026-06-18T23:02:05
+- generated_at: 2026-06-18T23:19:36
 
 ## Summary
 
@@ -21,7 +21,7 @@
 | id | lang | category | profile_head | anchor | reply | stale_reply | pass | reply_text |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | zh_favorite_update | zh | favorite_update | 1 | 1 | 1 | 0 | 1 | 前に溫牛奶が好きって言ってたし。 |
-| en_favorite_update | en | favorite_update | 1 | 1 | 1 | 0 | 1 | 前にchamomile teaが好きって言ってたし。 |
+| en_favorite_update | en | favorite_update | 1 | 1 | 1 | 0 | 1 | 前にカモミールティーが好きって言ってたし。 |
 | ja_favorite_update | ja | favorite_update | 1 | 1 | 1 | 0 | 1 | 忘れてないし、ほうじ茶だろ。 |
 | zh_dislike_update | zh | dislike_update | 1 | 1 | 1 | 0 | 1 | 吃辣嫌いって言ってたし。 |
 | en_dislike_update | en | dislike_update | 1 | 1 | 1 | 0 | 1 | 前にloud clubsはきついって言ってたじゃん。 |

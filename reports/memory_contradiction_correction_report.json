@@ -1,0 +1,291 @@
+{
+  "generated_at": "2026-06-18T23:21:22",
+  "summary": {
+    "total_cases": 5,
+    "case_pass_rate": 1.0,
+    "current_negative_profile_rate": 1.0,
+    "stale_positive_profile_rate": 0.0,
+    "correction_intent_rate": 1.0,
+    "current_anchor_rate": 1.0,
+    "reply_correction_rate": 1.0,
+    "by_category": {
+      "capability_negation": {
+        "count": 2,
+        "case_pass_rate": 1.0,
+        "stale_positive_profile_rate": 0.0,
+        "reply_correction_rate": 1.0
+      },
+      "preference_negation": {
+        "count": 3,
+        "case_pass_rate": 1.0,
+        "stale_positive_profile_rate": 0.0,
+        "reply_correction_rate": 1.0
+      }
+    },
+    "by_language": {
+      "en": {
+        "count": 2,
+        "case_pass_rate": 1.0,
+        "correction_intent_rate": 1.0
+      },
+      "ja": {
+        "count": 1,
+        "case_pass_rate": 1.0,
+        "correction_intent_rate": 1.0
+      },
+      "zh": {
+        "count": 2,
+        "case_pass_rate": 1.0,
+        "correction_intent_rate": 1.0
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "zh_like_then_not_like",
+      "language": "zh",
+      "category": "preference_negation",
+      "seed_turns": [
+        "我最喜歡咖啡。",
+        "我現在不喜歡咖啡了。"
+      ],
+      "query": "你還覺得我喜歡咖啡嗎？",
+      "target_terms": [
+        "咖啡",
+        "コーヒー"
+      ],
+      "profile": {
+        "name": null,
+        "likes": [],
+        "dislikes": [
+          "咖啡"
+        ],
+        "favorites": []
+      },
+      "memory_anchor": {
+        "kind": "preference_correction",
+        "value": "咖啡",
+        "jp_anchor": "咖啡",
+        "terms": [
+          "咖啡",
+          "咖啡じゃない",
+          "咖啡 not_current"
+        ],
+        "source_text": "current_negative_preference=咖啡",
+        "source": "profile",
+        "score": 2.75,
+        "expected": true,
+        "relevance": 0.9167
+      },
+      "logic_intent": "memory_correction",
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9167,
+      "reply": "前のままじゃない。今は咖啡じゃない方で覚えてる。",
+      "current_negative_profile": 1,
+      "stale_positive_profile": 0,
+      "correction_intent": 1,
+      "current_anchor": 1,
+      "reply_mentions_target": 1,
+      "reply_marks_correction": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "en_like_then_not_like",
+      "language": "en",
+      "category": "preference_negation",
+      "seed_turns": [
+        "My favorite drink is coffee.",
+        "I don't like coffee anymore."
+      ],
+      "query": "Do you still think coffee is my favorite drink?",
+      "target_terms": [
+        "coffee",
+        "コーヒー"
+      ],
+      "profile": {
+        "name": null,
+        "likes": [],
+        "dislikes": [
+          "coffee"
+        ],
+        "favorites": []
+      },
+      "memory_anchor": {
+        "kind": "preference_correction",
+        "value": "coffee",
+        "jp_anchor": "コーヒー",
+        "terms": [
+          "コーヒー",
+          "coffee",
+          "コーヒーじゃない",
+          "coffee not_current"
+        ],
+        "source_text": "current_negative_preference=coffee",
+        "source": "profile",
+        "score": 2.75,
+        "expected": true,
+        "relevance": 0.9167
+      },
+      "logic_intent": "memory_correction",
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9167,
+      "reply": "コーヒーはもう違うって更新してるし。",
+      "current_negative_profile": 1,
+      "stale_positive_profile": 0,
+      "correction_intent": 1,
+      "current_anchor": 1,
+      "reply_mentions_target": 1,
+      "reply_marks_correction": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "ja_like_then_not_like",
+      "language": "ja",
+      "category": "preference_negation",
+      "seed_turns": [
+        "コーヒーが一番好き。",
+        "コーヒーはもう好きじゃない。"
+      ],
+      "query": "まだコーヒーが一番好きだと思ってる？",
+      "target_terms": [
+        "コーヒー"
+      ],
+      "profile": {
+        "name": null,
+        "likes": [],
+        "dislikes": [
+          "コーヒー"
+        ],
+        "favorites": []
+      },
+      "memory_anchor": {
+        "kind": "preference_correction",
+        "value": "コーヒー",
+        "jp_anchor": "コーヒー",
+        "terms": [
+          "コーヒー",
+          "コーヒーじゃない",
+          "コーヒー not_current"
+        ],
+        "source_text": "current_negative_preference=コーヒー",
+        "source": "profile",
+        "score": 2.75,
+        "expected": true,
+        "relevance": 0.9167
+      },
+      "logic_intent": "memory_correction",
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9167,
+      "reply": "今はコーヒーじゃないって言ってただろ。",
+      "current_negative_profile": 1,
+      "stale_positive_profile": 0,
+      "correction_intent": 1,
+      "current_anchor": 1,
+      "reply_mentions_target": 1,
+      "reply_marks_correction": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "zh_food_then_cannot_eat",
+      "language": "zh",
+      "category": "capability_negation",
+      "seed_turns": [
+        "我最喜歡拉麵。",
+        "我現在不能吃拉麵了。"
+      ],
+      "query": "你還覺得我喜歡拉麵嗎？",
+      "target_terms": [
+        "拉麵",
+        "ラーメン"
+      ],
+      "profile": {
+        "name": null,
+        "likes": [],
+        "dislikes": [
+          "拉麵"
+        ],
+        "favorites": []
+      },
+      "memory_anchor": {
+        "kind": "preference_correction",
+        "value": "拉麵",
+        "jp_anchor": "拉麵",
+        "terms": [
+          "拉麵",
+          "拉麵じゃない",
+          "拉麵 not_current"
+        ],
+        "source_text": "current_negative_preference=拉麵",
+        "source": "profile",
+        "score": 2.75,
+        "expected": true,
+        "relevance": 0.9167
+      },
+      "logic_intent": "memory_correction",
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9167,
+      "reply": "前のままじゃない。今は拉麵じゃない方で覚えてる。",
+      "current_negative_profile": 1,
+      "stale_positive_profile": 0,
+      "correction_intent": 1,
+      "current_anchor": 1,
+      "reply_mentions_target": 1,
+      "reply_marks_correction": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "en_food_then_cannot_eat",
+      "language": "en",
+      "category": "capability_negation",
+      "seed_turns": [
+        "My favorite food is ramen.",
+        "I cannot eat ramen anymore."
+      ],
+      "query": "Do you still think ramen is my favorite food?",
+      "target_terms": [
+        "ramen",
+        "ラーメン"
+      ],
+      "profile": {
+        "name": null,
+        "likes": [],
+        "dislikes": [
+          "ramen"
+        ],
+        "favorites": []
+      },
+      "memory_anchor": {
+        "kind": "preference_correction",
+        "value": "ramen",
+        "jp_anchor": "ラーメン",
+        "terms": [
+          "ラーメン",
+          "ramen",
+          "ラーメンじゃない",
+          "ramen not_current"
+        ],
+        "source_text": "current_negative_preference=ramen",
+        "source": "profile",
+        "score": 2.75,
+        "expected": true,
+        "relevance": 0.9167
+      },
+      "logic_intent": "memory_correction",
+      "memory_speakability": "explicit_ok",
+      "memory_use_expected": true,
+      "memory_relevance": 0.9167,
+      "reply": "今はラーメンじゃないって言ってただろ。",
+      "current_negative_profile": 1,
+      "stale_positive_profile": 0,
+      "correction_intent": 1,
+      "current_anchor": 1,
+      "reply_mentions_target": 1,
+      "reply_marks_correction": 1,
+      "case_pass": 1
+    }
+  ]
+}
