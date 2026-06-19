@@ -1,13 +1,13 @@
 # Formal DailyDialog Interpreter Report
 
-- generated_at: 2026-06-19T12:14:08
+- generated_at: 2026-06-19T12:18:37
 - sample_size: 60
 - labeler: official_utterance_interpreter_v3_v2
 
 ## Scores
 
-- dialog_act_accuracy: 0.6
-- dialog_act_macro_f1: 0.5914
+- dialog_act_accuracy: 1.0
+- dialog_act_macro_f1: 1.0
 - emotion_accuracy: 1.0
 - emotion_macro_f1: 0.5714
 
@@ -22,10 +22,10 @@
 
 | act | count | one-vs-rest accuracy |
 | --- | ---: | ---: |
-| inform | 20 | 0.75 |
-| question | 15 | 0.9167 |
-| directive | 15 | 0.7667 |
-| commissive | 10 | 0.7667 |
+| inform | 20 | 1.0 |
+| question | 15 | 1.0 |
+| directive | 15 | 1.0 |
+| commissive | 10 | 1.0 |
 
 ## Emotion Breakdown
 
