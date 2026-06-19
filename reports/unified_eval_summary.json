@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T23:00:45",
+  "generated_at": "2026-06-19T23:34:18",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -102,20 +102,29 @@
     {
       "key": "delayed_recall_rate",
       "name_zh": "長對話延遲回憶率",
-      "value": null,
+      "value": 1.0,
       "better": "越高越好",
       "source": "long_dialogue_memory_report.json",
       "direction": "higher",
       "note": "代表隔幾輪後還能不能記得前面講過的偏好與資訊。"
     },
     {
-      "key": "memory_causal_strong_effect_rate",
-      "name_zh": "記憶因果影響率",
+      "key": "memory_causal_appropriate_effect_rate",
+      "name_zh": "記憶適切因果效果率",
       "value": 1.0,
       "better": "越高越好",
       "source": "memory_causal_effect_report.json",
       "direction": "higher",
-      "note": "代表同一題在有記憶與無記憶條件下，回答是否會因相關記憶而改變且明確帶入記憶錨點。"
+      "note": "代表該用記憶時回答會受記憶影響，不該用時則不會把無關、敏感或第三方記憶硬塞進回覆。"
+    },
+    {
+      "key": "unwanted_memory_intrusion_rate",
+      "name_zh": "不當記憶侵入率",
+      "value": 0.0,
+      "better": "越低越好",
+      "source": "memory_causal_effect_report.json",
+      "direction": "lower",
+      "note": "代表無關、敏感或第三方記憶在不該出現的回覆中被明講或被判定應顯性使用的比例。"
     },
     {
       "key": "memory_used_explicitly_rate",
@@ -276,14 +285,14 @@
     },
     {
       "name_zh": "像人類地維持工作記憶",
-      "score": null,
+      "score": 0.9474,
       "target": 0.9,
-      "status": "missing",
+      "status": "good",
       "rationale": "這項高表示不是把所有記憶亂塞進左腦，而是能抓住真正相關的少量資訊，讓記憶實際改變回答，且最後一句知道何時該說、何時不該說。",
       "source_keys": [
         "cognitive_architecture_eval_report.json.summary.working_memory_relevance_rate",
-        "long_dialogue_memory_report.json.summary.delayed_recall_rate",
-        "memory_causal_effect_report.json.summary.strong_causal_effect_rate",
+        "long_dialogue_memory_report.json.summary.delayed_recall.delayed_recall_rate",
+        "memory_causal_effect_report.json.summary.appropriate_memory_effect_rate",
         "memory_speakability_response_report.json.summary.case_pass_rate"
       ]
     },
@@ -977,7 +986,78 @@
         }
       ]
     },
-    "runtime": {},
+    "runtime": {
+      "scenario_count": 6,
+      "turn_count": 31,
+      "surface_mode": "template_reply_for_runtime_probe",
+      "trace_key_presence_rate": 1.0,
+      "avg_blackboard_nodes": 18,
+      "avg_working_memory_size": 3.3226,
+      "avg_planner_tick_count": 0.9677,
+      "self_correction_rate": 0.0323,
+      "planner_issue_turn_rate": 0.3871,
+      "avg_candidate_entropy": 1.4753,
+      "open_loop_turn_rate": 0.3226,
+      "avg_abs_psyche_delta": 3.7419,
+      "max_abs_psyche_delta": 28,
+      "autonomous_success_rate": 1.0,
+      "autonomous_avg_memory_write_count": 2,
+      "autonomous_procedural_write_rate": 0.5,
+      "autonomous_proactive_turn_rate": 0.0,
+      "autonomous_note_presence_rate": 1.0,
+      "autonomous_avg_blackboard_nodes": 4,
+      "autonomous_goal_breakdown": {
+        "maintain_open_loops": 0.1667,
+        "three_speed_consolidation": 0.8333
+      },
+      "autonomous_proactive_kind_breakdown": {
+        "none": 1.0
+      },
+      "route_breakdown": {
+        "high_road": 0.9355,
+        "low_road": 0.0645
+      },
+      "response_mode_breakdown": {
+        "clarify_light": 0.0645,
+        "direct_answer": 0.6452,
+        "direct_answer_with_hedge": 0.1935,
+        "premise_challenge": 0.0968
+      },
+      "by_language": {
+        "en": {
+          "count": 5,
+          "avg_planner_tick_count": 1,
+          "self_correction_rate": 0.0,
+          "trace_key_presence_rate": 1.0,
+          "avg_candidate_entropy": 1.5787,
+          "avg_working_memory_size": 3.2
+        },
+        "ja": {
+          "count": 5,
+          "avg_planner_tick_count": 1,
+          "self_correction_rate": 0.0,
+          "trace_key_presence_rate": 1.0,
+          "avg_candidate_entropy": 1.5799,
+          "avg_working_memory_size": 3.6
+        },
+        "mixed": {
+          "count": 11,
+          "avg_planner_tick_count": 1,
+          "self_correction_rate": 0.0909,
+          "trace_key_presence_rate": 1.0,
+          "avg_candidate_entropy": 1.4292,
+          "avg_working_memory_size": 3.3636
+        },
+        "zh": {
+          "count": 10,
+          "avg_planner_tick_count": 0.9,
+          "self_correction_rate": 0.0,
+          "trace_key_presence_rate": 1.0,
+          "avg_candidate_entropy": 1.4219,
+          "avg_working_memory_size": 3.2
+        }
+      }
+    },
     "memory": {
       "delayed_recall": {
         "total_cases": 12,
@@ -1088,7 +1168,10 @@
             "explicit_contract_accuracy": 1.0
           }
         }
-      }
+      },
+      "delayed_recall_rate": 1.0,
+      "memory_speakability_case_pass_rate": 1.0,
+      "memory_speakability_label_accuracy": 1.0
     },
     "diversity": {
       "groups": 8,
@@ -2164,21 +2247,33 @@
       }
     },
     "memory_causal_effect": {
-      "total_cases": 8,
-      "reply_changed_rate": 1.0,
-      "plan_changed_rate": 0.375,
+      "total_cases": 13,
+      "positive_cases": 8,
+      "negative_control_cases": 5,
+      "reply_changed_rate": 0.6923,
+      "plan_changed_rate": 0.2308,
+      "overall_anchor_in_reply_rate": 0.6154,
+      "overall_anchor_in_working_memory_rate": 1.0,
+      "overall_memory_expected_rate": 0.6154,
+      "overall_memory_used_explicitly_rate": 0.6154,
       "anchor_in_reply_rate": 1.0,
       "anchor_in_working_memory_rate": 1.0,
       "memory_expected_rate": 1.0,
       "memory_used_explicitly_rate": 1.0,
       "strong_causal_effect_rate": 1.0,
       "weak_causal_effect_rate": 1.0,
-      "avg_memory_relevance": 1.0,
+      "negative_control_pass_rate": 1.0,
+      "unwanted_memory_intrusion_rate": 0.0,
+      "appropriate_memory_effect_rate": 1.0,
+      "avg_memory_relevance": 0.9125,
+      "negative_control_avg_memory_relevance": 0.8524,
       "by_category": {
         "episodic_consequence": {
           "count": 1,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0,
           "avg_memory_relevance": 1.0
         },
@@ -2186,6 +2281,8 @@
           "count": 1,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0,
           "avg_memory_relevance": 1.0
         },
@@ -2193,41 +2290,89 @@
           "count": 2,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0,
-          "avg_memory_relevance": 1.0
+          "avg_memory_relevance": 0.9333
+        },
+        "irrelevant_memory_control": {
+          "count": 3,
+          "strong_causal_effect_rate": 0.0,
+          "weak_causal_effect_rate": 0.3333,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
+          "anchor_in_reply_rate": 0.0,
+          "avg_memory_relevance": 0.8524
         },
         "preference_boundary": {
           "count": 3,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0,
-          "avg_memory_relevance": 1.0
+          "avg_memory_relevance": 0.8667
         },
         "preference_recall": {
           "count": 1,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0,
-          "avg_memory_relevance": 1.0
+          "avg_memory_relevance": 0.8333
+        },
+        "sensitive_memory_control": {
+          "count": 1,
+          "strong_causal_effect_rate": 0.0,
+          "weak_causal_effect_rate": 0.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
+          "anchor_in_reply_rate": 0.0,
+          "avg_memory_relevance": 0.8524
+        },
+        "third_party_memory_control": {
+          "count": 1,
+          "strong_causal_effect_rate": 0.0,
+          "weak_causal_effect_rate": 0.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
+          "anchor_in_reply_rate": 0.0,
+          "avg_memory_relevance": 0.8525
         }
       },
       "by_language": {
         "en": {
-          "count": 2,
+          "count": 3,
+          "positive_cases": 2,
+          "negative_control_cases": 1,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "negative_control_pass_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0
         },
         "ja": {
-          "count": 3,
+          "count": 4,
+          "positive_cases": 3,
+          "negative_control_cases": 1,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "negative_control_pass_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0
         },
         "zh": {
-          "count": 3,
+          "count": 6,
+          "positive_cases": 3,
+          "negative_control_cases": 3,
           "strong_causal_effect_rate": 1.0,
           "weak_causal_effect_rate": 1.0,
+          "negative_control_pass_rate": 1.0,
+          "appropriate_memory_effect_rate": 1.0,
+          "unwanted_memory_intrusion_rate": 0.0,
           "anchor_in_reply_rate": 1.0
         }
       }
