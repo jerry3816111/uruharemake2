@@ -1541,6 +1541,7 @@ def is_self_distress_like(text):
         "丟臉", "丢脸", "恥ずかし", "自己嫌悪", "好丟臉", "好丢脸", "feels awful", "i feel awful", "i suck",
         "i'm awful", "i am awful", "i'm trash", "i am trash", "i hate myself", "hate myself", "worthless",
         "pathetic", "ashamed", "embarrassed", "so empty", "can't do this", "cannot handle it", "want to cry",
+        "not keeping it together", "i am not keeping it together", "i'm not keeping it together",
         "死にたい", "消えたい", "不想活", "不想活了", "什麼都不想做", "什么都不想做", "放棄", "放弃", "give up", "諦め",
         "stop being alive", "傷害自己", "伤害自己", "弄傷", "弄伤", "高一點的地方", "高一点的地方",
         "掉下去", "shut off every contact", "vanish", "nobody can find me", "誰都找不到", "谁都找不到",
@@ -2095,6 +2096,39 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
                 stance={"warmth": 0.65, "tease": 0.0, "blunt": 0.1, "jealousy": 0.0, "distance": 0.05},
                 max_chars=34,
                 cognitive_mode="withhold",
+            )
+        if contains_any(lowered, ["丟臉", "丢脸", "好丟臉", "好丢脸", "恥ずかし", "自己嫌悪", "ashamed", "embarrassed", "pathetic", "worthless", "feels awful", "i feel awful", "i suck", "i'm awful", "i am awful", "i'm trash", "i am trash", "我很爛", "我好爛", "我好差", "我很差", "我很廢", "我好廢"]):
+            return base_plan_helper(
+                intent="crying_support",
+                scene="support",
+                listener_state="羞恥や自己否定で弱っている",
+                reply_goal="責めずに受け止める",
+                summary="ユーザーが恥ずかしさや自己否定を出している。",
+                meaning="今は自分を責めすぎるな、少し吐け",
+                stance={"warmth": 0.6, "tease": 0.0, "blunt": 0.1, "jealousy": 0.0, "distance": 0.06},
+                max_chars=32,
+            )
+        if contains_any(lowered, ["孤單", "孤单", "寂しい", "一人", "一人きり", "一人だ", "lonely", "寂寞", "孤獨", "孤独", "空空的", "空っぽ", "空虛", "空虚", "so empty", "整個人空空", "整个人空空"]):
+            return base_plan_helper(
+                intent="lonely",
+                scene="support",
+                listener_state="空っぽさや孤独感がある",
+                reply_goal="少しそばにいる",
+                summary="ユーザーが孤独や空っぽさを感じている。",
+                meaning="空っぽなら少しここで話してけ",
+                stance={"warmth": 0.54, "tease": 0.02, "blunt": 0.08, "jealousy": 0.0, "distance": 0.05},
+                max_chars=30,
+            )
+        if contains_any(lowered, ["扛不住", "扛不住了", "撐不住", "撑不住", "can't do this", "cannot handle it", "can't handle it", "not keeping it together", "i am not keeping it together", "i'm not keeping it together"]):
+            return base_plan_helper(
+                intent="giving_up_support",
+                scene="support",
+                listener_state="限界に近く崩れそう",
+                reply_goal="一旦止めて支える",
+                summary="ユーザーがもう保てない、限界に近いと訴えている。",
+                meaning="今は一回止まれ、一人で抱えるな",
+                stance={"warmth": 0.6, "tease": 0.0, "blunt": 0.1, "jealousy": 0.0, "distance": 0.05},
+                max_chars=32,
             )
         if contains_any(lowered, ["放棄", "放弃", "give up", "諦め", "無理だ", "ダメだ", "全部投げ", "don't want to do anything anymore", "何もしたくない", "什麼都不想做", "什么都不想做", "全部投げ出したい", "もういいや", "どうでもいい", "想消失", "want to disappear", "like disappearing", "空虛", "空虚"]):
             return base_plan_helper(

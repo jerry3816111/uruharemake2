@@ -705,6 +705,43 @@ class TestLeftBrainRules(unittest.TestCase):
         self.assertEqual(plan["scene"], "support")
         self.assertEqual(plan["cognitive_mode"], "withhold")
 
+    def test_self_shame_is_support_not_generic_tiredness(self):
+        plan = ulr.get_rule_based_plan("突然覺得自己好丟臉", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["intent"], "crying_support")
+        self.assertEqual(plan["scene"], "support")
+        self.assertEqual(plan["surface_act"], "validate_then_hold")
+        self.assertIn("責め", plan["core_message_jp"])
+
+    def test_self_overwhelm_is_protective_not_generic_tiredness(self):
+        plan = ulr.get_rule_based_plan("我真的有點撐不住", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["intent"], "giving_up_support")
+        self.assertEqual(plan["scene"], "support")
+        self.assertEqual(plan["surface_act"], "protective_brake")
+        self.assertIn("一人", plan["core_message_jp"])
+
+    def test_empty_self_state_is_lonely_support(self):
+        plan = ulr.get_rule_based_plan("整個人空空的", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["intent"], "lonely")
+        self.assertEqual(plan["scene"], "support")
+        self.assertIn("空っぽ", plan["core_message_jp"])
+
+    def test_other_attack_does_not_trigger_self_distress(self):
+        plan = ulr.get_rule_based_plan("你很爛", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["intent"], "abuse_pushback")
+        self.assertEqual(plan["scene"], "boundary")
+
+    def test_english_self_distress_subtypes(self):
+        shame = ulr.get_rule_based_plan("I feel awful today", recent_turns=[])
+        overwhelm = ulr.get_rule_based_plan("I am not keeping it together", recent_turns=[])
+        self.assertIsNotNone(shame)
+        self.assertIsNotNone(overwhelm)
+        self.assertEqual(shame["intent"], "crying_support")
+        self.assertEqual(overwhelm["intent"], "giving_up_support")
+
     def test_sexual_boundary_rule(self):
         plan = ulr.get_rule_based_plan("做愛嗎", recent_turns=[])
         self.assertIsNotNone(plan)
