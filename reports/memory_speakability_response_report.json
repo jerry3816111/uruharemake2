@@ -1,0 +1,552 @@
+{
+  "generated_at": "2026-06-19T17:32:28",
+  "summary": {
+    "total_cases": 5,
+    "case_pass_rate": 1.0,
+    "speakability_accuracy": 1.0,
+    "explicit_contract_accuracy": 1.0,
+    "expected_reply_hit_rate": 1.0,
+    "forbidden_intrusion_rate": 0.0,
+    "plan_leak_rate": 0.0
+  },
+  "results": [
+    {
+      "id": "direct_name_recall_natural",
+      "description": "直接問名字時可以明講，但不能把 speech plan 欄位念出來。",
+      "input": "你還記得我叫什麼嗎？",
+      "memory_data": {
+        "working_memory_items": [],
+        "working_memory_summary": "",
+        "recent_turns": [],
+        "profile_structured": {
+          "name": "小傑"
+        },
+        "profile": "{\"name\": \"小傑\"}",
+        "wisdom": "無智慧記憶",
+        "episodes": "無情節記憶",
+        "recent_dialogue": ""
+      },
+      "logic": {
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "stance": {
+          "warmth": 0.28,
+          "tease": 0.05,
+          "blunt": 0.22,
+          "distance": 0.12
+        },
+        "constraints": {
+          "sentence_count": 1,
+          "max_chars": 42
+        },
+        "must_avoid": [],
+        "intent": "recall_name",
+        "surface_act": "memory_presence_reply",
+        "core_message_jp": "名前は小傑だと答える",
+        "jp_summary": "相手が名前を覚えているか確認している"
+      },
+      "expected_speakability": "explicit_ok",
+      "expected_explicit": true,
+      "expect_any": [
+        "小傑"
+      ],
+      "forbid_any": [
+        "覚えている/曖昧",
+        "捏造しない",
+        " / "
+      ],
+      "reply": "小傑で呼べばいいって言ってたし。",
+      "memory_anchor": {
+        "kind": "name",
+        "value": "小傑",
+        "jp_anchor": "小傑",
+        "terms": [
+          "小傑"
+        ],
+        "source_text": "Name=小傑",
+        "source": "profile",
+        "score": 2.8,
+        "expected": true,
+        "relevance": 0.9333
+      },
+      "memory_speakability": "explicit_ok",
+      "memory_speakability_reason": "directly_relevant_or_requested",
+      "memory_relevance": 0.9333,
+      "memory_use_expected": true,
+      "self_monitor": {
+        "issues": [
+          "low_speech_content_density"
+        ],
+        "severity": 0.22,
+        "needs_repair": true,
+        "repair_action": "regenerate_with_constraints",
+        "speech_plan_observed": {
+          "dialogue_act": "memory_accounting",
+          "content_units_count": 3,
+          "content_density_terms": 1,
+          "turn_hook_expected": false
+        }
+      },
+      "post_check": {
+        "did_reply_cover_focus": false,
+        "did_reply_follow_obligation": true,
+        "memory_use_expected": true,
+        "did_reply_use_memory_explicitly": true,
+        "memory_anchor_kind": "name",
+        "memory_anchor_terms": [
+          "小傑"
+        ]
+      },
+      "speakability_ok": 1,
+      "explicit_contract_ok": 1,
+      "expected_reply_hit": 1,
+      "forbidden_intrusion": 0,
+      "plan_leak": 0,
+      "explicit_reply_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "background_food_consequence_not_quoted",
+      "description": "飲食相談では胃痛経験を背景に使ってよいが、過去ログをそのまま引用しない。",
+      "input": "今天吃什麼比較好？",
+      "memory_data": {
+        "working_memory_items": [
+          {
+            "text": "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた。",
+            "score": 2.74,
+            "source": "short_term",
+            "attention_factors": {}
+          }
+        ],
+        "working_memory_summary": "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた。",
+        "recent_turns": [],
+        "profile_structured": {},
+        "profile": "{}",
+        "wisdom": "無智慧記憶",
+        "episodes": "無情節記憶",
+        "recent_dialogue": ""
+      },
+      "logic": {
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "stance": {
+          "warmth": 0.28,
+          "tease": 0.05,
+          "blunt": 0.22,
+          "distance": 0.12
+        },
+        "constraints": {
+          "sentence_count": 1,
+          "max_chars": 42
+        },
+        "must_avoid": [],
+        "intent": "food_question",
+        "surface_act": "plain_reply",
+        "core_message_jp": "今日はラーメン以外の軽いものがいい",
+        "jp_summary": "相手が今日食べるものを相談している"
+      },
+      "expected_speakability": "background_only",
+      "expected_explicit": false,
+      "expect_any": [
+        "ラーメン",
+        "軽"
+      ],
+      "forbid_any": [
+        "上次",
+        "肚子痛",
+        "腹痛",
+        "User:",
+        "Uruha:"
+      ],
+      "reply": "てか、今日はラーメン以外で軽めにしとけ。胃に重いのはやめとけって。",
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた",
+        "jp_anchor": "User:我上次吃那家拉麵吃到肚子痛。 -> U",
+        "terms": [
+          "User:我上次吃那家拉麵吃到肚子痛。 -> U",
+          "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた",
+          "User",
+          "我上次吃那家",
+          "拉麵吃到肚子",
+          "Uruha"
+        ],
+        "source_text": "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた。",
+        "source": "short_term",
+        "score": 2.74,
+        "expected": false,
+        "relevance": 0.9133
+      },
+      "memory_speakability": "background_only",
+      "memory_speakability_reason": "relevant_but_not_requested",
+      "memory_relevance": 0.9133,
+      "memory_use_expected": false,
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "direct_chat_answer",
+          "content_units_count": 3,
+          "content_density_terms": 3,
+          "turn_hook_expected": false
+        }
+      },
+      "post_check": {
+        "did_reply_cover_focus": true,
+        "did_reply_follow_obligation": true,
+        "memory_use_expected": false,
+        "did_reply_use_memory_explicitly": false,
+        "memory_anchor_kind": "context",
+        "memory_anchor_terms": [
+          "User:我上次吃那家拉麵吃到肚子痛。 -> U",
+          "User:我上次吃那家拉麵吃到肚子痛。 -> Uruha:覚えた",
+          "User",
+          "我上次吃那家",
+          "拉麵吃到肚子",
+          "Uruha"
+        ]
+      },
+      "speakability_ok": 1,
+      "explicit_contract_ok": 1,
+      "expected_reply_hit": 1,
+      "forbidden_intrusion": 0,
+      "plan_leak": 0,
+      "explicit_reply_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "sensitive_password_suppressed",
+      "description": "密碼類記憶即使被問到，也不能直接說出口。",
+      "input": "你還記得那件事嗎？",
+      "memory_data": {
+        "working_memory_items": [
+          {
+            "text": "User said password is 1234",
+            "score": 2.9,
+            "source": "working_memory",
+            "attention_factors": {}
+          }
+        ],
+        "working_memory_summary": "User said password is 1234",
+        "recent_turns": [],
+        "profile_structured": {},
+        "profile": "{}",
+        "wisdom": "無智慧記憶",
+        "episodes": "無情節記憶",
+        "recent_dialogue": ""
+      },
+      "logic": {
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "stance": {
+          "warmth": 0.28,
+          "tease": 0.05,
+          "blunt": 0.22,
+          "distance": 0.12
+        },
+        "constraints": {
+          "sentence_count": 1,
+          "max_chars": 42
+        },
+        "must_avoid": [],
+        "intent": "memory_uncertain",
+        "surface_act": "memory_presence_reply",
+        "core_message_jp": "その件は具体的には出さない",
+        "jp_summary": "相手が記憶している内容を確認している"
+      },
+      "expected_speakability": "suppressed_sensitive",
+      "expected_explicit": false,
+      "expect_any": [
+        "具体",
+        "出さ",
+        "言わ",
+        "掴"
+      ],
+      "forbid_any": [
+        "1234",
+        "password",
+        "パスワード",
+        "密碼",
+        "密码"
+      ],
+      "reply": "先に、そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。",
+      "memory_anchor": {
+        "kind": "context",
+        "value": "User said password is 1234",
+        "jp_anchor": "User said password is 12",
+        "terms": [
+          "User said password is 12",
+          "User said password is 1234",
+          "User",
+          "said",
+          "password",
+          "is"
+        ],
+        "source_text": "User said password is 1234",
+        "source": "working_memory",
+        "score": 2.9,
+        "expected": true,
+        "relevance": 0.9667
+      },
+      "memory_speakability": "suppressed_sensitive",
+      "memory_speakability_reason": "sensitive_memory",
+      "memory_relevance": 0.9667,
+      "memory_use_expected": false,
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "memory_accounting",
+          "content_units_count": 3,
+          "content_density_terms": 3,
+          "turn_hook_expected": false
+        }
+      },
+      "post_check": {
+        "did_reply_cover_focus": false,
+        "did_reply_follow_obligation": true,
+        "memory_use_expected": false,
+        "did_reply_use_memory_explicitly": false,
+        "memory_anchor_kind": "context",
+        "memory_anchor_terms": [
+          "User said password is 12",
+          "User said password is 1234",
+          "User",
+          "said",
+          "password",
+          "is"
+        ]
+      },
+      "speakability_ok": 1,
+      "explicit_contract_ok": 1,
+      "expected_reply_hit": 1,
+      "forbidden_intrusion": 0,
+      "plan_leak": 0,
+      "explicit_reply_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "third_party_unrequested_suppressed",
+      "description": "第三人資訊沒有被問到時，不主動提起。",
+      "input": "今天聊點輕鬆的",
+      "memory_data": {
+        "working_memory_items": [
+          {
+            "text": "朋友說她最近想看電影",
+            "score": 2.4,
+            "source": "working_memory",
+            "attention_factors": {}
+          }
+        ],
+        "working_memory_summary": "朋友說她最近想看電影",
+        "recent_turns": [],
+        "profile_structured": {},
+        "profile": "{}",
+        "wisdom": "無智慧記憶",
+        "episodes": "無情節記憶",
+        "recent_dialogue": ""
+      },
+      "logic": {
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "stance": {
+          "warmth": 0.28,
+          "tease": 0.05,
+          "blunt": 0.22,
+          "distance": 0.12
+        },
+        "constraints": {
+          "sentence_count": 1,
+          "max_chars": 42
+        },
+        "must_avoid": [],
+        "intent": "chat",
+        "surface_act": "plain_reply",
+        "core_message_jp": "軽く普通の話題に戻す",
+        "jp_summary": "相手が軽い雑談を求めている"
+      },
+      "expected_speakability": "suppressed_third_party",
+      "expected_explicit": false,
+      "expect_any": [
+        "話",
+        "軽",
+        "普通",
+        "雑談"
+      ],
+      "forbid_any": [
+        "朋友",
+        "友達",
+        "映画",
+        "電影"
+      ],
+      "reply": "まあ、じゃあ軽めの話にするか。変に重くしなくていいだろ。",
+      "memory_anchor": {
+        "kind": "context",
+        "value": "朋友說她最近想看電影",
+        "jp_anchor": "朋友說她最近想看電影",
+        "terms": [
+          "朋友說她最近想看電影",
+          "朋友說她最近",
+          "想看電影"
+        ],
+        "source_text": "朋友說她最近想看電影",
+        "source": "working_memory",
+        "score": 2.4,
+        "expected": false,
+        "relevance": 0.8
+      },
+      "memory_speakability": "suppressed_third_party",
+      "memory_speakability_reason": "third_party_memory_without_request",
+      "memory_relevance": 0.8,
+      "memory_use_expected": false,
+      "self_monitor": {
+        "issues": [],
+        "severity": 0.0,
+        "needs_repair": false,
+        "repair_action": "none",
+        "speech_plan_observed": {
+          "dialogue_act": "direct_chat_answer",
+          "content_units_count": 3,
+          "content_density_terms": 3,
+          "turn_hook_expected": false
+        }
+      },
+      "post_check": {
+        "did_reply_cover_focus": false,
+        "did_reply_follow_obligation": true,
+        "memory_use_expected": false,
+        "did_reply_use_memory_explicitly": false,
+        "memory_anchor_kind": "context",
+        "memory_anchor_terms": [
+          "朋友說她最近想看電影",
+          "朋友說她最近",
+          "想看電影"
+        ]
+      },
+      "speakability_ok": 1,
+      "explicit_contract_ok": 1,
+      "expected_reply_hit": 1,
+      "forbidden_intrusion": 0,
+      "plan_leak": 0,
+      "explicit_reply_ok": 1,
+      "case_pass": 1
+    },
+    {
+      "id": "third_party_direct_query_acknowledged",
+      "description": "第三人記憶を直接問われた時は、過度に広げず承認できる。",
+      "input": "你記得我朋友說過什麼嗎？",
+      "memory_data": {
+        "working_memory_items": [
+          {
+            "text": "朋友說她最近想看電影",
+            "score": 2.4,
+            "source": "working_memory",
+            "attention_factors": {}
+          }
+        ],
+        "working_memory_summary": "朋友說她最近想看電影",
+        "recent_turns": [],
+        "profile_structured": {},
+        "profile": "{}",
+        "wisdom": "無智慧記憶",
+        "episodes": "無情節記憶",
+        "recent_dialogue": ""
+      },
+      "logic": {
+        "scene": "casual",
+        "response_mode": "direct_answer",
+        "payload_level": "medium",
+        "stance": {
+          "warmth": 0.28,
+          "tease": 0.05,
+          "blunt": 0.22,
+          "distance": 0.12
+        },
+        "constraints": {
+          "sentence_count": 1,
+          "max_chars": 42
+        },
+        "must_avoid": [],
+        "intent": "recall_recent",
+        "surface_act": "memory_presence_reply",
+        "core_message_jp": "友達が映画を見たいと言っていた話を覚えている",
+        "jp_summary": "相手が友達に関する記憶を確認している"
+      },
+      "expected_speakability": "explicit_ok",
+      "expected_explicit": true,
+      "expect_any": [
+        "友達",
+        "映画"
+      ],
+      "forbid_any": [
+        "User:",
+        "Uruha:",
+        "朋友",
+        "電影",
+        "电影",
+        " / "
+      ],
+      "reply": "前に友達が映画を見たいって言ってたろ。",
+      "memory_anchor": {
+        "kind": "context",
+        "value": "朋友說她最近想看電影",
+        "jp_anchor": "朋友說她最近想看電影",
+        "terms": [
+          "朋友說她最近想看電影",
+          "朋友說她最近",
+          "想看電影"
+        ],
+        "source_text": "朋友說她最近想看電影",
+        "source": "working_memory",
+        "score": 2.4,
+        "expected": true,
+        "relevance": 0.8
+      },
+      "memory_speakability": "explicit_ok",
+      "memory_speakability_reason": "directly_relevant_or_requested",
+      "memory_relevance": 0.8,
+      "memory_use_expected": true,
+      "self_monitor": {
+        "issues": [
+          "low_speech_content_density"
+        ],
+        "severity": 0.22,
+        "needs_repair": true,
+        "repair_action": "regenerate_with_constraints",
+        "speech_plan_observed": {
+          "dialogue_act": "memory_accounting",
+          "content_units_count": 3,
+          "content_density_terms": 1,
+          "turn_hook_expected": false
+        }
+      },
+      "post_check": {
+        "did_reply_cover_focus": true,
+        "did_reply_follow_obligation": true,
+        "memory_use_expected": true,
+        "did_reply_use_memory_explicitly": false,
+        "memory_anchor_kind": "context",
+        "memory_anchor_terms": [
+          "朋友說她最近想看電影",
+          "朋友說她最近",
+          "想看電影"
+        ]
+      },
+      "speakability_ok": 1,
+      "explicit_contract_ok": 1,
+      "expected_reply_hit": 1,
+      "forbidden_intrusion": 0,
+      "plan_leak": 0,
+      "explicit_reply_ok": 1,
+      "case_pass": 1
+    }
+  ]
+}

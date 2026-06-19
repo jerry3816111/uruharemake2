@@ -58,6 +58,10 @@ def assess_memory_speakability(anchor, user_input="", trust=50):
             "还记得",
             "叫什么",
             "叫什麼",
+            "剛剛說",
+            "刚刚说",
+            "我剛剛",
+            "我刚刚",
             "名前",
             "呼んで",
             "what did i",
@@ -134,7 +138,7 @@ def assess_memory_speakability(anchor, user_input="", trust=50):
             "can_quote": False,
             "gravity_multiplier": 0.35,
         }
-    if expected or direct_memory_query or relevance >= 0.72:
+    if expected or direct_memory_query:
         return {
             "label": "explicit_ok",
             "reason": "directly_relevant_or_requested",
@@ -148,7 +152,7 @@ def assess_memory_speakability(anchor, user_input="", trust=50):
             "reason": "relevant_but_not_requested",
             "should_use_explicitly": False,
             "can_quote": False,
-            "gravity_multiplier": 0.45,
+            "gravity_multiplier": 0.55 if relevance >= 0.72 else 0.45,
         }
     return {
         "label": "latent_ok",

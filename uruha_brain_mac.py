@@ -8047,6 +8047,12 @@ class RightBrain:
             return "コーヒー"
         if "ramen" in lowered:
             return "ラーメン"
+        if any(token in value for token in ["朋友", "友達", "friend"]) and any(token in value for token in ["電影", "电影", "映画", "movie"]):
+            return "友達が映画を見たい"
+        if any(token in value for token in ["拉麵", "拉面"]) or "ラーメン" in value:
+            return "ラーメン"
+        if "風呂" in value or "お風呂" in value or "bath" in lowered:
+            return "風呂入る"
         return value[:24]
 
     def _extract_offer_item_jp(self, user_input):
@@ -8186,7 +8192,11 @@ class RightBrain:
             "daily_state_answer": ["今の状態を具体的に一語で答える", core, "相手にも軽く返す余地を残す"],
             "concrete_offer_response": [f"{offered_item or '具体物'}を名詞で拾う", core, "味や今の状態を一語足す"],
             "relationship_temperature": ["少し照れか距離を置く", core, "聞き返しすぎを軽く刺す"],
-            "memory_accounting": ["覚えている/曖昧を正直に言う", memory_anchor.get("jp_anchor") or core, "捏造しない"],
+            "memory_accounting": [
+                "覚えている/曖昧を正直に言う",
+                self._jp_memory_value(memory_anchor.get("jp_anchor") or memory_anchor.get("value") or core),
+                "捏造しない",
+            ],
             "perspective_answer": ["事実視点と本人視点を分ける", core, "見ていない情報は知らないと示す"],
             "frame_negotiation": ["問いの広さか前提を止める", core, "次に絞る場所を示す"],
             "minimal_clarification": ["分からない箇所を一個だけ聞く", core],
@@ -8401,17 +8411,25 @@ class RightBrain:
                     "コンビニ行ってくるって話だったろ。",
                 ]
             else:
+                action = self._jp_memory_value(jp_anchor or value)
                 variants = [
-                    f"{jp_anchor}って言ってただろ。",
-                    f"さっき{jp_anchor}って言ってたし。",
+                    f"{action}って言ってただろ。",
+                    f"さっき{action}って言ってたし。",
                 ]
 
         if not variants:
             if jp_anchor and any(token in lowered for token in ["remember", "記得", "记得", "覚えて", "っけ"]):
-                variants = [
-                    f"{jp_anchor}の話なら覚えてるし。",
-                    f"前に{jp_anchor}って言ってたろ。",
-                ]
+                natural_anchor = self._jp_memory_value(jp_anchor or value)
+                if kind in {"name", "profile"} or any(token in lowered for token in ["名前", "name"]):
+                    variants = [
+                        f"{natural_anchor}だろ。名前くらい覚えてるし。",
+                        f"名前は{natural_anchor}だろ。そこは覚えてるし。",
+                    ]
+                else:
+                    variants = [
+                        f"{natural_anchor}って話なら覚えてるし。",
+                        f"前に{natural_anchor}って言ってたろ。",
+                    ]
 
         if not variants:
             return None
@@ -9155,6 +9173,9 @@ class RightBrain:
             add("全くじゃないとは言わない。そこ聞いて安心したいだけだろ。")
             add("少しは気にしてるし。いちいち確認すんなって。")
         elif dialogue_act == "memory_accounting":
+            grounded = self._memory_grounded_reply(logic_data, user_input)
+            if grounded:
+                add(grounded)
             if logic_data.get("intent") == "memory_uncertain":
                 add("そこはまだちゃんと掴めてない。適当に名前作る方が嫌だろ。")
             elif core:
@@ -9169,7 +9190,12 @@ class RightBrain:
         elif dialogue_act == "repair_check":
             add("ん、今のどこが引っかかったんだよ。そこだけ言え。")
         elif dialogue_act == "direct_chat_answer" and core:
-            add(f"{core}。それで普通に返せるだろ。")
+            if "ラーメン以外" in core:
+                add("今日はラーメン以外で軽めにしとけ。胃に重いのはやめとけって。")
+            elif "話題" in core and "戻" in core:
+                add("じゃあ軽めの話にするか。変に重くしなくていいだろ。")
+            else:
+                add(f"{core}。そのくらいでいいだろ。")
 
         return variants
 
@@ -9181,6 +9207,9 @@ class RightBrain:
             anchor = logic_data.get("memory_anchor") or {}
             terms = [str(term or "").strip() for term in anchor.get("terms") or []]
             if any(term and term.lower() in reply.lower() for term in terms[:6]):
+                return False
+            natural_anchor = self._jp_memory_value(anchor.get("jp_anchor") or anchor.get("value") or "")
+            if natural_anchor and natural_anchor.lower() in reply.lower():
                 return False
 
         scene = logic_data.get("scene", "casual")
@@ -9467,6 +9496,11 @@ class RightBrain:
             "daily_state_answer": ["食べ", "腹", "済ませ", "だら", "休ん", "ぼーっ"],
             "memory_accounting": ["覚", "忘", "掴", "名前", "適当"],
         }.get(dialogue_act, [])
+        if not semantic_tokens and logic_data.get("memory_speakability") == "background_only":
+            semantic_tokens = [
+                token for token in self._reply_tokens(logic_data.get("core_message_jp", ""))
+                if token not in {"今日", "いい", "もの", "それ", "する", "軽く"}
+            ][:5]
         if semantic_tokens:
             semantic_candidates = [
                 candidate for candidate in candidates
@@ -10188,6 +10222,15 @@ class RightBrain:
                     score += 0.8
                 else:
                     score -= 1.0
+        if logic_data.get("memory_speakability") == "background_only":
+            core_tokens = [
+                token for token in self._reply_tokens(logic_data.get("core_message_jp", ""))
+                if token not in {"今日", "いい", "もの", "それ", "する", "軽く"}
+            ][:5]
+            if core_tokens and any(token in reply for token in core_tokens):
+                score += 0.8
+            elif core_tokens:
+                score -= 0.7
         if logic_data.get("intent") in {"food_offer_generic", "food_offer_sweet"}:
             item = (logic_data.get("grounding") or {}).get("offered_item")
             if not item:
@@ -10800,6 +10843,16 @@ class UruhaBrainV4_Mac:
             issues.append("empty_reply")
         if not speech_plan:
             issues.append("missing_human_speech_plan")
+        plan_leak_markers = [
+            "まず一点だけ答える",
+            "覚えている/曖昧",
+            "相手の状態を一語で受ける",
+            "捏造しない",
+            "具体語:",
+            " / ",
+        ]
+        if any(marker in reply for marker in plan_leak_markers):
+            issues.append("plan_list_leak")
         if any(ord(ch) < 128 and ch.isalpha() for ch in reply):
             issues.append("non_japanese_leak")
         if len(reply) <= 7 and logic.get("payload_level") in {"medium", "high"}:
@@ -10878,6 +10931,22 @@ class UruhaBrainV4_Mac:
     def _repair_reply_from_self_monitor(self, reply, logic, monitor, user_input, memory_data, psyche_after):
         if not monitor.get("needs_repair"):
             return reply
+        issues = set(monitor.get("issues", []))
+        if logic.get("memory_use_expected") and issues.intersection({"plan_list_leak", "missed_memory_anchor"}):
+            memory_reply = self.right_brain._memory_grounded_reply(logic, user_input)
+            if memory_reply:
+                repaired = self.right_brain._finalize_surface_reply(
+                    memory_reply,
+                    logic,
+                    user_input,
+                    max_chars=(logic.get("constraints") or {}).get("max_chars", 34),
+                )
+                logic["self_monitor_repair"] = {
+                    "before": reply,
+                    "after": repaired,
+                    "issues": list(monitor.get("issues", [])),
+                }
+                return repaired
         repaired_logic = deepcopy(logic or {})
         repaired_logic["self_monitor_repair"] = monitor
         repaired_logic.setdefault("must_avoid", [])
@@ -10892,22 +10961,36 @@ class UruhaBrainV4_Mac:
             "speech_plan_grounding_miss",
             "speech_forbidden_repetition",
             "same_opening_frame",
+            "plan_list_leak",
         }
-        if speech_issues.intersection(set(monitor.get("issues", []))):
+        if speech_issues.intersection(issues):
             speech_plan = repaired_logic.get("human_speech_plan") or {}
             content_units = [str(item or "").strip() for item in (speech_plan.get("content_units") or []) if str(item or "").strip()]
             grounding_terms = [str(item or "").strip() for item in (speech_plan.get("grounding_terms") or []) if str(item or "").strip()]
+            filtered_units = [
+                item for item in content_units
+                if not any(
+                    marker in item
+                    for marker in [
+                        "まず一点だけ答える",
+                        "覚えている/曖昧",
+                        "相手の状態を一語で受ける",
+                        "捏造しない",
+                        "具体語:",
+                    ]
+                )
+            ]
             repaired_logic["core_message_jp"] = self._trim_text(
-                " / ".join((content_units + grounding_terms)[:4]) or repaired_logic.get("core_message_jp", "自然に返す"),
+                "、".join((filtered_units + grounding_terms)[:3]) or repaired_logic.get("core_message_jp", "自然に返す"),
                 180,
             )
             repaired_logic.setdefault("must_avoid", [])
             repaired_logic["must_avoid"] = list(repaired_logic.get("must_avoid") or []) + list(speech_plan.get("forbidden_repetition") or [])
-        if "missed_memory_anchor" in monitor.get("issues", []):
+        if "missed_memory_anchor" in issues:
             anchor = (logic.get("memory_anchor") or {}).get("jp_anchor") or (logic.get("memory_anchor") or {}).get("value")
             if anchor:
                 repaired_logic["core_message_jp"] = f"{anchor}を拾って自然に返す"
-        if "non_japanese_leak" in monitor.get("issues", []):
+        if "non_japanese_leak" in issues:
             repaired_logic["core_message_jp"] = "英語を混ぜずに言い直す"
         try:
             repaired = self.right_brain.speak(user_input, repaired_logic, memory_data, psyche_after)

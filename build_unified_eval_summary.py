@@ -16,6 +16,7 @@ from project_paths import (
     HUMAN_SPEECH_LAYER_REPORT_JSON_PATH,
     LONG_DIALOGUE_MEMORY_REPORT_PATH,
     MEMORY_CAUSAL_EFFECT_REPORT_JSON_PATH,
+    MEMORY_SPEAKABILITY_RESPONSE_REPORT_JSON_PATH,
     REPLY_DIVERSITY_REPORT_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
     STRESS_EVAL_REPORT_PATH,
@@ -30,6 +31,7 @@ REPORT_PATHS = {
     "runtime": RUNTIME_DYNAMICS_REPORT_PATH,
     "memory": LONG_DIALOGUE_MEMORY_REPORT_PATH,
     "memory_causal_effect": MEMORY_CAUSAL_EFFECT_REPORT_JSON_PATH,
+    "memory_speakability_response": MEMORY_SPEAKABILITY_RESPONSE_REPORT_JSON_PATH,
     "diversity": REPLY_DIVERSITY_REPORT_PATH,
     "human_answer": V2_HUMAN_ANSWER_REPORT_PATH,
     "formal": FORMAL_BRAIN_BENCHMARKS_REPORT_JSON_PATH,
@@ -117,6 +119,13 @@ def _goal_item(name_zh, score, target, rationale, source_keys):
     }
 
 
+def _required_min(*values):
+    normalized = [_safe_float(value) for value in values]
+    if any(value is None for value in normalized):
+        return None
+    return min(normalized)
+
+
 def _diversity_acceptance_score(stress_summary):
     unique_ratio = _safe_float((stress_summary or {}).get("unique_reply_ratio")) or 0.0
     top20 = _safe_float((stress_summary or {}).get("top_20_reply_concentration"))
@@ -127,7 +136,18 @@ def _diversity_acceptance_score(stress_summary):
     return max(0.0, min(unique_score, concentration_score))
 
 
-def _build_alignment_snapshot(arch, human, formal, stress, annotation, regression, regression_eval, regression_diff, speech_layer):
+def _build_alignment_snapshot(
+    arch,
+    human,
+    formal,
+    stress,
+    annotation,
+    regression,
+    regression_eval,
+    regression_diff,
+    speech_layer,
+    memory_speakability_response,
+):
     tombench = ((formal or {}).get("summaries") or {}).get("tombench") or {}
     return {
         "working_memory_buffer": {
@@ -240,6 +260,19 @@ def _build_alignment_snapshot(arch, human, formal, stress, annotation, regressio
             },
             "detail": "右腦前新增語用功能、語意單元、風格算子與自檢，用來把『回答』轉成更像人類的口語行為。",
         },
+        "memory_speakability_response_layer": {
+            "status": "implemented"
+            if (memory_speakability_response or {}).get("case_pass_rate", 0) >= 0.9
+            else "partial",
+            "metric": {
+                "case_pass_rate": _safe_float((memory_speakability_response or {}).get("case_pass_rate")),
+                "speakability_accuracy": _safe_float((memory_speakability_response or {}).get("speakability_accuracy")),
+                "explicit_contract_accuracy": _safe_float((memory_speakability_response or {}).get("explicit_contract_accuracy")),
+                "forbidden_intrusion_rate": _safe_float((memory_speakability_response or {}).get("forbidden_intrusion_rate")),
+                "plan_leak_rate": _safe_float((memory_speakability_response or {}).get("plan_leak_rate")),
+            },
+            "detail": "記憶不只要被找回，還要決定最後一句是否該明講、只當背景、或因敏感/第三方資訊而不說出口。",
+        },
     }
 
 
@@ -248,6 +281,7 @@ def main():
     runtime_report = _load_json(REPORT_PATHS["runtime"])
     memory_report = _load_json(REPORT_PATHS["memory"])
     memory_causal_report = _load_json(REPORT_PATHS["memory_causal_effect"])
+    memory_speakability_response_report = _load_json(REPORT_PATHS["memory_speakability_response"])
     diversity_report = _load_json(REPORT_PATHS["diversity"])
     human_report = _load_json(REPORT_PATHS["human_answer"])
     formal_report = _load_json(REPORT_PATHS["formal"])
@@ -267,6 +301,7 @@ def main():
     runtime = runtime_report.get("summary", {})
     memory = memory_report.get("summary", {})
     memory_causal = memory_causal_report.get("summary", {})
+    memory_speakability_response = memory_speakability_response_report.get("summary", {})
     diversity = diversity_report.get("summary", {})
     human = human_report.get("summary", {})
     formal = formal_report.get("summaries", {})
@@ -361,6 +396,15 @@ def main():
             "memory_causal_effect_report.json",
             "higher",
             "代表系統判定應使用記憶時，最終日文回答是否真的顯性使用那條記憶。",
+        ),
+        _metric(
+            "記憶輸出契約通過率",
+            "memory_speakability_response_case_pass_rate",
+            memory_speakability_response.get("case_pass_rate"),
+            "越高越好",
+            "memory_speakability_response_report.json",
+            "higher",
+            "代表最後一句話是否正確處理記憶：直接問才明講，相關但未被問到只當背景，敏感或第三方資訊不亂說。",
         ),
         _metric(
             "小樣本回覆獨特率",
@@ -493,9 +537,11 @@ def main():
     goal_attainment = [
         _goal_item(
             "像人類地直接回答",
-            min(
-                _safe_float(human.get("direct_answer_rate_on_simple_queries")) or 0.0,
-                1.0 - (_safe_float(human.get("over_reframe_rate")) or 1.0),
+            _required_min(
+                human.get("direct_answer_rate_on_simple_queries"),
+                (1.0 - _safe_float(human.get("over_reframe_rate")))
+                if _safe_float(human.get("over_reframe_rate")) is not None
+                else None,
             ),
             0.95,
             "這項高表示模型不會逢題拆題，簡單對話能直接回應。",
@@ -503,24 +549,26 @@ def main():
         ),
         _goal_item(
             "像人類地維持工作記憶",
-            min(
-                _safe_float(arch.get("working_memory_relevance_rate")) or 0.0,
-                _safe_float(memory.get("delayed_recall_rate")) or 0.0,
-                _safe_float(memory_causal.get("strong_causal_effect_rate")) or 0.0,
+            _required_min(
+                arch.get("working_memory_relevance_rate"),
+                memory.get("delayed_recall_rate"),
+                memory_causal.get("strong_causal_effect_rate"),
+                memory_speakability_response.get("case_pass_rate"),
             ),
             0.9,
-            "這項高表示不是把所有記憶亂塞進左腦，而是能抓住真正相關的少量資訊，且記憶會實際改變回答。",
+            "這項高表示不是把所有記憶亂塞進左腦，而是能抓住真正相關的少量資訊，讓記憶實際改變回答，且最後一句知道何時該說、何時不該說。",
             [
                 "cognitive_architecture_eval_report.json.summary.working_memory_relevance_rate",
                 "long_dialogue_memory_report.json.summary.delayed_recall_rate",
                 "memory_causal_effect_report.json.summary.strong_causal_effect_rate",
+                "memory_speakability_response_report.json.summary.case_pass_rate",
             ],
         ),
         _goal_item(
             "像人類地做多路徑思考",
-            min(
-                _safe_float(arch.get("bayesian_candidate_coverage")) or 0.0,
-                _safe_float(arch.get("scratchpad_presence_rate")) or 0.0,
+            _required_min(
+                arch.get("bayesian_candidate_coverage"),
+                arch.get("scratchpad_presence_rate"),
             ),
             1.0,
             "這項高表示左腦不是單一路徑，而是有候選計畫、scratchpad 與 rerank。",
@@ -667,6 +715,7 @@ def main():
             "簡單問題直接回答率很高，已經明顯脫離『每題都拆』的舊問題。",
             "長對話記憶與延遲回憶能力已可用，代表工作記憶 + 三循環記憶接法有效。",
             "記憶因果評測已接上，能區分『有取出記憶』與『記憶真的改變回答』。",
+            "記憶輸出契約評測已接上，能檢查記憶最後是否被明講、當背景使用，或被正確壓住不說。",
             "10k 壓測下規劃與邊界穩定度很高，表示系統架構比純 prompt 基線可靠。",
             "人工標記 -> regression dataset -> replay eval -> diff report 的修補閉環已經接通，後面可以開始做真實 fail case 的 patch 驗證。",
             "Web 對話 log 已可自動抽出 annotation candidate queue，後續不必手動翻完整 log 才知道先標哪幾題。",
@@ -689,6 +738,7 @@ def main():
             "human_answer": human,
             "formal": formal,
             "memory_causal_effect": memory_causal,
+            "memory_speakability_response": memory_speakability_response,
             "stress_10k": stress,
             "human_feedback_annotation": annotation,
             "annotation_candidate_queue": annotation_queue,
@@ -710,6 +760,7 @@ def main():
         regression_eval,
         regression_diff,
         speech_layer,
+        memory_speakability_response,
     )
 
     lines = [
@@ -749,6 +800,7 @@ def main():
             "- `簡單問題直接回答率`：越高越好。例：使用者說「你在幹嘛」，理想是直接回答，不是反問或拆題。",
             "- `過度拆題率`：越低越好。例：使用者只說「我今天很累」，不應被誤當成要先重構問題。",
             "- `工作記憶相關率`：越高越好。代表送進左腦的記憶真的跟當輪有關，不是亂塞背景。",
+            "- `記憶輸出契約通過率`：越高越好。代表最後一句話知道記憶該明講、只當背景，還是因敏感/第三方資訊而不說。",
             "- `正式心智理論分數`：越高越好。例：故事裡 A 在暗示 B，系統要能看出來不是只讀字面。",
             "- `回覆獨特率`：越高越好。代表同類題目不會一直回同一句。",
             "- `前 20 回覆集中率`：越低越好。這個太高就表示模板化嚴重。",
