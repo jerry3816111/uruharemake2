@@ -1,7 +1,7 @@
 # UruhaBrain vNext 研究 90+ 診斷報告
 
-- 產生時間：`2026-04-30T01:56:25+09:00`
-- 研究認知成熟度分數：`95.66`
+- 產生時間：`2026-06-19T23:34:18+09:00`
+- 研究認知成熟度分數：`93.54`
 - 是否可主張研究 90+：`True`
 - 表面對話對齊分數：`85.32`
 
@@ -19,16 +19,17 @@
   - formal_tombench_accuracy=0.975
   - research_social_reasoning_pass_rate=1.0
   - tom_subtext_proxy_rate=1.0
-- `記憶一致性 / 工作記憶`: `97.28` (weight=0.16)
-  - delayed_recall_rate=0.9167
+- `記憶一致性 / 工作記憶`: `98.95` (weight=0.16)
+  - delayed_recall_rate=1.0
   - profile_capture_rate=1.0
   - working_memory_relevance_rate=0.9474
-  - memory_causal_strong_effect_rate=1.0
+  - memory_causal_appropriate_effect_rate=1.0
+  - unwanted_memory_intrusion_rate=0.0
   - memory_used_explicitly_rate=1.0
-- `Runtime 動態 / 自主循環`: `100.0` (weight=0.12)
+- `Runtime 動態 / 自主循環`: `80.11` (weight=0.12)
   - trace_key_presence_rate=1.0
-  - self_correction_rate=0.3871
-  - open_loop_turn_rate=0.2903
+  - self_correction_rate=0.0323
+  - open_loop_turn_rate=0.3226
   - autonomous_success_rate=1.0
 - `對 prompt-only baseline 的研究優勢`: `89.4` (weight=0.1)
   - avg_score_delta=0.6851
@@ -75,8 +76,10 @@
 - `formal_tombench_accuracy`: 0.975
 - `research_social_reasoning_pass_rate`: 1.0
 - `leftbrain_readiness_pass_rate`: 1.0
-- `delayed_recall_rate`: 0.9167
+- `delayed_recall_rate`: 1.0
 - `working_memory_relevance_rate`: 0.9474
+- `memory_causal_appropriate_effect_rate`: 1.0
+- `unwanted_memory_intrusion_rate`: 0.0
 - `dialog_act_accuracy`: 0.3
 - `emotion_accuracy`: 0.6167
 - `diversity_unique_ratio`: 0.7604

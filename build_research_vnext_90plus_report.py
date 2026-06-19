@@ -28,6 +28,11 @@ def _pct(value: float) -> float:
     return round(float(value) * 100.0, 2)
 
 
+def _long_dialogue_recall_summary(report):
+    summary = (report or {}).get("summary") or {}
+    return summary.get("delayed_recall") or summary
+
+
 def build_report():
     cog = _load_json(REPORTS / "cognitive_architecture_eval_report.json")
     runtime = _load_json(REPORTS / "runtime_dynamics_report.json")
@@ -42,7 +47,7 @@ def build_report():
 
     cog_s = cog["summary"]
     runtime_s = runtime["summary"]
-    memory_s = memory["summary"]
+    memory_s = _long_dialogue_recall_summary(memory)
     memory_causal_s = memory_causal.get("summary", {})
     compare_s = compare["overall_compare"]
     diversity_s = diversity["summary"]
@@ -67,11 +72,15 @@ def build_report():
         cog_s["tom_subtext_proxy_rate"],
     ]))
 
+    memory_causal_alignment_rate = memory_causal_s.get("appropriate_memory_effect_rate")
+    if memory_causal_alignment_rate is None:
+        memory_causal_alignment_rate = memory_causal_s.get("strong_causal_effect_rate", 0.0)
+
     memory_coherence = _pct(_avg([
         memory_s["delayed_recall_rate"],
         memory_s["profile_capture_rate"],
         cog_s["working_memory_relevance_rate"],
-        memory_causal_s.get("strong_causal_effect_rate", 0.0),
+        memory_causal_alignment_rate,
         memory_causal_s.get("memory_used_explicitly_rate", 0.0),
     ]))
 
@@ -202,7 +211,8 @@ def build_report():
                     f"delayed_recall_rate={memory_s['delayed_recall_rate']}",
                     f"profile_capture_rate={memory_s['profile_capture_rate']}",
                     f"working_memory_relevance_rate={cog_s['working_memory_relevance_rate']}",
-                    f"memory_causal_strong_effect_rate={memory_causal_s.get('strong_causal_effect_rate')}",
+                    f"memory_causal_appropriate_effect_rate={memory_causal_alignment_rate}",
+                    f"unwanted_memory_intrusion_rate={memory_causal_s.get('unwanted_memory_intrusion_rate')}",
                     f"memory_used_explicitly_rate={memory_causal_s.get('memory_used_explicitly_rate')}",
                 ],
             },
@@ -290,6 +300,8 @@ def build_report():
             "leftbrain_readiness_pass_rate": 1.0,
             "delayed_recall_rate": memory_s["delayed_recall_rate"],
             "working_memory_relevance_rate": cog_s["working_memory_relevance_rate"],
+            "memory_causal_appropriate_effect_rate": memory_causal_alignment_rate,
+            "unwanted_memory_intrusion_rate": memory_causal_s.get("unwanted_memory_intrusion_rate"),
             "dialog_act_accuracy": daily_s["dialog_act_accuracy"],
             "emotion_accuracy": daily_s["emotion_accuracy"],
             "diversity_unique_ratio": diversity_s["overall_unique_ratio"],

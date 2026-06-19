@@ -86,6 +86,20 @@ def _safe_float(value, digits=4):
         return None
 
 
+def _flatten_long_dialogue_memory_summary(summary):
+    """Expose nested long-dialogue memory metrics for the unified scorecard."""
+    summary = summary or {}
+    delayed_recall = summary.get("delayed_recall") or {}
+    speakability = summary.get("speakability") or {}
+    flat = dict(summary)
+    flat["delayed_recall"] = delayed_recall
+    flat["speakability"] = speakability
+    flat["delayed_recall_rate"] = delayed_recall.get("delayed_recall_rate")
+    flat["memory_speakability_case_pass_rate"] = speakability.get("case_pass_rate")
+    flat["memory_speakability_label_accuracy"] = speakability.get("label_accuracy")
+    return flat
+
+
 def _status_by_threshold(value, target, direction="higher"):
     if value is None:
         return "missing"
@@ -308,9 +322,12 @@ def main():
 
     arch = arch_report.get("summary", {})
     runtime = runtime_report.get("summary", {})
-    memory = memory_report.get("summary", {})
+    memory = _flatten_long_dialogue_memory_summary(memory_report.get("summary", {}))
     memory_causal = memory_causal_report.get("summary", {})
     memory_speakability_response = memory_speakability_response_report.get("summary", {})
+    memory_causal_alignment_rate = memory_causal.get("appropriate_memory_effect_rate")
+    if memory_causal_alignment_rate is None:
+        memory_causal_alignment_rate = memory_causal.get("strong_causal_effect_rate")
     diversity = diversity_report.get("summary", {})
     human = human_report.get("summary", {})
     daily_state_self_distress = daily_state_self_distress_report.get("summary", {})
@@ -419,13 +436,22 @@ def main():
             "代表隔幾輪後還能不能記得前面講過的偏好與資訊。",
         ),
         _metric(
-            "記憶因果影響率",
-            "memory_causal_strong_effect_rate",
-            memory_causal.get("strong_causal_effect_rate"),
+            "記憶適切因果效果率",
+            "memory_causal_appropriate_effect_rate",
+            memory_causal_alignment_rate,
             "越高越好",
             "memory_causal_effect_report.json",
             "higher",
-            "代表同一題在有記憶與無記憶條件下，回答是否會因相關記憶而改變且明確帶入記憶錨點。",
+            "代表該用記憶時回答會受記憶影響，不該用時則不會把無關、敏感或第三方記憶硬塞進回覆。",
+        ),
+        _metric(
+            "不當記憶侵入率",
+            "unwanted_memory_intrusion_rate",
+            memory_causal.get("unwanted_memory_intrusion_rate"),
+            "越低越好",
+            "memory_causal_effect_report.json",
+            "lower",
+            "代表無關、敏感或第三方記憶在不該出現的回覆中被明講或被判定應顯性使用的比例。",
         ),
         _metric(
             "記憶顯性使用率",
@@ -591,15 +617,15 @@ def main():
             _required_min(
                 arch.get("working_memory_relevance_rate"),
                 memory.get("delayed_recall_rate"),
-                memory_causal.get("strong_causal_effect_rate"),
+                memory_causal_alignment_rate,
                 memory_speakability_response.get("case_pass_rate"),
             ),
             0.9,
             "這項高表示不是把所有記憶亂塞進左腦，而是能抓住真正相關的少量資訊，讓記憶實際改變回答，且最後一句知道何時該說、何時不該說。",
             [
                 "cognitive_architecture_eval_report.json.summary.working_memory_relevance_rate",
-                "long_dialogue_memory_report.json.summary.delayed_recall_rate",
-                "memory_causal_effect_report.json.summary.strong_causal_effect_rate",
+                "long_dialogue_memory_report.json.summary.delayed_recall.delayed_recall_rate",
+                "memory_causal_effect_report.json.summary.appropriate_memory_effect_rate",
                 "memory_speakability_response_report.json.summary.case_pass_rate",
             ],
         ),
