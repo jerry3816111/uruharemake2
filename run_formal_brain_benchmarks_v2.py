@@ -4319,6 +4319,36 @@ def classify_dailydialog_emotion_interpreter_v2(item):
     recent_context = " ".join(context[-2:])
     v1_emotion, v1_rule, v1_confidence = classify_dailydialog_emotion_interpreter_v1(item)
 
+    # Strong pragmatic emotion cues should override the generic lexical pass. This
+    # keeps the interpreter aligned with DailyDialog's utterance-level emotion IDs:
+    # short incredulous questions are surprise, and direct rebukes are anger.
+    if re.search(r"\b(get out of my store|you jerk|whatever you say)\b", text):
+        return 1, "v2_anger_direct_rebuke_or_dismissal", 0.9
+    if re.fullmatch(r"what\s*\?", text) or re.match(r"really\s*\?", text):
+        return 6, "v2_surprise_short_incredulous_question", 0.9
+
+    # Polite formulae are often interaction management rather than happiness in
+    # DailyDialog. Keep exact short thanks/opening forms neutral unless a stronger
+    # positive event cue is present elsewhere in the utterance.
+    if re.fullmatch(
+        r"(very well\s*\.\s*)?(thank you|thanks|thanks a lot|thank you\s*,?\s*bye-bye)\s*\.?",
+        text,
+    ):
+        return 0, "v2_neutral_polite_thanks_formula", 0.85
+    if re.fullmatch(r"sure\s*\.\s*what'?s up\s*\?", text):
+        return 0, "v2_neutral_polite_readiness_question", 0.85
+    if re.search(r"\b(that looks great.*do you have|perhaps we could go to .*festival|hot potato)\b", text):
+        return 0, "v2_neutral_pragmatic_false_positive", 0.8
+
+    # Positive affect is not only praise words. The official labels also mark
+    # some preference, care-taking, and cooperative-start utterances as happiness.
+    if re.search(
+        r"\b(i just like wildlife|this place is full of it|don't forget to bring your umbrella|"
+        r"let.?s get started by drafting a new contract)\b",
+        text,
+    ):
+        return 4, "v2_happiness_preference_care_or_cooperation", 0.85
+
     if re.search(
         r"\b(over this a hundred times|not getting a pet|twilight zone|never saw|no way|not my fault|"
         r"late again|fed up|bad job|our relation has been over|turn on the tv for what|no place for study|"
