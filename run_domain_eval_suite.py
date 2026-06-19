@@ -15,6 +15,7 @@ from project_paths import (
     REPLY_DIVERSITY_REPORT_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
+    SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH,
     V2_HUMAN_ANSWER_REPORT_PATH,
 )
 
@@ -32,6 +33,7 @@ TASKS = [
     ("human_speech_layer", "run_human_speech_layer_eval.py", HUMAN_SPEECH_LAYER_REPORT_JSON_PATH),
     ("daily_state_self_distress", "daily_state_self_distress_eval.py", DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH),
     ("self_distress_surface_contract", "self_distress_surface_contract_eval.py", SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH),
+    ("support_prefix_contract", "support_prefix_contract_eval.py", SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH),
 ]
 
 
@@ -90,6 +92,7 @@ def main():
         "human_speech_layer": (outputs.get("human_speech_layer") or {}).get("metrics", {}),
         "daily_state_self_distress": (outputs.get("daily_state_self_distress") or {}).get("summary", {}),
         "self_distress_surface_contract": (outputs.get("self_distress_surface_contract") or {}).get("summary", {}),
+        "support_prefix_contract": (outputs.get("support_prefix_contract") or {}).get("summary", {}),
         "task_runs": task_runs,
     }
     report = {

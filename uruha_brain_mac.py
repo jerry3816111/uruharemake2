@@ -8018,6 +8018,9 @@ class RightBrain:
             return reply
         if logic_data.get("intent") in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "memory_correction", "recall_recent"}:
             return reply
+        dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
+        if dialogue_act == "emotional_containment" or logic_data.get("scene") == "support":
+            return reply
 
         prefixes = ["ん、", "まあ、", "いや、", "てか、", "一回、", "先に、", "普通に、", "はいはい、"]
         seed = sum(ord(ch) for ch in f"{logic_data.get('intent','')}|{logic_data.get('surface_act','')}|{user_input}")
@@ -9507,8 +9510,15 @@ class RightBrain:
         if not candidates:
             return reply
         dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
+        emotional_tokens_by_intent = {
+            "tired_support": ["休", "無理", "疲", "寝", "回復", "しんど"],
+            "crying_support": ["責め", "吐", "平気", "強が", "泣"],
+            "lonely": ["空っぽ", "寂", "一人", "ここ", "話"],
+            "giving_up_support": ["止ま", "一人", "抱え", "切る"],
+            "crisis_support": ["止ま", "一人", "危", "抱え", "連絡"],
+        }
         semantic_tokens = {
-            "emotional_containment": ["休", "無理", "疲", "寝", "回復", "しんど"],
+            "emotional_containment": emotional_tokens_by_intent.get(intent, ["止ま", "無理", "しんど", "抱え"]),
             "frame_negotiation": ["前提", "違", "どこ", "何", "絞", "確認"],
             "daily_state_answer": ["食べ", "腹", "済ませ", "だら", "休ん", "ぼーっ"],
             "memory_accounting": ["覚", "忘", "掴", "名前", "適当"],
