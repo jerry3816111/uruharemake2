@@ -7,12 +7,14 @@ import time
 from project_paths import (
     BASE_DIR,
     COGNITIVE_ARCHITECTURE_REPORT_PATH,
+    DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH,
     DOMAIN_EVAL_SUITE_REPORT_PATH,
     FORMAL_BRAIN_BENCHMARKS_REPORT_JSON_PATH,
     HUMAN_SPEECH_LAYER_REPORT_JSON_PATH,
     LONG_DIALOGUE_MEMORY_REPORT_PATH,
     REPLY_DIVERSITY_REPORT_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
+    SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     V2_HUMAN_ANSWER_REPORT_PATH,
 )
 
@@ -28,6 +30,8 @@ TASKS = [
     ("human_answer_proxy", "eval_v2_human_answer.py", V2_HUMAN_ANSWER_REPORT_PATH),
     ("formal_benchmarks", "run_formal_brain_benchmarks.py", FORMAL_BRAIN_BENCHMARKS_REPORT_JSON_PATH),
     ("human_speech_layer", "run_human_speech_layer_eval.py", HUMAN_SPEECH_LAYER_REPORT_JSON_PATH),
+    ("daily_state_self_distress", "daily_state_self_distress_eval.py", DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH),
+    ("self_distress_surface_contract", "self_distress_surface_contract_eval.py", SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH),
 ]
 
 
@@ -83,6 +87,9 @@ def main():
         "reply_diversity": (outputs.get("reply_diversity") or {}).get("summary", {}),
         "human_answer_proxy": (outputs.get("human_answer_proxy") or {}).get("summary", {}),
         "formal_benchmarks": (outputs.get("formal_benchmarks") or {}).get("summary", {}),
+        "human_speech_layer": (outputs.get("human_speech_layer") or {}).get("metrics", {}),
+        "daily_state_self_distress": (outputs.get("daily_state_self_distress") or {}).get("summary", {}),
+        "self_distress_surface_contract": (outputs.get("self_distress_surface_contract") or {}).get("summary", {}),
         "task_runs": task_runs,
     }
     report = {

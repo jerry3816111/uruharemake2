@@ -9127,9 +9127,26 @@ class RightBrain:
                 variants.append(text)
 
         if dialogue_act == "emotional_containment":
-            add("そこまで疲れてるなら今日は休め。無理しても雑になるだけだろ。")
-            add("また疲れてるなら、今日はもう休む方に寄せろって。")
-            add("今は回復する側に回れって。話すのは起きてからでいいし。")
+            intent = logic_data.get("intent", "")
+            if intent == "tired_support":
+                add("また疲れてるなら、今日はもう休む方に寄せろって。")
+                add("今は回復する側に回れって。話すのは起きてからでいいし。")
+                add("今日はもう粘るな。疲れてる時は休む方が先だろ。")
+            elif intent == "crying_support":
+                add("今は自分を責めすぎるな。少し吐いてからでいいだろ。")
+                add("平気ぶらなくていい。今日は少し吐き出してけ。")
+                add("そこまで自分に刺すなって。今は責めるより吐け。")
+            elif intent == "lonely":
+                add("空っぽなら少しここで話してけ。一人で煮詰まるなよ。")
+                add("そういう空っぽな日はここにいろ。一人で抱えるなって。")
+                add("寂しいなら少し話せばいい。黙って沈むなよ。")
+            elif intent in {"giving_up_support", "crisis_support"}:
+                add("今は一回止まれ。一人で抱えたまま変な方に行くな。")
+                add("全部切る前に止まれ。今日は一人で決めるなって。")
+                add("今は進むより止まる方を選べ。一人で抱えるな。")
+            else:
+                add("そのまま抱え込むなって。今は少し止まれ。")
+                add("しんどいなら一回ここで止まれ。無理に整えるな。")
         elif dialogue_act == "daily_state_answer":
             surface = logic_data.get("surface_act", "")
             if surface == "meal_check_reply":
@@ -9605,26 +9622,71 @@ class RightBrain:
             )
 
         if logic_data.get("scene") == "support":
-            option_sets.extend(
-                [
+            if intent == "tired_support":
+                option_sets.extend(
+                    [
+                        {
+                            "text": "今日はもう空気が重い。",
+                            "boost_tokens": ["今日", "休", "無理"],
+                            "variants": [
+                                "今日はもう空気重いし。ここで無理する日じゃないだろ。",
+                                "今日ずっとしんどそうだし。今は立て直すより休めって。",
+                            ],
+                        },
+                        {
+                            "text": "相手の消耗がずっと残ってる。",
+                            "boost_tokens": ["今日", "疲", "休"],
+                            "variants": [
+                                "まだ消耗引いてるだろ。今日はもう切り上げていいって。",
+                                "今日のしんどさ残ってるし。今はもう休む側に回れ。",
+                            ],
+                        },
+                    ]
+                )
+            elif intent == "crying_support":
+                option_sets.append(
                     {
-                        "text": "今日はもう空気が重い。",
-                        "boost_tokens": ["今日", "休", "無理"],
+                        "text": "相手が自分を責めすぎている。",
+                        "boost_tokens": ["責め", "吐", "平気"],
                         "variants": [
-                            "今日はもう空気重いし。ここで無理する日じゃないだろ。",
-                            "今日ずっとしんどそうだし。今は立て直すより休めって。",
+                            "今は自分を責めすぎるな。少し吐いてからでいいだろ。",
+                            "平気ぶらなくていい。今日は少し吐き出してけ。",
                         ],
-                    },
+                    }
+                )
+            elif intent == "lonely":
+                option_sets.append(
                     {
-                        "text": "相手の消耗がずっと残ってる。",
-                        "boost_tokens": ["今日", "疲", "休"],
+                        "text": "相手が空っぽさと孤独を抱えている。",
+                        "boost_tokens": ["空っぽ", "一人", "話"],
                         "variants": [
-                            "まだ消耗引いてるだろ。今日はもう切り上げていいって。",
-                            "今日のしんどさ残ってるし。今はもう休む側に回れ。",
+                            "空っぽなら少しここで話してけ。一人で煮詰まるなよ。",
+                            "寂しいなら少し話せばいい。黙って沈むなよ。",
                         ],
-                    },
-                ]
-            )
+                    }
+                )
+            elif intent in {"giving_up_support", "crisis_support"}:
+                option_sets.append(
+                    {
+                        "text": "相手が限界に近く、一人で抱えると危ない。",
+                        "boost_tokens": ["止ま", "一人", "抱え"],
+                        "variants": [
+                            "今は一回止まれ。一人で抱えたまま変な方に行くな。",
+                            "全部切る前に止まれ。今日は一人で決めるなって。",
+                        ],
+                    }
+                )
+            else:
+                option_sets.append(
+                    {
+                        "text": "相手のしんどさを受け止める必要がある。",
+                        "boost_tokens": ["止ま", "無理", "抱え"],
+                        "variants": [
+                            "そのまま抱え込むなって。今は少し止まれ。",
+                            "しんどいなら一回ここで止まれ。無理に整えるな。",
+                        ],
+                    }
+                )
 
         if surface in {"nonsense_tease", "challenge_mirror", "announcement_tease", "reference_probe", "lyric_probe", "correction_followup"}:
             option_sets.extend(
@@ -10201,10 +10263,22 @@ class RightBrain:
             if any(term and term in reply for term in speech_terms[:4]):
                 score += 0.8
             if dialogue_act == "emotional_containment":
-                if any(x in reply for x in ["休", "無理", "疲", "寝", "回復"]):
-                    score += 0.8
+                containment_terms = {
+                    "tired_support": ["休", "無理", "疲", "寝", "回復", "しんど"],
+                    "crying_support": ["責め", "吐", "平気", "強が", "泣"],
+                    "lonely": ["空っぽ", "寂", "一人", "ここ", "話"],
+                    "giving_up_support": ["止ま", "一人", "抱え", "切る", "進むより"],
+                    "crisis_support": ["止ま", "一人", "危", "抱え", "連絡"],
+                }
+                intent_terms = containment_terms.get(logic_data.get("intent"), ["止ま", "無理", "しんど", "抱え"])
+                if any(x in reply for x in intent_terms):
+                    score += 1.0
                 else:
                     score -= 1.4
+                if logic_data.get("intent") != "tired_support" and any(
+                    x in reply for x in ["疲れてるなら", "回復する側", "休む方", "今日は休め"]
+                ):
+                    score -= 2.2
             if dialogue_act == "concrete_offer_response" and any(x in reply for x in ["ほしい", "もらう", "食べ", "一口"]):
                 score += 0.6
             if dialogue_act == "absurdity_mirror" and any(x in reply for x in ["何", "急", "意味", "ノリ"]):
