@@ -7894,7 +7894,7 @@ class RightBrain:
             "friend_no_reply": ["それはちょっと気になるな。", "返事ないと普通に気になるよな。", "既読つかないの地味に引っかかるよな。", "返事ないとそりゃ落ち着かないだろ。", "今はざわつくけど、少し様子見ろ。"],
             "phone_broke": ["うわ、それ普通にへこむ。", "スマホ死ぬのはだるすぎるだろ。", "それは普通に最悪じゃん。"],
             "fell_down": ["怪我してないならいいけど。", "転んだのかよ、大丈夫か。", "痛くないならいいけど、気をつけろよ。"],
-            "tired_support": ["今日は無理すんな、休め。", "今日は頑張りすぎんな、休め。", "しんどいならもう休んどけ。", "今日はもう粘る日じゃないだろ。", "一回止まって休んだほうがいい。", "今日は店じまいでいいって。"],
+            "tired_support": ["今日は無理すんな、休め。", "今日は頑張りすぎんな、休め。", "しんどいならもう休んどけ。", "今日はもう粘る日じゃないだろ。", "一回止まって休んだほうがいい。", "今日は切り上げて休む側でいいって。"],
             "sleep_support": ["スマホ置いて目閉じとけって。", "画面見てないで寝ろ。", "寝れないなら目だけでも閉じとけ。", "とりあえず布団入って転がっとけ。", "眠れないなら音消して横になれ。"],
             "lonely": ["寂しいなら少し話してけよ。", "じゃあ少し話してけばいいじゃん。", "寂しいならまだいていいし。", "一人で煮詰まるならここにいろよ。", "そういう日は一人で抱えんな。"],
             "anxious_support": ["考えすぎてるなら一回落ち着け。", "不安なのは分かるけど、今は深呼吸しろ。", "今は先のことより少し落ち着けって。", "焦っても余計しんどいだけだろ。", "不安なら少し吐き出せばいいし。"],
@@ -8146,10 +8146,14 @@ class RightBrain:
 
         if surface in {"nonsense_tease", "announcement_tease"}:
             return "absurdity_mirror"
+        if response_mode in {"premise_challenge", "reframe_large_question"}:
+            return "frame_negotiation"
         if surface in {"disgust_boundary", "challenge_mirror"} or logic_data.get("scene") == "boundary":
             return "boundary_pushback"
         if surface in {"lyric_probe", "reference_probe", "version_fragment_clarify"}:
             return "reference_probe"
+        if surface in {"meal_check_reply", "status_reply"}:
+            return "daily_state_answer"
         if surface in {"empathic_rest_suggestion", "validate_then_hold", "protective_brake"}:
             return "emotional_containment"
         if surface in {"named_offer_accept", "named_offer_light_accept"}:
@@ -8160,8 +8164,6 @@ class RightBrain:
             return "memory_accounting"
         if hidden_intent == "social_reasoning_probe":
             return "perspective_answer"
-        if response_mode in {"premise_challenge", "reframe_large_question"}:
-            return "frame_negotiation"
         if response_mode == "clarify_light":
             return "minimal_clarification"
         if any(token in lowered for token in ["蛤", "huh", "え", "啥", "什麼意思", "什么意思"]):
@@ -8181,6 +8183,7 @@ class RightBrain:
             "boundary_pushback": ["まず嫌悪か境界を出す", core, "短く止める"],
             "absurdity_mirror": ["怪しさに即反応する", "相手の言葉を一個拾って対称に吐槽する", "軽い接話点を残す"],
             "reference_probe": ["断片として受ける", "元ネタか歌詞かを聞く", "相手が説明できる余地を残す"],
+            "daily_state_answer": ["今の状態を具体的に一語で答える", core, "相手にも軽く返す余地を残す"],
             "concrete_offer_response": [f"{offered_item or '具体物'}を名詞で拾う", core, "味や今の状態を一語足す"],
             "relationship_temperature": ["少し照れか距離を置く", core, "聞き返しすぎを軽く刺す"],
             "memory_accounting": ["覚えている/曖昧を正直に言う", memory_anchor.get("jp_anchor") or core, "捏造しない"],
@@ -8211,6 +8214,8 @@ class RightBrain:
             operators.append("care_before_advice")
         if dialogue_act in {"reference_probe", "minimal_clarification", "repair_check"}:
             operators.append("curious")
+        if dialogue_act == "daily_state_answer":
+            operators.append("daily_concrete")
         if dialogue_act == "relationship_temperature":
             operators.append("embarrassed")
         if appraisal.get("cognitive_load", 0.0) >= 0.55:
@@ -8225,7 +8230,7 @@ class RightBrain:
         payload_level = logic_data.get("payload_level", "low")
         if dialogue_act in {"minimal_clarification", "repair_check"}:
             return "1_short_sentence"
-        if payload_level in {"medium", "high"} or dialogue_act in {"emotional_containment", "absurdity_mirror", "concrete_offer_response"}:
+        if payload_level in {"medium", "high"} or dialogue_act in {"emotional_containment", "absurdity_mirror", "concrete_offer_response", "daily_state_answer"}:
             return "2_short_sentences"
         return "1_or_2_short_sentences"
 
@@ -8240,6 +8245,8 @@ class RightBrain:
             return {"emotion": "thinking_blunt", "speed": "normal_slow", "energy": 0.48, "pause_after_first_unit": True}
         if dialogue_act in {"reference_probe", "minimal_clarification"}:
             return {"emotion": "curious", "speed": "normal", "energy": 0.58, "pause_after_first_unit": True}
+        if dialogue_act == "daily_state_answer":
+            return {"emotion": "casual_concrete", "speed": "normal", "energy": 0.52, "pause_after_first_unit": False}
         return {"emotion": "casual", "speed": "normal", "energy": 0.5, "pause_after_first_unit": False}
 
     def build_human_speech_plan(self, logic_data, user_input, memory_data, current_psyche):
@@ -8555,10 +8562,10 @@ class RightBrain:
                         "今日はもう休んどけ。ここで粘る日じゃないし、明日に回せ。",
                     ])
                 variants.extend([
-                    "それだけ疲れてるなら休め。無理してもだるいだけだろ。",
+                    "そこまで疲れてるなら休め。無理してもだるいだけだろ。",
                     "そこまでなら今日は休んどけ。もう十分頑張ってるし。",
                     "今日はさっさと休んだほうがいい。今はそれで十分だろ。",
-                    "それだけしんどいなら今日は休め。店じまいでいいだろ。",
+                    "そんなにしんどいなら今日は休め。続けても回復しないだろ。",
                 ])
                 return self._choose_variant(variants, f"surface:{intent}:{user_input}", intent=intent, max_chars=max_chars)
             variants = [
@@ -8929,7 +8936,7 @@ class RightBrain:
         elif intent == "tired_support":
             if any(token in lowered for token in ["超累", "exhausted", "drained", "burned out", "累爆"]):
                 variants.extend([
-                    "今日はもう店じまいでいいって。風呂だけ済ませて休め。",
+                    "今日はもう切り上げていいって。風呂だけ済ませて休め。",
                     "そこまでなら今日は切り上げろって。粘っても精度落ちるだけだろ。",
                 ])
             if any(token in lowered for token in ["too tired to talk", "懶得講", "懒得讲"]):
@@ -9102,8 +9109,17 @@ class RightBrain:
                 variants.append(text)
 
         if dialogue_act == "emotional_containment":
-            add("それだけ疲れてるなら今日は閉店でいい。無理しても雑になるだけだろ。")
+            add("そこまで疲れてるなら今日は休め。無理しても雑になるだけだろ。")
+            add("また疲れてるなら、今日はもう休む方に寄せろって。")
             add("今は回復する側に回れって。話すのは起きてからでいいし。")
+        elif dialogue_act == "daily_state_answer":
+            surface = logic_data.get("surface_act", "")
+            if surface == "meal_check_reply":
+                add("一応食べた。雑だけど腹には入れてある。")
+                add("食べたけど、かなり適当だった。お前はちゃんと食べたのか。")
+            else:
+                add("今はだらっとしてる。話すくらいなら普通にいける。")
+                add("今は少し休んでた。まだ本気出す前の感じ。")
         elif dialogue_act == "concrete_offer_response":
             if item:
                 add(f"{item}なら一口ほしい。今それくらいがちょうどいい。")
@@ -9323,7 +9339,7 @@ class RightBrain:
             if intent == "tired_support":
                 add("今日はもう休め。風呂だけ済ませて寝ろって。")
                 add("そこまでなら切り上げろ。粘っても雑になるだけだろ。")
-                add("今日は店じまいでいい。今は回復する側に回れ。")
+                add("今日はもう休む側でいい。今は回復する側に回れ。")
             elif intent == "sleep_support":
                 add("そのまま画面閉じて寝ろ。起きてても精度落ちるだけだろ。")
                 add("眠いなら素直に寝とけ。そこで抗う意味ないし。")
@@ -9444,6 +9460,22 @@ class RightBrain:
         candidates = list(dict.fromkeys([item for item in candidates if item]))
         if not candidates:
             return reply
+        dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
+        semantic_tokens = {
+            "emotional_containment": ["休", "無理", "疲", "寝", "回復", "しんど"],
+            "frame_negotiation": ["前提", "違", "どこ", "何", "絞", "確認"],
+            "daily_state_answer": ["食べ", "腹", "済ませ", "だら", "休ん", "ぼーっ"],
+            "memory_accounting": ["覚", "忘", "掴", "名前", "適当"],
+        }.get(dialogue_act, [])
+        if semantic_tokens:
+            semantic_candidates = [
+                candidate for candidate in candidates
+                if any(token in candidate for token in semantic_tokens)
+            ]
+            if semantic_candidates:
+                candidates = semantic_candidates
+            candidates.sort(key=lambda candidate: self._score_candidate(candidate, logic_data), reverse=True)
+            return candidates[0]
         return self._choose_variant(
             candidates,
             f"refine:{intent}:{surface}:{user_input}",
@@ -9553,7 +9585,7 @@ class RightBrain:
                         "text": "相手の消耗がずっと残ってる。",
                         "boost_tokens": ["今日", "疲", "休"],
                         "variants": [
-                            "まだ消耗引いてるだろ。今日はもう店じまいでいいって。",
+                            "まだ消耗引いてるだろ。今日はもう切り上げていいって。",
                             "今日のしんどさ残ってるし。今はもう休む側に回れ。",
                         ],
                     },
@@ -9765,6 +9797,8 @@ class RightBrain:
             "今日は麺系がいい気分。",
         }:
             penalty += 1.2
+        if intent == "tired_support" and any(token in text for token in ["閉店", "店じまい"]):
+            penalty += 2.0
         return penalty
 
     def _chat_rescue_variant(self, user_input):
@@ -9848,6 +9882,28 @@ class RightBrain:
         profile = memory_data.get("profile_structured") or {}
         recent_turns = memory_data.get("recent_turns") or []
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
+        response_mode = logic_data.get("response_mode", "direct_answer")
+
+        if response_mode == "premise_challenge" or intent == "premise_doubt":
+            variants = list(self.intent_reply_families["premise_doubt"])
+            if core:
+                variants.insert(0, f"{core}。そこ確認してからだろ。")
+            return self._choose_variant(
+                variants,
+                f"premise_template:{intent}:{core}:{user_input}",
+                intent=intent,
+                max_chars=max_chars,
+            )
+        if response_mode == "reframe_large_question" or intent == "question_reframe":
+            variants = list(self.intent_reply_families["question_reframe"])
+            if core:
+                variants.insert(0, f"{core}。まず一個に絞れって。")
+            return self._choose_variant(
+                variants,
+                f"reframe_template:{intent}:{core}:{user_input}",
+                intent=intent,
+                max_chars=max_chars,
+            )
 
         surface_reply = self._compose_surface_reply(logic_data, user_input, memory_data=memory_data)
         if surface_reply:
@@ -10110,8 +10166,11 @@ class RightBrain:
         if dialogue_act:
             if any(term and term in reply for term in speech_terms[:4]):
                 score += 0.8
-            if dialogue_act == "emotional_containment" and any(x in reply for x in ["休", "無理", "疲", "寝", "回復"]):
-                score += 0.6
+            if dialogue_act == "emotional_containment":
+                if any(x in reply for x in ["休", "無理", "疲", "寝", "回復"]):
+                    score += 0.8
+                else:
+                    score -= 1.4
             if dialogue_act == "concrete_offer_response" and any(x in reply for x in ["ほしい", "もらう", "食べ", "一口"]):
                 score += 0.6
             if dialogue_act == "absurdity_mirror" and any(x in reply for x in ["何", "急", "意味", "ノリ"]):
@@ -10122,6 +10181,13 @@ class RightBrain:
                 score += 0.6
             if dialogue_act == "memory_accounting" and any(x in reply for x in ["覚", "忘", "掴", "適当"]):
                 score += 0.6
+            if dialogue_act == "daily_state_answer" and any(x in reply for x in ["食べ", "腹", "済ませ", "だら", "休ん", "ぼーっ"]):
+                score += 0.7
+            if dialogue_act == "frame_negotiation":
+                if any(x in reply for x in ["前提", "違", "どこ", "何", "確認", "絞"]):
+                    score += 0.8
+                else:
+                    score -= 1.0
         if logic_data.get("intent") in {"food_offer_generic", "food_offer_sweet"}:
             item = (logic_data.get("grounding") or {}).get("offered_item")
             if not item:
@@ -10140,6 +10206,10 @@ class RightBrain:
                 score += 1.0
             if reply in {"今日は無理すんな、休め。", "今日は頑張りすぎんな、休め。", "それだけ疲れてるなら休め。"}:
                 score -= 0.9
+            if any(x in reply for x in ["閉店", "店じまい"]):
+                score -= 2.5
+            if not any(x in reply for x in ["休", "無理", "疲", "寝", "回復", "しんど"]):
+                score -= 1.2
             if "。" in reply and len(reply) >= 20:
                 score += 0.6
         if logic_data.get("surface_act") == "memory_presence_reply" and any(x in reply for x in ["忘れてない", "覚えてる"]):
