@@ -6,6 +6,7 @@ from project_paths import (
     ANNOTATION_CANDIDATE_QUEUE_JSON_PATH,
     ANNOTATION_DRAFT_QUEUE_JSON_PATH,
     COGNITIVE_ARCHITECTURE_REPORT_PATH,
+    DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH,
     DOMAIN_EVAL_SUITE_REPORT_PATH,
     FORMAL_BRAIN_BENCHMARKS_REPORT_JSON_PATH,
     FORMAL_TOMBENCH_REFRESH_PATH,
@@ -28,6 +29,7 @@ from project_paths import (
 
 REPORT_PATHS = {
     "architecture": COGNITIVE_ARCHITECTURE_REPORT_PATH,
+    "daily_state_self_distress": DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH,
     "runtime": RUNTIME_DYNAMICS_REPORT_PATH,
     "memory": LONG_DIALOGUE_MEMORY_REPORT_PATH,
     "memory_causal_effect": MEMORY_CAUSAL_EFFECT_REPORT_JSON_PATH,
@@ -284,6 +286,7 @@ def main():
     memory_speakability_response_report = _load_json(REPORT_PATHS["memory_speakability_response"])
     diversity_report = _load_json(REPORT_PATHS["diversity"])
     human_report = _load_json(REPORT_PATHS["human_answer"])
+    daily_state_self_distress_report = _load_json(REPORT_PATHS["daily_state_self_distress"])
     formal_report = _load_json(REPORT_PATHS["formal"])
     formal_tombench_refresh = _load_json(REPORT_PATHS["formal_tombench_refresh"])
     domain_suite = _load_json(REPORT_PATHS["domain_suite"])
@@ -304,6 +307,7 @@ def main():
     memory_speakability_response = memory_speakability_response_report.get("summary", {})
     diversity = diversity_report.get("summary", {})
     human = human_report.get("summary", {})
+    daily_state_self_distress = daily_state_self_distress_report.get("summary", {})
     formal = formal_report.get("summaries", {})
     if (formal_tombench_refresh or {}).get("summary") and _is_newer_or_same(
         REPORT_PATHS["formal_tombench_refresh"],
@@ -351,6 +355,15 @@ def main():
             "v2_human_answer_report.json",
             "higher",
             "代表像『你在幹嘛』『要不要吃蘋果派』這類問題，模型有沒有直接回答。",
+        ),
+        _metric(
+            "日常狀態/自我痛苦細分通過率",
+            "daily_state_self_distress_case_pass_rate",
+            daily_state_self_distress.get("case_pass_rate"),
+            "越高越好",
+            "daily_state_self_distress_report.json",
+            "higher",
+            "代表系統能否把疲累、羞恥、空洞、撐不住、危機句、直接辱罵分到不同支援行為，而不是全部當成泛用疲累。",
         ),
         _metric(
             "過度拆題率",
@@ -720,6 +733,7 @@ def main():
             "人工標記 -> regression dataset -> replay eval -> diff report 的修補閉環已經接通，後面可以開始做真實 fail case 的 patch 驗證。",
             "Web 對話 log 已可自動抽出 annotation candidate queue，後續不必手動翻完整 log 才知道先標哪幾題。",
             "annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。",
+            "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
         ],
         "gaps": [
             "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
@@ -736,6 +750,7 @@ def main():
             "memory": memory,
             "diversity": diversity,
             "human_answer": human,
+            "daily_state_self_distress": daily_state_self_distress,
             "formal": formal,
             "memory_causal_effect": memory_causal,
             "memory_speakability_response": memory_speakability_response,
@@ -798,6 +813,7 @@ def main():
             "",
             "## 指標中文說明",
             "- `簡單問題直接回答率`：越高越好。例：使用者說「你在幹嘛」，理想是直接回答，不是反問或拆題。",
+            "- `日常狀態/自我痛苦細分通過率`：越高越好。例：『我很累』要休息建議，『我好丟臉』要自責承接，『我撐不住』要先停下來，不該全部套同一句疲累模板。",
             "- `過度拆題率`：越低越好。例：使用者只說「我今天很累」，不應被誤當成要先重構問題。",
             "- `工作記憶相關率`：越高越好。代表送進左腦的記憶真的跟當輪有關，不是亂塞背景。",
             "- `記憶輸出契約通過率`：越高越好。代表最後一句話知道記憶該明講、只當背景，還是因敏感/第三方資訊而不說。",
