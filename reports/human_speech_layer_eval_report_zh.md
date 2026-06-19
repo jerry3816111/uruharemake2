@@ -94,7 +94,7 @@
 
 ### memory_known_name - PASS
 - 問: 你還記得我的名字嗎
-- 答: 名前はジェリーだと答える。そこはちゃんと拾ってるし。
+- 答: ジェリーだろ。名前くらい覚えてるし。
 - dialogue_act: memory_accounting / expected: memory_accounting
 - content_units: ['覚えている/曖昧を正直に言う', 'ジェリー', '捏造しない']
 - style_operators: ['blunt_soft']
