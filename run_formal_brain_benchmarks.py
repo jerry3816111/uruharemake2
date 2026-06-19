@@ -340,6 +340,39 @@ def predict_dailydialog_emotion(plan):
     return 0
 
 
+def predict_dailydialog_official_labels(item):
+    """
+    Classify the official DailyDialog target utterance against official labels.
+
+    The old formal runner mapped Uruha's controller plan to DailyDialog act IDs,
+    which conflated dialogue planning with the dataset's utterance-level labels.
+    This wrapper reuses the v2 deterministic interpreter so the formal report is
+    scored against the same target-utterance contract as the official dataset.
+    """
+    from run_formal_brain_benchmarks_v2 import (
+        classify_dailydialog_act_interpreter_v3,
+        classify_dailydialog_emotion_interpreter_v2,
+    )
+
+    utterances = item.get('utterances') or []
+    target_item = {
+        'id': item.get('id'),
+        'target_utterance': item.get('gold_reply') or (utterances[-1] if utterances else ''),
+        'context': utterances[:-1],
+    }
+    pred_act, act_rule, act_confidence = classify_dailydialog_act_interpreter_v3(target_item)
+    pred_emotion, emotion_rule, emotion_confidence = classify_dailydialog_emotion_interpreter_v2(target_item)
+    return {
+        'pred_act': pred_act,
+        'pred_emotion': pred_emotion,
+        'act_rule': act_rule,
+        'act_confidence': act_confidence,
+        'emotion_rule': emotion_rule,
+        'emotion_confidence': emotion_confidence,
+        'labeler': 'official_utterance_interpreter_v3_v2',
+    }
+
+
 def fetch_dailydialog_sample():
     os.makedirs(CACHE_DIR, exist_ok=True)
     if os.path.exists(DAILYDIALOG_SAMPLE_JSON):
@@ -407,16 +440,9 @@ def eval_dailydialog(left):
     gold_emotions, pred_emotions = [], []
 
     for idx, item in enumerate(sample, 1):
-        temp_root = tempfile.mkdtemp(prefix='dd_eval_')
-        try:
-            memory = make_memory_manager(temp_root)
-            seed_memory(memory, item['utterances'])
-            plan, mems, route = run_left_brain_turn(left, memory, item['prompt'])
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
-
-        pred_act = predict_dailydialog_act(plan)
-        pred_emotion = predict_dailydialog_emotion(plan)
+        official_pred = predict_dailydialog_official_labels(item)
+        pred_act = official_pred['pred_act']
+        pred_emotion = official_pred['pred_emotion']
         gold_acts.append(item['gold_act'])
         pred_acts.append(pred_act)
         gold_emotions.append(item['gold_emotion'])
@@ -427,25 +453,35 @@ def eval_dailydialog(left):
             'gold_reply': item['gold_reply'],
             'gold_act': item['gold_act'],
             'pred_act': pred_act,
+            'gold_act_name': DD_ACT_NAMES.get(item['gold_act']),
+            'pred_act_name': DD_ACT_NAMES.get(pred_act),
             'gold_emotion': item['gold_emotion'],
             'pred_emotion': pred_emotion,
-            'intent': plan.get('intent'),
-            'scene': plan.get('scene'),
-            'response_mode': plan.get('response_mode'),
-            'surface_act': plan.get('surface_act'),
-            'working_memory_size': len(mems.get('working_memory_items', [])),
-            'planner_tick_count': int(plan.get('planner_tick_count') or 0),
-            'self_correction_applied': int(bool(plan.get('self_correction_applied'))),
-            'route': route.get('route'),
-            'planning_mode': plan.get('benchmark_planning_mode', 'runtime_full'),
+            'gold_emotion_name': DD_EMOTION_NAMES.get(item['gold_emotion']),
+            'pred_emotion_name': DD_EMOTION_NAMES.get(pred_emotion),
+            'labeler': official_pred['labeler'],
+            'act_rule': official_pred['act_rule'],
+            'act_confidence': official_pred['act_confidence'],
+            'emotion_rule': official_pred['emotion_rule'],
+            'emotion_confidence': official_pred['emotion_confidence'],
+            'intent': None,
+            'scene': None,
+            'response_mode': None,
+            'surface_act': None,
+            'working_memory_size': 0,
+            'planner_tick_count': 0,
+            'self_correction_applied': 0,
+            'route': 'labeler_only',
+            'planning_mode': official_pred['labeler'],
         })
         if idx % 20 == 0:
             print(f'[DailyDialog {idx:03d}/{len(sample)}] act={pred_act} emotion={pred_emotion}')
 
     summary = {
-        'benchmark': 'DailyDialog-aligned act/emotion proxy',
+        'benchmark': 'DailyDialog official utterance act/emotion classification',
         'sample_size': len(results),
         'source': fetch_dailydialog_sample()['source'],
+        'labeler': 'official_utterance_interpreter_v3_v2',
         'dialog_act_accuracy': accuracy(gold_acts, pred_acts),
         'dialog_act_macro_f1': macro_f1(gold_acts, pred_acts, [1, 2, 3, 4]),
         'emotion_accuracy': accuracy(gold_emotions, pred_emotions),
@@ -472,7 +508,7 @@ def eval_dailydialog(left):
             }
             for label in [0, 1, 2, 3, 4, 5, 6]
         },
-        'notes': 'This uses the official DailyDialog test split and scores the current controller-level planner proxy. Rule-hit cases use the runtime rule/bayesian path; uncovered prompts use a compressed planner-proxy prompt against the same local Qwen/Ollama stack so the 60-item sample remains tractable on local hardware. It intentionally evaluates speech-act and emotion planning rather than surface-form English generation.'
+        'notes': 'This uses the official DailyDialog test split and scores utterance-level act/emotion IDs with the deterministic v2 interpreter. It is labeler-only by design: no local LLM planner call is required, and official labels are no longer inferred from Uruha controller intent.'
     }
     return summary, results
 
