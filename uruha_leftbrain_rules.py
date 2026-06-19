@@ -279,7 +279,7 @@ def _build_repair_fields(kind, text):
             return (
                 "回りくどさを抜いて要点から言い直す",
                 "ユーザーが回りくどさを嫌って結論を先に求めている。",
-                "分かった、簡単にする。一個ずつ返す",
+                "分かった、結論から簡単に返す。一個ずつ返す",
             )
         return (
             "変な言い回しを抜いて言い直す",
@@ -2727,7 +2727,7 @@ def get_direct_daily_query_plan(user_input, recent_turns):
         reply_goal, summary, meaning = _build_direct_daily_fields("food_offer", text, offered_item=offered_item)
         return base_plan_helper(
             intent="food_offer_sweet" if _is_sweet_offer_item(offered_item) else "food_offer_generic",
-            scene="invite",
+            scene="casual",
             listener_state="食べ物や飲み物を勧められている",
             reply_goal=reply_goal,
             summary=summary,
