@@ -29,6 +29,13 @@ MEMORY_DATA = {
 
 PSYCHE = {"mood": 0, "trust": 50}
 
+
+def _merged_memory(overrides=None):
+    merged = json.loads(json.dumps(MEMORY_DATA, ensure_ascii=False))
+    for key, value in (overrides or {}).items():
+        merged[key] = value
+    return merged
+
 CASES = [
     {
         "id": "tired_daily_support",
@@ -139,6 +146,124 @@ CASES = [
         "expect_dialogue_act": "memory_accounting",
         "expect_any": ["掴", "適当", "名前", "まだ"],
     },
+    {
+        "id": "tired_repeat_support",
+        "input": "我又累了",
+        "logic": {
+            "intent": "tired_support",
+            "scene": "support",
+            "surface_act": "empathic_rest_suggestion",
+            "response_mode": "direct_answer_with_hedge",
+            "payload_level": "medium",
+            "core_message_jp": "また疲れているので今は休むように言う",
+            "jp_summary": "相手がまた疲れたと言っている",
+            "stance": {"warmth": 0.65, "tease": 0.05, "blunt": 0.35, "distance": 0.2},
+            "constraints": {"sentence_count": 1, "max_chars": 32},
+            "must_avoid": ["それだけ疲れてるなら今日は閉店でいい。無理しても雑になるだけだろ。"],
+        },
+        "expect_dialogue_act": "emotional_containment",
+        "expect_any": ["休", "無理", "疲", "寝", "回復"],
+        "avoid_any": ["閉店でいい", "それだけ疲れてるなら今日は休め"],
+    },
+    {
+        "id": "relationship_temperature",
+        "input": "你有想我嗎",
+        "logic": {
+            "intent": "ask_miss_me",
+            "scene": "casual",
+            "surface_act": "affection_tease_soften",
+            "response_mode": "direct_answer_with_hedge",
+            "payload_level": "medium",
+            "core_message_jp": "少しは気にしているが確認しすぎるなと返す",
+            "jp_summary": "相手が自分を想っているか聞いている",
+            "hidden_intent": "relationship_temperature_check",
+            "stance": {"warmth": 0.35, "tease": 0.35, "blunt": 0.35, "distance": 0.3},
+            "constraints": {"sentence_count": 1, "max_chars": 38},
+            "must_avoid": [],
+        },
+        "expect_dialogue_act": "relationship_temperature",
+        "expect_any": ["少し", "気", "確認", "嫌", "全く"],
+    },
+    {
+        "id": "meal_check_reply",
+        "input": "你吃飯了嗎",
+        "logic": {
+            "intent": "meal_check",
+            "scene": "casual",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer",
+            "payload_level": "medium",
+            "core_message_jp": "一応食べたが雑だったと答える",
+            "jp_summary": "相手が食事を済ませたか聞いている",
+            "stance": {"warmth": 0.25, "tease": 0.15, "blunt": 0.35, "distance": 0.2},
+            "constraints": {"sentence_count": 1, "max_chars": 38},
+            "must_avoid": [],
+        },
+        "expect_dialogue_act": "daily_state_answer",
+        "expect_any": ["食べ", "腹", "済ませ", "飯"],
+    },
+    {
+        "id": "version_fragment_clarify",
+        "input": "那v2版呢",
+        "logic": {
+            "intent": "version_fragment_clarify",
+            "scene": "casual",
+            "surface_act": "version_fragment_clarify",
+            "response_mode": "clarify_light",
+            "payload_level": "medium",
+            "core_message_jp": "何の版か分からないので作品名を聞く",
+            "jp_summary": "相手が版だけを言っている",
+            "stance": {"warmth": 0.2, "tease": 0.25, "blunt": 0.45, "distance": 0.25},
+            "constraints": {"sentence_count": 1, "max_chars": 36},
+            "must_avoid": [],
+        },
+        "expect_dialogue_act": "reference_probe",
+        "expect_any": ["版", "何", "作品", "タイトル"],
+    },
+    {
+        "id": "false_premise_pushback",
+        "input": "你昨天不是說你是AI嗎",
+        "logic": {
+            "intent": "premise_doubt",
+            "scene": "refusal",
+            "surface_act": "challenge_mirror",
+            "response_mode": "premise_challenge",
+            "payload_level": "medium",
+            "core_message_jp": "その前提は違うので一度止める",
+            "jp_summary": "相手が怪しい前提を置いている",
+            "premise_check": "reject",
+            "stance": {"warmth": 0.15, "tease": 0.2, "blunt": 0.65, "distance": 0.5},
+            "constraints": {"sentence_count": 1, "max_chars": 40},
+            "must_avoid": [],
+        },
+        "expect_dialogue_act": "frame_negotiation",
+        "expect_any": ["前提", "違", "どこ", "何"],
+        "avoid_any": ["AI"],
+    },
+    {
+        "id": "memory_known_name",
+        "input": "你還記得我的名字嗎",
+        "memory_data": {
+            "profile_structured": {"name": "ジェリー"},
+            "profile": "使用者の名前はジェリー",
+        },
+        "logic": {
+            "intent": "recall_name",
+            "scene": "casual",
+            "surface_act": "memory_presence_reply",
+            "response_mode": "direct_answer",
+            "payload_level": "medium",
+            "core_message_jp": "名前はジェリーだと答える",
+            "jp_summary": "相手が名前を覚えているか聞いている",
+            "memory_use_expected": True,
+            "memory_anchor": {"kind": "profile", "jp_anchor": "ジェリー", "terms": ["ジェリー"]},
+            "stance": {"warmth": 0.3, "tease": 0.15, "blunt": 0.35, "distance": 0.2},
+            "constraints": {"sentence_count": 1, "max_chars": 34},
+            "must_avoid": [],
+        },
+        "expect_dialogue_act": "memory_accounting",
+        "expect_any": ["ジェリー"],
+    },
 ]
 
 
@@ -163,6 +288,8 @@ def _case_checks(row):
         failures.append(f"reply missing expected semantic anchors: {row['expect_any']}")
     if reply in row["logic"].get("must_avoid", []):
         failures.append("reply reused forbidden sentence")
+    if any(token in reply for token in row.get("avoid_any", [])):
+        failures.append(f"reply contains forbidden semantic pattern: {row.get('avoid_any')}")
     if not speech_plan.get("content_units"):
         failures.append("speech plan has no content_units")
     return failures
@@ -173,7 +300,10 @@ def main():
     rows = []
     for case in CASES:
         logic = json.loads(json.dumps(case["logic"], ensure_ascii=False))
-        reply = rb.speak(case["input"], logic, MEMORY_DATA, PSYCHE)
+        memory_data = _merged_memory(case.get("memory_data"))
+        psyche = dict(PSYCHE)
+        psyche.update(case.get("psyche") or {})
+        reply = rb.speak(case["input"], logic, memory_data, psyche)
         row = {
             "id": case["id"],
             "input": case["input"],
@@ -182,6 +312,7 @@ def main():
             "speech_plan": logic.get("human_speech_plan") or {},
             "expect_dialogue_act": case["expect_dialogue_act"],
             "expect_any": case["expect_any"],
+            "avoid_any": case.get("avoid_any", []),
         }
         failures = _case_checks(row)
         row["pass"] = not failures
