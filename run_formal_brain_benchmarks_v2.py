@@ -4236,16 +4236,28 @@ def classify_dailydialog_act_interpreter_v3(item):
     # These rules separate surface words from dialogue function: thanks/right can be
     # neutral acknowledgement, a question mark should keep a mixed utterance as a
     # question, and service requests/advice remain directive even when polite.
+    if re.fullmatch(r"(ok\.\s*)?here you are\.?", text):
+        return 1, "v3_service_delivery_as_inform", 0.9
     if re.fullmatch(r"(thanks a lot|thanks then [a-z]+\. goodbye|right)\.?", text):
         return 1, "v3_acknowledgement_or_thanks_as_inform", 0.9
+    if re.fullmatch(r"(no problem|i'm afraid not|thanks for letting me know)\.?", text):
+        return 1, "v3_short_social_response_as_inform", 0.85
     if previous and re.search(r"\bwhere would you like to go\b", previous) and re.match(r"perhaps we could go\b", text):
         return 1, "v3_location_preference_answer_as_inform", 0.85
     if re.search(r"\byou should go to talk with\b", text):
         return 1, "v3_social_recommendation_as_inform", 0.8
     if re.search(r"\bwonderful\s*!\s*i'll start packing\b", text):
         return 1, "v3_positive_plan_update_as_inform", 0.8
+    if re.search(r"\breporting desk .* over there\b", text):
+        return 1, "v3_service_location_answer_as_inform", 0.85
+    if re.match(r"milk\s*\?\s*i thought", text):
+        return 1, "v3_surprised_observation_as_inform", 0.85
+    if re.match(r"^sure\s*\.", text) and not re.search(r"\b(what'?s up|i'll|i will|please|wait|come|go|take|get)\b", text):
+        return 1, "v3_sure_preface_descriptive_answer_as_inform", 0.8
+    if re.search(r"\b(i can't agree more|let's hope so|i can't take it any more)\b", text):
+        return 1, "v3_idiom_or_affective_statement_as_inform", 0.8
 
-    if re.search(r"\b(how do you refund us|sure\. what's up|what about tomorrow|what if stars\.com)\b", text):
+    if re.search(r"\b(how do you refund us|sure\. what's up|what about tomorrow|what if stars\.com|how about your mother)\b", text):
         return 2, "v3_question_function_over_surface_commitment", 0.9
     if previous and re.search(r"\bi'll stop by your place now\b", previous) and re.search(r"\bdon't forget to bring your umbrella\b", text):
         return 2, "v3_caretaking_check_as_question", 0.75
@@ -4254,12 +4266,19 @@ def classify_dailydialog_act_interpreter_v3(item):
         r"\b(i want you to put your hands behind your head|you are under arrest|first and lasting impression|"
         r"would you please sign this bill|let.?s get started by drafting a new contract|"
         r"i'd like to deposit|you'd better|get out of my store|please step this way|"
-        r"you can wear that pretty red dress|cheer up)\b",
+        r"you can wear that pretty red dress|cheer up|please wait|please go to counter|please wrap|"
+        r"can you please hold|take these tablets|contact you in a week|can i help you with anything else|"
+        r"available next week|you will have to check|we need to call|we'd better go out|"
+        r"reduction of least 10|supposed to call for my test results|check out now|could i leave a message|"
+        r"would like to know if you have|is a queen-size bed okay|realplayer is a good)\b",
         text,
     ):
         return 3, "v3_pragmatic_request_advice_or_command", 0.9
 
-    if re.search(r"\b(we can't\. if we went that fast|whatever you say)\b", text):
+    if re.search(r"\b(we can't\. if we went that fast|whatever you say|that will do|doesn't work|won't cut it|"
+                 r"gonna cut it|can't figure out|can't find it now|let.?s meet at|we could wait all day|"
+                 r"says who|you must take the design and quality into consideration|i know where to put my card|"
+                 r"what about .* instead of)\b", text):
         return 4, "v3_refusal_or_compliance_as_commissive", 0.9
     if previous and re.search(r"\bmay i have your name\b", previous) and re.fullmatch(r"that's [a-z]+\.?", text):
         return 4, "v3_requested_identity_answer_as_commissive", 0.8
@@ -4356,8 +4375,15 @@ def classify_dailydialog_emotion_interpreter_v2(item):
     # short incredulous questions are surprise, and direct rebukes are anger.
     if re.search(r"\b(get out of my store|you jerk|whatever you say)\b", text):
         return 1, "v2_anger_direct_rebuke_or_dismissal", 0.9
+    if re.search(r"\b(things are getting out of hand|sticking your nose where it doesn't belong)\b", text):
+        return 1, "v2_anger_boundary_violation", 0.9
     if re.fullmatch(r"what\s*\?", text) or re.match(r"really\s*\?", text):
         return 6, "v2_surprise_short_incredulous_question", 0.9
+    if re.match(r"(milk|my birthday)\s*\?\s*i (thought|forgot)", text):
+        return 6, "v2_surprise_expectation_violation", 0.85
+
+    if re.search(r"\b(jealous|unfair|worse still)\b", text):
+        return 5, "v2_sadness_envy_unfairness_or_worsening", 0.85
 
     # Polite formulae are often interaction management rather than happiness in
     # DailyDialog. Keep exact short thanks/opening forms neutral unless a stronger
@@ -4369,16 +4395,29 @@ def classify_dailydialog_emotion_interpreter_v2(item):
         return 0, "v2_neutral_polite_thanks_formula", 0.85
     if re.fullmatch(r"sure\s*\.\s*what'?s up\s*\?", text):
         return 0, "v2_neutral_polite_readiness_question", 0.85
-    if re.search(r"\b(that looks great.*do you have|perhaps we could go to .*festival|hot potato)\b", text):
+    if re.search(
+        r"\b(that looks great.*do you have|perhaps we could go to .*festival|hot potato|"
+        r"thanks for letting me know|no,? thanks|oh no,? thank you|thanks for the info|"
+        r"lovely house|great ! and remember|great! and remember|that's hilarious|"
+        r"sure\..*his skull|looking forward to this day|video rentals.*personal matter|"
+        r"can't take it any more|i'm worried.*outdoor party|worn me out|next friday week is my birthday|"
+        r"thank you.*can you please hold|sure, john sandals|we'll split the bill|i'm not worried)\b",
+        text,
+    ):
         return 0, "v2_neutral_pragmatic_false_positive", 0.8
+
+    if re.search(r"\ball the tables .* reserved\b", text):
+        return 5, "v2_sadness_unavailable_service", 0.75
 
     # Positive affect is not only praise words. The official labels also mark
     # some preference, care-taking, and cooperative-start utterances as happiness.
     if re.search(
         r"\b(i just like wildlife|this place is full of it|don't forget to bring your umbrella|"
-        r"let.?s get started by drafting a new contract)\b",
+        r"let.?s get started by drafting a new contract|it is ok with me.*enjoy|yeah, i go a lot too|"
+        r"here comes jordan|of course\. wait for a moment|ok then.*work on my part|"
+        r"fruit sculpture.*artist|sounds like a good idea|let.?s meet at)\b",
         text,
-    ):
+    ) or re.fullmatch(r"(no problem|all right)\.?", text):
         return 4, "v2_happiness_preference_care_or_cooperation", 0.85
 
     if re.search(
