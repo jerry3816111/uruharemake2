@@ -29,6 +29,28 @@ class TestFormalDailyDialogInterpreter(unittest.TestCase):
         pred = self._predict("You are welcome.", ["Thanks."])
         self.assertEqual(pred["pred_act"], 1)
 
+    def test_short_thanks_remains_inform_act(self):
+        pred = self._predict("Thanks a lot.", ["Here are your passports."])
+        self.assertEqual(pred["pred_act"], 1)
+
+    def test_mixed_refund_utterance_keeps_question_act(self):
+        pred = self._predict("Here I'll take taxi instead, how do you refund us?", ["I'm sorry to say no."])
+        self.assertEqual(pred["pred_act"], 2)
+
+    def test_service_command_maps_to_directive_act(self):
+        pred = self._predict(
+            "Yes, sir. I'll get them for you right away. Would you please sign this bill first?",
+            ["Tomato or orange juice, please."],
+        )
+        self.assertEqual(pred["pred_act"], 3)
+
+    def test_refusal_maps_to_commissive_act(self):
+        pred = self._predict(
+            "We can't. If we went that fast, we would break the speed limit.",
+            ["That's fast!"],
+        )
+        self.assertEqual(pred["pred_act"], 4)
+
     def test_short_incredulous_question_maps_to_surprise(self):
         pred = self._predict("Really? I will slow down then.", ["You are driving too fast."])
         self.assertEqual(pred["pred_emotion"], 6)

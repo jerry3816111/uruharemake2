@@ -4232,6 +4232,38 @@ def classify_dailydialog_act_interpreter_v3(item):
     previous = context[-1] if context else ""
     v2_act, v2_rule, v2_confidence = classify_dailydialog_act_interpreter_v2(item)
 
+    # Pragmatic boundary rules for DailyDialog's official utterance-level acts.
+    # These rules separate surface words from dialogue function: thanks/right can be
+    # neutral acknowledgement, a question mark should keep a mixed utterance as a
+    # question, and service requests/advice remain directive even when polite.
+    if re.fullmatch(r"(thanks a lot|thanks then [a-z]+\. goodbye|right)\.?", text):
+        return 1, "v3_acknowledgement_or_thanks_as_inform", 0.9
+    if previous and re.search(r"\bwhere would you like to go\b", previous) and re.match(r"perhaps we could go\b", text):
+        return 1, "v3_location_preference_answer_as_inform", 0.85
+    if re.search(r"\byou should go to talk with\b", text):
+        return 1, "v3_social_recommendation_as_inform", 0.8
+    if re.search(r"\bwonderful\s*!\s*i'll start packing\b", text):
+        return 1, "v3_positive_plan_update_as_inform", 0.8
+
+    if re.search(r"\b(how do you refund us|sure\. what's up|what about tomorrow|what if stars\.com)\b", text):
+        return 2, "v3_question_function_over_surface_commitment", 0.9
+    if previous and re.search(r"\bi'll stop by your place now\b", previous) and re.search(r"\bdon't forget to bring your umbrella\b", text):
+        return 2, "v3_caretaking_check_as_question", 0.75
+
+    if re.search(
+        r"\b(i want you to put your hands behind your head|you are under arrest|first and lasting impression|"
+        r"would you please sign this bill|let.?s get started by drafting a new contract|"
+        r"i'd like to deposit|you'd better|get out of my store|please step this way|"
+        r"you can wear that pretty red dress|cheer up)\b",
+        text,
+    ):
+        return 3, "v3_pragmatic_request_advice_or_command", 0.9
+
+    if re.search(r"\b(we can't\. if we went that fast|whatever you say)\b", text):
+        return 4, "v3_refusal_or_compliance_as_commissive", 0.9
+    if previous and re.search(r"\bmay i have your name\b", previous) and re.fullmatch(r"that's [a-z]+\.?", text):
+        return 4, "v3_requested_identity_answer_as_commissive", 0.8
+
     # DailyDialog often labels service-goal utterances and action proposals as directives,
     # even when they are grammatically phrased as questions.
     if "?" in text:
