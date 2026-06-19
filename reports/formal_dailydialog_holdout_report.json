@@ -1,0 +1,1861 @@
+{
+  "generated_at": "2026-06-19T12:24:04",
+  "benchmark": "DailyDialog v2 official utterance holdout",
+  "sample_size": 200,
+  "purpose": "Larger official-test-split check for utterance-level act/emotion interpretation. This guards against overclaiming from the 60-item formal interpreter report.",
+  "labelers": {
+    "interpreter_v4": {
+      "summary": {
+        "benchmark": "DailyDialog v2 official utterance classification",
+        "sample_size": 200,
+        "source": {
+          "dataset": "roskoN/dailydialog",
+          "config": "full",
+          "split": "test",
+          "url": "https://hf.co/datasets/roskoN/dailydialog",
+          "label_source": "DailyDialog official act/emotion arrays",
+          "total_candidate_utterances": 7740,
+          "sample_mode": "utterance_level_act_balanced_200"
+        },
+        "mode": "llm_only",
+        "labeler": "interpreter_v4",
+        "dialog_act_accuracy": 0.765,
+        "dialog_act_macro_f1": 0.7625,
+        "dialog_act_supported_macro_f1": 0.7625,
+        "dialog_act_unparsed_rate": 0.0,
+        "emotion_accuracy": 0.825,
+        "emotion_macro_f1": 0.3713,
+        "emotion_supported_macro_f1": 0.5198,
+        "emotion_unparsed_rate": 0.0,
+        "act_gold_distribution": {
+          "inform": 50,
+          "question": 50,
+          "directive": 50,
+          "commissive": 50
+        },
+        "emotion_gold_distribution": {
+          "none": 166,
+          "anger": 4,
+          "disgust": 0,
+          "fear": 0,
+          "happiness": 22,
+          "sadness": 3,
+          "surprise": 5
+        },
+        "frozen_act_correction_count": 0,
+        "frozen_emotion_correction_count": 0,
+        "scoring_rule": "Exact match against official DailyDialog utterance-level act and emotion IDs. No planner-to-label heuristic mapping is used in v2."
+      },
+      "act_confusion_pairs": [
+        {
+          "gold": "directive",
+          "pred": "commissive",
+          "count": 11
+        },
+        {
+          "gold": "inform",
+          "pred": "commissive",
+          "count": 6
+        },
+        {
+          "gold": "directive",
+          "pred": "inform",
+          "count": 6
+        },
+        {
+          "gold": "commissive",
+          "pred": "inform",
+          "count": 6
+        },
+        {
+          "gold": "inform",
+          "pred": "directive",
+          "count": 5
+        },
+        {
+          "gold": "commissive",
+          "pred": "directive",
+          "count": 5
+        },
+        {
+          "gold": "directive",
+          "pred": "question",
+          "count": 3
+        },
+        {
+          "gold": "question",
+          "pred": "directive",
+          "count": 2
+        },
+        {
+          "gold": "inform",
+          "pred": "question",
+          "count": 1
+        },
+        {
+          "gold": "question",
+          "pred": "inform",
+          "count": 1
+        },
+        {
+          "gold": "commissive",
+          "pred": "question",
+          "count": 1
+        }
+      ],
+      "emotion_confusion_pairs": [
+        {
+          "gold": "none",
+          "pred": "happiness",
+          "count": 12
+        },
+        {
+          "gold": "happiness",
+          "pred": "none",
+          "count": 10
+        },
+        {
+          "gold": "none",
+          "pred": "anger",
+          "count": 3
+        },
+        {
+          "gold": "none",
+          "pred": "sadness",
+          "count": 2
+        },
+        {
+          "gold": "sadness",
+          "pred": "none",
+          "count": 2
+        },
+        {
+          "gold": "none",
+          "pred": "surprise",
+          "count": 2
+        },
+        {
+          "gold": "sadness",
+          "pred": "happiness",
+          "count": 1
+        },
+        {
+          "gold": "surprise",
+          "pred": "none",
+          "count": 1
+        },
+        {
+          "gold": "anger",
+          "pred": "none",
+          "count": 1
+        },
+        {
+          "gold": "surprise",
+          "pred": "happiness",
+          "count": 1
+        }
+      ],
+      "act_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_42:4",
+          "context": [
+            "Draft beer and cans beer . Which do you prefer ?",
+            "A draft beer please ."
+          ],
+          "target_utterance": "OK . Here you are .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_306:11",
+          "context": [
+            "That should ’ Ve been something you knew already .",
+            "I couldn ’ t remember ."
+          ],
+          "target_utterance": "Whatever . Just make sure you go vote .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_414:1",
+          "context": [
+            "I ’ m taking BA fright 123 to London . Can you tell me where the reporting desk is , please ?"
+          ],
+          "target_utterance": "Yes , Madam . The reporting desk for the British Airway's flight to London is over there .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_service_answer_or_commitment",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_434:5",
+          "context": [
+            "Well , you know , those styles or colors don ’ t suit me .",
+            "What style do you want ?"
+          ],
+          "target_utterance": "I want to buy a V-neck checked sweater , and it should be tight .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_act_name": "inform",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "accept_or_commit",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_595:11",
+          "context": [
+            "Of course I will .",
+            "I just wanted to give you the good news ."
+          ],
+          "target_utterance": "Thanks for letting me know .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "accept_or_commit",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "action_request_or_instruction",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_705:7",
+          "context": [
+            "About three years .",
+            "Can you speak any other languages ?"
+          ],
+          "target_utterance": "I'm afraid not .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "reject_or_refuse",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_744:7",
+          "context": [
+            "What do you think of the local accent here ? Has it been causing you any problems ?",
+            "I think it's just a matter of getting used to it ."
+          ],
+          "target_utterance": "I can't agree more .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "action_request_or_instruction",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_847:12",
+          "context": [
+            "Regardless of how much pressure you're under , there's never a good reason to take drugs .",
+            "I agree . Hopefully with the new regulations , fewer athletes will try to cheat with drugs ."
+          ],
+          "target_utterance": "Let's hope so .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "action_request_or_instruction",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_582:4",
+          "context": [
+            "I took out a life insurance policy and made your mother the beneficiary .",
+            "Can you tell me why you want to buy it ?"
+          ],
+          "target_utterance": "I am a fireman and it is a dangerous job . I have to consider your mother's life .",
+          "gold_act_name": "question",
+          "pred_act_name": "inform",
+          "rule": "default_inform",
+          "confidence": 0.45
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_718:4",
+          "context": [
+            "Where do your parents live ?",
+            "My father lives in Washington DC ."
+          ],
+          "target_utterance": "How about your mother ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v3_suggestion_question_as_directive",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_825:0",
+          "context": [],
+          "target_utterance": "The bartender just gave the last call . Let's order another round , okay ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "lets_directive_question",
+          "confidence": 0.6
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_15:11",
+          "context": [
+            "Great ! Would you prefer smoking or nonsmoking ?",
+            "Definitely nonsmoking . I can't handle that smell ."
+          ],
+          "target_utterance": "Nonsmoking . Now , is a queen-size bed okay ?",
+          "gold_act_name": "directive",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_62:8",
+          "context": [
+            "Would you like to have some more beer ?",
+            "No , thanks . I ' Ve had enough . I'll have my bill , please ."
+          ],
+          "target_utterance": "Of course . Please wait a moment . I'll go and get it .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_73:17",
+          "context": [
+            "Good . Have you got any other questions ?",
+            "No ."
+          ],
+          "target_utterance": "Ok , I will contact you in a week . See you .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_110:8",
+          "context": [
+            "The buying rate is 826 . 44 yuan for 100 dollars .",
+            "I want to change some Us dollars to cover my expense here ."
+          ],
+          "target_utterance": "Please go to Counter No . 2 , the foreign exchange counter . It's over there .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_service_answer_or_commitment",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_121:5",
+          "context": [
+            "It'll be our pleasure . We'll call you at 7 and then at 7 fifteen .",
+            "Oops , cancel that . Change the second call to 7 thirty will you , please ?"
+          ],
+          "target_utterance": "No sooner said than done . Can I help you with anything else ?",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_response_to_request_or_offer",
+          "confidence": 0.85
+        }
+      ],
+      "emotion_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_170:5",
+          "context": [
+            "Remember when we were kids ? Theaters wouldn't let kids in to PG moves without a parent .",
+            "I remember that I never saw an X moves even displayed ."
+          ],
+          "target_utterance": "Now with video rentals it's all a personal matter .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "v2_anger_frustration_or_rebuke",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_240:5",
+          "context": [
+            "Quite a lot . All them one afternoon ?",
+            "Yes , it is not easy ."
+          ],
+          "target_utterance": "It is OK with me . I enjoy being busy and learning new things .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_258:9",
+          "context": [
+            "well , they ’ Ve got the money and she ’ s going tomorrow for treatment .",
+            "I ’ m so happy for the family ! They must be very relieved and excited about that ."
+          ],
+          "target_utterance": "I ’ m sure they are . Oh , and a local man won the lottery . I ’ m so jealous ! I wish it were me ! I buy a lottery ticket every week and I ’ m amazed that I haven ’ t even won a small prize yet . It ’ s so unfair !",
+          "gold_emotion_name": "sadness",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_458:0",
+          "context": [],
+          "target_utterance": "You have a lovely house , Jack .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_481:10",
+          "context": [
+            "The sooner the better .",
+            "A taxi will be here shortly , sir ."
+          ],
+          "target_utterance": "Great ! And remember , a taxi , not a limo .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v2_neutralize_false_happiness_lexical",
+          "confidence": 0.75
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_595:11",
+          "context": [
+            "Of course I will .",
+            "I just wanted to give you the good news ."
+          ],
+          "target_utterance": "Thanks for letting me know .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "v2_happiness_gratitude_praise_or_positive_social",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "anger_lexical",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_684:1",
+          "context": [
+            "The weather has been terrible this week ."
+          ],
+          "target_utterance": "Yeah , I'm worried . If it's like this tomorrow , our big outdoor party will have to be canceled .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "sadness",
+          "rule": "fear_or_sadness_lexical",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_813:6",
+          "context": [
+            "It would be nice to get out of the city . Do you want some company ?",
+            "Sure . But , it will be a long hike , 30 miles in three days . Have you been hiking before ?"
+          ],
+          "target_utterance": "Yeah , I go a lot too . I saw a bear and a mountain lion on my last hike .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_827:10",
+          "context": [
+            "I'd rather know and buy all the baby things ahead of time .",
+            "There are so many things you have to prepare for ."
+          ],
+          "target_utterance": "I know I am going to be busy , but I know I can handle it . I have been looking forward to this day for a long long time .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_968:11",
+          "context": [
+            "I try to keep it to myself . But there is a lot of gossip about us .",
+            "oh , I see . Office romance tends to be the subject of gossip ."
+          ],
+          "target_utterance": "worse still , he is trying to avoid me these days .",
+          "gold_emotion_name": "sadness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_982:5",
+          "context": [
+            "Wait a second . He shoots , he scores !",
+            "All right !"
+          ],
+          "target_utterance": "Here comes Jordan , though .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_158:0",
+          "context": [],
+          "target_utterance": "What ’ s the problem ? Things are getting out of hand . You keep sticking your nose where it doesn ’ t belong .",
+          "gold_emotion_name": "anger",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_656:12",
+          "context": [
+            "Are you sure he really got the message ?",
+            "Yeah , I'm pretty sure since I then asked him how long it took him to learn English ."
+          ],
+          "target_utterance": "That's hilarious ! What did he say ?",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_805:2",
+          "context": [
+            "hi , darling ! I have a one-month vacation saved up . How about a trip to Europe ?",
+            "I could go for that . But I'm afraid our budget is a little tight this year ."
+          ],
+          "target_utterance": "oh , but I really need to leave this town for a change . Working day after day has worn me out . Do you have any other suggestions ?",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "surprise",
+          "rule": "v2_surprise_unexpected_or_incredulous",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_910:2",
+          "context": [
+            "Hello , Bessie .",
+            "Hello , Jack.Happy birthday !"
+          ],
+          "target_utterance": "My birthday ? I forgot it , Thank you for remembering my birthday .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "happiness",
+          "rule": "v2_happiness_gratitude_praise_or_positive_social",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_46:14",
+          "context": [
+            "Besides steamed fish , what else are you good at cooking ?",
+            "I am good at stewing beef with potato , frying chicken , hot and sour soup etc ."
+          ],
+          "target_utterance": "So many dishes . Next Friday week is my birthday . I would like to invite you to cook for my dinner party , OK ?",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "surprise",
+          "rule": "surprise_lexical",
+          "confidence": 0.85
+        }
+      ]
+    },
+    "interpreter_v5": {
+      "summary": {
+        "benchmark": "DailyDialog v2 official utterance classification",
+        "sample_size": 200,
+        "source": {
+          "dataset": "roskoN/dailydialog",
+          "config": "full",
+          "split": "test",
+          "url": "https://hf.co/datasets/roskoN/dailydialog",
+          "label_source": "DailyDialog official act/emotion arrays",
+          "total_candidate_utterances": 7740,
+          "sample_mode": "utterance_level_act_balanced_200"
+        },
+        "mode": "llm_only",
+        "labeler": "interpreter_v5",
+        "dialog_act_accuracy": 0.755,
+        "dialog_act_macro_f1": 0.7537,
+        "dialog_act_supported_macro_f1": 0.7537,
+        "dialog_act_unparsed_rate": 0.0,
+        "emotion_accuracy": 0.83,
+        "emotion_macro_f1": 0.3568,
+        "emotion_supported_macro_f1": 0.4995,
+        "emotion_unparsed_rate": 0.0,
+        "act_gold_distribution": {
+          "inform": 50,
+          "question": 50,
+          "directive": 50,
+          "commissive": 50
+        },
+        "emotion_gold_distribution": {
+          "none": 166,
+          "anger": 4,
+          "disgust": 0,
+          "fear": 0,
+          "happiness": 22,
+          "sadness": 3,
+          "surprise": 5
+        },
+        "frozen_act_correction_count": 0,
+        "frozen_emotion_correction_count": 0,
+        "scoring_rule": "Exact match against official DailyDialog utterance-level act and emotion IDs. No planner-to-label heuristic mapping is used in v2."
+      },
+      "act_confusion_pairs": [
+        {
+          "gold": "directive",
+          "pred": "commissive",
+          "count": 11
+        },
+        {
+          "gold": "commissive",
+          "pred": "inform",
+          "count": 10
+        },
+        {
+          "gold": "inform",
+          "pred": "commissive",
+          "count": 7
+        },
+        {
+          "gold": "directive",
+          "pred": "inform",
+          "count": 5
+        },
+        {
+          "gold": "commissive",
+          "pred": "directive",
+          "count": 4
+        },
+        {
+          "gold": "inform",
+          "pred": "directive",
+          "count": 3
+        },
+        {
+          "gold": "question",
+          "pred": "directive",
+          "count": 3
+        },
+        {
+          "gold": "directive",
+          "pred": "question",
+          "count": 3
+        },
+        {
+          "gold": "inform",
+          "pred": "question",
+          "count": 1
+        },
+        {
+          "gold": "question",
+          "pred": "inform",
+          "count": 1
+        },
+        {
+          "gold": "commissive",
+          "pred": "question",
+          "count": 1
+        }
+      ],
+      "emotion_confusion_pairs": [
+        {
+          "gold": "none",
+          "pred": "happiness",
+          "count": 13
+        },
+        {
+          "gold": "happiness",
+          "pred": "none",
+          "count": 9
+        },
+        {
+          "gold": "surprise",
+          "pred": "none",
+          "count": 4
+        },
+        {
+          "gold": "none",
+          "pred": "anger",
+          "count": 2
+        },
+        {
+          "gold": "sadness",
+          "pred": "none",
+          "count": 2
+        },
+        {
+          "gold": "none",
+          "pred": "sadness",
+          "count": 1
+        },
+        {
+          "gold": "anger",
+          "pred": "none",
+          "count": 1
+        },
+        {
+          "gold": "surprise",
+          "pred": "happiness",
+          "count": 1
+        },
+        {
+          "gold": "none",
+          "pred": "surprise",
+          "count": 1
+        }
+      ],
+      "act_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_42:4",
+          "context": [
+            "Draft beer and cans beer . Which do you prefer ?",
+            "A draft beer please ."
+          ],
+          "target_utterance": "OK . Here you are .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v5_train_retrieval_act:commissive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_306:11",
+          "context": [
+            "That should ’ Ve been something you knew already .",
+            "I couldn ’ t remember ."
+          ],
+          "target_utterance": "Whatever . Just make sure you go vote .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_414:1",
+          "context": [
+            "I ’ m taking BA fright 123 to London . Can you tell me where the reporting desk is , please ?"
+          ],
+          "target_utterance": "Yes , Madam . The reporting desk for the British Airway's flight to London is over there .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_service_answer_or_commitment",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_434:5",
+          "context": [
+            "Well , you know , those styles or colors don ’ t suit me .",
+            "What style do you want ?"
+          ],
+          "target_utterance": "I want to buy a V-neck checked sweater , and it should be tight .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_502:4",
+          "context": [
+            "I know , that's my problem . What do you think I should do ?",
+            "Well , maybe you could get a two-bedroom apartment downtown and share the rent with a roommate ."
+          ],
+          "target_utterance": "Oh , great idea !",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v5_train_retrieval_act:commissive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_524:3",
+          "context": [
+            "Is this the one you want ?",
+            "No , the one next to it ."
+          ],
+          "target_utterance": "Here you are .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v5_train_retrieval_act:commissive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_act_name": "inform",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v5_train_retrieval_act:commissive",
+          "confidence": 0.8166
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "action_request_or_instruction",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_999:11",
+          "context": [
+            "yeah , I think so .",
+            "ok . I'll make the arrangements . It will be great ."
+          ],
+          "target_utterance": "wonderful ! I'll start packing our suitcases .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v5_train_retrieval_act:commissive",
+          "confidence": 0.9039
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_582:4",
+          "context": [
+            "I took out a life insurance policy and made your mother the beneficiary .",
+            "Can you tell me why you want to buy it ?"
+          ],
+          "target_utterance": "I am a fireman and it is a dangerous job . I have to consider your mother's life .",
+          "gold_act_name": "question",
+          "pred_act_name": "inform",
+          "rule": "default_inform",
+          "confidence": 0.45
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_718:4",
+          "context": [
+            "Where do your parents live ?",
+            "My father lives in Washington DC ."
+          ],
+          "target_utterance": "How about your mother ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v5_train_retrieval_act:directive",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_805:2",
+          "context": [
+            "hi , darling ! I have a one-month vacation saved up . How about a trip to Europe ?",
+            "I could go for that . But I'm afraid our budget is a little tight this year ."
+          ],
+          "target_utterance": "oh , but I really need to leave this town for a change . Working day after day has worn me out . Do you have any other suggestions ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v5_train_retrieval_act:directive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_825:0",
+          "context": [],
+          "target_utterance": "The bartender just gave the last call . Let's order another round , okay ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v5_train_retrieval_act:directive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_15:11",
+          "context": [
+            "Great ! Would you prefer smoking or nonsmoking ?",
+            "Definitely nonsmoking . I can't handle that smell ."
+          ],
+          "target_utterance": "Nonsmoking . Now , is a queen-size bed okay ?",
+          "gold_act_name": "directive",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_62:8",
+          "context": [
+            "Would you like to have some more beer ?",
+            "No , thanks . I ' Ve had enough . I'll have my bill , please ."
+          ],
+          "target_utterance": "Of course . Please wait a moment . I'll go and get it .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_73:17",
+          "context": [
+            "Good . Have you got any other questions ?",
+            "No ."
+          ],
+          "target_utterance": "Ok , I will contact you in a week . See you .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_110:8",
+          "context": [
+            "The buying rate is 826 . 44 yuan for 100 dollars .",
+            "I want to change some Us dollars to cover my expense here ."
+          ],
+          "target_utterance": "Please go to Counter No . 2 , the foreign exchange counter . It's over there .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_service_answer_or_commitment",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_121:5",
+          "context": [
+            "It'll be our pleasure . We'll call you at 7 and then at 7 fifteen .",
+            "Oops , cancel that . Change the second call to 7 thirty will you , please ?"
+          ],
+          "target_utterance": "No sooner said than done . Can I help you with anything else ?",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_response_to_request_or_offer",
+          "confidence": 0.85
+        }
+      ],
+      "emotion_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_170:5",
+          "context": [
+            "Remember when we were kids ? Theaters wouldn't let kids in to PG moves without a parent .",
+            "I remember that I never saw an X moves even displayed ."
+          ],
+          "target_utterance": "Now with video rentals it's all a personal matter .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "v2_anger_frustration_or_rebuke",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_240:5",
+          "context": [
+            "Quite a lot . All them one afternoon ?",
+            "Yes , it is not easy ."
+          ],
+          "target_utterance": "It is OK with me . I enjoy being busy and learning new things .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_258:9",
+          "context": [
+            "well , they ’ Ve got the money and she ’ s going tomorrow for treatment .",
+            "I ’ m so happy for the family ! They must be very relieved and excited about that ."
+          ],
+          "target_utterance": "I ’ m sure they are . Oh , and a local man won the lottery . I ’ m so jealous ! I wish it were me ! I buy a lottery ticket every week and I ’ m amazed that I haven ’ t even won a small prize yet . It ’ s so unfair !",
+          "gold_emotion_name": "sadness",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_481:10",
+          "context": [
+            "The sooner the better .",
+            "A taxi will be here shortly , sir ."
+          ],
+          "target_utterance": "Great ! And remember , a taxi , not a limo .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v2_neutralize_false_happiness_lexical",
+          "confidence": 0.75
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_595:11",
+          "context": [
+            "Of course I will .",
+            "I just wanted to give you the good news ."
+          ],
+          "target_utterance": "Thanks for letting me know .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "v5_train_retrieval_emotion:happiness",
+          "confidence": 0.8921
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "anger_lexical",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_684:1",
+          "context": [
+            "The weather has been terrible this week ."
+          ],
+          "target_utterance": "Yeah , I'm worried . If it's like this tomorrow , our big outdoor party will have to be canceled .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "sadness",
+          "rule": "fear_or_sadness_lexical",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_813:6",
+          "context": [
+            "It would be nice to get out of the city . Do you want some company ?",
+            "Sure . But , it will be a long hike , 30 miles in three days . Have you been hiking before ?"
+          ],
+          "target_utterance": "Yeah , I go a lot too . I saw a bear and a mountain lion on my last hike .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_827:10",
+          "context": [
+            "I'd rather know and buy all the baby things ahead of time .",
+            "There are so many things you have to prepare for ."
+          ],
+          "target_utterance": "I know I am going to be busy , but I know I can handle it . I have been looking forward to this day for a long long time .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_863:6",
+          "context": [
+            "well , I've never been to either so I was thinking of going to Disneyworld for my honeymoon .",
+            "when are you getting married ?"
+          ],
+          "target_utterance": "some time next year . We haven't set the date yet .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "v5_train_retrieval_emotion:happiness",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_982:5",
+          "context": [
+            "Wait a second . He shoots , he scores !",
+            "All right !"
+          ],
+          "target_utterance": "Here comes Jordan , though .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_0:1",
+          "context": [
+            "Hey man , you wanna buy some weed ?"
+          ],
+          "target_utterance": "Some what ?",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.877
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_158:0",
+          "context": [],
+          "target_utterance": "What ’ s the problem ? Things are getting out of hand . You keep sticking your nose where it doesn ’ t belong .",
+          "gold_emotion_name": "anger",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.8214
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_656:12",
+          "context": [
+            "Are you sure he really got the message ?",
+            "Yeah , I'm pretty sure since I then asked him how long it took him to learn English ."
+          ],
+          "target_utterance": "That's hilarious ! What did he say ?",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_891:3",
+          "context": [
+            "Sorry , I thought you knew .",
+            "But you should tell me you were in love with her ."
+          ],
+          "target_utterance": "Didn't I ?",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_910:2",
+          "context": [
+            "Hello , Bessie .",
+            "Hello , Jack.Happy birthday !"
+          ],
+          "target_utterance": "My birthday ? I forgot it , Thank you for remembering my birthday .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "happiness",
+          "rule": "v2_happiness_gratitude_praise_or_positive_social",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_999:7",
+          "context": [
+            "yes , it was wonderful but it's already been a year . How time flies !",
+            "why not go again to celebrate out one-year anniversary ? We can go to the same beach , stay in the same hotel and enjoy a dinner in the same restaurant ."
+          ],
+          "target_utterance": "are you kidding ? Can you afford it ? Do you think we can get a room on such short notice ?",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        }
+      ]
+    },
+    "interpreter_v6": {
+      "summary": {
+        "benchmark": "DailyDialog v2 official utterance classification",
+        "sample_size": 200,
+        "source": {
+          "dataset": "roskoN/dailydialog",
+          "config": "full",
+          "split": "test",
+          "url": "https://hf.co/datasets/roskoN/dailydialog",
+          "label_source": "DailyDialog official act/emotion arrays",
+          "total_candidate_utterances": 7740,
+          "sample_mode": "utterance_level_act_balanced_200"
+        },
+        "mode": "llm_only",
+        "labeler": "interpreter_v6",
+        "dialog_act_accuracy": 0.775,
+        "dialog_act_macro_f1": 0.7735,
+        "dialog_act_supported_macro_f1": 0.7735,
+        "dialog_act_unparsed_rate": 0.0,
+        "emotion_accuracy": 0.82,
+        "emotion_macro_f1": 0.33,
+        "emotion_supported_macro_f1": 0.462,
+        "emotion_unparsed_rate": 0.0,
+        "act_gold_distribution": {
+          "inform": 50,
+          "question": 50,
+          "directive": 50,
+          "commissive": 50
+        },
+        "emotion_gold_distribution": {
+          "none": 166,
+          "anger": 4,
+          "disgust": 0,
+          "fear": 0,
+          "happiness": 22,
+          "sadness": 3,
+          "surprise": 5
+        },
+        "frozen_act_correction_count": 0,
+        "frozen_emotion_correction_count": 0,
+        "scoring_rule": "Exact match against official DailyDialog utterance-level act and emotion IDs. No planner-to-label heuristic mapping is used in v2."
+      },
+      "act_confusion_pairs": [
+        {
+          "gold": "directive",
+          "pred": "commissive",
+          "count": 11
+        },
+        {
+          "gold": "inform",
+          "pred": "commissive",
+          "count": 9
+        },
+        {
+          "gold": "directive",
+          "pred": "inform",
+          "count": 5
+        },
+        {
+          "gold": "commissive",
+          "pred": "inform",
+          "count": 4
+        },
+        {
+          "gold": "commissive",
+          "pred": "directive",
+          "count": 4
+        },
+        {
+          "gold": "inform",
+          "pred": "directive",
+          "count": 3
+        },
+        {
+          "gold": "question",
+          "pred": "directive",
+          "count": 3
+        },
+        {
+          "gold": "directive",
+          "pred": "question",
+          "count": 3
+        },
+        {
+          "gold": "inform",
+          "pred": "question",
+          "count": 1
+        },
+        {
+          "gold": "question",
+          "pred": "inform",
+          "count": 1
+        },
+        {
+          "gold": "commissive",
+          "pred": "question",
+          "count": 1
+        }
+      ],
+      "emotion_confusion_pairs": [
+        {
+          "gold": "none",
+          "pred": "happiness",
+          "count": 13
+        },
+        {
+          "gold": "happiness",
+          "pred": "none",
+          "count": 9
+        },
+        {
+          "gold": "none",
+          "pred": "anger",
+          "count": 3
+        },
+        {
+          "gold": "sadness",
+          "pred": "none",
+          "count": 3
+        },
+        {
+          "gold": "surprise",
+          "pred": "none",
+          "count": 3
+        },
+        {
+          "gold": "none",
+          "pred": "sadness",
+          "count": 2
+        },
+        {
+          "gold": "anger",
+          "pred": "none",
+          "count": 1
+        },
+        {
+          "gold": "surprise",
+          "pred": "happiness",
+          "count": 1
+        },
+        {
+          "gold": "none",
+          "pred": "surprise",
+          "count": 1
+        }
+      ],
+      "act_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_42:4",
+          "context": [
+            "Draft beer and cans beer . Which do you prefer ?",
+            "A draft beer please ."
+          ],
+          "target_utterance": "OK . Here you are .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_306:11",
+          "context": [
+            "That should ’ Ve been something you knew already .",
+            "I couldn ’ t remember ."
+          ],
+          "target_utterance": "Whatever . Just make sure you go vote .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_414:1",
+          "context": [
+            "I ’ m taking BA fright 123 to London . Can you tell me where the reporting desk is , please ?"
+          ],
+          "target_utterance": "Yes , Madam . The reporting desk for the British Airway's flight to London is over there .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_service_answer_or_commitment",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_434:5",
+          "context": [
+            "Well , you know , those styles or colors don ’ t suit me .",
+            "What style do you want ?"
+          ],
+          "target_utterance": "I want to buy a V-neck checked sweater , and it should be tight .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "v2_service_goal_instruction_or_request",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_502:4",
+          "context": [
+            "I know , that's my problem . What do you think I should do ?",
+            "Well , maybe you could get a two-bedroom apartment downtown and share the rent with a roommate ."
+          ],
+          "target_utterance": "Oh , great idea !",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v6_gated_v5_train_retrieval_act:commissive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_524:3",
+          "context": [
+            "Is this the one you want ?",
+            "No , the one next to it ."
+          ],
+          "target_utterance": "Here you are .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v6_gated_v5_train_retrieval_act:commissive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_act_name": "inform",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "accept_or_commit",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_595:11",
+          "context": [
+            "Of course I will .",
+            "I just wanted to give you the good news ."
+          ],
+          "target_utterance": "Thanks for letting me know .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "accept_or_commit",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_act_name": "inform",
+          "pred_act_name": "directive",
+          "rule": "action_request_or_instruction",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_705:7",
+          "context": [
+            "About three years .",
+            "Can you speak any other languages ?"
+          ],
+          "target_utterance": "I'm afraid not .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "reject_or_refuse",
+          "confidence": 0.8
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_999:11",
+          "context": [
+            "yeah , I think so .",
+            "ok . I'll make the arrangements . It will be great ."
+          ],
+          "target_utterance": "wonderful ! I'll start packing our suitcases .",
+          "gold_act_name": "inform",
+          "pred_act_name": "commissive",
+          "rule": "v6_gated_v5_train_retrieval_act:commissive",
+          "confidence": 0.9039
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_582:4",
+          "context": [
+            "I took out a life insurance policy and made your mother the beneficiary .",
+            "Can you tell me why you want to buy it ?"
+          ],
+          "target_utterance": "I am a fireman and it is a dangerous job . I have to consider your mother's life .",
+          "gold_act_name": "question",
+          "pred_act_name": "inform",
+          "rule": "default_inform",
+          "confidence": 0.45
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_718:4",
+          "context": [
+            "Where do your parents live ?",
+            "My father lives in Washington DC ."
+          ],
+          "target_utterance": "How about your mother ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v3_suggestion_question_as_directive",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_805:2",
+          "context": [
+            "hi , darling ! I have a one-month vacation saved up . How about a trip to Europe ?",
+            "I could go for that . But I'm afraid our budget is a little tight this year ."
+          ],
+          "target_utterance": "oh , but I really need to leave this town for a change . Working day after day has worn me out . Do you have any other suggestions ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "v6_gated_v5_train_retrieval_act:directive",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_825:0",
+          "context": [],
+          "target_utterance": "The bartender just gave the last call . Let's order another round , okay ?",
+          "gold_act_name": "question",
+          "pred_act_name": "directive",
+          "rule": "lets_directive_question",
+          "confidence": 0.6
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_15:11",
+          "context": [
+            "Great ! Would you prefer smoking or nonsmoking ?",
+            "Definitely nonsmoking . I can't handle that smell ."
+          ],
+          "target_utterance": "Nonsmoking . Now , is a queen-size bed okay ?",
+          "gold_act_name": "directive",
+          "pred_act_name": "question",
+          "rule": "question_mark_default",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_62:8",
+          "context": [
+            "Would you like to have some more beer ?",
+            "No , thanks . I ' Ve had enough . I'll have my bill , please ."
+          ],
+          "target_utterance": "Of course . Please wait a moment . I'll go and get it .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_73:17",
+          "context": [
+            "Good . Have you got any other questions ?",
+            "No ."
+          ],
+          "target_utterance": "Ok , I will contact you in a week . See you .",
+          "gold_act_name": "directive",
+          "pred_act_name": "commissive",
+          "rule": "v2_accept_permission_or_service_fulfillment",
+          "confidence": 0.9
+        }
+      ],
+      "emotion_miss_examples": [
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_170:5",
+          "context": [
+            "Remember when we were kids ? Theaters wouldn't let kids in to PG moves without a parent .",
+            "I remember that I never saw an X moves even displayed ."
+          ],
+          "target_utterance": "Now with video rentals it's all a personal matter .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "v2_anger_frustration_or_rebuke",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_240:5",
+          "context": [
+            "Quite a lot . All them one afternoon ?",
+            "Yes , it is not easy ."
+          ],
+          "target_utterance": "It is OK with me . I enjoy being busy and learning new things .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_258:9",
+          "context": [
+            "well , they ’ Ve got the money and she ’ s going tomorrow for treatment .",
+            "I ’ m so happy for the family ! They must be very relieved and excited about that ."
+          ],
+          "target_utterance": "I ’ m sure they are . Oh , and a local man won the lottery . I ’ m so jealous ! I wish it were me ! I buy a lottery ticket every week and I ’ m amazed that I haven ’ t even won a small prize yet . It ’ s so unfair !",
+          "gold_emotion_name": "sadness",
+          "pred_emotion_name": "none",
+          "rule": "v6_gated_v5_train_retrieval_emotion:none",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_481:10",
+          "context": [
+            "The sooner the better .",
+            "A taxi will be here shortly , sir ."
+          ],
+          "target_utterance": "Great ! And remember , a taxi , not a limo .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_547:2",
+          "context": [
+            "Jim ? Jim ? ... What are you doing in the kitchen ?",
+            "Nothing , Mummy . I was hungry so I came here for some milk ."
+          ],
+          "target_utterance": "Milk ? I thought you didn't like milk .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_574:9",
+          "context": [
+            "No . I don't . I suggest you look in the phone book .",
+            "I'm sorry to have bothered you ."
+          ],
+          "target_utterance": "No problem .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "v2_neutralize_false_happiness_lexical",
+          "confidence": 0.75
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_595:11",
+          "context": [
+            "Of course I will .",
+            "I just wanted to give you the good news ."
+          ],
+          "target_utterance": "Thanks for letting me know .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "v2_happiness_gratitude_praise_or_positive_social",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_652:0",
+          "context": [],
+          "target_utterance": "Oh , my God . I can't take it any more .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "anger",
+          "rule": "anger_lexical",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_684:1",
+          "context": [
+            "The weather has been terrible this week ."
+          ],
+          "target_utterance": "Yeah , I'm worried . If it's like this tomorrow , our big outdoor party will have to be canceled .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "sadness",
+          "rule": "fear_or_sadness_lexical",
+          "confidence": 0.65
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_780:6",
+          "context": [
+            "Some movie stars measure their worth by how many millions of dollars they make . Do you know how Jackie Chan measures his worth ?",
+            "He measures his worth by how many of his bones he has fractured while executing his film , incredible stunts . By the way , can you count the breaks ?"
+          ],
+          "target_utterance": "Sure . His skull , his eyes , his nose , three times , his jaw , his shoul-der , is chest , two fingers , a knee . As he said ' Everything from the top of my head to the bottom of my feet ! '",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_813:6",
+          "context": [
+            "It would be nice to get out of the city . Do you want some company ?",
+            "Sure . But , it will be a long hike , 30 miles in three days . Have you been hiking before ?"
+          ],
+          "target_utterance": "Yeah , I go a lot too . I saw a bear and a mountain lion on my last hike .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_827:10",
+          "context": [
+            "I'd rather know and buy all the baby things ahead of time .",
+            "There are so many things you have to prepare for ."
+          ],
+          "target_utterance": "I know I am going to be busy , but I know I can handle it . I have been looking forward to this day for a long long time .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_863:6",
+          "context": [
+            "well , I've never been to either so I was thinking of going to Disneyworld for my honeymoon .",
+            "when are you getting married ?"
+          ],
+          "target_utterance": "some time next year . We haven't set the date yet .",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "v6_gated_v5_train_retrieval_emotion:happiness",
+          "confidence": 0.98
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_968:11",
+          "context": [
+            "I try to keep it to myself . But there is a lot of gossip about us .",
+            "oh , I see . Office romance tends to be the subject of gossip ."
+          ],
+          "target_utterance": "worse still , he is trying to avoid me these days .",
+          "gold_emotion_name": "sadness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_982:5",
+          "context": [
+            "Wait a second . He shoots , he scores !",
+            "All right !"
+          ],
+          "target_utterance": "Here comes Jordan , though .",
+          "gold_emotion_name": "happiness",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_0:1",
+          "context": [
+            "Hey man , you wanna buy some weed ?"
+          ],
+          "target_utterance": "Some what ?",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "v6_gated_v5_train_retrieval_emotion:none",
+          "confidence": 0.877
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_158:0",
+          "context": [],
+          "target_utterance": "What ’ s the problem ? Things are getting out of hand . You keep sticking your nose where it doesn ’ t belong .",
+          "gold_emotion_name": "anger",
+          "pred_emotion_name": "none",
+          "rule": "emotion_default_none",
+          "confidence": 0.55
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_656:12",
+          "context": [
+            "Are you sure he really got the message ?",
+            "Yeah , I'm pretty sure since I then asked him how long it took him to learn English ."
+          ],
+          "target_utterance": "That's hilarious ! What did he say ?",
+          "gold_emotion_name": "none",
+          "pred_emotion_name": "happiness",
+          "rule": "happiness_lexical",
+          "confidence": 0.7
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_891:3",
+          "context": [
+            "Sorry , I thought you knew .",
+            "But you should tell me you were in love with her ."
+          ],
+          "target_utterance": "Didn't I ?",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "none",
+          "rule": "v6_gated_v5_train_retrieval_emotion:none",
+          "confidence": 0.85
+        },
+        {
+          "id": "ef13ae7a7502181b0f98b2e5b417aad98550672fada48a4fbd94f4d6aa995ba1_910:2",
+          "context": [
+            "Hello , Bessie .",
+            "Hello , Jack.Happy birthday !"
+          ],
+          "target_utterance": "My birthday ? I forgot it , Thank you for remembering my birthday .",
+          "gold_emotion_name": "surprise",
+          "pred_emotion_name": "happiness",
+          "rule": "v2_happiness_gratitude_praise_or_positive_social",
+          "confidence": 0.85
+        }
+      ]
+    }
+  },
+  "best_by_act_accuracy": "interpreter_v6",
+  "best_by_emotion_accuracy": "interpreter_v5"
+}
