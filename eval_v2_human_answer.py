@@ -8,7 +8,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPECTED_PYTHON = os.path.join(BASE_DIR, 'Style-Bert-VITS2', 'venv', 'bin', 'python')
 EXPECTED_VENV = os.path.dirname(os.path.dirname(EXPECTED_PYTHON))
 DATASET_PATH = os.path.join(BASE_DIR, 'v2_human_answer_dataset.json')
-REPORT_PATH = os.path.join(BASE_DIR, 'v2_human_answer_report.json')
+from project_paths import V2_HUMAN_ANSWER_REPORT_PATH
+
+REPORT_PATH = V2_HUMAN_ANSWER_REPORT_PATH
 
 
 def _ensure_project_python():
