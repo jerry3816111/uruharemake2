@@ -22,6 +22,7 @@ from project_paths import (
     RUNTIME_DYNAMICS_REPORT_PATH,
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     STRESS_EVAL_REPORT_PATH,
+    SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH,
     SYSTEM_VS_PROMPT_ONLY_COMPARE_PATH,
     UNIFIED_EVAL_SUMMARY_JSON_PATH,
     UNIFIED_EVAL_SUMMARY_MD_PATH,
@@ -32,6 +33,7 @@ REPORT_PATHS = {
     "architecture": COGNITIVE_ARCHITECTURE_REPORT_PATH,
     "daily_state_self_distress": DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH,
     "self_distress_surface_contract": SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
+    "support_prefix_contract": SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH,
     "runtime": RUNTIME_DYNAMICS_REPORT_PATH,
     "memory": LONG_DIALOGUE_MEMORY_REPORT_PATH,
     "memory_causal_effect": MEMORY_CAUSAL_EFFECT_REPORT_JSON_PATH,
@@ -290,6 +292,7 @@ def main():
     human_report = _load_json(REPORT_PATHS["human_answer"])
     daily_state_self_distress_report = _load_json(REPORT_PATHS["daily_state_self_distress"])
     self_distress_surface_contract_report = _load_json(REPORT_PATHS["self_distress_surface_contract"])
+    support_prefix_contract_report = _load_json(REPORT_PATHS["support_prefix_contract"])
     formal_report = _load_json(REPORT_PATHS["formal"])
     formal_tombench_refresh = _load_json(REPORT_PATHS["formal_tombench_refresh"])
     domain_suite = _load_json(REPORT_PATHS["domain_suite"])
@@ -312,6 +315,7 @@ def main():
     human = human_report.get("summary", {})
     daily_state_self_distress = daily_state_self_distress_report.get("summary", {})
     self_distress_surface_contract = self_distress_surface_contract_report.get("summary", {})
+    support_prefix_contract = support_prefix_contract_report.get("summary", {})
     formal = formal_report.get("summaries", {})
     if (formal_tombench_refresh or {}).get("summary") and _is_newer_or_same(
         REPORT_PATHS["formal_tombench_refresh"],
@@ -377,6 +381,15 @@ def main():
             "self_distress_surface_contract_report.json",
             "higher",
             "代表左腦分出的羞恥、空洞、撐不住、危機與直接辱罵，是否真的在右腦最後一句保留下來，而不是退回疲累模板。",
+        ),
+        _metric(
+            "支援回覆固定前綴率",
+            "support_fixed_prefix_rate",
+            support_prefix_contract.get("fixed_prefix_rate"),
+            "越低越好",
+            "support_prefix_contract_report.json",
+            "lower",
+            "代表支援類最後一句是否避免固定開頭，例如『普通に、』『てか、』『はいはい、』。",
         ),
         _metric(
             "過度拆題率",
@@ -748,6 +761,7 @@ def main():
             "annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。",
             "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
             "自我痛苦最終回覆契約已接上，用來檢查右腦最後一句是否保留左腦的心理狀態細分，而不是退回泛用疲累模板。",
+            "支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。",
         ],
         "gaps": [
             "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
@@ -766,6 +780,7 @@ def main():
             "human_answer": human,
             "daily_state_self_distress": daily_state_self_distress,
             "self_distress_surface_contract": self_distress_surface_contract,
+            "support_prefix_contract": support_prefix_contract,
             "formal": formal,
             "memory_causal_effect": memory_causal,
             "memory_speakability_response": memory_speakability_response,
@@ -830,6 +845,7 @@ def main():
             "- `簡單問題直接回答率`：越高越好。例：使用者說「你在幹嘛」，理想是直接回答，不是反問或拆題。",
             "- `日常狀態/自我痛苦細分通過率`：越高越好。例：『我很累』要休息建議，『我好丟臉』要自責承接，『我撐不住』要先停下來，不該全部套同一句疲累模板。",
             "- `自我痛苦最終回覆契約通過率`：越高越好。例：左腦判斷『我好丟臉』是自責羞恥，右腦最後一句也要說到『別責めすぎるな／少し吐け』，不能變成『疲れてるなら休め』。",
+            "- `支援回覆固定前綴率`：越低越好。例：支援句不應每次都用『普通に、』『てか、』『はいはい、』開頭，否則會像模板。",
             "- `過度拆題率`：越低越好。例：使用者只說「我今天很累」，不應被誤當成要先重構問題。",
             "- `工作記憶相關率`：越高越好。代表送進左腦的記憶真的跟當輪有關，不是亂塞背景。",
             "- `記憶輸出契約通過率`：越高越好。代表最後一句話知道記憶該明講、只當背景，還是因敏感/第三方資訊而不說。",
