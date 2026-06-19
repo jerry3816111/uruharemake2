@@ -29,6 +29,25 @@ class TestFormalDailyDialogInterpreter(unittest.TestCase):
         pred = self._predict("You are welcome.", ["Thanks."])
         self.assertEqual(pred["pred_act"], 1)
 
+    def test_short_incredulous_question_maps_to_surprise(self):
+        pred = self._predict("Really? I will slow down then.", ["You are driving too fast."])
+        self.assertEqual(pred["pred_emotion"], 6)
+
+    def test_direct_rebuke_maps_to_anger(self):
+        pred = self._predict("Get out of my store, you jerk!", ["Can I return this?"])
+        self.assertEqual(pred["pred_emotion"], 1)
+
+    def test_plain_thanks_remains_neutral_emotion(self):
+        pred = self._predict("Thank you.", ["Here is your receipt."])
+        self.assertEqual(pred["pred_emotion"], 0)
+
+    def test_caretaking_positive_reply_maps_to_happiness(self):
+        pred = self._predict(
+            "Ok. Don't forget to bring your umbrella. The rain can start up again anytime.",
+            ["I will go out now."],
+        )
+        self.assertEqual(pred["pred_emotion"], 4)
+
 
 if __name__ == "__main__":
     unittest.main()
