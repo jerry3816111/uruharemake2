@@ -7,9 +7,10 @@ import math
 import contextlib
 
 import uruha_brain_mac as brain_mod
+from project_paths import RUNTIME_DYNAMICS_REPORT_PATH
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-REPORT_PATH = os.path.join(BASE_DIR, "runtime_dynamics_report.json")
+REPORT_PATH = RUNTIME_DYNAMICS_REPORT_PATH
 
 
 SCENARIOS = [

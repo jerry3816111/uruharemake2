@@ -22,9 +22,10 @@ def _ensure_project_python():
 _ensure_project_python()
 
 import uruha_brain_mac as brain_mod
+from project_paths import STRESS_EVAL_REPORT_PATH
 
 DATASET_PATH = os.path.join(BASE_DIR, 'stress_eval_dataset_10000.json')
-REPORT_PATH = os.path.join(BASE_DIR, 'stress_eval_report_10000.json')
+REPORT_PATH = STRESS_EVAL_REPORT_PATH
 
 PERSONA_BAD = ['私', 'わかりました', '承知', 'かしこまり', 'assistant', 'AIとして', 'サポート']
 POLITE_BAD = ['です。', 'ます。', 'でしょう', 'くださいませ']
