@@ -84,12 +84,16 @@ def build_report():
         memory_causal_s.get("memory_used_explicitly_rate", 0.0),
     ]))
 
+    planner_resolution_quality = runtime_s.get("planner_resolution_quality_rate")
+    if planner_resolution_quality is None:
+        planner_resolution_quality = 1.0 - runtime_s.get("planner_issue_turn_rate", 1.0)
+
     runtime_dynamics = _pct(_avg([
         runtime_s["trace_key_presence_rate"],
         runtime_s["autonomous_success_rate"],
         runtime_s["autonomous_note_presence_rate"],
         runtime_s["autonomous_procedural_write_rate"],
-        _cap_target(runtime_s["self_correction_rate"], 0.30),
+        planner_resolution_quality,
         _cap_target(runtime_s["open_loop_turn_rate"], 0.25),
         _cap_target(runtime_s["avg_candidate_entropy"], 1.20),
     ]))
@@ -224,6 +228,10 @@ def build_report():
                 "evidence": [
                     f"trace_key_presence_rate={runtime_s['trace_key_presence_rate']}",
                     f"self_correction_rate={runtime_s['self_correction_rate']}",
+                    f"planner_detected_issue_turn_rate={runtime_s.get('planner_detected_issue_turn_rate')}",
+                    f"planner_unresolved_issue_turn_rate={runtime_s.get('planner_unresolved_issue_turn_rate')}",
+                    f"planner_resolution_quality_rate={planner_resolution_quality}",
+                    f"planner_repair_success_rate={runtime_s.get('planner_repair_success_rate')}",
                     f"open_loop_turn_rate={runtime_s['open_loop_turn_rate']}",
                     f"autonomous_success_rate={runtime_s['autonomous_success_rate']}",
                 ],

@@ -23,6 +23,32 @@ class TestLeftBrainRules(unittest.TestCase):
         self.assertEqual(plan["intent"], "nickname_question")
         self.assertEqual(plan["surface_act"], "permission_with_boundary")
 
+    def test_user_name_update_is_not_misread_as_nickname_permission(self):
+        cases = [
+            ("Call me Jerry.", "Jerry"),
+            ("My name is Jerry.", "Jerry"),
+            ("請叫我小傑", "小傑"),
+            ("ジェリーって呼んで。", "ジェリー"),
+        ]
+        for utterance, expected_name in cases:
+            with self.subTest(utterance=utterance):
+                plan = ulr.get_rule_based_plan(utterance, recent_turns=[])
+                self.assertIsNotNone(plan)
+                self.assertEqual(plan["intent"], "profile_name_update")
+                self.assertEqual(plan["response_mode"], "direct_answer")
+                self.assertEqual(plan["grounding"]["profile_name"], expected_name)
+                self.assertIn(expected_name, plan["core_message_jp"])
+
+    def test_name_extractor_rejects_questions_and_pet_names(self):
+        for utterance in [
+            "Why did you call me Jerry?",
+            "Can I call you Uruha?",
+            "Call me baby.",
+            "為什麼叫我小傑？",
+        ]:
+            with self.subTest(utterance=utterance):
+                self.assertEqual(ulr.extract_requested_user_name(utterance), "")
+
     def test_relationship_followup_rule(self):
         recent_turns = [
             {"user": "你有想我嗎？", "intent": "ask_miss_me", "reply": "少しくらいは思ってる。"},
