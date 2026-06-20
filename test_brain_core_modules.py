@@ -50,6 +50,20 @@ class TestRuntimeState(unittest.TestCase):
         self.assertFalse(state.proactive_sleep_mode)
         self.assertEqual(state.consecutive_proactive_count, 0)
 
+    def test_proactive_delivery_key_is_recorded_and_reset_by_user(self):
+        state = RuntimeState()
+
+        state.register_proactive_output(delivery_key="clarification:premise_challenge")
+        state.register_proactive_output(delivery_key="clarification:premise_challenge")
+
+        self.assertEqual(state.proactive_delivery_keys, ["clarification:premise_challenge"])
+        self.assertEqual(state.consecutive_proactive_count, 2)
+
+        state.register_user_input()
+
+        self.assertEqual(state.proactive_delivery_keys, [])
+        self.assertEqual(state.consecutive_proactive_count, 0)
+
     def test_prediction_buffer(self):
         state = RuntimeState()
         state.set_prediction("test_intent", 0.5, "source_intent")

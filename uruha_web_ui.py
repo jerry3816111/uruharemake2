@@ -346,10 +346,12 @@ def _status_markdown():
         autonomous = runtime_state.get("last_autonomous_result") or {}
         autonomous_goal = ((autonomous.get("goal") or {}).get("label") if isinstance(autonomous.get("goal"), dict) else None) or "none"
         pending_proactive = (runtime_state.get("pending_proactive_turn") or {}).get("line") or "none"
+        delivered_proactive = (runtime_state.get("last_proactive_delivery") or {}).get("line") or "none"
         autonomous_info = (
             f"tick={runtime_state.get('autonomous_tick_index', 0)}, "
             f"goal={autonomous_goal}, "
-            f"pending={pending_proactive}"
+            f"pending={pending_proactive}, "
+            f"last_delivered={delivered_proactive}"
         )
     return (
         f"- Brain: {'loaded' if RUNTIME._brain is not None else 'lazy'}\n"
@@ -2187,6 +2189,71 @@ def _append_conversation_log(input_mode, result):
     return record
 
 
+def poll_proactive_turn(history, auto_tts):
+    if RUNTIME._brain is None:
+        return (gr.skip(),) * 7
+
+    with RUNTIME._lock:
+        brain = RUNTIME._brain
+        proactive = brain.consume_pending_proactive_turn()
+        memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
+        autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+    if not proactive:
+        return (gr.skip(),) * 7
+
+    reply = str(proactive.get("line") or "").strip()
+    if not reply:
+        return (gr.skip(),) * 7
+
+    audio_path = None
+    if auto_tts:
+        tmp = tempfile.NamedTemporaryFile(prefix="uruha_web_proactive_", suffix=".wav", delete=False)
+        tmp.close()
+        try:
+            audio_path = RUNTIME.get_mouth().synthesize_to_file(reply, output_file=tmp.name)
+        except Exception as exc:
+            _cleanup_input_audio(tmp.name)
+            print(Fore.YELLOW + f"⚠️ [Web] Proactive TTS failed: {exc}")
+
+    logic = {
+        "intent": proactive.get("intent") or "chat",
+        "scene": "casual",
+        "response_mode": "proactive",
+        "surface_act": "proactive_turn",
+        "autonomous_proactive": proactive,
+    }
+    debug = {
+        "intent": logic["intent"],
+        "scene": logic["scene"],
+        "response_mode": logic["response_mode"],
+        "surface_act": logic["surface_act"],
+        "proactive_kind": proactive.get("kind"),
+        "delivery_key": proactive.get("delivery_key"),
+    }
+    result = {
+        "user_text": "[沉默後的自主延續]",
+        "reply": reply,
+        "debug": debug,
+        "logic": logic,
+        "cognition_trace": {
+            "autonomous": autonomous_trace,
+            "delivery": proactive,
+        },
+        "memory_snapshot": memory_snapshot,
+    }
+    log_record = _append_conversation_log("autonomous_proactive", result)
+    updated_history = _append_history(history, "assistant", reply)
+    return (
+        updated_history,
+        updated_history,
+        audio_path,
+        _status_markdown(),
+        log_record,
+        _annotation_context_markdown(log_record),
+        "自主延續已可標記。",
+    )
+
+
 def _cleanup_input_audio(audio_path):
     if not audio_path:
         return
@@ -2311,6 +2378,7 @@ def build_demo():
 
         with gr.Tabs():
             with gr.Tab("Chat"):
+                proactive_poll_timer = gr.Timer(value=2.0, active=True)
                 with gr.Row(elem_classes=["wrap"]):
                     with gr.Column(scale=3):
                         chatbot = gr.Chatbot(label="Uruha", height=560)
@@ -2492,6 +2560,15 @@ def build_demo():
             inputs=None,
             outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript],
             queue=False,
+        )
+
+        proactive_poll_timer.tick(
+            fn=poll_proactive_turn,
+            inputs=[history_state, auto_tts],
+            outputs=[chatbot, history_state, audio_out, status, latest_turn_state, annotation_context, annotation_status],
+            queue=True,
+            trigger_mode="always_last",
+            concurrency_limit=1,
         )
 
         annotation_save_btn.click(

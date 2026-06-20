@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-20T17:32:29",
+  "generated_at": "2026-06-21T01:45:48",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -326,6 +326,22 @@
       "source_keys": [
         "stress_eval_report_10000.json.summary.unique_reply_ratio",
         "stress_eval_report_10000.json.summary.top_20_reply_concentration"
+      ]
+    },
+    {
+      "name_zh": "像人類地延續真正未完成的話題",
+      "score": 1.0,
+      "target": 0.9,
+      "status": "good",
+      "rationale": "這項高表示系統只在話題確實缺少資訊時，沉默後主動追問一次並真正交付；目前可歸因樣本數為 5，仍需擴大情境。",
+      "source_keys": [
+        "runtime_dynamics_report.json.summary.autonomous_open_loop_detection_accuracy",
+        "runtime_dynamics_report.json.summary.autonomous_open_loop_key_accuracy",
+        "runtime_dynamics_report.json.summary.autonomous_open_loop_followup_rate",
+        "runtime_dynamics_report.json.summary.autonomous_proactive_semantic_match_rate",
+        "runtime_dynamics_report.json.summary.autonomous_proactive_delivery_rate",
+        "runtime_dynamics_report.json.summary.autonomous_proactive_memory_record_rate",
+        "runtime_dynamics_report.json.summary.autonomous_duplicate_suppression_rate"
       ]
     },
     {
@@ -987,46 +1003,55 @@
       ]
     },
     "runtime": {
-      "scenario_count": 6,
-      "turn_count": 31,
+      "scenario_count": 11,
+      "turn_count": 36,
       "surface_mode": "template_reply_for_runtime_probe",
       "trace_key_presence_rate": 1.0,
       "avg_blackboard_nodes": 18,
-      "avg_working_memory_size": 3.3226,
-      "avg_planner_tick_count": 0.9355,
-      "self_correction_rate": 0.2581,
-      "planner_issue_turn_rate": 0.2581,
-      "planner_detected_issue_turn_rate": 0.2581,
+      "avg_working_memory_size": 2.8611,
+      "avg_planner_tick_count": 0.9167,
+      "self_correction_rate": 0.1944,
+      "planner_issue_turn_rate": 0.1944,
+      "planner_detected_issue_turn_rate": 0.1944,
       "planner_unresolved_issue_turn_rate": 0.0,
       "planner_resolution_quality_rate": 1.0,
       "planner_repair_attempt_rate": 1.0,
       "planner_repair_success_rate": 1.0,
-      "avg_candidate_entropy": 1.4784,
-      "open_loop_turn_rate": 0.3226,
-      "avg_abs_psyche_delta": 3.4194,
+      "avg_candidate_entropy": 1.4487,
+      "open_loop_turn_rate": 0.25,
+      "avg_abs_psyche_delta": 3.0278,
       "max_abs_psyche_delta": 28,
       "autonomous_success_rate": 1.0,
-      "autonomous_avg_memory_write_count": 1.6667,
-      "autonomous_procedural_write_rate": 0.3333,
-      "autonomous_proactive_turn_rate": 0.0,
+      "autonomous_avg_memory_write_count": 1.3636,
+      "autonomous_procedural_write_rate": 0.1818,
+      "autonomous_proactive_turn_rate": 0.4545,
+      "autonomous_open_loop_eligible_count": 5,
+      "autonomous_open_loop_detection_accuracy": 1.0,
+      "autonomous_open_loop_key_accuracy": 1.0,
+      "autonomous_open_loop_followup_rate": 1.0,
+      "autonomous_proactive_semantic_match_rate": 1.0,
+      "autonomous_proactive_delivery_rate": 1.0,
+      "autonomous_proactive_memory_record_rate": 1.0,
+      "autonomous_duplicate_suppression_rate": 1.0,
       "autonomous_note_presence_rate": 1.0,
       "autonomous_avg_blackboard_nodes": 4,
       "autonomous_goal_breakdown": {
-        "maintain_open_loops": 0.1667,
-        "three_speed_consolidation": 0.8333
+        "maintain_open_loops": 0.4545,
+        "three_speed_consolidation": 0.5455
       },
       "autonomous_proactive_kind_breakdown": {
-        "none": 1.0
+        "none": 0.5455,
+        "proactive_followup": 0.4545
       },
       "route_breakdown": {
-        "high_road": 0.9355,
-        "low_road": 0.0645
+        "high_road": 0.9167,
+        "low_road": 0.0833
       },
       "response_mode_breakdown": {
-        "clarify_light": 0.0645,
-        "direct_answer": 0.5806,
-        "direct_answer_with_hedge": 0.2903,
-        "premise_challenge": 0.0645
+        "clarify_light": 0.0833,
+        "direct_answer": 0.6111,
+        "direct_answer_with_hedge": 0.2222,
+        "premise_challenge": 0.0833
       },
       "by_language": {
         "en": {
@@ -1040,14 +1065,14 @@
           "avg_working_memory_size": 3.2
         },
         "ja": {
-          "count": 5,
-          "avg_planner_tick_count": 1,
-          "self_correction_rate": 0.4,
+          "count": 8,
+          "avg_planner_tick_count": 0.875,
+          "self_correction_rate": 0.25,
           "planner_unresolved_issue_turn_rate": 0.0,
           "planner_resolution_quality_rate": 1.0,
           "trace_key_presence_rate": 1.0,
-          "avg_candidate_entropy": 1.581,
-          "avg_working_memory_size": 3.6
+          "avg_candidate_entropy": 1.383,
+          "avg_working_memory_size": 2.25
         },
         "mixed": {
           "count": 11,
@@ -1056,18 +1081,18 @@
           "planner_unresolved_issue_turn_rate": 0.0,
           "planner_resolution_quality_rate": 1.0,
           "trace_key_presence_rate": 1.0,
-          "avg_candidate_entropy": 1.4371,
+          "avg_candidate_entropy": 1.4373,
           "avg_working_memory_size": 3.3636
         },
         "zh": {
-          "count": 10,
-          "avg_planner_tick_count": 0.9,
-          "self_correction_rate": 0.3,
+          "count": 12,
+          "avg_planner_tick_count": 0.9167,
+          "self_correction_rate": 0.1667,
           "planner_unresolved_issue_turn_rate": 0.0,
           "planner_resolution_quality_rate": 1.0,
           "trace_key_presence_rate": 1.0,
-          "avg_candidate_entropy": 1.4221,
-          "avg_working_memory_size": 3.2
+          "avg_candidate_entropy": 1.4485,
+          "avg_working_memory_size": 2.6667
         }
       }
     },
