@@ -654,6 +654,34 @@ def main():
             ["stress_eval_report_10000.json.summary.unique_reply_ratio", "stress_eval_report_10000.json.summary.top_20_reply_concentration"],
         ),
         _goal_item(
+            "像人類地延續真正未完成的話題",
+            _required_min(
+                runtime.get("autonomous_open_loop_detection_accuracy"),
+                runtime.get("autonomous_open_loop_key_accuracy"),
+                runtime.get("autonomous_open_loop_followup_rate"),
+                runtime.get("autonomous_proactive_semantic_match_rate"),
+                runtime.get("autonomous_proactive_delivery_rate"),
+                runtime.get("autonomous_proactive_memory_record_rate"),
+                runtime.get("autonomous_duplicate_suppression_rate"),
+            )
+            if (runtime.get("autonomous_open_loop_eligible_count") or 0) > 0
+            else None,
+            0.9,
+            (
+                "這項高表示系統只在話題確實缺少資訊時，沉默後主動追問一次並真正交付；"
+                f"目前可歸因樣本數為 {int(runtime.get('autonomous_open_loop_eligible_count') or 0)}，仍需擴大情境。"
+            ),
+            [
+                "runtime_dynamics_report.json.summary.autonomous_open_loop_detection_accuracy",
+                "runtime_dynamics_report.json.summary.autonomous_open_loop_key_accuracy",
+                "runtime_dynamics_report.json.summary.autonomous_open_loop_followup_rate",
+                "runtime_dynamics_report.json.summary.autonomous_proactive_semantic_match_rate",
+                "runtime_dynamics_report.json.summary.autonomous_proactive_delivery_rate",
+                "runtime_dynamics_report.json.summary.autonomous_proactive_memory_record_rate",
+                "runtime_dynamics_report.json.summary.autonomous_duplicate_suppression_rate",
+            ],
+        ),
+        _goal_item(
             "像人類地修補真實失敗案例",
             regression_eval.get("overall_auto_pass_rate") if (regression_eval.get("total_cases") or 0) > 0 else None,
             0.75,

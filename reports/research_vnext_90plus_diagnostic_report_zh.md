@@ -1,7 +1,7 @@
 # UruhaBrain vNext 研究 90+ 診斷報告
 
-- 產生時間：`2026-06-20T17:32:23+09:00`
-- 研究認知成熟度分數：`94.79`
+- 產生時間：`2026-06-21T01:45:48+09:00`
+- 研究認知成熟度分數：`95.18`
 - 是否可主張研究 90+：`True`
 - 表面對話對齊分數：`85.32`
 
@@ -26,14 +26,22 @@
   - memory_causal_appropriate_effect_rate=1.0
   - unwanted_memory_intrusion_rate=0.0
   - memory_used_explicitly_rate=1.0
-- `Runtime 動態 / 自主循環`: `90.48` (weight=0.12)
+- `Runtime 動態 / 自主循環`: `93.71` (weight=0.12)
   - trace_key_presence_rate=1.0
-  - self_correction_rate=0.2581
-  - planner_detected_issue_turn_rate=0.2581
+  - self_correction_rate=0.1944
+  - planner_detected_issue_turn_rate=0.1944
   - planner_unresolved_issue_turn_rate=0.0
   - planner_resolution_quality_rate=1.0
   - planner_repair_success_rate=1.0
-  - open_loop_turn_rate=0.3226
+  - open_loop_turn_rate=0.25
+  - autonomous_open_loop_eligible_count=5
+  - autonomous_open_loop_detection_accuracy=1.0
+  - autonomous_open_loop_key_accuracy=1.0
+  - autonomous_open_loop_followup_rate=1.0
+  - autonomous_proactive_semantic_match_rate=1.0
+  - autonomous_proactive_delivery_rate=1.0
+  - autonomous_proactive_memory_record_rate=1.0
+  - autonomous_duplicate_suppression_rate=1.0
   - autonomous_success_rate=1.0
 - `對 prompt-only baseline 的研究優勢`: `89.4` (weight=0.1)
   - avg_score_delta=0.6851
@@ -68,12 +76,14 @@
 - 工作記憶 relevance、delayed recall 與 runtime trace/self-correction 已形成可驗證證據鏈。
 - Memory Causal Effect 已驗證記憶不是只被檢索，而是會改變回答並被顯性引用。
 - 相對於 prompt-only baseline，雙腦架構在 relevance、emotion、boundary、consistency 上仍有顯著優勢。
+- 未完成對話在模擬沉默後可完成一次性交付，且同一迴圈不會立即重複輸出。
 
 ## 剩餘缺口
 
 - DailyDialog act/emotion proxy 仍偏低，表示一般對話標籤對齊不是目前最強軸。
 - DailyDialog act/emotion 是英文資料集上的 proxy，和本系統的三語角色對話不完全同域；後續應以人工標註的真實互動資料替代。
 - Knowledge-Pretend Play Links 仍非滿分，是 ToM 細部殘留桶。
+- 主動延續目前只有 5 個合格情境，100% 僅代表這個小型可歸因測試通過，尚不能外推所有對話。
 
 ## 關鍵證據快照
 
@@ -84,6 +94,14 @@
 - `working_memory_relevance_rate`: 0.9474
 - `memory_causal_appropriate_effect_rate`: 1.0
 - `unwanted_memory_intrusion_rate`: 0.0
+- `autonomous_open_loop_eligible_count`: 5
+- `autonomous_open_loop_detection_accuracy`: 1.0
+- `autonomous_open_loop_key_accuracy`: 1.0
+- `autonomous_open_loop_followup_rate`: 1.0
+- `autonomous_proactive_semantic_match_rate`: 1.0
+- `autonomous_proactive_delivery_rate`: 1.0
+- `autonomous_proactive_memory_record_rate`: 1.0
+- `autonomous_duplicate_suppression_rate`: 1.0
 - `dialog_act_accuracy`: 0.3
 - `emotion_accuracy`: 0.6167
 - `diversity_unique_ratio`: 0.7604

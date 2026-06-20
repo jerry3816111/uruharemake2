@@ -87,6 +87,27 @@ def build_report():
     planner_resolution_quality = runtime_s.get("planner_resolution_quality_rate")
     if planner_resolution_quality is None:
         planner_resolution_quality = 1.0 - runtime_s.get("planner_issue_turn_rate", 1.0)
+    proactive_followup_quality = runtime_s.get("autonomous_open_loop_followup_rate")
+    if proactive_followup_quality is None:
+        proactive_followup_quality = 0.0
+    proactive_detection_quality = runtime_s.get("autonomous_open_loop_detection_accuracy")
+    if proactive_detection_quality is None:
+        proactive_detection_quality = 0.0
+    proactive_key_quality = runtime_s.get("autonomous_open_loop_key_accuracy")
+    if proactive_key_quality is None:
+        proactive_key_quality = 0.0
+    proactive_semantic_quality = runtime_s.get("autonomous_proactive_semantic_match_rate")
+    if proactive_semantic_quality is None:
+        proactive_semantic_quality = 0.0
+    proactive_delivery_quality = runtime_s.get("autonomous_proactive_delivery_rate")
+    if proactive_delivery_quality is None:
+        proactive_delivery_quality = 0.0
+    proactive_duplicate_suppression = runtime_s.get("autonomous_duplicate_suppression_rate")
+    if proactive_duplicate_suppression is None:
+        proactive_duplicate_suppression = 0.0
+    proactive_memory_record_quality = runtime_s.get("autonomous_proactive_memory_record_rate")
+    if proactive_memory_record_quality is None:
+        proactive_memory_record_quality = 0.0
 
     runtime_dynamics = _pct(_avg([
         runtime_s["trace_key_presence_rate"],
@@ -94,7 +115,13 @@ def build_report():
         runtime_s["autonomous_note_presence_rate"],
         runtime_s["autonomous_procedural_write_rate"],
         planner_resolution_quality,
-        _cap_target(runtime_s["open_loop_turn_rate"], 0.25),
+        proactive_detection_quality,
+        proactive_key_quality,
+        proactive_followup_quality,
+        proactive_semantic_quality,
+        proactive_delivery_quality,
+        proactive_duplicate_suppression,
+        proactive_memory_record_quality,
         _cap_target(runtime_s["avg_candidate_entropy"], 1.20),
     ]))
 
@@ -233,6 +260,14 @@ def build_report():
                     f"planner_resolution_quality_rate={planner_resolution_quality}",
                     f"planner_repair_success_rate={runtime_s.get('planner_repair_success_rate')}",
                     f"open_loop_turn_rate={runtime_s['open_loop_turn_rate']}",
+                    f"autonomous_open_loop_eligible_count={runtime_s.get('autonomous_open_loop_eligible_count')}",
+                    f"autonomous_open_loop_detection_accuracy={runtime_s.get('autonomous_open_loop_detection_accuracy')}",
+                    f"autonomous_open_loop_key_accuracy={runtime_s.get('autonomous_open_loop_key_accuracy')}",
+                    f"autonomous_open_loop_followup_rate={runtime_s.get('autonomous_open_loop_followup_rate')}",
+                    f"autonomous_proactive_semantic_match_rate={runtime_s.get('autonomous_proactive_semantic_match_rate')}",
+                    f"autonomous_proactive_delivery_rate={runtime_s.get('autonomous_proactive_delivery_rate')}",
+                    f"autonomous_proactive_memory_record_rate={runtime_s.get('autonomous_proactive_memory_record_rate')}",
+                    f"autonomous_duplicate_suppression_rate={runtime_s.get('autonomous_duplicate_suppression_rate')}",
                     f"autonomous_success_rate={runtime_s['autonomous_success_rate']}",
                 ],
             },
@@ -296,11 +331,13 @@ def build_report():
             "工作記憶 relevance、delayed recall 與 runtime trace/self-correction 已形成可驗證證據鏈。",
             "Memory Causal Effect 已驗證記憶不是只被檢索，而是會改變回答並被顯性引用。",
             "相對於 prompt-only baseline，雙腦架構在 relevance、emotion、boundary、consistency 上仍有顯著優勢。",
+            "未完成對話在模擬沉默後可完成一次性交付，且同一迴圈不會立即重複輸出。",
         ],
         "remaining_gaps": [
             "DailyDialog act/emotion proxy 仍偏低，表示一般對話標籤對齊不是目前最強軸。",
             "DailyDialog act/emotion 是英文資料集上的 proxy，和本系統的三語角色對話不完全同域；後續應以人工標註的真實互動資料替代。",
             "Knowledge-Pretend Play Links 仍非滿分，是 ToM 細部殘留桶。",
+            f"主動延續目前只有 {runtime_s.get('autonomous_open_loop_eligible_count', 0)} 個合格情境，100% 僅代表這個小型可歸因測試通過，尚不能外推所有對話。",
         ],
         "evidence_snapshot": {
             "formal_tombench_accuracy": tombench_s["accuracy"],
@@ -310,6 +347,14 @@ def build_report():
             "working_memory_relevance_rate": cog_s["working_memory_relevance_rate"],
             "memory_causal_appropriate_effect_rate": memory_causal_alignment_rate,
             "unwanted_memory_intrusion_rate": memory_causal_s.get("unwanted_memory_intrusion_rate"),
+            "autonomous_open_loop_eligible_count": runtime_s.get("autonomous_open_loop_eligible_count"),
+            "autonomous_open_loop_detection_accuracy": runtime_s.get("autonomous_open_loop_detection_accuracy"),
+            "autonomous_open_loop_key_accuracy": runtime_s.get("autonomous_open_loop_key_accuracy"),
+            "autonomous_open_loop_followup_rate": runtime_s.get("autonomous_open_loop_followup_rate"),
+            "autonomous_proactive_semantic_match_rate": runtime_s.get("autonomous_proactive_semantic_match_rate"),
+            "autonomous_proactive_delivery_rate": runtime_s.get("autonomous_proactive_delivery_rate"),
+            "autonomous_proactive_memory_record_rate": runtime_s.get("autonomous_proactive_memory_record_rate"),
+            "autonomous_duplicate_suppression_rate": runtime_s.get("autonomous_duplicate_suppression_rate"),
             "dialog_act_accuracy": daily_s["dialog_act_accuracy"],
             "emotion_accuracy": daily_s["emotion_accuracy"],
             "diversity_unique_ratio": diversity_s["overall_unique_ratio"],

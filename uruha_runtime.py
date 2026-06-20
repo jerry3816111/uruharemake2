@@ -59,6 +59,8 @@ class RuntimeState:
     last_state_diff: dict = field(default_factory=dict)
     last_autonomous_result: dict = field(default_factory=dict)
     pending_proactive_turn: dict = field(default_factory=dict)
+    last_proactive_delivery: dict = field(default_factory=dict)
+    proactive_delivery_keys: list = field(default_factory=list)
     autonomous_traces: list = field(default_factory=list)
     turn_traces: list = field(default_factory=list)
     boredom: float = 0.0
@@ -89,10 +91,14 @@ class RuntimeState:
         self.touch_interaction(when=when, reset_drives=True)
         self.consecutive_proactive_count = 0
         self.proactive_sleep_mode = False
+        self.proactive_delivery_keys = []
 
-    def register_proactive_output(self, when=None):
+    def register_proactive_output(self, when=None, delivery_key=""):
         self.touch_interaction(when=when, reset_drives=True)
         self.consecutive_proactive_count += 1
+        key = str(delivery_key or "").strip()
+        if key and key not in self.proactive_delivery_keys:
+            self.proactive_delivery_keys = [*self.proactive_delivery_keys, key][-8:]
         if self.consecutive_proactive_count >= self.config.proactive_sleep_after_ignores:
             self.proactive_sleep_mode = True
             self.social_need = 0.0

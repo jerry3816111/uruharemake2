@@ -11692,20 +11692,26 @@ class UruhaBrainV4_Mac:
         surface_act = logic.get("surface_act")
         intent = logic.get("intent")
 
-        if response_mode in {"clarify_light", "reframe_large_question", "premise_challenge"}:
-            loops.append(
-                {
-                    "kind": "clarification",
-                    "label": "等待使用者補充或修正前提",
-                    "reason": response_mode,
-                }
-            )
-        if surface_act in {"lyric_probe", "reference_probe", "version_fragment_clarify", "correction_followup"}:
+        specific_followup_acts = {
+            "lyric_probe",
+            "reference_probe",
+            "version_fragment_clarify",
+            "correction_followup",
+        }
+        if surface_act in specific_followup_acts:
             loops.append(
                 {
                     "kind": "followup",
                     "label": "等待對方補完梗、歌詞或上下文",
                     "reason": surface_act,
+                }
+            )
+        elif response_mode in {"clarify_light", "reframe_large_question", "premise_challenge"}:
+            loops.append(
+                {
+                    "kind": "clarification",
+                    "label": "等待使用者補充或修正前提",
+                    "reason": response_mode,
                 }
             )
         if intent == "crisis_support":
@@ -11716,14 +11722,6 @@ class UruhaBrainV4_Mac:
                     "reason": intent,
                 }
             )
-        if logic.get("hidden_intent") in {"relationship_temperature_check", "permission_probe"}:
-            loops.append(
-                {
-                    "kind": "relationship",
-                    "label": "關係溫度還在延續",
-                    "reason": logic.get("hidden_intent"),
-                }
-            )
         deduped = []
         seen = set()
         for item in loops:
@@ -11731,6 +11729,7 @@ class UruhaBrainV4_Mac:
             if key in seen:
                 continue
             seen.add(key)
+            item["key"] = f"{item.get('kind', 'loop')}:{item.get('reason', item.get('label', 'followup'))}"
             deduped.append(item)
         return deduped[:3]
 
@@ -11791,6 +11790,8 @@ class UruhaBrainV4_Mac:
             "last_state_diff": deepcopy(self.runtime.last_state_diff),
             "last_autonomous_result": deepcopy(self.runtime.last_autonomous_result),
             "pending_proactive_turn": deepcopy(self.runtime.pending_proactive_turn),
+            "last_proactive_delivery": deepcopy(self.runtime.last_proactive_delivery),
+            "proactive_delivery_keys": list(self.runtime.proactive_delivery_keys),
             "boredom": round(float(self.runtime.boredom), 3),
             "social_need": round(float(self.runtime.social_need), 3),
             "consecutive_proactive_count": int(self.runtime.consecutive_proactive_count),
@@ -12263,8 +12264,15 @@ class UruhaBrainV4_Mac:
     def _autonomous_goal_candidates(self):
         memory_runtime = self.memory.get_runtime_snapshot()
         candidates = []
-        idle_seconds = max(0.0, time.time() - self._last_external_input_at)
+        last_dialogue_activity = max(
+            float(self._last_external_input_at or 0.0),
+            float(self.runtime.last_interaction_timestamp or 0.0),
+        )
+        idle_seconds = max(0.0, time.time() - last_dialogue_activity)
         psyche_now = self.psyche.get_state()
+        pending_delivery = bool(self.runtime.pending_proactive_turn)
+        delivered_keys = set(self.runtime.proactive_delivery_keys or [])
+        proactive_allowed = not pending_delivery and not self.runtime.proactive_sleep_mode
 
         if self.runtime.open_loops:
             candidates.append(
@@ -12275,14 +12283,27 @@ class UruhaBrainV4_Mac:
                     "detail": deepcopy(self.runtime.open_loops[:3]),
                 }
             )
-            if idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 1.8:
+            follow_loop = next(
+                (
+                    loop
+                    for loop in self.runtime.open_loops
+                    if str(loop.get("key") or f"{loop.get('kind', 'loop')}:{loop.get('reason', 'followup')}") not in delivered_keys
+                ),
+                None,
+            )
+            if proactive_allowed and follow_loop and idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 1.8:
+                delivery_key = str(
+                    follow_loop.get("key")
+                    or f"{follow_loop.get('kind', 'loop')}:{follow_loop.get('reason', 'followup')}"
+                )
                 candidates.append(
                     {
                         "kind": "proactive_followup",
                         "label": "主動追問未完成的對話",
                         "priority": 0.97,
                         "detail": {
-                            "open_loop": deepcopy(self.runtime.open_loops[0]),
+                            "open_loop": deepcopy(follow_loop),
+                            "delivery_key": delivery_key,
                             "idle_seconds": round(idle_seconds, 2),
                         },
                     }
@@ -12318,7 +12339,13 @@ class UruhaBrainV4_Mac:
                     },
                 }
             )
-            if idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 2.3 and float(strongest.get("strength", 0.0)) >= 0.52:
+            share_key = f"share:{strongest.get('intent') or 'chat'}:{self._trim_text(strongest.get('text', ''), 24)}"
+            if (
+                proactive_allowed
+                and share_key not in delivered_keys
+                and idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 2.3
+                and float(strongest.get("strength", 0.0)) >= 0.52
+            ):
                 candidates.append(
                     {
                         "kind": "proactive_share",
@@ -12329,11 +12356,17 @@ class UruhaBrainV4_Mac:
                             "scene": strongest.get("scene"),
                             "strength": strongest.get("strength"),
                             "text": self._trim_text(strongest.get("text", ""), 80),
+                            "delivery_key": share_key,
                         },
                     }
                 )
 
-        if idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 3.4 and -35 <= psyche_now.get("mood", 0) <= 20:
+        if (
+            proactive_allowed
+            and "ping" not in delivered_keys
+            and idle_seconds >= AUTONOMOUS_IDLE_SECONDS * 3.4
+            and -35 <= psyche_now.get("mood", 0) <= 20
+        ):
             candidates.append(
                 {
                     "kind": "proactive_ping",
@@ -12343,6 +12376,7 @@ class UruhaBrainV4_Mac:
                         "idle_seconds": round(idle_seconds, 2),
                         "mood": psyche_now.get("mood", 0),
                         "trust": psyche_now.get("trust", 50),
+                        "delivery_key": "ping",
                     },
                 }
             )
@@ -12371,9 +12405,18 @@ class UruhaBrainV4_Mac:
             elif reason == "premise_challenge":
                 line = "さっきの前提、結局どこから来たんだよ。そこ先だろ。"
                 intent = "premise_doubt"
-            elif reason in {"lyric_probe", "reference_probe", "version_fragment_clarify", "correction_followup"}:
-                line = "さっきのやつ、断片だけで終わるなって。元まで出せ。"
+            elif reason == "lyric_probe":
+                line = "さっきの歌詞っぽいやつ、結局何の曲だよ。曲名まで出せって。"
                 intent = "reference_probe"
+            elif reason == "reference_probe":
+                line = "さっきの一言、結局何のネタだよ。元まで出せって。"
+                intent = "reference_probe"
+            elif reason == "version_fragment_clarify":
+                line = "さっきの日版って、何の作品のどの版だよ。そこまで言えって。"
+                intent = "version_fragment_clarify"
+            elif reason == "correction_followup":
+                line = "さっき答えが違うって言っただろ。どこを直せばいいか教えろって。"
+                intent = "correction_followup"
             elif reason == "relationship_temperature_check":
                 line = "結局そこ確認したかっただけだろ。まだ何かあるのか。"
                 intent = "ask_miss_me"
@@ -12381,7 +12424,7 @@ class UruhaBrainV4_Mac:
                 line = "呼び方の件、まだ気にしてるのか。変なのじゃなきゃ別にいいし。"
                 intent = "nickname_question"
             elif reason == "crisis_support":
-                line = "さっきのやつ、まだ危ない方に寄るなよ。今は止まっとけ。"
+                line = "さっきの件、今ひとりか？まだ危ないなら近くの人に連絡しろ。"
                 intent = "crisis_support"
             else:
                 line = "さっきの話、まだ途中だろ。そこ投げっぱなしにするなって。"
@@ -12409,6 +12452,7 @@ class UruhaBrainV4_Mac:
             "kind": kind,
             "intent": intent,
             "line": self.right_brain._sanitize_reply(line, max_chars=42),
+            "delivery_key": str(detail.get("delivery_key") or kind),
             "detail": deepcopy(detail),
         }
 
@@ -12456,7 +12500,8 @@ class UruhaBrainV4_Mac:
         selected_goal = goal_candidates[0]
         note = self._derive_autonomous_note(selected_goal)
         proactive_turn = self._build_proactive_turn(selected_goal)
-        self.runtime.pending_proactive_turn = deepcopy(proactive_turn)
+        if proactive_turn:
+            self.runtime.pending_proactive_turn = deepcopy(proactive_turn)
         self.runtime.active_goal = selected_goal.get("label", "待機")
         self.runtime.latent_goal_stack = deepcopy(goal_candidates[:4])
         self.runtime.current_focus = selected_goal.get("kind", "idle")
@@ -12536,6 +12581,69 @@ class UruhaBrainV4_Mac:
             self.runtime.autonomous_traces = self.runtime.autonomous_traces[-18:]
         self._last_background_tick_at = now
         return result
+
+    def consume_pending_proactive_turn(self, delivered_at=None):
+        pending = deepcopy(self.runtime.pending_proactive_turn or {})
+        if not pending:
+            return {}
+        now = float(delivered_at if delivered_at is not None else time.time())
+        self.runtime.pending_proactive_turn = {}
+        delivery_key = str(pending.get("delivery_key") or pending.get("kind") or "proactive").strip()
+        delivered = {
+            **pending,
+            "delivery_key": delivery_key,
+            "delivered_at": now,
+        }
+        memory_recorded = False
+        memory_error = ""
+        memory_before = self.memory.get_runtime_snapshot()
+        try:
+            delivery_logic = {
+                "intent": pending.get("intent") or "chat",
+                "scene": "casual",
+                "cognitive_mode": "proactive",
+                "response_mode": "proactive",
+                "surface_act": "proactive_turn",
+                "reply_goal": "未完成の話題を自分から拾い直す",
+                "core_message_jp": pending.get("line") or "",
+                "autonomous_proactive": deepcopy(pending),
+            }
+            episode_doc = self.memory.save_episode(
+                f"[proactive:{pending.get('kind') or 'turn'}]",
+                pending.get("line") or "",
+                self.psyche.get_state(),
+                delivery_logic,
+            )
+            memory_after = self.memory.get_runtime_snapshot()
+            self.runtime.last_memory_before = memory_before
+            self.runtime.last_memory_after = memory_after
+            self.runtime.last_memory_diff = self._diff_memory_snapshot(memory_before, memory_after)
+            self.runtime.last_memory_writes = [
+                {
+                    "layer": "episodic_memory",
+                    "kind": "proactive_delivery_episode",
+                    "summary": self._trim_text(episode_doc, 120),
+                }
+            ]
+            memory_recorded = True
+        except Exception as exc:
+            memory_error = self._trim_text(exc, 120)
+        delivered["memory_recorded"] = memory_recorded
+        delivered["memory_error"] = memory_error
+        self.runtime.last_proactive_delivery = deepcopy(delivered)
+        self.runtime.register_proactive_output(when=now, delivery_key=delivery_key)
+        self._push_blackboard("autonomous", "proactive_delivery", delivered, salience=0.96)
+        if memory_recorded:
+            self._push_blackboard(
+                "memory",
+                "proactive_delivery_memory",
+                {
+                    "writes": self.runtime.last_memory_writes,
+                    "diff": self.runtime.last_memory_diff,
+                },
+                salience=0.88,
+            )
+        return delivered
 
     def _handle_timer_tick_event(self, event):
         now = float((event or {}).get("payload", {}).get("timestamp", time.time()))

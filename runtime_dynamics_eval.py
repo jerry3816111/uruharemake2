@@ -5,6 +5,7 @@ import tempfile
 import io
 import math
 import contextlib
+import time
 
 import uruha_brain_mac as brain_mod
 from project_paths import RUNTIME_DYNAMICS_REPORT_PATH
@@ -81,6 +82,56 @@ SCENARIOS = [
             "What's my name?",
         ],
     },
+    {
+        "id": "ja_unfinished_fragment",
+        "language": "ja",
+        "turns": [
+            "日版",
+        ],
+        "expected_open_loop_key": "followup:version_fragment_clarify",
+        "expected_proactive_intent": "version_fragment_clarify",
+        "proactive_required_any": ["作品", "版"],
+    },
+    {
+        "id": "ja_unfinished_reference",
+        "language": "ja",
+        "turns": [
+            "夜空",
+        ],
+        "expected_open_loop_key": "followup:reference_probe",
+        "expected_proactive_intent": "reference_probe",
+        "proactive_required_any": ["ネタ", "元"],
+    },
+    {
+        "id": "zh_unfinished_correction",
+        "language": "zh",
+        "turns": [
+            "不是啦你剛剛答錯了",
+        ],
+        "expected_open_loop_key": "followup:correction_followup",
+        "expected_proactive_intent": "correction_followup",
+        "proactive_required_any": ["違う", "直せ", "どこ"],
+    },
+    {
+        "id": "zh_unfinished_false_premise",
+        "language": "zh",
+        "turns": [
+            "你養過Shiro嗎",
+        ],
+        "expected_open_loop_key": "clarification:premise_challenge",
+        "expected_proactive_intent": "premise_doubt",
+        "proactive_required_any": ["前提", "どこ"],
+    },
+    {
+        "id": "ja_unfinished_safety_check",
+        "language": "ja",
+        "turns": [
+            "死にたい、もう消えたい",
+        ],
+        "expected_open_loop_key": "safety_check:crisis_support",
+        "expected_proactive_intent": "crisis_support",
+        "proactive_required_any": ["ひとり", "連絡"],
+    },
 ]
 
 
@@ -95,9 +146,25 @@ def silent_turn(brain, utterance):
         return brain.run_turn_debug(utterance)
 
 
-def silent_background_cycle(brain):
+def silent_background_cycle(brain, force=True):
     with contextlib.redirect_stdout(io.StringIO()):
-        return brain.run_background_cycle(force=True)
+        return brain.run_background_cycle(force=force)
+
+
+def silent_consume_proactive_turn(brain):
+    with contextlib.redirect_stdout(io.StringIO()):
+        return brain.consume_pending_proactive_turn()
+
+
+def compact_autonomous_result(result):
+    result = result or {}
+    return {
+        "goal": result.get("goal") or {},
+        "internal_note": result.get("internal_note"),
+        "proactive_turn": result.get("proactive_turn") or {},
+        "memory_writes": result.get("memory_writes") or [],
+        "blackboard_nodes": len(result.get("blackboard") or []),
+    }
 
 
 def install_fast_consolidation(memory):
@@ -290,21 +357,58 @@ def main():
             })
             turn_traces.append(turn_info)
 
-        auto = silent_background_cycle(brain)
-        proactive_turn = (auto or {}).get("proactive_turn") or {}
+        expected_open_loop_key = str(scenario.get("expected_open_loop_key") or "")
+        expected_open_loop_eligible = bool(expected_open_loop_key)
+        actual_open_loop_keys = [str(loop.get("key") or "") for loop in brain.runtime.open_loops]
+        actual_open_loop_eligible = bool(actual_open_loop_keys)
+        immediate_auto = silent_background_cycle(brain, force=True)
+        simulated_idle_at = time.time() - (brain_mod.AUTONOMOUS_IDLE_SECONDS * 2.0)
+        brain._last_external_input_at = simulated_idle_at
+        brain.runtime.last_interaction_timestamp = simulated_idle_at
+        brain._last_background_tick_at = 0.0
+        idle_auto = silent_background_cycle(brain, force=False)
+        proactive_turn = (idle_auto or {}).get("proactive_turn") or {}
+        proactive_line = str(proactive_turn.get("line") or "")
+        required_markers = list(scenario.get("proactive_required_any") or [])
+        proactive_semantic_match = bool(
+            proactive_turn
+            and proactive_turn.get("intent") == scenario.get("expected_proactive_intent")
+            and (not required_markers or any(marker in proactive_line for marker in required_markers))
+        )
+        delivered_turn = silent_consume_proactive_turn(brain)
+        brain._last_background_tick_at = 0.0
+        duplicate_auto = silent_background_cycle(brain, force=False)
+        duplicate_turn = (duplicate_auto or {}).get("proactive_turn") or {}
         autonomous_rows.append(
             {
                 "scenario_id": scenario["id"],
-                "autonomous_success": int(bool(auto)),
-                "memory_write_count": len((auto or {}).get("memory_writes") or []),
-                "procedural_write_present": int(any(item.get("layer") == "procedural_memory" for item in ((auto or {}).get("memory_writes") or []))),
-                "goal_kind": ((auto or {}).get("goal") or {}).get("kind"),
-                "goal_label": ((auto or {}).get("goal") or {}).get("label"),
+                "autonomous_success": int(bool(immediate_auto)),
+                "memory_write_count": len((immediate_auto or {}).get("memory_writes") or []),
+                "procedural_write_present": int(any(item.get("layer") == "procedural_memory" for item in ((immediate_auto or {}).get("memory_writes") or []))),
+                "goal_kind": ((immediate_auto or {}).get("goal") or {}).get("kind"),
+                "goal_label": ((immediate_auto or {}).get("goal") or {}).get("label"),
+                "expected_open_loop_eligible": int(expected_open_loop_eligible),
+                "actual_open_loop_eligible": int(actual_open_loop_eligible),
+                "open_loop_eligibility_correct": int(expected_open_loop_eligible == actual_open_loop_eligible),
+                "expected_open_loop_key": expected_open_loop_key,
+                "actual_open_loop_keys": actual_open_loop_keys,
+                "open_loop_key_correct": int(
+                    (not expected_open_loop_eligible and not actual_open_loop_keys)
+                    or expected_open_loop_key in actual_open_loop_keys
+                ),
                 "proactive_turn_present": int(bool(proactive_turn)),
                 "proactive_turn_kind": proactive_turn.get("kind"),
-                "proactive_turn_line": proactive_turn.get("line"),
-                "internal_note": (auto or {}).get("internal_note"),
-                "blackboard_nodes": len((auto or {}).get("blackboard") or []),
+                "proactive_turn_line": proactive_line,
+                "expected_proactive_intent": scenario.get("expected_proactive_intent"),
+                "proactive_required_any": required_markers,
+                "proactive_semantic_match": int(proactive_semantic_match),
+                "proactive_delivery_present": int(bool(delivered_turn)),
+                "proactive_delivery_memory_recorded": int(bool(delivered_turn.get("memory_recorded"))),
+                "proactive_delivery_key": delivered_turn.get("delivery_key"),
+                "duplicate_proactive_present": int(bool(duplicate_turn)),
+                "duplicate_proactive_suppressed": int(bool(delivered_turn) and not duplicate_turn),
+                "internal_note": (immediate_auto or {}).get("internal_note"),
+                "blackboard_nodes": len((immediate_auto or {}).get("blackboard") or []),
             }
         )
         scenario_reports.append(
@@ -313,7 +417,12 @@ def main():
                 "language": scenario["language"],
                 "turn_count": len(turn_traces),
                 "turns": turn_traces,
-                "autonomous": auto,
+                "autonomous": {
+                    "immediate": compact_autonomous_result(immediate_auto),
+                    "idle": compact_autonomous_result(idle_auto),
+                    "delivered": delivered_turn,
+                    "duplicate_attempt": compact_autonomous_result(duplicate_auto),
+                },
             }
         )
 
@@ -325,6 +434,9 @@ def main():
     detected_issue_rows = [row for row in turn_rows if row["planner_tick_issues"]]
     repair_rows = [row for row in turn_rows if row["planner_repair_applied"]]
     unresolved_rows = [row for row in turn_rows if row["planner_unresolved_issues"]]
+    open_loop_eligible_rows = [row for row in autonomous_rows if row["expected_open_loop_eligible"]]
+    proactive_rows = [row for row in autonomous_rows if row["proactive_turn_present"]]
+    delivered_rows = [row for row in autonomous_rows if row["proactive_delivery_present"]]
 
     summary = {
         "scenario_count": len(scenario_reports),
@@ -349,6 +461,14 @@ def main():
         "autonomous_avg_memory_write_count": round(statistics.mean(row["memory_write_count"] for row in autonomous_rows), 4) if autonomous_rows else 0.0,
         "autonomous_procedural_write_rate": rate(autonomous_rows, "procedural_write_present"),
         "autonomous_proactive_turn_rate": rate(autonomous_rows, "proactive_turn_present"),
+        "autonomous_open_loop_eligible_count": len(open_loop_eligible_rows),
+        "autonomous_open_loop_detection_accuracy": rate(autonomous_rows, "open_loop_eligibility_correct"),
+        "autonomous_open_loop_key_accuracy": rate(autonomous_rows, "open_loop_key_correct"),
+        "autonomous_open_loop_followup_rate": round(sum(row["proactive_turn_present"] for row in open_loop_eligible_rows) / len(open_loop_eligible_rows), 4) if open_loop_eligible_rows else None,
+        "autonomous_proactive_semantic_match_rate": round(sum(row["proactive_semantic_match"] for row in open_loop_eligible_rows) / len(open_loop_eligible_rows), 4) if open_loop_eligible_rows else None,
+        "autonomous_proactive_delivery_rate": round(sum(row["proactive_delivery_present"] for row in proactive_rows) / len(proactive_rows), 4) if proactive_rows else None,
+        "autonomous_proactive_memory_record_rate": round(sum(row["proactive_delivery_memory_recorded"] for row in delivered_rows) / len(delivered_rows), 4) if delivered_rows else None,
+        "autonomous_duplicate_suppression_rate": round(sum(row["duplicate_proactive_suppressed"] for row in delivered_rows) / len(delivered_rows), 4) if delivered_rows else None,
         "autonomous_note_presence_rate": round(sum(1 for row in autonomous_rows if row.get("internal_note")) / len(autonomous_rows), 4) if autonomous_rows else 0.0,
         "autonomous_avg_blackboard_nodes": round(statistics.mean(row["blackboard_nodes"] for row in autonomous_rows), 4) if autonomous_rows else 0.0,
         "autonomous_goal_breakdown": {},
