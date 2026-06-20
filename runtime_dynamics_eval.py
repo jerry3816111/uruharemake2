@@ -193,6 +193,15 @@ def flatten_tick_issues(planner_ticks):
     return deduped
 
 
+def final_tick_issues(planner_ticks):
+    if not planner_ticks:
+        return []
+    final_tick = planner_ticks[-1]
+    if "remaining_issues" in final_tick:
+        return list(final_tick.get("remaining_issues") or [])
+    return list(final_tick.get("issues") or [])
+
+
 def turn_observation(result, utterance, idx):
     logic = result.get("logic") or {}
     state = result.get("runtime_state") or {}
@@ -207,6 +216,13 @@ def turn_observation(result, utterance, idx):
     memory_writes = trace.get("memory_writes") or []
     open_loops = state.get("open_loops") or []
     top_candidate = candidates[0] if candidates else {}
+    self_monitor = trace.get("self_monitor") or state.get("last_self_monitor") or {}
+    detected_issues = logic.get("planner_detected_issues") or flatten_tick_issues(planner_ticks)
+    unresolved_issues = logic.get("planner_unresolved_issues")
+    if unresolved_issues is None:
+        unresolved_issues = final_tick_issues(planner_ticks)
+    repair_applied = bool(logic.get("planner_repair_applied", state.get("self_correction_applied")))
+    repair_success = bool(logic.get("planner_repair_success", repair_applied and not unresolved_issues))
 
     return {
         "turn_index": idx,
@@ -222,7 +238,10 @@ def turn_observation(result, utterance, idx):
         "working_memory_size": len(memory_data.get("working_memory_items") or []),
         "working_memory_summary": memory_data.get("working_memory_summary"),
         "planner_tick_count": int(state.get("planner_tick_count") or 0),
-        "planner_tick_issues": flatten_tick_issues(planner_ticks),
+        "planner_tick_issues": detected_issues,
+        "planner_unresolved_issues": unresolved_issues,
+        "planner_repair_applied": int(repair_applied),
+        "planner_repair_success": int(repair_success),
         "self_correction_applied": int(bool(state.get("self_correction_applied"))),
         "candidate_count": len(candidates),
         "candidate_entropy": candidate_entropy(candidates),
@@ -230,6 +249,10 @@ def turn_observation(result, utterance, idx):
         "top_candidate_probability": round(float(top_candidate.get("bayes_probability", 0.0)), 4),
         "selected_intent": selected_plan.get("intent"),
         "selected_scene": selected_plan.get("scene"),
+        "selected_core_message": selected_plan.get("core_message_jp"),
+        "selected_grounding": selected_plan.get("grounding") or {},
+        "reply_self_monitor_issues": list(self_monitor.get("issues") or []),
+        "reply_self_monitor_repaired": int(bool(logic.get("self_monitor_repair"))),
         "open_loop_count": len(open_loops),
         "open_loop_labels": [loop.get("label", str(loop)) for loop in open_loops],
         "blackboard_nodes": len(trace.get("blackboard") or []),
@@ -299,6 +322,10 @@ def main():
         psyche = row.get("psyche_diff") or {}
         psyche_deltas.append(abs(psyche.get("mood_delta", 0)) + abs(psyche.get("trust_delta", 0)))
 
+    detected_issue_rows = [row for row in turn_rows if row["planner_tick_issues"]]
+    repair_rows = [row for row in turn_rows if row["planner_repair_applied"]]
+    unresolved_rows = [row for row in turn_rows if row["planner_unresolved_issues"]]
+
     summary = {
         "scenario_count": len(scenario_reports),
         "turn_count": len(turn_rows),
@@ -309,6 +336,11 @@ def main():
         "avg_planner_tick_count": round(statistics.mean(row["planner_tick_count"] for row in turn_rows), 4) if turn_rows else 0.0,
         "self_correction_rate": rate(turn_rows, "self_correction_applied"),
         "planner_issue_turn_rate": round(sum(1 for row in turn_rows if row["planner_tick_issues"]) / len(turn_rows), 4) if turn_rows else 0.0,
+        "planner_detected_issue_turn_rate": round(len(detected_issue_rows) / len(turn_rows), 4) if turn_rows else 0.0,
+        "planner_unresolved_issue_turn_rate": round(len(unresolved_rows) / len(turn_rows), 4) if turn_rows else 0.0,
+        "planner_resolution_quality_rate": round(1.0 - len(unresolved_rows) / len(turn_rows), 4) if turn_rows else 0.0,
+        "planner_repair_attempt_rate": round(len(repair_rows) / len(detected_issue_rows), 4) if detected_issue_rows else 1.0,
+        "planner_repair_success_rate": round(sum(row["planner_repair_success"] for row in repair_rows) / len(repair_rows), 4) if repair_rows else 1.0,
         "avg_candidate_entropy": round(statistics.mean(row["candidate_entropy"] for row in turn_rows), 4) if turn_rows else 0.0,
         "open_loop_turn_rate": round(sum(1 for row in turn_rows if row["open_loop_count"] > 0) / len(turn_rows), 4) if turn_rows else 0.0,
         "avg_abs_psyche_delta": round(statistics.mean(psyche_deltas), 4) if psyche_deltas else 0.0,
@@ -361,6 +393,8 @@ def main():
             "count": len(rows),
             "avg_planner_tick_count": round(statistics.mean(row["planner_tick_count"] for row in rows), 4) if rows else 0.0,
             "self_correction_rate": rate(rows, "self_correction_applied"),
+            "planner_unresolved_issue_turn_rate": round(sum(1 for row in rows if row["planner_unresolved_issues"]) / len(rows), 4) if rows else 0.0,
+            "planner_resolution_quality_rate": round(1.0 - sum(1 for row in rows if row["planner_unresolved_issues"]) / len(rows), 4) if rows else 0.0,
             "trace_key_presence_rate": rate(rows, "trace_key_presence"),
             "avg_candidate_entropy": round(statistics.mean(row["candidate_entropy"] for row in rows), 4) if rows else 0.0,
             "avg_working_memory_size": round(statistics.mean(row["working_memory_size"] for row in rows), 4) if rows else 0.0,

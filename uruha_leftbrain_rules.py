@@ -1766,6 +1766,31 @@ def base_plan_helper(
         "must_avoid": avoid or ["私", "わかりました", "AI", "技術説明"],
     }
 
+def extract_requested_user_name(text):
+    raw = str(text or "").strip()
+    lowered = raw.lower().replace("’", "'").replace("`", "'")
+    if not raw or contains_any(lowered, ["can i call you", "do you mind if i call you", "call yourself"]):
+        return ""
+
+    patterns = [
+        (r"^\s*(?:(?:please|you can|i want you to)\s+)?call me\s+([a-z0-9_\-]{2,20})[.!?]?\s*$", raw),
+        (r"^\s*use the name\s+([a-z0-9_\-]{2,20})(?:\s+for me)?[.!?]?\s*$", raw),
+        (r"^\s*my name is\s+([a-z0-9_\-]{2,20})[.!?]?\s*$", raw),
+        (r"^\s*(?:我叫|叫我|請叫我|请叫我|你可以叫我)([^\s，。！？?]{1,20})[。！？?]?\s*$", raw),
+        (r"^\s*([^\s、。！？?]{1,20})(?:って|と)呼んで(?:ね)?[。！？?]?\s*$", raw),
+        (r"^\s*(?:名前は|名前)([^\s、。！？?]{1,20})[。！？?]?\s*$", raw),
+    ]
+    for pattern, source in patterns:
+        match = re.search(pattern, source, re.IGNORECASE)
+        if not match:
+            continue
+        name = match.group(1).strip(" .。！？!?、，")
+        if name.lower() in {"baby", "babe", "sweetheart", "darling", "watashi"}:
+            return ""
+        return name[:20]
+    return ""
+
+
 def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
     text = user_input.strip()
     lowered = text.lower().replace("’", "'").replace("`", "'")
@@ -2516,6 +2541,22 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
     priority_override = _detect_clause_priority_override(text)
     if priority_override.get("clause") and priority_override.get("clause") != text:
         scoped_input = str(priority_override.get("clause") or "").strip() or text
+
+    requested_name = extract_requested_user_name(scoped_input)
+    if requested_name:
+        return base_plan_helper(
+            intent="profile_name_update",
+            scene="casual",
+            listener_state="自分の呼び方を伝えている",
+            reply_goal="指定された呼び方を受け取る",
+            summary="ユーザーが今後使ってほしい自分の名前を伝えている。",
+            meaning=f"{requested_name}って呼べばいいんだろ、覚えとく",
+            stance={"warmth": 0.3, "tease": 0.04, "blunt": 0.08, "jealousy": 0.0, "distance": 0.04},
+            max_chars=28,
+            avoid=["私", "わかりました", "誰情報"],
+            grounding={"profile_name": requested_name},
+            payload_level="medium",
+        )
 
     # 2. Relationship checks
     relationship_intent = _detect_relationship_intent(scoped_input)

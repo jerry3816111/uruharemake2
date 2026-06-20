@@ -528,11 +528,10 @@ class MemoryManager:
         text = user_input.strip()
         lowered = text.lower()
         facts = []
+        requested_name = uruha_leftbrain_rules.extract_requested_user_name(text)
+        if requested_name:
+            facts.append(("name", requested_name))
         patterns = [
-            ("name", [r"(?:my name is|call me|use the name|you can call me|please call me|i want you to call me)\s+([a-z0-9_\-]{2,20})"]),
-            ("name", [r"(?:use the name)\s+([a-z0-9_\-]{2,20})\s+for me"]),
-            ("name", [r"(?:我叫|叫我|你可以叫我|請叫我|请叫我|稱呼我|称呼我)([^\s，。！？?]{1,20})"]),
-            ("name", [r"([^\s、。！？?]{1,20})って呼んで", r"([^\s、。！？?]{1,20})と呼んで", r"([^\s、。！？?]{1,20})って呼んでね", r"(?:名前は|名前)([^\s、。！？?]{1,20})"]),
             ("favorite", [r"(?:my favorite(?: drink| food| snack)? is)\s+([a-z0-9 \-]{2,30})"]),
             ("favorite", [r"(?:我最喜歡|我最喜欢)([^，。！？?]{1,20})"]),
             ("favorite", [r"(.{1,20})(?:が一番好き|が好き一番)"]),
@@ -557,23 +556,6 @@ class MemoryManager:
                 if not match:
                     continue
                 value = self._clean_fact_value(match.group(1))
-                if fact_type == "name":
-                    bad_name_values = {
-                        "baby",
-                        "babe",
-                        "sweetheart",
-                        "darling",
-                        "honey",
-                        "dear",
-                        "宝贝",
-                        "寶貝",
-                        "亲爱的",
-                        "親愛的",
-                    }
-                    if value.lower() in bad_name_values:
-                        continue
-                    if any(marker in value for marker in ["什麼", "什么", "嗎", "吗", "?", "？"]):
-                        continue
                 if value:
                     facts.append((fact_type, value))
                 break
@@ -6738,6 +6720,11 @@ Rules:
         lowered = user_input.lower()
         issues = []
         notes = []
+        premise_guard = (
+            plan.get("hidden_intent") == "premise_trap"
+            or plan.get("intent") in {"premise_doubt", "question_premise_doubt", "hallucination_safe"}
+            or plan.get("premise_check") == "reject"
+        )
         sexual_or_abuse_markers = [
             "操你",
             "幹你",
@@ -6774,11 +6761,19 @@ Rules:
             "版那个",
         ]
 
-        if self._looks_simple_daily_query(user_input) and plan.get("response_mode") not in {"direct_answer", "direct_answer_with_hedge", "clarify_light"}:
+        if (
+            not premise_guard
+            and self._looks_simple_daily_query(user_input)
+            and plan.get("response_mode") not in {"direct_answer", "direct_answer_with_hedge", "clarify_light"}
+        ):
             issues.append("overthink_simple_query")
             notes.append("普通の問いを分解しすぎてる。")
 
-        if len(user_input.strip()) <= 10 and plan.get("response_mode") in {"premise_challenge", "reframe_large_question"}:
+        if (
+            not premise_guard
+            and len(user_input.strip()) <= 10
+            and plan.get("response_mode") in {"premise_challenge", "reframe_large_question"}
+        ):
             issues.append("overchallenge_short_input")
             notes.append("短すぎる発話に対して構えすぎ。")
 
@@ -6815,16 +6810,37 @@ Rules:
             notes.append("主観的再構築を使う必要がない。")
 
         offered_item = (plan.get("grounding") or {}).get("offered_item")
-        if offered_item and plan.get("surface_act") == "plain_reply":
+        if (
+            offered_item
+            and plan.get("intent") in {
+                "food_offer_generic",
+                "food_offer_sweet",
+                "store_offer",
+                "food_question",
+                "food_preference_query",
+                "fastfood_preference",
+                "cooked_food",
+            }
+            and plan.get("surface_act") == "plain_reply"
+        ):
             issues.append("missed_concrete_grounding")
             notes.append("具体物を拾わず抽象返答になってる。")
 
         user_belief = str(plan.get("user_belief", ""))
         user_expectation = str(plan.get("user_expectation", ""))
-        if any(token in user_expectation for token in ["自然な返答", "短い応答", "即答"]) and plan.get("response_mode") in {
-            "premise_challenge",
-            "reframe_large_question",
-        }:
+        false_premise_context = (
+            "前提" in user_belief
+            or plan.get("hidden_intent") == "premise_trap"
+            or self._looks_false_premise(user_input)
+        )
+        if (
+            not false_premise_context
+            and any(token in user_expectation for token in ["自然な返答", "短い応答", "即答"])
+            and plan.get("response_mode") in {
+                "premise_challenge",
+                "reframe_large_question",
+            }
+        ):
             issues.append("bdi_direct_miss")
             notes.append("相手はまず返答を欲しがってるのに構えすぎ。")
 
@@ -7050,28 +7066,69 @@ Rules:
                 current_monologue,
             )
             critique = self._critique_plan(selected, user_input, memory_data, current_psyche)
-            tick_trace.append(
-                {
-                    "tick": tick,
-                    "selected_intent": selected.get("intent"),
-                    "selected_scene": selected.get("scene"),
-                    "response_mode": selected.get("response_mode"),
-                    "surface_act": selected.get("surface_act"),
-                    "issues": critique.get("issues", []),
-                    "note": critique.get("internal_note", ""),
-                }
-            )
-            if not critique.get("needs_revision") or tick >= max_ticks:
+            tick_entry = {
+                "tick": tick,
+                "selected_intent": selected.get("intent"),
+                "selected_scene": selected.get("scene"),
+                "response_mode": selected.get("response_mode"),
+                "surface_act": selected.get("surface_act"),
+                "issues": critique.get("issues", []),
+                "note": critique.get("internal_note", ""),
+                "revision_applied": False,
+                "resolution": "accepted",
+                "remaining_issues": [],
+            }
+            tick_trace.append(tick_entry)
+            if not critique.get("needs_revision"):
                 break
 
             revised = self._revise_plan_from_critique(selected, critique, user_input, memory_data, current_psyche)
             revised["candidate_label"] = f"self_corrected_t{tick}"
+            residual = self._critique_plan(revised, user_input, memory_data, current_psyche)
+            tick_entry["revision_applied"] = True
+            tick_entry["remaining_issues"] = residual.get("issues", [])
             working_candidates = self._derive_bayesian_candidates(revised, user_input, current_psyche, memory_data)
             if working_candidates:
                 working_candidates[0]["candidate_label"] = f"self_corrected_t{tick}"
             corrected = True
             if critique.get("internal_note"):
                 current_monologue = f"{current_monologue} / {critique['internal_note']}".strip(" /")
+            if tick >= max_ticks:
+                repair_rounds = 1
+                if residual.get("needs_revision"):
+                    second_revised = self._revise_plan_from_critique(
+                        revised,
+                        residual,
+                        user_input,
+                        memory_data,
+                        current_psyche,
+                    )
+                    second_residual = self._critique_plan(
+                        second_revised,
+                        user_input,
+                        memory_data,
+                        current_psyche,
+                    )
+                    if second_revised != revised:
+                        revised = second_revised
+                        residual = second_residual
+                        repair_rounds = 2
+                tick_entry["resolution"] = "final_tick_repair"
+                tick_entry["repair_rounds"] = repair_rounds
+                tick_entry["remaining_issues"] = residual.get("issues", [])
+                for key in (
+                    "bayes_score",
+                    "bayes_probability",
+                    "bayes_breakdown",
+                    "bayes_candidates",
+                    "working_memory_used",
+                    "routing_path",
+                ):
+                    if key in selected:
+                        revised[key] = deepcopy(selected[key])
+                selected = revised
+                break
+            tick_entry["resolution"] = "rerank_next_tick"
 
         final = selected or self._bayesian_rerank(
             working_candidates,
@@ -7085,6 +7142,15 @@ Rules:
         final["planner_tick_count"] = len(tick_trace)
         final["planner_tick_budget"] = max_ticks
         final["self_correction_applied"] = corrected
+        detected_issues = []
+        for entry in tick_trace:
+            for issue in entry.get("issues", []):
+                if issue not in detected_issues:
+                    detected_issues.append(issue)
+        final["planner_detected_issues"] = detected_issues
+        final["planner_unresolved_issues"] = list((tick_trace[-1] if tick_trace else {}).get("remaining_issues", []))
+        final["planner_repair_applied"] = any(bool(entry.get("revision_applied")) for entry in tick_trace)
+        final["planner_repair_success"] = bool(final["planner_repair_applied"] and not final["planner_unresolved_issues"])
         return final
 
     def _normalize_candidate_bundle(self, payload, user_input, memory_data, current_psyche):
@@ -10937,7 +11003,22 @@ class UruhaBrainV4_Mac:
         ]
         if any(marker in reply for marker in plan_leak_markers):
             issues.append("plan_list_leak")
-        if any(ord(ch) < 128 and ch.isalpha() for ch in reply):
+        allowed_ascii_tokens = set()
+        grounding = logic.get("grounding") or {}
+        memory_anchor = logic.get("memory_anchor") or {}
+        profile = (memory_data or {}).get("profile_structured") or {}
+        allowed_sources = [grounding.get("profile_name")]
+        allowed_sources.extend(list(memory_anchor.get("terms") or []))
+        allowed_sources.extend([memory_anchor.get("value"), memory_anchor.get("jp_anchor"), profile.get("name")])
+        for source in allowed_sources:
+            if isinstance(source, (list, tuple, set)):
+                source = " ".join(str(item or "") for item in source)
+            allowed_ascii_tokens.update(token.lower() for token in re.findall(r"[A-Za-z][A-Za-z0-9_\-]*", str(source or "")))
+        reply_ascii_tokens = {
+            token.lower()
+            for token in re.findall(r"[A-Za-z][A-Za-z0-9_\-]*", reply)
+        }
+        if reply_ascii_tokens - allowed_ascii_tokens:
             issues.append("non_japanese_leak")
         if len(reply) <= 7 and logic.get("payload_level") in {"medium", "high"}:
             issues.append("reply_too_short_for_plan")
@@ -11064,10 +11145,11 @@ class UruhaBrainV4_Mac:
                     ]
                 )
             ]
-            repaired_logic["core_message_jp"] = self._trim_text(
-                "、".join((filtered_units + grounding_terms)[:3]) or repaired_logic.get("core_message_jp", "自然に返す"),
-                180,
-            )
+            if issues.intersection({"plan_list_leak", "speech_plan_grounding_miss"}):
+                repaired_logic["core_message_jp"] = self._trim_text(
+                    "、".join((filtered_units + grounding_terms)[:3]) or repaired_logic.get("core_message_jp", "自然に返す"),
+                    180,
+                )
             repaired_logic.setdefault("must_avoid", [])
             repaired_logic["must_avoid"] = list(repaired_logic.get("must_avoid") or []) + list(speech_plan.get("forbidden_repetition") or [])
         if "missed_memory_anchor" in issues:

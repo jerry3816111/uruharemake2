@@ -1,7 +1,7 @@
 # UruhaBrain vNext 研究 90+ 診斷報告
 
-- 產生時間：`2026-06-19T23:34:18+09:00`
-- 研究認知成熟度分數：`93.54`
+- 產生時間：`2026-06-20T17:32:23+09:00`
+- 研究認知成熟度分數：`94.79`
 - 是否可主張研究 90+：`True`
 - 表面對話對齊分數：`85.32`
 
@@ -26,9 +26,13 @@
   - memory_causal_appropriate_effect_rate=1.0
   - unwanted_memory_intrusion_rate=0.0
   - memory_used_explicitly_rate=1.0
-- `Runtime 動態 / 自主循環`: `80.11` (weight=0.12)
+- `Runtime 動態 / 自主循環`: `90.48` (weight=0.12)
   - trace_key_presence_rate=1.0
-  - self_correction_rate=0.0323
+  - self_correction_rate=0.2581
+  - planner_detected_issue_turn_rate=0.2581
+  - planner_unresolved_issue_turn_rate=0.0
+  - planner_resolution_quality_rate=1.0
+  - planner_repair_success_rate=1.0
   - open_loop_turn_rate=0.3226
   - autonomous_success_rate=1.0
 - `對 prompt-only baseline 的研究優勢`: `89.4` (weight=0.1)
