@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T19:21:45",
+  "generated_at": "2026-06-22T00:32:28",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -24,7 +24,8 @@
     "human_feedback_regression_eval": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_eval_report.json",
     "human_feedback_regression_diff": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_diff_report.json",
     "human_speech_layer": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_speech_layer_eval_report.json",
-    "surface_microplanning": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/surface_microplanning_report.json"
+    "surface_microplanning": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/surface_microplanning_report.json",
+    "rightbrain_model_gate": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/rightbrain_model_gate_report.json"
   },
   "source_of_truth_note": "統一摘要優先採用各獨立報告，不採 domain_eval_suite_report.json 內可能過時的巢狀快照。",
   "refresh_note": "formal_tombench_refresh.json 只有在檔案時間不早於 formal_brain_benchmarks_report.json 時才覆蓋，避免舊 refresh 汙染統一摘要。",
@@ -325,6 +326,24 @@
       "source": "surface_microplanning_report.json",
       "direction": "lower",
       "note": "檢查專心、容量整理、通知省電、暫時離群等正常操作是否被錯當成社交撤退。"
+    },
+    {
+      "key": "rightbrain_model_raw_candidate_acceptance_rate",
+      "name_zh": "真實右腦模型 raw 候選契約接受率",
+      "value": 0.0,
+      "better": "越高越好",
+      "source": "rightbrain_model_gate_report.json",
+      "direction": "higher",
+      "note": "只計算 Qwen + LoRA 原始候選能否通過語意、語言、風險與口吻 gate；不把 deterministic 救援算成模型能力。"
+    },
+    {
+      "key": "rightbrain_model_final_contract_pass_rate",
+      "name_zh": "右腦模型接入後最終契約通過率",
+      "value": 1.0,
+      "better": "越高越好",
+      "source": "rightbrain_model_gate_report.json",
+      "direction": "higher",
+      "note": "模型候選不合格時必須退回 deterministic，確保最終輸出不因模型接入而漏掉左腦語意。"
     }
   ],
   "goal_attainment": [
@@ -440,9 +459,38 @@
       "source_keys": [
         "surface_microplanning_report.json.summary"
       ]
+    },
+    {
+      "name_zh": "安全地接入真實右腦模型候選",
+      "score": 1.0,
+      "target": 0.95,
+      "status": "good",
+      "rationale": "這項高只證明模型候選接入不會破壞最終回答；raw 模型是否成熟需另外看候選接受率與實際接管率。",
+      "source_keys": [
+        "rightbrain_model_gate_report.json.summary"
+      ]
     }
   ],
   "weak_points": [
+    {
+      "id": "raw_rightbrain_model_maturity",
+      "name_zh": "真實右腦模型本體仍無法穩定實現 speech plan",
+      "current": {
+        "raw_candidate_acceptance_rate": 0.0,
+        "model_selected_case_rate": 0.0,
+        "final_contract_pass_rate": 1.0
+      },
+      "target": {
+        "raw_candidate_acceptance_rate": 0.6,
+        "model_selected_case_rate": 0.2,
+        "final_contract_pass_rate": 0.99
+      },
+      "better": "前兩者越高越好，最終契約必須維持接近 1",
+      "why_it_matters": "目前自然度主要仍由 deterministic 候選提供；如果 raw LoRA 長期進不了 gate，就不能說模型本體已學會把思考轉成自然說話。",
+      "acceptance": "開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。",
+      "planned_fix": "以 rejection trace 建立 speech-plan slot 訓練資料，優先修正槽位遺失、英文字串污染、過長與敬語漂移，而不是放寬 gate。",
+      "source": "rightbrain_model_gate_report.json"
+    },
     {
       "id": "human_blind_chat_readiness",
       "name_zh": "真人盲評的嚴格可聊天率仍不足",
@@ -494,7 +542,8 @@
     "annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。",
     "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
     "自我痛苦最終回覆契約已接上，用來檢查右腦最後一句是否保留左腦的心理狀態細分，而不是退回泛用疲累模板。",
-    "支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。"
+    "支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。",
+    "真實 Qwen + LoRA 候選已接上嚴格語意 gate；目前即使 raw 候選失敗，最終語意與語言契約仍能維持。"
   ],
   "gaps": [
     "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
@@ -503,7 +552,8 @@
     "目前只有 19 筆有效 S0 人類盲評與 10 筆 fail-like 回放，足以找問題但不足以代表所有對話情境。",
     "真人盲評嚴格 yes 率仍低於目標；既有失敗回放全過不等於新情境也會自然。",
     "annotation candidate queue 目前仍是 heuristic 挖掘，功能是縮小人工檢查範圍，不是最終真值標籤。",
-    "annotation draft 目前只是建議 verdict / severity / failure types，還不能替代人工判斷。"
+    "annotation draft 目前只是建議 verdict / severity / failure types，還不能替代人工判斷。",
+    "raw 右腦模型候選接受率仍低，現階段主要價值是被安全攔截與留下訓練診斷，尚未穩定提升真人自然度。"
   ],
   "prompt_baseline_snapshot": {
     "avg_score": {
@@ -14863,6 +14913,37 @@
       "benign_false_alarm_rate": 0.0,
       "exact_reply_unique_ratio": 1.0,
       "repeated_prefix_row_rate": 0.0952
+    },
+    "rightbrain_model_gate": {
+      "case_count": 10,
+      "model_enabled_case_count": 6,
+      "policy_match_rate": 1.0,
+      "generated_candidate_count": 18,
+      "accepted_candidate_count": 0,
+      "raw_candidate_acceptance_rate": 0.0,
+      "model_selected_case_count": 0,
+      "model_selected_case_rate": 0.0,
+      "final_contract_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "fallback_protection_rate": 1.0,
+      "deterministic_contract_pass_rate": 1.0,
+      "rejection_reason_counts": {
+        "semantic_slots_missing:2/3": 2,
+        "unexpected_ascii_leak": 11,
+        "semantic_slots_missing:1/3": 1,
+        "semantic_slots_missing:1/4": 7,
+        "over_max_chars": 6,
+        "semantic_slots_missing:0/4": 1,
+        "semantic_slots_missing:2/4": 2,
+        "semantic_slots_missing:3/4": 2,
+        "cjk_language_leak": 2,
+        "semantic_slots_missing:0/2": 3
+      },
+      "disabled_reason_counts": {
+        "missing_semantic_contract": 2,
+        "high_withdrawal_risk": 1,
+        "acute_support_intent": 1
+      }
     },
     "domain_suite": {}
   },

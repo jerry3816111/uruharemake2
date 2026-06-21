@@ -1,6 +1,6 @@
 # 統一評測摘要
 
-- 生成時間：`2026-06-21T19:21:45`
+- 生成時間：`2026-06-22T00:32:28`
 - 說明：本摘要優先使用各獨立報告作為最新真值，避免巢狀總表混入舊快照。
 
 ## 現在做得好的地方
@@ -17,8 +17,10 @@
 - 日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。
 - 自我痛苦最終回覆契約已接上，用來檢查右腦最後一句是否保留左腦的心理狀態細分，而不是退回泛用疲累模板。
 - 支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。
+- 真實 Qwen + LoRA 候選已接上嚴格語意 gate；目前即使 raw 候選失敗，最終語意與語言契約仍能維持。
 
 ## 目前最主要的三個瓶頸
+- `真實右腦模型本體仍無法穩定實現 speech plan`：現在值={"raw_candidate_acceptance_rate": 0.0, "model_selected_case_rate": 0.0, "final_contract_pass_rate": 1.0}；目標={"raw_candidate_acceptance_rate": 0.6, "model_selected_case_rate": 0.2, "final_contract_pass_rate": 0.99}；標準=開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。
 - `真人盲評的嚴格可聊天率仍不足`：現在值={"s0_annotation_count": 19.0, "s0_normalized_mean_score": 0.6474, "s0_chat_ready_yes_rate": 0.4737, "s0_chat_ready_acceptable_rate": 0.8947}；目標={"s0_annotation_count": 30, "s0_normalized_mean_score": 0.8, "s0_chat_ready_yes_rate": 0.75}；標準=至少 30 筆有效 S0 盲評，正規化均分 >= 0.8，嚴格 yes 率 >= 0.75。
 - `人工標記回歸集尚未累積到可用規模`：現在值={"annotation_count": 19.0, "regression_case_count": 10.0}；目標={"annotation_count": 50, "regression_case_count": 30}；標準=至少累積 50 筆人工標記，並轉出 30 筆以上可回放的 regression cases。
 
@@ -55,6 +57,7 @@
 - `在技術契約下重播人工失敗案例`：score=1.0 / target=0.75 / status=good — 這項高只表示人工 fail case 的必要語意、禁止語句與表面規則可重播通過；它不能代替 patch 後的人類自然度盲評。
 - `像人類地把意圖變成口語行為`：score=1.0 / target=0.9 / status=good — 這項高表示右腦不是只把左腦結論念出來，而是先經過語用功能、語意單元與風格算子的表面化流程。
 - `依語境與風險組織支援回覆`：score=1.0 / target=0.9 / status=good — 這項高表示支援回覆會先保留具體情境與使用者選擇，再按風險加入界線和下一步；它仍是技術契約，不取代真人盲評。
+- `安全地接入真實右腦模型候選`：score=1.0 / target=0.95 / status=good — 這項高只證明模型候選接入不會破壞最終回答；raw 模型是否成熟需另外看候選接受率與實際接管率。
 
 ## 與 Prompt-only 基線的歷史對照快照
 - `Avg Score`：{"dual_brain": 0.8297, "prompt_only": 0.1446, "delta": 0.6851}

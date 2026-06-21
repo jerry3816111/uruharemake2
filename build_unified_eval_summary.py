@@ -20,6 +20,7 @@ from project_paths import (
     MEMORY_CAUSAL_EFFECT_REPORT_JSON_PATH,
     MEMORY_SPEAKABILITY_RESPONSE_REPORT_JSON_PATH,
     REPLY_DIVERSITY_REPORT_PATH,
+    RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     STRESS_EVAL_REPORT_PATH,
@@ -56,6 +57,7 @@ REPORT_PATHS = {
     "human_feedback_regression_diff": HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH,
     "human_speech_layer": HUMAN_SPEECH_LAYER_REPORT_JSON_PATH,
     "surface_microplanning": SURFACE_MICROPLANNING_REPORT_JSON_PATH,
+    "rightbrain_model_gate": RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
 }
 
 OUT_JSON = UNIFIED_EVAL_SUMMARY_JSON_PATH
@@ -364,6 +366,7 @@ def main():
     regression_diff_report = _load_json(REPORT_PATHS["human_feedback_regression_diff"])
     speech_layer_report = _load_json(REPORT_PATHS["human_speech_layer"])
     surface_microplanning_report = _load_json(REPORT_PATHS["surface_microplanning"])
+    rightbrain_model_gate_report = _load_json(REPORT_PATHS["rightbrain_model_gate"])
 
     arch = arch_report.get("summary", {})
     runtime = runtime_report.get("summary", {})
@@ -400,6 +403,7 @@ def main():
     regression_diff = regression_diff_report.get("summary", {})
     speech_layer = speech_layer_report.get("metrics", {})
     surface_microplanning = surface_microplanning_report.get("summary", {})
+    rightbrain_model_gate = rightbrain_model_gate_report.get("summary", {})
     speech_english_leak = _safe_float(speech_layer.get("english_leak_rate"))
     speech_english_safe = 1.0 - (speech_english_leak if speech_english_leak is not None else 1.0)
 
@@ -702,6 +706,24 @@ def main():
             "lower",
             "檢查專心、容量整理、通知省電、暫時離群等正常操作是否被錯當成社交撤退。",
         ),
+        _metric(
+            "真實右腦模型 raw 候選契約接受率",
+            "rightbrain_model_raw_candidate_acceptance_rate",
+            rightbrain_model_gate.get("raw_candidate_acceptance_rate"),
+            "越高越好",
+            "rightbrain_model_gate_report.json",
+            "higher",
+            "只計算 Qwen + LoRA 原始候選能否通過語意、語言、風險與口吻 gate；不把 deterministic 救援算成模型能力。",
+        ),
+        _metric(
+            "右腦模型接入後最終契約通過率",
+            "rightbrain_model_final_contract_pass_rate",
+            rightbrain_model_gate.get("final_contract_pass_rate"),
+            "越高越好",
+            "rightbrain_model_gate_report.json",
+            "higher",
+            "模型候選不合格時必須退回 deterministic，確保最終輸出不因模型接入而漏掉左腦語意。",
+        ),
     ]
 
     goal_attainment = [
@@ -838,9 +860,40 @@ def main():
             "這項高表示支援回覆會先保留具體情境與使用者選擇，再按風險加入界線和下一步；它仍是技術契約，不取代真人盲評。",
             ["surface_microplanning_report.json.summary"],
         ),
+        _goal_item(
+            "安全地接入真實右腦模型候選",
+            _required_min(
+                rightbrain_model_gate.get("policy_match_rate"),
+                rightbrain_model_gate.get("final_contract_pass_rate"),
+                rightbrain_model_gate.get("final_language_clean_rate"),
+                rightbrain_model_gate.get("fallback_protection_rate"),
+            ),
+            0.95,
+            "這項高只證明模型候選接入不會破壞最終回答；raw 模型是否成熟需另外看候選接受率與實際接管率。",
+            ["rightbrain_model_gate_report.json.summary"],
+        ),
     ]
 
     weak_points = [
+        {
+            "id": "raw_rightbrain_model_maturity",
+            "name_zh": "真實右腦模型本體仍無法穩定實現 speech plan",
+            "current": {
+                "raw_candidate_acceptance_rate": _safe_float(rightbrain_model_gate.get("raw_candidate_acceptance_rate")),
+                "model_selected_case_rate": _safe_float(rightbrain_model_gate.get("model_selected_case_rate")),
+                "final_contract_pass_rate": _safe_float(rightbrain_model_gate.get("final_contract_pass_rate")),
+            },
+            "target": {
+                "raw_candidate_acceptance_rate": 0.6,
+                "model_selected_case_rate": 0.2,
+                "final_contract_pass_rate": 0.99,
+            },
+            "better": "前兩者越高越好，最終契約必須維持接近 1",
+            "why_it_matters": "目前自然度主要仍由 deterministic 候選提供；如果 raw LoRA 長期進不了 gate，就不能說模型本體已學會把思考轉成自然說話。",
+            "acceptance": "開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。",
+            "planned_fix": "以 rejection trace 建立 speech-plan slot 訓練資料，優先修正槽位遺失、英文字串污染、過長與敬語漂移，而不是放寬 gate。",
+            "source": "rightbrain_model_gate_report.json",
+        },
         {
             "id": "formal_tom_reasoning",
             "name_zh": "正式 ToM / 社會推理仍弱",
@@ -928,6 +981,12 @@ def main():
         item
         for item in weak_points
         if not (
+            item["id"] == "raw_rightbrain_model_maturity"
+            and (_safe_float(rightbrain_model_gate.get("raw_candidate_acceptance_rate")) or 0.0) >= 0.6
+            and (_safe_float(rightbrain_model_gate.get("model_selected_case_rate")) or 0.0) >= 0.2
+            and (_safe_float(rightbrain_model_gate.get("final_contract_pass_rate")) or 0.0) >= 0.99
+        )
+        and not (
             item["id"] == "formal_tom_reasoning"
             and (_safe_float((formal.get("tombench") or {}).get("accuracy")) or 0.0) >= 0.65
         )
@@ -981,6 +1040,7 @@ def main():
             "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
             "自我痛苦最終回覆契約已接上，用來檢查右腦最後一句是否保留左腦的心理狀態細分，而不是退回泛用疲累模板。",
             "支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。",
+            "真實 Qwen + LoRA 候選已接上嚴格語意 gate；目前即使 raw 候選失敗，最終語意與語言契約仍能維持。",
         ],
         "gaps": [
             "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
@@ -990,6 +1050,7 @@ def main():
             "真人盲評嚴格 yes 率仍低於目標；既有失敗回放全過不等於新情境也會自然。",
             "annotation candidate queue 目前仍是 heuristic 挖掘，功能是縮小人工檢查範圍，不是最終真值標籤。",
             "annotation draft 目前只是建議 verdict / severity / failure types，還不能替代人工判斷。",
+            "raw 右腦模型候選接受率仍低，現階段主要價值是被安全攔截與留下訓練診斷，尚未穩定提升真人自然度。",
         ],
         "prompt_baseline_snapshot": prompt_compare_focus,
         "raw_rollup": {
@@ -1014,6 +1075,7 @@ def main():
             "human_feedback_regression_diff": regression_diff,
             "human_speech_layer": speech_layer,
             "surface_microplanning": surface_microplanning,
+            "rightbrain_model_gate": rightbrain_model_gate,
             "domain_suite": compact_domain_suite,
         },
     }
