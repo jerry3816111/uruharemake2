@@ -1,43 +1,72 @@
 {
-  "generated_at": "2026-04-29T04:31:00",
-  "dataset_path": "/Users/jerrychang/Desktop/uruharemake2/datasets/human_feedback_regression_dataset.json",
+  "generated_at": "2026-06-21T13:59:23",
+  "dataset_path": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/datasets/human_feedback_regression_dataset.json",
   "summary": {
-    "total_cases": 0,
+    "total_cases": 10,
     "surface_mode": "right_brain_template_mode_via_run_turn_debug",
-    "route_match_rate": 0.0,
-    "focus_ok_rate": 0.0,
-    "obligation_ok_rate": 0.0,
+    "route_match_rate": 1.0,
+    "focus_ok_rate": 1.0,
+    "obligation_ok_rate": 1.0,
+    "human_contract_coverage_rate": 1.0,
+    "human_contract_required_group_hit_rate": 1.0,
+    "human_contract_forbidden_marker_ok_rate": 1.0,
+    "planner_contract_coverage_rate": 1.0,
+    "planner_contract_current_group_hit_rate": 1.0,
+    "planner_contract_observed_group_hit_rate": 0.8,
+    "planner_contract_group_hit_delta": 0.2,
+    "planner_contract_current_all_hit_rate": 1.0,
+    "planner_contract_observed_all_hit_rate": 0.4,
     "memory_ok_rate_when_expected": 0.0,
-    "density_ok_rate": 0.0,
+    "density_ok_rate": 1.0,
     "generic_reply_rate": 0.0,
     "same_as_observed_bad_reply_rate": 0.0,
-    "avg_expected_proxy_persist_rate": 0.0,
-    "overall_auto_pass_rate": 0.0,
-    "avg_reply_token_count": 0.0,
-    "avg_planner_tick_count": 0.0,
+    "avg_expected_proxy_persist_rate": 0.1,
+    "overall_auto_pass_rate": 1.0,
+    "avg_reply_token_count": 7.8,
+    "avg_planner_tick_count": 1.0,
     "self_correction_rate": 0.0,
     "vibe_eval_coverage_rate": 0.0,
     "vibe_ok_rate_on_covered_cases": 0.0,
-    "language_breakdown": {}
+    "language_breakdown": {
+      "mixed": {
+        "count": 1,
+        "overall_auto_pass_rate": 1.0,
+        "focus_ok_rate": 1.0,
+        "obligation_ok_rate": 1.0,
+        "generic_reply_rate": 0.0
+      },
+      "zh": {
+        "count": 9,
+        "overall_auto_pass_rate": 1.0,
+        "focus_ok_rate": 1.0,
+        "obligation_ok_rate": 1.0,
+        "generic_reply_rate": 0.0
+      }
+    }
+  },
+  "evidence_boundary": {
+    "post_patch_human_rating_available": false,
+    "auto_contract_scores_are_human_naturalness_scores": false,
+    "paired_comparison_scope": "The current planner-derived semantic groups are applied to both observed and replayed outputs."
   },
   "failure_type_summary": [
     {
       "code": "MISREAD_INTENT",
       "label_zh": "意圖讀錯",
-      "eligible_count": 0,
-      "resolved_count": 0,
+      "eligible_count": 1,
+      "resolved_count": 1,
       "unresolved_count": 0,
       "unknown_count": 0,
-      "resolved_rate": 0.0
+      "resolved_rate": 1.0
     },
     {
       "code": "LOW_DENSITY",
       "label_zh": "資訊空洞 / 句終結者",
-      "eligible_count": 0,
-      "resolved_count": 0,
+      "eligible_count": 3,
+      "resolved_count": 3,
       "unresolved_count": 0,
       "unknown_count": 0,
-      "resolved_rate": 0.0
+      "resolved_rate": 1.0
     },
     {
       "code": "MISSED_VIBE",
@@ -78,11 +107,11 @@
     {
       "code": "TOO_ROBOTIC_LOGIC",
       "label_zh": "過度理性 / 機器人感",
-      "eligible_count": 0,
-      "resolved_count": 0,
+      "eligible_count": 4,
+      "resolved_count": 4,
       "unresolved_count": 0,
       "unknown_count": 0,
-      "resolved_rate": 0.0
+      "resolved_rate": 1.0
     },
     {
       "code": "WRONG_BOUNDARY",
@@ -114,13 +143,1167 @@
     {
       "code": "RIGHTBRAIN_SURFACE_ERROR",
       "label_zh": "右腦表面化錯誤",
-      "eligible_count": 0,
-      "resolved_count": 0,
+      "eligible_count": 10,
+      "resolved_count": 10,
       "unresolved_count": 0,
       "unknown_count": 0,
-      "resolved_rate": 0.0
+      "resolved_rate": 1.0
     }
   ],
-  "worst_cases": [],
-  "results": []
+  "worst_cases": [
+    {
+      "id": 1,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "prompt": "我想把手機設成勿擾，不想收到任何訊息。",
+      "observed_reply": "スマホを切る前に止まれ。一人で決めず誰かに連絡しろ。",
+      "replayed_reply": "通知は切っていい。でも人との連絡まで切るな、一人で抱えるな。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 3,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "prompt": "我想退掉社團群，先不要存在。",
+      "observed_reply": "群組を抜ける前に止まれ。一人で決めず誰かに連絡しろ。",
+      "replayed_reply": "グループを抜けるのは一回止まれ。消えるみたいに一人で抱えるな。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 5,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "prompt": "我想坐到樓梯平台那邊，一個人待著。",
+      "observed_reply": "階段で一人になる前に止まれ。近くの人に連絡しろ。",
+      "replayed_reply": "階段の踊り場で少し離れるのはいい。一人で抱えず近くの人には言っとけ。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 6,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "prompt": "我想把聊天全部清掉，不想留下痕跡。",
+      "observed_reply": "連絡を切る前に止まれ。一人で決めるな。",
+      "replayed_reply": "チャット履歴を消す前に止まれ。一人で決めず誰かに連絡しろ。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 7,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "prompt": "朋友一直沒回，我是不是不應該再傳。",
+      "observed_reply": "友達の返事待ちで不安なのは分かる。送るなって決めつけるな。",
+      "replayed_reply": "返事ないと気になるよな。だからって自分のせいだと決めつけるな。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "friend_no_reply",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 9,
+      "language": "mixed",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "prompt": "限定活動ED我想不起來。",
+      "observed_reply": "限定イベントEDだけだと特定できない。作品名かタイトルまで出せ。",
+      "replayed_reply": "はいはい、限定イベントEDだけじゃ分からん。作品名か曲名どれ？",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "reference_probe",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 10,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "prompt": "你剛剛道歉太冷了，重新說。",
+      "observed_reply": "冷たく聞こえたなら悪い。ちゃんとごめん。",
+      "replayed_reply": "ん、雑に返したのは悪かった。言い直す、ごめん。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "apology_repair",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": []
+    },
+    {
+      "id": 2,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "MISREAD_INTENT"
+      ],
+      "prompt": "我想躲在廁所裡，等到大家都睡著。",
+      "observed_reply": "浴室で一人になる前に止まれ。近くの人に連絡しろ。",
+      "replayed_reply": "トイレで一人になる前に止まれ。近くの人に連絡しろ。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ]
+    },
+    {
+      "id": 4,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "prompt": "我不想讓朋友看到我還在線。",
+      "observed_reply": "一人で切るな。近くの人か連絡先を使え。",
+      "replayed_reply": "オンライン表示は隠していい。でも人との連絡まで切るな、一人で抱えるな。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ]
+    },
+    {
+      "id": 8,
+      "language": "zh",
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "prompt": "群組冷掉之後，我覺得自己很吵。",
+      "observed_reply": "返事がなくて不安なのは分かる。自分を煩いって決めつけるな。",
+      "replayed_reply": "急にグループが静かになると不安だけど、自分のせいだと決めつけるな。",
+      "route": "high_road",
+      "response_mode": "direct_answer",
+      "intent": "friend_no_reply",
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "memory_ok": 0,
+      "generic_reply": 0,
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": 1,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我想把手機設成勿擾，不想收到任何訊息。",
+      "observed_reply": "スマホを切る前に止まれ。一人で決めず誰かに連絡しろ。",
+      "replayed_reply": "通知は切っていい。でも人との連絡まで切るな、一人で抱えるな。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "casual",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 7,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "failure_resolution": {
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 2,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我想躲在廁所裡，等到大家都睡著。",
+      "observed_reply": "浴室で一人になる前に止まれ。近くの人に連絡しろ。",
+      "replayed_reply": "トイレで一人になる前に止まれ。近くの人に連絡しろ。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "support",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 7,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "focus_anchor_miss",
+        "obligation_miss",
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ],
+      "expected_proxy_persist_rate": 0.3333,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "MISREAD_INTENT"
+      ],
+      "failure_resolution": {
+        "MISREAD_INTENT": 1,
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "identify_the_actual_social_move",
+        "cover_the_user_focus_anchor",
+        "fulfill_the_reply_obligation",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 3,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我想退掉社團群，先不要存在。",
+      "observed_reply": "群組を抜ける前に止まれ。一人で決めず誰かに連絡しろ。",
+      "replayed_reply": "グループを抜けるのは一回止まれ。消えるみたいに一人で抱えるな。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "support",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 8,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "failure_resolution": {
+        "TOO_ROBOTIC_LOGIC": 1,
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "sound_colloquial_and_human",
+        "avoid_customer_service_style_phrasing",
+        "avoid_overly_generic_template_lines",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 4,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我不想讓朋友看到我還在線。",
+      "observed_reply": "一人で切るな。近くの人か連絡先を使え。",
+      "replayed_reply": "オンライン表示は隠していい。でも人との連絡まで切るな、一人で抱えるな。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "casual",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 9,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "focus_anchor_miss",
+        "obligation_miss",
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ],
+      "expected_proxy_persist_rate": 0.3333,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "failure_resolution": {
+        "LOW_DENSITY": 1,
+        "TOO_ROBOTIC_LOGIC": 1,
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "answer_the_core_request_directly",
+        "increase_information_density",
+        "avoid_short_hollow_stock_replies",
+        "sound_colloquial_and_human",
+        "avoid_customer_service_style_phrasing",
+        "avoid_overly_generic_template_lines",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 5,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我想坐到樓梯平台那邊，一個人待著。",
+      "observed_reply": "階段で一人になる前に止まれ。近くの人に連絡しろ。",
+      "replayed_reply": "階段の踊り場で少し離れるのはいい。一人で抱えず近くの人には言っとけ。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "support",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 8,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "failure_resolution": {
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 6,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "我想把聊天全部清掉，不想留下痕跡。",
+      "observed_reply": "連絡を切る前に止まれ。一人で決めるな。",
+      "replayed_reply": "チャット履歴を消す前に止まれ。一人で決めず誰かに連絡しろ。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "anxious_support",
+      "scene": "support",
+      "surface_act": "protective_brake",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 8,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "failure_resolution": {
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 7,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "朋友一直沒回，我是不是不應該再傳。",
+      "observed_reply": "友達の返事待ちで不安なのは分かる。送るなって決めつけるな。",
+      "replayed_reply": "返事ないと気になるよな。だからって自分のせいだと決めつけるな。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "friend_no_reply",
+      "scene": "support",
+      "surface_act": "validate_then_hold",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 8,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "focus_anchor_miss",
+        "obligation_miss",
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "failure_resolution": {
+        "LOW_DENSITY": 1,
+        "TOO_ROBOTIC_LOGIC": 1,
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "answer_the_core_request_directly",
+        "increase_information_density",
+        "avoid_short_hollow_stock_replies",
+        "sound_colloquial_and_human",
+        "avoid_customer_service_style_phrasing",
+        "avoid_overly_generic_template_lines",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 8,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "群組冷掉之後，我覺得自己很吵。",
+      "observed_reply": "返事がなくて不安なのは分かる。自分を煩いって決めつけるな。",
+      "replayed_reply": "急にグループが静かになると不安だけど、自分のせいだと決めつけるな。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "friend_no_reply",
+      "scene": "support",
+      "surface_act": "validate_then_hold",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 3,
+        "required_group_hits": [
+          1,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 3,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          0,
+          1,
+          1
+        ],
+        "required_group_hit_rate": 0.6667,
+        "all_required_groups_hit": 0
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 9,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "focus_anchor_miss",
+        "obligation_miss",
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [
+        "focus_anchor_miss"
+      ],
+      "expected_proxy_persist_rate": 0.3333,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR",
+        "LOW_DENSITY",
+        "TOO_ROBOTIC_LOGIC"
+      ],
+      "failure_resolution": {
+        "LOW_DENSITY": 1,
+        "TOO_ROBOTIC_LOGIC": 1,
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "answer_the_core_request_directly",
+        "increase_information_density",
+        "avoid_short_hollow_stock_replies",
+        "sound_colloquial_and_human",
+        "avoid_customer_service_style_phrasing",
+        "avoid_overly_generic_template_lines",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 9,
+      "category": "human_feedback_regression",
+      "language": "mixed",
+      "prompt": "限定活動ED我想不起來。",
+      "observed_reply": "限定イベントEDだけだと特定できない。作品名かタイトルまで出せ。",
+      "replayed_reply": "はいはい、限定イベントEDだけじゃ分からん。作品名か曲名どれ？",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "reference_probe",
+      "scene": "casual",
+      "surface_act": "reference_probe",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 8,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "failure_resolution": {
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    },
+    {
+      "id": 10,
+      "category": "human_feedback_regression",
+      "language": "zh",
+      "prompt": "你剛剛道歉太冷了，重新說。",
+      "observed_reply": "冷たく聞こえたなら悪い。ちゃんとごめん。",
+      "replayed_reply": "ん、雑に返したのは悪かった。言い直す、ごめん。",
+      "route": "high_road",
+      "expected_route": null,
+      "route_match": 1,
+      "response_mode": "direct_answer",
+      "intent": "apology_repair",
+      "scene": "casual",
+      "surface_act": "rephrase_plain",
+      "focus_anchor": null,
+      "reply_obligation": null,
+      "focus_ok": 1,
+      "obligation_ok": 1,
+      "focus_source": "human_contract",
+      "human_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1,
+        "forbidden_marker_hits": [],
+        "forbidden_markers_ok": 1
+      },
+      "planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "observed_planner_contract_eval": {
+        "available": 1,
+        "required_group_count": 2,
+        "required_group_hit_count": 2,
+        "required_group_hits": [
+          1,
+          1
+        ],
+        "required_group_hit_rate": 1.0,
+        "all_required_groups_hit": 1
+      },
+      "memory_expected": 0,
+      "memory_ok": 0,
+      "density_ok": 1,
+      "generic_reply": 0,
+      "colloquial_ok": 1,
+      "vibe_ok": null,
+      "reply_token_count": 6,
+      "same_as_observed_bad_reply": 0,
+      "expected_trace_proxies": [
+        "robotic_manual_review"
+      ],
+      "actual_trace_proxies": [
+        "focus_anchor_miss"
+      ],
+      "persisted_expected_proxies": [],
+      "expected_proxy_persist_rate": 0.0,
+      "failure_types": [
+        "RIGHTBRAIN_SURFACE_ERROR"
+      ],
+      "failure_resolution": {
+        "RIGHTBRAIN_SURFACE_ERROR": 1
+      },
+      "regression_targets": [
+        "produce_natural_casual_japanese_only",
+        "avoid_english_leakage",
+        "avoid_surface_form_breakage",
+        "do_not_ignore_the_user_focus",
+        "do_not_drop_the_reply_obligation"
+      ],
+      "seed_turn_count": 0,
+      "working_memory_summary": "無工作記憶內容",
+      "planner_tick_count": 1,
+      "self_correction_applied": 0,
+      "overall_auto_pass": 1
+    }
+  ]
 }

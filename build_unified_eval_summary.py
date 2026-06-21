@@ -10,6 +10,7 @@ from project_paths import (
     DOMAIN_EVAL_SUITE_REPORT_PATH,
     FORMAL_BRAIN_BENCHMARKS_REPORT_JSON_PATH,
     FORMAL_TOMBENCH_REFRESH_PATH,
+    HUMAN_BLIND_EVIDENCE_REPORT_JSON_PATH,
     HUMAN_FEEDBACK_ANNOTATION_REPORT_JSON_PATH,
     HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH,
     HUMAN_FEEDBACK_REGRESSION_EVAL_REPORT_JSON_PATH,
@@ -45,6 +46,7 @@ REPORT_PATHS = {
     "domain_suite": DOMAIN_EVAL_SUITE_REPORT_PATH,
     "stress_10k": STRESS_EVAL_REPORT_PATH,
     "system_vs_prompt": SYSTEM_VS_PROMPT_ONLY_COMPARE_PATH,
+    "human_blind": HUMAN_BLIND_EVIDENCE_REPORT_JSON_PATH,
     "human_feedback_annotation": HUMAN_FEEDBACK_ANNOTATION_REPORT_JSON_PATH,
     "annotation_candidate_queue": ANNOTATION_CANDIDATE_QUEUE_JSON_PATH,
     "annotation_draft_queue": ANNOTATION_DRAFT_QUEUE_JSON_PATH,
@@ -167,6 +169,7 @@ def _build_alignment_snapshot(
     regression_diff,
     speech_layer,
     memory_speakability_response,
+    human_blind,
 ):
     tombench = ((formal or {}).get("summaries") or {}).get("tombench") or {}
     return {
@@ -247,7 +250,20 @@ def _build_alignment_snapshot(
                 "fail_like_rate": _safe_float((annotation or {}).get("fail_like_rate")),
                 "memory_related_rate": _safe_float((annotation or {}).get("memory_related_rate")),
             },
-            "detail": "人工標記與 taxonomy 已接上；若 annotation_count 仍是 0，代表流程就緒但尚未累積真實資料。",
+            "detail": "人工標記與 taxonomy 已接上，annotation_count 只計入可追溯的人類標記，不把自動評分冒充成人工真值。",
+        },
+        "human_blind_validation": {
+            "status": "implemented"
+            if (human_blind or {}).get("s0_annotation_count", 0) >= 30
+            and (human_blind or {}).get("s0_chat_ready_yes_rate", 0) >= 0.75
+            else "partial",
+            "metric": {
+                "s0_annotation_count": _safe_float((human_blind or {}).get("s0_annotation_count"), digits=0),
+                "s0_normalized_mean_score": _safe_float((human_blind or {}).get("s0_normalized_mean_score")),
+                "s0_chat_ready_yes_rate": _safe_float((human_blind or {}).get("s0_chat_ready_yes_rate")),
+                "s0_chat_ready_acceptable_rate": _safe_float((human_blind or {}).get("s0_chat_ready_acceptable_rate")),
+            },
+            "detail": "盲評已接入正式證據鏈；目前樣本仍小，嚴格可聊天率未達研究目標，因此只列 partial。",
         },
         "human_feedback_regression_loop": {
             "status": "implemented" if (regression_eval or {}).get("total_cases", 0) > 0 else "partial",
@@ -256,7 +272,7 @@ def _build_alignment_snapshot(
                 "overall_auto_pass_rate": _safe_float((regression_eval or {}).get("overall_auto_pass_rate")),
                 "generic_reply_rate": _safe_float((regression_eval or {}).get("generic_reply_rate")),
             },
-            "detail": "從人工標記抽 regression case、重播回腦、再做自動檢查的閉環已成形；若 case 數仍是 0，表示還缺真實標記餵入。",
+            "detail": "從人工標記抽 regression case、重播回腦、再做自動檢查的閉環已成形；通過率只代表已收錄案例，不外推到所有對話。",
         },
         "patch_diff_regression": {
             "status": "implemented" if (regression_diff or {}).get("metric_count", 0) > 0 else "partial",
@@ -312,6 +328,7 @@ def main():
     domain_suite = _load_json(REPORT_PATHS["domain_suite"])
     stress_report = _load_json(REPORT_PATHS["stress_10k"])
     compare_report = _load_json(REPORT_PATHS["system_vs_prompt"])
+    human_blind_report = _load_json(REPORT_PATHS["human_blind"])
     annotation_report = _load_json(REPORT_PATHS["human_feedback_annotation"])
     annotation_candidate_report = _load_json(REPORT_PATHS["annotation_candidate_queue"])
     annotation_draft_report = _load_json(REPORT_PATHS["annotation_draft_queue"])
@@ -342,6 +359,11 @@ def main():
         formal["tombench"] = formal_tombench_refresh["summary"]
     stress = stress_report.get("summary", {})
     compare = compare_report.get("overall_compare", {})
+    human_blind = human_blind_report.get("summary", {})
+    human_blind_pairs = {
+        item.get("control_system_id"): item
+        for item in human_blind_report.get("pairwise_s0_vs_controls", [])
+    }
     annotation = annotation_report.get("summary", {})
     annotation_queue = annotation_candidate_report.get("summary", {})
     annotation_draft = annotation_draft_report.get("summary", {})
@@ -544,6 +566,33 @@ def main():
             "代表可直接優先人工確認的高風險草稿數量。",
         ),
         _metric(
+            "人類盲評正規化平均分",
+            "human_blind_s0_normalized_mean_score",
+            human_blind.get("s0_normalized_mean_score"),
+            "越高越好",
+            "human_blind_evidence_report.json",
+            "higher",
+            "代表真人在不知道系統身分時，對完整 Uruha 右腦候選給出的平均品質；1.0 等於五分制滿分。",
+        ),
+        _metric(
+            "人類盲評嚴格可聊天率",
+            "human_blind_s0_chat_ready_yes_rate",
+            human_blind.get("s0_chat_ready_yes_rate"),
+            "越高越好",
+            "human_blind_evidence_report.json",
+            "higher",
+            "只計算明確選 yes 的比例；borderline 不算成功，因此比一般可接受率嚴格。",
+        ),
+        _metric(
+            "人類盲評對通用改寫勝率",
+            "human_blind_s0_vs_generic_win_rate",
+            (human_blind_pairs.get("C1_GENERIC_PARAPHRASE_PROXY") or {}).get("s0_win_rate_excluding_ties"),
+            "越高越好",
+            "human_blind_evidence_report.json",
+            "higher",
+            "同一題配對比較完整 Uruha 與通用 LLM 改寫，平手不計入分母。",
+        ),
+        _metric(
             "人工標記回歸整體通過率",
             "human_feedback_regression_overall_auto_pass_rate",
             regression_eval.get("overall_auto_pass_rate"),
@@ -560,6 +609,15 @@ def main():
             "human_feedback_regression_eval_report.json",
             "lower",
             "代表回放真實壞案例時，是否仍大量掉回『別にいいけど』『そうなんだ』這類空泛句型。",
+        ),
+        _metric(
+            "Planner 語意契約新舊輸出命中差",
+            "planner_contract_group_hit_delta",
+            regression_eval.get("planner_contract_group_hit_delta"),
+            "越高越好",
+            "human_feedback_regression_eval_report.json",
+            "higher",
+            "同一份目前 planner 語意群套用到舊輸出與新回放的配對差；只衡量具體語意保留，不等於真人自然度。",
         ),
         _metric(
             "Patch Diff 改善指標數",
@@ -682,10 +740,28 @@ def main():
             ],
         ),
         _goal_item(
-            "像人類地修補真實失敗案例",
+            "在人類盲評中自然且可直接聊天",
+            min(
+                _safe_float(human_blind.get("s0_normalized_mean_score")) or 0.0,
+                _safe_float(human_blind.get("s0_chat_ready_yes_rate")) or 0.0,
+            )
+            if (human_blind.get("s0_annotation_count") or 0) > 0
+            else None,
+            0.75,
+            (
+                "這項同時受真人平均品質與嚴格 yes 率限制，避免只靠內部規則測試宣稱像人；"
+                f"目前有效 S0 標記為 {int(human_blind.get('s0_annotation_count') or 0)} 筆。"
+            ),
+            [
+                "human_blind_evidence_report.json.summary.s0_normalized_mean_score",
+                "human_blind_evidence_report.json.summary.s0_chat_ready_yes_rate",
+            ],
+        ),
+        _goal_item(
+            "在技術契約下重播人工失敗案例",
             regression_eval.get("overall_auto_pass_rate") if (regression_eval.get("total_cases") or 0) > 0 else None,
             0.75,
-            "這項高表示不是只在人工設計 benchmark 上過關，而是連真實人工標過的 fail case 回放時也能修正到位。",
+            "這項高只表示人工 fail case 的必要語意、禁止語句與表面規則可重播通過；它不能代替 patch 後的人類自然度盲評。",
             ["human_feedback_regression_eval_report.json.summary.overall_auto_pass_rate"],
         ),
         _goal_item(
@@ -749,6 +825,26 @@ def main():
             "source": "v2_human_answer_report.json",
         },
         {
+            "id": "human_blind_chat_readiness",
+            "name_zh": "真人盲評的嚴格可聊天率仍不足",
+            "current": {
+                "s0_annotation_count": _safe_float(human_blind.get("s0_annotation_count"), digits=0),
+                "s0_normalized_mean_score": _safe_float(human_blind.get("s0_normalized_mean_score")),
+                "s0_chat_ready_yes_rate": _safe_float(human_blind.get("s0_chat_ready_yes_rate")),
+                "s0_chat_ready_acceptable_rate": _safe_float(human_blind.get("s0_chat_ready_acceptable_rate")),
+            },
+            "target": {
+                "s0_annotation_count": 30,
+                "s0_normalized_mean_score": 0.8,
+                "s0_chat_ready_yes_rate": 0.75,
+            },
+            "better": "越高越好",
+            "why_it_matters": "自動測試能證明契約沒有消失，但只有真人盲評能判斷回覆是否真的自然、願意繼續聊。",
+            "acceptance": "至少 30 筆有效 S0 盲評，正規化均分 >= 0.8，嚴格 yes 率 >= 0.75。",
+            "planned_fix": "優先修正盲評中重複出現的語意流失、公式化與意圖誤讀，再用新 holdout 盲評驗證泛化。",
+            "source": "human_blind_evidence_report.json",
+        },
+        {
             "id": "human_feedback_regression_population",
             "name_zh": "人工標記回歸集尚未累積到可用規模",
             "current": {
@@ -784,6 +880,12 @@ def main():
             and (_safe_float(stress.get("unique_reply_ratio")) or 0.0) >= 0.08
             and (_safe_float(stress.get("top_20_reply_concentration")) or 1.0) <= 0.35
         )
+        and not (
+            item["id"] == "human_blind_chat_readiness"
+            and (_safe_float(human_blind.get("s0_annotation_count")) or 0.0) >= 30
+            and (_safe_float(human_blind.get("s0_normalized_mean_score")) or 0.0) >= 0.8
+            and (_safe_float(human_blind.get("s0_chat_ready_yes_rate")) or 0.0) >= 0.75
+        )
     ]
 
     prompt_compare_focus = {
@@ -810,7 +912,8 @@ def main():
             "記憶因果評測已接上，能區分『有取出記憶』與『記憶真的改變回答』。",
             "記憶輸出契約評測已接上，能檢查記憶最後是否被明講、當背景使用，或被正確壓住不說。",
             "10k 壓測下規劃與邊界穩定度很高，表示系統架構比純 prompt 基線可靠。",
-            "人工標記 -> regression dataset -> replay eval -> diff report 的修補閉環已經接通，後面可以開始做真實 fail case 的 patch 驗證。",
+            "人工標記 -> regression dataset -> replay eval -> diff report 的技術閉環已接通，可驗證語意契約，但真人自然度仍需獨立盲評。",
+            "19 筆真人 S0 盲評與 76 筆候選評分已納入證據鏈，完整右腦在配對比較中勝過三種對照，但嚴格可聊天率仍需提升。",
             "Web 對話 log 已可自動抽出 annotation candidate queue，後續不必手動翻完整 log 才知道先標哪幾題。",
             "annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。",
             "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
@@ -821,7 +924,8 @@ def main():
             "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
             "大量題目下表面回覆仍太集中，說話雖正確，但偶爾還像模板。",
             "少數日常狀態句、自我羞愧句、短碎片句仍可能走錯分支。",
-            "人工標記與 regression cases 目前仍接近 0，表示閉環已建好，但資料還沒有餵進來。",
+            "目前只有 19 筆有效 S0 人類盲評與 10 筆 fail-like 回放，足以找問題但不足以代表所有對話情境。",
+            "真人盲評嚴格 yes 率仍低於目標；既有失敗回放全過不等於新情境也會自然。",
             "annotation candidate queue 目前仍是 heuristic 挖掘，功能是縮小人工檢查範圍，不是最終真值標籤。",
             "annotation draft 目前只是建議 verdict / severity / failure types，還不能替代人工判斷。",
         ],
@@ -839,6 +943,7 @@ def main():
             "memory_causal_effect": memory_causal,
             "memory_speakability_response": memory_speakability_response,
             "stress_10k": stress,
+            "human_blind": human_blind,
             "human_feedback_annotation": annotation,
             "annotation_candidate_queue": annotation_queue,
             "annotation_draft_queue": annotation_draft,
@@ -860,6 +965,7 @@ def main():
         regression_diff,
         speech_layer,
         memory_speakability_response,
+        human_blind,
     )
 
     lines = [

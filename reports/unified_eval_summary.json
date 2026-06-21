@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T01:45:48",
+  "generated_at": "2026-06-21T13:59:30",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -16,6 +16,7 @@
     "domain_suite": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/domain_eval_suite_report.json",
     "stress_10k": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/stress_eval_report_10000.json",
     "system_vs_prompt": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/system_vs_prompt_only_compare.json",
+    "human_blind": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_blind_evidence_report.json",
     "human_feedback_annotation": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_annotation_report.json",
     "annotation_candidate_queue": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/annotation_candidate_queue.json",
     "annotation_draft_queue": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/annotation_draft_queue.json",
@@ -217,9 +218,36 @@
       "note": "代表可直接優先人工確認的高風險草稿數量。"
     },
     {
+      "key": "human_blind_s0_normalized_mean_score",
+      "name_zh": "人類盲評正規化平均分",
+      "value": 0.6474,
+      "better": "越高越好",
+      "source": "human_blind_evidence_report.json",
+      "direction": "higher",
+      "note": "代表真人在不知道系統身分時，對完整 Uruha 右腦候選給出的平均品質；1.0 等於五分制滿分。"
+    },
+    {
+      "key": "human_blind_s0_chat_ready_yes_rate",
+      "name_zh": "人類盲評嚴格可聊天率",
+      "value": 0.4737,
+      "better": "越高越好",
+      "source": "human_blind_evidence_report.json",
+      "direction": "higher",
+      "note": "只計算明確選 yes 的比例；borderline 不算成功，因此比一般可接受率嚴格。"
+    },
+    {
+      "key": "human_blind_s0_vs_generic_win_rate",
+      "name_zh": "人類盲評對通用改寫勝率",
+      "value": 0.7333,
+      "better": "越高越好",
+      "source": "human_blind_evidence_report.json",
+      "direction": "higher",
+      "note": "同一題配對比較完整 Uruha 與通用 LLM 改寫，平手不計入分母。"
+    },
+    {
       "key": "human_feedback_regression_overall_auto_pass_rate",
       "name_zh": "人工標記回歸整體通過率",
-      "value": 0.0,
+      "value": 1.0,
       "better": "越高越好",
       "source": "human_feedback_regression_eval_report.json",
       "direction": "higher",
@@ -233,6 +261,15 @@
       "source": "human_feedback_regression_eval_report.json",
       "direction": "lower",
       "note": "代表回放真實壞案例時，是否仍大量掉回『別にいいけど』『そうなんだ』這類空泛句型。"
+    },
+    {
+      "key": "planner_contract_group_hit_delta",
+      "name_zh": "Planner 語意契約新舊輸出命中差",
+      "value": 0.2,
+      "better": "越高越好",
+      "source": "human_feedback_regression_eval_report.json",
+      "direction": "higher",
+      "note": "同一份目前 planner 語意群套用到舊輸出與新回放的配對差；只衡量具體語意保留，不等於真人自然度。"
     },
     {
       "key": "human_feedback_regression_diff_improved_metric_count",
@@ -345,11 +382,22 @@
       ]
     },
     {
-      "name_zh": "像人類地修補真實失敗案例",
-      "score": null,
+      "name_zh": "在人類盲評中自然且可直接聊天",
+      "score": 0.4737,
       "target": 0.75,
-      "status": "missing",
-      "rationale": "這項高表示不是只在人工設計 benchmark 上過關，而是連真實人工標過的 fail case 回放時也能修正到位。",
+      "status": "weak",
+      "rationale": "這項同時受真人平均品質與嚴格 yes 率限制，避免只靠內部規則測試宣稱像人；目前有效 S0 標記為 19 筆。",
+      "source_keys": [
+        "human_blind_evidence_report.json.summary.s0_normalized_mean_score",
+        "human_blind_evidence_report.json.summary.s0_chat_ready_yes_rate"
+      ]
+    },
+    {
+      "name_zh": "在技術契約下重播人工失敗案例",
+      "score": 1.0,
+      "target": 0.75,
+      "status": "good",
+      "rationale": "這項高只表示人工 fail case 的必要語意、禁止語句與表面規則可重播通過；它不能代替 patch 後的人類自然度盲評。",
       "source_keys": [
         "human_feedback_regression_eval_report.json.summary.overall_auto_pass_rate"
       ]
@@ -367,11 +415,31 @@
   ],
   "weak_points": [
     {
+      "id": "human_blind_chat_readiness",
+      "name_zh": "真人盲評的嚴格可聊天率仍不足",
+      "current": {
+        "s0_annotation_count": 19.0,
+        "s0_normalized_mean_score": 0.6474,
+        "s0_chat_ready_yes_rate": 0.4737,
+        "s0_chat_ready_acceptable_rate": 0.8947
+      },
+      "target": {
+        "s0_annotation_count": 30,
+        "s0_normalized_mean_score": 0.8,
+        "s0_chat_ready_yes_rate": 0.75
+      },
+      "better": "越高越好",
+      "why_it_matters": "自動測試能證明契約沒有消失，但只有真人盲評能判斷回覆是否真的自然、願意繼續聊。",
+      "acceptance": "至少 30 筆有效 S0 盲評，正規化均分 >= 0.8，嚴格 yes 率 >= 0.75。",
+      "planned_fix": "優先修正盲評中重複出現的語意流失、公式化與意圖誤讀，再用新 holdout 盲評驗證泛化。",
+      "source": "human_blind_evidence_report.json"
+    },
+    {
       "id": "human_feedback_regression_population",
       "name_zh": "人工標記回歸集尚未累積到可用規模",
       "current": {
-        "annotation_count": 0.0,
-        "regression_case_count": 0.0
+        "annotation_count": 19.0,
+        "regression_case_count": 10.0
       },
       "target": {
         "annotation_count": 50,
@@ -391,7 +459,8 @@
     "記憶因果評測已接上，能區分『有取出記憶』與『記憶真的改變回答』。",
     "記憶輸出契約評測已接上，能檢查記憶最後是否被明講、當背景使用，或被正確壓住不說。",
     "10k 壓測下規劃與邊界穩定度很高，表示系統架構比純 prompt 基線可靠。",
-    "人工標記 -> regression dataset -> replay eval -> diff report 的修補閉環已經接通，後面可以開始做真實 fail case 的 patch 驗證。",
+    "人工標記 -> regression dataset -> replay eval -> diff report 的技術閉環已接通，可驗證語意契約，但真人自然度仍需獨立盲評。",
+    "19 筆真人 S0 盲評與 76 筆候選評分已納入證據鏈，完整右腦在配對比較中勝過三種對照，但嚴格可聊天率仍需提升。",
     "Web 對話 log 已可自動抽出 annotation candidate queue，後續不必手動翻完整 log 才知道先標哪幾題。",
     "annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。",
     "日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。",
@@ -402,7 +471,8 @@
     "正式社會推理 / ToM 仍不足，與你要的『更像人類會揣摩對方』還有差距。",
     "大量題目下表面回覆仍太集中，說話雖正確，但偶爾還像模板。",
     "少數日常狀態句、自我羞愧句、短碎片句仍可能走錯分支。",
-    "人工標記與 regression cases 目前仍接近 0，表示閉環已建好，但資料還沒有餵進來。",
+    "目前只有 19 筆有效 S0 人類盲評與 10 筆 fail-like 回放，足以找問題但不足以代表所有對話情境。",
+    "真人盲評嚴格 yes 率仍低於目標；既有失敗回放全過不等於新情境也會自然。",
     "annotation candidate queue 目前仍是 heuristic 挖掘，功能是縮小人工檢查範圍，不是最終真值標籤。",
     "annotation draft 目前只是建議 verdict / severity / failure types，還不能替代人工判斷。"
   ],
@@ -14626,19 +14696,30 @@
         }
       ]
     },
+    "human_blind": {
+      "source_count": 2,
+      "completed_task_count": 19,
+      "completed_candidate_rating_count": 76,
+      "s0_annotation_count": 19,
+      "s0_fail_like_annotation_count": 10,
+      "s0_mean_score_1_5": 3.2368,
+      "s0_normalized_mean_score": 0.6474,
+      "s0_chat_ready_yes_rate": 0.4737,
+      "s0_chat_ready_acceptable_rate": 0.8947
+    },
     "human_feedback_annotation": {
-      "raw_record_count": 0,
+      "raw_record_count": 19,
       "invalid_record_count": 0,
-      "valid_record_count": 0,
-      "annotation_count": 0,
-      "unique_sessions": 0,
-      "unique_turns": 0,
-      "fail_like_count": 0,
-      "fail_like_rate": 0.0,
+      "valid_record_count": 19,
+      "annotation_count": 19,
+      "unique_sessions": 2,
+      "unique_turns": 19,
+      "fail_like_count": 10,
+      "fail_like_rate": 0.5263,
       "memory_related_count": 0,
       "memory_related_rate": 0.0,
       "taxonomy_version": "v1.2",
-      "source_path": "/Users/jerrychang/Desktop/uruharemake2/analysis/human_feedback_annotations.jsonl"
+      "source_path": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/analysis/human_feedback_annotations.jsonl"
     },
     "annotation_candidate_queue": {
       "total_logged_turns": 45,
@@ -14655,42 +14736,66 @@
       "high_priority_draft_count": 24
     },
     "human_feedback_regression": {
-      "annotation_count_raw": 0,
+      "annotation_count_raw": 19,
       "invalid_annotation_count": 0,
       "invalid_annotation_reason_breakdown": [],
-      "valid_annotation_count": 0,
-      "annotation_count_latest_per_turn": 0,
-      "fail_like_annotation_count_latest": 0,
-      "regression_case_count": 0,
+      "valid_annotation_count": 19,
+      "annotation_count_latest_per_turn": 19,
+      "fail_like_annotation_count_latest": 10,
+      "regression_case_count": 10,
       "include_pass": false,
       "joined_web_log_count": 0,
       "joined_web_log_rate": 0.0,
       "with_seed_turns_count": 0,
       "with_seed_turns_rate": 0.0,
-      "with_notes_count": 0,
-      "with_notes_rate": 0.0,
+      "with_notes_count": 10,
+      "with_notes_rate": 1.0,
       "taxonomy_version": "v1.2",
-      "annotation_source_path": "/Users/jerrychang/Desktop/uruharemake2/analysis/human_feedback_annotations.jsonl",
-      "web_log_source_path": "/Users/jerrychang/Desktop/uruharemake2/web_logs/uruha_web_conversation_log.jsonl"
+      "annotation_source_path": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/analysis/human_feedback_annotations.jsonl",
+      "web_log_source_path": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/web_logs/uruha_web_conversation_log.jsonl"
     },
     "human_feedback_regression_eval": {
-      "total_cases": 0,
+      "total_cases": 10,
       "surface_mode": "right_brain_template_mode_via_run_turn_debug",
-      "route_match_rate": 0.0,
-      "focus_ok_rate": 0.0,
-      "obligation_ok_rate": 0.0,
+      "route_match_rate": 1.0,
+      "focus_ok_rate": 1.0,
+      "obligation_ok_rate": 1.0,
+      "human_contract_coverage_rate": 1.0,
+      "human_contract_required_group_hit_rate": 1.0,
+      "human_contract_forbidden_marker_ok_rate": 1.0,
+      "planner_contract_coverage_rate": 1.0,
+      "planner_contract_current_group_hit_rate": 1.0,
+      "planner_contract_observed_group_hit_rate": 0.8,
+      "planner_contract_group_hit_delta": 0.2,
+      "planner_contract_current_all_hit_rate": 1.0,
+      "planner_contract_observed_all_hit_rate": 0.4,
       "memory_ok_rate_when_expected": 0.0,
-      "density_ok_rate": 0.0,
+      "density_ok_rate": 1.0,
       "generic_reply_rate": 0.0,
       "same_as_observed_bad_reply_rate": 0.0,
-      "avg_expected_proxy_persist_rate": 0.0,
-      "overall_auto_pass_rate": 0.0,
-      "avg_reply_token_count": 0.0,
-      "avg_planner_tick_count": 0.0,
+      "avg_expected_proxy_persist_rate": 0.1,
+      "overall_auto_pass_rate": 1.0,
+      "avg_reply_token_count": 7.8,
+      "avg_planner_tick_count": 1.0,
       "self_correction_rate": 0.0,
       "vibe_eval_coverage_rate": 0.0,
       "vibe_ok_rate_on_covered_cases": 0.0,
-      "language_breakdown": {}
+      "language_breakdown": {
+        "mixed": {
+          "count": 1,
+          "overall_auto_pass_rate": 1.0,
+          "focus_ok_rate": 1.0,
+          "obligation_ok_rate": 1.0,
+          "generic_reply_rate": 0.0
+        },
+        "zh": {
+          "count": 9,
+          "overall_auto_pass_rate": 1.0,
+          "focus_ok_rate": 1.0,
+          "obligation_ok_rate": 1.0,
+          "generic_reply_rate": 0.0
+        }
+      }
     },
     "human_feedback_regression_diff": {
       "before_total_cases": 0,
@@ -14781,22 +14886,32 @@
       "detail": "10k 壓測下規劃穩定，但表面回覆仍有模板集中問題。"
     },
     "human_feedback_annotation_loop": {
-      "status": "partial",
+      "status": "implemented",
       "metric": {
-        "annotation_count": 0.0,
-        "fail_like_rate": 0.0,
+        "annotation_count": 19.0,
+        "fail_like_rate": 0.5263,
         "memory_related_rate": 0.0
       },
-      "detail": "人工標記與 taxonomy 已接上；若 annotation_count 仍是 0，代表流程就緒但尚未累積真實資料。"
+      "detail": "人工標記與 taxonomy 已接上，annotation_count 只計入可追溯的人類標記，不把自動評分冒充成人工真值。"
     },
-    "human_feedback_regression_loop": {
+    "human_blind_validation": {
       "status": "partial",
       "metric": {
-        "regression_case_count": 0.0,
-        "overall_auto_pass_rate": 0.0,
+        "s0_annotation_count": 19.0,
+        "s0_normalized_mean_score": 0.6474,
+        "s0_chat_ready_yes_rate": 0.4737,
+        "s0_chat_ready_acceptable_rate": 0.8947
+      },
+      "detail": "盲評已接入正式證據鏈；目前樣本仍小，嚴格可聊天率未達研究目標，因此只列 partial。"
+    },
+    "human_feedback_regression_loop": {
+      "status": "implemented",
+      "metric": {
+        "regression_case_count": 10.0,
+        "overall_auto_pass_rate": 1.0,
         "generic_reply_rate": 0.0
       },
-      "detail": "從人工標記抽 regression case、重播回腦、再做自動檢查的閉環已成形；若 case 數仍是 0，表示還缺真實標記餵入。"
+      "detail": "從人工標記抽 regression case、重播回腦、再做自動檢查的閉環已成形；通過率只代表已收錄案例，不外推到所有對話。"
     },
     "patch_diff_regression": {
       "status": "implemented",

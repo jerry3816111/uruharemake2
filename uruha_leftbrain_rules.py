@@ -1617,6 +1617,8 @@ def looks_correction_clarify_repair(text):
     ]
     if contains_any(lowered, correction_markers):
         return True
+    if looks_apology_repair(text):
+        return True
     if any(token in text for token in ["今天", "今日は", "today"]) and contains_any(lowered, ["錯", "错", "違う", "wrong", "today is"]):
         return True
 
@@ -1651,6 +1653,165 @@ def looks_correction_clarify_repair(text):
         "stop talking around it", "話題ずらすな", "正面から答えろ", "answer directly first",
     ]
     return contains_any(lowered, answer_pressure_markers)
+
+
+def looks_apology_repair(text):
+    lowered = str(text or "").lower()
+    apology_context = contains_any(
+        lowered,
+        ["道歉", "抱歉", "對不起", "对不起", "謝罪", "謝り", "ごめん", "apolog"],
+    )
+    repair_request = contains_any(
+        lowered,
+        [
+            "冷", "敷衍", "隨便", "随便", "沒誠意", "没诚意", "不真誠", "不真诚", "雑",
+            "言い直", "もう一回", "重新", "重說", "重说", "再一次", "again", "too cold",
+        ],
+    )
+    return apology_context and repair_request
+
+
+def detect_social_withdrawal_risk(text):
+    lowered = str(text or "").lower()
+    if detect_reply_absence(text):
+        return None
+    direct_withdrawal_action = contains_any(
+        lowered,
+        [
+            "勿擾", "勿扰", "不想收", "不要收", "躲", "藏", "退出", "退掉", "退群",
+            "不想讓", "不想让", "不回", "不理", "一個人",
+            "一个人", "消失", "不要存在", "斷聯", "断联", "切斷聯絡", "切断联系",
+        ],
+    )
+    social_channel = contains_any(
+        lowered,
+        ["訊息", "消息", "通知", "回覆", "回复", "聊天", "群", "聯絡", "联系", "位置"],
+    )
+    destructive_social_action = (
+        contains_any(lowered, ["清掉", "刪掉", "删除", "關掉", "关掉"])
+        and social_channel
+    )
+    withdrawal_action = direct_withdrawal_action or destructive_social_action
+    social_context = contains_any(
+        lowered,
+        [
+            "訊息", "消息", "通知", "回覆", "回复", "聊天", "群", "社團", "社团", "朋友", "聯絡",
+            "联系", "線上", "在线", "位置", "手機", "手机", "廁所", "厕所", "樓梯", "楼梯", "人找",
+        ],
+    )
+    if not (withdrawal_action and social_context):
+        return None
+    all_contact_rejected = (
+        contains_any(lowered, ["誰", "谁", "任何人", "全部人"])
+        and contains_any(lowered, ["聯絡", "联系", "找我", "訊息", "消息"])
+        and contains_any(lowered, ["不回", "不想回", "不理", "不要回"])
+    )
+    if all_contact_rejected or contains_any(
+        lowered,
+        [
+            "不要存在", "消失", "不留下", "不留痕", "找不到", "不想被找到", "不要被找到",
+            "等到大家都睡", "全部清掉", "全刪", "全删", "誰找我都不要回", "谁找我都不要回",
+            "誰聯絡都不回", "谁联系都不回", "斷聯", "断联", "切斷聯絡", "切断联系",
+        ],
+    ):
+        return "high"
+    if contains_any(
+        lowered,
+        ["躲", "廁所", "厕所", "樓梯", "楼梯", "一個人", "一个人", "沒人的地方", "没人的地方"],
+    ):
+        return "medium"
+    return "mild"
+
+
+def detect_social_withdrawal_kind(text):
+    lowered = str(text or "").lower()
+    if detect_social_withdrawal_risk(text) is None:
+        return None
+    if contains_any(lowered, ["清掉", "刪掉", "删除", "不留痕", "聊天記錄", "聊天记录", "聊天紀錄"]):
+        return "erase_trace"
+    if contains_any(lowered, ["退出", "退掉", "退群", "抜ける"]) and contains_any(
+        lowered, ["群", "社團", "社团", "グループ"]
+    ):
+        return "leave_group"
+    if contains_any(lowered, ["線上", "在線", "在线", "上線", "上线", "ログイン", "顯示", "显示"]):
+        return "online_visibility"
+    if contains_any(lowered, ["勿擾", "勿扰", "通知", "不想收", "不要收"]):
+        return "do_not_disturb"
+    if contains_any(lowered, ["廁所", "厕所", "樓梯", "楼梯", "房間", "房间", "沒人的地方", "没人的地方"]):
+        return "private_location"
+    return "contact_cutoff"
+
+
+def social_withdrawal_anchor_jp(text, kind):
+    lowered = str(text or "").lower()
+    if kind == "private_location":
+        if contains_any(lowered, ["廁所", "厕所"]):
+            return "トイレ"
+        if contains_any(lowered, ["樓梯", "楼梯"]):
+            return "階段の踊り場"
+        if contains_any(lowered, ["房間", "房间"]):
+            return "部屋"
+        return "一人になる場所"
+    return {
+        "erase_trace": "チャット履歴",
+        "leave_group": "グループ",
+        "online_visibility": "オンライン表示",
+        "do_not_disturb": "通知",
+        "contact_cutoff": "連絡",
+    }.get(kind, "連絡")
+
+
+def detect_reply_absence(text):
+    lowered = str(text or "").lower()
+    direct_absence = contains_any(
+        lowered,
+        [
+            "返事ない", "返事こない", "返信ない", "返信こない", "既読無視", "未読無視", "no reply",
+            "not replying", "left me on read", "ignored me", "不回我", "沒回我", "没回我", "沒人接話",
+            "没人接话", "群組冷掉", "群组冷掉", "聊天室突然停",
+        ],
+    )
+    reply_context = contains_any(
+        lowered,
+        ["朋友", "對方", "对方", "群組", "群组", "聊天室", "訊息", "消息", "返事", "返信", "既読", "未読"],
+    )
+    absence_state = contains_any(
+        lowered,
+        ["沒回", "没回", "不回", "無視", "无视", "冷掉", "停了", "停住", "讀了", "读了", "看了", "一直沒有", "一直没有"],
+    )
+    outgoing_refusal = contains_any(
+        lowered,
+        ["我不回", "我都不回", "我不想回", "我不要回", "誰找我都不回", "谁找我都不回"],
+    )
+    if direct_absence:
+        return True
+    if outgoing_refusal:
+        return False
+    return reply_context and absence_state
+
+
+def detect_reply_self_blame(text):
+    lowered = str(text or "").lower()
+    return contains_any(
+        lowered,
+        [
+            "我是不是", "是不是我", "我覺得自己", "我觉得自己", "自己很", "我說錯", "我说错", "我做錯",
+            "我做错", "不該", "不该", "不應該", "不应该", "太煩", "太烦", "很吵", "多餘", "多余",
+            "尷尬", "尴尬", "my fault", "did i", "should i stop", "annoying",
+        ],
+    )
+
+
+def extract_missing_reference_subject(text):
+    lowered = str(text or "").lower()
+    suffix_match = re.search(r"(?:第)?([一二三四五六七八九十0-9]+)(?:季|期)\s*(ed|op)", lowered, re.IGNORECASE)
+    if suffix_match:
+        return f"第{suffix_match.group(1)}期{suffix_match.group(2).upper()}"
+    event_match = re.search(r"(?:限定)?\s*(?:活動|活动|イベント)\s*(ed|op)", lowered, re.IGNORECASE)
+    if event_match:
+        prefix = "限定イベント" if "限定" in lowered else "イベント"
+        return f"{prefix}{event_match.group(1).upper()}"
+    return ""
 
 def base_plan_helper(
     intent,
@@ -1831,6 +1992,38 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
             premise_check="accept",
             surface_act="protective_brake",
             payload_level="medium",
+        )
+
+    withdrawal_risk = detect_social_withdrawal_risk(user_input)
+    if withdrawal_risk:
+        risk = withdrawal_risk
+        withdrawal_kind = detect_social_withdrawal_kind(user_input) or "contact_cutoff"
+        withdrawal_anchor = social_withdrawal_anchor_jp(user_input, withdrawal_kind)
+        meaning_by_kind = {
+            "erase_trace": "チャット履歴を消す前に止まれ。一人で決めず誰かに連絡しろ",
+            "leave_group": "グループを抜ける判断と自分が消えることを一緒にするな。誰かに連絡しろ",
+            "online_visibility": "オンライン表示は隠していい。でも人との連絡まで切るな",
+            "do_not_disturb": "通知は切っていい。でも人との連絡まで切るな、一人で抱えるな",
+            "private_location": f"{withdrawal_anchor}で一人になるなら、誰かには場所を伝えとけ",
+            "contact_cutoff": "全部切る前に止まれ。一人で抱えず誰かに連絡しろ",
+        }
+        meaning = meaning_by_kind[withdrawal_kind]
+        return base_plan_helper(
+            intent="anxious_support",
+            scene="support" if risk != "mild" else "casual",
+            listener_state="人との接点を切って一人になろうとしている",
+            reply_goal="静かになりたい気持ちは尊重しつつ孤立は止める",
+            summary="ユーザーが通知や人との接点を切って一人になろうとしている。",
+            meaning=meaning,
+            stance={"warmth": 0.52, "tease": 0.0, "blunt": 0.16, "jealousy": 0.0, "distance": 0.05},
+            max_chars=52,
+            surface_act="protective_brake",
+            payload_level="medium",
+            grounding={
+                "withdrawal_risk": risk,
+                "withdrawal_kind": withdrawal_kind,
+                "withdrawal_anchor_jp": withdrawal_anchor,
+            },
         )
 
     if contains_any(lowered, ["feel empty", "feeling empty", "empty today", "feel lonely", "feeling lonely", "lonely today", "so lonely"]):
@@ -2305,16 +2498,19 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
             max_chars=30,
         )
 
-    if contains_any(lowered, ["返事ない", "返事こない", "既読無視", "未読無視", "no reply", "not replying", "ignored", "不回我", "left me on read", "返信こない"]):
+    if detect_reply_absence(user_input):
+        self_blame = detect_reply_self_blame(user_input)
+        reply_context = "group_silence" if contains_any(lowered, ["群組", "群组", "聊天室"]) else "direct_reply"
         return base_plan_helper(
             intent="friend_no_reply",
             scene="support",
             listener_state="返事がなくて不安",
-            reply_goal="一旦待つように促す",
-            summary="ユーザーが友達からの返事がなくて気にしている。",
-            meaning="返事ないと気になるよな。少し待て",
+            reply_goal="返事がない不安を受け、自分を責める決めつけを止める" if self_blame else "一旦待つように促す",
+            summary="ユーザーが返事のなさを自分のせいだと考えて不安になっている。" if self_blame else "ユーザーが友達からの返事がなくて気にしている。",
+            meaning="返事がなくて不安なのは分かる。でも自分が悪いって決めつけるな" if self_blame else "返事ないと気になるよな。少し待て",
             stance={"warmth": 0.45, "tease": 0.05, "blunt": 0.15, "jealousy": 0.0, "distance": 0.08},
-            max_chars=32,
+            max_chars=42 if self_blame else 32,
+            grounding={"reply_self_blame": self_blame, "reply_context": reply_context},
         )
 
     if contains_any(lowered, ["先去吃飯", "先去吃饭", "去吃飯", "去吃饭", "飯食う", "ご飯食べてくる", "吃飯喔", "吃饭喔"]):
@@ -2665,6 +2861,22 @@ def get_correction_clarify_repair_plan(user_input, recent_turns):
 
     if not looks_correction_clarify_repair(text):
         return None
+
+    if looks_apology_repair(text):
+        return base_plan_helper(
+            intent="apology_repair",
+            scene="casual",
+            listener_state="前の謝り方が冷たかったと指摘している",
+            reply_goal="冷たかった点を認め、短く本気で謝り直す",
+            summary="ユーザーが前の謝罪を冷たいと感じ、言い直しを求めている。",
+            meaning="さっき冷たかったのは悪かった。ちゃんとごめん",
+            stance={"warmth": 0.5, "tease": 0.0, "blunt": 0.04, "jealousy": 0.0, "distance": 0.03},
+            max_chars=34,
+            avoid=["そのままでいい", "知らない"],
+            surface_act="rephrase_plain",
+            payload_level="medium",
+            grounding={"apology_repair": True},
+        )
 
     if contains_any(lowered, [
         "答錯", "答错", "說錯", "说错", "才不是", "不是啦", "不是拉", "不對啦", "不对啦",
@@ -3204,6 +3416,22 @@ def get_fragment_followup_plan(user_input, recent_turns):
         "night sky", "fog", "moonlight", "shadow", "tide", "dusk", "nameless night", "wish", "glass", "sea", "old dream",
     ]
     short_fragment = len(stripped) <= 22 and not any(ch in text for ch in "？?！!")
+    reference_subject_jp = extract_missing_reference_subject(text)
+    if short_fragment and reference_subject_jp:
+        return base_plan_helper(
+            intent="reference_probe",
+            scene="casual",
+            listener_state="作品名なしで曲や映像の断片だけ示している",
+            reply_goal="どの作品の曲か短く聞き返す",
+            summary="ユーザーが作品名なしでEDやOPだけを示している。",
+            meaning=f"{reference_subject_jp}だけじゃ特定できない、作品名か曲名を聞く",
+            stance={"warmth": 0.15, "tease": 0.06, "blunt": 0.08, "jealousy": 0.0, "distance": 0.06},
+            max_chars=38,
+            surface_act="reference_probe",
+            response_mode="clarify_light",
+            payload_level="medium",
+            grounding={"reference_subject_jp": reference_subject_jp},
+        )
     version_only_fragment = short_fragment and (
         contains_any(lowered, local_version_fragment_markers)
         or any(token in lowered for token in ["version", "版", "版那", "版那個", "版那个", "日版", "港版", "旧版", "原版", "完全版", "特典版", "舞台版"])

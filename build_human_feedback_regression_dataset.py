@@ -337,6 +337,7 @@ def _make_case(case_id, annotation_record, web_log_record, session_rows, taxonom
         "focus_anchor": selected_plan.get("focus_anchor"),
         "reply_obligation": selected_plan.get("reply_obligation"),
         "proxy_flags": _active_proxy_flags(annotation_record),
+        "human_contract": annotation_record.get("human_contract") or {},
         "seed_turns": seed_turns,
         "replay_context": {
             "annotation_timestamp": annotation_record.get("timestamp"),
@@ -350,6 +351,7 @@ def _make_case(case_id, annotation_record, web_log_record, session_rows, taxonom
         "source": {
             "annotation_path": HUMAN_FEEDBACK_ANNOTATIONS_JSONL_PATH,
             "web_log_path": WEB_CONVERSATION_LOG_JSONL_PATH if web_log_record else None,
+            "annotation_provenance": annotation_record.get("provenance") or {},
         },
     }
 

@@ -1,6 +1,6 @@
 # 統一評測摘要
 
-- 生成時間：`2026-06-21T01:45:48`
+- 生成時間：`2026-06-21T13:59:30`
 - 說明：本摘要優先使用各獨立報告作為最新真值，避免巢狀總表混入舊快照。
 
 ## 現在做得好的地方
@@ -10,7 +10,8 @@
 - 記憶因果評測已接上，能區分『有取出記憶』與『記憶真的改變回答』。
 - 記憶輸出契約評測已接上，能檢查記憶最後是否被明講、當背景使用，或被正確壓住不說。
 - 10k 壓測下規劃與邊界穩定度很高，表示系統架構比純 prompt 基線可靠。
-- 人工標記 -> regression dataset -> replay eval -> diff report 的修補閉環已經接通，後面可以開始做真實 fail case 的 patch 驗證。
+- 人工標記 -> regression dataset -> replay eval -> diff report 的技術閉環已接通，可驗證語意契約，但真人自然度仍需獨立盲評。
+- 19 筆真人 S0 盲評與 76 筆候選評分已納入證據鏈，完整右腦在配對比較中勝過三種對照，但嚴格可聊天率仍需提升。
 - Web 對話 log 已可自動抽出 annotation candidate queue，後續不必手動翻完整 log 才知道先標哪幾題。
 - annotation draft queue 已可把候選整理成可直接載入標註表單的草稿，縮短人工標記時間。
 - 日常狀態/自我痛苦分流評測已接上，用來檢查疲累、羞恥、空洞、撐不住與危機句是否被分到不同支援策略。
@@ -18,12 +19,13 @@
 - 支援回覆固定前綴評測已接上，用來檢查右腦最後一句是否保留人類口語感，而不是每句都套『普通に、』『てか、』等固定開頭。
 
 ## 目前最主要的三個瓶頸
-- `人工標記回歸集尚未累積到可用規模`：現在值={"annotation_count": 0.0, "regression_case_count": 0.0}；目標={"annotation_count": 50, "regression_case_count": 30}；標準=至少累積 50 筆人工標記，並轉出 30 筆以上可回放的 regression cases。
+- `真人盲評的嚴格可聊天率仍不足`：現在值={"s0_annotation_count": 19.0, "s0_normalized_mean_score": 0.6474, "s0_chat_ready_yes_rate": 0.4737, "s0_chat_ready_acceptable_rate": 0.8947}；目標={"s0_annotation_count": 30, "s0_normalized_mean_score": 0.8, "s0_chat_ready_yes_rate": 0.75}；標準=至少 30 筆有效 S0 盲評，正規化均分 >= 0.8，嚴格 yes 率 >= 0.75。
+- `人工標記回歸集尚未累積到可用規模`：現在值={"annotation_count": 19.0, "regression_case_count": 10.0}；目標={"annotation_count": 50, "regression_case_count": 30}；標準=至少累積 50 筆人工標記，並轉出 30 筆以上可回放的 regression cases。
 
 ## 人工標記 / Regression 現況
-- `人工標記數`：0
-- `Regression Case 數`：0
-- `Regression 自動通過率`：0.0
+- `人工標記數`：19
+- `Regression Case 數`：10
+- `Regression 自動通過率`：1.0
 - `Regression 通用空話率`：0.0
 - `Patch Diff 改善指標數 / 退步指標數`：0 / 0
 
@@ -49,7 +51,8 @@
 - `像人類地推測別人心思`：score=0.975 / target=0.65 / status=good — 這項高表示模型不只會回話，還能在故事任務裡推測他人信念、情緒與隱含意圖。
 - `像人類地避免模板化`：score=1.0 / target=0.65 / status=good — 這項高表示同類題目不會一直掉進同一句模板。
 - `像人類地延續真正未完成的話題`：score=1.0 / target=0.9 / status=good — 這項高表示系統只在話題確實缺少資訊時，沉默後主動追問一次並真正交付；目前可歸因樣本數為 5，仍需擴大情境。
-- `像人類地修補真實失敗案例`：score=None / target=0.75 / status=missing — 這項高表示不是只在人工設計 benchmark 上過關，而是連真實人工標過的 fail case 回放時也能修正到位。
+- `在人類盲評中自然且可直接聊天`：score=0.4737 / target=0.75 / status=weak — 這項同時受真人平均品質與嚴格 yes 率限制，避免只靠內部規則測試宣稱像人；目前有效 S0 標記為 19 筆。
+- `在技術契約下重播人工失敗案例`：score=1.0 / target=0.75 / status=good — 這項高只表示人工 fail case 的必要語意、禁止語句與表面規則可重播通過；它不能代替 patch 後的人類自然度盲評。
 - `像人類地把意圖變成口語行為`：score=1.0 / target=0.9 / status=good — 這項高表示右腦不是只把左腦結論念出來，而是先經過語用功能、語意單元與風格算子的表面化流程。
 
 ## 與 Prompt-only 基線的歷史對照快照
