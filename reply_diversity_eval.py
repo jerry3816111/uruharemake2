@@ -37,7 +37,8 @@ def longest_streak(items):
 
 
 def main():
-    brain = brain_mod.UruhaBrainV4_Mac()
+    brain = brain_mod.UruhaBrainV4_Mac(load_right_brain_model=False)
+    brain.left_brain.client_logic = None
     brain.memory.reflect_experience = lambda *_args, **_kwargs: None
     groups = {}
 
@@ -59,6 +60,7 @@ def main():
     all_replies = [reply for group in groups.values() for reply in group['replies']]
     all_counts = Counter(all_replies)
     report = {
+        'surface_mode': 'deterministic_template_without_local_llm',
         'summary': {
             'groups': len(groups),
             'replies_per_group': REPEATS,

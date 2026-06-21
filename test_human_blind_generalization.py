@@ -30,8 +30,8 @@ class TestHumanBlindGeneralizationSurface(unittest.TestCase):
             {"reply_self_blame": True},
         )
 
-        self.assertIn("返事", reply)
-        self.assertIn("決めつけ", reply)
+        self.assertTrue(any(marker in reply for marker in ("返事", "返信", "既読")))
+        self.assertTrue(any(marker in reply for marker in ("決めつけ", "決めず")))
         self.assertTrue("不安" in reply or "気になる" in reply)
 
     def test_reference_probe_uses_grounded_subject(self):
@@ -67,7 +67,7 @@ class TestHumanBlindGeneralizationSurface(unittest.TestCase):
 
         self.assertTrue(any(marker in mild for marker in ("通知", "表示")))
         self.assertIn("連絡", mild)
-        self.assertIn("止ま", high)
+        self.assertTrue(any(marker in high for marker in ("止ま", "止め")))
         self.assertTrue(any(marker in high for marker in ("誰か", "連絡", "近くの人")))
 
     def test_withdrawal_surface_preserves_concrete_context(self):

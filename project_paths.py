@@ -16,6 +16,10 @@ FAILURE_TAXONOMY_MD_PATH = os.path.join(ANALYSIS_DIR, "failure_taxonomy.md")
 FAILURE_TAXONOMY_SCHEMA_PATH = os.path.join(ANALYSIS_DIR, "failure_taxonomy_schema.json")
 HUMAN_FEEDBACK_ANNOTATIONS_JSONL_PATH = os.path.join(ANALYSIS_DIR, "human_feedback_annotations.jsonl")
 HUMAN_BLIND_DATA_DIR = os.path.join(DATASETS_DIR, "human_blind")
+SURFACE_MICROPLANNING_HOLDOUT_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "surface_microplanning_holdout.json",
+)
 
 COGNITIVE_ARCHITECTURE_DATASET_PATH = os.path.join(DATASETS_DIR, "cognitive_architecture_eval_dataset.json")
 HUMAN_FEEDBACK_REGRESSION_DATASET_PATH = os.path.join(DATASETS_DIR, "human_feedback_regression_dataset.json")
@@ -67,6 +71,18 @@ HUMAN_FEEDBACK_ANNOTATION_CLEANUP_REPORT_JSON_PATH = os.path.join(REPORTS_DIR, "
 HUMAN_FEEDBACK_ANNOTATION_CLEANUP_REPORT_MD_PATH = os.path.join(REPORTS_DIR, "human_feedback_annotation_cleanup_report.md")
 HUMAN_BLIND_EVIDENCE_REPORT_JSON_PATH = os.path.join(REPORTS_DIR, "human_blind_evidence_report.json")
 HUMAN_BLIND_EVIDENCE_REPORT_MD_PATH = os.path.join(REPORTS_DIR, "human_blind_evidence_report.md")
+SURFACE_MICROPLANNING_BASELINE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "surface_microplanning_baseline_report.json",
+)
+SURFACE_MICROPLANNING_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "surface_microplanning_report.json",
+)
+SURFACE_MICROPLANNING_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "surface_microplanning_report.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")

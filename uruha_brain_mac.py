@@ -8105,7 +8105,7 @@ class RightBrain:
         if logic_data.get("intent") in {"recall_name", "recall_preference", "recall_favorite", "recall_dislike", "memory_correction", "recall_recent"}:
             return reply
         dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
-        if dialogue_act == "emotional_containment" or logic_data.get("scene") == "support":
+        if dialogue_act in {"emotional_containment", "practical_action_response"} or logic_data.get("scene") == "support":
             return reply
 
         prefixes = ["ん、", "まあ、", "いや、", "てか、", "一回、", "先に、", "普通に、", "はいはい、"]
@@ -8249,6 +8249,8 @@ class RightBrain:
             return "reference_probe"
         if surface in {"meal_check_reply", "status_reply"}:
             return "daily_state_answer"
+        if surface == "practical_action_response":
+            return "practical_action_response"
         if surface in {"empathic_rest_suggestion", "validate_then_hold", "protective_brake"}:
             return "emotional_containment"
         if surface in {"named_offer_accept", "named_offer_light_accept"}:
@@ -8279,6 +8281,7 @@ class RightBrain:
             "absurdity_mirror": ["怪しさに即反応する", "相手の言葉を一個拾って対称に吐槽する", "軽い接話点を残す"],
             "reference_probe": ["断片として受ける", "元ネタか歌詞かを聞く", "相手が説明できる余地を残す"],
             "daily_state_answer": ["今の状態を具体的に一語で答える", core, "相手にも軽く返す余地を残す"],
+            "practical_action_response": ["実用目的を拾う", "必要な範囲の行動を肯定する", "戻す条件か残す対象を一つ置く"],
             "concrete_offer_response": [f"{offered_item or '具体物'}を名詞で拾う", core, "味や今の状態を一語足す"],
             "relationship_temperature": ["少し照れか距離を置く", core, "聞き返しすぎを軽く刺す"],
             "memory_accounting": [
@@ -8299,6 +8302,76 @@ class RightBrain:
             units.append("嘲りには慰めではなく軽い押し返し")
         return [unit for unit in units if str(unit).strip()][:4]
 
+    def _support_speech_moves(self, logic_data, user_input, grounding):
+        """Build pragmatic moves before lexical realization.
+
+        The moves contain roles and grounded attributes, not benchmark answers or
+        complete reply sentences. Surface candidates are composed from these roles.
+        """
+        logic_data = logic_data or {}
+        grounding = grounding or {}
+        dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
+        if dialogue_act == "practical_action_response":
+            return [
+                {
+                    "role": "context_acknowledgement",
+                    "kind": grounding.get("management_kind"),
+                    "anchor": grounding.get("management_anchor_jp"),
+                    "purpose": grounding.get("management_purpose"),
+                },
+                {"role": "agency_permission", "scope": "reversible_practical_action"},
+                {"role": "reversible_boundary", "scope": "restore_or_keep_needed_items"},
+            ]
+        if dialogue_act != "emotional_containment":
+            return []
+
+        intent = str(logic_data.get("intent") or "")
+        reply_self_blame = self._grounding_flag_enabled(grounding.get("reply_self_blame"))
+        if intent == "friend_no_reply":
+            moves = [
+                {
+                    "role": "context_acknowledgement",
+                    "context": grounding.get("reply_context") or "direct_reply",
+                    "signal": grounding.get("reply_signal") or "no_reply",
+                },
+                {"role": "uncertainty_tolerance", "target": "reason_for_silence"},
+            ]
+            if reply_self_blame:
+                moves.append({"role": "self_blame_boundary", "target": "premature_self_blame"})
+            moves.append({"role": "next_action", "action": "wait_before_followup"})
+            return moves
+
+        risk = str(grounding.get("withdrawal_risk") or "").strip().lower()
+        if risk:
+            context_move = {
+                "role": "context_acknowledgement",
+                "kind": grounding.get("withdrawal_kind") or "contact_cutoff",
+                "anchor": grounding.get("withdrawal_anchor_jp") or "連絡",
+                "risk": risk,
+            }
+            if risk == "mild":
+                return [
+                    context_move,
+                    {"role": "agency_permission", "scope": "requested_channel_action"},
+                    {"role": "connection_boundary", "scope": "keep_one_reachable_channel"},
+                ]
+            if risk == "medium":
+                return [
+                    context_move,
+                    {"role": "state_validation", "state": "need_brief_space"},
+                    {"role": "next_action", "action": "share_location_with_one_person"},
+                ]
+            return [
+                context_move,
+                {"role": "safety_boundary", "scope": "pause_irreversible_isolation"},
+                {"role": "next_action", "action": "contact_one_person_first"},
+            ]
+
+        return [
+            {"role": "state_validation", "state": intent or "distress"},
+            {"role": "next_action", "action": "one_small_recovery_step"},
+        ]
+
     def _style_operators_for_speech(self, logic_data, user_input):
         stance = logic_data.get("stance") or {}
         appraisal = logic_data.get("appraisal") or {}
@@ -8314,6 +8387,8 @@ class RightBrain:
         if dialogue_act in {"reference_probe", "minimal_clarification", "repair_check"}:
             operators.append("curious")
         if dialogue_act == "daily_state_answer":
+            operators.append("daily_concrete")
+        if dialogue_act == "practical_action_response":
             operators.append("daily_concrete")
         if dialogue_act == "relationship_temperature":
             operators.append("embarrassed")
@@ -8358,6 +8433,11 @@ class RightBrain:
             grounding,
         )
         style_operators = self._style_operators_for_speech({**logic_data, "dialogue_act": dialogue_act}, user_input)
+        speech_moves = self._support_speech_moves(
+            {**logic_data, "dialogue_act": dialogue_act},
+            user_input,
+            grounding,
+        )
         recent_assistant = [item["content"] for item in self.history[-6:] if item.get("role") == "assistant"]
         recent_frames = []
         for reply in recent_assistant[-3:]:
@@ -8368,6 +8448,7 @@ class RightBrain:
         speech_plan = {
             "dialogue_act": dialogue_act,
             "content_units": content_units,
+            "speech_moves": speech_moves,
             "style_operators": style_operators,
             "target_length": self._speech_target_length(logic_data, dialogue_act),
             "forbidden_repetition": {
@@ -8393,6 +8474,8 @@ class RightBrain:
         elif speech_plan.get("target_length") == "1_short_sentence":
             constraints["sentence_count"] = min(1, int(constraints.get("sentence_count", 1) or 1))
             constraints["max_chars"] = max(18, int(constraints.get("max_chars", 24) or 24))
+        if len(speech_plan.get("speech_moves") or []) >= 3:
+            constraints["max_chars"] = max(48, int(constraints.get("max_chars", 28) or 28))
         logic_data["constraints"] = constraints
         must_avoid = list(logic_data.get("must_avoid") or [])
         must_avoid.extend((speech_plan.get("forbidden_repetition") or {}).get("avoid_generic_frames") or [])
@@ -8822,26 +8905,7 @@ class RightBrain:
             return self._choose_variant(variants, f"surface:{surface_act}:{intent}:{user_input}", intent=intent, max_chars=max_chars)
         if surface_act == "validate_then_hold":
             if intent == "friend_no_reply":
-                if self._grounding_flag_enabled(grounding.get("reply_self_blame")):
-                    if grounding.get("reply_context") == "group_silence":
-                        variants = [
-                            "グループが静かになると気になるよな。でも自分が邪魔だって決めつけるな。",
-                            "急にグループが静かになると不安だけど、自分のせいだと決めつけるな。",
-                        ]
-                    else:
-                        variants = [
-                            "返事がなくて不安なのは分かる。でも自分が悪いって決めつけるな。",
-                            "返事ないと気になるよな。だからって自分のせいだと決めつけるな。",
-                            "返事が止まると不安になるけど、自分で空気を壊したって決めつけるな。",
-                        ]
-                    return self._choose_variant(variants, f"surface:{intent}:self_blame:{user_input}", intent=intent, max_chars=max_chars)
-                variants = [
-                    "返事ないと普通に気になるよな。そわそわするのは分かる。",
-                    "友達から返事ないままだと落ち着かないよな。そこは普通だろ。",
-                    "返事ないままだと気になるのは普通だろ。考えすぎる前に少し待て。",
-                    "既読も返事もないと地味に刺さるよな。今は少し待て。",
-                    "返事来ないと頭に残るよな。でも今は追いすぎるな。",
-                ]
+                variants = self._reply_anxiety_surface_variants(grounding)
                 return self._choose_variant(variants, f"surface:{intent}:{user_input}", intent=intent, max_chars=max_chars)
             if intent == "anxious_support":
                 variants = [
@@ -8868,6 +8932,14 @@ class RightBrain:
                 "そのノリで来るのはきついって。急に雑すぎる。",
             ]
             return self._choose_variant(variants, f"surface:{intent}:{user_input}", intent=intent, max_chars=max_chars)
+        if surface_act == "practical_action_response":
+            variants = self._practical_action_surface_variants(grounding)
+            return self._choose_variant(
+                variants,
+                f"surface:practical:{grounding.get('management_kind')}:{grounding.get('management_purpose')}:{user_input}",
+                intent=intent,
+                max_chars=max_chars,
+            )
         if surface_act == "protective_brake":
             withdrawal_variants = self._withdrawal_surface_variants(grounding)
             if withdrawal_variants:
@@ -9246,39 +9318,39 @@ class RightBrain:
         anchor = str(grounding.get("withdrawal_anchor_jp") or "").strip()
         if kind == "do_not_disturb":
             return [
-                "通知は切っていい。でも人との連絡まで切るな、一人で抱えるな。",
-                "通知を止めて休むのはあり。でも誰かとの連絡は残しとけ。",
+                "通知は切って休んでいい。ただ、必要な連絡まで閉じなくていい。",
+                "通知を止めて静かにするのはあり。でも連絡手段は一つ残しとけ。",
             ]
         if kind == "online_visibility":
             return [
-                "オンライン表示は隠していい。でも人との連絡まで切るな、一人で抱えるな。",
-                "表示を消して休むのはいい。でも誰か一人とは連絡を残しとけ。",
+                "オンライン表示は隠して休んでいい。ただ、必要な連絡まで閉じなくていい。",
+                "表示を消して静かにするのはあり。でも連絡手段は一つ残しとけ。",
             ]
         if kind == "private_location":
             place = anchor or "一人になる場所"
             if risk == "high":
                 return [
-                    f"{place}に隠れたまま全部切るな。誰かに場所を伝えろ。",
-                    f"{place}で一人になる前に止まれ。近くの人に連絡しろ。",
+                    f"{place}に隠れたまま全部切るのは止めとけ。先に誰か一人へ場所を伝えろ。",
+                    f"{place}で一人になる前に一回止まれ。近くの人へ今の場所を連絡しろ。",
                 ]
             return [
-                f"{place}で一人になりたいのは分かる。でも誰かには場所を伝えとけ。",
-                f"{place}で少し離れるのはいい。一人で抱えず近くの人には言っとけ。",
+                f"{place}で一人になりたいなら、少し離れるのはいい。場所だけ誰かに伝えとけ。",
+                f"{place}で少し離れるのはあり。ただ、近くの人には場所を連絡しとけ。",
             ]
         if kind == "leave_group":
             return [
-                "グループを抜けるのは一回止まれ。消えるみたいに一人で抱えるな。",
-                "グループから離れるのは後で決めろ。今は一人にならず誰かに連絡しろ。",
+                "グループを抜けるのは今決めるな。先に誰か一人へ今のことを話せ。",
+                "グループから消える前に一回止まれ。まず誰か一人に連絡しろ。",
             ]
         if kind == "erase_trace":
             return [
-                "チャット履歴を消す前に止まれ。一人で決めず誰かに連絡しろ。",
-                "履歴を全部消して切るな。まず誰か一人に今のことを伝えろ。",
+                "チャット履歴を今消すのは止めとけ。先に誰か一人へ今のことを話せ。",
+                "履歴を全部消す前に一回止まれ。まず誰か一人に連絡しろ。",
             ]
         if risk == "high":
             return [
-                "全部切る前に止まれ。一人で抱えず誰かに連絡しろ。",
-                "消えるみたいに切るな。一人にならず近くの人を呼べ。",
+                "連絡を全部切るのは一回止めとけ。先に誰か一人へ今のことを話せ。",
+                "連絡を全部切る前に一回止まれ。まず一人だけでも今のことを話せ。",
             ]
         if risk == "medium":
             return [
@@ -9300,8 +9372,15 @@ class RightBrain:
 
         if self._grounding_flag_enabled(grounding.get("reply_self_blame")):
             reply_context = str(grounding.get("reply_context") or "")
+            reply_signal = str(grounding.get("reply_signal") or "")
+            if reply_signal == "read_receipt":
+                context_group = ("既読",)
+            elif reply_context == "group_silence":
+                context_group = ("グループ", "チャット", "静か")
+            else:
+                context_group = ("返事", "既読", "返信")
             return [
-                ("グループ", "静") if reply_context == "group_silence" else ("返事", "既読", "返信"),
+                context_group,
                 ("不安", "気になる", "気に"),
                 ("決めつけ", "自分のせい", "自分で"),
             ]
@@ -9323,13 +9402,13 @@ class RightBrain:
             ]
         if withdrawal_risk == "medium":
             return context_groups + [
-                ("一人", "抱え"),
+                ("一人", "少し離れ"),
                 ("誰か", "近くの人", "連絡", "場所", "伝え"),
             ]
         if withdrawal_risk == "mild":
             return (context_groups or [("通知", "表示")]) + [
-                ("連絡",),
-                ("一人", "抱え", "誰か"),
+                ("いい", "あり", "休", "静か", "隠", "止め"),
+                ("連絡", "メッセージ"),
             ]
 
         reference_subject = str(grounding.get("reference_subject_jp") or "").strip()
@@ -9370,6 +9449,15 @@ class RightBrain:
 
         if dialogue_act == "emotional_containment":
             intent = logic_data.get("intent", "")
+            support_variants = []
+            if intent == "friend_no_reply":
+                support_variants = self._reply_anxiety_surface_variants(grounding)
+            elif grounding.get("withdrawal_risk"):
+                support_variants = self._withdrawal_surface_variants(grounding)
+            for support_variant in support_variants:
+                add(support_variant)
+            if support_variants:
+                return variants
             if intent == "tired_support":
                 add("また疲れてるなら、今日はもう休む方に寄せろって。")
                 add("今は回復する側に回れって。話すのは起きてからでいいし。")
@@ -9389,6 +9477,9 @@ class RightBrain:
             else:
                 add("そのまま抱え込むなって。今は少し止まれ。")
                 add("しんどいなら一回ここで止まれ。無理に整えるな。")
+        elif dialogue_act == "practical_action_response":
+            for practical_variant in self._practical_action_surface_variants(grounding):
+                add(practical_variant)
         elif dialogue_act == "daily_state_answer":
             surface = logic_data.get("surface_act", "")
             if surface == "meal_check_reply":
@@ -9457,6 +9548,77 @@ class RightBrain:
                 add(f"{core}。そのくらいでいいだろ。")
 
         return variants
+
+    def _reply_anxiety_surface_variants(self, grounding):
+        grounding = grounding or {}
+        reply_context = str(grounding.get("reply_context") or "direct_reply")
+        reply_signal = str(grounding.get("reply_signal") or "no_reply")
+        reply_channel = str(grounding.get("reply_channel") or "")
+        self_blame = self._grounding_flag_enabled(grounding.get("reply_self_blame"))
+        if reply_context == "group_silence":
+            if reply_channel == "chatroom":
+                context_variants = [
+                    "チャットが止まると気になるよな",
+                    "チャットルームが急に静かだと不安になるよな",
+                ]
+            else:
+                context_variants = [
+                    "グループが静かだと気になるよな",
+                    "グループの会話が止まると不安になるよな",
+                ]
+        elif reply_signal == "read_receipt":
+            context_variants = [
+                "既読のまま返事がないと気になるよな",
+                "既読だけ付いて返信がないと不安になるよな",
+            ]
+        else:
+            context_variants = [
+                "返事がしばらくないと気になるよな",
+                "返信を待ってると不安になるよな",
+            ]
+        if self_blame:
+            return [
+                f"{context_variants[0]}。でも理由はまだ分からない。自分のせいと決めず、少し待て。",
+                f"{context_variants[1]}。今の沈黙だけで自分が悪いと決めず、少し置け。",
+            ]
+        return [
+            f"{context_variants[0]}。理由はまだ分からないし、今は少し待て。",
+            f"{context_variants[1]}。追い打ちせず、少し置いてから返事を待て。",
+        ]
+
+    def _practical_action_surface_variants(self, grounding):
+        grounding = grounding or {}
+        kind = str(grounding.get("management_kind") or "")
+        purpose = str(grounding.get("management_purpose") or "")
+        anchor = str(grounding.get("management_anchor_jp") or "").strip()
+        purpose_prefix = {
+            "focus": "集中したいなら",
+            "noise": "邪魔なものを減らしたいなら",
+            "storage": "容量を空けたいなら",
+            "battery": "電池を持たせたいなら",
+            "archive": "古い記録の整理なら",
+            "privacy": "一人で過ごしたいだけなら",
+            "temporary": "一時的に離れるだけなら",
+        }.get(purpose, "必要があるなら")
+        action = {
+            "do_not_disturb": "通知を切って",
+            "online_visibility": "オンライン表示を隠して",
+            "leave_group": "グループを抜けて",
+            "erase_trace": "古いチャットを整理して",
+            "private_location": f"{anchor or '部屋'}で一人で過ごして",
+        }.get(kind, f"{anchor or '設定'}を調整して")
+        if kind in {"erase_trace"} or purpose in {"storage", "archive"}:
+            boundary = "必要な記録だけ残しとけ"
+        elif kind == "leave_group" or purpose == "temporary":
+            boundary = "必要なら後で戻ればいい"
+        elif purpose == "privacy":
+            boundary = "そのくらい普通だろ"
+        else:
+            boundary = "終わったら戻せばいい"
+        return [
+            f"{purpose_prefix}{action}いい。{boundary}。",
+            f"{purpose_prefix}{action}構わない。{boundary}。",
+        ]
 
     def _reply_needs_conversation_density(self, reply, logic_data):
         reply = str(reply or "").strip()
@@ -9643,15 +9805,8 @@ class RightBrain:
                 add("泣きたいなら少し吐けよ。無理に平気ぶる方がだるいし。")
                 add("今日は無理に止めなくていい。吐き出してから考えろ。")
             elif intent == "friend_no_reply":
-                if self._grounding_flag_enabled(grounding.get("reply_self_blame")):
-                    if grounding.get("reply_context") == "group_silence":
-                        add("グループが静かになると気になるよな。でも自分が邪魔だって決めつけるな。")
-                        add("急にグループが静かになると不安だけど、自分のせいだと決めつけるな。")
-                    else:
-                        add("返事がなくて不安なのは分かる。でも自分が悪いって決めつけるな。")
-                        add("返事ないと気になるよな。だからって自分のせいだと決めつけるな。")
-                add("返事こないの気になるのは分かる。今は追い打ちしすぎるなって。")
-                add("気になるのは分かるけど。今は一回待つ側に回れ。")
+                for reply_variant in self._reply_anxiety_surface_variants(grounding):
+                    add(reply_variant)
 
         if surface == "protective_brake":
             for withdrawal_variant in self._withdrawal_surface_variants(grounding):
@@ -9736,7 +9891,10 @@ class RightBrain:
 
     def _refine_conversational_reply(self, reply, logic_data, user_input, memory_data=None):
         reply = str(reply or "").strip()
-        if not self._reply_needs_conversation_density(reply, logic_data):
+        semantic_groups = self._required_surface_semantic_groups(logic_data)
+        _, initial_semantic_hits = self._surface_semantic_group_hits(reply, logic_data)
+        semantic_repair_needed = bool(semantic_groups) and not all(initial_semantic_hits)
+        if not semantic_repair_needed and not self._reply_needs_conversation_density(reply, logic_data):
             return reply
 
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
@@ -9761,7 +9919,6 @@ class RightBrain:
         candidates = list(dict.fromkeys([item for item in candidates if item]))
         if not candidates:
             return reply
-        semantic_groups = self._required_surface_semantic_groups(logic_data)
         if semantic_groups:
             full_semantic_candidates = []
             best_hit_count = -1
@@ -10784,6 +10941,7 @@ You are Ichinose Uruha.
 [Human speech realization plan]
 - dialogue_act={logic_data.get('dialogue_act', '')}
 - content_units={logic_data.get('human_speech_plan', {}).get('content_units', [])}
+- speech_moves={logic_data.get('human_speech_plan', {}).get('speech_moves', [])}
 - style_operators={logic_data.get('human_speech_plan', {}).get('style_operators', [])}
 - target_length={logic_data.get('human_speech_plan', {}).get('target_length', '')}
 - turn_opening_potential={logic_data.get('human_speech_plan', {}).get('turn_opening_potential', False)}
@@ -10881,6 +11039,7 @@ You are Ichinose Uruha.
                 "reference_probe",
                 "boundary_pushback",
                 "memory_accounting",
+                "practical_action_response",
             }:
                 templated = self._choose_variant(
                     speech_variants,
@@ -11195,12 +11354,15 @@ class UruhaBrainV4_Mac:
         speech_plan = logic.get("human_speech_plan") or {}
         dialogue_act = str(speech_plan.get("dialogue_act", logic.get("dialogue_act", "")) or "")
         content_units = [str(item or "").strip() for item in (speech_plan.get("content_units") or []) if str(item or "").strip()]
+        speech_moves = [item for item in (speech_plan.get("speech_moves") or []) if isinstance(item, dict)]
         recent_replies = [str(turn.get("reply", "")) for turn in (self.memory.session_turns or [])[-5:]]
 
         if not reply:
             issues.append("empty_reply")
         if not speech_plan:
             issues.append("missing_human_speech_plan")
+        if dialogue_act == "emotional_containment" and not speech_moves:
+            issues.append("missing_support_speech_moves")
         plan_leak_markers = [
             "まず一点だけ答える",
             "覚えている/曖昧",
