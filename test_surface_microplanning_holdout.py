@@ -39,6 +39,14 @@ class SurfaceMicroplanningHoldoutTest(unittest.TestCase):
     def test_outputs_are_not_exact_template_duplicates(self):
         self.assertEqual(self.summary["exact_reply_unique_ratio"], 1.0)
 
+    def test_planner_semantic_groups_survive_surface_realization(self):
+        failed = [
+            row["id"]
+            for row in self.rows
+            if row["planner_semantic_group_hits"] and not all(row["planner_semantic_group_hits"])
+        ]
+        self.assertEqual(failed, [])
+
     def test_report_scope_does_not_claim_human_naturalness(self):
         self.assertIn("cannot establish human naturalness", self.dataset["research_boundary"])
 

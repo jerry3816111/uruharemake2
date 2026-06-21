@@ -20,6 +20,10 @@ SURFACE_MICROPLANNING_HOLDOUT_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "surface_microplanning_holdout.json",
 )
+RIGHTBRAIN_MODEL_GATE_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_model_gate_development.json",
+)
 
 COGNITIVE_ARCHITECTURE_DATASET_PATH = os.path.join(DATASETS_DIR, "cognitive_architecture_eval_dataset.json")
 HUMAN_FEEDBACK_REGRESSION_DATASET_PATH = os.path.join(DATASETS_DIR, "human_feedback_regression_dataset.json")
@@ -82,6 +86,14 @@ SURFACE_MICROPLANNING_REPORT_JSON_PATH = os.path.join(
 SURFACE_MICROPLANNING_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "surface_microplanning_report.md",
+)
+RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_model_gate_report.json",
+)
+RIGHTBRAIN_MODEL_GATE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_model_gate_report.md",
 )
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")

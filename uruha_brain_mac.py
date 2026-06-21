@@ -78,6 +78,13 @@ def _env_int(name, default):
         return int(default)
 
 
+def _env_bool(name, default=False):
+    raw = os.getenv(name)
+    if raw is None or str(raw).strip() == "":
+        return bool(default)
+    return str(raw).strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _env_csv_floats(name, default_values):
     raw = os.getenv(name)
     if raw is None or str(raw).strip() == "":
@@ -114,8 +121,10 @@ OLLAMA_API_KEY = "ollama"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "uruha_memory_mac_db")
-RIGHT_BRAIN_BASE_MODEL = "Qwen/Qwen2.5-7B-Instruct"
-RIGHT_BRAIN_ADAPTER_PATH = os.path.join(BASE_DIR, "uruha_v10_all_linear_lora")
+RIGHT_BRAIN_BASE_MODEL = os.getenv("URUHA_RIGHT_BRAIN_BASE_MODEL", "Qwen/Qwen2.5-7B-Instruct")
+RIGHT_BRAIN_ADAPTER_PATH = os.path.abspath(
+    os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH", os.path.join(BASE_DIR, "uruha_v10_all_linear_lora"))
+)
 SCENE_VALUES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 WORKING_MEMORY_LIMIT = 5
 WORKING_MEMORY_RETRIEVAL_LIMIT = _env_int("URUHA_WORKING_MEMORY_RETRIEVAL_LIMIT", 20)
@@ -142,6 +151,15 @@ RIGHT_BRAIN_SAMPLE_TOP_P = _env_csv_floats("URUHA_RIGHT_BRAIN_SAMPLE_TOP_P", [0.
 RIGHT_BRAIN_SAMPLE_TOP_K = _env_csv_ints("URUHA_RIGHT_BRAIN_SAMPLE_TOP_K", [64, 96, 128])
 RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES = _env_csv_floats("URUHA_RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES", [1.2, 1.26, 1.32])
 RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE = _env_int("URUHA_RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE", 3)
+RIGHT_BRAIN_MODEL_BLEND_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED", False)
+RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT", 3)
+RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
+
+
+def _resolve_right_brain_model_loading(requested):
+    if requested is None:
+        return RIGHT_BRAIN_MODEL_BLEND_ENABLED
+    return bool(requested)
 
 
 def _compact_dialogue_text(text):
@@ -7827,12 +7845,16 @@ class RightBrain:
         self.compat_adapter_dir = None
         self.tokenizer = None
         self.model = None
+        self.model_blend_enabled = RIGHT_BRAIN_MODEL_BLEND_ENABLED
+        self.model_candidate_count = max(1, RIGHT_BRAIN_MODEL_CANDIDATE_COUNT)
+        self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
 
         if load_model:
             if not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
                 raise FileNotFoundError(f"Right brain adapter not found: {RIGHT_BRAIN_ADAPTER_PATH}")
 
-            print(Fore.CYAN + f"🧠 [Right Brain] Loading V10 on {self.device}...")
+            adapter_name = os.path.basename(os.path.normpath(RIGHT_BRAIN_ADAPTER_PATH))
+            print(Fore.CYAN + f"🧠 [Right Brain] Loading {adapter_name} on {self.device}...")
             self.compat_adapter_dir = self._build_compat_adapter(RIGHT_BRAIN_ADAPTER_PATH)
             self.tokenizer = AutoTokenizer.from_pretrained(RIGHT_BRAIN_BASE_MODEL, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -7844,7 +7866,7 @@ class RightBrain:
             self.model.to(self.device)
             self.model = PeftModel.from_pretrained(self.model, self.compat_adapter_dir)
             self.model.eval()
-            print(Fore.GREEN + "✅ Right Brain (Local V10 LoRA) Loaded!")
+            print(Fore.GREEN + f"✅ Right Brain ({adapter_name}) Loaded!")
 
         self.scene_fallbacks = {
             "support": [
@@ -8312,7 +8334,7 @@ class RightBrain:
         grounding = grounding or {}
         dialogue_act = logic_data.get("dialogue_act") or self._dialogue_act_from_plan(logic_data, user_input)
         if dialogue_act == "practical_action_response":
-            return [
+            moves = [
                 {
                     "role": "context_acknowledgement",
                     "kind": grounding.get("management_kind"),
@@ -8320,8 +8342,12 @@ class RightBrain:
                     "purpose": grounding.get("management_purpose"),
                 },
                 {"role": "agency_permission", "scope": "reversible_practical_action"},
-                {"role": "reversible_boundary", "scope": "restore_or_keep_needed_items"},
             ]
+            if grounding.get("management_purpose") == "privacy":
+                moves.append({"role": "normality_boundary", "scope": "ordinary_private_time"})
+            else:
+                moves.append({"role": "reversible_boundary", "scope": "restore_or_keep_needed_items"})
+            return moves
         if dialogue_act != "emotional_containment":
             return []
 
@@ -9370,7 +9396,7 @@ class RightBrain:
         grounding = logic_data.get("grounding") or {}
         intent = str(logic_data.get("intent") or "")
 
-        if self._grounding_flag_enabled(grounding.get("reply_self_blame")):
+        if intent == "friend_no_reply":
             reply_context = str(grounding.get("reply_context") or "")
             reply_signal = str(grounding.get("reply_signal") or "")
             if reply_signal == "read_receipt":
@@ -9379,10 +9405,38 @@ class RightBrain:
                 context_group = ("グループ", "チャット", "静か")
             else:
                 context_group = ("返事", "既読", "返信")
-            return [
+            groups = [
                 context_group,
                 ("不安", "気になる", "気に"),
-                ("決めつけ", "自分のせい", "自分で"),
+            ]
+            if self._grounding_flag_enabled(grounding.get("reply_self_blame")):
+                groups.append(("決めつけ", "自分のせい", "自分で"))
+            groups.append(("待", "少し置", "追い打ち"))
+            return groups
+
+        management_kind = str(grounding.get("management_kind") or "").strip().lower()
+        if management_kind:
+            context_groups = {
+                "do_not_disturb": ("通知", "メッセージ"),
+                "online_visibility": ("オンライン", "表示", "ログイン"),
+                "leave_group": ("グループ",),
+                "erase_trace": ("チャット", "履歴", "記録"),
+                "private_location": ("部屋", "トイレ", "一人"),
+            }
+            action_groups = {
+                "do_not_disturb": ("切", "止", "オフ", "閉"),
+                "online_visibility": ("隠", "消"),
+                "leave_group": ("抜", "離", "退出", "消え"),
+                "erase_trace": ("消", "整理", "封存"),
+                "private_location": ("過ご", "待", "いる"),
+            }
+            purpose = str(grounding.get("management_purpose") or "").strip().lower()
+            boundary_group = ("普通", "自然") if purpose == "privacy" else ("戻", "残", "必要", "後で")
+            return [
+                context_groups.get(management_kind, ("設定", "調整")),
+                action_groups.get(management_kind, ("変", "調整")),
+                ("いい", "構わない", "あり"),
+                boundary_group,
             ]
 
         withdrawal_risk = str(grounding.get("withdrawal_risk") or "").strip().lower()
@@ -9395,18 +9449,24 @@ class RightBrain:
             "leave_group": [("グループ", "抜け", "離れ")],
             "erase_trace": [("チャット", "履歴", "消")],
         }.get(withdrawal_kind, [])
+        action_groups = {
+            "do_not_disturb": [("切", "止", "閉")],
+            "online_visibility": [("隠", "消")],
+            "leave_group": [("抜", "離", "消え")],
+            "erase_trace": [("消", "整理")],
+        }.get(withdrawal_kind, [])
         if withdrawal_risk == "high":
-            return context_groups + [
+            return context_groups + action_groups + [
                 ("止ま", "切るな", "消えるな"),
                 ("一人", "誰か", "連絡", "近くの人"),
             ]
         if withdrawal_risk == "medium":
-            return context_groups + [
+            return context_groups + action_groups + [
                 ("一人", "少し離れ"),
                 ("誰か", "近くの人", "連絡", "場所", "伝え"),
             ]
         if withdrawal_risk == "mild":
-            return (context_groups or [("通知", "表示")]) + [
+            return (context_groups or [("通知", "表示")]) + action_groups + [
                 ("いい", "あり", "休", "静か", "隠", "止め"),
                 ("連絡", "メッセージ"),
             ]
@@ -11005,6 +11065,263 @@ You are Ichinose Uruha.
 - No English tags, no emoji, no metadata
 """
 
+    def _model_required_semantic_groups(self, logic_data):
+        return [tuple(group) for group in self._required_surface_semantic_groups(logic_data) if group]
+
+    def _model_surface_disabled_reason(self, logic_data):
+        if not self.model_blend_enabled:
+            return "model_blend_disabled"
+        if self.model is None or self.tokenizer is None:
+            return "model_not_loaded"
+        if logic_data.get("scene") in {"jealousy", "boundary", "refusal", "ooc_defense"}:
+            return "hard_boundary_scene"
+        grounding = logic_data.get("grounding") or {}
+        if str(grounding.get("withdrawal_risk") or "").lower() == "high":
+            return "high_withdrawal_risk"
+        if logic_data.get("intent") in {"crisis_support", "giving_up_support"}:
+            return "acute_support_intent"
+        if not self._model_required_semantic_groups(logic_data):
+            return "missing_semantic_contract"
+        return ""
+
+    def _model_surface_candidates_allowed(self, logic_data):
+        return not self._model_surface_disabled_reason(logic_data)
+
+    def _build_model_surface_payload(self, logic_data, current_psyche, max_chars):
+        speech_plan = logic_data.get("human_speech_plan") or {}
+        psyche = current_psyche if isinstance(current_psyche, dict) else {}
+        payload = {
+            "task": "write_one_natural_casual_japanese_reply",
+            "input_boundary": "Use only the normalized Japanese plan below; the original user language is intentionally hidden.",
+            "situation_jp": str(logic_data.get("jp_summary") or ""),
+            "intent": str(logic_data.get("intent") or ""),
+            "scene": str(logic_data.get("scene") or ""),
+            "dialogue_act": str(speech_plan.get("dialogue_act") or logic_data.get("dialogue_act") or ""),
+            "surface_act": str(logic_data.get("surface_act") or ""),
+            "leftbrain_meaning": str(logic_data.get("core_message_jp") or ""),
+            "speech_moves": speech_plan.get("speech_moves") or [],
+            "style_operators": speech_plan.get("style_operators") or [],
+            "required_semantic_groups": [list(group) for group in self._model_required_semantic_groups(logic_data)],
+            "mood": psyche.get("mood", 0),
+            "trust": psyche.get("trust", 50),
+            "recent_assistant_replies": [
+                item.get("content", "") for item in self.history[-4:] if item.get("role") == "assistant"
+            ],
+            "max_chars": int(max_chars or 48),
+            "must_avoid": list(logic_data.get("must_avoid") or []),
+        }
+        return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+    def _model_candidate_rejection_reasons(self, reply, logic_data, max_chars, user_input=""):
+        reply = str(reply or "").strip()
+        reasons = []
+        if not reply:
+            return ["empty"]
+        if not re.search(r"[ぁ-んァ-ヶー一-龠]", reply):
+            reasons.append("missing_japanese_surface")
+
+        chinese_specific = re.compile(
+            r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]|好了|不是|我想|你的|可以|為什麼|为什么"
+        )
+        if chinese_specific.search(reply):
+            reasons.append("cjk_language_leak")
+
+        allowed_ascii = set(
+            token.lower()
+            for token in re.findall(
+                r"[A-Za-z][A-Za-z0-9_-]{1,}",
+                f"{user_input} {logic_data.get('core_message_jp', '')}",
+            )
+        )
+        leaked_ascii = {
+            token.lower() for token in re.findall(r"[A-Za-z][A-Za-z0-9_-]{1,}", reply)
+            if token.lower() not in allowed_ascii
+        }
+        if leaked_ascii:
+            reasons.append("unexpected_ascii_leak")
+
+        instruction_markers = [
+            "required_semantic", "speech_moves", "leftbrain", "ユーザー入力", "出力契約",
+            "一回止まって聞き返す", "それで普通に返せるだろ", "回答を生成",
+        ]
+        if any(marker.lower() in reply.lower() for marker in instruction_markers):
+            reasons.append("instruction_or_plan_leak")
+        if re.search(r"(?:です|ます|ください|ございました|しましょう)(?:[。！？!?]|$)", reply):
+            reasons.append("polite_tone_drift")
+        if any(marker in reply for marker in ["詫び", "お詫び", "謝罪いた"]):
+            reasons.append("formal_register_drift")
+
+        groups = self._model_required_semantic_groups(logic_data)
+        semantic_hits = [any(marker and marker in reply for marker in group) for group in groups]
+        if groups and not all(semantic_hits):
+            reasons.append(f"semantic_slots_missing:{sum(semantic_hits)}/{len(semantic_hits)}")
+
+        must_avoid = [str(item) for item in logic_data.get("must_avoid") or [] if str(item).strip()]
+        if any(marker in reply for marker in must_avoid):
+            reasons.append("must_avoid_violation")
+        if len(reply) > int(max_chars or 48) + 2:
+            reasons.append("over_max_chars")
+
+        grounding = logic_data.get("grounding") or {}
+        risk = str(grounding.get("withdrawal_risk") or "").lower()
+        if risk in {"mild", "medium"} and any(
+            marker in reply for marker in ["今すぐ", "危ない", "消えるな", "一人で思い詰め", "しゃべり合おう"]
+        ):
+            reasons.append("risk_overreaction")
+        if risk in {"mild", "medium"} and "一人" in reply and any(
+            marker in reply for marker in ["悩", "思い詰", "抱え"]
+        ):
+            reasons.append("risk_overreaction")
+        if grounding.get("management_kind") and any(
+            marker in reply for marker in ["誰かに連絡", "一人で抱え", "一人で思い詰め", "危ない"]
+        ):
+            reasons.append("benign_action_overreaction")
+        return list(dict.fromkeys(reasons))
+
+    def _generate_model_surface_candidates(
+        self,
+        user_input,
+        logic_data,
+        memory_data,
+        current_psyche,
+        max_chars,
+    ):
+        disabled_reason = self._model_surface_disabled_reason(logic_data)
+        trace = {
+            "selection_mode": "strict_model_candidate_gate",
+            "disabled_reason": disabled_reason or None,
+            "semantic_contract": [list(group) for group in self._model_required_semantic_groups(logic_data)],
+            "accepted": [],
+            "rejected": [],
+        }
+        logic_data["model_surface_candidate_trace"] = trace
+        if disabled_reason:
+            return []
+
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "あなたは、左脳の発話計画を自然な日本語口語へ変える表現器。"
+                    "一ノ瀬うるは風の、少し気だるく直接的な口調にする。"
+                    "required_semantic_groups の各組から意味を一つずつ必ず残す。"
+                    "元の外国語入力は推測も復唱もせず、日本語の返答一つだけを出す。"
+                    "JSON、ラベル、分析、敬語、説明文は出さない。"
+                ),
+            },
+            {
+                "role": "user",
+                "content": self._build_model_surface_payload(
+                    logic_data,
+                    current_psyche,
+                    max_chars,
+                ),
+            },
+        ]
+        prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {key: value.to(self.device) for key, value in inputs.items()}
+        setting_count = min(
+            self.model_candidate_count,
+            len(RIGHT_BRAIN_SAMPLE_TEMPERATURES),
+            len(RIGHT_BRAIN_SAMPLE_TOP_P),
+            len(RIGHT_BRAIN_SAMPLE_TOP_K),
+            len(RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES),
+        )
+        accepted = []
+        seen = set()
+        with torch.no_grad():
+            for idx in range(setting_count):
+                output = self.model.generate(
+                    **inputs,
+                    max_new_tokens=56,
+                    do_sample=True,
+                    temperature=RIGHT_BRAIN_SAMPLE_TEMPERATURES[idx],
+                    top_p=RIGHT_BRAIN_SAMPLE_TOP_P[idx],
+                    top_k=RIGHT_BRAIN_SAMPLE_TOP_K[idx],
+                    repetition_penalty=RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES[idx],
+                    no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
+                    renormalize_logits=True,
+                    pad_token_id=self.tokenizer.eos_token_id,
+                )
+                raw_reply = self.tokenizer.decode(
+                    output[0][inputs["input_ids"].shape[1] :],
+                    skip_special_tokens=False,
+                )
+                raw_reply = raw_reply.split("<|im_end|>")[0].strip()
+                raw_reasons = self._model_candidate_rejection_reasons(
+                    raw_reply,
+                    logic_data,
+                    max_chars,
+                    user_input=user_input,
+                )
+                if raw_reasons:
+                    trace["rejected"].append({"raw_candidate": raw_reply, "rejection_reasons": raw_reasons})
+                    continue
+
+                candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)
+                candidate = self._refine_conversational_reply(
+                    candidate,
+                    logic_data,
+                    user_input,
+                    memory_data=memory_data,
+                )
+                candidate = self._finalize_surface_reply(candidate, logic_data, user_input, max_chars=max_chars)
+                final_reasons = self._model_candidate_rejection_reasons(
+                    candidate,
+                    logic_data,
+                    max_chars,
+                    user_input=user_input,
+                )
+                normalized = self._normalize_reply_key(candidate)
+                if normalized in seen:
+                    final_reasons.append("duplicate_candidate")
+                if final_reasons:
+                    trace["rejected"].append(
+                        {
+                            "raw_candidate": raw_reply,
+                            "candidate": candidate,
+                            "rejection_reasons": list(dict.fromkeys(final_reasons)),
+                        }
+                    )
+                    continue
+                seen.add(normalized)
+                score = self._score_candidate(candidate, logic_data)
+                trace["accepted"].append({"raw_candidate": raw_reply, "candidate": candidate, "score": score})
+                accepted.append(candidate)
+        return accepted
+
+    def _select_model_blended_reply(self, deterministic_reply, model_candidates, logic_data):
+        deterministic_score = self._score_candidate(deterministic_reply, logic_data)
+        selection = {
+            "deterministic_candidate": deterministic_reply,
+            "deterministic_score": deterministic_score,
+            "model_candidate_count": len(model_candidates),
+            "selected_source": "deterministic",
+            "selection_margin": self.model_selection_margin,
+        }
+        if not model_candidates:
+            logic_data["model_surface_selection"] = selection
+            return deterministic_reply
+
+        ranked_models = sorted(
+            ((self._score_candidate(candidate, logic_data), candidate) for candidate in model_candidates),
+            reverse=True,
+        )
+        best_score, best_candidate = ranked_models[0]
+        selection["model_candidates"] = [
+            {"candidate": candidate, "score": score} for score, candidate in ranked_models
+        ]
+        selection["best_model_score"] = best_score
+        if best_score >= deterministic_score + self.model_selection_margin:
+            selection["selected_source"] = "model"
+            selection["selected_candidate"] = best_candidate
+            logic_data["model_surface_selection"] = selection
+            return best_candidate
+        selection["selected_candidate"] = deterministic_reply
+        logic_data["model_surface_selection"] = selection
+        return deterministic_reply
+
     def speak(self, user_input, logic_data, memory_data, current_psyche):
         original_logic_data = logic_data if isinstance(logic_data, dict) else {}
         logic_data = dict(logic_data or {})
@@ -11022,11 +11339,16 @@ You are Ichinose Uruha.
             original_logic_data["constraints"] = deepcopy(logic_data.get("constraints") or {})
             original_logic_data["must_avoid"] = list(logic_data.get("must_avoid") or [])
 
-        system_prompt = self._build_system_prompt(logic_data, memory_data, current_psyche)
+        def publish_model_trace():
+            if not isinstance(original_logic_data, dict):
+                return
+            for key in ("model_surface_candidate_trace", "model_surface_selection"):
+                if key in logic_data:
+                    original_logic_data[key] = deepcopy(logic_data.get(key))
+
         summary = logic_data.get("jp_summary", "ユーザーが何か話している。")
         core_message = logic_data.get("core_message_jp", "軽く返事する")
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
-        must_avoid = ", ".join(logic_data.get("must_avoid", []))
         templated = self._template_reply(logic_data, user_input=user_input, current_psyche=current_psyche, memory_data=memory_data)
         intent = logic_data.get("intent", "chat")
 
@@ -11047,9 +11369,28 @@ You are Ichinose Uruha.
                     intent=intent,
                     max_chars=max_chars,
                 ) or templated
-            reply = self._refine_conversational_reply(templated, logic_data, user_input, memory_data=memory_data)
-            reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
+            deterministic_reply = self._refine_conversational_reply(
+                templated,
+                logic_data,
+                user_input,
+                memory_data=memory_data,
+            )
+            deterministic_reply = self._finalize_surface_reply(
+                deterministic_reply,
+                logic_data,
+                user_input,
+                max_chars=max_chars,
+            )
+            model_candidates = self._generate_model_surface_candidates(
+                user_input=user_input,
+                logic_data=logic_data,
+                memory_data=memory_data,
+                current_psyche=current_psyche,
+                max_chars=max_chars,
+            )
+            reply = self._select_model_blended_reply(deterministic_reply, model_candidates, logic_data)
             self._remember_turn(summary, reply, intent)
+            publish_model_trace()
             return reply
 
         # High-risk scenes are better handled deterministically than letting a small persona model drift.
@@ -11058,95 +11399,47 @@ You are Ichinose Uruha.
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
+            publish_model_trace()
             return reply
         if logic_data.get("scene") == "support" and "少し話して" in core_message:
             reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
+            publish_model_trace()
             return reply
         if self.model is None or self.tokenizer is None:
             reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
+            publish_model_trace()
             return reply
 
-        messages = [{"role": "system", "content": system_prompt}]
-        messages.extend(self.history[-4:])
-        messages.append(
-            {
-                "role": "user",
-                "content": (
-                    f"[状況] {summary}\n"
-                    f"[言うべき意味] {core_message}\n"
-                    f"[避けるもの] {must_avoid}\n"
-                    "上の意味だけを、自然な一言の口語で返して。"
-                ),
-            }
+        deterministic_reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
+        deterministic_reply = self._refine_conversational_reply(
+            deterministic_reply,
+            logic_data,
+            user_input,
+            memory_data=memory_data,
         )
-
-        prompt = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True,
+        deterministic_reply = self._finalize_surface_reply(
+            deterministic_reply,
+            logic_data,
+            user_input,
+            max_chars=max_chars,
         )
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        inputs = {k: v.to(self.device) for k, v in inputs.items()}
-        candidates = []
-        generation_settings = []
-        max_setting_count = min(
-            len(RIGHT_BRAIN_SAMPLE_TEMPERATURES),
-            len(RIGHT_BRAIN_SAMPLE_TOP_P),
-            len(RIGHT_BRAIN_SAMPLE_TOP_K),
-            len(RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES),
+        model_candidates = self._generate_model_surface_candidates(
+            user_input=user_input,
+            logic_data=logic_data,
+            memory_data=memory_data,
+            current_psyche=current_psyche,
+            max_chars=max_chars,
         )
-        for idx in range(max_setting_count):
-            generation_settings.append(
-                {
-                    "temperature": RIGHT_BRAIN_SAMPLE_TEMPERATURES[idx],
-                    "top_p": RIGHT_BRAIN_SAMPLE_TOP_P[idx],
-                    "top_k": RIGHT_BRAIN_SAMPLE_TOP_K[idx],
-                    "repetition_penalty": RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES[idx],
-                }
-            )
-
-        if templated:
-            candidates.append((self._score_candidate(templated, logic_data) + 0.8, templated))
-
-        with torch.no_grad():
-            for setting in generation_settings:
-                output = self.model.generate(
-                    **inputs,
-                    max_new_tokens=44,
-                    do_sample=True,
-                    temperature=setting["temperature"],
-                    top_p=setting["top_p"],
-                    top_k=setting["top_k"],
-                    repetition_penalty=setting["repetition_penalty"],
-                    no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
-                    renormalize_logits=True,
-                    pad_token_id=self.tokenizer.eos_token_id,
-                )
-                raw_reply = self.tokenizer.decode(
-                    output[0][inputs["input_ids"].shape[1]:],
-                    skip_special_tokens=False,
-                )
-                reply = raw_reply.split("<|im_end|>")[0].strip()
-                reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
-                reply = self._sanitize_reply(reply, max_chars=max_chars)
-                candidates.append((self._score_candidate(reply, logic_data), reply))
-
-        candidates.sort(key=lambda item: item[0], reverse=True)
-        reply = (
-            candidates[0][1]
-            if candidates and candidates[0][0] >= 1.5
-            else self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
-        )
-        reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
-        reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
+        reply = self._select_model_blended_reply(deterministic_reply, model_candidates, logic_data)
 
         self._remember_turn(summary, reply, intent)
+        publish_model_trace()
 
         return reply
 
@@ -11155,7 +11448,7 @@ You are Ichinose Uruha.
 # 🚀 核心控制器 (Main Loop)
 # ===========================
 class UruhaBrainV4_Mac:
-    def __init__(self, load_right_brain_model=True):
+    def __init__(self, load_right_brain_model=None):
         print(Fore.CYAN + "🍎 Uruha V5 Local Dual-Brain Starting...")
 
         try:
@@ -11181,7 +11474,7 @@ class UruhaBrainV4_Mac:
         )
         self.psyche = Psyche(config=self.psyche_config)
         self.left_brain = LeftBrain(self.client_logic)
-        self.right_brain = RightBrain(load_model=load_right_brain_model)
+        self.right_brain = RightBrain(load_model=_resolve_right_brain_model_loading(load_right_brain_model))
         self.runtime = RuntimeState(config=self.runtime_config)
         self.runtime.touch_interaction(reset_drives=True)
         self._last_external_input_at = time.time()

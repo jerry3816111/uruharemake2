@@ -174,7 +174,9 @@ class TestHumanBlindGeneralizationSurface(unittest.TestCase):
             memory_data={},
         )
 
-        self.assertEqual(groups, [])
+        self.assertTrue(any("返事" in group for group in groups))
+        self.assertTrue(any("待" in group for group in groups))
+        self.assertFalse(any("自分のせい" in group or "決めつけ" in group for group in groups))
         self.assertNotIn("決めつけ", reply)
 
     def test_surface_sanitizer_collapses_duplicate_punctuation(self):
