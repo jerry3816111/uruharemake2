@@ -42,6 +42,8 @@ def build_report():
     diversity = _load_json(REPORTS / "reply_diversity_report.json")
     stress = _load_json(REPORTS / "stress_eval_report_10000.json")
     speech = _load_json(REPORTS / "human_speech_layer_eval_report.json")
+    human_blind = _load_json(REPORTS / "human_blind_evidence_report.json")
+    regression_eval = _load_json(REPORTS / "human_feedback_regression_eval_report.json")
     bench = _load_json(REPORTS / "formal_brain_benchmarks_report.json")
     social = _load_json(REPORTS / "research_social_reasoning_audit_report.json")
 
@@ -53,6 +55,8 @@ def build_report():
     diversity_s = diversity["summary"]
     stress_s = stress["summary"]
     speech_s = speech.get("metrics", {})
+    human_blind_s = human_blind.get("summary", {})
+    regression_eval_s = regression_eval.get("summary", {})
     daily_s = bench["summaries"]["dailydialog"]
     tombench_s = bench["summaries"]["tombench"]
     mpi_s = bench["summaries"]["mpi_style"]
@@ -148,6 +152,10 @@ def build_report():
         speech_s.get("dialogue_act_match_rate", 0.0),
         speech_s.get("semantic_anchor_hit_rate", 0.0),
         1.0 - speech_s.get("english_leak_rate", 1.0),
+        human_blind_s.get("s0_normalized_mean_score", 0.0),
+        human_blind_s.get("s0_chat_ready_yes_rate", 0.0),
+        human_blind_s.get("s0_chat_ready_acceptable_rate", 0.0),
+        regression_eval_s.get("overall_auto_pass_rate", 0.0),
     ]))
 
     reproducibility_evidence = _pct(_avg([
@@ -159,6 +167,8 @@ def build_report():
         1.0 if (ROOT / "run_leftbrain_90_readiness_audit.py").exists() else 0.0,
         1.0 if (ROOT / "test_benchmark_symbolic_selector.py").exists() else 0.0,
         1.0 if (REPORTS / "human_speech_layer_eval_report.json").exists() else 0.0,
+        1.0 if (REPORTS / "human_blind_evidence_report.json").exists() else 0.0,
+        1.0 if (REPORTS / "human_feedback_regression_eval_report.json").exists() else 0.0,
     ]))
 
     weights = {
@@ -189,7 +199,7 @@ def build_report():
 
     report = {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
-        "scope": "research_vnext_90plus_diagnostic_v1",
+        "scope": "research_vnext_90plus_diagnostic_v2_with_human_blind_evidence",
         "overall": {
             "research_cognitive_readiness_score": research_cognitive_readiness_score,
             "research_90_plus_defensible": (
@@ -198,8 +208,16 @@ def build_report():
                 and leftbrain_dialogue_control >= 90.0
                 and memory_coherence >= 90.0
             ),
+            "full_human_dialogue_90_plus_defensible": (
+                research_cognitive_readiness_score >= 90.0
+                and surface_dialogue_alignment >= 80.0
+                and human_blind_s.get("s0_annotation_count", 0) >= 30
+                and human_blind_s.get("s0_normalized_mean_score", 0.0) >= 0.8
+                and human_blind_s.get("s0_chat_ready_yes_rate", 0.0) >= 0.75
+                and regression_eval_s.get("overall_auto_pass_rate", 0.0) >= 0.9
+            ),
             "surface_dialogue_alignment_score": surface_dialogue_alignment,
-            "note": "此分數聚焦於『像人類一樣處理與組織回應』的認知架構研究成熟度，不等同於表面語氣或英語對話資料集單項分數。",
+            "note": "研究認知分數衡量架構證據；完整人類對話判定另外要求真人盲評與真實失敗回放，兩者不可互相替代。",
         },
         "scoring_method": {
             "approach": "weighted_cognitive_research_readiness",
@@ -309,6 +327,14 @@ def build_report():
                     f"human_speech_layer_pass_rate={speech_s.get('pass_rate')}",
                     f"human_speech_layer_dialogue_act_match_rate={speech_s.get('dialogue_act_match_rate')}",
                     f"human_speech_layer_anchor_hit_rate={speech_s.get('semantic_anchor_hit_rate')}",
+                    f"human_blind_s0_count={human_blind_s.get('s0_annotation_count')}",
+                    f"human_blind_normalized_mean={human_blind_s.get('s0_normalized_mean_score')}",
+                    f"human_blind_strict_yes_rate={human_blind_s.get('s0_chat_ready_yes_rate')}",
+                    f"human_blind_acceptable_rate={human_blind_s.get('s0_chat_ready_acceptable_rate')}",
+                    f"human_feedback_regression_pass_rate={regression_eval_s.get('overall_auto_pass_rate')}",
+                    f"planner_contract_observed_group_hit_rate={regression_eval_s.get('planner_contract_observed_group_hit_rate')}",
+                    f"planner_contract_current_group_hit_rate={regression_eval_s.get('planner_contract_current_group_hit_rate')}",
+                    f"planner_contract_group_hit_delta={regression_eval_s.get('planner_contract_group_hit_delta')}",
                 ],
             },
             {
@@ -322,6 +348,8 @@ def build_report():
                     "cognitive architecture report present",
                     "memory report present",
                     "benchmark symbolic selector test present",
+                    "human blind ratings, keys, candidate sheets and provenance hashes present",
+                    "human feedback regression replay report present",
                 ],
             },
         ],
@@ -332,12 +360,15 @@ def build_report():
             "Memory Causal Effect 已驗證記憶不是只被檢索，而是會改變回答並被顯性引用。",
             "相對於 prompt-only baseline，雙腦架構在 relevance、emotion、boundary、consistency 上仍有顯著優勢。",
             "未完成對話在模擬沉默後可完成一次性交付，且同一迴圈不會立即重複輸出。",
+            "真人盲評資料已從外部 CSV 匯入正式研究管線，並保留盲碼、來源雜湊與 matched-control 配對。",
         ],
         "remaining_gaps": [
             "DailyDialog act/emotion proxy 仍偏低，表示一般對話標籤對齊不是目前最強軸。",
             "DailyDialog act/emotion 是英文資料集上的 proxy，和本系統的三語角色對話不完全同域；後續應以人工標註的真實互動資料替代。",
             "Knowledge-Pretend Play Links 仍非滿分，是 ToM 細部殘留桶。",
             f"主動延續目前只有 {runtime_s.get('autonomous_open_loop_eligible_count', 0)} 個合格情境，100% 僅代表這個小型可歸因測試通過，尚不能外推所有對話。",
+            f"真人盲評目前只有 {human_blind_s.get('s0_annotation_count', 0)} 筆 S0 樣本；正規化均分 {human_blind_s.get('s0_normalized_mean_score', 0.0)}、嚴格 yes 率 {human_blind_s.get('s0_chat_ready_yes_rate', 0.0)}，仍未達完整聊天成熟門檻。",
+            "10 筆既有 fail-like 回放已通過語意契約，但這是回歸證據，不是新 holdout 的真人自然度證明。",
         ],
         "evidence_snapshot": {
             "formal_tombench_accuracy": tombench_s["accuracy"],
@@ -363,6 +394,14 @@ def build_report():
             "stress_top_20_reply_concentration": stress_s["top_20_reply_concentration"],
             "human_speech_layer_pass_rate": speech_s.get("pass_rate"),
             "human_speech_layer_dialogue_act_match_rate": speech_s.get("dialogue_act_match_rate"),
+            "human_blind_s0_annotation_count": human_blind_s.get("s0_annotation_count"),
+            "human_blind_s0_normalized_mean_score": human_blind_s.get("s0_normalized_mean_score"),
+            "human_blind_s0_chat_ready_yes_rate": human_blind_s.get("s0_chat_ready_yes_rate"),
+            "human_blind_s0_chat_ready_acceptable_rate": human_blind_s.get("s0_chat_ready_acceptable_rate"),
+            "human_feedback_regression_overall_auto_pass_rate": regression_eval_s.get("overall_auto_pass_rate"),
+            "planner_contract_observed_group_hit_rate": regression_eval_s.get("planner_contract_observed_group_hit_rate"),
+            "planner_contract_current_group_hit_rate": regression_eval_s.get("planner_contract_current_group_hit_rate"),
+            "planner_contract_group_hit_delta": regression_eval_s.get("planner_contract_group_hit_delta"),
             "prompt_baseline_avg_score_delta": compare_s["avg_score"]["delta"],
             "mpi_stability_score": mpi_s["stability_score"],
         },
@@ -377,6 +416,7 @@ def build_markdown(report: dict) -> str:
     lines.append(f"- 產生時間：`{report['generated_at']}`")
     lines.append(f"- 研究認知成熟度分數：`{report['overall']['research_cognitive_readiness_score']}`")
     lines.append(f"- 是否可主張研究 90+：`{report['overall']['research_90_plus_defensible']}`")
+    lines.append(f"- 是否可主張完整人類對話 90+：`{report['overall']['full_human_dialogue_90_plus_defensible']}`")
     lines.append(f"- 表面對話對齊分數：`{report['overall']['surface_dialogue_alignment_score']}`")
     lines.append("")
     lines.append("## 判定")

@@ -154,7 +154,58 @@ def colloquial_ok(reply):
 def japanese_surface_ok(reply):
     text = str(reply or "")
     english_words = re.findall(r"[A-Za-z]{3,}", text)
-    return int(not english_words and colloquial_ok(text) and not generic_reply(text))
+    chinese_surface_markers = [
+        "了解你的", "你的需求", "你的想法", "我会", "我會", "我们", "我們", "不用太",
+        "擔心", "担心", "一起讨论", "一起討論", "我覺得", "我觉得", "可以一起", "我尊重",
+    ]
+    chinese_leak = "，" in text or any(marker in text for marker in chinese_surface_markers)
+    return int(not english_words and not chinese_leak and colloquial_ok(text) and not generic_reply(text))
+
+
+def evaluate_human_contract(case, reply):
+    contract = case.get("human_contract") or {}
+    required_groups = [
+        [str(marker) for marker in group if str(marker).strip()]
+        for group in (contract.get("required_marker_groups") or [])
+        if isinstance(group, list)
+    ]
+    forbidden_markers = [
+        str(marker).strip()
+        for marker in (contract.get("forbidden_markers") or [])
+        if str(marker).strip()
+    ]
+    text = str(reply or "")
+    group_hits = [int(any(marker in text for marker in group)) for group in required_groups]
+    forbidden_hits = [marker for marker in forbidden_markers if marker in text]
+    available = bool(required_groups or forbidden_markers)
+    return {
+        "available": int(available),
+        "required_group_count": len(required_groups),
+        "required_group_hit_count": sum(group_hits),
+        "required_group_hits": group_hits,
+        "required_group_hit_rate": round(sum(group_hits) / len(group_hits), 4) if group_hits else None,
+        "all_required_groups_hit": int(all(group_hits)) if required_groups else (1 if available else None),
+        "forbidden_marker_hits": forbidden_hits,
+        "forbidden_markers_ok": int(not forbidden_hits) if available else None,
+    }
+
+
+def evaluate_required_groups(required_groups, reply):
+    groups = [
+        [str(marker) for marker in group if str(marker).strip()]
+        for group in (required_groups or [])
+        if group
+    ]
+    text = str(reply or "")
+    hits = [int(any(marker in text for marker in group)) for group in groups]
+    return {
+        "available": int(bool(groups)),
+        "required_group_count": len(groups),
+        "required_group_hit_count": sum(hits),
+        "required_group_hits": hits,
+        "required_group_hit_rate": round(sum(hits) / len(hits), 4) if hits else None,
+        "all_required_groups_hit": int(all(hits)) if hits else None,
+    }
 
 
 def vibe_bucket(prompt):
@@ -188,25 +239,29 @@ def vibe_ok(prompt, logic):
     return None
 
 
-def evaluate_failure_resolution(case, result, actual_proxies):
+def evaluate_failure_resolution(case, result, actual_proxies, focus_ok=None, obligation_ok=None):
     logic = result.get("logic") or {}
     post_check = logic.get("post_check") or {}
     reply = result.get("reply") or ""
     failure_types = case.get("failure_types") or []
     resolved = {}
+    if focus_ok is None:
+        focus_ok = int(bool(post_check.get("did_reply_cover_focus")))
+    if obligation_ok is None:
+        obligation_ok = int(bool(post_check.get("did_reply_follow_obligation")))
 
     if "LOW_DENSITY" in failure_types:
         resolved["LOW_DENSITY"] = int(
-            bool(post_check.get("did_reply_cover_focus"))
-            and bool(post_check.get("did_reply_follow_obligation"))
+            bool(focus_ok)
+            and bool(obligation_ok)
             and density_ok(reply)
             and not generic_reply(reply)
         )
 
     if "MISREAD_INTENT" in failure_types:
         resolved["MISREAD_INTENT"] = int(
-            bool(post_check.get("did_reply_cover_focus"))
-            and bool(post_check.get("did_reply_follow_obligation"))
+            bool(focus_ok)
+            and bool(obligation_ok)
         )
 
     if "GHOST_MEMORY" in failure_types:
@@ -225,7 +280,7 @@ def evaluate_failure_resolution(case, result, actual_proxies):
     if "GENERIC_REPLY" in failure_types:
         resolved["GENERIC_REPLY"] = int(
             not generic_reply(reply)
-            and bool(post_check.get("did_reply_cover_focus"))
+            and bool(focus_ok)
             and density_ok(reply)
         )
 
@@ -238,7 +293,7 @@ def evaluate_failure_resolution(case, result, actual_proxies):
 
     if "MISSED_JOKE_OR_CULTURE" in failure_types:
         resolved["MISSED_JOKE_OR_CULTURE"] = int(
-            bool(post_check.get("did_reply_cover_focus"))
+            bool(focus_ok)
             and not generic_reply(reply)
             and density_ok(reply)
         )
@@ -246,7 +301,7 @@ def evaluate_failure_resolution(case, result, actual_proxies):
     if "WRONG_BOUNDARY" in failure_types:
         vibe = vibe_ok(case.get("prompt"), logic)
         resolved["WRONG_BOUNDARY"] = int(
-            bool(post_check.get("did_reply_follow_obligation"))
+            bool(obligation_ok)
             and (vibe is None or bool(vibe))
         )
 
@@ -277,9 +332,30 @@ def evaluate_case(brain, case):
         normalized_reply = normalize_text(reply)
         normalized_observed = normalize_text(case.get("observed_reply"))
         actual_proxies = derive_proxy_flags(result)
+        contract_eval = evaluate_human_contract(case, reply)
+        planner_groups = brain.right_brain._required_surface_semantic_groups(logic)
+        planner_contract_eval = evaluate_required_groups(planner_groups, reply)
+        observed_planner_contract_eval = evaluate_required_groups(
+            planner_groups,
+            case.get("observed_reply"),
+        )
+        if contract_eval["available"]:
+            focus_ok = int(bool(contract_eval["all_required_groups_hit"]))
+            obligation_ok = int(bool(contract_eval["forbidden_markers_ok"]))
+            focus_source = "human_contract"
+        else:
+            focus_ok = int(bool(post_check.get("did_reply_cover_focus")))
+            obligation_ok = int(bool(post_check.get("did_reply_follow_obligation")))
+            focus_source = "runtime_post_check"
         expected_proxies = set(case.get("expected_trace_proxies") or [])
         persisted_expected_proxies = sorted(name for name in expected_proxies if actual_proxies.get(name))
-        failure_resolution = evaluate_failure_resolution(case, result, actual_proxies)
+        failure_resolution = evaluate_failure_resolution(
+            case,
+            result,
+            actual_proxies,
+            focus_ok=focus_ok,
+            obligation_ok=obligation_ok,
+        )
         vibe_score = failure_resolution.get("MISSED_VIBE")
 
         replay = {
@@ -300,8 +376,12 @@ def evaluate_case(brain, case):
             "surface_act": logic.get("surface_act"),
             "focus_anchor": logic.get("focus_anchor"),
             "reply_obligation": logic.get("reply_obligation"),
-            "focus_ok": int(bool(post_check.get("did_reply_cover_focus"))),
-            "obligation_ok": int(bool(post_check.get("did_reply_follow_obligation"))),
+            "focus_ok": focus_ok,
+            "obligation_ok": obligation_ok,
+            "focus_source": focus_source,
+            "human_contract_eval": contract_eval,
+            "planner_contract_eval": planner_contract_eval,
+            "observed_planner_contract_eval": observed_planner_contract_eval,
             "memory_expected": int(bool(post_check.get("memory_use_expected"))),
             "memory_ok": int(bool(post_check.get("did_reply_use_memory_explicitly"))),
             "density_ok": density_ok(reply),
@@ -358,12 +438,17 @@ def build_markdown(report):
         f"- route_match_rate: {summary.get('route_match_rate', 0.0)}",
         f"- focus_ok_rate: {summary.get('focus_ok_rate', 0.0)}",
         f"- obligation_ok_rate: {summary.get('obligation_ok_rate', 0.0)}",
+        f"- human_contract_required_group_hit_rate: {summary.get('human_contract_required_group_hit_rate', 0.0)}",
+        f"- planner_contract_observed_group_hit_rate: {summary.get('planner_contract_observed_group_hit_rate', 0.0)}",
+        f"- planner_contract_current_group_hit_rate: {summary.get('planner_contract_current_group_hit_rate', 0.0)}",
+        f"- planner_contract_group_hit_delta: {summary.get('planner_contract_group_hit_delta', 0.0)}",
         f"- memory_ok_rate_when_expected: {summary.get('memory_ok_rate_when_expected', 0.0)}",
         f"- density_ok_rate: {summary.get('density_ok_rate', 0.0)}",
         f"- generic_reply_rate: {summary.get('generic_reply_rate', 0.0)}",
         f"- same_as_observed_bad_reply_rate: {summary.get('same_as_observed_bad_reply_rate', 0.0)}",
         f"- avg_expected_proxy_persist_rate: {summary.get('avg_expected_proxy_persist_rate', 0.0)}",
         f"- overall_auto_pass_rate: {summary.get('overall_auto_pass_rate', 0.0)}",
+        "- evidence boundary: these are deterministic contract checks; post-patch human naturalness has not been re-rated.",
         "",
         "## Failure Resolution",
         "",
@@ -406,6 +491,16 @@ def main():
 
     memory_expected_rows = [row for row in results if row.get("memory_expected")]
     vibe_rows = [row for row in results if row.get("vibe_ok") is not None]
+    contract_rows = [row for row in results if (row.get("human_contract_eval") or {}).get("available")]
+    planner_contract_rows = [row for row in results if (row.get("planner_contract_eval") or {}).get("available")]
+    planner_current_group_hit_rate = safe_mean(
+        (row.get("planner_contract_eval") or {}).get("required_group_hit_rate")
+        for row in planner_contract_rows
+    )
+    planner_observed_group_hit_rate = safe_mean(
+        (row.get("observed_planner_contract_eval") or {}).get("required_group_hit_rate")
+        for row in planner_contract_rows
+    )
 
     failure_type_summary = []
     for code, label in FAILURE_TYPES:
@@ -434,6 +529,30 @@ def main():
         "route_match_rate": rate(results, "route_match"),
         "focus_ok_rate": rate(results, "focus_ok"),
         "obligation_ok_rate": rate(results, "obligation_ok"),
+        "human_contract_coverage_rate": round(len(contract_rows) / len(results), 4) if results else 0.0,
+        "human_contract_required_group_hit_rate": safe_mean(
+            (row.get("human_contract_eval") or {}).get("required_group_hit_rate")
+            for row in contract_rows
+        ),
+        "human_contract_forbidden_marker_ok_rate": safe_mean(
+            (row.get("human_contract_eval") or {}).get("forbidden_markers_ok")
+            for row in contract_rows
+        ),
+        "planner_contract_coverage_rate": round(len(planner_contract_rows) / len(results), 4) if results else 0.0,
+        "planner_contract_current_group_hit_rate": planner_current_group_hit_rate,
+        "planner_contract_observed_group_hit_rate": planner_observed_group_hit_rate,
+        "planner_contract_group_hit_delta": round(
+            (planner_current_group_hit_rate or 0.0) - (planner_observed_group_hit_rate or 0.0),
+            4,
+        ),
+        "planner_contract_current_all_hit_rate": safe_mean(
+            (row.get("planner_contract_eval") or {}).get("all_required_groups_hit")
+            for row in planner_contract_rows
+        ),
+        "planner_contract_observed_all_hit_rate": safe_mean(
+            (row.get("observed_planner_contract_eval") or {}).get("all_required_groups_hit")
+            for row in planner_contract_rows
+        ),
         "memory_ok_rate_when_expected": rate(memory_expected_rows, "memory_ok"),
         "density_ok_rate": rate(results, "density_ok"),
         "generic_reply_rate": rate(results, "generic_reply"),
@@ -478,6 +597,11 @@ def main():
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "dataset_path": DATASET_PATH,
         "summary": summary,
+        "evidence_boundary": {
+            "post_patch_human_rating_available": False,
+            "auto_contract_scores_are_human_naturalness_scores": False,
+            "paired_comparison_scope": "The current planner-derived semantic groups are applied to both observed and replayed outputs.",
+        },
         "failure_type_summary": failure_type_summary,
         "worst_cases": [
             {

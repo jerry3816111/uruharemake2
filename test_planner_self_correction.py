@@ -120,6 +120,73 @@ class TestPlannerSelfCorrection(unittest.TestCase):
         self.assertNotIn("overthink_simple_query", critique["issues"])
         self.assertNotIn("overchallenge_short_input", critique["issues"])
 
+    def test_grounded_apology_repair_is_not_misread_as_scope_overload(self):
+        seed = self.left._fallback_plan()
+        seed.update(
+            {
+                "intent": "apology_repair",
+                "scene": "casual",
+                "response_mode": "direct_answer",
+                "surface_act": "rephrase_plain",
+                "grounding": {"apology_repair": True},
+                "payload_level": "medium",
+            }
+        )
+
+        critique = self.left._critique_plan(
+            seed,
+            "你剛才那個抱歉聽起來很敷衍，請認真再說一次。",
+            self.memory,
+            self.psyche,
+        )
+
+        self.assertNotIn("scope_too_open", critique["issues"])
+
+    def test_apology_repair_normalization_keeps_trace_cognitively_consistent(self):
+        seed = self.left._fallback_plan()
+        seed.update(
+            {
+                "intent": "apology_repair",
+                "hidden_intent": "scope_overload",
+                "user_belief": "広い問いだ。",
+                "my_hidden_knowledge": "範囲を絞らせる。",
+                "user_expectation": "万能解。",
+                "internal_monologue": "論点が多すぎる。",
+            }
+        )
+
+        normalized = self.left._normalize_plan(seed)
+
+        self.assertEqual(normalized["hidden_intent"], "plain_request")
+        self.assertIn("冷た", normalized["user_belief"])
+        self.assertIn("謝り直す", normalized["my_hidden_knowledge"])
+        self.assertIn("repair,apology", normalized["internal_monologue"])
+
+    def test_grounded_withdrawal_is_not_misread_as_scope_overload(self):
+        seed = self.left._fallback_plan()
+        seed.update(
+            {
+                "intent": "anxious_support",
+                "scene": "support",
+                "response_mode": "direct_answer",
+                "surface_act": "protective_brake",
+                "grounding": {
+                    "withdrawal_risk": "high",
+                    "withdrawal_kind": "erase_trace",
+                },
+                "payload_level": "medium",
+            }
+        )
+
+        critique = self.left._critique_plan(
+            seed,
+            "我想把聊天全部清掉，不想留下痕跡。",
+            self.memory,
+            self.psyche,
+        )
+
+        self.assertNotIn("scope_too_open", critique["issues"])
+
     def test_self_monitor_allows_explicitly_grounded_ascii_name(self):
         brain = object.__new__(UruhaBrainV4_Mac)
         brain.memory = SimpleNamespace(session_turns=[])

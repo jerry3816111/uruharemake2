@@ -4,6 +4,78 @@ import uruha_leftbrain_rules as ulr
 
 
 class TestLeftBrainRules(unittest.TestCase):
+    def test_reply_absence_with_self_blame_is_support_not_abuse(self):
+        for utterance in [
+            "朋友一直沒回，我是不是不應該再傳。",
+            "群組冷掉之後，我覺得自己很吵。",
+        ]:
+            with self.subTest(utterance=utterance):
+                plan = ulr.get_rule_based_plan(utterance, recent_turns=[])
+                self.assertEqual(plan["intent"], "friend_no_reply")
+                self.assertEqual(plan["surface_act"], "validate_then_hold")
+                self.assertTrue(plan["grounding"]["reply_self_blame"])
+                self.assertIn("決めつけ", plan["core_message_jp"])
+
+    def test_social_withdrawal_uses_risk_calibrated_support(self):
+        cases = [
+            ("我想把手機設成勿擾，不想收到任何訊息。", "mild", "do_not_disturb", "通知"),
+            ("我不想讓朋友看到我還在線。", "mild", "online_visibility", "オンライン表示"),
+            ("我想坐到樓梯平台那邊，一個人待著。", "medium", "private_location", "階段の踊り場"),
+            ("我想把聊天全部清掉，不想留下痕跡。", "high", "erase_trace", "チャット履歴"),
+        ]
+        for utterance, expected_risk, expected_kind, expected_anchor in cases:
+            with self.subTest(utterance=utterance):
+                plan = ulr.get_rule_based_plan(utterance, recent_turns=[])
+                self.assertEqual(plan["surface_act"], "protective_brake")
+                self.assertEqual(plan["grounding"]["withdrawal_risk"], expected_risk)
+                self.assertEqual(plan["grounding"]["withdrawal_kind"], expected_kind)
+                self.assertEqual(plan["grounding"]["withdrawal_anchor_jp"], expected_anchor)
+
+    def test_missing_ed_context_requests_work_or_title(self):
+        plan = ulr.get_rule_based_plan("限定活動ED我想不起來。", recent_turns=[])
+
+        self.assertEqual(plan["intent"], "reference_probe")
+        self.assertEqual(plan["grounding"]["reference_subject_jp"], "限定イベントED")
+        self.assertIn("作品名", plan["core_message_jp"])
+
+    def test_cold_apology_request_repairs_the_apology(self):
+        plan = ulr.get_rule_based_plan("你剛剛道歉太冷了，重新說。", recent_turns=[])
+
+        self.assertEqual(plan["intent"], "apology_repair")
+        self.assertEqual(plan["surface_act"], "rephrase_plain")
+        self.assertTrue(plan["grounding"]["apology_repair"])
+        self.assertIn("ごめん", plan["core_message_jp"])
+
+    def test_paraphrased_withdrawal_holdout_uses_high_risk_support(self):
+        plan = ulr.get_rule_based_plan("我把所有群聊都退出了，接下來誰聯絡我都不想回。", recent_turns=[])
+
+        self.assertEqual(plan["surface_act"], "protective_brake")
+        self.assertEqual(plan["grounding"]["withdrawal_risk"], "high")
+        self.assertEqual(plan["grounding"]["withdrawal_kind"], "leave_group")
+
+    def test_phone_restart_is_not_misread_as_social_withdrawal(self):
+        plan = ulr.get_rule_based_plan("手機當機了，我想關掉再重開。", recent_turns=[])
+
+        self.assertFalse((plan or {}).get("grounding", {}).get("withdrawal_risk"))
+
+    def test_paraphrased_reply_self_blame_holdout_is_detected(self):
+        plan = ulr.get_rule_based_plan("朋友讀了訊息卻一直沒有回，是不是我說錯話了？", recent_turns=[])
+
+        self.assertEqual(plan["intent"], "friend_no_reply")
+        self.assertTrue(plan["grounding"]["reply_self_blame"])
+
+    def test_paraphrased_apology_repair_holdout_is_detected(self):
+        plan = ulr.get_rule_based_plan("你剛才那個抱歉聽起來很敷衍，請認真再說一次。", recent_turns=[])
+
+        self.assertEqual(plan["intent"], "apology_repair")
+        self.assertEqual(plan["surface_act"], "rephrase_plain")
+
+    def test_paraphrased_reference_holdout_extracts_season_op(self):
+        plan = ulr.get_rule_based_plan("第三季 OP 是哪首來著", recent_turns=[])
+
+        self.assertEqual(plan["intent"], "reference_probe")
+        self.assertEqual(plan["grounding"]["reference_subject_jp"], "第三期OP")
+
     def test_mad_check_rule(self):
         plan = ulr.get_rule_based_plan("怒ってる？", recent_turns=[])
         self.assertIsNotNone(plan)
