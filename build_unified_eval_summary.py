@@ -24,6 +24,7 @@ from project_paths import (
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     STRESS_EVAL_REPORT_PATH,
     SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH,
+    SURFACE_MICROPLANNING_REPORT_JSON_PATH,
     SYSTEM_VS_PROMPT_ONLY_COMPARE_PATH,
     UNIFIED_EVAL_SUMMARY_JSON_PATH,
     UNIFIED_EVAL_SUMMARY_MD_PATH,
@@ -54,6 +55,7 @@ REPORT_PATHS = {
     "human_feedback_regression_eval": HUMAN_FEEDBACK_REGRESSION_EVAL_REPORT_JSON_PATH,
     "human_feedback_regression_diff": HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH,
     "human_speech_layer": HUMAN_SPEECH_LAYER_REPORT_JSON_PATH,
+    "surface_microplanning": SURFACE_MICROPLANNING_REPORT_JSON_PATH,
 }
 
 OUT_JSON = UNIFIED_EVAL_SUMMARY_JSON_PATH
@@ -68,6 +70,30 @@ def _load_json(path):
             return json.load(f)
     except Exception:
         return {}
+
+
+def _compact_domain_suite_summary(report):
+    summary = dict((report or {}).get("summary") or {})
+    compact_runs = []
+    for row in summary.get("task_runs") or []:
+        compact_runs.append(
+            {
+                key: row.get(key)
+                for key in (
+                    "task",
+                    "script",
+                    "returncode",
+                    "duration_seconds",
+                    "report_found",
+                    "execution_mode",
+                    "refresh_instruction",
+                )
+                if key in row
+            }
+        )
+    if "task_runs" in summary:
+        summary["task_runs"] = compact_runs
+    return summary
 
 
 def _is_newer_or_same(candidate_path, reference_path):
@@ -326,6 +352,7 @@ def main():
     formal_report = _load_json(REPORT_PATHS["formal"])
     formal_tombench_refresh = _load_json(REPORT_PATHS["formal_tombench_refresh"])
     domain_suite = _load_json(REPORT_PATHS["domain_suite"])
+    compact_domain_suite = _compact_domain_suite_summary(domain_suite)
     stress_report = _load_json(REPORT_PATHS["stress_10k"])
     compare_report = _load_json(REPORT_PATHS["system_vs_prompt"])
     human_blind_report = _load_json(REPORT_PATHS["human_blind"])
@@ -336,6 +363,7 @@ def main():
     regression_eval_report = _load_json(REPORT_PATHS["human_feedback_regression_eval"])
     regression_diff_report = _load_json(REPORT_PATHS["human_feedback_regression_diff"])
     speech_layer_report = _load_json(REPORT_PATHS["human_speech_layer"])
+    surface_microplanning_report = _load_json(REPORT_PATHS["surface_microplanning"])
 
     arch = arch_report.get("summary", {})
     runtime = runtime_report.get("summary", {})
@@ -371,6 +399,7 @@ def main():
     regression_eval = regression_eval_report.get("summary", {})
     regression_diff = regression_diff_report.get("summary", {})
     speech_layer = speech_layer_report.get("metrics", {})
+    surface_microplanning = surface_microplanning_report.get("summary", {})
     speech_english_leak = _safe_float(speech_layer.get("english_leak_rate"))
     speech_english_safe = 1.0 - (speech_english_leak if speech_english_leak is not None else 1.0)
 
@@ -655,6 +684,24 @@ def main():
             "higher",
             "代表系統是否把一句話先轉成社交行為，例如安撫、吐槽、邊界回應、記憶說明，而不是只做問答。",
         ),
+        _metric(
+            "表面微規劃技術契約通過率",
+            "surface_microplanning_case_pass_rate",
+            surface_microplanning.get("case_pass_rate"),
+            "越高越好",
+            "surface_microplanning_report.json",
+            "higher",
+            "只驗證未載入 runtime 的技術集合中，語境、風險、言語動作與禁止過度反應是否成立；不等同真人自然度。",
+        ),
+        _metric(
+            "正常日常操作危機誤報率",
+            "surface_microplanning_benign_false_alarm_rate",
+            surface_microplanning.get("benign_false_alarm_rate"),
+            "越低越好",
+            "surface_microplanning_report.json",
+            "lower",
+            "檢查專心、容量整理、通知省電、暫時離群等正常操作是否被錯當成社交撤退。",
+        ),
     ]
 
     goal_attainment = [
@@ -775,6 +822,21 @@ def main():
             0.9,
             "這項高表示右腦不是只把左腦結論念出來，而是先經過語用功能、語意單元與風格算子的表面化流程。",
             ["human_speech_layer_eval_report.json.metrics"],
+        ),
+        _goal_item(
+            "依語境與風險組織支援回覆",
+            _required_min(
+                surface_microplanning.get("routing_contract_rate"),
+                surface_microplanning.get("risk_calibration_rate"),
+                surface_microplanning.get("context_specificity_rate"),
+                surface_microplanning.get("speech_move_contract_rate"),
+                (1.0 - _safe_float(surface_microplanning.get("benign_false_alarm_rate")))
+                if _safe_float(surface_microplanning.get("benign_false_alarm_rate")) is not None
+                else None,
+            ),
+            0.9,
+            "這項高表示支援回覆會先保留具體情境與使用者選擇，再按風險加入界線和下一步；它仍是技術契約，不取代真人盲評。",
+            ["surface_microplanning_report.json.summary"],
         ),
     ]
 
@@ -951,7 +1013,8 @@ def main():
             "human_feedback_regression_eval": regression_eval,
             "human_feedback_regression_diff": regression_diff,
             "human_speech_layer": speech_layer,
-            "domain_suite": domain_suite.get("summary", {}),
+            "surface_microplanning": surface_microplanning,
+            "domain_suite": compact_domain_suite,
         },
     }
     report["alignment_snapshot"] = _build_alignment_snapshot(

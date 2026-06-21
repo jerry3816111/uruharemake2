@@ -58,6 +58,31 @@ class TestLeftBrainRules(unittest.TestCase):
 
         self.assertFalse((plan or {}).get("grounding", {}).get("withdrawal_risk"))
 
+    def test_practical_channel_management_is_not_misread_as_withdrawal(self):
+        cases = [
+            ("我要開勿擾專心讀書兩小時。", "do_not_disturb", "focus"),
+            ("這個群組廣告太多，我要退掉。", "leave_group", "noise"),
+            ("舊聊天記錄太佔空間，我想刪掉。", "erase_trace", "storage"),
+            ("群組太吵，我先退出，明天再加回來。", "leave_group", "temporary"),
+        ]
+        for utterance, expected_kind, expected_purpose in cases:
+            with self.subTest(utterance=utterance):
+                plan = ulr.get_rule_based_plan(utterance, recent_turns=[])
+                self.assertEqual(plan["intent"], "channel_management")
+                self.assertEqual(plan["surface_act"], "practical_action_response")
+                self.assertEqual(plan["grounding"]["management_kind"], expected_kind)
+                self.assertEqual(plan["grounding"]["management_purpose"], expected_purpose)
+                self.assertFalse(plan["grounding"].get("withdrawal_risk"))
+
+    def test_explicit_disappearance_overrides_practical_channel_language(self):
+        plan = ulr.get_rule_based_plan(
+            "我要把群組和通知都清掉，當作我沒存在過。",
+            recent_turns=[],
+        )
+
+        self.assertEqual(plan["surface_act"], "protective_brake")
+        self.assertEqual(plan["grounding"]["withdrawal_risk"], "high")
+
     def test_paraphrased_reply_self_blame_holdout_is_detected(self):
         plan = ulr.get_rule_based_plan("朋友讀了訊息卻一直沒有回，是不是我說錯話了？", recent_turns=[])
 

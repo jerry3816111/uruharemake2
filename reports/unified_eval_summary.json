@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T13:59:30",
+  "generated_at": "2026-06-21T19:21:45",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -23,7 +23,8 @@
     "human_feedback_regression": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_report.json",
     "human_feedback_regression_eval": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_eval_report.json",
     "human_feedback_regression_diff": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_diff_report.json",
-    "human_speech_layer": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_speech_layer_eval_report.json"
+    "human_speech_layer": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_speech_layer_eval_report.json",
+    "surface_microplanning": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/surface_microplanning_report.json"
   },
   "source_of_truth_note": "統一摘要優先採用各獨立報告，不採 domain_eval_suite_report.json 內可能過時的巢狀快照。",
   "refresh_note": "formal_tombench_refresh.json 只有在檔案時間不早於 formal_brain_benchmarks_report.json 時才覆蓋，避免舊 refresh 汙染統一摘要。",
@@ -306,6 +307,24 @@
       "source": "human_speech_layer_eval_report.json",
       "direction": "higher",
       "note": "代表系統是否把一句話先轉成社交行為，例如安撫、吐槽、邊界回應、記憶說明，而不是只做問答。"
+    },
+    {
+      "key": "surface_microplanning_case_pass_rate",
+      "name_zh": "表面微規劃技術契約通過率",
+      "value": 1.0,
+      "better": "越高越好",
+      "source": "surface_microplanning_report.json",
+      "direction": "higher",
+      "note": "只驗證未載入 runtime 的技術集合中，語境、風險、言語動作與禁止過度反應是否成立；不等同真人自然度。"
+    },
+    {
+      "key": "surface_microplanning_benign_false_alarm_rate",
+      "name_zh": "正常日常操作危機誤報率",
+      "value": 0.0,
+      "better": "越低越好",
+      "source": "surface_microplanning_report.json",
+      "direction": "lower",
+      "note": "檢查專心、容量整理、通知省電、暫時離群等正常操作是否被錯當成社交撤退。"
     }
   ],
   "goal_attainment": [
@@ -410,6 +429,16 @@
       "rationale": "這項高表示右腦不是只把左腦結論念出來，而是先經過語用功能、語意單元與風格算子的表面化流程。",
       "source_keys": [
         "human_speech_layer_eval_report.json.metrics"
+      ]
+    },
+    {
+      "name_zh": "依語境與風險組織支援回覆",
+      "score": 1.0,
+      "target": 0.9,
+      "status": "good",
+      "rationale": "這項高表示支援回覆會先保留具體情境與使用者選擇，再按風險加入界線和下一步；它仍是技術契約，不取代真人盲評。",
+      "source_keys": [
+        "surface_microplanning_report.json.summary"
       ]
     }
   ],
@@ -14821,6 +14850,19 @@
       "semantic_anchor_hit_rate": 1.0,
       "content_density_pass_rate": 1.0,
       "english_leak_rate": 0.0
+    },
+    "surface_microplanning": {
+      "case_count": 21,
+      "case_pass_count": 21,
+      "case_pass_rate": 1.0,
+      "routing_contract_rate": 1.0,
+      "risk_calibration_rate": 1.0,
+      "context_specificity_rate": 1.0,
+      "speech_move_contract_rate": 1.0,
+      "forbidden_overreaction_rate": 0.0,
+      "benign_false_alarm_rate": 0.0,
+      "exact_reply_unique_ratio": 1.0,
+      "repeated_prefix_row_rate": 0.0952
     },
     "domain_suite": {}
   },

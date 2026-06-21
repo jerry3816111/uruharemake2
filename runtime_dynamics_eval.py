@@ -333,6 +333,9 @@ def turn_observation(result, utterance, idx):
 
 def main():
     brain = brain_mod.UruhaBrainV4_Mac(load_right_brain_model=False)
+    # This evaluator measures runtime state transitions, not local-model quality.
+    # Unmatched turns must fall back immediately instead of waiting on Ollama.
+    brain.left_brain.client_logic = None
     brain.memory.reflect_experience = lambda *_args, **_kwargs: None
     install_fast_consolidation(brain.memory)
 

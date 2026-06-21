@@ -1,6 +1,6 @@
 import unittest
 
-from build_unified_eval_summary import _flatten_long_dialogue_memory_summary
+from build_unified_eval_summary import _compact_domain_suite_summary, _flatten_long_dialogue_memory_summary
 from build_research_vnext_90plus_report import _long_dialogue_recall_summary
 from memory_causal_effect_eval import build_cases, build_summary
 from project_paths import (
@@ -11,6 +11,26 @@ from run_domain_eval_suite import TASKS
 
 
 class UnifiedMemorySummaryTest(unittest.TestCase):
+    def test_domain_suite_summary_drops_captured_process_output(self):
+        compact = _compact_domain_suite_summary(
+            {
+                "summary": {
+                    "task_runs": [
+                        {
+                            "task": "surface_microplanning",
+                            "returncode": 0,
+                            "execution_mode": "executed",
+                            "stdout_tail": "large output",
+                            "stderr_tail": "large error output",
+                        }
+                    ]
+                }
+            }
+        )
+        self.assertEqual(compact["task_runs"][0]["task"], "surface_microplanning")
+        self.assertNotIn("stdout_tail", compact["task_runs"][0])
+        self.assertNotIn("stderr_tail", compact["task_runs"][0])
+
     def test_flatten_long_dialogue_memory_summary_exposes_nested_recall(self):
         summary = {
             "delayed_recall": {

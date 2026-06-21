@@ -1671,6 +1671,57 @@ def looks_apology_repair(text):
     return apology_context and repair_request
 
 
+def detect_benign_channel_management(text):
+    """Classify reversible everyday channel/privacy operations.
+
+    A practical purpose distinguishes these actions from affect-driven social
+    withdrawal. Explicit disappearance or total-contact language always wins.
+    """
+    lowered = str(text or "").lower()
+    if contains_any(
+        lowered,
+        [
+            "不要存在", "消失", "不留痕", "不想被找到", "全部清掉", "誰找我都不要回",
+            "谁找我都不要回", "斷聯", "断联", "切斷聯絡", "切断联系", "當作我沒存在過",
+            "当作我没存在过",
+        ],
+    ):
+        return None
+
+    purpose = ""
+    if contains_any(lowered, ["專心", "专心", "讀書", "读书", "工作", "同事打擾", "同事打扰"]):
+        purpose = "focus"
+    elif contains_any(lowered, ["明天再加", "等一下再加", "暫時", "暂时"]):
+        purpose = "temporary"
+    elif contains_any(lowered, ["廣告太多", "广告太多", "群組太吵", "群组太吵"]):
+        purpose = "noise"
+    elif contains_any(lowered, ["佔空間", "占空间", "容量"]):
+        purpose = "storage"
+    elif contains_any(lowered, ["耗電", "耗电", "省電", "省电"]):
+        purpose = "battery"
+    elif contains_any(lowered, ["整理舊", "整理旧", "封存", "備份", "备份"]):
+        purpose = "archive"
+    elif contains_any(lowered, ["看電影", "看电影", "不想被吵", "很正常吧"]):
+        purpose = "privacy"
+    if not purpose:
+        return None
+
+    if contains_any(lowered, ["勿擾", "勿扰", "通知", "不想收", "不要收"]):
+        kind, anchor = "do_not_disturb", "通知"
+    elif contains_any(lowered, ["線上", "在线", "上線", "上线", "顯示", "显示", "登入", "登录"]):
+        kind, anchor = "online_visibility", "オンライン表示"
+    elif contains_any(lowered, ["退出", "退掉", "退群", "離開群", "离开群"]):
+        kind, anchor = "leave_group", "グループ"
+    elif contains_any(lowered, ["聊天", "記錄", "记录", "紀錄", "刪掉", "删除", "封存"]):
+        kind, anchor = "erase_trace", "チャット履歴"
+    elif contains_any(lowered, ["房間", "房间", "廁所", "厕所", "一個人", "一个人"]):
+        kind = "private_location"
+        anchor = social_withdrawal_anchor_jp(text, kind)
+    else:
+        return None
+    return {"management_kind": kind, "management_anchor_jp": anchor, "management_purpose": purpose}
+
+
 def detect_social_withdrawal_risk(text):
     lowered = str(text or "").lower()
     if detect_reply_absence(text):
@@ -1706,15 +1757,22 @@ def detect_social_withdrawal_risk(text):
         and contains_any(lowered, ["聯絡", "联系", "找我", "訊息", "消息"])
         and contains_any(lowered, ["不回", "不想回", "不理", "不要回"])
     )
-    if all_contact_rejected or contains_any(
+    severe_withdrawal = all_contact_rejected or contains_any(
         lowered,
         [
             "不要存在", "消失", "不留下", "不留痕", "找不到", "不想被找到", "不要被找到",
             "等到大家都睡", "全部清掉", "全刪", "全删", "誰找我都不要回", "谁找我都不要回",
             "誰聯絡都不回", "谁联系都不回", "斷聯", "断联", "切斷聯絡", "切断联系",
+            "當作我沒存在過", "当作我没存在过", "像我沒存在過", "像我没存在过",
         ],
-    ):
+    )
+    if severe_withdrawal:
         return "high"
+
+    # Ordinary privacy, focus, storage, and notification management should not be
+    # escalated into a social-isolation intervention without a separate danger cue.
+    if detect_benign_channel_management(text):
+        return None
     if contains_any(
         lowered,
         ["躲", "廁所", "厕所", "樓梯", "楼梯", "一個人", "一个人", "沒人的地方", "没人的地方"],
@@ -1768,7 +1826,8 @@ def detect_reply_absence(text):
         [
             "返事ない", "返事こない", "返信ない", "返信こない", "既読無視", "未読無視", "no reply",
             "not replying", "left me on read", "ignored me", "不回我", "沒回我", "没回我", "沒人接話",
-            "没人接话", "群組冷掉", "群组冷掉", "聊天室突然停",
+            "没人接话", "群組冷掉", "群组冷掉", "聊天室突然停", "已讀但沒回", "已读但没回",
+            "看了但沒回", "看了但没回", "突然安靜", "突然安静", "沒人說話", "没人说话",
         ],
     )
     reply_context = contains_any(
@@ -1992,6 +2051,23 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
             premise_check="accept",
             surface_act="protective_brake",
             payload_level="medium",
+        )
+
+    benign_management = detect_benign_channel_management(user_input)
+    if benign_management:
+        anchor = benign_management["management_anchor_jp"]
+        return base_plan_helper(
+            intent="channel_management",
+            scene="casual",
+            listener_state="日常の目的で通知や連絡経路を調整しようとしている",
+            reply_goal="目的を受け、可逆な範囲で行動を肯定する",
+            summary="ユーザーが集中、整理、静けさなどの実用目的でチャンネルを調整しようとしている。",
+            meaning=f"{anchor}を目的に必要な範囲だけ調整し、戻す条件か残す対象を一つ示す",
+            stance={"warmth": 0.24, "tease": 0.08, "blunt": 0.12, "jealousy": 0.0, "distance": 0.08},
+            max_chars=48,
+            surface_act="practical_action_response",
+            payload_level="medium",
+            grounding=benign_management,
         )
 
     withdrawal_risk = detect_social_withdrawal_risk(user_input)
@@ -2501,6 +2577,13 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
     if detect_reply_absence(user_input):
         self_blame = detect_reply_self_blame(user_input)
         reply_context = "group_silence" if contains_any(lowered, ["群組", "群组", "聊天室"]) else "direct_reply"
+        reply_channel = "chatroom" if "聊天室" in lowered else "group" if reply_context == "group_silence" else "direct"
+        if contains_any(lowered, ["已讀", "已读", "既読", "left me on read", "看了但沒回", "看了但没回"]):
+            reply_signal = "read_receipt"
+        elif reply_context == "group_silence":
+            reply_signal = "group_silence"
+        else:
+            reply_signal = "no_reply"
         return base_plan_helper(
             intent="friend_no_reply",
             scene="support",
@@ -2510,7 +2593,12 @@ def get_rule_based_plan(user_input, recent_turns, current_psyche=None):
             meaning="返事がなくて不安なのは分かる。でも自分が悪いって決めつけるな" if self_blame else "返事ないと気になるよな。少し待て",
             stance={"warmth": 0.45, "tease": 0.05, "blunt": 0.15, "jealousy": 0.0, "distance": 0.08},
             max_chars=42 if self_blame else 32,
-            grounding={"reply_self_blame": self_blame, "reply_context": reply_context},
+            grounding={
+                "reply_self_blame": self_blame,
+                "reply_context": reply_context,
+                "reply_signal": reply_signal,
+                "reply_channel": reply_channel,
+            },
         )
 
     if contains_any(lowered, ["先去吃飯", "先去吃饭", "去吃飯", "去吃饭", "飯食う", "ご飯食べてくる", "吃飯喔", "吃饭喔"]):

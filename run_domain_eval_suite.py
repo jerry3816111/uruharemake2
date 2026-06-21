@@ -18,12 +18,16 @@ from project_paths import (
     RUNTIME_DYNAMICS_REPORT_PATH,
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH,
+    SURFACE_MICROPLANNING_REPORT_JSON_PATH,
     V2_HUMAN_ANSWER_REPORT_PATH,
 )
 
 EXPECTED_PYTHON = os.path.join(BASE_DIR, "Style-Bert-VITS2", "venv", "bin", "python")
 EXPECTED_VENV = os.path.dirname(os.path.dirname(EXPECTED_PYTHON))
 REPORT_PATH = DOMAIN_EVAL_SUITE_REPORT_PATH
+TASK_TIMEOUT_SECONDS = int(os.environ.get("URUHA_EVAL_TASK_TIMEOUT_SECONDS", "600"))
+FORMAL_BENCHMARK_REFRESH_ENV = "URUHA_DOMAIN_REFRESH_FORMAL"
+REUSABLE_REPORT_TASKS = {"formal_benchmarks"}
 
 TASKS = [
     ("cognitive_architecture", "cognitive_architecture_eval.py", COGNITIVE_ARCHITECTURE_REPORT_PATH),
@@ -42,6 +46,7 @@ TASKS = [
     ("daily_state_self_distress", "daily_state_self_distress_eval.py", DAILY_STATE_SELF_DISTRESS_REPORT_JSON_PATH),
     ("self_distress_surface_contract", "self_distress_surface_contract_eval.py", SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH),
     ("support_prefix_contract", "support_prefix_contract_eval.py", SUPPORT_PREFIX_CONTRACT_REPORT_JSON_PATH),
+    ("surface_microplanning", "eval_surface_microplanning_holdout.py", SURFACE_MICROPLANNING_REPORT_JSON_PATH),
 ]
 
 
@@ -65,18 +70,90 @@ def load_json(path):
         return json.load(f)
 
 
+def should_reuse_existing_report(task_key, report_path, env=None):
+    env = os.environ if env is None else env
+    refresh_requested = str(env.get(FORMAL_BENCHMARK_REFRESH_ENV, "0")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    return task_key in REUSABLE_REPORT_TASKS and os.path.exists(report_path) and not refresh_requested
+
+
+def should_reuse_report_for_missing_runner(script_path, report_path):
+    return not os.path.exists(script_path) and os.path.exists(report_path)
+
+
+def task_run_succeeded(row):
+    mode = str((row or {}).get("execution_mode") or "")
+    if mode.startswith("reused_existing_report"):
+        return bool((row or {}).get("report_found"))
+    return (row or {}).get("returncode") == 0 and bool((row or {}).get("report_found"))
+
+
 def main():
     outputs = {}
     task_runs = []
     for key, script, report_path in TASKS:
+        script_path = os.path.join(BASE_DIR, script)
+        if should_reuse_report_for_missing_runner(script_path, report_path):
+            print(f"[REUSE: MISSING RUNNER] {script}: {report_path}")
+            outputs[key] = load_json(report_path)
+            task_runs.append(
+                {
+                    "task": key,
+                    "script": script,
+                    "returncode": None,
+                    "duration_seconds": 0.0,
+                    "stdout_tail": "",
+                    "stderr_tail": f"Runner is not tracked at {script_path}; reused the existing report.",
+                    "report_found": bool(outputs[key]),
+                    "execution_mode": "reused_existing_report_missing_runner",
+                    "report_path": report_path,
+                    "refresh_instruction": "Add the missing runner to the repository before refreshing this task.",
+                }
+            )
+            continue
+
+        if should_reuse_existing_report(key, report_path):
+            print(f"[REUSE] {script}: {report_path}")
+            outputs[key] = load_json(report_path)
+            task_runs.append(
+                {
+                    "task": key,
+                    "script": script,
+                    "returncode": None,
+                    "duration_seconds": 0.0,
+                    "stdout_tail": "",
+                    "stderr_tail": "",
+                    "report_found": bool(outputs[key]),
+                    "execution_mode": "reused_existing_report",
+                    "report_path": report_path,
+                    "refresh_instruction": f"Set {FORMAL_BENCHMARK_REFRESH_ENV}=1 to execute this task.",
+                }
+            )
+            continue
+
         print(f"[RUN] {script}")
         started_at = time.time()
-        proc = subprocess.run(
-            [sys.executable, os.path.join(BASE_DIR, script)],
-            cwd=BASE_DIR,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            proc = subprocess.run(
+                [sys.executable, script_path],
+                cwd=BASE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=TASK_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired as exc:
+            stdout = exc.stdout.decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else str(exc.stdout or "")
+            stderr = exc.stderr.decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else str(exc.stderr or "")
+            proc = subprocess.CompletedProcess(
+                args=exc.cmd,
+                returncode=124,
+                stdout=stdout,
+                stderr=f"{stderr}\nTimed out after {TASK_TIMEOUT_SECONDS} seconds.",
+            )
         outputs[key] = load_json(report_path)
         task_runs.append(
             {
@@ -87,6 +164,8 @@ def main():
                 "stdout_tail": (proc.stdout or "")[-4000:],
                 "stderr_tail": (proc.stderr or "")[-4000:],
                 "report_found": bool(outputs[key]),
+                "execution_mode": "executed",
+                "report_path": report_path,
             }
         )
 
@@ -103,7 +182,9 @@ def main():
         "daily_state_self_distress": (outputs.get("daily_state_self_distress") or {}).get("summary", {}),
         "self_distress_surface_contract": (outputs.get("self_distress_surface_contract") or {}).get("summary", {}),
         "support_prefix_contract": (outputs.get("support_prefix_contract") or {}).get("summary", {}),
+        "surface_microplanning": (outputs.get("surface_microplanning") or {}).get("summary", {}),
         "task_runs": task_runs,
+        "execution_ok": all(task_run_succeeded(row) for row in task_runs),
     }
     report = {
         "tasks": [task[0] for task in TASKS],
@@ -114,7 +195,8 @@ def main():
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(REPORT_PATH)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0 if summary["execution_ok"] else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

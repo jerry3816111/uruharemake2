@@ -399,6 +399,7 @@ def build_markdown(report):
 def main():
     ensure_project_dirs()
     brain = brain_mod.UruhaBrainV4_Mac(load_right_brain_model=False)
+    brain.left_brain.client_logic = None
     brain.memory.reflect_experience = lambda *_args, **_kwargs: None
 
     delayed_recall_results = [evaluate_recall_case(brain, case) for case in build_recall_cases()]
