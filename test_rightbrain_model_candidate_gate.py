@@ -1,8 +1,16 @@
+import json
 import unittest
 
 import torch
 
-from uruha_brain_mac import RIGHT_BRAIN_MODEL_BLEND_ENABLED, RightBrain, _resolve_right_brain_model_loading
+from uruha_brain_mac import (
+    RIGHT_BRAIN_MODEL_BLEND_ENABLED,
+    RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
+    RIGHT_BRAIN_MODEL_SYSTEM_PROMPT,
+    RightBrain,
+    _normalize_right_brain_adapter_path,
+    _resolve_right_brain_model_loading,
+)
 
 
 MEMORY = {
@@ -57,6 +65,7 @@ def reply_anxiety_logic():
         "intent": "friend_no_reply",
         "surface_act": "validate_then_hold",
         "dialogue_act": "emotional_containment",
+        "jp_summary": "既読のまま返事がないことを心配している。",
         "core_message_jp": "既読のまま返事がなくて不安でも、自分のせいと決めつけず少し待つ",
         "grounding": {
             "reply_self_blame": True,
@@ -80,6 +89,31 @@ def reply_anxiety_logic():
 
 
 class TestRightBrainModelCandidateGate(unittest.TestCase):
+    def test_adapter_path_supports_explicit_base_only_ablation(self):
+        self.assertEqual(_normalize_right_brain_adapter_path("base-only", "/tmp/default"), "")
+        self.assertEqual(_normalize_right_brain_adapter_path("none", "/tmp/default"), "")
+        self.assertEqual(_normalize_right_brain_adapter_path(None, "/tmp/default"), "/tmp/default")
+
+    def test_model_payload_matches_plan_sft_contract_without_raw_user_text(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        payload_text = rightbrain._build_model_surface_payload(logic, {"mood": -3, "trust": 62}, 80)
+        payload = json.loads(payload_text)
+
+        self.assertEqual(payload["contract_version"], RIGHT_BRAIN_MODEL_CONTRACT_VERSION)
+        self.assertEqual(payload["task"], "write_one_user_facing_japanese_reply")
+        self.assertEqual(payload["user_input"], logic["jp_summary"])
+        self.assertEqual(payload["leftbrain_plan"]["meaning"], logic["core_message_jp"])
+        self.assertEqual(
+            payload["required_marker_groups"],
+            [list(group) for group in rightbrain._model_required_semantic_groups(logic)],
+        )
+        self.assertEqual(payload["context"]["max_chars"], 80)
+        self.assertNotIn("required_semantic_groups", payload)
+        self.assertNotIn("他已讀但沒回", payload_text)
+        self.assertIn("required_marker_group", RIGHT_BRAIN_MODEL_SYSTEM_PROMPT)
+
     def test_default_model_loading_follows_explicit_blend_switch(self):
         self.assertEqual(_resolve_right_brain_model_loading(None), RIGHT_BRAIN_MODEL_BLEND_ENABLED)
         self.assertTrue(_resolve_right_brain_model_loading(True))
@@ -179,6 +213,16 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         self.assertNotIn("cjk_language_leak", reasons)
 
+    def test_gate_rejects_extended_latin_pollution(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "返事ないと気になるcá？少し待て。",
+            reply_anxiety_logic(),
+            max_chars=80,
+        )
+
+        self.assertIn("unexpected_ascii_leak", reasons)
+
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])
         logic = {
@@ -205,6 +249,18 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("polite_tone_drift", reasons)
         self.assertIn("benign_action_overreaction", reasons)
 
+    def test_gate_rejects_polite_sentence_particles(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "返事来ないのは気になりますよね。ちょっと待ってみて。",
+            logic,
+            80,
+        )
+
+        self.assertIn("polite_tone_drift", reasons)
+
     def test_mild_withdrawal_rejects_unnecessary_isolation_language(self):
         rightbrain = RightBrain(load_model=False)
         logic = reply_anxiety_logic()
@@ -215,6 +271,19 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         reasons = rightbrain._model_candidate_rejection_reasons(
             "通知は止めていい。でも一人だけで悩むな。連絡は残しとけ。",
+            logic,
+            80,
+        )
+
+        self.assertIn("risk_overreaction", reasons)
+
+    def test_mild_withdrawal_rejects_unrequested_social_intervention(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        logic["grounding"] = {"withdrawal_risk": "mild", "withdrawal_kind": "do_not_disturb"}
+
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "通知は切っていい。でも今も友達と話してみて。",
             logic,
             80,
         )
