@@ -122,8 +122,18 @@ OLLAMA_API_KEY = "ollama"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "uruha_memory_mac_db")
 RIGHT_BRAIN_BASE_MODEL = os.getenv("URUHA_RIGHT_BRAIN_BASE_MODEL", "Qwen/Qwen2.5-7B-Instruct")
-RIGHT_BRAIN_ADAPTER_PATH = os.path.abspath(
-    os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH", os.path.join(BASE_DIR, "uruha_v10_all_linear_lora"))
+
+
+def _normalize_right_brain_adapter_path(raw_path, default_path):
+    raw = str(default_path if raw_path is None else raw_path).strip()
+    if raw.lower() in {"none", "base-only", "base_only"}:
+        return ""
+    return os.path.abspath(raw)
+
+
+RIGHT_BRAIN_ADAPTER_PATH = _normalize_right_brain_adapter_path(
+    os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH"),
+    os.path.join(BASE_DIR, "uruha_v10_all_linear_lora"),
 )
 SCENE_VALUES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 WORKING_MEMORY_LIMIT = 5
@@ -154,6 +164,15 @@ RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE = _env_int("URUHA_RIGHT_BRAIN_NO_REPEAT_NGRAM_S
 RIGHT_BRAIN_MODEL_BLEND_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED", False)
 RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT", 3)
 RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
+RIGHT_BRAIN_MODEL_CONTRACT_VERSION = "plan_surface_contract_v1"
+RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
+    "You are the RightBrain surface formulator for UruhaBrain. Your job is semantic realization, "
+    "not roleplay improvisation. Return exactly one short, natural casual Japanese chat reply. "
+    "For every required_marker_group in the input contract, include at least one marker from that "
+    "group naturally in the reply. Do not include any forbidden_marker. Keep the concrete topic and "
+    "grounding terms. Do not output analysis, labels, JSON, metadata, English, Chinese, or system "
+    "text. Do not use 私. Do not explain the contract."
+)
 
 
 def _resolve_right_brain_model_loading(requested):
@@ -7850,12 +7869,17 @@ class RightBrain:
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
 
         if load_model:
-            if not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
+            if RIGHT_BRAIN_ADAPTER_PATH and not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
                 raise FileNotFoundError(f"Right brain adapter not found: {RIGHT_BRAIN_ADAPTER_PATH}")
 
-            adapter_name = os.path.basename(os.path.normpath(RIGHT_BRAIN_ADAPTER_PATH))
+            adapter_name = (
+                os.path.basename(os.path.normpath(RIGHT_BRAIN_ADAPTER_PATH))
+                if RIGHT_BRAIN_ADAPTER_PATH
+                else "base_model_only"
+            )
             print(Fore.CYAN + f"🧠 [Right Brain] Loading {adapter_name} on {self.device}...")
-            self.compat_adapter_dir = self._build_compat_adapter(RIGHT_BRAIN_ADAPTER_PATH)
+            if RIGHT_BRAIN_ADAPTER_PATH:
+                self.compat_adapter_dir = self._build_compat_adapter(RIGHT_BRAIN_ADAPTER_PATH)
             self.tokenizer = AutoTokenizer.from_pretrained(RIGHT_BRAIN_BASE_MODEL, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
                 RIGHT_BRAIN_BASE_MODEL,
@@ -7864,7 +7888,8 @@ class RightBrain:
                 trust_remote_code=True,
             )
             self.model.to(self.device)
-            self.model = PeftModel.from_pretrained(self.model, self.compat_adapter_dir)
+            if self.compat_adapter_dir:
+                self.model = PeftModel.from_pretrained(self.model, self.compat_adapter_dir)
             self.model.eval()
             print(Fore.GREEN + f"✅ Right Brain ({adapter_name}) Loaded!")
 
@@ -11091,24 +11116,39 @@ You are Ichinose Uruha.
         speech_plan = logic_data.get("human_speech_plan") or {}
         psyche = current_psyche if isinstance(current_psyche, dict) else {}
         payload = {
-            "task": "write_one_natural_casual_japanese_reply",
-            "input_boundary": "Use only the normalized Japanese plan below; the original user language is intentionally hidden.",
-            "situation_jp": str(logic_data.get("jp_summary") or ""),
-            "intent": str(logic_data.get("intent") or ""),
-            "scene": str(logic_data.get("scene") or ""),
-            "dialogue_act": str(speech_plan.get("dialogue_act") or logic_data.get("dialogue_act") or ""),
-            "surface_act": str(logic_data.get("surface_act") or ""),
-            "leftbrain_meaning": str(logic_data.get("core_message_jp") or ""),
-            "speech_moves": speech_plan.get("speech_moves") or [],
-            "style_operators": speech_plan.get("style_operators") or [],
-            "required_semantic_groups": [list(group) for group in self._model_required_semantic_groups(logic_data)],
-            "mood": psyche.get("mood", 0),
-            "trust": psyche.get("trust", 50),
-            "recent_assistant_replies": [
-                item.get("content", "") for item in self.history[-4:] if item.get("role") == "assistant"
+            "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
+            "task": "write_one_user_facing_japanese_reply",
+            "contract_rule": (
+                "required_marker_groups is the semantic contract. Include at least one phrase from "
+                "every inner list naturally and avoid every forbidden marker."
+            ),
+            # Preserve the training schema without exposing the original multilingual user text.
+            "user_input": str(logic_data.get("jp_summary") or "ユーザーの発話を左脳が要約済み。"),
+            "leftbrain_plan": {
+                "scene": str(logic_data.get("scene") or ""),
+                "intent": str(logic_data.get("intent") or ""),
+                "surface_act": str(logic_data.get("surface_act") or ""),
+                "dialogue_act": str(speech_plan.get("dialogue_act") or logic_data.get("dialogue_act") or ""),
+                "meaning": str(logic_data.get("core_message_jp") or ""),
+                "content_units": list(speech_plan.get("content_units") or []),
+                "style_operators": list(speech_plan.get("style_operators") or []),
+                "grounding_terms": list(speech_plan.get("grounding_terms") or []),
+            },
+            "context": {
+                "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
+                "mood": psyche.get("mood", 0),
+                "trust": psyche.get("trust", 50),
+                "max_chars": int(max_chars or 48),
+            },
+            "required_marker_groups": [list(group) for group in self._model_required_semantic_groups(logic_data)],
+            "forbidden_markers": list(logic_data.get("must_avoid") or []),
+            "reply_requirements": [
+                "one sentence or short chat reply",
+                "natural casual Japanese",
+                "no labels or JSON",
+                "no Chinese or English",
+                "no first person 私",
             ],
-            "max_chars": int(max_chars or 48),
-            "must_avoid": list(logic_data.get("must_avoid") or []),
         }
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
@@ -11133,9 +11173,11 @@ You are Ichinose Uruha.
                 f"{user_input} {logic_data.get('core_message_jp', '')}",
             )
         )
+        latin_tokens = re.findall(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*", reply)
         leaked_ascii = {
-            token.lower() for token in re.findall(r"[A-Za-z][A-Za-z0-9_-]{1,}", reply)
-            if token.lower() not in allowed_ascii
+            token.lower()
+            for token in latin_tokens
+            if token.lower() not in allowed_ascii or re.search(r"[\u00C0-\u024F]", token)
         }
         if leaked_ascii:
             reasons.append("unexpected_ascii_leak")
@@ -11146,7 +11188,10 @@ You are Ichinose Uruha.
         ]
         if any(marker.lower() in reply.lower() for marker in instruction_markers):
             reasons.append("instruction_or_plan_leak")
-        if re.search(r"(?:です|ます|ください|ございました|しましょう)(?:[。！？!?]|$)", reply):
+        if re.search(
+            r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)(?:よね|よ|ね)?(?:[。！？!?、]|$)",
+            reply,
+        ):
             reasons.append("polite_tone_drift")
         if any(marker in reply for marker in ["詫び", "お詫び", "謝罪いた"]):
             reasons.append("formal_register_drift")
@@ -11172,6 +11217,10 @@ You are Ichinose Uruha.
             marker in reply for marker in ["悩", "思い詰", "抱え"]
         ):
             reasons.append("risk_overreaction")
+        if risk == "mild" and any(
+            marker in reply for marker in ["友達と話して", "誰かと話して", "今すぐ連絡", "人に連絡して"]
+        ):
+            reasons.append("risk_overreaction")
         if grounding.get("management_kind") and any(
             marker in reply for marker in ["誰かに連絡", "一人で抱え", "一人で思い詰め", "危ない"]
         ):
@@ -11189,6 +11238,7 @@ You are Ichinose Uruha.
         disabled_reason = self._model_surface_disabled_reason(logic_data)
         trace = {
             "selection_mode": "strict_model_candidate_gate",
+            "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
             "disabled_reason": disabled_reason or None,
             "semantic_contract": [list(group) for group in self._model_required_semantic_groups(logic_data)],
             "accepted": [],
@@ -11201,13 +11251,7 @@ You are Ichinose Uruha.
         messages = [
             {
                 "role": "system",
-                "content": (
-                    "あなたは、左脳の発話計画を自然な日本語口語へ変える表現器。"
-                    "一ノ瀬うるは風の、少し気だるく直接的な口調にする。"
-                    "required_semantic_groups の各組から意味を一つずつ必ず残す。"
-                    "元の外国語入力は推測も復唱もせず、日本語の返答一つだけを出す。"
-                    "JSON、ラベル、分析、敬語、説明文は出さない。"
-                ),
+                "content": RIGHT_BRAIN_MODEL_SYSTEM_PROMPT,
             },
             {
                 "role": "user",

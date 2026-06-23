@@ -12,12 +12,10 @@ from zoneinfo import ZoneInfo
 from project_paths import (
     RIGHTBRAIN_MODEL_GATE_DATASET_PATH,
     RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
-    RIGHTBRAIN_MODEL_GATE_REPORT_MD_PATH,
 )
 
 
 TZ = ZoneInfo("Asia/Tokyo")
-REPORT_PATH = RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH
 MEMORY = {
     "wisdom": "",
     "episodes": "",
@@ -69,7 +67,7 @@ def _summarize(rows):
     }
 
 
-def _write_markdown(report):
+def _write_markdown(report, output_path):
     summary = report["summary"]
     lines = [
         "# RightBrain Model Candidate Gate Report",
@@ -95,26 +93,31 @@ def _write_markdown(report):
                 "",
             ]
         )
-    Path(RIGHTBRAIN_MODEL_GATE_REPORT_MD_PATH).write_text("\n".join(lines), encoding="utf-8")
+    Path(output_path).write_text("\n".join(lines), encoding="utf-8")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", default=RIGHTBRAIN_MODEL_GATE_DATASET_PATH)
     parser.add_argument("--report", default=RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH)
+    parser.add_argument("--report-md", default="")
     parser.add_argument("--adapter-path", default=os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH", ""))
+    parser.add_argument("--base-only", action="store_true", help="Evaluate the base model without a LoRA adapter.")
     parser.add_argument("--candidate-count", type=int, default=1)
     parser.add_argument("--seed", type=int, default=20260621)
     args = parser.parse_args()
+    report_md_path = args.report_md or str(Path(args.report).with_suffix(".md"))
 
-    if args.adapter_path:
+    if args.base_only:
+        os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = "base-only"
+    elif args.adapter_path:
         os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = os.path.abspath(args.adapter_path)
     os.environ["URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT"] = str(max(1, args.candidate_count))
     os.environ["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] = "1"
     os.environ["URUHA_SKIP_AUTO_VENV"] = "1"
 
     import torch
-    from uruha_brain_mac import LeftBrain, RightBrain
+    from uruha_brain_mac import RIGHT_BRAIN_MODEL_CONTRACT_VERSION, LeftBrain, RightBrain
 
     torch.manual_seed(args.seed)
     if torch.backends.mps.is_available():
@@ -166,6 +169,7 @@ def main():
                 "actual_model_policy": actual_policy,
                 "disabled_reason": disabled_reason,
                 "policy_match": policy_match,
+                "contract_version": trace.get("contract_version"),
                 "semantic_contract": [list(group) for group in model_groups],
                 "generated_candidate_count": len(trace.get("accepted") or []) + len(trace.get("rejected") or []),
                 "accepted_candidate_count": len(trace.get("accepted") or []),
@@ -191,9 +195,18 @@ def main():
         "human_naturalness_claim_allowed": False,
         "dataset_version": dataset.get("version"),
         "dataset_sha256": _sha256(args.dataset),
-        "adapter_ref": os.path.basename(os.path.abspath(args.adapter_path)) if args.adapter_path else "configured_default",
-        "adapter_config_sha256": _sha256(os.path.join(args.adapter_path, "adapter_config.json")) if args.adapter_path else None,
+        "adapter_ref": (
+            "base_model_only"
+            if args.base_only
+            else os.path.basename(os.path.abspath(args.adapter_path)) if args.adapter_path else "configured_default"
+        ),
+        "adapter_config_sha256": (
+            _sha256(os.path.join(args.adapter_path, "adapter_config.json"))
+            if args.adapter_path and not args.base_only
+            else None
+        ),
         "case_state_reset": True,
+        "runtime_contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
         "candidate_count_per_enabled_case": max(1, args.candidate_count),
         "seed": args.seed,
         "duration_seconds": round(time.time() - started_at, 3),
@@ -201,7 +214,7 @@ def main():
         "cases": rows,
     }
     Path(args.report).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    _write_markdown(report)
+    _write_markdown(report, report_md_path)
     print(json.dumps(report["summary"], ensure_ascii=False, indent=2))
     success = (
         report["summary"]["policy_match_rate"] == 1.0
