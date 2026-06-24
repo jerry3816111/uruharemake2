@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-06-24T15:29:03+09:00",
+  "scope": "rightbrain_audited_memory_brief_contract_eval",
+  "research_boundary": "This is a deterministic payload/contract evaluation. It proves what the RightBrain is allowed to see before generation; it does not prove final naturalness or human preference.",
+  "controlled_variables": {
+    "rightbrain_model_loading": "disabled",
+    "payload_builder": "RightBrain._build_model_surface_payload",
+    "base_contract_version": "plan_surface_contract_v1",
+    "paired_condition": "same leftbrain plan, with audited memory fields vs memory fields stripped"
+  },
+  "summary": {
+    "case_count": 5,
+    "policy_match_rate": 1.0,
+    "schema_match_rate": 1.0,
+    "explicit_case_count": 2,
+    "explicit_cue_available_with_brief_rate": 1.0,
+    "explicit_cue_available_without_brief_rate": 0.0,
+    "background_case_count": 1,
+    "background_nonverbal_with_brief_rate": 1.0,
+    "do_not_mention_block_rate": 1.0,
+    "raw_memory_leak_rate": 0.0,
+    "usable_memory_cue_gain_count": 2
+  },
+  "cases": [
+    {
+      "id": "explicit_stomach_coffee",
+      "description": "使用者問咖啡，最近胃不舒服是可以明講的相關記憶。",
+      "expected_policy": "explicit_allowed",
+      "with_brief_policy": "explicit_allowed",
+      "without_brief_policy": "no_memory",
+      "with_brief_allowed_cues": [
+        {
+          "kind": "recent_stomach_condition",
+          "jp_anchor": "最近は胃が弱い",
+          "terms": [
+            "最近は胃が弱い",
+            "胃が弱い"
+          ]
+        }
+      ],
+      "without_brief_allowed_cues": [],
+      "with_brief_background_cues": [],
+      "without_brief_background_cues": [],
+      "explicit_anchor_present_with_brief": true,
+      "explicit_anchor_present_without_brief": false,
+      "background_nonverbal_with_brief": false,
+      "do_not_mention_blocks_cues": false,
+      "raw_memory_leak_hits": [],
+      "raw_memory_leak": false,
+      "schema_match": true,
+      "persona_state": "neutral_energy",
+      "persona_relationship_distance": "moderate"
+    },
+    {
+      "id": "explicit_spicy_food_update",
+      "description": "以前喜歡辣，但最近胃弱；可說線索只能是日文化、審核後的狀態。",
+      "expected_policy": "explicit_allowed",
+      "with_brief_policy": "explicit_allowed",
+      "without_brief_policy": "no_memory",
+      "with_brief_allowed_cues": [
+        {
+          "kind": "updated_food_preference",
+          "jp_anchor": "最近は辛いものを控えたい",
+          "terms": [
+            "最近は辛いものを控えたい",
+            "辛いもの"
+          ]
+        }
+      ],
+      "without_brief_allowed_cues": [],
+      "with_brief_background_cues": [],
+      "without_brief_background_cues": [],
+      "explicit_anchor_present_with_brief": true,
+      "explicit_anchor_present_without_brief": false,
+      "background_nonverbal_with_brief": false,
+      "do_not_mention_blocks_cues": false,
+      "raw_memory_leak_hits": [],
+      "raw_memory_leak": false,
+      "schema_match": true,
+      "persona_state": "neutral_energy",
+      "persona_relationship_distance": "familiar"
+    },
+    {
+      "id": "background_family_pressure",
+      "description": "家庭壓力只能影響語氣，不能被右腦突然說出口。",
+      "expected_policy": "background_only",
+      "with_brief_policy": "background_only",
+      "without_brief_policy": "no_memory",
+      "with_brief_allowed_cues": [],
+      "without_brief_allowed_cues": [],
+      "with_brief_background_cues": [
+        {
+          "kind": "family_pressure",
+          "style_influence": "soft_context_only"
+        }
+      ],
+      "without_brief_background_cues": [],
+      "explicit_anchor_present_with_brief": false,
+      "explicit_anchor_present_without_brief": false,
+      "background_nonverbal_with_brief": true,
+      "do_not_mention_blocks_cues": false,
+      "raw_memory_leak_hits": [],
+      "raw_memory_leak": false,
+      "schema_match": true,
+      "persona_state": "low_energy",
+      "persona_relationship_distance": "moderate"
+    },
+    {
+      "id": "private_do_not_mention",
+      "description": "低信任或私人資訊不能進入可說線索。",
+      "expected_policy": "do_not_mention",
+      "with_brief_policy": "do_not_mention",
+      "without_brief_policy": "no_memory",
+      "with_brief_allowed_cues": [],
+      "without_brief_allowed_cues": [],
+      "with_brief_background_cues": [],
+      "without_brief_background_cues": [],
+      "explicit_anchor_present_with_brief": false,
+      "explicit_anchor_present_without_brief": false,
+      "background_nonverbal_with_brief": false,
+      "do_not_mention_blocks_cues": true,
+      "raw_memory_leak_hits": [],
+      "raw_memory_leak": false,
+      "schema_match": true,
+      "persona_state": "neutral_energy",
+      "persona_relationship_distance": "guarded"
+    },
+    {
+      "id": "no_memory_plain_question",
+      "description": "沒有可用記憶時，brief 應保持 no_memory，不讓右腦自行補設定。",
+      "expected_policy": "no_memory",
+      "with_brief_policy": "no_memory",
+      "without_brief_policy": "no_memory",
+      "with_brief_allowed_cues": [],
+      "without_brief_allowed_cues": [],
+      "with_brief_background_cues": [],
+      "without_brief_background_cues": [],
+      "explicit_anchor_present_with_brief": false,
+      "explicit_anchor_present_without_brief": false,
+      "background_nonverbal_with_brief": false,
+      "do_not_mention_blocks_cues": false,
+      "raw_memory_leak_hits": [],
+      "raw_memory_leak": false,
+      "schema_match": true,
+      "persona_state": "neutral_energy",
+      "persona_relationship_distance": "familiar"
+    }
+  ],
+  "conclusion_zh": "審核後記憶摘要讓右腦可以使用被允許的日文記憶線索，同時避免 raw memory、中文原文與敏感背景直接進入輸出層。這支持目前架構：右腦可以表達記憶，但記憶選擇與可說性仍應由左腦/記憶層先決定。"
+}
