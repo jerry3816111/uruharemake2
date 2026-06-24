@@ -48,6 +48,9 @@ class RightBrainContractV1TrainingDatasetTest(unittest.TestCase):
         self.assertEqual(payload["user_input"], "頭痛がつらいので休むように返す。")
         self.assertNotIn("今天頭痛", rows[0]["messages"][1]["content"])
         self.assertEqual(rows[0]["messages"][0]["content"], RIGHT_BRAIN_MODEL_SYSTEM_PROMPT)
+        self.assertEqual(payload["context"]["audited_memory_brief"]["policy"], "no_memory")
+        self.assertEqual(payload["context"]["audited_memory_brief"]["allowed_memory_cues"], [])
+        self.assertEqual(payload["context"]["persona_expression_brief"]["role"], "surface_style_only")
 
     def test_builder_excludes_development_overlap_and_bad_register(self):
         def row(source_id, user_input, reply):

@@ -7,6 +7,7 @@
 - contract：plan_surface_contract_v1
 - 資料身份：正式改列為 training corpus，不得再當 holdout 或獨立評測證據。
 - 原始中文輸入：不進入訓練 payload，只保留左腦日文 meaning。
+- 右腦記憶/人格：只提供 audited_memory_brief 與 persona_expression_brief，不提供 raw memory。
 
 ## 類別
 

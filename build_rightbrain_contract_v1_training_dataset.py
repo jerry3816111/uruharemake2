@@ -40,6 +40,50 @@ def _required_groups_hit(reply, groups):
     return all(any(str(marker) and str(marker) in reply for marker in group) for group in groups)
 
 
+def _default_audited_memory_brief():
+    return {
+        "policy": "no_memory",
+        "speakability": "no_memory",
+        "allowed_memory_cues": [],
+        "background_style_cues": [],
+        "forbidden": [
+            "do_not_quote_raw_memory",
+            "do_not_reveal_source_text",
+            "do_not_invent_unprovided_profile",
+        ],
+    }
+
+
+def _persona_expression_brief(context):
+    try:
+        mood = float((context or {}).get("mood", 0))
+    except (TypeError, ValueError):
+        mood = 0.0
+    try:
+        trust = float((context or {}).get("trust", 50))
+    except (TypeError, ValueError):
+        trust = 50.0
+    if mood <= -25:
+        state = "low_energy"
+    elif mood >= 25:
+        state = "lighter_mood"
+    else:
+        state = "neutral_energy"
+    if trust >= 72:
+        distance = "familiar"
+    elif trust <= 35:
+        distance = "guarded"
+    else:
+        distance = "moderate"
+    return {
+        "role": "surface_style_only",
+        "state": state,
+        "relationship_distance": distance,
+        "stable_traits": ["lazy_short", "slightly_bratty", "not_customer_service"],
+        "must_not_override": ["leftbrain_plan", "required_marker_groups", "audited_memory_policy"],
+    }
+
+
 def _canonical_payload(source_payload):
     source_plan = source_payload.get("leftbrain_plan") or {}
     if not source_plan:
@@ -78,6 +122,8 @@ def _canonical_payload(source_payload):
         },
         "context": {
             "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
+            "audited_memory_brief": _default_audited_memory_brief(),
+            "persona_expression_brief": _persona_expression_brief(context),
             "mood": context.get("mood", 0),
             "trust": context.get("trust", 50),
             "max_chars": int(context.get("max_chars") or source_payload.get("max_chars") or 60),
@@ -174,6 +220,7 @@ def write_summary_markdown(summary, path):
         f"- contract：{summary['contract_version']}",
         "- 資料身份：正式改列為 training corpus，不得再當 holdout 或獨立評測證據。",
         "- 原始中文輸入：不進入訓練 payload，只保留左腦日文 meaning。",
+        "- 右腦記憶/人格：只提供 audited_memory_brief 與 persona_expression_brief，不提供 raw memory。",
         "",
         "## 類別",
         "",

@@ -113,6 +113,74 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertNotIn("required_semantic_groups", payload)
         self.assertNotIn("他已讀但沒回", payload_text)
         self.assertIn("required_marker_group", RIGHT_BRAIN_MODEL_SYSTEM_PROMPT)
+        self.assertIn("audited_memory_brief", payload["context"])
+        self.assertIn("persona_expression_brief", payload["context"])
+
+    def test_model_payload_allows_only_audited_memory_surface_cues(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        logic.update(
+            {
+                "memory_anchor": {
+                    "kind": "ramen_bad_consequence",
+                    "jp_anchor": "ラーメンで腹痛",
+                    "terms": ["ラーメンで腹痛", "拉麵", "肚子痛", "ramen"],
+                    "source_text": "使用者上週說吃拉麵會肚子痛，這是不能原文丟給右腦的 raw memory。",
+                },
+                "memory_speakability": "explicit_ok",
+                "memory_speakability_reason": "user asks food advice and this memory is relevant",
+                "memory_use_expected": True,
+            }
+        )
+
+        payload_text = rightbrain._build_model_surface_payload(
+            logic,
+            {"mood": -5, "trust": 74},
+            80,
+            memory_data={
+                "working_memory_summary": "raw summary should not enter model payload",
+                "working_memory_items": [
+                    {"text": "使用者上週說吃拉麵會肚子痛，這是 raw source text。", "score": 0.95}
+                ],
+            },
+        )
+        payload = json.loads(payload_text)
+        brief = payload["context"]["audited_memory_brief"]
+
+        self.assertEqual(brief["policy"], "explicit_allowed")
+        self.assertEqual(brief["allowed_memory_cues"][0]["jp_anchor"], "ラーメンで腹痛")
+        self.assertIn("ラーメンで腹痛", brief["allowed_memory_cues"][0]["terms"])
+        self.assertNotIn("拉麵", payload_text)
+        self.assertNotIn("肚子痛", payload_text)
+        self.assertNotIn("raw source text", payload_text)
+        self.assertNotIn("raw summary should not enter model payload", payload_text)
+
+    def test_model_payload_keeps_background_memory_nonverbal(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        logic.update(
+            {
+                "memory_anchor": {
+                    "kind": "family_pressure",
+                    "jp_anchor": "家庭の話",
+                    "terms": ["家庭の話", "家庭壓力"],
+                    "source_text": "使用者以前說家庭壓力很大，但這輪不能突然明講。",
+                },
+                "memory_speakability": "background_only",
+                "memory_speakability_reason": "sensitive context should only tune warmth",
+                "memory_use_expected": False,
+            }
+        )
+
+        payload_text = rightbrain._build_model_surface_payload(logic, {"mood": -20, "trust": 55}, 80)
+        payload = json.loads(payload_text)
+        brief = payload["context"]["audited_memory_brief"]
+
+        self.assertEqual(brief["policy"], "background_only")
+        self.assertEqual(brief["allowed_memory_cues"], [])
+        self.assertEqual(brief["background_style_cues"][0]["kind"], "family_pressure")
+        self.assertNotIn("家庭壓力", payload_text)
+        self.assertNotIn("以前說", payload_text)
 
     def test_default_model_loading_follows_explicit_blend_switch(self):
         self.assertEqual(_resolve_right_brain_model_loading(None), RIGHT_BRAIN_MODEL_BLEND_ENABLED)

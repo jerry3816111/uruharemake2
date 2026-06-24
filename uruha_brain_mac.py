@@ -170,7 +170,8 @@ RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
     "not roleplay improvisation. Return exactly one short, natural casual Japanese chat reply. "
     "For every required_marker_group in the input contract, include at least one marker from that "
     "group naturally in the reply. Do not include any forbidden_marker. Keep the concrete topic and "
-    "grounding terms. Do not output analysis, labels, JSON, metadata, English, Chinese, or system "
+    "grounding terms. Use audited_memory_brief only as a surface cue; never infer from hidden memory "
+    "or reveal memory that is not explicitly allowed. Do not output analysis, labels, JSON, metadata, English, Chinese, or system "
     "text. Do not use 私. Do not explain the contract."
 )
 
@@ -11112,9 +11113,93 @@ You are Ichinose Uruha.
     def _model_surface_candidates_allowed(self, logic_data):
         return not self._model_surface_disabled_reason(logic_data)
 
-    def _build_model_surface_payload(self, logic_data, current_psyche, max_chars):
+    def _persona_expression_brief(self, current_psyche):
+        psyche = current_psyche if isinstance(current_psyche, dict) else {}
+        def as_float(value, default):
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return default
+
+        mood = as_float(psyche.get("mood"), 0.0)
+        trust = as_float(psyche.get("trust"), 50.0)
+        if mood <= -25:
+            state = "low_energy"
+        elif mood >= 25:
+            state = "lighter_mood"
+        else:
+            state = "neutral_energy"
+        if trust >= 72:
+            distance = "familiar"
+        elif trust <= 35:
+            distance = "guarded"
+        else:
+            distance = "moderate"
+        return {
+            "role": "surface_style_only",
+            "state": state,
+            "relationship_distance": distance,
+            "stable_traits": ["lazy_short", "slightly_bratty", "not_customer_service"],
+            "must_not_override": ["leftbrain_plan", "required_marker_groups", "audited_memory_policy"],
+        }
+
+    def _audited_memory_expression_brief(self, logic_data, memory_data=None):
+        logic_data = logic_data or {}
+        anchor = logic_data.get("memory_anchor") or {}
+        speakability = str(logic_data.get("memory_speakability") or "no_memory")
+        explicit = bool(logic_data.get("memory_use_expected"))
+        policy = "no_memory"
+        allowed_cues = []
+        background_cues = []
+
+        if anchor:
+            jp_anchor = str(anchor.get("jp_anchor") or "").strip()
+            surface_terms = []
+            for term in [jp_anchor, *(anchor.get("terms") or [])]:
+                term = str(term or "").strip()
+                if not term:
+                    continue
+                if term != jp_anchor and not re.search(r"[ぁ-んァ-ヶー]", term):
+                    continue
+                if term not in surface_terms:
+                    surface_terms.append(term)
+            cue = {
+                "kind": str(anchor.get("kind") or "context"),
+                "jp_anchor": jp_anchor,
+                "terms": surface_terms[:4],
+            }
+            cue = {key: value for key, value in cue.items() if value}
+            if explicit:
+                policy = "explicit_allowed"
+                allowed_cues.append(cue)
+            elif speakability in {"background_only", "latent_ok", "low_trust_background", "private_background"}:
+                policy = "background_only"
+                background_cues.append({"kind": cue.get("kind", "context"), "style_influence": "soft_context_only"})
+            else:
+                policy = "do_not_mention"
+
+        if not anchor and speakability not in {"", "no_memory"}:
+            policy = "background_only" if "background" in speakability or "latent" in speakability else "do_not_mention"
+
+        brief = {
+            "policy": policy,
+            "speakability": speakability,
+            "allowed_memory_cues": allowed_cues,
+            "background_style_cues": background_cues,
+            "forbidden": [
+                "do_not_quote_raw_memory",
+                "do_not_reveal_source_text",
+                "do_not_invent_unprovided_profile",
+            ],
+        }
+        if logic_data.get("memory_speakability_reason"):
+            brief["reason"] = str(logic_data.get("memory_speakability_reason"))[:80]
+        return brief
+
+    def _build_model_surface_payload(self, logic_data, current_psyche, max_chars, memory_data=None):
         speech_plan = logic_data.get("human_speech_plan") or {}
         psyche = current_psyche if isinstance(current_psyche, dict) else {}
+        memory_brief = self._audited_memory_expression_brief(logic_data, memory_data)
         payload = {
             "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
             "task": "write_one_user_facing_japanese_reply",
@@ -11136,6 +11221,8 @@ You are Ichinose Uruha.
             },
             "context": {
                 "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
+                "audited_memory_brief": memory_brief,
+                "persona_expression_brief": self._persona_expression_brief(current_psyche),
                 "mood": psyche.get("mood", 0),
                 "trust": psyche.get("trust", 50),
                 "max_chars": int(max_chars or 48),
@@ -11259,6 +11346,7 @@ You are Ichinose Uruha.
                     logic_data,
                     current_psyche,
                     max_chars,
+                    memory_data=memory_data,
                 ),
             },
         ]
