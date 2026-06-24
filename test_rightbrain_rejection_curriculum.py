@@ -13,11 +13,16 @@ class RightBrainRejectionCurriculumTest(unittest.TestCase):
         cls.rows, cls.summary = build_curriculum(report)
 
     def test_builds_rows_from_rejected_candidates_only(self):
-        self.assertEqual(self.summary["curriculum_row_count"], 6)
-        self.assertEqual(len(self.rows), 6)
+        self.assertEqual(self.summary["curriculum_row_count"], 36)
+        self.assertEqual(len(self.rows), 36)
         self.assertEqual(self.summary["skipped_counts"]["no_rejection"], 5)
+        self.assertEqual(self.summary["variant_cases"], 6)
         self.assertIn("unexpected_ascii_leak", self.summary["failure_reason_counts"])
         self.assertIn("semantic_slots_missing:0/1", self.summary["failure_reason_counts"])
+        per_case = {}
+        for row in self.rows:
+            per_case[row["source_case_id"]] = per_case.get(row["source_case_id"], 0) + 1
+        self.assertEqual(set(per_case.values()), {6})
 
     def test_training_messages_use_clean_target_not_rejected_raw_candidate(self):
         for row in self.rows:
@@ -29,6 +34,12 @@ class RightBrainRejectionCurriculumTest(unittest.TestCase):
                 self.assertNotIn(raw, messages_text)
             payload = json.loads(row["messages"][1]["content"])
             self.assertTrue(payload["required_marker_groups"])
+            self.assertTrue(
+                all(
+                    any(str(marker) and str(marker) in row["messages"][-1]["content"] for marker in group)
+                    for group in payload["required_marker_groups"]
+                )
+            )
             self.assertEqual(row["messages"][-1]["content"].strip(), row["messages"][-1]["content"])
 
     def test_explicit_memory_payload_preserves_allowed_memory_contract(self):
