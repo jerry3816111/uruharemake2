@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-06-25T01:58:23+09:00",
+  "scope": "rightbrain_v9_rejection_training_comparison",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+  "trained_adapter": "uruha_rightbrain_plan_sft_lora_v9_rejection_v1",
+  "training_rows": 1031,
+  "supplemental_rows": 6,
+  "optimizer_updates": 15,
+  "nonfinite_skips": 0,
+  "initial_eval_loss_probe": 3.3049805760383606,
+  "sampled_eval_loss": 3.2186499337355294,
+  "final_train_loss": 3.2333790670361435,
+  "metric_rows": [
+    {
+      "metric": "generated_candidate_count",
+      "v8": 10,
+      "v9": 10,
+      "delta": 0
+    },
+    {
+      "metric": "accepted_candidate_count",
+      "v8": 4,
+      "v9": 4,
+      "delta": 0
+    },
+    {
+      "metric": "raw_candidate_acceptance_rate",
+      "v8": 0.4,
+      "v9": 0.4,
+      "delta": 0.0
+    },
+    {
+      "metric": "model_selected_case_count",
+      "v8": 1,
+      "v9": 1,
+      "delta": 0
+    },
+    {
+      "metric": "model_selected_case_rate",
+      "v8": 0.0909,
+      "v9": 0.0909,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_quality_pass_rate",
+      "v8": 1.0,
+      "v9": 1.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_forbidden_surface_leak_rate",
+      "v8": 0.0,
+      "v9": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_generic_template_hit_rate",
+      "v8": 0.0,
+      "v9": 0.0,
+      "delta": 0.0
+    }
+  ],
+  "case_diffs": [],
+  "conclusion_zh": "v9 rejection 補強訓練成功完成且 eval loss 下降，但在同一套 11 題 model-surface holdout 上，accepted/model-selected/final quality 指標與 v8 相同。這代表 6 筆補強資料不足以讓模型行為在 holdout 上出現可測差異，下一步應擴大 curriculum 或提高針對 semantic slot 的訓練權重。"
+}
