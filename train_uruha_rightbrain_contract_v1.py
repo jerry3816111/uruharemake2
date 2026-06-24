@@ -42,7 +42,7 @@ def _sha256(path):
     return digest.hexdigest()
 
 
-def load_rows(path):
+def load_rows(path, min_rows=500):
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     rows = []
     for item in raw:
@@ -56,9 +56,33 @@ def load_rows(path):
         if payload.get("contract_version") != RIGHT_BRAIN_MODEL_CONTRACT_VERSION:
             continue
         rows.append(item)
-    if len(rows) < 500:
+    if len(rows) < min_rows:
         raise RuntimeError(f"Too few canonical training rows: {len(rows)}")
     return rows
+
+
+def load_training_rows(dataset_path, supplemental_paths=None):
+    rows = load_rows(dataset_path, min_rows=500)
+    sources = [
+        {
+            "role": "primary",
+            "path": str(dataset_path),
+            "rows": len(rows),
+            "sha256": _sha256(dataset_path),
+        }
+    ]
+    for supplemental_path in supplemental_paths or []:
+        supplemental_rows = load_rows(supplemental_path, min_rows=1)
+        rows.extend(supplemental_rows)
+        sources.append(
+            {
+                "role": "supplemental",
+                "path": str(supplemental_path),
+                "rows": len(supplemental_rows),
+                "sha256": _sha256(supplemental_path),
+            }
+        )
+    return rows, sources
 
 
 def tokenize_row(row, tokenizer, max_length):
@@ -241,6 +265,7 @@ def train(model, tokenizer, train_set, eval_set, args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", default=RIGHTBRAIN_CONTRACT_V1_TRAIN_DATASET_PATH)
+    parser.add_argument("--supplemental-dataset", action="append", default=[])
     parser.add_argument("--base-model", default=DEFAULT_BASE_MODEL)
     parser.add_argument("--init-adapter", required=True)
     parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR)
@@ -268,7 +293,7 @@ def main():
     torch.manual_seed(args.seed)
     if torch.backends.mps.is_available():
         torch.mps.manual_seed(args.seed)
-    rows = load_rows(args.dataset)
+    rows, dataset_sources = load_training_rows(args.dataset, args.supplemental_dataset)
     random.Random(args.seed).shuffle(rows)
     eval_count = max(1, int(len(rows) * args.eval_split))
     eval_rows = rows[:eval_count]
@@ -285,6 +310,8 @@ def main():
             json.dumps(
                 {
                     "rows": len(rows),
+                    "primary_rows": dataset_sources[0]["rows"],
+                    "supplemental_rows": sum(source["rows"] for source in dataset_sources[1:]),
                     "train_rows": len(train_rows),
                     "eval_rows": len(eval_rows),
                     "token_length_min": min(lengths),
@@ -319,6 +346,8 @@ def main():
         "base_model": args.base_model,
         "dataset_ref": Path(args.dataset).name,
         "dataset_sha256": _sha256(args.dataset),
+        "dataset_sources": dataset_sources,
+        "supplemental_rows": sum(source["rows"] for source in dataset_sources[1:]),
         "init_adapter_ref": Path(args.init_adapter).name,
         "init_adapter_config_sha256": _sha256(Path(args.init_adapter) / "adapter_config.json"),
         "output_adapter_ref": output_dir.name,
