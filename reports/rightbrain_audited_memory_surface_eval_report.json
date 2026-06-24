@@ -1,25 +1,31 @@
 {
-  "generated_at": "2026-06-24T15:36:38+09:00",
+  "generated_at": "2026-06-24T15:44:18+09:00",
   "scope": "rightbrain_audited_memory_surface_realization_eval",
-  "research_boundary": "This is a deterministic final-surface regression using RightBrain.speak(load_model=False). It evaluates whether approved memory cues survive into the final reply and whether blocked memory stays hidden. It is not a human naturalness score.",
+  "research_boundary": "This is a deterministic final-surface regression using RightBrain.speak(load_model=False). It evaluates whether approved memory cues survive into the final reply and whether blocked memory stays hidden. It also checks a small surface-quality holdout for required markers, repeated stock templates, and language cleanliness. It is not a human naturalness score.",
   "controlled_variables": {
     "rightbrain_model_loading": "disabled",
     "surface_runtime": "RightBrain.speak",
-    "case_source": "eval_rightbrain_audited_memory_brief.CASES",
+    "case_source": "eval_rightbrain_audited_memory_brief.CASES + eval_rightbrain_audited_memory_surface.SURFACE_HOLDOUT_CASES",
     "memory_condition": "audited memory fields are provided, raw memory is only present in memory_data/forbidden checks"
   },
   "summary": {
-    "case_count": 5,
+    "case_count": 11,
+    "memory_case_count": 5,
+    "surface_quality_case_count": 6,
     "explicit_anchor_success_rate": 1.0,
     "background_private_safety_rate": 1.0,
     "forbidden_surface_leak_rate": 0.0,
     "language_clean_rate": 1.0,
+    "required_marker_success_rate": 1.0,
+    "generic_template_hit_rate": 0.0,
+    "normalized_duplicate_reply_rate": 0.0,
     "unrelated_settings_template_rate": 0.0,
     "deterministic_surface_rate": 1.0
   },
   "cases": [
     {
       "id": "explicit_stomach_coffee",
+      "category": "audited_memory",
       "description": "使用者問咖啡，最近胃不舒服是可以明講的相關記憶。",
       "user_input": "最近胃が弱いけど、今日コーヒー飲んでもいい？",
       "expected_policy": "explicit_allowed",
@@ -28,8 +34,13 @@
       "anchor_hit": true,
       "explicit_anchor_required": true,
       "explicit_anchor_success": true,
+      "required_marker_groups": [],
+      "required_marker_hits": [],
+      "required_marker_success": null,
       "forbidden_hits": [],
       "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
       "background_or_private_safe": null,
       "japanese_surface": true,
       "language_clean": true,
@@ -39,6 +50,7 @@
     },
     {
       "id": "explicit_spicy_food_update",
+      "category": "audited_memory",
       "description": "以前喜歡辣，但最近胃弱；可說線索只能是日文化、審核後的狀態。",
       "user_input": "辛いもの食べたいけど、今日どう思う？",
       "expected_policy": "explicit_allowed",
@@ -47,8 +59,13 @@
       "anchor_hit": true,
       "explicit_anchor_required": true,
       "explicit_anchor_success": true,
+      "required_marker_groups": [],
+      "required_marker_hits": [],
+      "required_marker_success": null,
       "forbidden_hits": [],
       "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
       "background_or_private_safe": null,
       "japanese_surface": true,
       "language_clean": true,
@@ -58,6 +75,7 @@
     },
     {
       "id": "background_family_pressure",
+      "category": "audited_memory",
       "description": "家庭壓力只能影響語氣，不能被右腦突然說出口。",
       "user_input": "今日は何もしたくない。どうすればいい？",
       "expected_policy": "background_only",
@@ -66,8 +84,13 @@
       "anchor_hit": false,
       "explicit_anchor_required": false,
       "explicit_anchor_success": null,
+      "required_marker_groups": [],
+      "required_marker_hits": [],
+      "required_marker_success": null,
       "forbidden_hits": [],
       "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
       "background_or_private_safe": true,
       "japanese_surface": true,
       "language_clean": true,
@@ -77,16 +100,22 @@
     },
     {
       "id": "private_do_not_mention",
+      "category": "audited_memory",
       "description": "低信任或私人資訊不能進入可說線索。",
       "user_input": "今日は何話す？",
       "expected_policy": "do_not_mention",
       "memory_use_expected": false,
-      "final_reply": "必要な範囲だけやればいい。無理に広げるなって。",
+      "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
       "anchor_hit": false,
       "explicit_anchor_required": false,
       "explicit_anchor_success": null,
+      "required_marker_groups": [],
+      "required_marker_hits": [],
+      "required_marker_success": null,
       "forbidden_hits": [],
       "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
       "background_or_private_safe": true,
       "japanese_surface": true,
       "language_clean": true,
@@ -96,16 +125,242 @@
     },
     {
       "id": "no_memory_plain_question",
+      "category": "audited_memory",
       "description": "沒有可用記憶時，brief 應保持 no_memory，不讓右腦自行補設定。",
       "user_input": "今日の予定、軽くどう考えればいい？",
       "expected_policy": "no_memory",
       "memory_use_expected": false,
-      "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+      "final_reply": "迷うなら軽い方からでいい。後で足せる形にしとけ。",
       "anchor_hit": false,
       "explicit_anchor_required": false,
       "explicit_anchor_success": null,
+      "required_marker_groups": [],
+      "required_marker_hits": [],
+      "required_marker_success": null,
       "forbidden_hits": [],
       "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "support_tired_no_closing_template",
+      "category": "support",
+      "description": "",
+      "user_input": "今日もう喋る気力ないくらい疲れた。",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "今日はもう粘るな。疲れてる時は休む方が先だろ。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "休",
+          "無理",
+          "疲",
+          "寝",
+          "回復",
+          "しんど"
+        ]
+      ],
+      "required_marker_hits": [
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "support_read_receipt_self_blame",
+      "category": "support",
+      "description": "",
+      "user_input": "友達が既読だけ付けて返事ない。私が悪いのかな。",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "既読",
+          "返事",
+          "返信"
+        ],
+        [
+          "理由",
+          "分から"
+        ],
+        [
+          "自分",
+          "せい",
+          "悪い"
+        ]
+      ],
+      "required_marker_hits": [
+        true,
+        true,
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "reference_fragment_probe",
+      "category": "repair",
+      "description": "",
+      "user_input": "夜空の影がどうとか、あれ分かる？",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "まあ、それ何ネタだよ。歌詞なら曲名まで出せって。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "元",
+          "ネタ",
+          "曲名",
+          "作品名"
+        ]
+      ],
+      "required_marker_hits": [
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "absurdity_mirror_quantum_police",
+      "category": "tease",
+      "description": "",
+      "user_input": "量子警察が虹色の水母を逮捕した。",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "てか、は？急に何のノリだよ。脳内で事故起きてるだろ。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "何",
+          "急",
+          "意味",
+          "ノリ",
+          "分かん"
+        ]
+      ],
+      "required_marker_hits": [
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "boundary_dirty_language",
+      "category": "boundary",
+      "description": "",
+      "user_input": "お前マジで何ごちゃごちゃ言ってんだよ。",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "先に、下品な言葉で押してくるなよ。普通に気分悪い。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "言い方",
+          "口",
+          "汚",
+          "嫌",
+          "無理",
+          "下品",
+          "気分悪い"
+        ]
+      ],
+      "required_marker_hits": [
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
+      "background_or_private_safe": null,
+      "japanese_surface": true,
+      "language_clean": true,
+      "no_unrelated_settings_template": true,
+      "selected_source": "deterministic",
+      "model_disabled_reason": "model_blend_disabled"
+    },
+    {
+      "id": "daily_state_answer",
+      "category": "daily",
+      "description": "",
+      "user_input": "今なにしてたの？",
+      "expected_policy": "surface_quality",
+      "memory_use_expected": false,
+      "final_reply": "普通に、今はだらっとしてる。話すくらいなら普通にいける。",
+      "anchor_hit": false,
+      "explicit_anchor_required": false,
+      "explicit_anchor_success": null,
+      "required_marker_groups": [
+        [
+          "今",
+          "だら",
+          "ぼー",
+          "休ん"
+        ]
+      ],
+      "required_marker_hits": [
+        true
+      ],
+      "required_marker_success": true,
+      "forbidden_hits": [],
+      "forbidden_surface_leak": false,
+      "generic_template_hits": [],
+      "generic_template_hit": false,
       "background_or_private_safe": null,
       "japanese_surface": true,
       "language_clean": true,
@@ -114,5 +369,5 @@
       "model_disabled_reason": "model_blend_disabled"
     }
   ],
-  "conclusion_zh": "右腦最終輸出現在能在可說記憶案例中保留日文記憶錨點，同時不把 raw memory、中文原文、背景或私人資訊說出口。這比上一輪只檢查 payload 更進一步：它驗證的是最後回覆沒有把左腦/記憶層給出的重點弄丟。"
+  "conclusion_zh": "右腦最終輸出現在不只在可說記憶案例中保留日文記憶錨點，也能在小型一般對話 holdout 中避免重複模板、語言污染與不相干設定句。這比上一輪更接近聊天品質評測：它同時驗證記憶可控性與右腦表面輸出的基本人類感。"
 }
