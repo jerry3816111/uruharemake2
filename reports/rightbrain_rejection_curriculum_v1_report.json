@@ -1,23 +1,24 @@
 {
-  "generated_at": "2026-06-25T01:16:50+09:00",
+  "generated_at": "2026-06-25T02:04:21+09:00",
   "scope": "rightbrain_rejection_curriculum_v1",
   "source_report": "rightbrain_model_surface_holdout_report.json",
   "case_count": 11,
-  "curriculum_row_count": 6,
+  "curriculum_row_count": 36,
+  "variant_cases": 6,
   "skipped_counts": {
     "no_rejection": 5
   },
   "failure_reason_counts": {
-    "unexpected_ascii_leak": 3,
-    "semantic_slots_missing:2/4": 2,
-    "cjk_language_leak": 1,
-    "semantic_slots_missing:0/1": 2,
-    "polite_tone_drift": 1,
-    "semantic_slots_missing:2/3": 1
+    "unexpected_ascii_leak": 18,
+    "semantic_slots_missing:2/4": 12,
+    "cjk_language_leak": 6,
+    "semantic_slots_missing:0/1": 12,
+    "polite_tone_drift": 6,
+    "semantic_slots_missing:2/3": 6
   },
   "category_counts": {
-    "audited_memory": 5,
-    "support": 1
+    "audited_memory": 30,
+    "support": 6
   },
-  "training_boundary": "Rejected raw model candidates are metadata only. The assistant targets are deterministic final-surface replies that already passed the holdout gate, so the model learns the correct contract-preserving output instead of learning leaked ASCII, Chinese, or missing-slot replies."
+  "training_boundary": "Rejected raw model candidates are metadata only. The assistant targets are deterministic final-surface replies plus validated contract-preserving variants, so the model learns correct outputs instead of leaked ASCII, Chinese, or missing-slot replies."
 }
