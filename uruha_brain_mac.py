@@ -8642,6 +8642,31 @@ class RightBrain:
                 ]
 
         if not variants:
+            if jp_anchor:
+                natural_anchor = self._jp_memory_value(jp_anchor or value)
+                core = str(logic_data.get("core_message_jp") or "")
+                target = "それ"
+                if any(token in lowered or token in core for token in ["coffee", "コーヒー", "咖啡"]):
+                    target = "コーヒー"
+                elif any(token in lowered or token in core for token in ["辛", "辣", "spicy"]):
+                    target = "辛いもの"
+                elif any(token in lowered or token in core for token in ["ramen", "ラーメン", "拉麵", "拉面"]):
+                    target = "ラーメン"
+                elif any(token in lowered or token in core for token in ["食", "飲", "drink", "eat"]):
+                    target = "飲食"
+
+                if any(token in core for token in ["控え", "無理", "優先", "体調"]):
+                    variants = [
+                        f"{natural_anchor}んだから、{target}は控えめにしとけ。",
+                        f"{natural_anchor}なら、今日は{target}を攻めすぎるなって。",
+                        f"{natural_anchor}って前提なら、まず体調優先だろ。",
+                    ]
+                else:
+                    variants = [
+                        f"{natural_anchor}って話は拾ってる。そこ前提で返す。",
+                        f"前に{natural_anchor}って言ってたろ。そこは忘れてない。",
+                    ]
+        if not variants:
             if jp_anchor and any(token in lowered for token in ["remember", "記得", "记得", "覚えて", "っけ"]):
                 natural_anchor = self._jp_memory_value(jp_anchor or value)
                 if kind in {"name", "profile"} or any(token in lowered for token in ["名前", "name"]):
@@ -9677,6 +9702,17 @@ class RightBrain:
         kind = str(grounding.get("management_kind") or "")
         purpose = str(grounding.get("management_purpose") or "")
         anchor = str(grounding.get("management_anchor_jp") or "").strip()
+        topic_terms = [str(term or "") for term in (grounding.get("topic_terms") or [])]
+        if not kind and not purpose and not anchor:
+            if any(term in {"体調", "飲食", "胃痛", "胃"} for term in topic_terms):
+                return [
+                    "今日は体調優先で軽めにしとけ。無理して攻めるなって。",
+                    "迷うなら軽い方に寄せろ。体調を削ってまで行くな。",
+                ]
+            return [
+                "必要な範囲だけやればいい。無理に広げるなって。",
+                "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+            ]
         purpose_prefix = {
             "focus": "集中したいなら",
             "noise": "邪魔なものを減らしたいなら",
@@ -11486,7 +11522,10 @@ You are Ichinose Uruha.
 
         if templated:
             speech_variants = self._speech_plan_variants(templated, logic_data, user_input, memory_data=memory_data)
-            if speech_variants and logic_data.get("dialogue_act") in {
+            if (
+                speech_variants
+                and not logic_data.get("memory_use_expected")
+                and logic_data.get("dialogue_act") in {
                 "emotional_containment",
                 "concrete_offer_response",
                 "absurdity_mirror",
@@ -11494,7 +11533,8 @@ You are Ichinose Uruha.
                 "boundary_pushback",
                 "memory_accounting",
                 "practical_action_response",
-            }:
+                }
+            ):
                 templated = self._choose_variant(
                     speech_variants,
                     f"speech_template:{intent}:{user_input}",
