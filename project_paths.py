@@ -28,6 +28,10 @@ RIGHTBRAIN_CONTRACT_V1_TRAIN_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_plan_surface_contract_v1_train.json",
 )
+RIGHTBRAIN_REJECTION_CURRICULUM_V1_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_rejection_curriculum_v1.json",
+)
 
 COGNITIVE_ARCHITECTURE_DATASET_PATH = os.path.join(DATASETS_DIR, "cognitive_architecture_eval_dataset.json")
 HUMAN_FEEDBACK_REGRESSION_DATASET_PATH = os.path.join(DATASETS_DIR, "human_feedback_regression_dataset.json")
@@ -142,6 +146,14 @@ RIGHTBRAIN_CONTRACT_V1_DATASET_SUMMARY_MD_PATH = os.path.join(
 RIGHTBRAIN_CONTRACT_V1_TRAINING_RUN_REPORT_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_contract_v1_training_run.json",
+)
+RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_rejection_curriculum_v1_report.json",
+)
+RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_rejection_curriculum_v1_report.md",
 )
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
