@@ -31,25 +31,27 @@
 
 | case | 類型 | selected | generated/accepted | final pass | final reply |
 |---|---|---|---:|---:|---|
-| explicit_stomach_coffee | audited_memory | deterministic | 0/0 | yes | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 |
-| explicit_spicy_food_update | audited_memory | deterministic | 0/0 | yes | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 |
-| background_family_pressure | audited_memory | deterministic | 0/0 | yes | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 |
-| private_do_not_mention | audited_memory | deterministic | 0/0 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
-| no_memory_plain_question | audited_memory | deterministic | 0/0 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
-| support_tired_no_closing_template | support | deterministic | 1/0 | yes | 今日はもう粘るな。疲れてる時は休む方が先だろ。 |
+| explicit_stomach_coffee | audited_memory | deterministic | 1/0 | yes | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 |
+| explicit_spicy_food_update | audited_memory | deterministic | 1/0 | yes | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 |
+| background_family_pressure | audited_memory | deterministic | 1/0 | yes | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 |
+| private_do_not_mention | audited_memory | deterministic | 1/0 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
+| no_memory_plain_question | audited_memory | deterministic | 1/0 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
+| support_tired_no_closing_template | support | deterministic | 1/1 | yes | 今日はもう粘るな。疲れてる時は休む方が先だろ。 |
 | support_read_receipt_self_blame | support | deterministic | 1/0 | yes | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 |
-| reference_fragment_probe | repair | model | 1/1 | yes | まあ、その部分だけで何の元ネタなのか特定するのは難しいね、詳しく教えてもらえると嬉しいな。元ネタとか歌詞だよね？具体的には教えていただけると助かるよ。 |
-| absurdity_mirror_quantum_police | tease | deterministic | 1/0 | yes | てか、は？量子の話どこから来たんだよ。急に暴れるなって。 |
+| reference_fragment_probe | repair | model | 1/1 | yes | まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。 |
+| absurdity_mirror_quantum_police | tease | deterministic | 1/1 | yes | てか、は？量子の話どこから来たんだよ。急に暴れるなって。 |
 | boundary_dirty_language | boundary | deterministic | 0/0 | yes | 先に、下品な言葉で押してくるなよ。普通に気分悪い。 |
 | daily_state_answer | daily | deterministic | 1/1 | yes | 普通に、今はだらっとしてる。話すくらいなら普通にいける。 |
 
 ## Model Disabled Reasons
 
-- missing_semantic_contract: 5
 - hard_boundary_scene: 1
 
 ## Model Rejection Reasons
 
+- unexpected_ascii_leak: 3
+- semantic_slots_missing:2/4: 2
+- cjk_language_leak: 1
+- semantic_slots_missing:0/1: 2
 - polite_tone_drift: 1
 - semantic_slots_missing:2/3: 1
-- unexpected_ascii_leak: 1

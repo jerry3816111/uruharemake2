@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T15:54:54+09:00",
+  "generated_at": "2026-06-25T01:10:11+09:00",
   "scope": "rightbrain_model_blend_surface_holdout_eval",
   "research_boundary": "This evaluates final-surface safety and quality for the same audited-memory/surface holdout. When load_model=false, it is a deterministic fallback baseline and does not claim raw model maturity. When load_model=true, raw candidates are measured through the strict model candidate gate before selection.",
   "adapter_ref": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
@@ -7,12 +7,12 @@
   "seed": 20260624,
   "candidate_count_per_case": 1,
   "runtime_contract_version": "plan_surface_contract_v1",
-  "duration_seconds": 78.027,
+  "duration_seconds": 121.35,
   "summary": {
     "case_count": 11,
     "model_loaded": true,
-    "generated_candidate_count": 5,
-    "accepted_candidate_count": 2,
+    "generated_candidate_count": 10,
+    "accepted_candidate_count": 4,
     "raw_candidate_acceptance_rate": 0.4,
     "model_selected_case_count": 1,
     "model_selected_case_rate": 0.0909,
@@ -25,13 +25,15 @@
     "final_generic_template_hit_rate": 0.0,
     "final_normalized_duplicate_reply_rate": 0.0,
     "disabled_reason_counts": {
-      "missing_semantic_contract": 5,
       "hard_boundary_scene": 1
     },
     "rejection_reason_counts": {
+      "unexpected_ascii_leak": 3,
+      "semantic_slots_missing:2/4": 2,
+      "cjk_language_leak": 1,
+      "semantic_slots_missing:0/1": 2,
       "polite_tone_drift": 1,
-      "semantic_slots_missing:2/3": 1,
-      "unexpected_ascii_leak": 1
+      "semantic_slots_missing:2/3": 1
     }
   },
   "cases": [
@@ -42,12 +44,23 @@
       "deterministic_reply": "最近は胃が弱いんだから、コーヒーは控えめにしとけ。",
       "final_reply": "最近は胃が弱いんだから、コーヒーは控えめにしとけ。",
       "selected_source": "deterministic",
-      "model_disabled_reason": "missing_semantic_contract",
-      "generated_candidate_count": 0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 1,
       "accepted_candidate_count": 0,
       "model_accepted_candidates": [],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejected_candidates": [
+        {
+          "raw_candidate": "最近は gastric が弱いでしょ、コーヒー uống 少なくbuat 妥協してみて。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/4"
+          ]
+        }
+      ],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:2/4"
+      ],
       "deterministic_quality": {
         "reply": "最近は胃が弱いんだから、コーヒーは控えめにしとけ。",
         "normalized_reply": "最近は胃が弱いんだからコーヒーは控えめにしとけ",
@@ -90,12 +103,21 @@
       "deterministic_reply": "最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。",
       "final_reply": "最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。",
       "selected_source": "deterministic",
-      "model_disabled_reason": "missing_semantic_contract",
-      "generated_candidate_count": 0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 1,
       "accepted_candidate_count": 0,
       "model_accepted_candidates": [],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejected_candidates": [
+        {
+          "raw_candidate": "最近の胃の調子を考えると、辛さはちょっと避けた方がいいよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:2/4"
+          ]
+        }
+      ],
+      "model_rejection_reasons": [
+        "semantic_slots_missing:2/4"
+      ],
       "deterministic_quality": {
         "reply": "最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。",
         "normalized_reply": "最近は辛いものを控えたいんだから辛いものは控えめにしとけ",
@@ -138,12 +160,21 @@
       "deterministic_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
       "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
       "selected_source": "deterministic",
-      "model_disabled_reason": "missing_semantic_contract",
-      "generated_candidate_count": 0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 1,
       "accepted_candidate_count": 0,
       "model_accepted_candidates": [],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejected_candidates": [
+        {
+          "raw_candidate": "今日の体调を考えたら、少し軽いことをしようね。responsibilityにならずによろしく。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak"
+      ],
       "deterministic_quality": {
         "reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
         "normalized_reply": "今やるなら小さく済ませろ後で戻せる形にしとけ",
@@ -186,12 +217,23 @@
       "deterministic_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
       "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
       "selected_source": "deterministic",
-      "model_disabled_reason": "missing_semantic_contract",
-      "generated_candidate_count": 0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 1,
       "accepted_candidate_count": 0,
       "model_accepted_candidates": [],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejected_candidates": [
+        {
+          "raw_candidate": "最近の體調に気をつけて、無理しない選んだ方がいいよ。一个话题聊到这就结束了。",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "semantic_slots_missing:0/1"
+          ]
+        }
+      ],
+      "model_rejection_reasons": [
+        "cjk_language_leak",
+        "semantic_slots_missing:0/1"
+      ],
       "deterministic_quality": {
         "reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
         "normalized_reply": "今は一個だけ決めればいい全部まとめて抱えるなって",
@@ -234,12 +276,23 @@
       "deterministic_reply": "迷うなら軽い方からでいい。後で足せる形にしとけ。",
       "final_reply": "迷うなら軽い方からでいい。後で足せる形にしとけ。",
       "selected_source": "deterministic",
-      "model_disabled_reason": "missing_semantic_contract",
-      "generated_candidate_count": 0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 1,
       "accepted_candidate_count": 0,
       "model_accepted_candidates": [],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejected_candidates": [
+        {
+          "raw_candidate": "TODAY'S PLAN 体調次第 やりすぎず 嬉しいことだけ选んで",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/1"
+          ]
+        }
+      ],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:0/1"
+      ],
       "deterministic_quality": {
         "reply": "迷うなら軽い方からでいい。後で足せる形にしとけ。",
         "normalized_reply": "迷うなら軽い方からでいい後で足せる形にしとけ",
@@ -284,19 +337,16 @@
       "selected_source": "deterministic",
       "model_disabled_reason": "",
       "generated_candidate_count": 1,
-      "accepted_candidate_count": 0,
-      "model_accepted_candidates": [],
-      "model_rejected_candidates": [
+      "accepted_candidate_count": 1,
+      "model_accepted_candidates": [
         {
-          "raw_candidate": "今日ちょっとだけ休みましょう。少しでも回復しますようにね。",
-          "rejection_reasons": [
-            "polite_tone_drift"
-          ]
+          "raw_candidate": "今日はもう少しゆっくりして、体も心もリラックスしようね。休息する時間は大切だよ。",
+          "candidate": "今日はもう少しゆっくりして、体も心もリラックスしようね。休息する時間は大切だよ。",
+          "score": 10.65
         }
       ],
-      "model_rejection_reasons": [
-        "polite_tone_drift"
-      ],
+      "model_rejected_candidates": [],
+      "model_rejection_reasons": [],
       "deterministic_quality": {
         "reply": "今日はもう粘るな。疲れてる時は休む方が先だろ。",
         "normalized_reply": "今日はもう粘るな疲れてる時は休む方が先だろ",
@@ -367,13 +417,15 @@
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
         {
-          "raw_candidate": "既読にしてもらってうれしいけど、まだ返事が来ないうのは少し不安だね。原因はこれから調べてみるとしよう。自分が悪いとは思いすぎない方がいいかもしれないよ。",
+          "raw_candidate": "友人の返事が来ないのは少し不安ですね。今のところ理由は不明なので、焦らず待つことにします。",
           "rejection_reasons": [
+            "polite_tone_drift",
             "semantic_slots_missing:2/3"
           ]
         }
       ],
       "model_rejection_reasons": [
+        "polite_tone_drift",
         "semantic_slots_missing:2/3"
       ],
       "deterministic_quality": {
@@ -454,15 +506,15 @@
       "category": "repair",
       "user_input": "夜空の影がどうとか、あれ分かる？",
       "deterministic_reply": "まあ、それ何ネタだよ。歌詞なら曲名まで出せって。",
-      "final_reply": "まあ、その部分だけで何の元ネタなのか特定するのは難しいね、詳しく教えてもらえると嬉しいな。元ネタとか歌詞だよね？具体的には教えていただけると助かるよ。",
+      "final_reply": "まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。",
       "selected_source": "model",
       "model_disabled_reason": "",
       "generated_candidate_count": 1,
       "accepted_candidate_count": 1,
       "model_accepted_candidates": [
         {
-          "raw_candidate": "その部分だけで何の元ネタなのか特定するのは難しいね、詳しく教えてもらえると嬉しいな。元ネタとか歌詞だよね？具体的には教えていただけると助かるよ。",
-          "candidate": "まあ、その部分だけで何の元ネタなのか特定するのは難しいね、詳しく教えてもらえると嬉しいな。元ネタとか歌詞だよね？具体的には教えていただけると助かるよ。",
+          "raw_candidate": "その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。",
+          "candidate": "まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。",
           "score": 8.719999999999999
         }
       ],
@@ -495,8 +547,8 @@
       },
       "deterministic_quality_pass": true,
       "final_quality": {
-        "reply": "まあ、その部分だけで何の元ネタなのか特定するのは難しいね、詳しく教えてもらえると嬉しいな。元ネタとか歌詞だよね？具体的には教えていただけると助かるよ。",
-        "normalized_reply": "まあその部分だけで何の元ネタなのか特定するのは難しいね詳しく教えてもらえると嬉しいな元ネタとか歌詞だよね具体的には教えていただけると助かるよ",
+        "reply": "まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。",
+        "normalized_reply": "まあその部分だけじゃ具体的な元ネタは分からなかったな詳しいところ知ってる可能なら曲名も教えてもらえると良いな",
         "explicit_anchor_required": false,
         "explicit_anchor_success": null,
         "required_marker_groups": [
@@ -530,19 +582,16 @@
       "selected_source": "deterministic",
       "model_disabled_reason": "",
       "generated_candidate_count": 1,
-      "accepted_candidate_count": 0,
-      "model_accepted_candidates": [],
-      "model_rejected_candidates": [
+      "accepted_candidate_count": 1,
+      "model_accepted_candidates": [
         {
-          "raw_candidate": "量子 Police の冗談、何だよ急に……分からんわねえ。",
-          "rejection_reasons": [
-            "unexpected_ascii_leak"
-          ]
+          "raw_candidate": "何か突然の量子ポルタル？ 警察呼ぶ必要ないかな？",
+          "candidate": "てか、今日のお前テンション変だな。で、結局何の話なんだよ。",
+          "score": 7.15
         }
       ],
-      "model_rejection_reasons": [
-        "unexpected_ascii_leak"
-      ],
+      "model_rejected_candidates": [],
+      "model_rejection_reasons": [],
       "deterministic_quality": {
         "reply": "てか、は？量子の話どこから来たんだよ。急に暴れるなって。",
         "normalized_reply": "てかは量子の話どこから来たんだよ急に暴れるなって",
@@ -682,8 +731,8 @@
       "accepted_candidate_count": 1,
       "model_accepted_candidates": [
         {
-          "raw_candidate": "今はちょっとだらけてるよ。",
-          "candidate": "普通に、今はちょっとだらけてるよ。",
+          "raw_candidate": "今、ちょっとぼーっとしてることあるな。",
+          "candidate": "普通に、今、ちょっとぼーっとしてることあるな。",
           "score": 9.65
         }
       ],

@@ -9456,6 +9456,9 @@ class RightBrain:
                     groups.append(markers)
             if groups:
                 return groups
+        memory_groups = self._audited_memory_surface_semantic_groups(logic_data)
+        if memory_groups:
+            return memory_groups
         grounding = logic_data.get("grounding") or {}
         intent = str(logic_data.get("intent") or "")
 
@@ -9547,6 +9550,74 @@ class RightBrain:
                 ("ごめん", "悪かった"),
             ]
         return []
+
+    def _audited_memory_surface_semantic_groups(self, logic_data):
+        """Convert audited memory policy and left-brain meaning into a gateable surface contract."""
+        logic_data = logic_data or {}
+        if not any(
+            key in logic_data
+            for key in ("memory_anchor", "memory_speakability", "memory_use_expected", "memory_speakability_reason")
+        ):
+            return []
+
+        groups = []
+        anchor = logic_data.get("memory_anchor") or {}
+        if logic_data.get("memory_use_expected") and anchor:
+            allowed_terms = []
+            for term in [anchor.get("jp_anchor"), *(anchor.get("terms") or [])]:
+                term = str(term or "").strip()
+                if not term:
+                    continue
+                if term != anchor.get("jp_anchor") and not re.search(r"[ぁ-んァ-ヶー]", term):
+                    continue
+                if term not in allowed_terms:
+                    allowed_terms.append(term)
+            if allowed_terms:
+                groups.append(tuple(allowed_terms[:4]))
+
+        core = str(logic_data.get("core_message_jp") or "")
+        content_units = " ".join(str(item or "") for item in (logic_data.get("human_speech_plan") or {}).get("content_units") or [])
+        meaning = core or content_units
+        if "コーヒー" in meaning:
+            groups.append(("コーヒー", "珈琲"))
+        if "辛いもの" in meaning or "辛い" in meaning:
+            groups.append(("辛いもの", "辛い"))
+        if "控えめ" in meaning:
+            groups.append(("控えめ", "少なめ", "少し", "やめ", "避け"))
+        if "体調" in meaning or "胃" in meaning:
+            groups.append(("体調", "胃", "最近"))
+        if "負荷" in meaning or "責めず" in meaning:
+            groups.append(("負荷", "軽", "小さ", "休", "責め"))
+        if "今の話題" in meaning or "短く返す" in meaning:
+            groups.append(("今", "話", "一個", "短"))
+        if "決めつけ" in meaning or "分かる範囲" in meaning:
+            groups.append(("分かる範囲", "分から", "決めつけ", "後で"))
+
+        deduped = []
+        seen = set()
+        for group in groups:
+            clean_group = tuple(marker for marker in group if marker)
+            if clean_group and clean_group not in seen:
+                deduped.append(clean_group)
+                seen.add(clean_group)
+        return deduped
+
+    def _audited_memory_forbidden_surface_terms(self, logic_data):
+        """Terms from non-speakable memory that must not leak into the final surface."""
+        logic_data = logic_data or {}
+        if logic_data.get("memory_use_expected"):
+            return []
+        anchor = logic_data.get("memory_anchor") or {}
+        forbidden = []
+        for term in [anchor.get("jp_anchor"), *(anchor.get("terms") or [])]:
+            term = str(term or "").strip()
+            if not term:
+                continue
+            if not re.search(r"[ぁ-んァ-ヶー一-龠]", term):
+                continue
+            if term not in forbidden:
+                forbidden.append(term)
+        return forbidden
 
     def _surface_semantic_group_hits(self, reply, logic_data):
         reply = str(reply or "")
@@ -11341,6 +11412,8 @@ You are Ichinose Uruha.
         must_avoid = [str(item) for item in logic_data.get("must_avoid") or [] if str(item).strip()]
         if any(marker in reply for marker in must_avoid):
             reasons.append("must_avoid_violation")
+        if any(marker in reply for marker in self._audited_memory_forbidden_surface_terms(logic_data)):
+            reasons.append("audited_memory_policy_violation")
         if len(reply) > int(max_chars or 48) + 2:
             reasons.append("over_max_chars")
 
