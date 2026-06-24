@@ -9444,6 +9444,18 @@ class RightBrain:
     def _required_surface_semantic_groups(self, logic_data):
         """Return planner-derived meaning groups that the surface reply must preserve."""
         logic_data = logic_data or {}
+        explicit_groups = logic_data.get("required_marker_groups") or logic_data.get("surface_required_marker_groups")
+        if explicit_groups:
+            groups = []
+            for group in explicit_groups:
+                if isinstance(group, (list, tuple, set)):
+                    markers = tuple(str(marker or "").strip() for marker in group if str(marker or "").strip())
+                else:
+                    markers = (str(group or "").strip(),)
+                if markers:
+                    groups.append(markers)
+            if groups:
+                return groups
         grounding = logic_data.get("grounding") or {}
         intent = str(logic_data.get("intent") or "")
 
