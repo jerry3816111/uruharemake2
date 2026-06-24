@@ -9,7 +9,7 @@
 ## 執行條件
 
 - load_model: True
-- adapter_ref: uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5
+- adapter_ref: uruha_rightbrain_plan_sft_lora_v9_rejection_v1
 - candidate_count_per_case: 1
 - runtime_contract_version: plan_surface_contract_v1
 
