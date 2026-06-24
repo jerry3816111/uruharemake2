@@ -107,6 +107,14 @@ RIGHTBRAIN_CONTRACT_ALIGNMENT_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_contract_alignment_report.md",
 )
+RIGHTBRAIN_AUDITED_MEMORY_BRIEF_EVAL_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_audited_memory_brief_eval_report.json",
+)
+RIGHTBRAIN_AUDITED_MEMORY_BRIEF_EVAL_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_audited_memory_brief_eval_report.md",
+)
 RIGHTBRAIN_CONTRACT_V1_DATASET_SUMMARY_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_plan_surface_contract_v1_dataset_summary.json",
