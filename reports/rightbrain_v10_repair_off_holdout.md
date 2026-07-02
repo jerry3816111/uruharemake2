@@ -11,10 +11,10 @@
 - load_model: True
 - adapter_ref: uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1
 - candidate_count_per_case: 1
-- repair_enabled: True
+- repair_enabled: False
 - runtime_contract_version: plan_surface_contract_v1
-- model_load_duration_seconds: 31.649
-- case_eval_duration_seconds: 165.715
+- model_load_duration_seconds: 33.31
+- case_eval_duration_seconds: 93.791
 
 ## 指標總表
 
@@ -22,7 +22,7 @@
 |---|---:|---|
 | case_count | 11 | 同一套 final-surface holdout 題數 |
 | raw_candidate_acceptance_rate | 50.0% | raw model 候選通過 gate 的比例 |
-| repair_success_rate | 0.0% | 首次失敗後，一次修正成功的比例 |
+| repair_success_rate | n/a | 首次失敗後，一次修正成功的比例 |
 | effective_candidate_acceptance_rate | 50.0% | 加入一次修正後，候選最終可用比例 |
 | model_selected_case_rate | 9.1% | 模型候選實際接管最終回覆比例 |
 | deterministic_quality_pass_rate | 100.0% | deterministic baseline 品質通過率 |
@@ -36,11 +36,11 @@
 
 | case | 類型 | selected | initial/effective | repair accepted/attempted | final pass | final reply |
 |---|---|---|---:|---:|---:|---|
-| explicit_stomach_coffee | audited_memory | deterministic | 0/0 | 0/1 | yes | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 |
-| explicit_spicy_food_update | audited_memory | deterministic | 0/0 | 0/1 | yes | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 |
-| background_family_pressure | audited_memory | deterministic | 0/0 | 0/1 | yes | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 |
-| private_do_not_mention | audited_memory | deterministic | 0/0 | 0/1 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
-| no_memory_plain_question | audited_memory | deterministic | 0/0 | 0/1 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
+| explicit_stomach_coffee | audited_memory | deterministic | 0/0 | 0/0 | yes | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 |
+| explicit_spicy_food_update | audited_memory | deterministic | 0/0 | 0/0 | yes | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 |
+| background_family_pressure | audited_memory | deterministic | 0/0 | 0/0 | yes | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 |
+| private_do_not_mention | audited_memory | deterministic | 0/0 | 0/0 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
+| no_memory_plain_question | audited_memory | deterministic | 0/0 | 0/0 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
 | support_tired_no_closing_template | support | deterministic | 1/1 | 0/0 | yes | 今日はもう粘るな。疲れてる時は休む方が先だろ。 |
 | support_read_receipt_self_blame | support | deterministic | 1/1 | 0/0 | yes | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 |
 | reference_fragment_probe | repair | model | 1/1 | 0/0 | yes | まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。 |
@@ -54,8 +54,8 @@
 
 ## Model Rejection Reasons
 
-- unexpected_ascii_leak: 1
-- polite_tone_drift: 2
+- unexpected_ascii_leak: 3
 - semantic_slots_missing:2/4: 2
-- nonstandard_cjk_surface: 1
-- semantic_slots_missing:0/1: 1
+- nonstandard_cjk_surface: 2
+- cjk_language_leak: 1
+- semantic_slots_missing:0/1: 2

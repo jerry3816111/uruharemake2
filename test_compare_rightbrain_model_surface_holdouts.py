@@ -3,19 +3,38 @@ import unittest
 from compare_rightbrain_model_surface_holdouts import build_comparison
 
 
-def _report(adapter, accepted, reasons=None):
+def _report(
+    adapter,
+    accepted,
+    reasons=None,
+    *,
+    initial_accepted=None,
+    repair_enabled=False,
+    repair_attempts=0,
+    repair_accepted=0,
+):
     reasons = reasons or []
+    initial_accepted = accepted if initial_accepted is None else initial_accepted
     return {
         "scope": "rightbrain_model_blend_surface_holdout_eval",
         "adapter_ref": adapter,
         "load_model": True,
         "seed": 20260624,
         "candidate_count_per_case": 1,
+        "repair_enabled": repair_enabled,
         "runtime_contract_version": "plan_surface_contract_v1",
+        "case_eval_duration_seconds": 10.0 + repair_attempts,
         "summary": {
             "generated_candidate_count": 10,
+            "initial_accepted_candidate_count": initial_accepted,
             "accepted_candidate_count": accepted,
-            "raw_candidate_acceptance_rate": accepted / 10,
+            "raw_candidate_acceptance_rate": initial_accepted / 10,
+            "repair_attempt_count": repair_attempts,
+            "repair_accepted_count": repair_accepted,
+            "repair_success_rate": (
+                repair_accepted / repair_attempts if repair_attempts else None
+            ),
+            "effective_candidate_acceptance_rate": accepted / 10,
             "model_selected_case_count": 1,
             "model_selected_case_rate": 1 / 11,
             "final_quality_pass_rate": 1.0,
@@ -79,6 +98,30 @@ class CompareRightBrainModelSurfaceHoldoutsTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "seed"):
             build_comparison(baseline, trained, self.training)
+
+    def test_reports_repair_as_single_independent_variable(self):
+        baseline = _report("v10", 5, initial_accepted=5)
+        trained = _report(
+            "v10",
+            8,
+            initial_accepted=5,
+            repair_enabled=True,
+            repair_attempts=5,
+            repair_accepted=3,
+        )
+
+        report = build_comparison(baseline, trained, self.training)
+
+        self.assertEqual(
+            report["independent_variable"],
+            {
+                "baseline_repair_enabled": False,
+                "trained_repair_enabled": True,
+            },
+        )
+        self.assertIn("首次 raw 通過率維持 50.0%", report["conclusion_zh"])
+        self.assertIn("50.0% 變為 80.0%", report["conclusion_zh"])
+        self.assertEqual(report["runtime"]["case_eval_duration_delta_seconds"], 5.0)
 
     def test_rejects_non_model_baseline(self):
         baseline = _report("v9", 4)

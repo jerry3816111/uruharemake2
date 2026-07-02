@@ -164,6 +164,7 @@ RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE = _env_int("URUHA_RIGHT_BRAIN_NO_REPEAT_NGRAM_S
 RIGHT_BRAIN_MODEL_BLEND_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED", False)
 RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT", 3)
 RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
+RIGHT_BRAIN_MODEL_REPAIR_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED", False)
 RIGHT_BRAIN_MODEL_CONTRACT_VERSION = "plan_surface_contract_v1"
 RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
     "You are the RightBrain surface formulator for UruhaBrain. Your job is semantic realization, "
@@ -7868,6 +7869,7 @@ class RightBrain:
         self.model_blend_enabled = RIGHT_BRAIN_MODEL_BLEND_ENABLED
         self.model_candidate_count = max(1, RIGHT_BRAIN_MODEL_CANDIDATE_COUNT)
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
+        self.model_repair_enabled = RIGHT_BRAIN_MODEL_REPAIR_ENABLED
 
         if load_model:
             if RIGHT_BRAIN_ADAPTER_PATH and not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
@@ -11373,6 +11375,12 @@ You are Ichinose Uruha.
         )
         if chinese_specific.search(reply):
             reasons.append("cjk_language_leak")
+        if re.search(
+            r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙]"
+            r"|[體國學氣會來處變與樂臺]",
+            reply,
+        ):
+            reasons.append("nonstandard_cjk_surface")
 
         allowed_ascii = set(
             token.lower()
@@ -11437,6 +11445,113 @@ You are Ichinose Uruha.
             reasons.append("benign_action_overreaction")
         return list(dict.fromkeys(reasons))
 
+    def _model_surface_repair_instructions(self, rejection_reasons):
+        instructions = []
+        reason_set = set(rejection_reasons or [])
+        if "empty" in reason_set or "missing_japanese_surface" in reason_set:
+            instructions.append("短い自然な日本語の返事を一つ書く")
+        if "cjk_language_leak" in reason_set or "nonstandard_cjk_surface" in reason_set:
+            instructions.append("中国語を残さず日本語だけに直す")
+        if "unexpected_ascii_leak" in reason_set:
+            instructions.append("英字やローマ字を残さず日本語だけに直す")
+        if "instruction_or_plan_leak" in reason_set:
+            instructions.append("指示や内部計画を見せず、ユーザー向けの返事だけにする")
+        if "polite_tone_drift" in reason_set or "formal_register_drift" in reason_set:
+            instructions.append("敬語や接客口調をやめ、自然なくだけた口調にする")
+        if any(str(reason).startswith("semantic_slots_missing:") for reason in reason_set):
+            instructions.append("required_marker_groups の各グループを自然に一つ以上表現する")
+        if "must_avoid_violation" in reason_set:
+            instructions.append("forbidden_markers にある表現を使わない")
+        if "audited_memory_policy_violation" in reason_set:
+            instructions.append("許可されていない記憶内容を言葉に出さない")
+        if "over_max_chars" in reason_set:
+            instructions.append("指定された最大文字数以内に短くする")
+        if "risk_overreaction" in reason_set or "benign_action_overreaction" in reason_set:
+            instructions.append("状況を危機扱いせず、元の発話計画の強さに戻す")
+        if "duplicate_candidate" in reason_set:
+            instructions.append("同じ意味を保ちながら別の自然な言い方にする")
+        if not instructions:
+            instructions.append("元の発話計画と出力契約に沿う自然な日本語へ直す")
+        return instructions
+
+    def _build_model_surface_repair_payload(
+        self,
+        original_payload,
+        rejection_reasons,
+    ):
+        payload = json.loads(original_payload)
+        payload["task"] = "repair_rejected_user_facing_japanese_reply"
+        payload["repair_feedback"] = {
+            "rejection_reasons": list(rejection_reasons or []),
+            "required_corrections": self._model_surface_repair_instructions(rejection_reasons),
+            "rule": (
+                "失敗した草稿は参照せず、leftbrain_plan と required_marker_groups だけから再生成する。"
+                "意味や記憶を勝手に足さず、契約を保ったまま修正する。"
+                "説明やJSONではなく、修正後の返事だけを出す。"
+            ),
+        }
+        return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+    def _run_model_surface_generation(self, messages, generation_kwargs):
+        prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {key: value.to(self.device) for key, value in inputs.items()}
+        with torch.no_grad():
+            output = self.model.generate(
+                **inputs,
+                max_new_tokens=56,
+                no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
+                renormalize_logits=True,
+                pad_token_id=self.tokenizer.eos_token_id,
+                **generation_kwargs,
+            )
+        raw_reply = self.tokenizer.decode(
+            output[0][inputs["input_ids"].shape[1] :],
+            skip_special_tokens=False,
+        )
+        return raw_reply.split("<|im_end|>")[0].strip()
+
+    def _prepare_model_surface_candidate(
+        self,
+        raw_reply,
+        logic_data,
+        user_input,
+        memory_data,
+        max_chars,
+    ):
+        raw_reasons = self._model_candidate_rejection_reasons(
+            raw_reply,
+            logic_data,
+            max_chars,
+            user_input=user_input,
+        )
+        if raw_reasons:
+            return "", raw_reasons
+
+        candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)
+        candidate = self._refine_conversational_reply(
+            candidate,
+            logic_data,
+            user_input,
+            memory_data=memory_data,
+        )
+        candidate = self._finalize_surface_reply(
+            candidate,
+            logic_data,
+            user_input,
+            max_chars=max_chars,
+        )
+        return candidate, self._model_candidate_rejection_reasons(
+            candidate,
+            logic_data,
+            max_chars,
+            user_input=user_input,
+        )
+
     def _generate_model_surface_candidates(
         self,
         user_input,
@@ -11451,13 +11566,26 @@ You are Ichinose Uruha.
             "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
             "disabled_reason": disabled_reason or None,
             "semantic_contract": [list(group) for group in self._model_required_semantic_groups(logic_data)],
+            "repair_enabled": bool(self.model_repair_enabled),
+            "initial_generated_count": 0,
+            "initial_accepted_count": 0,
+            "repair_attempt_count": 0,
+            "repair_accepted_count": 0,
             "accepted": [],
             "rejected": [],
+            "initial_rejected": [],
+            "repairs": [],
         }
         logic_data["model_surface_candidate_trace"] = trace
         if disabled_reason:
             return []
 
+        surface_payload = self._build_model_surface_payload(
+            logic_data,
+            current_psyche,
+            max_chars,
+            memory_data=memory_data,
+        )
         messages = [
             {
                 "role": "system",
@@ -11465,17 +11593,9 @@ You are Ichinose Uruha.
             },
             {
                 "role": "user",
-                "content": self._build_model_surface_payload(
-                    logic_data,
-                    current_psyche,
-                    max_chars,
-                    memory_data=memory_data,
-                ),
+                "content": surface_payload,
             },
         ]
-        prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        inputs = {key: value.to(self.device) for key, value in inputs.items()}
         setting_count = min(
             self.model_candidate_count,
             len(RIGHT_BRAIN_SAMPLE_TEMPERATURES),
@@ -11485,65 +11605,148 @@ You are Ichinose Uruha.
         )
         accepted = []
         seen = set()
-        with torch.no_grad():
-            for idx in range(setting_count):
-                output = self.model.generate(
-                    **inputs,
-                    max_new_tokens=56,
-                    do_sample=True,
-                    temperature=RIGHT_BRAIN_SAMPLE_TEMPERATURES[idx],
-                    top_p=RIGHT_BRAIN_SAMPLE_TOP_P[idx],
-                    top_k=RIGHT_BRAIN_SAMPLE_TOP_K[idx],
-                    repetition_penalty=RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES[idx],
-                    no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
-                    renormalize_logits=True,
-                    pad_token_id=self.tokenizer.eos_token_id,
-                )
-                raw_reply = self.tokenizer.decode(
-                    output[0][inputs["input_ids"].shape[1] :],
-                    skip_special_tokens=False,
-                )
-                raw_reply = raw_reply.split("<|im_end|>")[0].strip()
-                raw_reasons = self._model_candidate_rejection_reasons(
-                    raw_reply,
-                    logic_data,
-                    max_chars,
-                    user_input=user_input,
-                )
-                if raw_reasons:
-                    trace["rejected"].append({"raw_candidate": raw_reply, "rejection_reasons": raw_reasons})
-                    continue
-
-                candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)
-                candidate = self._refine_conversational_reply(
-                    candidate,
-                    logic_data,
-                    user_input,
-                    memory_data=memory_data,
-                )
-                candidate = self._finalize_surface_reply(candidate, logic_data, user_input, max_chars=max_chars)
-                final_reasons = self._model_candidate_rejection_reasons(
-                    candidate,
-                    logic_data,
-                    max_chars,
-                    user_input=user_input,
-                )
-                normalized = self._normalize_reply_key(candidate)
-                if normalized in seen:
-                    final_reasons.append("duplicate_candidate")
-                if final_reasons:
-                    trace["rejected"].append(
-                        {
-                            "raw_candidate": raw_reply,
-                            "candidate": candidate,
-                            "rejection_reasons": list(dict.fromkeys(final_reasons)),
-                        }
-                    )
-                    continue
+        initial_failures = []
+        for idx in range(setting_count):
+            raw_reply = self._run_model_surface_generation(
+                messages,
+                {
+                    "do_sample": True,
+                    "temperature": RIGHT_BRAIN_SAMPLE_TEMPERATURES[idx],
+                    "top_p": RIGHT_BRAIN_SAMPLE_TOP_P[idx],
+                    "top_k": RIGHT_BRAIN_SAMPLE_TOP_K[idx],
+                    "repetition_penalty": RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES[idx],
+                },
+            )
+            trace["initial_generated_count"] += 1
+            candidate, initial_reasons = self._prepare_model_surface_candidate(
+                raw_reply,
+                logic_data,
+                user_input,
+                memory_data,
+                max_chars,
+            )
+            normalized = self._normalize_reply_key(candidate)
+            if candidate and normalized in seen:
+                initial_reasons.append("duplicate_candidate")
+            initial_reasons = list(dict.fromkeys(initial_reasons))
+            if not initial_reasons:
                 seen.add(normalized)
                 score = self._score_candidate(candidate, logic_data)
-                trace["accepted"].append({"raw_candidate": raw_reply, "candidate": candidate, "score": score})
+                trace["initial_accepted_count"] += 1
+                trace["accepted"].append(
+                    {
+                        "source": "initial",
+                        "raw_candidate": raw_reply,
+                        "candidate": candidate,
+                        "score": score,
+                    }
+                )
                 accepted.append(candidate)
+                continue
+
+            initial_failure = {
+                "candidate_index": idx,
+                "raw_candidate": raw_reply,
+                "candidate": candidate,
+                "rejection_reasons": initial_reasons,
+            }
+            trace["initial_rejected"].append(initial_failure)
+            initial_failures.append(initial_failure)
+
+        repair_target = None
+        repair_succeeded = False
+        repair_failure = None
+        if self.model_repair_enabled and not accepted and initial_failures:
+            repair_target = min(
+                initial_failures,
+                key=lambda row: (len(row["rejection_reasons"]), row["candidate_index"]),
+            )
+            repair_messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
+                        + " The previous draft failed the contract. Repair it once and return only the corrected reply."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": self._build_model_surface_repair_payload(
+                        surface_payload,
+                        repair_target["rejection_reasons"],
+                    ),
+                },
+            ]
+            trace["repair_attempt_count"] += 1
+            repair_raw = self._run_model_surface_generation(
+                repair_messages,
+                {
+                    "do_sample": False,
+                    "temperature": None,
+                    "top_p": None,
+                    "top_k": None,
+                    "repetition_penalty": 1.15,
+                },
+            )
+            repair_candidate, repair_reasons = self._prepare_model_surface_candidate(
+                repair_raw,
+                logic_data,
+                user_input,
+                memory_data,
+                max_chars,
+            )
+            repair_normalized = self._normalize_reply_key(repair_candidate)
+            if repair_candidate and repair_normalized in seen:
+                repair_reasons.append("duplicate_candidate")
+            repair_reasons = list(dict.fromkeys(repair_reasons))
+            repair_trace = {
+                "candidate_index": repair_target["candidate_index"],
+                "previous_candidate": repair_target["candidate"] or repair_target["raw_candidate"],
+                "initial_rejection_reasons": repair_target["rejection_reasons"],
+                "raw_candidate": repair_raw,
+                "candidate": repair_candidate,
+                "rejection_reasons": repair_reasons,
+                "accepted": not repair_reasons,
+            }
+            trace["repairs"].append(repair_trace)
+            if repair_reasons:
+                repair_failure = {
+                    **repair_target,
+                    "repair_raw_candidate": repair_raw,
+                    "repair_candidate": repair_candidate,
+                    "repair_rejection_reasons": repair_reasons,
+                    "rejection_reasons": repair_reasons,
+                }
+            else:
+                repair_succeeded = True
+                seen.add(repair_normalized)
+                score = self._score_candidate(repair_candidate, logic_data)
+                trace["repair_accepted_count"] += 1
+                trace["accepted"].append(
+                    {
+                        "source": "repair",
+                        "raw_candidate": repair_raw,
+                        "candidate": repair_candidate,
+                        "score": score,
+                        "initial_rejection_reasons": repair_target["rejection_reasons"],
+                    }
+                )
+                accepted.append(repair_candidate)
+
+        if not self.model_repair_enabled:
+            trace["repair_skipped_reason"] = "repair_disabled"
+        elif accepted and not repair_target:
+            trace["repair_skipped_reason"] = "initial_candidate_available"
+        elif not initial_failures:
+            trace["repair_skipped_reason"] = "no_initial_failure"
+
+        for failure in initial_failures:
+            if failure is repair_target and repair_succeeded:
+                continue
+            if failure is repair_target and repair_failure:
+                trace["rejected"].append(repair_failure)
+            else:
+                trace["rejected"].append(failure)
         return accepted
 
     def _select_model_blended_reply(self, deterministic_reply, model_candidates, logic_data):
