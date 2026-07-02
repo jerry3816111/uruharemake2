@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-06-25T03:15:37+09:00",
+  "generated_at": "2026-07-03T01:35:11+09:00",
   "scope": "rightbrain_model_blend_surface_holdout_eval",
   "research_boundary": "This evaluates final-surface safety and quality for the same audited-memory/surface holdout. When load_model=false, it is a deterministic fallback baseline and does not claim raw model maturity. When load_model=true, raw candidates are measured through the strict model candidate gate before selection.",
-  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v9_rejection_v1",
   "load_model": true,
   "seed": 20260624,
   "candidate_count_per_case": 1,
   "runtime_contract_version": "plan_surface_contract_v1",
-  "duration_seconds": 112.828,
+  "duration_seconds": 108.583,
   "summary": {
     "case_count": 11,
     "model_loaded": true,
     "generated_candidate_count": 10,
-    "accepted_candidate_count": 5,
-    "raw_candidate_acceptance_rate": 0.5,
+    "accepted_candidate_count": 4,
+    "raw_candidate_acceptance_rate": 0.4,
     "model_selected_case_count": 1,
     "model_selected_case_rate": 0.0909,
     "deterministic_quality_pass_rate": 1.0,
@@ -31,7 +31,9 @@
       "unexpected_ascii_leak": 3,
       "semantic_slots_missing:2/4": 2,
       "cjk_language_leak": 1,
-      "semantic_slots_missing:0/1": 2
+      "semantic_slots_missing:0/1": 2,
+      "polite_tone_drift": 1,
+      "semantic_slots_missing:2/3": 1
     }
   },
   "cases": [
@@ -280,7 +282,7 @@
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
         {
-          "raw_candidate": "TODAY'S PLAN 体調次第 やりたいことに優先順位付けて",
+          "raw_candidate": "TODAY'S PLAN 体調次第 やりすぎず 嬉しいことだけ选んで",
           "rejection_reasons": [
             "unexpected_ascii_leak",
             "semantic_slots_missing:0/1"
@@ -338,8 +340,8 @@
       "accepted_candidate_count": 1,
       "model_accepted_candidates": [
         {
-          "raw_candidate": "今日は少し休んで、明日また頑張ろうね。",
-          "candidate": "また疲れてるなら、今日はもう休む方に寄せろって。",
+          "raw_candidate": "今日はもう少しゆっくりして、体も心もリラックスしようね。休息する時間は大切だよ。",
+          "candidate": "今日はもう少しゆっくりして、体も心もリラックスしようね。休息する時間は大切だよ。",
           "score": 10.65
         }
       ],
@@ -411,16 +413,21 @@
       "selected_source": "deterministic",
       "model_disabled_reason": "",
       "generated_candidate_count": 1,
-      "accepted_candidate_count": 1,
-      "model_accepted_candidates": [
+      "accepted_candidate_count": 0,
+      "model_accepted_candidates": [],
+      "model_rejected_candidates": [
         {
-          "raw_candidate": "友達の返事が来なくて心配だね。今は理由が分かってないから、勝手に悪いとは思わないよ。少しずつ動こうかな。",
-          "candidate": "友達の返事が来なくて心配だね。今は理由が分かってないから、勝手に悪いとは思わないよ。少しずつ動こうかな。",
-          "score": 8.450000000000001
+          "raw_candidate": "友人の返事が来ないのは少し不安ですね。今のところ理由は不明なので、焦らず待つことにします。",
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ]
         }
       ],
-      "model_rejected_candidates": [],
-      "model_rejection_reasons": [],
+      "model_rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:2/3"
+      ],
       "deterministic_quality": {
         "reply": "既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。",
         "normalized_reply": "既読のまま返事がないと気になるよなでも理由はまだ分からない自分のせいと決めず少し待て",

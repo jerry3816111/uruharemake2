@@ -10,6 +10,10 @@
 
 | 指標 | 數值 |
 |---|---:|
+| source report | rightbrain_v9_rejection_source_holdout.json |
+| source adapter | uruha_rightbrain_plan_sft_lora_v9_rejection_v1 |
+| source seed | 20260624 |
+| source candidates per case | 1 |
 | source case count | 11 |
 | curriculum row count | 36 |
 

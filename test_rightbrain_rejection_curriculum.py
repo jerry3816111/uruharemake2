@@ -3,20 +3,35 @@ import unittest
 from pathlib import Path
 
 from build_rightbrain_rejection_curriculum_v1 import build_curriculum
-from project_paths import RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH
+from project_paths import RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH
 
 
 class RightBrainRejectionCurriculumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        report = json.loads(Path(RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH).read_text(encoding="utf-8"))
-        cls.rows, cls.summary = build_curriculum(report)
+        report = json.loads(
+            Path(RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH).read_text(
+                encoding="utf-8"
+            )
+        )
+        cls.rows, cls.summary = build_curriculum(
+            report,
+            source_report=RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH,
+        )
 
     def test_builds_rows_from_rejected_candidates_only(self):
         self.assertEqual(self.summary["curriculum_row_count"], 36)
         self.assertEqual(len(self.rows), 36)
         self.assertEqual(self.summary["skipped_counts"]["no_rejection"], 5)
         self.assertEqual(self.summary["variant_cases"], 6)
+        self.assertEqual(
+            self.summary["source_report"],
+            "rightbrain_v9_rejection_source_holdout.json",
+        )
+        self.assertEqual(
+            self.summary["source_adapter"],
+            "uruha_rightbrain_plan_sft_lora_v9_rejection_v1",
+        )
         self.assertIn("unexpected_ascii_leak", self.summary["failure_reason_counts"])
         self.assertIn("semantic_slots_missing:0/1", self.summary["failure_reason_counts"])
         per_case = {}

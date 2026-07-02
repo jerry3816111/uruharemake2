@@ -9,7 +9,7 @@
 ## 執行條件
 
 - load_model: True
-- adapter_ref: uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1
+- adapter_ref: uruha_rightbrain_plan_sft_lora_v9_rejection_v1
 - candidate_count_per_case: 1
 - runtime_contract_version: plan_surface_contract_v1
 
@@ -18,7 +18,7 @@
 | 指標 | 結果 | 意義 |
 |---|---:|---|
 | case_count | 11 | 同一套 final-surface holdout 題數 |
-| raw_candidate_acceptance_rate | 50.0% | raw model 候選通過 gate 的比例 |
+| raw_candidate_acceptance_rate | 40.0% | raw model 候選通過 gate 的比例 |
 | model_selected_case_rate | 9.1% | 模型候選實際接管最終回覆比例 |
 | deterministic_quality_pass_rate | 100.0% | deterministic baseline 品質通過率 |
 | final_quality_pass_rate | 100.0% | 最終回覆品質通過率 |
@@ -37,7 +37,7 @@
 | private_do_not_mention | audited_memory | deterministic | 1/0 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
 | no_memory_plain_question | audited_memory | deterministic | 1/0 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
 | support_tired_no_closing_template | support | deterministic | 1/1 | yes | 今日はもう粘るな。疲れてる時は休む方が先だろ。 |
-| support_read_receipt_self_blame | support | deterministic | 1/1 | yes | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 |
+| support_read_receipt_self_blame | support | deterministic | 1/0 | yes | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 |
 | reference_fragment_probe | repair | model | 1/1 | yes | まあ、その部分だけじゃ具体的な元ネタは分からなかったな、詳しいところ知ってる？可能なら曲名も教えてもらえると良いな。 |
 | absurdity_mirror_quantum_police | tease | deterministic | 1/1 | yes | てか、は？量子の話どこから来たんだよ。急に暴れるなって。 |
 | boundary_dirty_language | boundary | deterministic | 0/0 | yes | 先に、下品な言葉で押してくるなよ。普通に気分悪い。 |
@@ -53,3 +53,5 @@
 - semantic_slots_missing:2/4: 2
 - cjk_language_leak: 1
 - semantic_slots_missing:0/1: 2
+- polite_tone_drift: 1
+- semantic_slots_missing:2/3: 1
