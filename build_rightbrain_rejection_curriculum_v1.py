@@ -11,10 +11,10 @@ from zoneinfo import ZoneInfo
 
 from eval_rightbrain_model_surface_holdout import _case_inputs
 from project_paths import (
-    RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH,
     RIGHTBRAIN_REJECTION_CURRICULUM_V1_DATASET_PATH,
     RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_JSON_PATH,
     RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_MD_PATH,
+    RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH,
 )
 from uruha_brain_mac import RIGHT_BRAIN_MODEL_SYSTEM_PROMPT, RightBrain
 
@@ -129,7 +129,7 @@ def _target_variants(case_id, deterministic_reply):
     return variants
 
 
-def build_curriculum(report, cases=None):
+def build_curriculum(report, cases=None, source_report=None):
     cases = list(cases or _case_inputs())
     report_rows = _report_rows_by_id(report)
     rightbrain = RightBrain(load_model=False)
@@ -196,7 +196,12 @@ def build_curriculum(report, cases=None):
     summary = {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
         "scope": "rightbrain_rejection_curriculum_v1",
-        "source_report": Path(RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH).name,
+        "source_report": Path(
+            source_report or RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH
+        ).name,
+        "source_adapter": report.get("adapter_ref"),
+        "source_seed": report.get("seed"),
+        "source_candidate_count_per_case": report.get("candidate_count_per_case"),
         "case_count": len(cases),
         "curriculum_row_count": len(rows),
         "variant_cases": len(TARGET_VARIANTS_BY_CASE),
@@ -229,6 +234,10 @@ def write_markdown(summary, rows, path):
         "",
         "| 指標 | 數值 |",
         "|---|---:|",
+        f"| source report | {summary['source_report']} |",
+        f"| source adapter | {summary['source_adapter']} |",
+        f"| source seed | {summary['source_seed']} |",
+        f"| source candidates per case | {summary['source_candidate_count_per_case']} |",
         f"| source case count | {summary['case_count']} |",
         f"| curriculum row count | {summary['curriculum_row_count']} |",
         "",
@@ -248,14 +257,17 @@ def write_markdown(summary, rows, path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source-report", default=RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH)
+    parser.add_argument(
+        "--source-report",
+        default=RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH,
+    )
     parser.add_argument("--output", default=RIGHTBRAIN_REJECTION_CURRICULUM_V1_DATASET_PATH)
     parser.add_argument("--summary-json", default=RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_JSON_PATH)
     parser.add_argument("--summary-md", default=RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_MD_PATH)
     args = parser.parse_args()
 
     report = json.loads(Path(args.source_report).read_text(encoding="utf-8"))
-    rows, summary = build_curriculum(report)
+    rows, summary = build_curriculum(report, source_report=args.source_report)
     if not rows:
         raise RuntimeError("No rejected model candidates were converted into curriculum rows.")
 
