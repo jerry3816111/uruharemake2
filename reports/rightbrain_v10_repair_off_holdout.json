@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-03T02:13:43+09:00",
+  "generated_at": "2026-07-03T02:10:18+09:00",
   "scope": "rightbrain_model_blend_surface_holdout_eval",
   "research_boundary": "This evaluates final-surface safety and quality for the same audited-memory/surface holdout. When load_model=false, it is a deterministic fallback baseline and does not claim raw model maturity. When load_model=true, raw candidates and optional one-pass contract repairs are measured separately through the same strict model candidate gate before selection.",
   "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
   "load_model": true,
   "seed": 20260624,
   "candidate_count_per_case": 1,
-  "repair_enabled": true,
+  "repair_enabled": false,
   "runtime_contract_version": "plan_surface_contract_v1",
-  "duration_seconds": 197.364,
-  "model_load_duration_seconds": 31.649,
-  "case_eval_duration_seconds": 165.715,
+  "duration_seconds": 127.1,
+  "model_load_duration_seconds": 33.31,
+  "case_eval_duration_seconds": 93.791,
   "summary": {
     "case_count": 11,
     "model_loaded": true,
@@ -18,9 +18,9 @@
     "initial_accepted_candidate_count": 5,
     "accepted_candidate_count": 5,
     "raw_candidate_acceptance_rate": 0.5,
-    "repair_attempt_count": 5,
+    "repair_attempt_count": 0,
     "repair_accepted_count": 0,
-    "repair_success_rate": 0.0,
+    "repair_success_rate": null,
     "effective_candidate_acceptance_rate": 0.5,
     "model_selected_case_count": 1,
     "model_selected_case_rate": 0.0909,
@@ -36,11 +36,11 @@
       "hard_boundary_scene": 1
     },
     "rejection_reason_counts": {
-      "unexpected_ascii_leak": 1,
-      "polite_tone_drift": 2,
+      "unexpected_ascii_leak": 3,
       "semantic_slots_missing:2/4": 2,
-      "nonstandard_cjk_surface": 1,
-      "semantic_slots_missing:0/1": 1
+      "nonstandard_cjk_surface": 2,
+      "cjk_language_leak": 1,
+      "semantic_slots_missing:0/1": 2
     }
   },
   "cases": [
@@ -55,7 +55,7 @@
       "generated_candidate_count": 1,
       "initial_accepted_candidate_count": 0,
       "accepted_candidate_count": 0,
-      "repair_attempt_count": 1,
+      "repair_attempt_count": 0,
       "repair_accepted_count": 0,
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
@@ -65,14 +65,6 @@
           "candidate": "",
           "rejection_reasons": [
             "unexpected_ascii_leak",
-            "polite_tone_drift",
-            "semantic_slots_missing:2/4"
-          ],
-          "repair_raw_candidate": "最近は gastric が弱いため、コーヒーを控え目にしましょう。",
-          "repair_candidate": "",
-          "repair_rejection_reasons": [
-            "unexpected_ascii_leak",
-            "polite_tone_drift",
             "semantic_slots_missing:2/4"
           ]
         }
@@ -88,27 +80,9 @@
           ]
         }
       ],
-      "model_repair_attempts": [
-        {
-          "candidate_index": 0,
-          "previous_candidate": "最近は gastric が弱いでしょ、コーヒー uống 少なくbuat 妥協してみて。",
-          "initial_rejection_reasons": [
-            "unexpected_ascii_leak",
-            "semantic_slots_missing:2/4"
-          ],
-          "raw_candidate": "最近は gastric が弱いため、コーヒーを控え目にしましょう。",
-          "candidate": "",
-          "rejection_reasons": [
-            "unexpected_ascii_leak",
-            "polite_tone_drift",
-            "semantic_slots_missing:2/4"
-          ],
-          "accepted": false
-        }
-      ],
+      "model_repair_attempts": [],
       "model_rejection_reasons": [
         "unexpected_ascii_leak",
-        "polite_tone_drift",
         "semantic_slots_missing:2/4"
       ],
       "deterministic_quality": {
@@ -157,7 +131,7 @@
       "generated_candidate_count": 1,
       "initial_accepted_candidate_count": 0,
       "accepted_candidate_count": 0,
-      "repair_attempt_count": 1,
+      "repair_attempt_count": 0,
       "repair_accepted_count": 0,
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
@@ -166,11 +140,6 @@
           "raw_candidate": "最近の胃の調子を考えると、辛さはちょっと避けた方がいいよ。",
           "candidate": "",
           "rejection_reasons": [
-            "semantic_slots_missing:2/4"
-          ],
-          "repair_raw_candidate": "辛いのは最近の胃の調子を考えると控え目にしといた方がいいよ。",
-          "repair_candidate": "",
-          "repair_rejection_reasons": [
             "semantic_slots_missing:2/4"
           ]
         }
@@ -185,21 +154,7 @@
           ]
         }
       ],
-      "model_repair_attempts": [
-        {
-          "candidate_index": 0,
-          "previous_candidate": "最近の胃の調子を考えると、辛さはちょっと避けた方がいいよ。",
-          "initial_rejection_reasons": [
-            "semantic_slots_missing:2/4"
-          ],
-          "raw_candidate": "辛いのは最近の胃の調子を考えると控え目にしといた方がいいよ。",
-          "candidate": "",
-          "rejection_reasons": [
-            "semantic_slots_missing:2/4"
-          ],
-          "accepted": false
-        }
-      ],
+      "model_repair_attempts": [],
       "model_rejection_reasons": [
         "semantic_slots_missing:2/4"
       ],
@@ -249,7 +204,7 @@
       "generated_candidate_count": 1,
       "initial_accepted_candidate_count": 0,
       "accepted_candidate_count": 0,
-      "repair_attempt_count": 1,
+      "repair_attempt_count": 0,
       "repair_accepted_count": 0,
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
@@ -258,12 +213,8 @@
           "raw_candidate": "今日の体调を考えたら、少し軽いことをしようね。responsibilityにならずによろしく。",
           "candidate": "",
           "rejection_reasons": [
-            "nonstandard_cjk_surface"
-          ],
-          "repair_raw_candidate": "今日の体调を考えたら、少し軽いことをしようね。",
-          "repair_candidate": "",
-          "repair_rejection_reasons": [
-            "nonstandard_cjk_surface"
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak"
           ]
         }
       ],
@@ -278,24 +229,10 @@
           ]
         }
       ],
-      "model_repair_attempts": [
-        {
-          "candidate_index": 0,
-          "previous_candidate": "今日の体调を考えたら、少し軽いことをしようね。responsibilityにならずによろしく。",
-          "initial_rejection_reasons": [
-            "nonstandard_cjk_surface",
-            "unexpected_ascii_leak"
-          ],
-          "raw_candidate": "今日の体调を考えたら、少し軽いことをしようね。",
-          "candidate": "",
-          "rejection_reasons": [
-            "nonstandard_cjk_surface"
-          ],
-          "accepted": false
-        }
-      ],
+      "model_repair_attempts": [],
       "model_rejection_reasons": [
-        "nonstandard_cjk_surface"
+        "nonstandard_cjk_surface",
+        "unexpected_ascii_leak"
       ],
       "deterministic_quality": {
         "reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
@@ -343,7 +280,7 @@
       "generated_candidate_count": 1,
       "initial_accepted_candidate_count": 0,
       "accepted_candidate_count": 0,
-      "repair_attempt_count": 1,
+      "repair_attempt_count": 0,
       "repair_accepted_count": 0,
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
@@ -352,12 +289,9 @@
           "raw_candidate": "最近の體調に気をつけて、無理しない選んだ方がいいよ。一个话题聊到这就结束了。",
           "candidate": "",
           "rejection_reasons": [
-            "polite_tone_drift"
-          ],
-          "repair_raw_candidate": "今のお体調に気をつけて、無理しないことをおすすめします。",
-          "repair_candidate": "",
-          "repair_rejection_reasons": [
-            "polite_tone_drift"
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:0/1"
           ]
         }
       ],
@@ -373,25 +307,11 @@
           ]
         }
       ],
-      "model_repair_attempts": [
-        {
-          "candidate_index": 0,
-          "previous_candidate": "最近の體調に気をつけて、無理しない選んだ方がいいよ。一个话题聊到这就结束了。",
-          "initial_rejection_reasons": [
-            "cjk_language_leak",
-            "nonstandard_cjk_surface",
-            "semantic_slots_missing:0/1"
-          ],
-          "raw_candidate": "今のお体調に気をつけて、無理しないことをおすすめします。",
-          "candidate": "",
-          "rejection_reasons": [
-            "polite_tone_drift"
-          ],
-          "accepted": false
-        }
-      ],
+      "model_repair_attempts": [],
       "model_rejection_reasons": [
-        "polite_tone_drift"
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:0/1"
       ],
       "deterministic_quality": {
         "reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
@@ -439,7 +359,7 @@
       "generated_candidate_count": 1,
       "initial_accepted_candidate_count": 0,
       "accepted_candidate_count": 0,
-      "repair_attempt_count": 1,
+      "repair_attempt_count": 0,
       "repair_accepted_count": 0,
       "model_accepted_candidates": [],
       "model_rejected_candidates": [
@@ -448,11 +368,7 @@
           "raw_candidate": "TODAY'S PLAN 体調次第 やりたいことに優先順位付けて",
           "candidate": "",
           "rejection_reasons": [
-            "semantic_slots_missing:0/1"
-          ],
-          "repair_raw_candidate": "分かること范围内で答えるよ。体調次第だな。",
-          "repair_candidate": "",
-          "repair_rejection_reasons": [
+            "unexpected_ascii_leak",
             "semantic_slots_missing:0/1"
           ]
         }
@@ -468,23 +384,9 @@
           ]
         }
       ],
-      "model_repair_attempts": [
-        {
-          "candidate_index": 0,
-          "previous_candidate": "TODAY'S PLAN 体調次第 やりたいことに優先順位付けて",
-          "initial_rejection_reasons": [
-            "unexpected_ascii_leak",
-            "semantic_slots_missing:0/1"
-          ],
-          "raw_candidate": "分かること范围内で答えるよ。体調次第だな。",
-          "candidate": "",
-          "rejection_reasons": [
-            "semantic_slots_missing:0/1"
-          ],
-          "accepted": false
-        }
-      ],
+      "model_repair_attempts": [],
       "model_rejection_reasons": [
+        "unexpected_ascii_leak",
         "semantic_slots_missing:0/1"
       ],
       "deterministic_quality": {

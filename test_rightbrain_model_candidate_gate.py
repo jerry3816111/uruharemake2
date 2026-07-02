@@ -6,6 +6,7 @@ import torch
 from uruha_brain_mac import (
     RIGHT_BRAIN_MODEL_BLEND_ENABLED,
     RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
+    RIGHT_BRAIN_MODEL_REPAIR_ENABLED,
     RIGHT_BRAIN_MODEL_SYSTEM_PROMPT,
     RightBrain,
     _normalize_right_brain_adapter_path,
@@ -56,6 +57,7 @@ def build_rightbrain(outputs):
     rightbrain.device = "cpu"
     rightbrain.model_blend_enabled = True
     rightbrain.model_candidate_count = len(outputs)
+    rightbrain.model_repair_enabled = False
     return rightbrain
 
 
@@ -187,6 +189,10 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertTrue(_resolve_right_brain_model_loading(True))
         self.assertFalse(_resolve_right_brain_model_loading(False))
 
+    def test_unproven_repair_pass_is_disabled_by_default(self):
+        self.assertFalse(RIGHT_BRAIN_MODEL_REPAIR_ENABLED)
+        self.assertFalse(RightBrain(load_model=False).model_repair_enabled)
+
     def test_gate_accepts_only_clean_semantically_complete_candidate(self):
         rightbrain = build_rightbrain(
             [
@@ -213,6 +219,120 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         reasons = [reason for row in trace["rejected"] for reason in row["rejection_reasons"]]
         self.assertIn("cjk_language_leak", reasons)
         self.assertTrue(any(reason.startswith("semantic_slots_missing:") for reason in reasons))
+
+    def test_repair_payload_keeps_contract_and_explains_generic_failure(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        original = rightbrain._build_model_surface_payload(
+            logic,
+            {"mood": 0, "trust": 50},
+            80,
+        )
+
+        repaired = json.loads(
+            rightbrain._build_model_surface_repair_payload(
+                original,
+                ["unexpected_ascii_leak", "semantic_slots_missing:1/3"],
+            )
+        )
+
+        self.assertEqual(
+            repaired["task"],
+            "repair_rejected_user_facing_japanese_reply",
+        )
+        self.assertEqual(
+            repaired["required_marker_groups"],
+            json.loads(original)["required_marker_groups"],
+        )
+        self.assertIn("日本語だけ", " ".join(repaired["repair_feedback"]["required_corrections"]))
+        self.assertIn(
+            "required_marker_groups",
+            " ".join(repaired["repair_feedback"]["required_corrections"]),
+        )
+        self.assertNotIn("previous_draft", repaired["repair_feedback"])
+
+    def test_rejected_candidate_can_be_repaired_once_without_relaxing_gate(self):
+        rightbrain = build_rightbrain(
+            [
+                "好了、既読のままだと気になる。<|im_end|>",
+                "既読のままだと気になるよな。でも理由はまだ分からない。自分のせいと決めつけず、少し待て。<|im_end|>",
+            ]
+        )
+        rightbrain.model_candidate_count = 1
+        rightbrain.model_repair_enabled = True
+        logic = reply_anxiety_logic()
+
+        candidates = rightbrain._generate_model_surface_candidates(
+            user_input="他已讀但沒回，是不是我講錯話？",
+            logic_data=logic,
+            memory_data={},
+            current_psyche={"mood": 0, "trust": 50},
+            max_chars=80,
+        )
+
+        self.assertEqual(len(candidates), 1)
+        self.assertIn("理由はまだ分からない", candidates[0])
+        trace = logic["model_surface_candidate_trace"]
+        self.assertEqual(trace["initial_generated_count"], 1)
+        self.assertEqual(trace["initial_accepted_count"], 0)
+        self.assertEqual(trace["repair_attempt_count"], 1)
+        self.assertEqual(trace["repair_accepted_count"], 1)
+        self.assertEqual(trace["accepted"][0]["source"], "repair")
+        self.assertEqual(trace["rejected"], [])
+
+    def test_failed_repair_remains_rejected_and_cannot_reach_selection(self):
+        rightbrain = build_rightbrain(
+            [
+                "好了、既読だけ気にするな。<|im_end|>",
+                "TODAY PLAN 返事を待つ。<|im_end|>",
+            ]
+        )
+        rightbrain.model_candidate_count = 1
+        rightbrain.model_repair_enabled = True
+        logic = reply_anxiety_logic()
+
+        candidates = rightbrain._generate_model_surface_candidates(
+            user_input="他已讀但沒回，是不是我講錯話？",
+            logic_data=logic,
+            memory_data={},
+            current_psyche={"mood": 0, "trust": 50},
+            max_chars=80,
+        )
+
+        self.assertEqual(candidates, [])
+        trace = logic["model_surface_candidate_trace"]
+        self.assertEqual(trace["repair_attempt_count"], 1)
+        self.assertEqual(trace["repair_accepted_count"], 0)
+        self.assertEqual(len(trace["rejected"]), 1)
+        self.assertIn(
+            "unexpected_ascii_leak",
+            trace["rejected"][0]["repair_rejection_reasons"],
+        )
+
+    def test_repair_is_skipped_when_an_initial_candidate_is_already_available(self):
+        rightbrain = build_rightbrain(
+            [
+                "好了、既読だけ気にするな。<|im_end|>",
+                "既読のままだと気になるよな。でも理由はまだ分からない。自分のせいと決めつけず、少し待て。<|im_end|>",
+            ]
+        )
+        rightbrain.model_candidate_count = 2
+        rightbrain.model_repair_enabled = True
+        logic = reply_anxiety_logic()
+
+        candidates = rightbrain._generate_model_surface_candidates(
+            user_input="他已讀但沒回，是不是我講錯話？",
+            logic_data=logic,
+            memory_data={},
+            current_psyche={"mood": 0, "trust": 50},
+            max_chars=80,
+        )
+
+        self.assertEqual(len(candidates), 1)
+        trace = logic["model_surface_candidate_trace"]
+        self.assertEqual(trace["repair_attempt_count"], 0)
+        self.assertEqual(trace["repair_skipped_reason"], "initial_candidate_available")
+        self.assertEqual(len(trace["rejected"]), 1)
 
     def test_speak_can_select_a_better_gated_model_candidate(self):
         model_reply = "既読のままだと気になるよな。でも理由はまだ分からない。自分のせいと決めつけず、急がず少し待て。"
@@ -290,6 +410,16 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         )
 
         self.assertIn("unexpected_ascii_leak", reasons)
+
+    def test_gate_rejects_simplified_or_nonstandard_cjk_surface(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "今日の體調を見て、一個だけ話を选ぼう。",
+            reply_anxiety_logic(),
+            max_chars=80,
+        )
+
+        self.assertIn("nonstandard_cjk_surface", reasons)
 
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])

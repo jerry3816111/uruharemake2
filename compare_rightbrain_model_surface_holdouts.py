@@ -6,8 +6,13 @@ from pathlib import Path
 
 METRICS = (
     "generated_candidate_count",
+    "initial_accepted_candidate_count",
     "accepted_candidate_count",
     "raw_candidate_acceptance_rate",
+    "repair_attempt_count",
+    "repair_accepted_count",
+    "repair_success_rate",
+    "effective_candidate_acceptance_rate",
     "model_selected_case_count",
     "model_selected_case_rate",
     "final_quality_pass_rate",
@@ -116,13 +121,45 @@ def build_comparison(baseline, trained, training):
     baseline_rate = baseline["summary"]["raw_candidate_acceptance_rate"]
     trained_rate = trained["summary"]["raw_candidate_acceptance_rate"]
     acceptance_delta = round(trained_rate - baseline_rate, 4)
-    conclusion = (
-        f"在相同 holdout、seed、候選數與 gate 下，raw model 候選通過率由 "
-        f"{baseline_rate:.1%} 提升至 {trained_rate:.1%}"
-        f"（{acceptance_delta * 100:+.1f} 個百分點）。"
-        "最終品質仍為 100%，表示嚴格 gate 與 deterministic fallback 沒有被放寬；"
-        "這次量到的是模型候選可靠度的小幅提升，不是整體認知能力已完成。"
-    )
+    baseline_repair = bool(baseline.get("repair_enabled"))
+    trained_repair = bool(trained.get("repair_enabled"))
+    if baseline_repair != trained_repair:
+        baseline_effective = baseline["summary"]["effective_candidate_acceptance_rate"]
+        trained_effective = trained["summary"]["effective_candidate_acceptance_rate"]
+        effective_delta = round(trained_effective - baseline_effective, 4)
+        conclusion = (
+            f"在相同 adapter、holdout、seed、候選數與 gate 下，首次 raw 通過率維持 "
+            f"{baseline_rate:.1%}；開啟一次契約修正後，有效候選通過率由 "
+            f"{baseline_effective:.1%} 變為 {trained_effective:.1%}"
+            f"（{effective_delta * 100:+.1f} 個百分點）。"
+            "最終品質仍須通過原 gate，未放寬語意、語言或記憶權限。"
+        )
+        if effective_delta <= 0:
+            conclusion += "這個 repair prompt 沒有產生淨改善，不應預設開啟；下一步需要先訓練修正能力。"
+    else:
+        conclusion = (
+            f"在相同 holdout、seed、候選數與 gate 下，raw model 候選通過率由 "
+            f"{baseline_rate:.1%} 提升至 {trained_rate:.1%}"
+            f"（{acceptance_delta * 100:+.1f} 個百分點）。"
+            "最終品質仍為 100%，表示嚴格 gate 與 deterministic fallback 沒有被放寬；"
+            "這次量到的是模型候選可靠度的小幅提升，不是整體認知能力已完成。"
+        )
+
+    baseline_eval_seconds = baseline.get("case_eval_duration_seconds")
+    trained_eval_seconds = trained.get("case_eval_duration_seconds")
+    runtime = {
+        "baseline_case_eval_duration_seconds": baseline_eval_seconds,
+        "trained_case_eval_duration_seconds": trained_eval_seconds,
+        "case_eval_duration_delta_seconds": None,
+        "note": "Single-run wall-clock evidence; use repeated runs before making a latency claim.",
+    }
+    if isinstance(baseline_eval_seconds, (int, float)) and isinstance(
+        trained_eval_seconds, (int, float)
+    ):
+        runtime["case_eval_duration_delta_seconds"] = round(
+            trained_eval_seconds - baseline_eval_seconds,
+            3,
+        )
 
     return {
         "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -131,6 +168,10 @@ def build_comparison(baseline, trained, training):
         "trained_adapter": trained["adapter_ref"],
         "matched_conditions": {
             field: baseline.get(field) for field in MATCHED_FIELDS
+        },
+        "independent_variable": {
+            "baseline_repair_enabled": baseline_repair,
+            "trained_repair_enabled": trained_repair,
         },
         "training": {
             "rows": training.get("rows"),
@@ -142,6 +183,7 @@ def build_comparison(baseline, trained, training):
             "final_train_loss": training.get("final_train_loss"),
             "learning_rate": training.get("learning_rate"),
         },
+        "runtime": runtime,
         "metric_rows": metric_rows,
         "case_diffs": case_diffs,
         "conclusion_zh": conclusion,
@@ -171,12 +213,24 @@ def write_markdown(report, output_path):
     ]
     for key, value in report["matched_conditions"].items():
         lines.append(f"- {key}: {value}")
+    lines.extend(
+        [
+            f"- baseline repair enabled: {report['independent_variable']['baseline_repair_enabled']}",
+            f"- trained repair enabled: {report['independent_variable']['trained_repair_enabled']}",
+        ]
+    )
 
     training = report["training"]
+    comparison_heading = (
+        "固定模型背景"
+        if report["independent_variable"]["baseline_repair_enabled"]
+        != report["independent_variable"]["trained_repair_enabled"]
+        else "訓練摘要"
+    )
     lines.extend(
         [
             "",
-            "## 訓練摘要",
+            f"## {comparison_heading}",
             "",
             f"- rows: {training['rows']}",
             f"- supplemental rows: {training['supplemental_rows']}",
@@ -185,6 +239,13 @@ def write_markdown(report, output_path):
             f"- learning rate: {training['learning_rate']}",
             f"- initial eval loss: {training['initial_eval_loss_probe']:.4f}",
             f"- sampled eval loss: {training['sampled_eval_loss']:.4f}",
+            "",
+            "## 執行時間",
+            "",
+            f"- baseline case eval: {report['runtime']['baseline_case_eval_duration_seconds']} seconds",
+            f"- trained case eval: {report['runtime']['trained_case_eval_duration_seconds']} seconds",
+            f"- delta: {report['runtime']['case_eval_duration_delta_seconds']} seconds",
+            f"- boundary: {report['runtime']['note']}",
             "",
             "## Holdout 指標",
             "",

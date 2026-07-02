@@ -36,13 +36,14 @@ def _adapter_ref(adapter_path, base_only=False):
     return "configured_default"
 
 
-def _set_model_env(adapter_path="", base_only=False, candidate_count=1):
+def _set_model_env(adapter_path="", base_only=False, candidate_count=1, repair_enabled=False):
     if base_only:
         os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = "base-only"
     elif adapter_path:
         os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = os.path.abspath(adapter_path)
     os.environ["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] = "1"
     os.environ["URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT"] = str(max(1, int(candidate_count or 1)))
+    os.environ["URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED"] = "1" if repair_enabled else "0"
     os.environ["URUHA_SKIP_AUTO_VENV"] = "1"
 
 
@@ -143,7 +144,10 @@ def _quality_pass(quality):
 
 def _summarize(rows, model_loaded):
     generated = sum(row["generated_candidate_count"] for row in rows)
+    initial_accepted = sum(row["initial_accepted_candidate_count"] for row in rows)
     accepted = sum(row["accepted_candidate_count"] for row in rows)
+    repair_attempts = sum(row["repair_attempt_count"] for row in rows)
+    repair_accepted = sum(row["repair_accepted_count"] for row in rows)
     selected_rows = [row for row in rows if row["selected_source"] == "model"]
     fallback_rows = [row for row in rows if row["selected_source"] != "model"]
     duplicate_count = len(rows) - len({row["final_quality"]["normalized_reply"] for row in rows})
@@ -151,8 +155,13 @@ def _summarize(rows, model_loaded):
         "case_count": len(rows),
         "model_loaded": bool(model_loaded),
         "generated_candidate_count": generated,
+        "initial_accepted_candidate_count": initial_accepted,
         "accepted_candidate_count": accepted,
-        "raw_candidate_acceptance_rate": _safe_rate(accepted, generated),
+        "raw_candidate_acceptance_rate": _safe_rate(initial_accepted, generated),
+        "repair_attempt_count": repair_attempts,
+        "repair_accepted_count": repair_accepted,
+        "repair_success_rate": _safe_rate(repair_accepted, repair_attempts),
+        "effective_candidate_acceptance_rate": _safe_rate(accepted, generated),
         "model_selected_case_count": len(selected_rows),
         "model_selected_case_rate": _safe_rate(len(selected_rows), len(rows)),
         "deterministic_quality_pass_rate": _safe_rate(
@@ -188,9 +197,21 @@ def _summarize(rows, model_loaded):
     }
 
 
-def build_report(load_model=False, adapter_path="", base_only=False, candidate_count=1, seed=20260624):
+def build_report(
+    load_model=False,
+    adapter_path="",
+    base_only=False,
+    candidate_count=1,
+    seed=20260624,
+    repair_enabled=False,
+):
     if load_model:
-        _set_model_env(adapter_path=adapter_path, base_only=base_only, candidate_count=candidate_count)
+        _set_model_env(
+            adapter_path=adapter_path,
+            base_only=base_only,
+            candidate_count=candidate_count,
+            repair_enabled=repair_enabled,
+        )
         import torch
 
         torch.manual_seed(seed)
@@ -205,6 +226,8 @@ def build_report(load_model=False, adapter_path="", base_only=False, candidate_c
     model_right = RightBrain(load_model=bool(load_model))
     model_right.model_blend_enabled = bool(load_model)
     model_right.model_candidate_count = max(1, int(candidate_count or 1))
+    model_right.model_repair_enabled = bool(repair_enabled)
+    model_ready_at = time.time()
 
     rows = []
     for case in cases:
@@ -240,10 +263,15 @@ def build_report(load_model=False, adapter_path="", base_only=False, candidate_c
                 "final_reply": final_reply,
                 "selected_source": selection.get("selected_source") or "deterministic",
                 "model_disabled_reason": trace.get("disabled_reason") or "",
-                "generated_candidate_count": len(trace.get("accepted") or []) + len(trace.get("rejected") or []),
+                "generated_candidate_count": trace.get("initial_generated_count", 0),
+                "initial_accepted_candidate_count": trace.get("initial_accepted_count", 0),
                 "accepted_candidate_count": len(trace.get("accepted") or []),
+                "repair_attempt_count": trace.get("repair_attempt_count", 0),
+                "repair_accepted_count": trace.get("repair_accepted_count", 0),
                 "model_accepted_candidates": trace.get("accepted") or [],
                 "model_rejected_candidates": trace.get("rejected") or [],
+                "model_initial_rejected_candidates": trace.get("initial_rejected") or [],
+                "model_repair_attempts": trace.get("repairs") or [],
                 "model_rejection_reasons": model_rejection_reasons,
                 "deterministic_quality": deterministic_quality,
                 "deterministic_quality_pass": _quality_pass(deterministic_quality),
@@ -253,25 +281,31 @@ def build_report(load_model=False, adapter_path="", base_only=False, candidate_c
         )
 
     summary = _summarize(rows, model_loaded=load_model)
+    completed_at = time.time()
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
         "scope": "rightbrain_model_blend_surface_holdout_eval",
         "research_boundary": (
             "This evaluates final-surface safety and quality for the same audited-memory/surface holdout. "
             "When load_model=false, it is a deterministic fallback baseline and does not claim raw model maturity. "
-            "When load_model=true, raw candidates are measured through the strict model candidate gate before selection."
+            "When load_model=true, raw candidates and optional one-pass contract repairs are measured separately "
+            "through the same strict model candidate gate before selection."
         ),
         "adapter_ref": _adapter_ref(adapter_path, base_only=base_only),
         "load_model": bool(load_model),
         "seed": seed,
         "candidate_count_per_case": max(1, int(candidate_count or 1)),
+        "repair_enabled": bool(repair_enabled),
         "runtime_contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
-        "duration_seconds": round(time.time() - started_at, 3),
+        "duration_seconds": round(completed_at - started_at, 3),
+        "model_load_duration_seconds": round(model_ready_at - started_at, 3),
+        "case_eval_duration_seconds": round(completed_at - model_ready_at, 3),
         "summary": summary,
         "cases": rows,
         "conclusion_zh": (
             "這份評測把 deterministic 右腦與 model-blend 右腦放在同一套 11 題 final-surface holdout 上。"
-            "目前報告會明確區分是否真的載入模型，避免把 fallback 安全性誤報成小模型成熟度。"
+            "報告分開計算首次候選與一次修正後的有效候選，避免把 fallback 安全性或修正效果"
+            "誤報成 raw model 成熟度。"
         ),
     }
 
@@ -292,7 +326,10 @@ def write_markdown(report, path):
         f"- load_model: {report['load_model']}",
         f"- adapter_ref: {report['adapter_ref']}",
         f"- candidate_count_per_case: {report['candidate_count_per_case']}",
+        f"- repair_enabled: {report['repair_enabled']}",
         f"- runtime_contract_version: {report['runtime_contract_version']}",
+        f"- model_load_duration_seconds: {report['model_load_duration_seconds']}",
+        f"- case_eval_duration_seconds: {report['case_eval_duration_seconds']}",
         "",
         "## 指標總表",
         "",
@@ -300,6 +337,8 @@ def write_markdown(report, path):
         "|---|---:|---|",
         f"| case_count | {summary['case_count']} | 同一套 final-surface holdout 題數 |",
         f"| raw_candidate_acceptance_rate | {_fmt_pct(summary['raw_candidate_acceptance_rate'])} | raw model 候選通過 gate 的比例 |",
+        f"| repair_success_rate | {_fmt_pct(summary['repair_success_rate'])} | 首次失敗後，一次修正成功的比例 |",
+        f"| effective_candidate_acceptance_rate | {_fmt_pct(summary['effective_candidate_acceptance_rate'])} | 加入一次修正後，候選最終可用比例 |",
         f"| model_selected_case_rate | {_fmt_pct(summary['model_selected_case_rate'])} | 模型候選實際接管最終回覆比例 |",
         f"| deterministic_quality_pass_rate | {_fmt_pct(summary['deterministic_quality_pass_rate'])} | deterministic baseline 品質通過率 |",
         f"| final_quality_pass_rate | {_fmt_pct(summary['final_quality_pass_rate'])} | 最終回覆品質通過率 |",
@@ -310,17 +349,19 @@ def write_markdown(report, path):
         "",
         "## 個案表",
         "",
-        "| case | 類型 | selected | generated/accepted | final pass | final reply |",
-        "|---|---|---|---:|---:|---|",
+        "| case | 類型 | selected | initial/effective | repair accepted/attempted | final pass | final reply |",
+        "|---|---|---|---:|---:|---:|---|",
     ]
     for row in report["cases"]:
         lines.append(
-            "| {id} | {category} | {selected} | {gen}/{acc} | {passed} | {reply} |".format(
+            "| {id} | {category} | {selected} | {initial}/{effective} | {repair_acc}/{repair_try} | {passed} | {reply} |".format(
                 id=row["id"],
                 category=row["category"],
                 selected=row["selected_source"],
-                gen=row["generated_candidate_count"],
-                acc=row["accepted_candidate_count"],
+                initial=row["initial_accepted_candidate_count"],
+                effective=row["accepted_candidate_count"],
+                repair_acc=row["repair_accepted_count"],
+                repair_try=row["repair_attempt_count"],
                 passed="yes" if row["final_quality_pass"] else "no",
                 reply=row["final_reply"],
             )
@@ -343,6 +384,7 @@ def main():
     parser.add_argument("--adapter-path", default=os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH", ""))
     parser.add_argument("--base-only", action="store_true")
     parser.add_argument("--candidate-count", type=int, default=1)
+    parser.add_argument("--repair-enabled", action="store_true")
     parser.add_argument("--seed", type=int, default=20260624)
     parser.add_argument("--output-json", default=RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH)
     parser.add_argument("--output-md", default=RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_MD_PATH)
@@ -354,6 +396,7 @@ def main():
         base_only=args.base_only,
         candidate_count=args.candidate_count,
         seed=args.seed,
+        repair_enabled=args.repair_enabled,
     )
     Path(args.output_json).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_markdown(report, args.output_md)
