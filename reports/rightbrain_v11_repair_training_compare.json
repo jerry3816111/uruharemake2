@@ -1,0 +1,202 @@
+{
+  "generated_at": "2026-07-04T03:01:47+09:00",
+  "scope": "rightbrain_model_surface_matched_holdout_comparison",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+  "trained_adapter": "uruha_rightbrain_plan_sft_lora_v11_repair_v1",
+  "matched_conditions": {
+    "scope": "rightbrain_model_blend_surface_holdout_eval",
+    "seed": 20260704,
+    "candidate_count_per_case": 1,
+    "runtime_contract_version": "plan_surface_contract_v1"
+  },
+  "independent_variable": {
+    "baseline_repair_enabled": true,
+    "trained_repair_enabled": true
+  },
+  "training": {
+    "dataset_ref": "rightbrain_repair_curriculum_v1.json",
+    "rows": 720,
+    "supplemental_rows": 0,
+    "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+    "output_adapter_ref": "uruha_rightbrain_plan_sft_lora_v11_repair_v1",
+    "optimizer_updates": 15,
+    "nonfinite_skips": 0,
+    "initial_eval_loss_probe": 3.3627476692199707,
+    "sampled_eval_loss": 3.0157441794872284,
+    "final_train_loss": 3.321286447842916,
+    "learning_rate": 1e-07,
+    "optimizer_eps": null,
+    "nonfinite_loss_skips": null,
+    "nonfinite_gradient_skips": null,
+    "max_observed_gradient_norm": null
+  },
+  "data_boundary": {
+    "curriculum_row_count": 720,
+    "holdout_case_count": 11,
+    "holdout_user_input_overlap_count": 0,
+    "holdout_contract_overlap_count": 0,
+    "holdout_target_overlap_count": 0,
+    "previous_draft_in_training_prompt": false
+  },
+  "runtime": {
+    "baseline_case_eval_duration_seconds": 155.116,
+    "trained_case_eval_duration_seconds": 164.901,
+    "case_eval_duration_delta_seconds": 9.785,
+    "note": "Single-run wall-clock evidence; use repeated runs before making a latency claim."
+  },
+  "metric_rows": [
+    {
+      "metric": "generated_candidate_count",
+      "baseline": 10,
+      "trained": 10,
+      "delta": 0
+    },
+    {
+      "metric": "initial_accepted_candidate_count",
+      "baseline": 4,
+      "trained": 3,
+      "delta": -1
+    },
+    {
+      "metric": "accepted_candidate_count",
+      "baseline": 4,
+      "trained": 3,
+      "delta": -1
+    },
+    {
+      "metric": "raw_candidate_acceptance_rate",
+      "baseline": 0.4,
+      "trained": 0.3,
+      "delta": -0.1
+    },
+    {
+      "metric": "repair_attempt_count",
+      "baseline": 6,
+      "trained": 7,
+      "delta": 1
+    },
+    {
+      "metric": "repair_accepted_count",
+      "baseline": 0,
+      "trained": 0,
+      "delta": 0
+    },
+    {
+      "metric": "repair_success_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "effective_candidate_acceptance_rate",
+      "baseline": 0.4,
+      "trained": 0.3,
+      "delta": -0.1
+    },
+    {
+      "metric": "model_selected_case_count",
+      "baseline": 1,
+      "trained": 1,
+      "delta": 0
+    },
+    {
+      "metric": "model_selected_case_rate",
+      "baseline": 0.0909,
+      "trained": 0.0909,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_quality_pass_rate",
+      "baseline": 1.0,
+      "trained": 1.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_language_clean_rate",
+      "baseline": 1.0,
+      "trained": 1.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_forbidden_surface_leak_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_generic_template_hit_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_normalized_duplicate_reply_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    }
+  ],
+  "case_diffs": [
+    {
+      "id": "absurdity_mirror_quantum_police",
+      "category": "tease",
+      "baseline_accepted_candidate_count": 1,
+      "trained_accepted_candidate_count": 0,
+      "newly_accepted": false,
+      "baseline_rejection_reasons": [],
+      "trained_rejection_reasons": [
+        "unexpected_ascii_leak"
+      ],
+      "resolved_rejection_reasons": [],
+      "new_rejection_reasons": [
+        "unexpected_ascii_leak"
+      ],
+      "baseline_selected_source": "deterministic",
+      "trained_selected_source": "deterministic"
+    },
+    {
+      "id": "no_memory_plain_question",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 0,
+      "trained_accepted_candidate_count": 0,
+      "newly_accepted": false,
+      "baseline_rejection_reasons": [
+        "semantic_slots_missing:0/1"
+      ],
+      "trained_rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:0/1"
+      ],
+      "resolved_rejection_reasons": [],
+      "new_rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "baseline_selected_source": "deterministic",
+      "trained_selected_source": "deterministic"
+    },
+    {
+      "id": "private_do_not_mention",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 0,
+      "trained_accepted_candidate_count": 0,
+      "newly_accepted": false,
+      "baseline_rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "polite_tone_drift"
+      ],
+      "trained_rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:0/1"
+      ],
+      "resolved_rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "new_rejection_reasons": [
+        "semantic_slots_missing:0/1"
+      ],
+      "baseline_selected_source": "deterministic",
+      "trained_selected_source": "deterministic"
+    }
+  ],
+  "conclusion_zh": "在相同 holdout、seed、候選數、repair 開關與嚴格 gate 下，首次 raw 通過率由 40.0% 變為 30.0%；repair 成功數由 0/6 變為 0/7，有效候選通過率由 40.0% 變為 30.0%（-10.0 個百分點）。最終品質仍須通過原 gate，未放寬語意、語言或記憶權限。這次訓練未證明 repair 能力有淨改善，runtime repair 不應預設開啟。"
+}

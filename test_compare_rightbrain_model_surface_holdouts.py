@@ -58,6 +58,7 @@ def _report(
 class CompareRightBrainModelSurfaceHoldoutsTest(unittest.TestCase):
     def setUp(self):
         self.training = {
+            "dataset_ref": "rightbrain_repair_curriculum_v1.json",
             "rows": 1061,
             "supplemental_rows": 36,
             "optimizer_updates": 15,
@@ -66,6 +67,8 @@ class CompareRightBrainModelSurfaceHoldoutsTest(unittest.TestCase):
             "sampled_eval_loss": 3.05,
             "final_train_loss": 3.21,
             "learning_rate": 3e-7,
+            "init_adapter_ref": "v8",
+            "output_adapter_ref": "v11",
         }
 
     def test_builds_matched_delta_and_newly_accepted_case(self):
@@ -130,6 +133,55 @@ class CompareRightBrainModelSurfaceHoldoutsTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "model-loaded"):
             build_comparison(baseline, trained, self.training)
+
+    def test_reports_trained_repair_delta_when_both_runs_enable_repair(self):
+        baseline = _report(
+            "v8",
+            4,
+            initial_accepted=4,
+            repair_enabled=True,
+            repair_attempts=6,
+            repair_accepted=0,
+        )
+        trained = _report(
+            "v11",
+            7,
+            initial_accepted=5,
+            repair_enabled=True,
+            repair_attempts=5,
+            repair_accepted=2,
+        )
+
+        report = build_comparison(baseline, trained, self.training)
+
+        self.assertIn("repair 成功數由 0/6 變為 2/5", report["conclusion_zh"])
+        self.assertIn("40.0% 變為 70.0%", report["conclusion_zh"])
+        self.assertNotIn("不應預設開啟", report["conclusion_zh"])
+
+    def test_carries_curriculum_leakage_boundary(self):
+        baseline = _report("v8", 4)
+        trained = _report("v11", 5)
+        curriculum = {
+            "curriculum_row_count": 720,
+            "holdout_case_count": 11,
+            "holdout_user_input_overlap_count": 0,
+            "holdout_contract_overlap_count": 0,
+            "holdout_target_overlap_count": 0,
+            "runtime_schema": {"previous_draft_in_training_prompt": False},
+        }
+
+        report = build_comparison(
+            baseline,
+            trained,
+            self.training,
+            curriculum,
+        )
+
+        self.assertEqual(report["data_boundary"]["curriculum_row_count"], 720)
+        self.assertEqual(report["data_boundary"]["holdout_contract_overlap_count"], 0)
+        self.assertFalse(
+            report["data_boundary"]["previous_draft_in_training_prompt"]
+        )
 
 
 if __name__ == "__main__":
