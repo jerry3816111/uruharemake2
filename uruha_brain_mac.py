@@ -175,6 +175,10 @@ RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
     "or reveal memory that is not explicitly allowed. Do not output analysis, labels, JSON, metadata, English, Chinese, or system "
     "text. Do not use 私. Do not explain the contract."
 )
+RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT = (
+    RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
+    + " The previous draft failed the contract. Repair it once and return only the corrected reply."
+)
 
 
 def _resolve_right_brain_model_loading(requested):
@@ -11664,10 +11668,7 @@ You are Ichinose Uruha.
             repair_messages = [
                 {
                     "role": "system",
-                    "content": (
-                        RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
-                        + " The previous draft failed the contract. Repair it once and return only the corrected reply."
-                    ),
+                    "content": RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT,
                 },
                 {
                     "role": "user",

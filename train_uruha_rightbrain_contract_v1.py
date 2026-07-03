@@ -212,8 +212,10 @@ def train(model, tokenizer, train_set, eval_set, args):
     optimizer.zero_grad(set_to_none=True)
     consumed = 0
     updates = 0
-    skipped = 0
+    nonfinite_loss_skips = 0
+    nonfinite_gradient_skips = 0
     total_loss = 0.0
+    max_observed_gradient_norm = 0.0
     epoch_pass = 0
     print(
         f"training rows={len(train_set)} eval_rows={len(eval_set)} micro_steps={target_micro_steps} "
@@ -227,18 +229,39 @@ def train(model, tokenizer, train_set, eval_set, args):
             consumed += 1
             loss = model(**_move(batch, device)).loss
             if not torch.isfinite(loss):
-                skipped += 1
+                nonfinite_loss_skips += 1
                 optimizer.zero_grad(set_to_none=True)
                 print(f"WARNING non-finite loss at micro_step={consumed}: {float(loss.detach().cpu())}")
-                if skipped > args.max_nonfinite_skips:
-                    raise RuntimeError(f"Too many non-finite losses: {skipped}")
+                if nonfinite_loss_skips + nonfinite_gradient_skips > args.max_nonfinite_skips:
+                    raise RuntimeError(
+                        "Too many non-finite training events: "
+                        f"loss={nonfinite_loss_skips}, gradient={nonfinite_gradient_skips}"
+                    )
                 continue
             (loss / args.grad_accum).backward()
             total_loss += float(loss.detach().cpu())
             if consumed % args.grad_accum == 0 or consumed == target_micro_steps:
-                torch.nn.utils.clip_grad_norm_(
+                gradient_norm = torch.nn.utils.clip_grad_norm_(
                     [parameter for parameter in model.parameters() if parameter.requires_grad],
                     max_norm=0.3,
+                )
+                gradient_norm_value = float(gradient_norm.detach().float().cpu())
+                if not math.isfinite(gradient_norm_value):
+                    nonfinite_gradient_skips += 1
+                    optimizer.zero_grad(set_to_none=True)
+                    print(
+                        "WARNING non-finite gradient at "
+                        f"micro_step={consumed}; optimizer update skipped"
+                    )
+                    if nonfinite_loss_skips + nonfinite_gradient_skips > args.max_nonfinite_skips:
+                        raise RuntimeError(
+                            "Too many non-finite training events: "
+                            f"loss={nonfinite_loss_skips}, gradient={nonfinite_gradient_skips}"
+                        )
+                    continue
+                max_observed_gradient_norm = max(
+                    max_observed_gradient_norm,
+                    gradient_norm_value,
                 )
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
@@ -255,7 +278,10 @@ def train(model, tokenizer, train_set, eval_set, args):
         "target_micro_steps": target_micro_steps,
         "consumed_micro_steps": consumed,
         "optimizer_updates": updates,
-        "nonfinite_skips": skipped,
+        "nonfinite_skips": nonfinite_loss_skips + nonfinite_gradient_skips,
+        "nonfinite_loss_skips": nonfinite_loss_skips,
+        "nonfinite_gradient_skips": nonfinite_gradient_skips,
+        "max_observed_gradient_norm": max_observed_gradient_norm,
         "final_train_loss": total_loss / max(1, consumed),
         "sampled_eval_loss": eval_loss,
         "initial_eval_loss_probe": initial_eval_loss,
@@ -362,6 +388,7 @@ def main():
         "token_length_mean": round(sum(lengths) / len(lengths), 2),
         "epochs": args.epochs,
         "learning_rate": args.learning_rate,
+        "optimizer_eps": args.optimizer_eps,
         "batch_size": args.batch_size,
         "grad_accum": args.grad_accum,
         "seed": args.seed,
