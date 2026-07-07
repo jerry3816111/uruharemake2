@@ -163,6 +163,18 @@ def build_model(base_model, init_adapter, lora_r, lora_alpha, lora_dropout, dtyp
     return model
 
 
+def init_adapter_report(init_adapter):
+    if not init_adapter:
+        return {
+            "init_adapter_ref": "base_model_new_lora",
+            "init_adapter_config_sha256": None,
+        }
+    return {
+        "init_adapter_ref": Path(init_adapter).name,
+        "init_adapter_config_sha256": _sha256(Path(init_adapter) / "adapter_config.json"),
+    }
+
+
 def _device(model):
     return next(model.parameters()).device
 
@@ -293,7 +305,7 @@ def main():
     parser.add_argument("--dataset", default=RIGHTBRAIN_CONTRACT_V1_TRAIN_DATASET_PATH)
     parser.add_argument("--supplemental-dataset", action="append", default=[])
     parser.add_argument("--base-model", default=DEFAULT_BASE_MODEL)
-    parser.add_argument("--init-adapter", required=True)
+    parser.add_argument("--init-adapter", default="")
     parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--run-report", default=RIGHTBRAIN_CONTRACT_V1_TRAINING_RUN_REPORT_PATH)
     parser.add_argument("--max-length", type=int, default=720)
@@ -366,6 +378,7 @@ def main():
     model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
     adapter_model_path = output_dir / "adapter_model.safetensors"
+    adapter_report = init_adapter_report(args.init_adapter)
     report = {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
         "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
@@ -374,8 +387,7 @@ def main():
         "dataset_sha256": _sha256(args.dataset),
         "dataset_sources": dataset_sources,
         "supplemental_rows": sum(source["rows"] for source in dataset_sources[1:]),
-        "init_adapter_ref": Path(args.init_adapter).name,
-        "init_adapter_config_sha256": _sha256(Path(args.init_adapter) / "adapter_config.json"),
+        **adapter_report,
         "output_adapter_ref": output_dir.name,
         "output_adapter_config_sha256": _sha256(output_dir / "adapter_config.json"),
         "output_adapter_model_sha256": _sha256(adapter_model_path),

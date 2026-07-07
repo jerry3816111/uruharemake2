@@ -1,0 +1,143 @@
+{
+  "generated_at": "2026-07-07T12:53:14+09:00",
+  "scope": "rightbrain_model_surface_matched_holdout_comparison",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+  "trained_adapter": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+  "baseline_repair_adapter": "",
+  "trained_repair_adapter": "uruha_rightbrain_repair_lora_v1_base",
+  "matched_conditions": {
+    "scope": "rightbrain_model_blend_surface_holdout_eval",
+    "seed": 20260707,
+    "candidate_count_per_case": 1,
+    "runtime_contract_version": "plan_surface_contract_v1"
+  },
+  "independent_variable": {
+    "baseline_repair_enabled": true,
+    "trained_repair_enabled": true
+  },
+  "training": {
+    "dataset_ref": "rightbrain_repair_curriculum_v1.json",
+    "rows": 720,
+    "supplemental_rows": 0,
+    "init_adapter_ref": "base_model_new_lora",
+    "output_adapter_ref": "uruha_rightbrain_repair_lora_v1_base",
+    "optimizer_updates": 17,
+    "nonfinite_skips": 0,
+    "initial_eval_loss_probe": 3.449033260345459,
+    "sampled_eval_loss": 3.03088586529096,
+    "final_train_loss": 3.3679583135404085,
+    "learning_rate": 3e-07,
+    "optimizer_eps": 1e-05,
+    "nonfinite_loss_skips": 0,
+    "nonfinite_gradient_skips": 0,
+    "max_observed_gradient_norm": 1170039.875
+  },
+  "data_boundary": {
+    "curriculum_row_count": 720,
+    "holdout_case_count": 11,
+    "holdout_user_input_overlap_count": 0,
+    "holdout_contract_overlap_count": 0,
+    "holdout_target_overlap_count": 0,
+    "previous_draft_in_training_prompt": false
+  },
+  "runtime": {
+    "baseline_case_eval_duration_seconds": 146.526,
+    "trained_case_eval_duration_seconds": 148.896,
+    "case_eval_duration_delta_seconds": 2.37,
+    "note": "Single-run wall-clock evidence; use repeated runs before making a latency claim."
+  },
+  "metric_rows": [
+    {
+      "metric": "generated_candidate_count",
+      "baseline": 10,
+      "trained": 10,
+      "delta": 0
+    },
+    {
+      "metric": "initial_accepted_candidate_count",
+      "baseline": 2,
+      "trained": 2,
+      "delta": 0
+    },
+    {
+      "metric": "accepted_candidate_count",
+      "baseline": 3,
+      "trained": 3,
+      "delta": 0
+    },
+    {
+      "metric": "raw_candidate_acceptance_rate",
+      "baseline": 0.2,
+      "trained": 0.2,
+      "delta": 0.0
+    },
+    {
+      "metric": "repair_attempt_count",
+      "baseline": 8,
+      "trained": 8,
+      "delta": 0
+    },
+    {
+      "metric": "repair_accepted_count",
+      "baseline": 1,
+      "trained": 1,
+      "delta": 0
+    },
+    {
+      "metric": "repair_success_rate",
+      "baseline": 0.125,
+      "trained": 0.125,
+      "delta": 0.0
+    },
+    {
+      "metric": "effective_candidate_acceptance_rate",
+      "baseline": 0.3,
+      "trained": 0.3,
+      "delta": 0.0
+    },
+    {
+      "metric": "model_selected_case_count",
+      "baseline": 1,
+      "trained": 1,
+      "delta": 0
+    },
+    {
+      "metric": "model_selected_case_rate",
+      "baseline": 0.0909,
+      "trained": 0.0909,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_quality_pass_rate",
+      "baseline": 1.0,
+      "trained": 1.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_language_clean_rate",
+      "baseline": 1.0,
+      "trained": 1.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_forbidden_surface_leak_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_generic_template_hit_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "final_normalized_duplicate_reply_rate",
+      "baseline": 0.0,
+      "trained": 0.0,
+      "delta": 0.0
+    }
+  ],
+  "case_diffs": [],
+  "conclusion_zh": "在相同 holdout、seed、候選數、repair 開關與嚴格 gate 下，首次 raw 通過率由 20.0% 變為 20.0%；repair 成功數由 1/8 變為 1/8，有效候選通過率由 30.0% 變為 30.0%（+0.0 個百分點）。最終品質仍須通過原 gate，未放寬語意、語言或記憶權限。這次訓練未證明 repair 能力有淨改善，runtime repair 不應預設開啟。"
+}
