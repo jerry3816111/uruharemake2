@@ -52,6 +52,14 @@ import uruha_memory_runtime as umr
 import uruha_leftbrain_rules
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
 from rightbrain_repair_selector import load_model_artifact, score_candidate as score_learned_repair_candidate
+from rightbrain_language_quality import (
+    ASCII_WORD_RE,
+    CHINESE_SPECIFIC_RE,
+    INSTRUCTION_MARKERS,
+    NONSTANDARD_CJK_RE,
+    POLITE_RE,
+    UNICODE_REPLACEMENT_CHAR,
+)
 
 # ===========================
 # ⚙️ Mac 雙腦系統初始化
@@ -11439,17 +11447,12 @@ You are Ichinose Uruha.
         if not re.search(r"[ぁ-んァ-ヶー一-龠]", reply):
             reasons.append("missing_japanese_surface")
 
-        chinese_specific = re.compile(
-            r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]|好了|不是|我想|你的|可以|為什麼|为什么"
-        )
-        if chinese_specific.search(reply):
+        if CHINESE_SPECIFIC_RE.search(reply):
             reasons.append("cjk_language_leak")
-        if re.search(
-            r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙]"
-            r"|[體國學氣會來處變與樂臺]",
-            reply,
-        ):
+        if NONSTANDARD_CJK_RE.search(reply):
             reasons.append("nonstandard_cjk_surface")
+        if UNICODE_REPLACEMENT_CHAR in reply:
+            reasons.append("unicode_replacement_character")
 
         allowed_ascii = set(
             token.lower()
@@ -11458,7 +11461,7 @@ You are Ichinose Uruha.
                 f"{user_input} {logic_data.get('core_message_jp', '')}",
             )
         )
-        latin_tokens = re.findall(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*", reply)
+        latin_tokens = ASCII_WORD_RE.findall(reply)
         leaked_ascii = {
             token.lower()
             for token in latin_tokens
@@ -11468,15 +11471,13 @@ You are Ichinose Uruha.
             reasons.append("unexpected_ascii_leak")
 
         instruction_markers = [
-            "required_semantic", "speech_moves", "leftbrain", "ユーザー入力", "出力契約",
-            "一回止まって聞き返す", "それで普通に返せるだろ", "回答を生成",
+            *INSTRUCTION_MARKERS,
+            "一回止まって聞き返す",
+            "それで普通に返せるだろ",
         ]
         if any(marker.lower() in reply.lower() for marker in instruction_markers):
             reasons.append("instruction_or_plan_leak")
-        if re.search(
-            r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)(?:よね|よ|ね)?(?:[。！？!?、]|$)",
-            reply,
-        ):
+        if POLITE_RE.search(reply):
             reasons.append("polite_tone_drift")
         if any(marker in reply for marker in ["詫び", "お詫び", "謝罪いた"]):
             reasons.append("formal_register_drift")
@@ -11521,6 +11522,8 @@ You are Ichinose Uruha.
             instructions.append("短い自然な日本語の返事を一つ書く")
         if "cjk_language_leak" in reason_set or "nonstandard_cjk_surface" in reason_set:
             instructions.append("中国語を残さず日本語だけに直す")
+        if "unicode_replacement_character" in reason_set:
+            instructions.append("文字化けの置換文字を残さず、読める日本語に直す")
         if "unexpected_ascii_leak" in reason_set:
             instructions.append("英字やローマ字を残さず日本語だけに直す")
         if "instruction_or_plan_leak" in reason_set:

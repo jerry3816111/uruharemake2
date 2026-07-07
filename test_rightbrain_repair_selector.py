@@ -53,6 +53,11 @@ class RightBrainRepairSelectorTest(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(tuple(first), FEATURE_NAMES)
 
+    def test_nonstandard_surface_feature_catches_actual_model_pollution(self):
+        row = self.rows[0]
+        features = extract_candidate_features("今日は无理しないで休め。範�", row["contract_payload"])
+        self.assertGreater(features["nonstandard_cjk_density"], 0.0)
+
     def test_model_round_trip_preserves_selection(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             path = Path(tmpdir) / "model.json"

@@ -13,6 +13,7 @@ from project_paths import (
     RIGHTBRAIN_AUDITED_MEMORY_SURFACE_EVAL_REPORT_JSON_PATH,
     RIGHTBRAIN_AUDITED_MEMORY_SURFACE_EVAL_REPORT_MD_PATH,
 )
+from rightbrain_language_quality import has_bad_language, has_japanese
 from uruha_brain_mac import RightBrain
 
 
@@ -183,11 +184,11 @@ def _surface_for_holdout_case(rightbrain, case):
 
 
 def _has_japanese(text):
-    return bool(re.search(r"[ぁ-んァ-ヶー一-龠]", str(text or "")))
+    return has_japanese(text)
 
 
 def _has_bad_language(text):
-    return bool(re.search(r"[这吗么们没还让给说话這嗎麼們沒還讓說]|好了|不是|為什麼|为什么", str(text or "")))
+    return has_bad_language(text)
 
 
 def _contains_anchor(reply, case):

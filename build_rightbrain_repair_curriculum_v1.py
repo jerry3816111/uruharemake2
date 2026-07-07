@@ -5,7 +5,6 @@ import argparse
 import hashlib
 import json
 import random
-import re
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +17,15 @@ from project_paths import (
     RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH,
     RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_MD_PATH,
 )
+from rightbrain_language_quality import (
+    ASCII_WORD_RE,
+    CHINESE_SPECIFIC_RE,
+    INSTRUCTION_MARKERS,
+    JAPANESE_RE,
+    NONSTANDARD_CJK_RE,
+    POLITE_RE,
+    UNICODE_REPLACEMENT_CHAR,
+)
 from uruha_brain_mac import RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT, RightBrain
 
 
@@ -25,28 +33,6 @@ TZ = ZoneInfo("Asia/Tokyo")
 DEFAULT_HOLDOUT_REPORT = Path("reports/rightbrain_v10_repair_off_holdout.json")
 DEFAULT_SEED = 20260704
 DEFAULT_ROW_LIMIT = 720
-
-JAPANESE_RE = re.compile(r"[ぁ-んァ-ヶー一-龠]")
-ASCII_WORD_RE = re.compile(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*")
-CHINESE_SPECIFIC_RE = re.compile(
-    r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]|好了|不是|我想|你的|可以|為什麼|为什么"
-)
-NONSTANDARD_CJK_RE = re.compile(
-    r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙]"
-    r"|[體國學氣會來處變與樂臺]"
-)
-POLITE_RE = re.compile(
-    r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)"
-    r"(?:よね|よ|ね)?(?:[。！？!?、]|$)"
-)
-INSTRUCTION_MARKERS = (
-    "required_semantic",
-    "speech_moves",
-    "leftbrain",
-    "ユーザー入力",
-    "出力契約",
-    "回答を生成",
-)
 
 REPAIR_REASON_PATTERNS = (
     ("semantic_only", ("semantic_slots_missing:0/{slot_count}",)),
@@ -89,6 +75,8 @@ def _target_errors(reply, payload):
         errors.append("chinese_leak")
     if NONSTANDARD_CJK_RE.search(reply):
         errors.append("nonstandard_cjk_surface")
+    if UNICODE_REPLACEMENT_CHAR in reply:
+        errors.append("unicode_replacement_character")
     if ASCII_WORD_RE.search(reply):
         errors.append("ascii_leak")
     if "私" in reply:
