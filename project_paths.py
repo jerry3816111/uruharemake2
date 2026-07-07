@@ -36,6 +36,10 @@ RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_curriculum_v1.json",
 )
+RIGHTBRAIN_REPAIR_SELECTION_V1_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_repair_selection_v1.json",
+)
 
 COGNITIVE_ARCHITECTURE_DATASET_PATH = os.path.join(DATASETS_DIR, "cognitive_architecture_eval_dataset.json")
 HUMAN_FEEDBACK_REGRESSION_DATASET_PATH = os.path.join(DATASETS_DIR, "human_feedback_regression_dataset.json")
@@ -170,6 +174,22 @@ RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_curriculum_v1_report.md",
+)
+RIGHTBRAIN_REPAIR_SELECTION_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selection_v1_report.json",
+)
+RIGHTBRAIN_REPAIR_SELECTION_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selection_v1_report.md",
+)
+RIGHTBRAIN_REPAIR_SELECTION_EVAL_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selection_eval_v1_report.json",
+)
+RIGHTBRAIN_REPAIR_SELECTION_EVAL_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selection_eval_v1_report.md",
 )
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
