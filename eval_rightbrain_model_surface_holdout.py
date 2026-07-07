@@ -36,11 +36,15 @@ def _adapter_ref(adapter_path, base_only=False):
     return "configured_default"
 
 
-def _set_model_env(adapter_path="", base_only=False, candidate_count=1, repair_enabled=False):
+def _set_model_env(adapter_path="", base_only=False, candidate_count=1, repair_enabled=False, repair_adapter_path=""):
     if base_only:
         os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = "base-only"
     elif adapter_path:
         os.environ["URUHA_RIGHT_BRAIN_ADAPTER_PATH"] = os.path.abspath(adapter_path)
+    if repair_adapter_path:
+        os.environ["URUHA_RIGHT_BRAIN_REPAIR_ADAPTER_PATH"] = os.path.abspath(repair_adapter_path)
+    else:
+        os.environ["URUHA_RIGHT_BRAIN_REPAIR_ADAPTER_PATH"] = ""
     os.environ["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] = "1"
     os.environ["URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT"] = str(max(1, int(candidate_count or 1)))
     os.environ["URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED"] = "1" if repair_enabled else "0"
@@ -200,6 +204,7 @@ def _summarize(rows, model_loaded):
 def build_report(
     load_model=False,
     adapter_path="",
+    repair_adapter_path="",
     base_only=False,
     candidate_count=1,
     seed=20260624,
@@ -211,6 +216,7 @@ def build_report(
             base_only=base_only,
             candidate_count=candidate_count,
             repair_enabled=repair_enabled,
+            repair_adapter_path=repair_adapter_path,
         )
         import torch
 
@@ -292,6 +298,7 @@ def build_report(
             "through the same strict model candidate gate before selection."
         ),
         "adapter_ref": _adapter_ref(adapter_path, base_only=base_only),
+        "repair_adapter_ref": _adapter_ref(repair_adapter_path) if repair_adapter_path else "",
         "load_model": bool(load_model),
         "seed": seed,
         "candidate_count_per_case": max(1, int(candidate_count or 1)),
@@ -325,6 +332,7 @@ def write_markdown(report, path):
         "",
         f"- load_model: {report['load_model']}",
         f"- adapter_ref: {report['adapter_ref']}",
+        f"- repair_adapter_ref: {report.get('repair_adapter_ref', '')}",
         f"- candidate_count_per_case: {report['candidate_count_per_case']}",
         f"- repair_enabled: {report['repair_enabled']}",
         f"- runtime_contract_version: {report['runtime_contract_version']}",
@@ -382,6 +390,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--load-model", action="store_true")
     parser.add_argument("--adapter-path", default=os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH", ""))
+    parser.add_argument("--repair-adapter-path", default=os.getenv("URUHA_RIGHT_BRAIN_REPAIR_ADAPTER_PATH", ""))
     parser.add_argument("--base-only", action="store_true")
     parser.add_argument("--candidate-count", type=int, default=1)
     parser.add_argument("--repair-enabled", action="store_true")
@@ -393,6 +402,7 @@ def main():
     report = build_report(
         load_model=args.load_model,
         adapter_path=args.adapter_path,
+        repair_adapter_path=args.repair_adapter_path,
         base_only=args.base_only,
         candidate_count=args.candidate_count,
         seed=args.seed,

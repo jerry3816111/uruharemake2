@@ -204,6 +204,8 @@ def build_comparison(baseline, trained, training, curriculum=None):
         "scope": "rightbrain_model_surface_matched_holdout_comparison",
         "baseline_adapter": baseline["adapter_ref"],
         "trained_adapter": trained["adapter_ref"],
+        "baseline_repair_adapter": baseline.get("repair_adapter_ref", ""),
+        "trained_repair_adapter": trained.get("repair_adapter_ref", ""),
         "matched_conditions": {
             field: baseline.get(field) for field in MATCHED_FIELDS
         },
@@ -256,6 +258,8 @@ def write_markdown(report, output_path):
         "",
         f"- baseline adapter: {report['baseline_adapter']}",
         f"- trained adapter: {report['trained_adapter']}",
+        f"- baseline repair adapter: {report.get('baseline_repair_adapter', '')}",
+        f"- trained repair adapter: {report.get('trained_repair_adapter', '')}",
     ]
     for key, value in report["matched_conditions"].items():
         lines.append(f"- {key}: {value}")
