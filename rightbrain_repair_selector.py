@@ -9,33 +9,22 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from rightbrain_language_quality import (
+    ASCII_WORD_RE as LATIN_TOKEN_RE,
+    CHINESE_SPECIFIC_RE,
+    INSTRUCTION_MARKERS,
+    JAPANESE_RE,
+    NONSTANDARD_CJK_RE,
+    POLITE_RE,
+    UNICODE_REPLACEMENT_CHAR,
+)
+
 
 DEFAULT_SPLIT_SEED = 20260707
 DEFAULT_TRAIN_SEED = 20260707
 
-JAPANESE_RE = re.compile(r"[ぁ-んァ-ヶー一-龠]")
 JAPANESE_CHAR_RE = re.compile(r"[ぁ-んァ-ヶー一-龠]")
 KANA_RE = re.compile(r"[ぁ-んァ-ヶー]")
-LATIN_TOKEN_RE = re.compile(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*")
-CHINESE_SPECIFIC_RE = re.compile(
-    r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]|好了|不是|我想|你的|可以|為什麼|为什么"
-)
-NONSTANDARD_CJK_RE = re.compile(
-    r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙]"
-    r"|[體國學氣會來處變與樂臺]"
-)
-POLITE_RE = re.compile(
-    r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)"
-    r"(?:よね|よ|ね)?(?:[。！？!?、]|$)"
-)
-INSTRUCTION_MARKERS = (
-    "required_semantic",
-    "speech_moves",
-    "leftbrain",
-    "ユーザー入力",
-    "出力契約",
-    "回答を生成",
-)
 
 FEATURE_NAMES = (
     "has_japanese",
@@ -82,7 +71,7 @@ def extract_candidate_features(text, payload):
     kana_count = len(KANA_RE.findall(text))
     latin_count = len(LATIN_TOKEN_RE.findall(text))
     chinese_count = len(CHINESE_SPECIFIC_RE.findall(text))
-    nonstandard_count = len(NONSTANDARD_CJK_RE.findall(text))
+    nonstandard_count = len(NONSTANDARD_CJK_RE.findall(text)) + text.count(UNICODE_REPLACEMENT_CHAR)
     polite_count = len(POLITE_RE.findall(text))
     instruction_count = sum(text.lower().count(marker.lower()) for marker in INSTRUCTION_MARKERS)
     forbidden_count = _count_occurrences(text, forbidden)

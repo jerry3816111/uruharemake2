@@ -107,6 +107,19 @@ class RightBrainRepairCurriculumTest(unittest.TestCase):
         ):
             self.assertEqual(self.summary[key], second_summary[key])
 
+    def test_target_validator_rejects_actual_model_cjk_and_mojibake(self):
+        payload = {
+            "required_marker_groups": [["休", "無理"]],
+            "forbidden_markers": [],
+            "context": {"max_chars": 80},
+        }
+
+        simplified = _target_errors("今日は无理しないで休め。", payload)
+        replacement = _target_errors("今日は範�だけ決めて休め。", payload)
+
+        self.assertIn("nonstandard_cjk_surface", simplified)
+        self.assertIn("unicode_replacement_character", replacement)
+
 
 if __name__ == "__main__":
     unittest.main()

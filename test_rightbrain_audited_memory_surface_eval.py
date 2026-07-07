@@ -1,6 +1,6 @@
 import unittest
 
-from eval_rightbrain_audited_memory_surface import build_report
+from eval_rightbrain_audited_memory_surface import _has_bad_language, build_report
 
 
 class RightBrainAuditedMemorySurfaceEvalTest(unittest.TestCase):
@@ -50,6 +50,12 @@ class RightBrainAuditedMemorySurfaceEvalTest(unittest.TestCase):
         self.assertIn("RightBrain.speak", report["controlled_variables"]["surface_runtime"])
         self.assertIn("final-surface", report["research_boundary"])
         self.assertGreater(report["summary"]["surface_quality_case_count"], 0)
+
+    def test_external_quality_rejects_actual_model_pollution(self):
+        self.assertTrue(_has_bad_language("今日は无理しないで休め。"))
+        self.assertTrue(_has_bad_language("今日は範�だけ決める。"))
+        self.assertTrue(_has_bad_language("今日はBODY CHEMISTRYを見る。"))
+        self.assertFalse(_has_bad_language("今日は無理しないで休め。"))
 
 
 if __name__ == "__main__":

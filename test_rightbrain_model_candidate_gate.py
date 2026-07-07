@@ -421,6 +421,24 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         self.assertIn("nonstandard_cjk_surface", reasons)
 
+    def test_gate_rejects_simplified_wu_and_unicode_replacement_character(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        simplified = rightbrain._model_candidate_rejection_reasons(
+            "今日は无理しないで休め。",
+            logic,
+            max_chars=80,
+        )
+        replacement = rightbrain._model_candidate_rejection_reasons(
+            "今日は範�だけ決めて休め。",
+            logic,
+            max_chars=80,
+        )
+
+        self.assertIn("nonstandard_cjk_surface", simplified)
+        self.assertIn("unicode_replacement_character", replacement)
+
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])
         logic = {
