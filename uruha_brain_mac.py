@@ -126,6 +126,8 @@ RIGHT_BRAIN_BASE_MODEL = os.getenv("URUHA_RIGHT_BRAIN_BASE_MODEL", "Qwen/Qwen2.5
 
 def _normalize_right_brain_adapter_path(raw_path, default_path):
     raw = str(default_path if raw_path is None else raw_path).strip()
+    if not raw:
+        return ""
     if raw.lower() in {"none", "base-only", "base_only"}:
         return ""
     return os.path.abspath(raw)
@@ -134,6 +136,10 @@ def _normalize_right_brain_adapter_path(raw_path, default_path):
 RIGHT_BRAIN_ADAPTER_PATH = _normalize_right_brain_adapter_path(
     os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH"),
     os.path.join(BASE_DIR, "uruha_v10_all_linear_lora"),
+)
+RIGHT_BRAIN_REPAIR_ADAPTER_PATH = _normalize_right_brain_adapter_path(
+    os.getenv("URUHA_RIGHT_BRAIN_REPAIR_ADAPTER_PATH"),
+    "",
 )
 SCENE_VALUES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 WORKING_MEMORY_LIMIT = 5
@@ -7868,8 +7874,13 @@ class RightBrain:
         self.device = "mps" if torch.backends.mps.is_available() else "cpu"
         self.dtype = torch.float16 if self.device == "mps" else torch.float32
         self.compat_adapter_dir = None
+        self.repair_compat_adapter_dir = None
         self.tokenizer = None
         self.model = None
+        self.surface_adapter_name = "surface"
+        self.repair_adapter_name = "repair"
+        self.repair_adapter_loaded = False
+        self._active_model_adapter_name = None
         self.model_blend_enabled = RIGHT_BRAIN_MODEL_BLEND_ENABLED
         self.model_candidate_count = max(1, RIGHT_BRAIN_MODEL_CANDIDATE_COUNT)
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
@@ -7878,15 +7889,26 @@ class RightBrain:
         if load_model:
             if RIGHT_BRAIN_ADAPTER_PATH and not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
                 raise FileNotFoundError(f"Right brain adapter not found: {RIGHT_BRAIN_ADAPTER_PATH}")
+            if RIGHT_BRAIN_REPAIR_ADAPTER_PATH and not os.path.isdir(RIGHT_BRAIN_REPAIR_ADAPTER_PATH):
+                raise FileNotFoundError(f"Right brain repair adapter not found: {RIGHT_BRAIN_REPAIR_ADAPTER_PATH}")
+            if RIGHT_BRAIN_REPAIR_ADAPTER_PATH and not RIGHT_BRAIN_ADAPTER_PATH:
+                raise ValueError("Right brain repair adapter requires a surface adapter.")
 
             adapter_name = (
                 os.path.basename(os.path.normpath(RIGHT_BRAIN_ADAPTER_PATH))
                 if RIGHT_BRAIN_ADAPTER_PATH
                 else "base_model_only"
             )
+            repair_adapter_name = (
+                os.path.basename(os.path.normpath(RIGHT_BRAIN_REPAIR_ADAPTER_PATH))
+                if RIGHT_BRAIN_REPAIR_ADAPTER_PATH
+                else ""
+            )
             print(Fore.CYAN + f"🧠 [Right Brain] Loading {adapter_name} on {self.device}...")
             if RIGHT_BRAIN_ADAPTER_PATH:
                 self.compat_adapter_dir = self._build_compat_adapter(RIGHT_BRAIN_ADAPTER_PATH)
+            if RIGHT_BRAIN_REPAIR_ADAPTER_PATH:
+                self.repair_compat_adapter_dir = self._build_compat_adapter(RIGHT_BRAIN_REPAIR_ADAPTER_PATH)
             self.tokenizer = AutoTokenizer.from_pretrained(RIGHT_BRAIN_BASE_MODEL, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
                 RIGHT_BRAIN_BASE_MODEL,
@@ -7896,9 +7918,23 @@ class RightBrain:
             )
             self.model.to(self.device)
             if self.compat_adapter_dir:
-                self.model = PeftModel.from_pretrained(self.model, self.compat_adapter_dir)
+                self.model = PeftModel.from_pretrained(
+                    self.model,
+                    self.compat_adapter_dir,
+                    adapter_name=self.surface_adapter_name,
+                )
+                self._active_model_adapter_name = self.surface_adapter_name
+            if self.repair_compat_adapter_dir:
+                self.model.load_adapter(
+                    self.repair_compat_adapter_dir,
+                    adapter_name=self.repair_adapter_name,
+                )
+                self.repair_adapter_loaded = True
+                self._switch_model_adapter(self.surface_adapter_name)
             self.model.eval()
             print(Fore.GREEN + f"✅ Right Brain ({adapter_name}) Loaded!")
+            if repair_adapter_name:
+                print(Fore.GREEN + f"✅ Right Brain repair adapter ({repair_adapter_name}) Loaded!")
 
         self.scene_fallbacks = {
             "support": [
@@ -8085,6 +8121,20 @@ class RightBrain:
             "proactive_share": ["さっきの流れ、まだ少し頭に残ってる。", "なんかまださっきの話残ってるんだよな。", "さっきのやつ、まだちょっと引っかかってる。"],
             "proactive_ping": ["静かだな。今なにしてんだよ。", "急に静かだけど、今どうしてるんだよ。", "で、今は何してんの。"],
         }
+
+    def _switch_model_adapter(self, adapter_name):
+        if not adapter_name or not self.model or not hasattr(self.model, "set_adapter"):
+            return False
+        if self._active_model_adapter_name == adapter_name:
+            return False
+        self.model.set_adapter(adapter_name)
+        self._active_model_adapter_name = adapter_name
+        return True
+
+    def _adapter_for_generation(self, purpose):
+        if purpose == "repair" and self.repair_adapter_loaded:
+            return self.repair_adapter_name
+        return self.surface_adapter_name if self.compat_adapter_dir else None
 
     def reset_session_state(self):
         self.history = []
@@ -11496,7 +11546,7 @@ You are Ichinose Uruha.
         }
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
-    def _run_model_surface_generation(self, messages, generation_kwargs):
+    def _generate_model_text(self, messages, generation_kwargs):
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
@@ -11518,6 +11568,15 @@ You are Ichinose Uruha.
             skip_special_tokens=False,
         )
         return raw_reply.split("<|im_end|>")[0].strip()
+
+    def _run_model_surface_generation(self, messages, generation_kwargs, adapter_name=None):
+        previous_adapter = self._active_model_adapter_name
+        switched = self._switch_model_adapter(adapter_name)
+        try:
+            return self._generate_model_text(messages, generation_kwargs)
+        finally:
+            if switched and previous_adapter:
+                self._switch_model_adapter(previous_adapter)
 
     def _prepare_model_surface_candidate(
         self,
@@ -11571,6 +11630,9 @@ You are Ichinose Uruha.
             "disabled_reason": disabled_reason or None,
             "semantic_contract": [list(group) for group in self._model_required_semantic_groups(logic_data)],
             "repair_enabled": bool(self.model_repair_enabled),
+            "surface_adapter_name": self.surface_adapter_name if self.compat_adapter_dir else None,
+            "repair_adapter_name": self.repair_adapter_name if self.repair_adapter_loaded else None,
+            "repair_adapter_loaded": bool(self.repair_adapter_loaded),
             "initial_generated_count": 0,
             "initial_accepted_count": 0,
             "repair_attempt_count": 0,
@@ -11620,6 +11682,7 @@ You are Ichinose Uruha.
                     "top_k": RIGHT_BRAIN_SAMPLE_TOP_K[idx],
                     "repetition_penalty": RIGHT_BRAIN_SAMPLE_REPETITION_PENALTIES[idx],
                 },
+                adapter_name=self._adapter_for_generation("surface"),
             )
             trace["initial_generated_count"] += 1
             candidate, initial_reasons = self._prepare_model_surface_candidate(
@@ -11679,6 +11742,7 @@ You are Ichinose Uruha.
                 },
             ]
             trace["repair_attempt_count"] += 1
+            repair_adapter_name = self._adapter_for_generation("repair")
             repair_raw = self._run_model_surface_generation(
                 repair_messages,
                 {
@@ -11688,6 +11752,7 @@ You are Ichinose Uruha.
                     "top_k": None,
                     "repetition_penalty": 1.15,
                 },
+                adapter_name=repair_adapter_name,
             )
             repair_candidate, repair_reasons = self._prepare_model_surface_candidate(
                 repair_raw,
@@ -11708,6 +11773,8 @@ You are Ichinose Uruha.
                 "candidate": repair_candidate,
                 "rejection_reasons": repair_reasons,
                 "accepted": not repair_reasons,
+                "adapter_name": repair_adapter_name,
+                "used_repair_adapter": repair_adapter_name == self.repair_adapter_name and self.repair_adapter_loaded,
             }
             trace["repairs"].append(repair_trace)
             if repair_reasons:
