@@ -7,6 +7,7 @@ import math
 import random
 import re
 from collections import Counter, defaultdict
+from pathlib import Path
 
 
 DEFAULT_SPLIT_SEED = 20260707
@@ -111,6 +112,32 @@ def extract_candidate_features(text, payload):
 def feature_vector(text, payload):
     features = extract_candidate_features(text, payload)
     return [float(features[name]) for name in FEATURE_NAMES]
+
+
+def validate_model_artifact(model):
+    if not isinstance(model, dict):
+        raise ValueError("Selector model artifact must be a JSON object.")
+    if model.get("model_type") != "standardized_logistic_contract_reranker":
+        raise ValueError("Unsupported selector model_type.")
+    if tuple(model.get("feature_names") or ()) != FEATURE_NAMES:
+        raise ValueError("Selector feature schema does not match runtime FEATURE_NAMES.")
+    width = len(FEATURE_NAMES)
+    for key in ("means", "scales", "weights"):
+        values = model.get(key)
+        if not isinstance(values, list) or len(values) != width:
+            raise ValueError(f"Selector {key} must contain {width} values.")
+        if not all(isinstance(value, (int, float)) and math.isfinite(float(value)) for value in values):
+            raise ValueError(f"Selector {key} contains a non-finite value.")
+    if any(float(value) <= 0 for value in model["scales"]):
+        raise ValueError("Selector scales must be positive.")
+    if not isinstance(model.get("intercept"), (int, float)) or not math.isfinite(float(model["intercept"])):
+        raise ValueError("Selector intercept must be finite.")
+    return model
+
+
+def load_model_artifact(path):
+    model = json.loads(Path(path).read_text(encoding="utf-8"))
+    return validate_model_artifact(model)
 
 
 def grouped_contract_split(rows, seed=DEFAULT_SPLIT_SEED, train_ratio=0.7, validation_ratio=0.15):

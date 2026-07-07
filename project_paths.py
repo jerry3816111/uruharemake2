@@ -216,6 +216,14 @@ RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_selector_v1_eval_report.md",
 )
+RIGHTBRAIN_SELECTOR_SHADOW_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_shadow_v1_report.json",
+)
+RIGHTBRAIN_SELECTOR_SHADOW_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_shadow_v1_report.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")

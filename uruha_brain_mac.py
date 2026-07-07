@@ -50,6 +50,8 @@ from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
 import uruha_leftbrain_rules
+from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
+from rightbrain_repair_selector import load_model_artifact, score_candidate as score_learned_repair_candidate
 
 # ===========================
 # ⚙️ Mac 雙腦系統初始化
@@ -171,6 +173,10 @@ RIGHT_BRAIN_MODEL_BLEND_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABL
 RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT", 3)
 RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
 RIGHT_BRAIN_MODEL_REPAIR_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED", False)
+RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
+RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
+    os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
+)
 RIGHT_BRAIN_MODEL_CONTRACT_VERSION = "plan_surface_contract_v1"
 RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
     "You are the RightBrain surface formulator for UruhaBrain. Your job is semantic realization, "
@@ -7885,6 +7891,15 @@ class RightBrain:
         self.model_candidate_count = max(1, RIGHT_BRAIN_MODEL_CANDIDATE_COUNT)
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
         self.model_repair_enabled = RIGHT_BRAIN_MODEL_REPAIR_ENABLED
+        self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
+        self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
+        self.selector_model = None
+        self.selector_model_load_error = ""
+        if self.selector_shadow_enabled:
+            try:
+                self.selector_model = load_model_artifact(self.selector_model_path)
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                self.selector_model_load_error = f"{type(exc).__name__}: {exc}"
 
         if load_model:
             if RIGHT_BRAIN_ADAPTER_PATH and not os.path.isdir(RIGHT_BRAIN_ADAPTER_PATH):
@@ -11817,6 +11832,153 @@ You are Ichinose Uruha.
                 trace["rejected"].append(failure)
         return accepted
 
+    def _selector_contract_payload(self, logic_data):
+        max_chars = int((logic_data.get("constraints") or {}).get("max_chars") or 48)
+        return {
+            "context": {"max_chars": max_chars},
+            "required_marker_groups": [
+                list(group) for group in self._model_required_semantic_groups(logic_data)
+            ],
+            "forbidden_markers": list(logic_data.get("must_avoid") or []),
+        }
+
+    def _selector_shadow_candidate_pool(self, deterministic_reply, model_candidates, logic_data):
+        pool = []
+        seen = set()
+
+        def append_candidate(source, text, gate_reasons=None):
+            text = str(text or "").strip()
+            normalized = self._normalize_reply_key(text)
+            if not text or not normalized or normalized in seen:
+                return
+            seen.add(normalized)
+            pool.append(
+                {
+                    "source": source,
+                    "text": text,
+                    "recorded_gate_reasons": list(gate_reasons or []),
+                }
+            )
+
+        append_candidate("deterministic", deterministic_reply)
+        trace = logic_data.get("model_surface_candidate_trace") or {}
+        for index, candidate in enumerate(trace.get("accepted") or []):
+            append_candidate(
+                f"accepted:{candidate.get('source') or index}",
+                candidate.get("candidate") or candidate.get("raw_candidate"),
+            )
+        for index, candidate in enumerate(model_candidates or []):
+            append_candidate(f"accepted:untraced:{index}", candidate)
+        for index, candidate in enumerate(trace.get("initial_rejected") or []):
+            append_candidate(
+                f"rejected:initial:{index}",
+                candidate.get("raw_candidate") or candidate.get("candidate"),
+                candidate.get("rejection_reasons"),
+            )
+        for index, candidate in enumerate(trace.get("repairs") or []):
+            if candidate.get("accepted"):
+                continue
+            append_candidate(
+                f"rejected:repair:{index}",
+                candidate.get("raw_candidate") or candidate.get("candidate"),
+                candidate.get("rejection_reasons"),
+            )
+        return pool
+
+    def _record_selector_shadow(self, current_selected_reply, deterministic_reply, model_candidates, logic_data):
+        shadow = {
+            "mode": "observe_only",
+            "enabled": bool(self.selector_shadow_enabled),
+            "status": "disabled",
+            "changes_user_visible_reply": False,
+            "model_artifact": os.path.basename(self.selector_model_path),
+        }
+        logic_data["model_surface_selector_shadow"] = shadow
+        if not self.selector_shadow_enabled:
+            return shadow
+        if self.selector_model is None:
+            shadow["status"] = "model_unavailable"
+            shadow["load_error"] = self.selector_model_load_error or "selector model not loaded"
+            return shadow
+
+        payload = self._selector_contract_payload(logic_data)
+        candidate_pool = self._selector_shadow_candidate_pool(
+            deterministic_reply,
+            model_candidates,
+            logic_data,
+        )
+        if not candidate_pool:
+            shadow["status"] = "no_candidates"
+            return shadow
+
+        max_chars = int((payload.get("context") or {}).get("max_chars") or 48)
+        scored = []
+        for index, candidate in enumerate(candidate_pool):
+            probability = score_learned_repair_candidate(
+                self.selector_model,
+                {"text": candidate["text"]},
+                payload,
+            )
+            strict_reasons = self._model_candidate_rejection_reasons(
+                candidate["text"],
+                logic_data,
+                max_chars,
+                user_input=str(logic_data.get("user_input") or ""),
+            )
+            scored.append(
+                {
+                    **candidate,
+                    "probability": round(float(probability), 6),
+                    "strict_rejection_reasons": strict_reasons,
+                    "strict_valid": not strict_reasons,
+                    "candidate_index": index,
+                }
+            )
+        ranked = sorted(scored, key=lambda row: (-row["probability"], row["candidate_index"]))
+        learned = ranked[0]
+        current_errors = self._model_candidate_rejection_reasons(
+            current_selected_reply,
+            logic_data,
+            max_chars,
+            user_input=str(logic_data.get("user_input") or ""),
+        )
+        shadow.update(
+            {
+                "status": "active",
+                "model_type": self.selector_model.get("model_type"),
+                "model_schema_version": self.selector_model.get("schema_version"),
+                "candidate_count": len(ranked),
+                "candidate_scores": [
+                    {
+                        "source": row["source"],
+                        "text": row["text"],
+                        "probability": row["probability"],
+                        "strict_valid": row["strict_valid"],
+                        "strict_rejection_reasons": row["strict_rejection_reasons"],
+                    }
+                    for row in ranked
+                ],
+                "current_selected_text": current_selected_reply,
+                "current_selected_strict_valid": not current_errors,
+                "current_selected_strict_rejection_reasons": current_errors,
+                "learned_selected_source": learned["source"],
+                "learned_selected_text": learned["text"],
+                "learned_selected_probability": learned["probability"],
+                "learned_selected_strict_valid": learned["strict_valid"],
+                "learned_selected_strict_rejection_reasons": learned["strict_rejection_reasons"],
+                "learned_selected_was_gate_rejected": learned["source"].startswith("rejected:"),
+                "agrees_with_current": (
+                    self._normalize_reply_key(learned["text"])
+                    == self._normalize_reply_key(current_selected_reply)
+                ),
+                "would_change_output": (
+                    self._normalize_reply_key(learned["text"])
+                    != self._normalize_reply_key(current_selected_reply)
+                ),
+            }
+        )
+        return shadow
+
     def _select_model_blended_reply(self, deterministic_reply, model_candidates, logic_data):
         deterministic_score = self._score_candidate(deterministic_reply, logic_data)
         selection = {
@@ -11827,7 +11989,14 @@ You are Ichinose Uruha.
             "selection_margin": self.model_selection_margin,
         }
         if not model_candidates:
+            selection["selected_candidate"] = deterministic_reply
             logic_data["model_surface_selection"] = selection
+            self._record_selector_shadow(
+                deterministic_reply,
+                deterministic_reply,
+                model_candidates,
+                logic_data,
+            )
             return deterministic_reply
 
         ranked_models = sorted(
@@ -11843,9 +12012,21 @@ You are Ichinose Uruha.
             selection["selected_source"] = "model"
             selection["selected_candidate"] = best_candidate
             logic_data["model_surface_selection"] = selection
+            self._record_selector_shadow(
+                best_candidate,
+                deterministic_reply,
+                model_candidates,
+                logic_data,
+            )
             return best_candidate
         selection["selected_candidate"] = deterministic_reply
         logic_data["model_surface_selection"] = selection
+        self._record_selector_shadow(
+            deterministic_reply,
+            deterministic_reply,
+            model_candidates,
+            logic_data,
+        )
         return deterministic_reply
 
     def speak(self, user_input, logic_data, memory_data, current_psyche):
@@ -11868,7 +12049,11 @@ You are Ichinose Uruha.
         def publish_model_trace():
             if not isinstance(original_logic_data, dict):
                 return
-            for key in ("model_surface_candidate_trace", "model_surface_selection"):
+            for key in (
+                "model_surface_candidate_trace",
+                "model_surface_selection",
+                "model_surface_selector_shadow",
+            ):
                 if key in logic_data:
                     original_logic_data[key] = deepcopy(logic_data.get(key))
 
