@@ -5,6 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ANALYSIS_DIR = os.path.join(BASE_DIR, "analysis")
 DATASETS_DIR = os.path.join(BASE_DIR, "datasets")
 REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 WEB_LOG_DIR = os.path.join(BASE_DIR, "web_logs")
 HUMAN_FEEDBACK_REGRESSION_EVAL_SNAPSHOTS_DIR = os.path.join(REPORTS_DIR, "human_feedback_regression_eval_snapshots")
@@ -39,6 +40,14 @@ RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
 RIGHTBRAIN_REPAIR_SELECTION_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_selection_v1.json",
+)
+RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH = os.path.join(
+    MODELS_DIR,
+    "rightbrain_repair_selector_v1.json",
+)
+RIGHTBRAIN_REPAIR_SELECTOR_V1_NATURAL_HOLDOUT_SOURCE_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_v10_repair_off_holdout.json",
 )
 
 COGNITIVE_ARCHITECTURE_DATASET_PATH = os.path.join(DATASETS_DIR, "cognitive_architecture_eval_dataset.json")
@@ -191,6 +200,22 @@ RIGHTBRAIN_REPAIR_SELECTION_EVAL_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_selection_eval_v1_report.md",
 )
+RIGHTBRAIN_REPAIR_SELECTOR_V1_TRAIN_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selector_v1_train_report.json",
+)
+RIGHTBRAIN_REPAIR_SELECTOR_V1_TRAIN_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selector_v1_train_report.md",
+)
+RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selector_v1_eval_report.json",
+)
+RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_repair_selector_v1_eval_report.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")
@@ -202,6 +227,7 @@ def ensure_project_dirs():
         ANALYSIS_DIR,
         DATASETS_DIR,
         REPORTS_DIR,
+        MODELS_DIR,
         HUMAN_FEEDBACK_REGRESSION_EVAL_SNAPSHOTS_DIR,
         HUMAN_FEEDBACK_INVALID_ANNOTATION_ARCHIVE_DIR,
         CACHE_DIR,
