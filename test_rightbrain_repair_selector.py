@@ -12,6 +12,7 @@ from rightbrain_repair_selector import (
     FEATURE_NAMES,
     extract_candidate_features,
     grouped_contract_split,
+    load_model_artifact,
     model_to_json,
     select_learned_candidate,
     split_fingerprint_overlap,
@@ -79,6 +80,15 @@ class RightBrainRepairSelectorTest(unittest.TestCase):
         serialized = model_to_json(self.model)
         for forbidden in ("is_gold", "detected_errors", "candidate_source", "gold_candidate_id"):
             self.assertNotIn(forbidden, serialized)
+
+    def test_model_loader_rejects_feature_schema_drift(self):
+        malformed = dict(self.model)
+        malformed["feature_names"] = list(malformed["feature_names"][:-1])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "bad-model.json"
+            path.write_text(json.dumps(malformed), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "feature schema"):
+                load_model_artifact(path)
 
 
 if __name__ == "__main__":
