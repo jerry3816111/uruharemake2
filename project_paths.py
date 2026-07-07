@@ -236,6 +236,14 @@ RIGHTBRAIN_SELECTOR_LIVE_DISAGREEMENT_QUEUE_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_live_disagreement_queue.json",
 )
+RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_runtime_soak_v1_report.json",
+)
+RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_runtime_soak_v1_report.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")
