@@ -13,8 +13,8 @@
 | real rejected candidates | 5 | strict gate 當時拒絕的真實輸出 |
 | learned strict-valid | 100.0% | learner 選到不違反合約候選的比例 |
 | selected rejected candidate | 0.0% | learner 誤選已拒絕候選；越低越好 |
-| agreement with current | 81.8% | learner 與現行選擇相同的比例 |
-| would change | 18.2% | 只記錄差異，不實際切換 |
+| agreement with current | 100.0% | learner 與現行選擇相同的比例 |
+| would change | 0.0% | 只記錄差異，不實際切換 |
 | visible output unchanged | 100.0% | shadow 不得改變正式回答 |
 
 ## Gate
@@ -29,10 +29,10 @@
 
 ## 差異案例
 
-| case | current source | learned source | valid | would change |
-|---|---|---|---|---|
-| reference_fragment_probe | model | deterministic | True | True |
-| daily_state_answer | deterministic | accepted:initial | True | True |
+語意欄依序為 `grounding / leftbrain bigram / user-input unigram`，只作診斷，不是人工偏好分數。
+
+| case | current source | current semantic | learned source | learned semantic | valid | would change |
+|---|---|---:|---|---:|---|---|
 
 ## 邊界
 

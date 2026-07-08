@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T13:22:06+09:00",
+  "generated_at": "2026-07-08T11:20:04+09:00",
   "scope": "rightbrain_repair_selector_v1_train",
   "split": {
     "row_counts": {
@@ -69,7 +69,7 @@
   },
   "model": {
     "model_type": "standardized_logistic_contract_reranker",
-    "schema_version": 1,
+    "schema_version": 2,
     "feature_names": [
       "has_japanese",
       "japanese_char_ratio",
@@ -82,35 +82,40 @@
       "first_person_density",
       "required_group_hit_rate",
       "required_group_missing_rate",
+      "required_marker_member_coverage",
+      "grounding_term_hit_rate",
+      "semantic_reference_unigram_dice",
+      "semantic_reference_bigram_dice",
+      "user_input_unigram_dice",
       "forbidden_marker_density",
       "length_ratio",
       "over_limit_ratio",
       "sentence_density",
       "whitespace_density"
     ],
-    "best_epoch": 700,
+    "best_epoch": 60,
     "training_seed": 20260707,
     "split_seed": 20260707,
     "training_row_count": 252,
     "validation_row_count": 54,
-    "positive_class_weight": 7.98015873015873,
+    "positive_class_weight": 8.380952380952381,
     "learning_rate": 0.04,
     "l2": 0.002,
     "requested_epochs": 700,
-    "research_boundary": "This model learns a calibration over general contract-relative surface features. It does not consume candidate source, detected errors, gold flags, item IDs, or benchmark answers."
+    "research_boundary": "This model learns a calibration over general contract-relative surface and semantic-alignment features. It does not consume candidate source, detected errors, gold flags, item IDs, or benchmark answers."
   },
   "validation": {
     "first_candidate": {
       "case_count": 54,
-      "gold_selection_count": 2,
-      "gold_selection_rate": 0.037037,
-      "invalid_selection_count": 52,
-      "invalid_selection_rate": 0.962963,
+      "gold_selection_count": 9,
+      "gold_selection_rate": 0.166667,
+      "invalid_selection_count": 45,
+      "invalid_selection_rate": 0.833333,
       "category_rates": {
         "absurdity_mirror": {
           "count": 10,
-          "correct": 0,
-          "rate": 0.0
+          "correct": 2,
+          "rate": 0.2
         },
         "anxiety": {
           "count": 9,
@@ -129,8 +134,80 @@
         },
         "direct_answer": {
           "count": 6,
+          "correct": 1,
+          "rate": 0.166667
+        },
+        "emotional_support": {
+          "count": 6,
+          "correct": 3,
+          "rate": 0.5
+        },
+        "memory_accounting": {
+          "count": 6,
           "correct": 0,
           "rate": 0.0
+        },
+        "protective_brake": {
+          "count": 5,
+          "correct": 1,
+          "rate": 0.2
+        },
+        "relationship_temperature": {
+          "count": 2,
+          "correct": 0,
+          "rate": 0.0
+        },
+        "repair": {
+          "count": 4,
+          "correct": 1,
+          "rate": 0.25
+        }
+      },
+      "selected_source_counts": {
+        "ascii_leak": 3,
+        "chinese_leak": 5,
+        "forbidden_marker": 6,
+        "gold_valid_reply": 9,
+        "instruction_or_plan_leak": 7,
+        "missing_required_marker": 4,
+        "nonstandard_cjk_surface": 7,
+        "over_max_chars": 5,
+        "polite_tone_drift": 7,
+        "semantic_reference_drift": 1
+      },
+      "failures": []
+    },
+    "seeded_random": {
+      "case_count": 54,
+      "gold_selection_count": 6,
+      "gold_selection_rate": 0.111111,
+      "invalid_selection_count": 48,
+      "invalid_selection_rate": 0.888889,
+      "category_rates": {
+        "absurdity_mirror": {
+          "count": 10,
+          "correct": 1,
+          "rate": 0.1
+        },
+        "anxiety": {
+          "count": 9,
+          "correct": 0,
+          "rate": 0.0
+        },
+        "boundary": {
+          "count": 2,
+          "correct": 0,
+          "rate": 0.0
+        },
+        "concrete_offer": {
+          "count": 4,
+          "correct": 1,
+          "rate": 0.25
+        },
+        "direct_answer": {
+          "count": 6,
+          "correct": 2,
+          "rate": 0.333333
         },
         "emotional_support": {
           "count": 6,
@@ -144,8 +221,8 @@
         },
         "protective_brake": {
           "count": 5,
-          "correct": 0,
-          "rate": 0.0
+          "correct": 1,
+          "rate": 0.2
         },
         "relationship_temperature": {
           "count": 2,
@@ -160,85 +237,15 @@
       },
       "selected_source_counts": {
         "ascii_leak": 4,
-        "chinese_leak": 7,
-        "forbidden_marker": 8,
-        "gold_valid_reply": 2,
-        "instruction_or_plan_leak": 10,
-        "missing_required_marker": 5,
-        "nonstandard_cjk_surface": 4,
-        "over_max_chars": 7,
-        "polite_tone_drift": 7
-      },
-      "failures": []
-    },
-    "seeded_random": {
-      "case_count": 54,
-      "gold_selection_count": 10,
-      "gold_selection_rate": 0.185185,
-      "invalid_selection_count": 44,
-      "invalid_selection_rate": 0.814815,
-      "category_rates": {
-        "absurdity_mirror": {
-          "count": 10,
-          "correct": 2,
-          "rate": 0.2
-        },
-        "anxiety": {
-          "count": 9,
-          "correct": 3,
-          "rate": 0.333333
-        },
-        "boundary": {
-          "count": 2,
-          "correct": 1,
-          "rate": 0.5
-        },
-        "concrete_offer": {
-          "count": 4,
-          "correct": 0,
-          "rate": 0.0
-        },
-        "direct_answer": {
-          "count": 6,
-          "correct": 1,
-          "rate": 0.166667
-        },
-        "emotional_support": {
-          "count": 6,
-          "correct": 0,
-          "rate": 0.0
-        },
-        "memory_accounting": {
-          "count": 6,
-          "correct": 0,
-          "rate": 0.0
-        },
-        "protective_brake": {
-          "count": 5,
-          "correct": 1,
-          "rate": 0.2
-        },
-        "relationship_temperature": {
-          "count": 2,
-          "correct": 0,
-          "rate": 0.0
-        },
-        "repair": {
-          "count": 4,
-          "correct": 2,
-          "rate": 0.5
-        }
-      },
-      "selected_source_counts": {
-        "ascii_leak": 7,
-        "chinese_leak": 9,
-        "forbidden_marker": 4,
-        "gold_valid_reply": 10,
-        "instruction_or_plan_leak": 4,
+        "chinese_leak": 4,
+        "forbidden_marker": 6,
+        "gold_valid_reply": 6,
+        "instruction_or_plan_leak": 5,
         "missing_required_marker": 6,
-        "nonstandard_cjk_surface": 2,
-        "over_max_chars": 7,
-        "polite_tone_drift": 5
+        "nonstandard_cjk_surface": 5,
+        "over_max_chars": 11,
+        "polite_tone_drift": 6,
+        "semantic_reference_drift": 1
       },
       "failures": []
     },
@@ -307,10 +314,10 @@
     },
     "learned_selector": {
       "case_count": 54,
-      "gold_selection_count": 54,
-      "gold_selection_rate": 1.0,
-      "invalid_selection_count": 0,
-      "invalid_selection_rate": 0.0,
+      "gold_selection_count": 53,
+      "gold_selection_rate": 0.981481,
+      "invalid_selection_count": 1,
+      "invalid_selection_rate": 0.018519,
       "category_rates": {
         "absurdity_mirror": {
           "count": 10,
@@ -334,8 +341,8 @@
         },
         "direct_answer": {
           "count": 6,
-          "correct": 6,
-          "rate": 1.0
+          "correct": 5,
+          "rate": 0.833333
         },
         "emotional_support": {
           "count": 6,
@@ -364,13 +371,22 @@
         }
       },
       "selected_source_counts": {
-        "gold_valid_reply": 54
+        "gold_valid_reply": 53,
+        "semantic_reference_drift": 1
       },
-      "failures": [],
+      "failures": [
+        {
+          "id": "rb_repair_selection_v1_0184",
+          "category": "direct_answer",
+          "selected_candidate_id": "rb_repair_curriculum_v1_0555_cand_semantic_reference_drift",
+          "selected_source": "semantic_reference_drift",
+          "gold_candidate_id": "rb_repair_curriculum_v1_0555_cand_gold"
+        }
+      ],
       "candidate_metrics": {
-        "candidate_count": 484,
-        "brier_score": 0.026067,
-        "log_loss": 0.148127
+        "candidate_count": 503,
+        "brier_score": 0.20267,
+        "log_loss": 0.591105
       }
     }
   },
@@ -378,123 +394,131 @@
     {
       "epoch": 1,
       "weighted_train_loss": 0.693147,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.2484,
-      "log_loss": 0.689947
+      "validation_gold_selection_rate": 0.981481,
+      "candidate_count": 503,
+      "brier_score": 0.248716,
+      "log_loss": 0.690579
     },
     {
       "epoch": 50,
-      "weighted_train_loss": 0.483946,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.199532,
-      "log_loss": 0.585618
+      "weighted_train_loss": 0.492941,
+      "validation_gold_selection_rate": 0.981481,
+      "candidate_count": 503,
+      "brier_score": 0.209567,
+      "log_loss": 0.606605
+    },
+    {
+      "epoch": 60,
+      "weighted_train_loss": 0.47202,
+      "validation_gold_selection_rate": 0.981481,
+      "candidate_count": 503,
+      "brier_score": 0.20267,
+      "log_loss": 0.591105
     },
     {
       "epoch": 100,
-      "weighted_train_loss": 0.391347,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.160621,
-      "log_loss": 0.498321
+      "weighted_train_loss": 0.408328,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.17567,
+      "log_loss": 0.530531
     },
     {
       "epoch": 150,
-      "weighted_train_loss": 0.329694,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.128077,
-      "log_loss": 0.424691
+      "weighted_train_loss": 0.352907,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.146197,
+      "log_loss": 0.464142
     },
     {
       "epoch": 200,
-      "weighted_train_loss": 0.284392,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.102946,
-      "log_loss": 0.366162
+      "weighted_train_loss": 0.312538,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.123124,
+      "log_loss": 0.410894
     },
     {
       "epoch": 250,
-      "weighted_train_loss": 0.249789,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.084088,
-      "log_loss": 0.320198
+      "weighted_train_loss": 0.281926,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.105755,
+      "log_loss": 0.369115
     },
     {
       "epoch": 300,
-      "weighted_train_loss": 0.222641,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.069941,
-      "log_loss": 0.28381
+      "weighted_train_loss": 0.25807,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.092745,
+      "log_loss": 0.336191
     },
     {
       "epoch": 350,
-      "weighted_train_loss": 0.200866,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.059197,
-      "log_loss": 0.254575
+      "weighted_train_loss": 0.239049,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.082893,
+      "log_loss": 0.30988
     },
     {
       "epoch": 400,
-      "weighted_train_loss": 0.183064,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.050898,
-      "log_loss": 0.230709
+      "weighted_train_loss": 0.223581,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.075308,
+      "log_loss": 0.288504
     },
     {
       "epoch": 450,
-      "weighted_train_loss": 0.16827,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.044375,
-      "log_loss": 0.210926
+      "weighted_train_loss": 0.210785,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.06936,
+      "log_loss": 0.270854
     },
     {
       "epoch": 500,
-      "weighted_train_loss": 0.155797,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.039159,
-      "log_loss": 0.194298
+      "weighted_train_loss": 0.200039,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.064611,
+      "log_loss": 0.256061
     },
     {
       "epoch": 550,
-      "weighted_train_loss": 0.14515,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.034923,
-      "log_loss": 0.180148
+      "weighted_train_loss": 0.190896,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.060755,
+      "log_loss": 0.243494
     },
     {
       "epoch": 600,
-      "weighted_train_loss": 0.135962,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.031434,
-      "log_loss": 0.167974
+      "weighted_train_loss": 0.183027,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.057577,
+      "log_loss": 0.232689
     },
     {
       "epoch": 650,
-      "weighted_train_loss": 0.127957,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.028523,
-      "log_loss": 0.157397
+      "weighted_train_loss": 0.176186,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.05492,
+      "log_loss": 0.223301
     },
     {
       "epoch": 700,
-      "weighted_train_loss": 0.120921,
-      "validation_gold_selection_rate": 1.0,
-      "candidate_count": 484,
-      "brier_score": 0.026067,
-      "log_loss": 0.148127
+      "weighted_train_loss": 0.170184,
+      "validation_gold_selection_rate": 0.962963,
+      "candidate_count": 503,
+      "brier_score": 0.052672,
+      "log_loss": 0.215067
     }
   ],
-  "conclusion_zh": "這是 F 右腦候選排序器的第一個真正學習版本：它只從訓練合約學權重，並在完全不同合約指紋的 validation 上選候選。"
+  "conclusion_zh": "F 右腦候選排序器現在不只檢查語言表面，也會比較候選是否承接使用者輸入與左腦語意；權重只從訓練合約學習，並在完全不同合約指紋的 validation 上選候選。"
 }

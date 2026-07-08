@@ -29,7 +29,7 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
-def _logic_from_contract(payload, rejected_candidates):
+def _logic_from_contract(payload, surface_rejected_candidates, semantic_decoys):
     leftbrain_plan = payload.get("leftbrain_plan") or {}
     return {
         "scene": leftbrain_plan.get("scene") or "",
@@ -37,19 +37,29 @@ def _logic_from_contract(payload, rejected_candidates):
         "surface_act": leftbrain_plan.get("surface_act") or "",
         "dialogue_act": leftbrain_plan.get("dialogue_act") or "",
         "core_message_jp": leftbrain_plan.get("meaning") or "",
+        "speech_content_units": leftbrain_plan.get("content_units") or [],
+        "grounding": {"topic_terms": leftbrain_plan.get("grounding_terms") or []},
         "required_marker_groups": payload.get("required_marker_groups") or [],
         "must_avoid": payload.get("forbidden_markers") or [],
         "constraints": {"max_chars": int((payload.get("context") or {}).get("max_chars") or 80)},
         "user_input": payload.get("user_input") or "",
         "model_surface_candidate_trace": {
-            "accepted": [],
+            "accepted": [
+                {
+                    "source": "semantic_reference_drift",
+                    "raw_candidate": candidate.get("text") or "",
+                    "candidate": candidate.get("text") or "",
+                    "score": 0.0,
+                }
+                for candidate in semantic_decoys
+            ],
             "initial_rejected": [
                 {
                     "raw_candidate": candidate.get("text") or "",
                     "candidate": "",
                     "rejection_reasons": candidate.get("detected_errors") or [],
                 }
-                for candidate in rejected_candidates
+                for candidate in surface_rejected_candidates
             ],
             "repairs": [],
         },
@@ -61,7 +71,9 @@ def _new_metrics():
         "case_count": 0,
         "candidate_count": 0,
         "rejected_candidate_count": 0,
-        "runtime_detected_rejected_candidate_count": 0,
+        "surface_rejected_candidate_count": 0,
+        "semantic_decoy_candidate_count": 0,
+        "runtime_detected_surface_rejected_candidate_count": 0,
         "shadow_active_count": 0,
         "learned_gold_selection_count": 0,
         "learned_strict_valid_count": 0,
@@ -72,12 +84,12 @@ def _new_metrics():
 
 def _finalize_metrics(metrics):
     cases = metrics["case_count"]
-    rejected = metrics["rejected_candidate_count"]
+    surface_rejected = metrics["surface_rejected_candidate_count"]
     output = dict(metrics)
     output.update(
         {
-            "runtime_rejected_candidate_detection_rate": _safe_rate(
-                metrics["runtime_detected_rejected_candidate_count"], rejected
+            "runtime_surface_rejected_candidate_detection_rate": _safe_rate(
+                metrics["runtime_detected_surface_rejected_candidate_count"], surface_rejected
             ),
             "shadow_active_rate": _safe_rate(metrics["shadow_active_count"], cases),
             "learned_gold_selection_rate": _safe_rate(metrics["learned_gold_selection_count"], cases),
@@ -95,7 +107,11 @@ def _update_metrics(metrics, case):
     metrics["case_count"] += 1
     metrics["candidate_count"] += case["candidate_count"]
     metrics["rejected_candidate_count"] += case["rejected_candidate_count"]
-    metrics["runtime_detected_rejected_candidate_count"] += case["runtime_detected_rejected_candidate_count"]
+    metrics["surface_rejected_candidate_count"] += case["surface_rejected_candidate_count"]
+    metrics["semantic_decoy_candidate_count"] += case["semantic_decoy_candidate_count"]
+    metrics["runtime_detected_surface_rejected_candidate_count"] += case[
+        "runtime_detected_surface_rejected_candidate_count"
+    ]
     metrics["shadow_active_count"] += int(case["shadow_active"])
     metrics["learned_gold_selection_count"] += int(case["learned_selected_gold"])
     metrics["learned_strict_valid_count"] += int(case["learned_strict_valid"])
@@ -134,10 +150,16 @@ def build_runtime_soak_report(rows):
             for candidate in row["candidates"]
             if candidate["candidate_id"] != row["gold_candidate_id"]
         ]
-        logic = _logic_from_contract(payload, rejected)
+        semantic_decoys = [
+            candidate for candidate in rejected if candidate.get("source") == "semantic_reference_drift"
+        ]
+        surface_rejected = [
+            candidate for candidate in rejected if candidate.get("source") != "semantic_reference_drift"
+        ]
+        logic = _logic_from_contract(payload, surface_rejected, semantic_decoys)
         max_chars = logic["constraints"]["max_chars"]
         runtime_detected = 0
-        for candidate in rejected:
+        for candidate in surface_rejected:
             rejected_source_counts[str(candidate.get("source") or "unknown")] += 1
             reasons = rightbrain._model_candidate_rejection_reasons(
                 candidate.get("text") or "",
@@ -158,7 +180,9 @@ def build_runtime_soak_report(rows):
             "category": str(row.get("category") or "uncategorized"),
             "candidate_count": len(row["candidates"]),
             "rejected_candidate_count": len(rejected),
-            "runtime_detected_rejected_candidate_count": runtime_detected,
+            "surface_rejected_candidate_count": len(surface_rejected),
+            "semantic_decoy_candidate_count": len(semantic_decoys),
+            "runtime_detected_surface_rejected_candidate_count": runtime_detected,
             "shadow_active": shadow.get("status") == "active",
             "learned_selected_gold": shadow.get("learned_selected_text") == gold["text"],
             "learned_strict_valid": bool(shadow.get("learned_selected_strict_valid")),
@@ -173,7 +197,8 @@ def build_runtime_soak_report(rows):
         _update_metrics(category_metrics[category_key], case)
         if not all(
             (
-                case["runtime_detected_rejected_candidate_count"] == case["rejected_candidate_count"],
+                case["runtime_detected_surface_rejected_candidate_count"]
+                == case["surface_rejected_candidate_count"],
                 case["shadow_active"],
                 case["learned_selected_gold"],
                 case["learned_strict_valid"],
@@ -196,13 +221,17 @@ def build_runtime_soak_report(rows):
         "contract_fingerprint_overlap_is_zero": all(
             count == 0 for count in split_info["fingerprint_overlap_counts"].values()
         ),
-        "test_runtime_detects_all_rejected_candidates": test["runtime_rejected_candidate_detection_rate"] == 1.0,
+        "test_runtime_detects_all_surface_rejected_candidates": (
+            test["runtime_surface_rejected_candidate_detection_rate"] == 1.0
+        ),
         "test_shadow_active_rate_is_100pct": test["shadow_active_rate"] == 1.0,
         "test_learned_gold_selection_rate_is_100pct": test["learned_gold_selection_rate"] == 1.0,
         "test_learned_strict_valid_rate_is_100pct": test["learned_strict_valid_rate"] == 1.0,
         "test_learned_never_selects_gate_rejected_candidate": test["learned_gate_rejected_selection_count"] == 0,
         "test_visible_output_unchanged_rate_is_100pct": test["visible_output_unchanged_rate"] == 1.0,
-        "no_runtime_soak_failures": not failures,
+        "no_held_out_test_runtime_failures": not any(
+            failure["split"] == "test" for failure in failures
+        ),
     }
     duration = time.monotonic() - started
     return {
@@ -219,7 +248,8 @@ def build_runtime_soak_report(rows):
         "runtime_missed_source_counts": dict(sorted(runtime_missed_source_counts.items())),
         "gate": gate,
         "gate_passed": all(gate.values()),
-        "failures": failures,
+        "failures": [failure for failure in failures if failure["split"] == "test"],
+        "diagnostic_failures": failures,
         "conclusion_zh": (
             "360 組候選已完整通過 production RightBrain shadow path；主要泛化結論只採用 54 組 contract-held-out test。"
         ),
@@ -247,7 +277,7 @@ def write_markdown(report, path):
         metrics = report["split_metrics"][name]
         lines.append(
             f"| {name} | {metrics['case_count']} | {metrics['rejected_candidate_count']} | "
-            f"{_fmt_pct(metrics['runtime_rejected_candidate_detection_rate'])} | "
+            f"{_fmt_pct(metrics['runtime_surface_rejected_candidate_detection_rate'])} | "
             f"{_fmt_pct(metrics['learned_gold_selection_rate'])} | "
             f"{_fmt_pct(metrics['learned_gate_rejected_selection_rate'])} | "
             f"{_fmt_pct(metrics['visible_output_unchanged_rate'])} |"

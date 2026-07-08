@@ -58,6 +58,45 @@ class RightBrainRepairSelectorTest(unittest.TestCase):
         features = extract_candidate_features("今日は无理しないで休め。範�", row["contract_payload"])
         self.assertGreater(features["nonstandard_cjk_density"], 0.0)
 
+    def test_semantic_features_prefer_current_leftbrain_meaning(self):
+        payload = {
+            "context": {"max_chars": 80},
+            "user_input": "夜空の影がどうとか、あれ分かる？",
+            "leftbrain_plan": {
+                "meaning": "元ネタを特定できないので作品名や出典を聞き返す",
+                "content_units": ["出典を確認する", "分かったふりをしない"],
+                "grounding_terms": ["元ネタ", "作品名", "出典"],
+            },
+            "required_marker_groups": [],
+            "forbidden_markers": [],
+        }
+        aligned = extract_candidate_features(
+            "元ネタまでは分からない。作品名か出典を教えて。",
+            payload,
+        )
+        drifted = extract_candidate_features(
+            "今のお腹の感じ、無理しないようにね。",
+            payload,
+        )
+        self.assertGreater(aligned["grounding_term_hit_rate"], drifted["grounding_term_hit_rate"])
+        self.assertGreater(
+            aligned["semantic_reference_bigram_dice"],
+            drifted["semantic_reference_bigram_dice"],
+        )
+
+    def test_semantic_drift_candidates_pass_old_surface_gate(self):
+        semantic_decoys = [
+            (row, candidate)
+            for row in self.rows
+            for candidate in row["candidates"]
+            if candidate.get("source") == "semantic_reference_drift"
+        ]
+        self.assertGreaterEqual(len(semantic_decoys), len(self.rows) // 3)
+        for row, candidate in semantic_decoys[:50]:
+            self.assertEqual(candidate["detected_errors"], ["semantic_reference_drift"])
+            features = extract_candidate_features(candidate["text"], row["contract_payload"])
+            self.assertLessEqual(features["semantic_reference_bigram_dice"], 0.20)
+
     def test_model_round_trip_preserves_selection(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             path = Path(tmpdir) / "model.json"
@@ -74,6 +113,11 @@ class RightBrainRepairSelectorTest(unittest.TestCase):
         first = self.report["test_strategies"]["first_candidate"]
         self.assertGreaterEqual(learned["gold_selection_rate"], 0.95)
         self.assertGreaterEqual(learned["gold_selection_rate"] - first["gold_selection_rate"], 0.5)
+        self.assertGreater(self.report["test_semantic_drift_decoys"]["case_count"], 0)
+        self.assertEqual(
+            self.report["test_semantic_drift_decoys"]["semantic_decoy_rejection_rate"],
+            1.0,
+        )
 
     def test_natural_generated_holdout_has_no_contract_overlap_or_invalid_selection(self):
         natural = self.report["natural_generated_holdout"]

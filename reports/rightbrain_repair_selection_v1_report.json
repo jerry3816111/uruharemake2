@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-07-07T13:05:54+09:00",
+  "generated_at": "2026-07-08T11:22:49+09:00",
   "scope": "rightbrain_repair_selection_v1",
   "seed": 20260707,
   "source_row_count": 720,
   "selection_row_count": 360,
   "max_rows": 360,
-  "candidate_count": 3233,
+  "candidate_count": 3375,
   "gold_candidate_count": 360,
-  "invalid_candidate_count": 2873,
+  "invalid_candidate_count": 3015,
+  "semantic_reference_drift_candidate_count": 142,
   "candidate_source_counts": {
     "ascii_leak": 360,
     "chinese_leak": 360,
@@ -17,7 +18,8 @@
     "missing_required_marker": 360,
     "nonstandard_cjk_surface": 360,
     "over_max_chars": 353,
-    "polite_tone_drift": 360
+    "polite_tone_drift": 360,
+    "semantic_reference_drift": 142
   },
   "detected_error_counts": {
     "ascii_leak": 722,
@@ -27,7 +29,8 @@
     "nonstandard_cjk_surface": 360,
     "over_max_chars": 356,
     "polite_tone_drift": 361,
-    "required_marker_missing": 360
+    "required_marker_missing": 360,
+    "semantic_reference_drift": 142
   },
   "category_counts": {
     "absurdity_mirror": 44,
@@ -50,5 +53,5 @@
     "reply_anxiety": 13
   },
   "skipped_counts": {},
-  "research_boundary": "This is a synthetic candidate-selection harness built from the leakage-audited repair curriculum. It does not add benchmark answers. It tests whether a future selector can preserve the validated clean reply while rejecting general surface and semantic contract failures."
+  "research_boundary": "This is a synthetic candidate-selection harness built from the leakage-audited repair curriculum. It does not add benchmark answers. It tests whether a future selector can preserve the validated clean reply while rejecting general surface and semantic contract failures. Semantic drift negatives reuse replies from different contract fingerprints only when they pass the old surface/slot gate, so the selector must compare them with the current LeftBrain meaning rather than detect trivial pollution."
 }

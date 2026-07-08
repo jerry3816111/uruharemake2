@@ -78,8 +78,14 @@ class RightBrainSelectorActualModelSoakSummaryTest(unittest.TestCase):
         self.assertEqual(report["summary"]["simplified_wu_accepted_count"], 0)
         self.assertEqual(report["summary"]["unicode_replacement_generated_count"], 1)
         self.assertEqual(report["summary"]["unicode_replacement_accepted_count"], 0)
+        self.assertEqual(report["summary"]["shadow_disagreement_count"], 1)
         private_case = next(case for case in report["cases"] if case["id"] == "private_do_not_mention")
         self.assertNotIn("无", private_case["current_reply"])
+        self.assertEqual(private_case["learned_reply"], private_case["current_reply"])
+        self.assertNotIn("お腹", private_case["learned_reply"])
+        reference_case = next(case for case in report["cases"] if case["id"] == "reference_fragment_probe")
+        self.assertEqual(reference_case["learned_reply"], reference_case["current_reply"])
+        self.assertTrue(any(marker in reference_case["learned_reply"] for marker in ("元ネタ", "タイトル", "曲名")))
 
 
 if __name__ == "__main__":

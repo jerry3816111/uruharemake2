@@ -51,7 +51,11 @@ from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeS
 import uruha_memory_runtime as umr
 import uruha_leftbrain_rules
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
-from rightbrain_repair_selector import load_model_artifact, score_candidate as score_learned_repair_candidate
+from rightbrain_repair_selector import (
+    extract_candidate_features as extract_learned_repair_features,
+    load_model_artifact,
+    score_candidate as score_learned_repair_candidate,
+)
 from rightbrain_language_quality import (
     ASCII_WORD_RE,
     CHINESE_SPECIFIC_RE,
@@ -11837,8 +11841,25 @@ You are Ichinose Uruha.
 
     def _selector_contract_payload(self, logic_data):
         max_chars = int((logic_data.get("constraints") or {}).get("max_chars") or 48)
+        grounding = logic_data.get("grounding") or {}
+        grounding_terms = [
+            str(term).strip()
+            for term in grounding.get("topic_terms") or []
+            if str(term).strip()
+        ]
+        content_units = [
+            str(unit).strip()
+            for unit in logic_data.get("speech_content_units") or []
+            if str(unit).strip()
+        ]
         return {
             "context": {"max_chars": max_chars},
+            "user_input": str(logic_data.get("user_input") or ""),
+            "leftbrain_plan": {
+                "meaning": str(logic_data.get("core_message_jp") or ""),
+                "content_units": content_units,
+                "grounding_terms": grounding_terms,
+            },
             "required_marker_groups": [
                 list(group) for group in self._model_required_semantic_groups(logic_data)
             ],
@@ -11917,6 +11938,7 @@ You are Ichinose Uruha.
         max_chars = int((payload.get("context") or {}).get("max_chars") or 48)
         scored = []
         for index, candidate in enumerate(candidate_pool):
+            learned_features = extract_learned_repair_features(candidate["text"], payload)
             probability = score_learned_repair_candidate(
                 self.selector_model,
                 {"text": candidate["text"]},
@@ -11932,6 +11954,16 @@ You are Ichinose Uruha.
                 {
                     **candidate,
                     "probability": round(float(probability), 6),
+                    "semantic_alignment": {
+                        key: round(float(learned_features[key]), 6)
+                        for key in (
+                            "required_marker_member_coverage",
+                            "grounding_term_hit_rate",
+                            "semantic_reference_unigram_dice",
+                            "semantic_reference_bigram_dice",
+                            "user_input_unigram_dice",
+                        )
+                    },
                     "strict_rejection_reasons": strict_reasons,
                     "strict_valid": not strict_reasons,
                     "candidate_index": index,
@@ -11939,6 +11971,17 @@ You are Ichinose Uruha.
             )
         ranked = sorted(scored, key=lambda row: (-row["probability"], row["candidate_index"]))
         learned = ranked[0]
+        current_features = extract_learned_repair_features(current_selected_reply, payload)
+        current_semantic_alignment = {
+            key: round(float(current_features[key]), 6)
+            for key in (
+                "required_marker_member_coverage",
+                "grounding_term_hit_rate",
+                "semantic_reference_unigram_dice",
+                "semantic_reference_bigram_dice",
+                "user_input_unigram_dice",
+            )
+        }
         current_errors = self._model_candidate_rejection_reasons(
             current_selected_reply,
             logic_data,
@@ -11956,17 +11999,20 @@ You are Ichinose Uruha.
                         "source": row["source"],
                         "text": row["text"],
                         "probability": row["probability"],
+                        "semantic_alignment": row["semantic_alignment"],
                         "strict_valid": row["strict_valid"],
                         "strict_rejection_reasons": row["strict_rejection_reasons"],
                     }
                     for row in ranked
                 ],
                 "current_selected_text": current_selected_reply,
+                "current_selected_semantic_alignment": current_semantic_alignment,
                 "current_selected_strict_valid": not current_errors,
                 "current_selected_strict_rejection_reasons": current_errors,
                 "learned_selected_source": learned["source"],
                 "learned_selected_text": learned["text"],
                 "learned_selected_probability": learned["probability"],
+                "learned_selected_semantic_alignment": learned["semantic_alignment"],
                 "learned_selected_strict_valid": learned["strict_valid"],
                 "learned_selected_strict_rejection_reasons": learned["strict_rejection_reasons"],
                 "learned_selected_was_gate_rejected": learned["source"].startswith("rejected:"),
