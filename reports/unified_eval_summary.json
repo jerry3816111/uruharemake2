@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T21:02:24",
+  "generated_at": "2026-07-08T21:37:18",
   "sources": {
     "architecture": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/cognitive_architecture_eval_report.json",
     "daily_state_self_distress": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/daily_state_self_distress_report.json",
@@ -25,7 +25,9 @@
     "human_feedback_regression_diff": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_feedback_regression_diff_report.json",
     "human_speech_layer": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/human_speech_layer_eval_report.json",
     "surface_microplanning": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/surface_microplanning_report.json",
-    "rightbrain_model_gate": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/rightbrain_model_gate_report.json"
+    "rightbrain_model_gate": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/rightbrain_model_gate_report.json",
+    "rightbrain_model_surface_holdout": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/rightbrain_model_surface_holdout_report.json",
+    "rightbrain_runtime_adapter_multiseed": "/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/reports/rightbrain_runtime_adapter_multiseed_report.json"
   },
   "source_of_truth_note": "統一摘要優先採用各獨立報告，不採 domain_eval_suite_report.json 內可能過時的巢狀快照。",
   "refresh_note": "formal_tombench_refresh.json 只有在檔案時間不早於 formal_brain_benchmarks_report.json 時才覆蓋，避免舊 refresh 汙染統一摘要。",
@@ -330,9 +332,9 @@
     {
       "key": "rightbrain_model_raw_candidate_acceptance_rate",
       "name_zh": "真實右腦模型 raw 候選契約接受率",
-      "value": 0.0,
+      "value": 0.3,
       "better": "越高越好",
-      "source": "rightbrain_model_gate_report.json",
+      "source": "rightbrain_runtime_adapter_multiseed_report.json",
       "direction": "higher",
       "note": "只計算 Qwen + LoRA 原始候選能否通過語意、語言、風險與口吻 gate；不把 deterministic 救援算成模型能力。"
     },
@@ -476,9 +478,10 @@
       "id": "raw_rightbrain_model_maturity",
       "name_zh": "真實右腦模型本體仍無法穩定實現 speech plan",
       "current": {
-        "raw_candidate_acceptance_rate": 0.0,
-        "model_selected_case_rate": 0.0,
-        "final_contract_pass_rate": 1.0
+        "raw_candidate_acceptance_rate": 0.3,
+        "model_selected_case_rate": 0.1364,
+        "final_contract_pass_rate": 1.0,
+        "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"
       },
       "target": {
         "raw_candidate_acceptance_rate": 0.6,
@@ -489,7 +492,7 @@
       "why_it_matters": "目前自然度主要仍由 deterministic 候選提供；如果 raw LoRA 長期進不了 gate，就不能說模型本體已學會把思考轉成自然說話。",
       "acceptance": "開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。",
       "planned_fix": "以 rejection trace 建立 speech-plan slot 訓練資料，優先修正槽位遺失、英文字串污染、過長與敬語漂移，而不是放寬 gate。",
-      "source": "rightbrain_model_gate_report.json"
+      "source": "rightbrain_runtime_adapter_multiseed_report.json"
     },
     {
       "id": "human_blind_chat_readiness",

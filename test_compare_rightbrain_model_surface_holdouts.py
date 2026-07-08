@@ -102,6 +102,17 @@ class CompareRightBrainModelSurfaceHoldoutsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "seed"):
             build_comparison(baseline, trained, self.training)
 
+    def test_negative_delta_is_reported_as_regression(self):
+        report = build_comparison(
+            _report("legacy", 5),
+            _report("candidate", 4),
+            self.training,
+        )
+
+        self.assertIn("50.0% 變為 40.0%", report["conclusion_zh"])
+        self.assertIn("可靠度下降", report["conclusion_zh"])
+        self.assertNotIn("提升至", report["conclusion_zh"])
+
     def test_reports_repair_as_single_independent_variable(self):
         baseline = _report("v10", 5, initial_accepted=5)
         trained = _report(

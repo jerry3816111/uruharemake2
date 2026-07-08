@@ -332,7 +332,7 @@ def write_markdown(report, path):
         "",
         f"- load_model: {report['load_model']}",
         f"- adapter_ref: {report['adapter_ref']}",
-        f"- repair_adapter_ref: {report.get('repair_adapter_ref', '')}",
+        f"- repair_adapter_ref: {report.get('repair_adapter_ref') or '(none)'}",
         f"- candidate_count_per_case: {report['candidate_count_per_case']}",
         f"- repair_enabled: {report['repair_enabled']}",
         f"- runtime_contract_version: {report['runtime_contract_version']}",

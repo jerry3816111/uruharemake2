@@ -1,6 +1,6 @@
 # 統一評測摘要
 
-- 生成時間：`2026-07-08T21:02:24`
+- 生成時間：`2026-07-08T21:37:18`
 - 說明：本摘要優先使用各獨立報告作為最新真值，避免巢狀總表混入舊快照。
 
 ## 現在做得好的地方
@@ -20,7 +20,7 @@
 - 真實 Qwen + LoRA 候選已接上嚴格語意 gate；目前即使 raw 候選失敗，最終語意與語言契約仍能維持。
 
 ## 目前最主要的三個瓶頸
-- `真實右腦模型本體仍無法穩定實現 speech plan`：現在值={"raw_candidate_acceptance_rate": 0.0, "model_selected_case_rate": 0.0, "final_contract_pass_rate": 1.0}；目標={"raw_candidate_acceptance_rate": 0.6, "model_selected_case_rate": 0.2, "final_contract_pass_rate": 0.99}；標準=開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。
+- `真實右腦模型本體仍無法穩定實現 speech plan`：現在值={"raw_candidate_acceptance_rate": 0.3, "model_selected_case_rate": 0.1364, "final_contract_pass_rate": 1.0, "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"}；目標={"raw_candidate_acceptance_rate": 0.6, "model_selected_case_rate": 0.2, "final_contract_pass_rate": 0.99}；標準=開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。
 - `真人盲評的嚴格可聊天率仍不足`：現在值={"s0_annotation_count": 19.0, "s0_normalized_mean_score": 0.6474, "s0_chat_ready_yes_rate": 0.4737, "s0_chat_ready_acceptable_rate": 0.8947}；目標={"s0_annotation_count": 30, "s0_normalized_mean_score": 0.8, "s0_chat_ready_yes_rate": 0.75}；標準=至少 30 筆有效 S0 盲評，正規化均分 >= 0.8，嚴格 yes 率 >= 0.75。
 - `人工標記回歸集尚未累積到可用規模`：現在值={"annotation_count": 19.0, "regression_case_count": 10.0}；目標={"annotation_count": 50, "regression_case_count": 30}；標準=至少累積 50 筆人工標記，並轉出 30 筆以上可回放的 regression cases。
 

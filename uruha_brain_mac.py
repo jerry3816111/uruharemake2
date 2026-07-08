@@ -147,9 +147,24 @@ def _normalize_right_brain_adapter_path(raw_path, default_path):
     return os.path.abspath(raw)
 
 
+RIGHT_BRAIN_ADAPTER_PRIORITY = (
+    "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "uruha_v10_all_linear_lora",
+)
+
+
+def _default_right_brain_adapter_path(base_dir):
+    """Prefer the strongest validated local adapter, with legacy fallback."""
+    for adapter_ref in RIGHT_BRAIN_ADAPTER_PRIORITY:
+        candidate = os.path.join(base_dir, adapter_ref)
+        if os.path.isdir(candidate):
+            return os.path.abspath(candidate)
+    return os.path.abspath(os.path.join(base_dir, RIGHT_BRAIN_ADAPTER_PRIORITY[0]))
+
+
 RIGHT_BRAIN_ADAPTER_PATH = _normalize_right_brain_adapter_path(
     os.getenv("URUHA_RIGHT_BRAIN_ADAPTER_PATH"),
-    os.path.join(BASE_DIR, "uruha_v10_all_linear_lora"),
+    _default_right_brain_adapter_path(BASE_DIR),
 )
 RIGHT_BRAIN_REPAIR_ADAPTER_PATH = _normalize_right_brain_adapter_path(
     os.getenv("URUHA_RIGHT_BRAIN_REPAIR_ADAPTER_PATH"),

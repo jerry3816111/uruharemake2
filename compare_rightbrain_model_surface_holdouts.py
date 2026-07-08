@@ -158,11 +158,16 @@ def build_comparison(baseline, trained, training, curriculum=None):
     else:
         conclusion = (
             f"在相同 holdout、seed、候選數與 gate 下，raw model 候選通過率由 "
-            f"{baseline_rate:.1%} 提升至 {trained_rate:.1%}"
+            f"{baseline_rate:.1%} 變為 {trained_rate:.1%}"
             f"（{acceptance_delta * 100:+.1f} 個百分點）。"
             "最終品質仍為 100%，表示嚴格 gate 與 deterministic fallback 沒有被放寬；"
-            "這次量到的是模型候選可靠度的小幅提升，不是整體認知能力已完成。"
         )
+        if acceptance_delta > 0:
+            conclusion += "這次量到模型候選可靠度提升，但不是整體認知能力已完成。"
+        elif acceptance_delta < 0:
+            conclusion += "這次量到模型候選可靠度下降，不能據此升版。"
+        else:
+            conclusion += "這次沒有量到模型候選可靠度差異，不能據此升版。"
 
     baseline_eval_seconds = baseline.get("case_eval_duration_seconds")
     trained_eval_seconds = trained.get("case_eval_duration_seconds")
@@ -258,8 +263,8 @@ def write_markdown(report, output_path):
         "",
         f"- baseline adapter: {report['baseline_adapter']}",
         f"- trained adapter: {report['trained_adapter']}",
-        f"- baseline repair adapter: {report.get('baseline_repair_adapter', '')}",
-        f"- trained repair adapter: {report.get('trained_repair_adapter', '')}",
+        f"- baseline repair adapter: {report.get('baseline_repair_adapter') or '(none)'}",
+        f"- trained repair adapter: {report.get('trained_repair_adapter') or '(none)'}",
     ]
     for key, value in report["matched_conditions"].items():
         lines.append(f"- {key}: {value}")

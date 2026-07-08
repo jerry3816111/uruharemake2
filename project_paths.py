@@ -152,6 +152,14 @@ RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_model_surface_holdout_report.md",
 )
+RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_runtime_adapter_multiseed_report.json",
+)
+RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_runtime_adapter_multiseed_report.md",
+)
 RIGHTBRAIN_REJECTION_CURRICULUM_V1_SOURCE_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_v9_rejection_source_holdout.json",
