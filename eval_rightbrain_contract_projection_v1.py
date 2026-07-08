@@ -137,6 +137,26 @@ def _contract_snapshots(rightbrain, cases):
     return snapshots
 
 
+def _snapshot_respects_memory_policy(snapshot, case):
+    plan = snapshot.get("projected_leftbrain_plan") or {}
+    projection = snapshot.get("projection") or {}
+    if projection.get("mode") == "semantic_contract_only":
+        return True
+    plan_text = " ".join(
+        str(value or "")
+        for value in [
+            plan.get("scene"),
+            plan.get("intent"),
+            plan.get("surface_act"),
+            plan.get("dialogue_act"),
+            plan.get("meaning"),
+            *(plan.get("content_units") or []),
+            *(plan.get("grounding_terms") or []),
+        ]
+    )
+    return not any(term and term in plan_text for term in _excluded_memory_terms(case, projection))
+
+
 def apply_naturalness_audit(report, audit):
     expected_candidates = {
         (condition_name, row["id"], candidate["candidate"])
@@ -298,9 +318,11 @@ def build_report(adapter_path, load_model=True, seed=DEFAULT_SEED):
             - legacy["summary"]["accepted_candidate_count"]
         ),
     }
+    cases_by_id = {case["id"]: case for case in cases}
     report["gate"] = {
-        "all_three_target_contracts_are_projected": all(
-            row["projection"]["mode"] == "semantic_contract_only" for row in snapshots
+        "target_contracts_respect_memory_policy": all(
+            _snapshot_respects_memory_policy(row, cases_by_id[row["id"]])
+            for row in snapshots
         ),
         "projected_contract_does_not_reduce_contract_pass_count": (
             projected_metrics["contract_pass_count"] >= legacy_metrics["contract_pass_count"]
@@ -312,10 +334,16 @@ def build_report(adapter_path, load_model=True, seed=DEFAULT_SEED):
     report["gate_passed"] = all(report["gate"].values())
     audit_path = Path(RIGHTBRAIN_CONTRACT_PROJECTION_V1_AUDIT_JSON_PATH)
     if audit_path.exists():
-        report = apply_naturalness_audit(
-            report,
-            json.loads(audit_path.read_text(encoding="utf-8")),
-        )
+        try:
+            report = apply_naturalness_audit(
+                report,
+                json.loads(audit_path.read_text(encoding="utf-8")),
+            )
+        except ValueError as exc:
+            report["naturalness_audit_status"] = "stale"
+            report["naturalness_audit_error"] = str(exc)
+            report["gate"]["naturalness_audit_current"] = False
+            report["gate_passed"] = False
     report["research_boundary"] = (
         "This is a paired development-set ablation on three known conflicting contracts. The same model, adapter, "
         "cases, seed, candidate count, and conservative sampling schedule are held constant. It supports the "

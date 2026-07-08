@@ -124,8 +124,20 @@ CASES = [
         "expected_policy": "do_not_mention",
         "expected_anchor": "",
         "logic_update": {
-            "jp_summary": "ユーザーが普通の雑談をしている。",
-            "core_message_jp": "今の話題だけを短く返す",
+            "scene": "casual",
+            "intent": "topic_proposal",
+            "surface_act": "plain_reply",
+            "jp_summary": "ユーザーが今日なにを話すか軽く聞いている。",
+            "core_message_jp": "軽い話題なら最近どうしてたかでいい",
+            "grounding": {"topic_terms": ["話題", "最近"]},
+            "required_marker_groups": [["話題", "話"], ["最近", "どうしてた", "近況"]],
+            "human_speech_plan": {
+                "dialogue_act": "topic_proposal",
+                "content_units": ["軽い話題を一個出す", "相手の近況に渡す"],
+                "grounding_terms": ["話題", "最近"],
+                "style_operators": ["direct_spoken", "turn_opening"],
+                "target_length": "2_short_sentences",
+            },
             "memory_anchor": {
                 "kind": "private_background",
                 "jp_anchor": "個人的な事情",

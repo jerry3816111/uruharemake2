@@ -14,22 +14,22 @@
 | case | memory policy | mode | dropped units | dropped grounding |
 |---|---|---|---:|---:|
 | background_family_pressure | background_only | semantic_contract_only | 1 | 1 |
-| private_do_not_mention | do_not_mention | semantic_contract_only | 2 | 1 |
+| private_do_not_mention | do_not_mention | full_plan | 0 | 0 |
 | no_memory_plain_question | no_memory | semantic_contract_only | 2 | 1 |
 
 ## 實際模型結果
 
 | condition | final contract pass | final memory intrusion | gate-accepted candidates |
 |---|---:|---:|---:|
-| legacy_unprojected | 3/3 (100.0%) | 0 | 1/9 |
-| projected_contract | 3/3 (100.0%) | 0 | 5/9 |
+| legacy_unprojected | 3/3 (100.0%) | 0 | 3/9 |
+| projected_contract | 3/3 (100.0%) | 0 | 7/9 |
 
 ## 非盲自然度審核
 
 | condition | audit pass | audit fail |
 |---|---:|---:|
-| legacy_unprojected | 0 | 1 |
-| projected_contract | 3 | 2 |
+| legacy_unprojected | 0 | 3 |
+| projected_contract | 4 | 3 |
 
 最終回答配對：projected win 1、legacy win 0、tie 2。
 
@@ -41,15 +41,15 @@
   - before: 今やるなら小さく済ませろ。後で戻せる形にしとけ。
   - after: 今日は負担を軽くして休もうね。
 - `private_do_not_mention`
-  - before: 今は一個だけ決めればいい。全部まとめて抱えるなって。
-  - after: 今は一個だけ決めればいい。全部まとめて抱えるなって。
+  - before: まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。
+  - after: まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。
 - `no_memory_plain_question`
   - before: 今やるなら小さく済ませろ。後で戻せる形にしとけ。
   - after: 今やるなら小さく済ませろ。後で戻せる形にしとけ。
 
 ## Gate
 
-- all_three_target_contracts_are_projected: PASS
+- target_contracts_respect_memory_policy: PASS
 - projected_contract_does_not_reduce_contract_pass_count: PASS
 - projected_contract_has_no_memory_intrusion: PASS
 - naturalness_audit_matches_every_accepted_candidate: PASS

@@ -359,6 +359,28 @@ class TestLeftBrainRules(unittest.TestCase):
         self.assertIn("具体", plan["reply_goal"])
         self.assertIn("休んで", plan["core_message_jp"])
 
+    def test_topic_proposal_rule_gives_concrete_public_plan(self):
+        plan = ulr.get_rule_based_plan("今日は何話す？", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["intent"], "topic_proposal")
+        self.assertEqual(plan["surface_act"], "plain_reply")
+        self.assertEqual(plan["grounding"].get("topic_terms"), ["話題", "最近"])
+        self.assertIn("軽い話題", plan["core_message_jp"])
+        self.assertIn("最近どうしてた", plan["core_message_jp"])
+
+    def test_topic_proposal_rule_supports_chinese_and_english(self):
+        for user_input in ("今天聊什麼？", "give me a topic"):
+            with self.subTest(user_input=user_input):
+                plan = ulr.get_rule_based_plan(user_input, recent_turns=[])
+                self.assertIsNotNone(plan)
+                self.assertEqual(plan["intent"], "topic_proposal")
+                self.assertIn("最近どうしてた", plan["core_message_jp"])
+
+    def test_topic_proposal_rule_does_not_catch_answer_pressure(self):
+        plan = ulr.get_rule_based_plan("話題ずらすな、正面から答えろ", recent_turns=[])
+        self.assertIsNotNone(plan)
+        self.assertNotEqual(plan["intent"], "topic_proposal")
+
     def test_status_today_followup_rule(self):
         recent_turns = [
             {"user": "你在幹嘛", "intent": "what_are_you_doing", "reply": "さっきまでだらけてた。今は少し休んでる。"},

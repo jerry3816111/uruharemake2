@@ -336,6 +336,18 @@ def _build_direct_daily_fields(kind, text, offered_item=None, thread_depth=1):
             "ユーザーがさっき何をしていたか聞いている。",
             "さっきまでだらだらしてた。今は少し休んでる",
         )
+    if kind == "topic_proposal":
+        if has_today:
+            return (
+                "軽い話題を一個こちらから出す",
+                "ユーザーが今日なにを話すか軽く聞いている。",
+                "軽い話題なら最近どうしてたかでいい",
+            )
+        return (
+            "軽い話題を一個こちらから出す",
+            "ユーザーがなにを話すか軽く聞いている。",
+            "軽い話題なら最近どうしてたかでいい",
+        )
     if kind == "food_offer":
         return _build_food_offer_fields(offered_item, followup=False, ask_about_self=False)
     if kind == "food_offer_followup":
@@ -439,6 +451,56 @@ def _looks_status_query(text):
     if contains_any(lowered, ["忙", "busy"]) and (_has_now_reference(text) or "?" in text or "？" in text):
         return True
     return False
+
+
+def looks_topic_proposal_query(text):
+    lowered = str(text or "").lower().replace("’", "'").replace("`", "'")
+    if not lowered.strip():
+        return False
+    if contains_any(
+        lowered,
+        [
+            "話題ずらすな",
+            "話題をずらすな",
+            "話題変えるな",
+            "不要轉移話題",
+            "不要转移话题",
+            "stop changing the topic",
+            "answer directly first",
+        ],
+    ):
+        return False
+    topic_markers = [
+        "今日は何話す",
+        "今日何話す",
+        "今日はなに話す",
+        "今日なに話す",
+        "何話す",
+        "なに話す",
+        "何を話す",
+        "何喋る",
+        "何しゃべる",
+        "何しゃべろ",
+        "何話そう",
+        "話題ある",
+        "話題ちょうだい",
+        "話題出して",
+        "話題振って",
+        "what should we talk about",
+        "what do we talk about",
+        "what should we chat about",
+        "give me a topic",
+        "topic?",
+        "聊什麼",
+        "聊什么",
+        "今天聊什麼",
+        "今天聊什么",
+        "要聊什麼",
+        "要聊什么",
+        "有什麼話題",
+        "有什么话题",
+    ]
+    return contains_any(lowered, topic_markers)
 
 
 def _looks_meal_check_query(text):
@@ -1598,6 +1660,9 @@ def looks_direct_daily_query(text):
     if _looks_status_query(text):
         return True
 
+    if looks_topic_proposal_query(text):
+        return True
+
     if _looks_meal_check_query(text):
         return True
 
@@ -1927,6 +1992,8 @@ def base_plan_helper(
             surface_act = "disgust_boundary"
         elif intent in {"what_are_you_doing"}:
             surface_act = "status_reply"
+        elif intent in {"topic_proposal"}:
+            surface_act = "plain_reply"
         elif intent in {"self_intro"}:
             surface_act = "plain_identity"
         elif intent in {"version_fragment_clarify"}:
@@ -1947,7 +2014,7 @@ def base_plan_helper(
             "tired_support", "anxious_support", "crying_support", "giving_up_support", "pain_support",
             "other_vtuber", "sexual_boundary", "what_are_you_doing", "self_intro", "ask_miss_me", "nickname_question",
             "mad_check", "annoying_check", "cold_check", "food_offer_generic", "food_offer_sweet",
-            "version_fragment_clarify", "reference_probe", "rephrase_simple"
+            "version_fragment_clarify", "reference_probe", "rephrase_simple", "topic_proposal",
         }:
             payload_level = "medium"
         else:
@@ -3112,6 +3179,23 @@ def get_direct_daily_query_plan(user_input, recent_turns):
             avoid=["私", "いらない"],
             surface_act="named_offer_light_accept" if _is_sweet_offer_item(offered_item) else "named_offer_accept",
             grounding={"offered_item": offered_item or "何か"},
+            payload_level="medium",
+        )
+
+    if looks_topic_proposal_query(text):
+        reply_goal, summary, meaning = _build_direct_daily_fields("topic_proposal", text)
+        return base_plan_helper(
+            intent="topic_proposal",
+            scene="casual",
+            listener_state="軽い話題を求めている",
+            reply_goal=reply_goal,
+            summary=summary,
+            meaning=meaning,
+            stance={"warmth": 0.28, "tease": 0.08, "blunt": 0.1, "jealousy": 0.0, "distance": 0.05},
+            max_chars=34,
+            avoid=["私", "わかりました", "設定"],
+            surface_act="plain_reply",
+            grounding={"topic_terms": ["話題", "最近"]},
             payload_level="medium",
         )
 

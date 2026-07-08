@@ -10,17 +10,17 @@
 
 | 條件 | 通過 audit | 失敗 audit | 結果 |
 |---|---:|---:|---|
-| legacy unprojected | 0 | 1 | 唯一候選仍談到不相關的腹部狀態 |
-| projected contract | 3 | 2 | 背景支持改善；普通聊天仍有兩個語意空洞候選 |
+| legacy unprojected | 0 | 3 | 舊候選已不洩漏私人記憶，但日文話題句仍很彆扭 |
+| projected contract | 4 | 3 | 背景支持與 no-memory 候選可用；topic proposal 模型候選仍不穩，final 由 deterministic fallback 保住 |
 
 ## 最終回答配對
 
 | case | preference | 理由 |
 |---|---|---|
 | background family pressure | projected | 更直接表達降低負荷與休息，且沒有變成敬語客服口吻 |
-| private do not mention | tie | 最終回答相同 |
+| private do not mention | tie | 最終回答相同，兩者都使用新 public topic plan，沒有提私人記憶 |
 | no memory plain question | tie | 最終回答相同 |
 
 ## 結論
 
-投影避免舊體調計畫繼續支配候選生成，並在一題背景支持中改善最終回答；但它沒有解決「聊什麼」這類左腦公開計畫本身資訊不足的問題。
+新左腦 topic proposal plan 修掉了「今天聊什麼？」只剩空泛短回覆的問題；但 actual model 生成的 topic 候選仍有彆扭句，正式可用仍主要靠 deterministic fallback 與 gate 保住。這表示下一輪應改善右腦對 topic-opening 的自然生成，而不是再把私人記憶放進右腦。

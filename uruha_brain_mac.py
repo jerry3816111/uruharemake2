@@ -5802,6 +5802,22 @@ Rules:
                 payload_level="medium",
             )
 
+        if uruha_leftbrain_rules.looks_topic_proposal_query(user_input):
+            return base_plan(
+                intent="topic_proposal",
+                scene="casual",
+                listener_state="軽い話題を求めている",
+                reply_goal="軽い話題を一個こちらから出す",
+                summary="ユーザーが今日なにを話すか軽く聞いている。",
+                meaning="軽い話題なら最近どうしてたかでいい",
+                stance={"warmth": 0.28, "tease": 0.08, "blunt": 0.1, "jealousy": 0.0, "distance": 0.05},
+                max_chars=34,
+                avoid=["私", "わかりました", "設定"],
+                surface_act="plain_reply",
+                grounding={"topic_terms": ["話題", "最近"]},
+                payload_level="medium",
+            )
+
         if self._contains_any(lowered, ["你在幹嘛", "你今天在幹嘛", "你今天都在做什麼", "what are you doing", "what are you doing right now", "what were you doing today", "今日は何してた", "今日何してた", "今何してる", "今なにしてる", "何してるの", "なにしてるの"]):
             return base_plan(
                 intent="what_are_you_doing",
@@ -8359,6 +8375,9 @@ class RightBrain:
             add("距離感")
         if intent == "other_vtuber":
             add("戻る")
+        if intent == "topic_proposal":
+            add("話題")
+            add("最近")
 
         grounding["topic_terms"] = terms[:4]
         return grounding
@@ -8380,6 +8399,8 @@ class RightBrain:
             return "reference_probe"
         if surface in {"meal_check_reply", "status_reply"}:
             return "daily_state_answer"
+        if intent == "topic_proposal":
+            return "topic_proposal"
         if surface == "practical_action_response":
             return "practical_action_response"
         if surface in {"empathic_rest_suggestion", "validate_then_hold", "protective_brake"}:
@@ -8424,6 +8445,7 @@ class RightBrain:
             "frame_negotiation": ["問いの広さか前提を止める", core, "次に絞る場所を示す"],
             "minimal_clarification": ["分からない箇所を一個だけ聞く", core],
             "repair_check": ["聞き返しつつ責めすぎない", core],
+            "topic_proposal": ["軽い話題を一個出す", core, "相手の近況に渡す"],
             "direct_chat_answer": ["まず一点だけ答える", core],
         }
         units = list(units_by_act.get(dialogue_act, ["まず一点だけ答える", core]))
@@ -8523,6 +8545,8 @@ class RightBrain:
             operators.append("curious")
         if dialogue_act == "daily_state_answer":
             operators.append("daily_concrete")
+        if dialogue_act == "topic_proposal":
+            operators.append("turn_opening")
         if dialogue_act == "practical_action_response":
             operators.append("daily_concrete")
         if dialogue_act == "relationship_temperature":
@@ -8539,7 +8563,7 @@ class RightBrain:
         payload_level = logic_data.get("payload_level", "low")
         if dialogue_act in {"minimal_clarification", "repair_check"}:
             return "1_short_sentence"
-        if payload_level in {"medium", "high"} or dialogue_act in {"emotional_containment", "absurdity_mirror", "concrete_offer_response", "daily_state_answer"}:
+        if payload_level in {"medium", "high"} or dialogue_act in {"emotional_containment", "absurdity_mirror", "concrete_offer_response", "daily_state_answer", "topic_proposal"}:
             return "2_short_sentences"
         return "1_or_2_short_sentences"
 
@@ -8579,7 +8603,7 @@ class RightBrain:
             stripped = str(reply or "").strip()
             if stripped:
                 recent_frames.append(stripped[:6])
-        turn_opening = dialogue_act in {"reference_probe", "absurdity_mirror", "concrete_offer_response", "relationship_temperature", "repair_check"}
+        turn_opening = dialogue_act in {"reference_probe", "absurdity_mirror", "concrete_offer_response", "relationship_temperature", "repair_check", "topic_proposal"}
         speech_plan = {
             "dialogue_act": dialogue_act,
             "content_units": content_units,
@@ -9412,6 +9436,12 @@ class RightBrain:
                 "適当に過ごしてた。ゲーム開くか迷ってたし。",
                 "特に何もしてない。ぼーっとしてた。",
             ])
+        elif intent == "topic_proposal":
+            variants.extend([
+                "じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+                "重い話じゃなくていい。最近どうしてたかからでいいだろ。",
+                "話題なら軽く近況でいい。最近どうしてたんだよ。",
+            ])
         elif intent == "rephrase_simple":
             if any(token in lowered for token in ["what do you mean", "什麼意思", "什么意思", "どういう意味", "どの意味"]):
                 variants.extend([
@@ -9545,6 +9575,12 @@ class RightBrain:
         grounding = logic_data.get("grounding") or {}
         intent = str(logic_data.get("intent") or "")
 
+        if intent == "topic_proposal":
+            return [
+                ("話題", "話"),
+                ("最近", "どうしてた", "近況"),
+            ]
+
         if intent == "friend_no_reply":
             reply_context = str(grounding.get("reply_context") or "")
             reply_signal = str(grounding.get("reply_signal") or "")
@@ -9671,7 +9707,10 @@ class RightBrain:
             groups.append(("体調", "胃", "最近"))
         if "負荷" in meaning or "責めず" in meaning:
             groups.append(("負荷", "軽", "小さ", "休", "責め"))
-        if "今の話題" in meaning or "短く返す" in meaning:
+        if "軽い話題" in meaning or "最近どうしてた" in meaning:
+            groups.append(("話題", "話"))
+            groups.append(("最近", "どうしてた", "近況"))
+        elif "今の話題" in meaning or "短く返す" in meaning:
             groups.append(("今", "話", "一個", "短"))
         if "決めつけ" in meaning or "分かる範囲" in meaning:
             groups.append(("分かる範囲", "分から", "決めつけ", "後で"))
@@ -9816,9 +9855,16 @@ class RightBrain:
             add("どこの話か一個だけ出せって。そこ分かれば返せる。")
         elif dialogue_act == "repair_check":
             add("ん、今のどこが引っかかったんだよ。そこだけ言え。")
+        elif dialogue_act == "topic_proposal":
+            add("じゃあ軽い話題でいいだろ。最近どうしてたんだよ。")
+            add("重い話じゃなくていい。最近どうしてたかからでいいだろ。")
+            add("話題なら軽く近況でいい。最近どうしてたんだよ。")
         elif dialogue_act == "direct_chat_answer" and core:
             if "ラーメン以外" in core:
                 add("今日はラーメン以外で軽めにしとけ。胃に重いのはやめとけって。")
+            elif "軽い話題" in core or "最近どうしてた" in core:
+                add("じゃあ軽い話題でいいだろ。最近どうしてたんだよ。")
+                add("話題なら軽く近況でいい。最近どうしてたんだよ。")
             elif "話題" in core and "戻" in core:
                 add("じゃあ軽めの話にするか。変に重くしなくていいだろ。")
             else:
@@ -9969,6 +10015,7 @@ class RightBrain:
             "bored",
             "apology",
             "what_are_you_doing",
+            "topic_proposal",
         }
         stock_flat = {
             "今日は無理すんな、休め。",
@@ -10026,6 +10073,11 @@ class RightBrain:
             add("うちは適当に過ごしてた。お前は今日は何してたんだよ。")
             if "今" in topic_terms:
                 add("今はだらだらしてる。まだ本気出してない。")
+
+        if intent == "topic_proposal":
+            add("じゃあ軽い話題でいいだろ。最近どうしてたんだよ。")
+            add("話題なら軽く近況でいい。最近どうしてたんだよ。")
+            add("重い話じゃなくていい。最近どうしてたかからでいいだろ。")
 
         if surface in {"named_offer_accept", "named_offer_light_accept"}:
             item = offered_item or "それ"
@@ -11017,6 +11069,11 @@ class RightBrain:
                 score += 0.6
             if dialogue_act == "daily_state_answer" and any(x in reply for x in ["食べ", "腹", "済ませ", "だら", "休ん", "ぼーっ"]):
                 score += 0.7
+            if dialogue_act == "topic_proposal":
+                if any(x in reply for x in ["話題", "最近", "近況", "どうしてた"]):
+                    score += 0.9
+                else:
+                    score -= 1.0
             if dialogue_act == "frame_negotiation":
                 if any(x in reply for x in ["前提", "違", "どこ", "何", "確認", "絞"]):
                     score += 0.8
@@ -11435,6 +11492,12 @@ You are Ichinose Uruha.
                 for group in self._model_required_semantic_groups(logic_data)
                 for term in group
             ]
+            memory_anchor = logic_data.get("memory_anchor") or {}
+            blocked_terms = [
+                str(term or "").strip()
+                for term in [memory_anchor.get("jp_anchor"), *(memory_anchor.get("terms") or [])]
+                if str(term or "").strip()
+            ]
             evidence_values = [
                 logic_data.get("jp_summary"),
                 logic_data.get("core_message_jp"),
@@ -11446,6 +11509,8 @@ You are Ichinose Uruha.
             def supported(value):
                 normalized = str(value or "").strip()
                 if not normalized:
+                    return False
+                if any(term in normalized for term in blocked_terms):
                     return False
                 if len(normalized) >= 2 and normalized in evidence_text:
                     return True
