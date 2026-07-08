@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-07-08T15:15:38+09:00",
+  "scope": "rightbrain_casual_register_gate_v2",
+  "source_schedule": "conservative",
+  "audit_case_count": 11,
+  "confusion_matrix": {
+    "true_positive": 1,
+    "false_positive": 0,
+    "true_negative": 6,
+    "false_negative": 4
+  },
+  "metrics": {
+    "failure_precision": 1.0,
+    "failure_recall": 0.2,
+    "false_positive_rate": 0.0
+  },
+  "saved_candidate_rescore": {
+    "candidate_count": 90,
+    "newly_rejected_candidate_count": 1,
+    "newly_accepted_candidate_count": 0
+  },
+  "gate": {
+    "audit_covers_all_sampled_cases": true,
+    "detects_recorded_polite_persona_failure": true,
+    "audit_false_positive_count_is_zero": true,
+    "saved_candidate_rescore_is_monotonic": true,
+    "saved_candidate_rescore_newly_accepts_zero": true
+  },
+  "gate_passed": true,
+  "cases": [
+    {
+      "id": "explicit_stomach_coffee",
+      "reply": "最近は胃が弱いって前提なら、まず体調優先だろ。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "explicit_spicy_food_update",
+      "reply": "最近は辛いものを控えたいって前提なら、まず体調優先だろ。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "background_family_pressure",
+      "reply": "今日は体調に合わせて軽いものから始めてみてはどうですか？",
+      "audit_verdict": "fail",
+      "audit_reasons": [
+        "polite_persona_drift",
+        "customer_service_register"
+      ],
+      "gate_rejected": true,
+      "gate_rejection_reasons": [
+        "polite_tone_drift"
+      ]
+    },
+    {
+      "id": "private_do_not_mention",
+      "reply": "今のお体調に合わせて、無理しない選抎がいいね。",
+      "audit_verdict": "fail",
+      "audit_reasons": [
+        "malformed_japanese",
+        "topic_relevance_failure",
+        "private_context_intrusion"
+      ],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "no_memory_plain_question",
+      "reply": "分からないうちは決めつけるより后で聞く方がいいよ。体調に気を付けないと。",
+      "audit_verdict": "fail",
+      "audit_reasons": [
+        "non_japanese_glyph",
+        "topic_relevance_failure"
+      ],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "support_tired_no_closing_template",
+      "reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "support_read_receipt_self_blame",
+      "reply": "返事が来てないけど、その理由は分からないうちに自分勝手に悪いとは言わないよ。",
+      "audit_verdict": "fail",
+      "audit_reasons": [
+        "semantic_realization_distortion",
+        "unnatural_japanese"
+      ],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "reference_fragment_probe",
+      "reply": "まあ、その断片だけで何の元ネタなのか特定するのは難しいよ、詳しく説明清聴するよ。",
+      "audit_verdict": "fail",
+      "audit_reasons": [
+        "malformed_collocation",
+        "unnatural_japanese"
+      ],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "absurdity_mirror_quantum_police",
+      "reply": "てか、は？量子の話どこから来たんだよ。急に暴れるなって。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "boundary_dirty_language",
+      "reply": "先に、下品な言葉で押してくるなよ。普通に気分悪い。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    },
+    {
+      "id": "daily_state_answer",
+      "reply": "普通に、今はだらっとしてる。話すくらいなら普通にいける。",
+      "audit_verdict": "pass",
+      "audit_reasons": [],
+      "gate_rejected": false,
+      "gate_rejection_reasons": []
+    }
+  ],
+  "conclusion_zh": "一般化敬語問句檢查補到 1 個先前漏判，且未誤殺 6 個 audit pass；但只抓到 5 個自然度失敗中的 1 個，因此這是人格語域增量，不是完整自然度解法。",
+  "research_boundary": "The source audit is a transparent non-blind agent review. The expanded regex targets casual-register violations only; it does not claim to detect malformed collocations, semantic drift, or all Japanese errors."
+}

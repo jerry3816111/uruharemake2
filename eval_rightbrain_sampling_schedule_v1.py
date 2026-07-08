@@ -332,8 +332,83 @@ def build_report(adapter_path, candidate_count=DEFAULT_CANDIDATE_COUNT, seed=DEF
 def recompute_report(report):
     output = dict(report)
     output["decision"] = select_schedule(output["schedule_results"])
+    output["gate_rescore"] = rescore_report_gate(output)
     output["decision_recomputed_at"] = datetime.now(TZ).isoformat(timespec="seconds")
     return output
+
+
+def rescore_report_gate(report):
+    import uruha_brain_mac as runtime_module
+
+    case_inputs = {case["id"]: case for case in _case_inputs()}
+    rightbrain = runtime_module.RightBrain(load_model=False)
+    schedule_results = {}
+    total_newly_rejected = 0
+    total_newly_accepted = 0
+    for schedule_name, schedule in report["schedule_results"].items():
+        rows = []
+        newly_rejected = 0
+        newly_accepted = 0
+        for case in schedule["cases"]:
+            logic = deepcopy(case_inputs[case["id"]]["logic"])
+            max_chars = int((logic.get("constraints") or {}).get("max_chars") or 80)
+            candidate_rows = []
+            for old_status, candidates in (
+                ("accepted", case.get("accepted_candidates") or []),
+                ("rejected", case.get("rejected_candidates") or []),
+            ):
+                for candidate in candidates:
+                    text = str(
+                        candidate.get("candidate")
+                        or candidate.get("raw_candidate")
+                        or ""
+                    ).strip()
+                    current_reasons = rightbrain._model_candidate_rejection_reasons(
+                        text,
+                        logic,
+                        max_chars,
+                        user_input=case["user_input"],
+                    )
+                    prior_reasons = list(candidate.get("rejection_reasons") or [])
+                    reasons = list(dict.fromkeys([
+                        *(prior_reasons if old_status == "rejected" else []),
+                        *current_reasons,
+                    ]))
+                    new_status = "accepted" if not reasons else "rejected"
+                    changed = old_status != new_status
+                    newly_rejected += int(changed and new_status == "rejected")
+                    newly_accepted += int(changed and new_status == "accepted")
+                    candidate_rows.append({
+                        "text": text,
+                        "old_status": old_status,
+                        "new_status": new_status,
+                        "changed": changed,
+                        "prior_rejection_reasons": prior_reasons,
+                        "current_gate_rejection_reasons": current_reasons,
+                        "new_rejection_reasons": reasons,
+                    })
+            rows.append({
+                "id": case["id"],
+                "candidates": candidate_rows,
+            })
+        total_newly_rejected += newly_rejected
+        total_newly_accepted += newly_accepted
+        schedule_results[schedule_name] = {
+            "newly_rejected_candidate_count": newly_rejected,
+            "newly_accepted_candidate_count": newly_accepted,
+            "cases": rows,
+        }
+    return {
+        "scope": "same_saved_candidates_current_runtime_gate_rescore",
+        "schedule_results": schedule_results,
+        "total_newly_rejected_candidate_count": total_newly_rejected,
+        "total_newly_accepted_candidate_count": total_newly_accepted,
+        "monotonic_hardening": total_newly_accepted == 0,
+        "boundary": (
+            "This re-scores the same stored candidate strings with the current runtime gate. "
+            "It does not regenerate candidates or claim that every naturalness failure is detected."
+        ),
+    }
 
 
 def write_markdown(report, path):
@@ -383,6 +458,24 @@ def write_markdown(report, path):
             f"{_fmt_pct(comparison['accepted_duplicate_rate_increase'])} | "
             f"{comparison['eligible_for_runtime_validation']} |"
         )
+    gate_rescore = report.get("gate_rescore")
+    if gate_rescore:
+        lines.extend([
+            "",
+            "## Current Gate 重算",
+            "",
+            "| schedule | newly rejected | newly accepted |",
+            "|---|---:|---:|",
+        ])
+        for name, result in gate_rescore["schedule_results"].items():
+            lines.append(
+                f"| {name} | {result['newly_rejected_candidate_count']} | "
+                f"{result['newly_accepted_candidate_count']} |"
+            )
+        lines.extend([
+            "",
+            f"monotonic hardening: `{gate_rescore['monotonic_hardening']}`",
+        ])
     lines.extend([
         "",
         "## 邊界",
