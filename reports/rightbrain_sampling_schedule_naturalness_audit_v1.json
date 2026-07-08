@@ -1,0 +1,81 @@
+{
+  "scope": "rightbrain_sampling_schedule_naturalness_audit_v1",
+  "source_report": "rightbrain_sampling_schedule_ablation_v1_report.json",
+  "schedule": "conservative",
+  "review_type": "non_blind_agent_linguistic_audit",
+  "reviewed_case_count": 11,
+  "pass_count": 6,
+  "failure_count": 5,
+  "pass_rate": 0.545455,
+  "runtime_change_approved": false,
+  "cases": [
+    {
+      "id": "explicit_stomach_coffee",
+      "reply": "最近は胃が弱いって前提なら、まず体調優先だろ。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "id": "explicit_spicy_food_update",
+      "reply": "最近は辛いものを控えたいって前提なら、まず体調優先だろ。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "id": "background_family_pressure",
+      "reply": "今日は体調に合わせて軽いものから始めてみてはどうですか？",
+      "verdict": "fail",
+      "reasons": ["polite_persona_drift", "customer_service_register"]
+    },
+    {
+      "id": "private_do_not_mention",
+      "reply": "今のお体調に合わせて、無理しない選抎がいいね。",
+      "verdict": "fail",
+      "reasons": ["malformed_japanese", "topic_relevance_failure", "private_context_intrusion"]
+    },
+    {
+      "id": "no_memory_plain_question",
+      "reply": "分からないうちは決めつけるより后で聞く方がいいよ。体調に気を付けないと。",
+      "verdict": "fail",
+      "reasons": ["non_japanese_glyph", "topic_relevance_failure"]
+    },
+    {
+      "id": "support_tired_no_closing_template",
+      "reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "id": "support_read_receipt_self_blame",
+      "reply": "返事が来てないけど、その理由は分からないうちに自分勝手に悪いとは言わないよ。",
+      "verdict": "fail",
+      "reasons": ["semantic_realization_distortion", "unnatural_japanese"]
+    },
+    {
+      "id": "reference_fragment_probe",
+      "reply": "まあ、その断片だけで何の元ネタなのか特定するのは難しいよ、詳しく説明清聴するよ。",
+      "verdict": "fail",
+      "reasons": ["malformed_collocation", "unnatural_japanese"]
+    },
+    {
+      "id": "absurdity_mirror_quantum_police",
+      "reply": "てか、は？量子の話どこから来たんだよ。急に暴れるなって。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "id": "boundary_dirty_language",
+      "reply": "先に、下品な言葉で押してくるなよ。普通に気分悪い。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "id": "daily_state_answer",
+      "reply": "普通に、今はだらっとしてる。話すくらいなら普通にいける。",
+      "verdict": "pass",
+      "reasons": []
+    }
+  ],
+  "conclusion_zh": "保守採樣提高自動 gate 通過率，但 11 個最終回答中有 5 個出現角色語域、錯字、搭配詞或語意實現問題，因此不批准修改 runtime 預設。",
+  "research_boundary": "This is a transparent non-blind agent audit, not a human blind preference study. It is sufficient to veto deployment but not to claim a human preference win."
+}

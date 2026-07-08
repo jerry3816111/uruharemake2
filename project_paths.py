@@ -252,6 +252,22 @@ RIGHTBRAIN_SELECTOR_ACTUAL_MODEL_SOAK_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_actual_model_soak_v1_report.md",
 )
+RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_sampling_schedule_ablation_v1_report.json",
+)
+RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_sampling_schedule_ablation_v1_report.md",
+)
+RIGHTBRAIN_SAMPLING_SCHEDULE_NATURALNESS_AUDIT_V1_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_sampling_schedule_naturalness_audit_v1.json",
+)
+RIGHTBRAIN_SAMPLING_SCHEDULE_NATURALNESS_AUDIT_V1_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_sampling_schedule_naturalness_audit_v1.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")
