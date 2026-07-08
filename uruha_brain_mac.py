@@ -8582,9 +8582,52 @@ class RightBrain:
             return {"emotion": "casual_concrete", "speed": "normal", "energy": 0.52, "pause_after_first_unit": False}
         return {"emotion": "casual", "speed": "normal", "energy": 0.5, "pause_after_first_unit": False}
 
+    def _surface_focus_terms_from_logic(self, logic_data, user_input=""):
+        """Return Japanese terms that should be visible in the final surface."""
+        logic_data = logic_data or {}
+        grounding = logic_data.get("grounding") or {}
+        terms = []
+
+        def add(term):
+            term = str(term or "").strip()
+            if term and term not in terms:
+                terms.append(term)
+
+        for term in grounding.get("topic_terms") or []:
+            add(term)
+        for key in (
+            "withdrawal_anchor_jp",
+            "management_anchor_jp",
+            "reference_subject_jp",
+            "offered_item",
+            "greeting_target",
+        ):
+            add(grounding.get(key))
+
+        intent = str(logic_data.get("intent") or "")
+        if intent == "friend_no_reply":
+            reply_context = str(grounding.get("reply_context") or "")
+            reply_signal = str(grounding.get("reply_signal") or "")
+            reply_channel = str(grounding.get("reply_channel") or "")
+            if reply_signal == "read_receipt":
+                add("既読")
+            elif reply_context == "group_silence":
+                add("チャット" if reply_channel == "chatroom" else "グループ")
+            else:
+                add("返事")
+
+        if not terms:
+            raw_terms = re.findall(r"[A-Za-z0-9_]+|[\u3040-\u30ff\u4e00-\u9fff]{2,6}", str(user_input or ""))
+            stop_terms = {"你", "我", "這個", "那个", "那個", "這樣", "それ", "これ", "どう"}
+            for term in raw_terms:
+                if term.lower() not in stop_terms:
+                    add(term)
+        return terms[:4]
+
     def build_human_speech_plan(self, logic_data, user_input, memory_data, current_psyche):
         logic_data = dict(logic_data or {})
         grounding = self._extract_grounding_terms(user_input, logic_data.get("intent", ""), logic_data.get("grounding") or {})
+        logic_for_focus = {**logic_data, "grounding": grounding}
         dialogue_act = self._dialogue_act_from_plan(logic_data, user_input)
         content_units = self._speech_content_units(
             {**logic_data, "dialogue_act": dialogue_act},
@@ -8618,7 +8661,7 @@ class RightBrain:
             "turn_opening_potential": turn_opening,
             "prosody_hint": self._prosody_hint_for_speech(dialogue_act, logic_data),
             "content_density_target": 0.42 if logic_data.get("payload_level") in {"medium", "high"} else 0.28,
-            "grounding_terms": grounding.get("topic_terms", []),
+            "grounding_terms": self._surface_focus_terms_from_logic(logic_for_focus, user_input),
         }
         return speech_plan
 
@@ -9508,13 +9551,13 @@ class RightBrain:
         anchor = str(grounding.get("withdrawal_anchor_jp") or "").strip()
         if kind == "do_not_disturb":
             return [
-                "通知は切って休んでいい。ただ、必要な連絡まで閉じなくていい。",
-                "通知を止めて静かにするのはあり。でも連絡手段は一つ残しとけ。",
+                "通知は切って休んでいい。でも人との連絡まで切るな、一人で抱えるな。",
+                "通知を止めて静かにするのはあり。でも連絡まで切るな、誰かへの連絡手段は一つ残しとけ。",
             ]
         if kind == "online_visibility":
             return [
-                "オンライン表示は隠して休んでいい。ただ、必要な連絡まで閉じなくていい。",
-                "表示を消して静かにするのはあり。でも連絡手段は一つ残しとけ。",
+                "オンライン表示は隠して休んでいい。でも一人で抱えるな、連絡先は残しとけ。",
+                "表示を消して静かにするのはあり。でも一人で抱えるな、誰かへの連絡手段は一つ残しとけ。",
             ]
         if kind == "private_location":
             place = anchor or "一人になる場所"
@@ -9524,8 +9567,8 @@ class RightBrain:
                     f"{place}で一人になる前に一回止まれ。近くの人へ今の場所を連絡しろ。",
                 ]
             return [
-                f"{place}で一人になりたいなら、少し離れるのはいい。場所だけ誰かに伝えとけ。",
-                f"{place}で少し離れるのはあり。ただ、近くの人には場所を連絡しとけ。",
+                f"{place}で一人になりたいなら、少し離れるのはいい。場所だけ誰かに連絡しとけ。",
+                f"{place}で少し離れるのはあり。ただ、一人で抱えず近くの人には場所を連絡しとけ。",
             ]
         if kind == "leave_group":
             return [
@@ -9887,7 +9930,7 @@ class RightBrain:
             else:
                 context_variants = [
                     "グループが静かだと気になるよな",
-                    "グループの会話が止まると不安になるよな",
+                    "グループが急に静かだと不安になるよな",
                 ]
         elif reply_signal == "read_receipt":
             context_variants = [
@@ -9900,9 +9943,15 @@ class RightBrain:
                 "返信を待ってると不安になるよな",
             ]
         if self_blame:
+            if reply_context == "group_silence":
+                short_context = "チャットが静かだと不安だよな" if reply_channel == "chatroom" else "グループが静かだと不安だよな"
+            elif reply_signal == "read_receipt":
+                short_context = "既読だけで不安になるよな"
+            else:
+                short_context = "返事がないと不安になるよな"
             return [
-                f"{context_variants[0]}。でも理由はまだ分からない。自分のせいと決めず、少し待て。",
-                f"{context_variants[1]}。今の沈黙だけで自分が悪いと決めず、少し置け。",
+                f"{short_context}。理由は分からないし、自分のせいと決めつけず少し待て。",
+                f"{short_context}。理由は分からない。自分が悪いと決めつけず、少し置け。",
             ]
         return [
             f"{context_variants[0]}。理由はまだ分からないし、今は少し待て。",
@@ -13267,8 +13316,10 @@ class UruhaBrainV4_Mac:
     def _attach_reply_post_check(self, logic, user_input, reply, memory_data):
         logic = logic or {}
         grounding = logic.get("grounding") or {}
+        speech_plan = logic.get("human_speech_plan") or {}
+        speech_terms = [str(term) for term in speech_plan.get("grounding_terms") or [] if str(term).strip()]
         topic_terms = [str(term) for term in grounding.get("topic_terms") or [] if str(term).strip()]
-        focus_terms = topic_terms or self._focus_terms(user_input)
+        focus_terms = speech_terms or topic_terms or self._focus_terms(user_input)
         reply_text = str(reply or "")
         did_cover_focus = bool(not focus_terms or any(term and term in reply_text for term in focus_terms[:3]))
         anchor = logic.get("memory_anchor") or {}
