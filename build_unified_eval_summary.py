@@ -21,6 +21,8 @@ from project_paths import (
     MEMORY_SPEAKABILITY_RESPONSE_REPORT_JSON_PATH,
     REPLY_DIVERSITY_REPORT_PATH,
     RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
+    RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH,
+    RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
     SELF_DISTRESS_SURFACE_CONTRACT_REPORT_JSON_PATH,
     STRESS_EVAL_REPORT_PATH,
@@ -58,6 +60,8 @@ REPORT_PATHS = {
     "human_speech_layer": HUMAN_SPEECH_LAYER_REPORT_JSON_PATH,
     "surface_microplanning": SURFACE_MICROPLANNING_REPORT_JSON_PATH,
     "rightbrain_model_gate": RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
+    "rightbrain_model_surface_holdout": RIGHTBRAIN_MODEL_SURFACE_HOLDOUT_REPORT_JSON_PATH,
+    "rightbrain_runtime_adapter_multiseed": RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH,
 }
 
 OUT_JSON = UNIFIED_EVAL_SUMMARY_JSON_PATH
@@ -114,6 +118,36 @@ def _safe_float(value, digits=4):
         return round(float(value), digits)
     except Exception:
         return None
+
+
+def _rightbrain_model_maturity_evidence(gate_report, holdout_report, multiseed_report=None):
+    """Use model-loaded holdout evidence; fall back to the development gate."""
+    gate_summary = (gate_report or {}).get("summary") or {}
+    holdout_summary = (holdout_report or {}).get("summary") or {}
+    promoted_summary = ((multiseed_report or {}).get("aggregate") or {}).get("promoted") or {}
+    if (multiseed_report or {}).get("promotion_recommended") and promoted_summary:
+        return {
+            "raw_candidate_acceptance_rate": _safe_float(promoted_summary.get("raw_candidate_acceptance_rate")),
+            "model_selected_case_rate": _safe_float(promoted_summary.get("model_selected_case_rate")),
+            "final_contract_pass_rate": _safe_float(promoted_summary.get("final_quality_pass_rate")),
+            "adapter_ref": (multiseed_report or {}).get("promoted_adapter"),
+            "source": "rightbrain_runtime_adapter_multiseed_report.json",
+        }
+    if (holdout_report or {}).get("load_model") and holdout_summary.get("model_loaded"):
+        return {
+            "raw_candidate_acceptance_rate": _safe_float(holdout_summary.get("raw_candidate_acceptance_rate")),
+            "model_selected_case_rate": _safe_float(holdout_summary.get("model_selected_case_rate")),
+            "final_contract_pass_rate": _safe_float(holdout_summary.get("final_quality_pass_rate")),
+            "adapter_ref": (holdout_report or {}).get("adapter_ref"),
+            "source": "rightbrain_model_surface_holdout_report.json",
+        }
+    return {
+        "raw_candidate_acceptance_rate": _safe_float(gate_summary.get("raw_candidate_acceptance_rate")),
+        "model_selected_case_rate": _safe_float(gate_summary.get("model_selected_case_rate")),
+        "final_contract_pass_rate": _safe_float(gate_summary.get("final_contract_pass_rate")),
+        "adapter_ref": (gate_report or {}).get("adapter_ref"),
+        "source": "rightbrain_model_gate_report.json",
+    }
 
 
 def _flatten_long_dialogue_memory_summary(summary):
@@ -367,6 +401,10 @@ def main():
     speech_layer_report = _load_json(REPORT_PATHS["human_speech_layer"])
     surface_microplanning_report = _load_json(REPORT_PATHS["surface_microplanning"])
     rightbrain_model_gate_report = _load_json(REPORT_PATHS["rightbrain_model_gate"])
+    rightbrain_model_surface_holdout_report = _load_json(REPORT_PATHS["rightbrain_model_surface_holdout"])
+    rightbrain_runtime_adapter_multiseed_report = _load_json(
+        REPORT_PATHS["rightbrain_runtime_adapter_multiseed"]
+    )
 
     arch = arch_report.get("summary", {})
     runtime = runtime_report.get("summary", {})
@@ -404,6 +442,11 @@ def main():
     speech_layer = speech_layer_report.get("metrics", {})
     surface_microplanning = surface_microplanning_report.get("summary", {})
     rightbrain_model_gate = rightbrain_model_gate_report.get("summary", {})
+    rightbrain_model_maturity = _rightbrain_model_maturity_evidence(
+        rightbrain_model_gate_report,
+        rightbrain_model_surface_holdout_report,
+        rightbrain_runtime_adapter_multiseed_report,
+    )
     speech_english_leak = _safe_float(speech_layer.get("english_leak_rate"))
     speech_english_safe = 1.0 - (speech_english_leak if speech_english_leak is not None else 1.0)
 
@@ -709,9 +752,9 @@ def main():
         _metric(
             "真實右腦模型 raw 候選契約接受率",
             "rightbrain_model_raw_candidate_acceptance_rate",
-            rightbrain_model_gate.get("raw_candidate_acceptance_rate"),
+            rightbrain_model_maturity.get("raw_candidate_acceptance_rate"),
             "越高越好",
-            "rightbrain_model_gate_report.json",
+            rightbrain_model_maturity.get("source"),
             "higher",
             "只計算 Qwen + LoRA 原始候選能否通過語意、語言、風險與口吻 gate；不把 deterministic 救援算成模型能力。",
         ),
@@ -879,9 +922,10 @@ def main():
             "id": "raw_rightbrain_model_maturity",
             "name_zh": "真實右腦模型本體仍無法穩定實現 speech plan",
             "current": {
-                "raw_candidate_acceptance_rate": _safe_float(rightbrain_model_gate.get("raw_candidate_acceptance_rate")),
-                "model_selected_case_rate": _safe_float(rightbrain_model_gate.get("model_selected_case_rate")),
-                "final_contract_pass_rate": _safe_float(rightbrain_model_gate.get("final_contract_pass_rate")),
+                "raw_candidate_acceptance_rate": rightbrain_model_maturity.get("raw_candidate_acceptance_rate"),
+                "model_selected_case_rate": rightbrain_model_maturity.get("model_selected_case_rate"),
+                "final_contract_pass_rate": rightbrain_model_maturity.get("final_contract_pass_rate"),
+                "adapter_ref": rightbrain_model_maturity.get("adapter_ref"),
             },
             "target": {
                 "raw_candidate_acceptance_rate": 0.6,
@@ -892,7 +936,7 @@ def main():
             "why_it_matters": "目前自然度主要仍由 deterministic 候選提供；如果 raw LoRA 長期進不了 gate，就不能說模型本體已學會把思考轉成自然說話。",
             "acceptance": "開發集 raw 接受率 >= 0.6、至少部分情境由模型勝出，且最終契約 >= 0.99。",
             "planned_fix": "以 rejection trace 建立 speech-plan slot 訓練資料，優先修正槽位遺失、英文字串污染、過長與敬語漂移，而不是放寬 gate。",
-            "source": "rightbrain_model_gate_report.json",
+            "source": rightbrain_model_maturity.get("source"),
         },
         {
             "id": "formal_tom_reasoning",
@@ -982,9 +1026,9 @@ def main():
         for item in weak_points
         if not (
             item["id"] == "raw_rightbrain_model_maturity"
-            and (_safe_float(rightbrain_model_gate.get("raw_candidate_acceptance_rate")) or 0.0) >= 0.6
-            and (_safe_float(rightbrain_model_gate.get("model_selected_case_rate")) or 0.0) >= 0.2
-            and (_safe_float(rightbrain_model_gate.get("final_contract_pass_rate")) or 0.0) >= 0.99
+            and (rightbrain_model_maturity.get("raw_candidate_acceptance_rate") or 0.0) >= 0.6
+            and (rightbrain_model_maturity.get("model_selected_case_rate") or 0.0) >= 0.2
+            and (rightbrain_model_maturity.get("final_contract_pass_rate") or 0.0) >= 0.99
         )
         and not (
             item["id"] == "formal_tom_reasoning"

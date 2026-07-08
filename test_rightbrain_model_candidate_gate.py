@@ -1,4 +1,6 @@
 import json
+import os
+import tempfile
 import unittest
 
 import torch
@@ -9,6 +11,7 @@ from uruha_brain_mac import (
     RIGHT_BRAIN_MODEL_REPAIR_ENABLED,
     RIGHT_BRAIN_MODEL_SYSTEM_PROMPT,
     RightBrain,
+    _default_right_brain_adapter_path,
     _normalize_right_brain_adapter_path,
     _resolve_right_brain_model_loading,
 )
@@ -91,6 +94,22 @@ def reply_anxiety_logic():
 
 
 class TestRightBrainModelCandidateGate(unittest.TestCase):
+    def test_default_adapter_prefers_validated_v10_with_legacy_fallback(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy = os.path.join(tmpdir, "uruha_v10_all_linear_lora")
+            promoted = os.path.join(tmpdir, "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1")
+
+            os.makedirs(legacy)
+            self.assertEqual(_default_right_brain_adapter_path(tmpdir), legacy)
+
+            os.makedirs(promoted)
+            self.assertEqual(_default_right_brain_adapter_path(tmpdir), promoted)
+
+    def test_default_adapter_names_promoted_artifact_when_weights_are_missing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            expected = os.path.join(tmpdir, "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1")
+            self.assertEqual(_default_right_brain_adapter_path(tmpdir), expected)
+
     def test_adapter_path_supports_explicit_base_only_ablation(self):
         self.assertEqual(_normalize_right_brain_adapter_path("base-only", "/tmp/default"), "")
         self.assertEqual(_normalize_right_brain_adapter_path("none", "/tmp/default"), "")

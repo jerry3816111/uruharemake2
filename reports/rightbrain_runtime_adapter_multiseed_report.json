@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-07-08T21:37:10+09:00",
+  "scope": "rightbrain_runtime_adapter_multiseed_promotion_gate",
+  "baseline_adapter": "uruha_v10_all_linear_lora",
+  "promoted_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "candidate_count_per_case": 3,
+  "seeds": [
+    20260708,
+    20260709
+  ],
+  "promotion_recommended": true,
+  "quality_guard_pass": true,
+  "all_seed_noninferior": true,
+  "aggregate": {
+    "baseline": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 14,
+      "raw_candidate_acceptance_rate": 0.2333,
+      "model_selected_case_count": 1,
+      "model_selected_case_rate": 0.0455,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 444.374
+    },
+    "promoted": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 18,
+      "raw_candidate_acceptance_rate": 0.3,
+      "model_selected_case_count": 3,
+      "model_selected_case_rate": 0.1364,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 467.438
+    },
+    "raw_candidate_acceptance_delta": 0.0667
+  },
+  "per_seed": [
+    {
+      "seed": 20260708,
+      "baseline_raw_candidate_acceptance_rate": 0.1667,
+      "promoted_raw_candidate_acceptance_rate": 0.2667,
+      "raw_candidate_acceptance_delta": 0.1,
+      "baseline_model_selected_case_count": 0,
+      "promoted_model_selected_case_count": 1,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    },
+    {
+      "seed": 20260709,
+      "baseline_raw_candidate_acceptance_rate": 0.3,
+      "promoted_raw_candidate_acceptance_rate": 0.3333,
+      "raw_candidate_acceptance_delta": 0.0333,
+      "baseline_model_selected_case_count": 1,
+      "promoted_model_selected_case_count": 2,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    }
+  ],
+  "decision_zh": "建議升版：2 個 matched seeds 合計 raw 接受率由 23.3% 提升至 30.0%，模型接管數由 1 增至 3，且最終品質防線維持 100%。",
+  "research_boundary": "This gate compares adapters under matched seeds and runtime candidate count. It measures model candidate reliability and guarded integration, not human naturalness."
+}
