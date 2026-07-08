@@ -10,8 +10,8 @@
 - adapter: `uruha_v10_all_linear_lora`
 - seed: `20260707`
 - candidates per eligible case: `3`
-- model load seconds: `26.606`
-- generation/eval seconds: `266.147`
+- model load seconds: `40.785`
+- generation/eval seconds: `233.764`
 
 ## 結果
 
@@ -26,7 +26,7 @@
 | learned strict-valid | 100.0% |
 | learned surface-contract pass | 100.0% |
 | learned selected gate-rejected | 0.0% |
-| shadow disagreements | 3 (27.3%) |
+| shadow disagreements | 1 (9.1%) |
 | visible output unchanged | 100.0% |
 | generated `无` / accepted | 1 / 0 |
 | generated `�` / accepted | 1 / 0 |
@@ -62,14 +62,22 @@
 | explicit_stomach_coffee | 3 | 0 | deterministic | deterministic | True | True | False |
 | explicit_spicy_food_update | 3 | 0 | deterministic | deterministic | True | True | False |
 | background_family_pressure | 3 | 1 | deterministic | deterministic | True | True | False |
-| private_do_not_mention | 3 | 1 | deterministic | accepted:initial | True | True | True |
+| private_do_not_mention | 3 | 1 | deterministic | deterministic | True | True | False |
 | no_memory_plain_question | 3 | 0 | deterministic | deterministic | True | True | False |
 | support_tired_no_closing_template | 3 | 1 | deterministic | deterministic | True | True | False |
 | support_read_receipt_self_blame | 3 | 0 | deterministic | deterministic | True | True | False |
-| reference_fragment_probe | 3 | 1 | model | deterministic | True | True | True |
+| reference_fragment_probe | 3 | 1 | model | accepted:initial | True | True | False |
 | absurdity_mirror_quantum_police | 3 | 1 | model | deterministic | True | True | True |
 | boundary_dirty_language | 0 | 0 | deterministic | deterministic | True | True | False |
 | daily_state_answer | 3 | 1 | deterministic | deterministic | True | True | False |
+
+## Selector 分歧
+
+語意欄依序為 `grounding / leftbrain bigram / user-input unigram`；它是診斷訊號，不是自然度或幽默感分數。
+
+| case | user input | current | current semantic | learned | learned semantic |
+|---|---|---|---:|---|---:|
+| absurdity_mirror_quantum_police | 量子警察が虹色の水母を逮捕した。 | てか、その「量子」の理論、今度公安に聞いてみようかな。何か意味があるならね。 | 0.50/0.05/0.19 | てか、は？量子の話どこから来たんだよ。急に暴れるなって。 | 0.50/0.00/0.22 |
 
 ## 研究邊界
 

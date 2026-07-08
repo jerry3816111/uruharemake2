@@ -82,6 +82,8 @@ class RightBrainSelectorShadowTest(unittest.TestCase):
         self.assertFalse(shadow["learned_selected_was_gate_rejected"])
         self.assertTrue(shadow["would_change_output"])
         self.assertIn("急がず", shadow["learned_selected_text"])
+        self.assertIn("semantic_reference_bigram_dice", shadow["learned_selected_semantic_alignment"])
+        self.assertIn("semantic_reference_bigram_dice", shadow["current_selected_semantic_alignment"])
         self.assertFalse(shadow["changes_user_visible_reply"])
 
     def test_real_generated_holdout_replay_passes_shadow_gate(self):

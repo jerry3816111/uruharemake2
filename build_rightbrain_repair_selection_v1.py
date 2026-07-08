@@ -16,6 +16,7 @@ from project_paths import (
     RIGHTBRAIN_REPAIR_SELECTION_V1_REPORT_JSON_PATH,
     RIGHTBRAIN_REPAIR_SELECTION_V1_REPORT_MD_PATH,
 )
+from rightbrain_repair_selector import extract_candidate_features
 
 
 TZ = ZoneInfo("Asia/Tokyo")
@@ -81,7 +82,7 @@ def _candidate_transforms(reply, payload):
     ]
 
 
-def _build_candidates(row, rng):
+def _build_candidates(row, rng, semantic_decoy=None):
     payload = _load_contract_payload(row)
     target = _target_reply(row)
     candidates = [
@@ -113,12 +114,76 @@ def _build_candidates(row, rng):
             }
         )
         seen.add(text)
+    if semantic_decoy:
+        text = str(semantic_decoy.get("text") or "").strip()
+        if text and text not in seen:
+            candidates.append(
+                {
+                    "candidate_id": f"{row['id']}_cand_semantic_reference_drift",
+                    "source": "semantic_reference_drift",
+                    "text": text,
+                    "is_gold": False,
+                    "expected_errors": ["semantic_reference_drift"],
+                    "detected_errors": ["semantic_reference_drift"],
+                    "semantic_source_row_id": semantic_decoy.get("source_row_id"),
+                    "semantic_reference_bigram_dice": semantic_decoy.get("semantic_reference_bigram_dice"),
+                }
+            )
+            seen.add(text)
     gold = candidates[0]
     negatives = candidates[1:]
     rng.shuffle(negatives)
     candidates = [gold] + negatives
     rng.shuffle(candidates)
     return candidates
+
+
+def _prepare_source_rows(source_rows):
+    prepared = []
+    for row in source_rows:
+        try:
+            payload = _load_contract_payload(row)
+            target = _target_reply(row)
+        except (KeyError, IndexError, json.JSONDecodeError, TypeError):
+            continue
+        if not target or _target_errors(target, payload):
+            continue
+        prepared.append({"row": row, "payload": payload, "target": target})
+    return prepared
+
+
+def _find_semantic_decoy(index, prepared_rows, max_probes=200, max_similarity=0.20):
+    current = prepared_rows[index]
+    row = current["row"]
+    payload = current["payload"]
+    target = current["target"]
+    best = None
+    total = len(prepared_rows)
+    for offset in range(1, min(max_probes, total - 1) + 1):
+        other = prepared_rows[(index + offset * 37) % total]
+        other_row = other["row"]
+        candidate = other["target"]
+        if candidate == target:
+            continue
+        if other_row.get("source_contract_fingerprint") == row.get("source_contract_fingerprint"):
+            continue
+        # The semantic negative must pass the old surface/slot rules. Otherwise it
+        # would only duplicate an existing detectable corruption.
+        if _target_errors(candidate, payload):
+            continue
+        features = extract_candidate_features(candidate, payload)
+        similarity = float(features["semantic_reference_bigram_dice"])
+        if best is None or similarity < best["semantic_reference_bigram_dice"]:
+            best = {
+                "text": candidate,
+                "source_row_id": other_row.get("id"),
+                "semantic_reference_bigram_dice": round(similarity, 6),
+            }
+        if similarity <= 0.08:
+            break
+    if best and best["semantic_reference_bigram_dice"] <= max_similarity:
+        return best
+    return None
 
 
 def build_selection_dataset(source_rows, max_rows=DEFAULT_MAX_ROWS, seed=DEFAULT_SEED):
@@ -129,20 +194,15 @@ def build_selection_dataset(source_rows, max_rows=DEFAULT_MAX_ROWS, seed=DEFAULT
     detected_error_counts = Counter()
     source_rows = list(source_rows)
     rng.shuffle(source_rows)
+    prepared_rows = _prepare_source_rows(source_rows)
 
-    for source_row in source_rows:
+    for source_index, prepared in enumerate(prepared_rows):
         if len(rows) >= max_rows:
             break
-        try:
-            payload = _load_contract_payload(source_row)
-            target = _target_reply(source_row)
-        except (KeyError, IndexError, json.JSONDecodeError, TypeError):
-            skipped["invalid_source_row"] += 1
-            continue
-        if _target_errors(target, payload):
-            skipped["invalid_gold_target"] += 1
-            continue
-        candidates = _build_candidates(source_row, rng)
+        source_row = prepared["row"]
+        payload = prepared["payload"]
+        semantic_decoy = _find_semantic_decoy(source_index, prepared_rows)
+        candidates = _build_candidates(source_row, rng, semantic_decoy=semantic_decoy)
         negative_count = sum(not candidate["is_gold"] for candidate in candidates)
         if negative_count < 5:
             skipped["too_few_invalid_candidates"] += 1
@@ -182,6 +242,9 @@ def build_selection_dataset(source_rows, max_rows=DEFAULT_MAX_ROWS, seed=DEFAULT
             sum(not candidate["is_gold"] for candidate in row["candidates"])
             for row in rows
         ),
+        "semantic_reference_drift_candidate_count": candidate_source_counts.get(
+            "semantic_reference_drift", 0
+        ),
         "candidate_source_counts": dict(sorted(candidate_source_counts.items())),
         "detected_error_counts": dict(sorted(detected_error_counts.items())),
         "category_counts": dict(sorted(Counter(str(row.get("category") or "uncategorized") for row in rows).items())),
@@ -189,7 +252,9 @@ def build_selection_dataset(source_rows, max_rows=DEFAULT_MAX_ROWS, seed=DEFAULT
         "research_boundary": (
             "This is a synthetic candidate-selection harness built from the leakage-audited repair curriculum. "
             "It does not add benchmark answers. It tests whether a future selector can preserve the validated "
-            "clean reply while rejecting general surface and semantic contract failures."
+            "clean reply while rejecting general surface and semantic contract failures. Semantic drift negatives "
+            "reuse replies from different contract fingerprints only when they pass the old surface/slot gate, so "
+            "the selector must compare them with the current LeftBrain meaning rather than detect trivial pollution."
         ),
     }
     return rows, summary
@@ -203,7 +268,7 @@ def write_markdown(summary, path):
         "",
         (
             f"建立 {summary['selection_row_count']} 題右腦修復候選選擇資料；每題只有 1 個乾淨候選，"
-            "其餘候選含可檢出的語意漏失、語言污染、語氣漂移、指令外漏或過長錯誤。"
+            "其餘候選含已標註的語意漂移、語言污染、語氣漂移、指令外漏或過長錯誤。"
         ),
         "",
         "## 這次新增的能力",
@@ -214,6 +279,7 @@ def write_markdown(summary, path):
         f"| total candidates | {summary['candidate_count']} | 候選總數 |",
         f"| gold candidates | {summary['gold_candidate_count']} | 乾淨標準候選 |",
         f"| invalid candidates | {summary['invalid_candidate_count']} | 應被拒絕的錯誤候選 |",
+        f"| semantic drift candidates | {summary['semantic_reference_drift_candidate_count']} | 表面乾淨但不符合目前左腦語意 |",
         f"| invalid ratio | {_fmt_pct(_safe_rate(summary['invalid_candidate_count'], summary['candidate_count']))} | 選擇器主要要避開的比例 |",
         "",
         "## 錯誤類型分布",
@@ -234,6 +300,7 @@ def write_markdown(summary, path):
             "",
             "- 這不是把 holdout 或 ToMBench 答案塞給模型。",
             "- 這是在建立右腦修復選擇器的可重現訓練/評測底座。",
+            "- 語意漂移候選以跨合約、低文字重疊方式合成；它是受控 curriculum，不等同開放世界語意理解。",
             "- 目標是讓右腦不要把左腦已經想好的語意弄丟，也不要輸出中文、英文、敬語漂移或指令文字。",
             "",
         ]

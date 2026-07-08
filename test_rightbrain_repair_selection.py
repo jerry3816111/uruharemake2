@@ -27,8 +27,13 @@ class RightBrainRepairSelectionTest(unittest.TestCase):
             "chinese_leak",
             "polite_tone_drift",
             "instruction_or_plan_leak",
+            "semantic_reference_drift",
         ):
             self.assertIn(source, self.summary["candidate_source_counts"])
+        self.assertGreaterEqual(
+            self.summary["semantic_reference_drift_candidate_count"],
+            DEFAULT_MAX_ROWS // 3,
+        )
 
     def test_each_row_has_one_valid_gold_and_invalid_negatives(self):
         for row in self.rows:
@@ -43,6 +48,10 @@ class RightBrainRepairSelectionTest(unittest.TestCase):
             ]
             self.assertGreaterEqual(len(negative_candidates), 5)
             for candidate in negative_candidates:
+                if candidate["source"] == "semantic_reference_drift":
+                    self.assertEqual(_target_errors(candidate["text"], payload), [])
+                    self.assertEqual(candidate["detected_errors"], ["semantic_reference_drift"])
+                    continue
                 self.assertTrue(
                     _target_errors(candidate["text"], payload),
                     msg=f"{row['id']} {candidate['candidate_id']} should be invalid",

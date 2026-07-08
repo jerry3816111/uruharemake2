@@ -29,6 +29,18 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
+def _alignment_label(alignment):
+    alignment = alignment or {}
+    return "/".join(
+        f"{float(alignment.get(key) or 0.0):.2f}"
+        for key in (
+            "grounding_term_hit_rate",
+            "semantic_reference_bigram_dice",
+            "user_input_unigram_dice",
+        )
+    )
+
+
 def build_shadow_report(source_report):
     rightbrain = RightBrain(load_model=False)
     case_inputs = {case["id"]: case for case in _case_inputs()}
@@ -84,11 +96,13 @@ def build_shadow_report(source_report):
                 "category": source_case.get("category"),
                 "current_selected_source": selection.get("selected_source"),
                 "current_reply": current_reply,
+                "current_selected_semantic_alignment": shadow.get("current_selected_semantic_alignment"),
                 "shadow_status": shadow.get("status"),
                 "candidate_count": shadow.get("candidate_count"),
                 "learned_selected_source": shadow.get("learned_selected_source"),
                 "learned_selected_text": shadow.get("learned_selected_text"),
                 "learned_selected_probability": shadow.get("learned_selected_probability"),
+                "learned_selected_semantic_alignment": shadow.get("learned_selected_semantic_alignment"),
                 "learned_selected_strict_valid": shadow.get("learned_selected_strict_valid"),
                 "learned_selected_was_gate_rejected": shadow.get("learned_selected_was_gate_rejected"),
                 "agrees_with_current": shadow.get("agrees_with_current"),
@@ -178,15 +192,20 @@ def write_markdown(report, path):
             "",
             "## 差異案例",
             "",
-            "| case | current source | learned source | valid | would change |",
-            "|---|---|---|---|---|",
+            "語意欄依序為 `grounding / leftbrain bigram / user-input unigram`，只作診斷，不是人工偏好分數。",
+            "",
+            "| case | current source | current semantic | learned source | learned semantic | valid | would change |",
+            "|---|---|---:|---|---:|---|---|",
         ]
     )
     for case in report["cases"]:
         if not case.get("would_change_output"):
             continue
         lines.append(
-            f"| {case['id']} | {case['current_selected_source']} | {case['learned_selected_source']} | "
+            f"| {case['id']} | {case['current_selected_source']} | "
+            f"{_alignment_label(case['current_selected_semantic_alignment'])} | "
+            f"{case['learned_selected_source']} | "
+            f"{_alignment_label(case['learned_selected_semantic_alignment'])} | "
             f"{case['learned_selected_strict_valid']} | {case['would_change_output']} |"
         )
     lines.extend(

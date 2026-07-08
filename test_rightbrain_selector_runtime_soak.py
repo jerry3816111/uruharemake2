@@ -15,8 +15,16 @@ class RightBrainSelectorRuntimeSoakTest(unittest.TestCase):
     def test_full_runtime_soak_passes(self):
         self.assertTrue(self.report["gate_passed"], msg=self.report["gate"])
         self.assertEqual(self.report["summary"]["case_count"], 360)
-        self.assertEqual(self.report["summary"]["rejected_candidate_count"], 2873)
+        self.assertGreater(self.report["summary"]["semantic_decoy_candidate_count"], 0)
+        self.assertEqual(
+            self.report["summary"]["rejected_candidate_count"],
+            self.report["summary"]["surface_rejected_candidate_count"]
+            + self.report["summary"]["semantic_decoy_candidate_count"],
+        )
         self.assertEqual(self.report["failures"], [])
+        self.assertTrue(
+            all(failure["split"] != "test" for failure in self.report["diagnostic_failures"])
+        )
 
     def test_contract_disjoint_test_split_is_primary_gate(self):
         split = self.report["split"]
@@ -29,10 +37,13 @@ class RightBrainSelectorRuntimeSoakTest(unittest.TestCase):
         self.assertEqual(test["case_count"], 54)
         self.assertEqual(test["learned_gold_selection_rate"], 1.0)
 
-    def test_runtime_gate_detects_every_corrupted_candidate(self):
+    def test_runtime_gate_detects_every_surface_corrupted_candidate(self):
         summary = self.report["summary"]
-        self.assertEqual(summary["runtime_detected_rejected_candidate_count"], 2873)
-        self.assertEqual(summary["runtime_rejected_candidate_detection_rate"], 1.0)
+        self.assertEqual(
+            summary["runtime_detected_surface_rejected_candidate_count"],
+            summary["surface_rejected_candidate_count"],
+        )
+        self.assertEqual(summary["runtime_surface_rejected_candidate_detection_rate"], 1.0)
         self.assertEqual(self.report["runtime_missed_source_counts"], {})
 
     def test_shadow_never_changes_visible_output_or_selects_rejected(self):

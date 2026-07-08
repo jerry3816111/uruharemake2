@@ -37,7 +37,7 @@ def build_training_report(rows, split_seed=DEFAULT_SPLIT_SEED, train_seed=DEFAUL
     model["split_seed"] = split_seed
     model["dataset_scope"] = "rightbrain_repair_selection_v1"
     model["research_boundary"] = (
-        "This model learns a calibration over general contract-relative surface features. "
+        "This model learns a calibration over general contract-relative surface and semantic-alignment features. "
         "It does not consume candidate source, detected errors, gold flags, item IDs, or benchmark answers."
     )
     validation = evaluate_baselines(splits["validation"], model, random_seed=split_seed)
@@ -70,8 +70,8 @@ def build_training_report(rows, split_seed=DEFAULT_SPLIT_SEED, train_seed=DEFAUL
             if row["epoch"] == 1 or row["epoch"] % 50 == 0 or row["epoch"] == model["best_epoch"]
         ],
         "conclusion_zh": (
-            "這是 F 右腦候選排序器的第一個真正學習版本：它只從訓練合約學權重，"
-            "並在完全不同合約指紋的 validation 上選候選。"
+            "F 右腦候選排序器現在不只檢查語言表面，也會比較候選是否承接使用者輸入與左腦語意；"
+            "權重只從訓練合約學習，並在完全不同合約指紋的 validation 上選候選。"
         ),
     }
     return model, report, splits
@@ -117,7 +117,7 @@ def write_markdown(report, path):
             "## 研究邊界",
             "",
             "- 模型沒有讀候選來源、gold 標籤、錯誤標籤、題號或 benchmark 答案。",
-            "- 特徵仍是合約導向的表面與語意槽位訊號，因此這是 learned calibration/reranker，不是通用語意模型。",
+            "- 特徵是合約導向的表面、語意槽位與文字對齊訊號，因此這是 learned calibration/reranker，不是通用語意模型。",
             "- test split 保留到獨立評測腳本，不能用來挑 epoch。",
             "",
         ]

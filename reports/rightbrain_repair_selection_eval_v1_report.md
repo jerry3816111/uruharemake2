@@ -9,7 +9,7 @@
 | 指標 | 結果 | 意義 |
 |---|---:|---|
 | case_count | 360 | 選擇題數 |
-| candidate_count | 3233 | 候選總數 |
+| candidate_count | 3375 | 候選總數 |
 | invalid_candidate_error_detection_rate | 100.0% | 錯誤候選可被規則檢出的比例 |
 | gold_selection_rate | 100.0% | selector 選到乾淨候選的比例 |
 | valid_selection_rate | 100.0% | selector 選到合約有效候選的比例 |
@@ -33,6 +33,7 @@
 | nonstandard_cjk_surface | 360 |
 | required_marker_missing | 360 |
 | over_max_chars | 356 |
+| semantic_reference_drift | 142 |
 
 ## 抽樣個案
 

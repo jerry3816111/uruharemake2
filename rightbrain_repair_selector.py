@@ -38,6 +38,11 @@ FEATURE_NAMES = (
     "first_person_density",
     "required_group_hit_rate",
     "required_group_missing_rate",
+    "required_marker_member_coverage",
+    "grounding_term_hit_rate",
+    "semantic_reference_unigram_dice",
+    "semantic_reference_bigram_dice",
+    "user_input_unigram_dice",
     "forbidden_marker_density",
     "length_ratio",
     "over_limit_ratio",
@@ -54,6 +59,50 @@ def _count_occurrences(text, markers):
     return sum(text.count(str(marker)) for marker in markers if str(marker))
 
 
+def _semantic_chars(text):
+    return "".join(JAPANESE_CHAR_RE.findall(str(text or "").lower()))
+
+
+def _char_ngrams(text, width):
+    chars = _semantic_chars(text)
+    if not chars:
+        return set()
+    if len(chars) < width:
+        return {chars}
+    return {chars[index : index + width] for index in range(len(chars) - width + 1)}
+
+
+def _dice_similarity(first, second, width):
+    first_grams = _char_ngrams(first, width)
+    second_grams = _char_ngrams(second, width)
+    if not first_grams or not second_grams:
+        return 0.0
+    return _safe_ratio(2 * len(first_grams & second_grams), len(first_grams) + len(second_grams))
+
+
+def _semantic_references(payload):
+    plan = payload.get("leftbrain_plan") or {}
+    values = [
+        plan.get("meaning"),
+        *(plan.get("content_units") or []),
+    ]
+    references = []
+    for value in values:
+        value = str(value or "").strip()
+        if value and value not in references:
+            references.append(value)
+    return references
+
+
+def _grounding_terms(payload):
+    plan = payload.get("leftbrain_plan") or {}
+    return [
+        str(term).strip()
+        for term in plan.get("grounding_terms") or []
+        if str(term).strip()
+    ]
+
+
 def extract_candidate_features(text, payload):
     """Extract contract-relative features without reading labels or candidate metadata."""
     text = str(text or "").strip()
@@ -66,6 +115,20 @@ def extract_candidate_features(text, payload):
         if any(str(marker) and str(marker) in text for marker in group)
     )
     required_total = len(required_groups)
+    required_members = [str(marker) for group in required_groups for marker in group if str(marker)]
+    required_member_hits = sum(marker in text for marker in required_members)
+    grounding_terms = _grounding_terms(payload)
+    grounding_hits = sum(term in text for term in grounding_terms)
+    semantic_references = _semantic_references(payload)
+    semantic_unigram = max(
+        (_dice_similarity(text, reference, 1) for reference in semantic_references),
+        default=0.0,
+    )
+    semantic_bigram = max(
+        (_dice_similarity(text, reference, 2) for reference in semantic_references),
+        default=0.0,
+    )
+    user_input = str(payload.get("user_input") or "")
     forbidden = [str(marker) for marker in payload.get("forbidden_markers") or [] if str(marker)]
     japanese_count = len(JAPANESE_CHAR_RE.findall(text))
     kana_count = len(KANA_RE.findall(text))
@@ -90,6 +153,15 @@ def extract_candidate_features(text, payload):
         "first_person_density": _safe_ratio(text.count("私"), char_count),
         "required_group_hit_rate": _safe_ratio(required_hits, required_total) if required_total else 1.0,
         "required_group_missing_rate": _safe_ratio(required_total - required_hits, required_total),
+        "required_marker_member_coverage": (
+            _safe_ratio(required_member_hits, len(required_members)) if required_members else 1.0
+        ),
+        "grounding_term_hit_rate": (
+            _safe_ratio(grounding_hits, len(grounding_terms)) if grounding_terms else 1.0
+        ),
+        "semantic_reference_unigram_dice": semantic_unigram,
+        "semantic_reference_bigram_dice": semantic_bigram,
+        "user_input_unigram_dice": _dice_similarity(text, user_input, 1),
         "forbidden_marker_density": _safe_ratio(forbidden_count, char_count),
         "length_ratio": _safe_ratio(len(text), max_chars),
         "over_limit_ratio": _safe_ratio(overflow, max_chars),
@@ -341,7 +413,7 @@ def train_selector(
 
     best_model.update(
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "training_seed": seed,
             "training_row_count": len(train_rows),
             "validation_row_count": len(validation_rows),

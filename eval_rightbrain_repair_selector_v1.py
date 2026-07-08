@@ -39,6 +39,27 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
+def _semantic_decoy_metrics(rows, model):
+    rows_with_decoy = [
+        row
+        for row in rows
+        if any(candidate.get("source") == "semantic_reference_drift" for candidate in row["candidates"])
+    ]
+    selected_decoys = 0
+    for row in rows_with_decoy:
+        selected, _ = select_learned_candidate(model, row)
+        selected_decoys += int(selected.get("source") == "semantic_reference_drift")
+    return {
+        "case_count": len(rows_with_decoy),
+        "selected_semantic_decoy_count": selected_decoys,
+        "semantic_decoy_rejection_rate": (
+            round((len(rows_with_decoy) - selected_decoys) / len(rows_with_decoy), 6)
+            if rows_with_decoy
+            else None
+        ),
+    }
+
+
 def _natural_holdout_candidates(natural_report):
     rightbrain = RightBrain(load_model=False)
     case_inputs = {case["id"]: case for case in _case_inputs()}
@@ -166,6 +187,7 @@ def build_evaluation_report(rows, model, natural_report=None):
     strategies["deterministic_contract_oracle"] = evaluate_strategy(test_rows, select_oracle_candidate)
     learned_rate = strategies["learned_selector"]["gold_selection_rate"]
     first_rate = strategies["first_candidate"]["gold_selection_rate"]
+    semantic_decoys = _semantic_decoy_metrics(test_rows, model)
     natural_holdout = evaluate_natural_holdout(rows, model, natural_report) if natural_report else None
     gate = {
         "no_contract_fingerprint_overlap": all(
@@ -177,6 +199,10 @@ def build_evaluation_report(rows, model, natural_report=None):
         ),
         "gain_over_first_candidate_at_least_50pp": (
             learned_rate - first_rate >= MIN_GAIN_OVER_FIRST_CANDIDATE
+        ),
+        "test_contains_semantic_drift_decoys": semantic_decoys["case_count"] > 0,
+        "test_semantic_drift_decoy_rejection_rate_is_100pct": (
+            semantic_decoys["semantic_decoy_rejection_rate"] == 1.0
         ),
     }
     if natural_holdout:
@@ -198,13 +224,15 @@ def build_evaluation_report(rows, model, natural_report=None):
         "best_epoch": model.get("best_epoch"),
         "split": split_summary(splits),
         "test_strategies": strategies,
+        "test_semantic_drift_decoys": semantic_decoys,
         "natural_generated_holdout": natural_holdout,
         "gate": gate,
         "gate_passed": all(gate.values()),
         "research_boundary": (
             "The untouched test set contains source contracts never used for training or epoch selection. "
             "The learned selector is compared with weak baselines and the deterministic contract oracle. "
-            "Synthetic corruption coverage does not prove open-world natural-language understanding."
+            "Synthetic semantic decoys are constructed from cross-contract replies with low character overlap; "
+            "their rejection does not prove open-world natural-language understanding."
         ),
         "conclusion_zh": (
             "測試的是 F 右腦能否在未見過的輸出合約中，從多個回答候選挑出保留左腦語意且無污染的版本；"
@@ -240,6 +268,7 @@ def write_markdown(report, path):
         )
     learned = report["test_strategies"]["learned_selector"]
     binary = learned["candidate_metrics"]
+    semantic_decoys = report["test_semantic_drift_decoys"]
     lines.extend(
         [
             "",
@@ -248,6 +277,8 @@ def write_markdown(report, path):
             f"- test contracts: {report['split']['contract_fingerprint_counts']['test']}",
             f"- candidate Brier score: {binary['brier_score']}",
             f"- candidate log loss: {binary['log_loss']}",
+            f"- semantic drift decoys: {semantic_decoys['case_count']}",
+            f"- semantic drift decoy rejection: {_fmt_pct(semantic_decoys['semantic_decoy_rejection_rate'])}",
             f"- gate passed: `{report['gate_passed']}`",
             "",
             "| 門檻 | 結果 |",
@@ -284,6 +315,7 @@ def write_markdown(report, path):
             "",
             "- 這是未見合約的 held-out 評測，不是把同一題換順序再測。",
             "- 這是合約特徵的學習式校準器；規則 oracle 仍保留為安全上限與比較基準。",
+            "- 語意誘餌由跨合約、低文字重疊方式建立；22/22 是受控測試結果，仍需真實模型候選驗證。",
             "- 通過後只代表值得進入 runtime shadow mode，不代表應立即取代正式回答。",
             "",
         ]

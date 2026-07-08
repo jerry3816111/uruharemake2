@@ -38,6 +38,18 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
+def _alignment_label(alignment):
+    alignment = alignment or {}
+    return "/".join(
+        f"{float(alignment.get(key) or 0.0):.2f}"
+        for key in (
+            "grounding_term_hit_rate",
+            "semantic_reference_bigram_dice",
+            "user_input_unigram_dice",
+        )
+    )
+
+
 def _file_sha256(path):
     path = Path(path)
     if not path.exists():
@@ -242,6 +254,7 @@ def build_report(
                 "deterministic_reply": deterministic_reply,
                 "current_reply": final_reply,
                 "current_selected_source": selection.get("selected_source") or "deterministic",
+                "current_selected_semantic_alignment": shadow.get("current_selected_semantic_alignment") or {},
                 "current_surface_contract": current_surface_contract,
                 "current_surface_contract_pass": _quality_pass(current_surface_contract),
                 "model_disabled_reason": trace.get("disabled_reason") or "",
@@ -256,6 +269,7 @@ def build_report(
                 "learned_selected_source": shadow.get("learned_selected_source") or "not_run",
                 "learned_reply": learned_reply,
                 "learned_selected_probability": shadow.get("learned_selected_probability"),
+                "learned_selected_semantic_alignment": shadow.get("learned_selected_semantic_alignment") or {},
                 "learned_selected_strict_valid": bool(shadow.get("learned_selected_strict_valid")) if shadow_active else False,
                 "learned_selected_was_gate_rejected": bool(shadow.get("learned_selected_was_gate_rejected")) if shadow_active else False,
                 "learned_surface_contract": learned_surface_contract,
@@ -378,6 +392,26 @@ def write_markdown(report, path):
             f"{case['current_selected_source']} | {case['learned_selected_source']} | "
             f"{case['learned_selected_strict_valid']} | {case['learned_surface_contract_pass']} | "
             f"{case['shadow_would_change']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Selector 分歧",
+            "",
+            "語意欄依序為 `grounding / leftbrain bigram / user-input unigram`；它是診斷訊號，不是自然度或幽默感分數。",
+            "",
+            "| case | user input | current | current semantic | learned | learned semantic |",
+            "|---|---|---|---:|---|---:|",
+        ]
+    )
+    for case in report["cases"]:
+        if not case.get("shadow_would_change"):
+            continue
+        lines.append(
+            f"| {case['id']} | {case['user_input']} | {case['current_reply']} | "
+            f"{_alignment_label(case['current_selected_semantic_alignment'])} | "
+            f"{case['learned_reply']} | "
+            f"{_alignment_label(case['learned_selected_semantic_alignment'])} |"
         )
     lines.extend(
         [

@@ -35,9 +35,14 @@ def _required_group_hit_count(reply, payload):
     return count
 
 
+def _candidate_errors(candidate, payload):
+    annotated = [str(error) for error in candidate.get("detected_errors") or [] if str(error)]
+    return annotated or _target_errors(str(candidate.get("text") or ""), payload)
+
+
 def _candidate_score(candidate, payload):
     reply = str(candidate.get("text") or "")
-    errors = _target_errors(reply, payload)
+    errors = _candidate_errors(candidate, payload)
     max_chars = int((payload.get("context") or {}).get("max_chars") or 80)
     required_hits = _required_group_hit_count(reply, payload)
     length_penalty = abs(len(reply) - min(max_chars, 42))
@@ -74,7 +79,7 @@ def evaluate_selection_dataset(rows):
     for row in rows:
         payload = row["contract_payload"]
         selected = select_candidate(row)
-        selected_errors = _target_errors(selected["text"], payload)
+        selected_errors = _candidate_errors(selected, payload)
         selected_source_counts[selected["source"]] += 1
         selected_error_counts.update(selected_errors)
         if selected_errors:
@@ -87,7 +92,7 @@ def evaluate_selection_dataset(rows):
             if candidate["candidate_id"] == row["gold_candidate_id"]:
                 continue
             invalid_candidate_count += 1
-            errors = _target_errors(candidate["text"], payload)
+            errors = _candidate_errors(candidate, payload)
             if errors:
                 invalid_candidates_with_detected_errors += 1
                 all_invalid_error_counts.update(errors)
