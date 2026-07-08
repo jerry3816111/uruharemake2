@@ -477,6 +477,35 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         self.assertIn("polite_tone_drift", reasons)
 
+    def test_gate_rejects_polite_questions_missed_by_previous_pattern(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        polite_replies = (
+            "今日は体調に合わせて軽いものから始めてみてはどうですか？",
+            "その断片について詳しく教えてもらえますか？",
+            "今日は早めに休んだ方がいいでしょう。",
+            "もう少し待っていただけますか？",
+        )
+
+        for reply in polite_replies:
+            with self.subTest(reply=reply):
+                reasons = rightbrain._model_candidate_rejection_reasons(reply, logic, 80)
+                self.assertIn("polite_tone_drift", reasons)
+
+    def test_gate_keeps_casual_question_and_suggestion_forms(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        casual_replies = (
+            "今日は軽いものから始めてみたら？",
+            "その断片、もう少し詳しく教えてくれる？",
+            "分からんけど、少し待ってみる？",
+        )
+
+        for reply in casual_replies:
+            with self.subTest(reply=reply):
+                reasons = rightbrain._model_candidate_rejection_reasons(reply, logic, 80)
+                self.assertNotIn("polite_tone_drift", reasons)
+
     def test_mild_withdrawal_rejects_unnecessary_isolation_language(self):
         rightbrain = RightBrain(load_model=False)
         logic = reply_anxiety_logic()

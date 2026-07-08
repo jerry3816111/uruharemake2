@@ -4,6 +4,7 @@ from pathlib import Path
 
 from eval_rightbrain_sampling_schedule_v1 import (
     SCHEDULES,
+    recompute_report,
     select_schedule,
     summarize_schedule,
     validate_schedules,
@@ -106,6 +107,24 @@ class RightBrainSamplingScheduleTest(unittest.TestCase):
         self.assertEqual(failure_count, audit["failure_count"])
         self.assertEqual(audit["pass_rate"], round(pass_count / len(audited_cases), 6))
         self.assertFalse(audit["runtime_change_approved"])
+
+    def test_current_gate_rescore_only_hardens_saved_candidates(self):
+        report = json.loads(
+            Path(RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_JSON_PATH).read_text(encoding="utf-8")
+        )
+        rescored = recompute_report(report)["gate_rescore"]
+        conservative = rescored["schedule_results"]["conservative"]
+        background = next(
+            case for case in conservative["cases"] if case["id"] == "background_family_pressure"
+        )
+        changed = [candidate for candidate in background["candidates"] if candidate["changed"]]
+
+        self.assertTrue(rescored["monotonic_hardening"])
+        self.assertEqual(rescored["total_newly_accepted_candidate_count"], 0)
+        self.assertTrue(changed)
+        self.assertTrue(
+            any("polite_tone_drift" in candidate["new_rejection_reasons"] for candidate in changed)
+        )
 
 
 if __name__ == "__main__":

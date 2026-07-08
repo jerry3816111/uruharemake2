@@ -5,6 +5,7 @@ import unittest
 from project_paths import (
     BASE_DIR,
     REPLY_DIVERSITY_REPORT_PATH,
+    RIGHTBRAIN_CASUAL_REGISTER_GATE_V2_REPORT_JSON_PATH,
     RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH,
     RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_JSON_PATH,
     RUNTIME_DYNAMICS_REPORT_PATH,
@@ -35,6 +36,7 @@ class ReportOutputPathTest(unittest.TestCase):
     def test_evaluators_write_to_reports_directory(self):
         expected = {
             "reply_diversity_eval": REPLY_DIVERSITY_REPORT_PATH,
+            "eval_rightbrain_casual_register_gate_v2": RIGHTBRAIN_CASUAL_REGISTER_GATE_V2_REPORT_JSON_PATH,
             "runtime_dynamics_eval": RUNTIME_DYNAMICS_REPORT_PATH,
             "stress_eval_10000": STRESS_EVAL_REPORT_PATH,
             "eval_v2_human_answer": V2_HUMAN_ANSWER_REPORT_PATH,

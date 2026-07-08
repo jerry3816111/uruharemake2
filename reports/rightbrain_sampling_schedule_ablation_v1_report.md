@@ -28,6 +28,16 @@
 | balanced | 3.3% | 0 | 1 | 0.0% | False |
 | conservative | 26.7% | 2 | 3 | 0.0% | True |
 
+## Current Gate 重算
+
+| schedule | newly rejected | newly accepted |
+|---|---:|---:|
+| runtime_baseline | 0 | 0 |
+| balanced | 0 | 0 |
+| conservative | 1 | 0 |
+
+monotonic hardening: `True`
+
 ## 邊界
 
 - 這是生成策略消融，不改左腦答案、不加入題庫答案、不新增固定救援句。

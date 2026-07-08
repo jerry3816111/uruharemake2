@@ -268,6 +268,14 @@ RIGHTBRAIN_SAMPLING_SCHEDULE_NATURALNESS_AUDIT_V1_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_sampling_schedule_naturalness_audit_v1.md",
 )
+RIGHTBRAIN_CASUAL_REGISTER_GATE_V2_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_casual_register_gate_v2_report.json",
+)
+RIGHTBRAIN_CASUAL_REGISTER_GATE_V2_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_casual_register_gate_v2_report.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")
