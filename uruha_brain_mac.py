@@ -11400,10 +11400,87 @@ You are Ichinose Uruha.
             brief["reason"] = str(logic_data.get("memory_speakability_reason"))[:80]
         return brief
 
-    def _build_model_surface_payload(self, logic_data, current_psyche, max_chars, memory_data=None):
+    @staticmethod
+    def _surface_semantic_bigrams(*values):
+        grams = set()
+        for value in values:
+            text = "".join(re.findall(r"[ぁ-んァ-ヶー一-龠]", str(value or "")))
+            for index in range(max(0, len(text) - 1)):
+                gram = text[index : index + 2]
+                # Hiragana-only pairs mostly encode grammar and are too weak to prove semantic agreement.
+                if re.search(r"[ァ-ヶー一-龠]", gram):
+                    grams.add(gram)
+        return grams
+
+    def _project_model_surface_plan(self, logic_data, memory_brief):
         speech_plan = logic_data.get("human_speech_plan") or {}
+        content_units = [
+            str(item or "").strip()
+            for item in speech_plan.get("content_units") or []
+            if str(item or "").strip()
+        ]
+        grounding_terms = [
+            str(item or "").strip()
+            for item in speech_plan.get("grounding_terms") or []
+            if str(item or "").strip()
+        ]
+        policy = str(memory_brief.get("policy") or "no_memory")
+
+        if policy == "explicit_allowed":
+            kept_units = content_units
+            kept_terms = grounding_terms
+        else:
+            required_terms = [
+                term
+                for group in self._model_required_semantic_groups(logic_data)
+                for term in group
+            ]
+            evidence_values = [
+                logic_data.get("jp_summary"),
+                logic_data.get("core_message_jp"),
+                *required_terms,
+            ]
+            evidence_text = " ".join(str(item or "") for item in evidence_values)
+            evidence_grams = self._surface_semantic_bigrams(*evidence_values)
+
+            def supported(value):
+                normalized = str(value or "").strip()
+                if not normalized:
+                    return False
+                if len(normalized) >= 2 and normalized in evidence_text:
+                    return True
+                return bool(self._surface_semantic_bigrams(normalized) & evidence_grams)
+
+            kept_units = [unit for unit in content_units if supported(unit)]
+            kept_terms = [term for term in grounding_terms if supported(term)]
+
+        dropped_units = [unit for unit in content_units if unit not in kept_units]
+        dropped_terms = [term for term in grounding_terms if term not in kept_terms]
+        conflict = bool(dropped_units or dropped_terms)
+        dialogue_act = str(speech_plan.get("dialogue_act") or logic_data.get("dialogue_act") or "")
+        projected = {
+            "scene": "" if conflict else str(logic_data.get("scene") or ""),
+            "intent": "" if conflict else str(logic_data.get("intent") or ""),
+            "surface_act": "" if conflict else str(logic_data.get("surface_act") or ""),
+            "dialogue_act": "" if conflict else dialogue_act,
+            "meaning": str(logic_data.get("core_message_jp") or ""),
+            "content_units": kept_units,
+            "style_operators": list(speech_plan.get("style_operators") or []),
+            "grounding_terms": kept_terms,
+        }
+        trace = {
+            "policy": policy,
+            "mode": "semantic_contract_only" if conflict else "full_plan",
+            "dropped_content_units": dropped_units,
+            "dropped_grounding_terms": dropped_terms,
+        }
+        return projected, trace
+
+    def _build_model_surface_payload(self, logic_data, current_psyche, max_chars, memory_data=None):
         psyche = current_psyche if isinstance(current_psyche, dict) else {}
         memory_brief = self._audited_memory_expression_brief(logic_data, memory_data)
+        surface_plan, plan_projection = self._project_model_surface_plan(logic_data, memory_brief)
+        logic_data["model_surface_plan_projection"] = plan_projection
         payload = {
             "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
             "task": "write_one_user_facing_japanese_reply",
@@ -11413,16 +11490,7 @@ You are Ichinose Uruha.
             ),
             # Preserve the training schema without exposing the original multilingual user text.
             "user_input": str(logic_data.get("jp_summary") or "ユーザーの発話を左脳が要約済み。"),
-            "leftbrain_plan": {
-                "scene": str(logic_data.get("scene") or ""),
-                "intent": str(logic_data.get("intent") or ""),
-                "surface_act": str(logic_data.get("surface_act") or ""),
-                "dialogue_act": str(speech_plan.get("dialogue_act") or logic_data.get("dialogue_act") or ""),
-                "meaning": str(logic_data.get("core_message_jp") or ""),
-                "content_units": list(speech_plan.get("content_units") or []),
-                "style_operators": list(speech_plan.get("style_operators") or []),
-                "grounding_terms": list(speech_plan.get("grounding_terms") or []),
-            },
+            "leftbrain_plan": surface_plan,
             "context": {
                 "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
                 "audited_memory_brief": memory_brief,
@@ -12102,6 +12170,7 @@ You are Ichinose Uruha.
                 "model_surface_candidate_trace",
                 "model_surface_selection",
                 "model_surface_selector_shadow",
+                "model_surface_plan_projection",
             ):
                 if key in logic_data:
                     original_logic_data[key] = deepcopy(logic_data.get(key))

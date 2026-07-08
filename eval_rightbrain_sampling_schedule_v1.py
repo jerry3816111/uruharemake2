@@ -218,8 +218,11 @@ def run_schedule(runtime_module, torch_module, model_right, deterministic_right,
     started = time.time()
     rows = []
     for case in cases:
-        deterministic_right.history = []
-        model_right.history = []
+        for rightbrain in (deterministic_right, model_right):
+            if hasattr(rightbrain, "reset_session_state"):
+                rightbrain.reset_session_state()
+            else:
+                rightbrain.history = []
         deterministic_logic = deepcopy(case["logic"])
         model_logic = deepcopy(case["logic"])
         deterministic_reply = deterministic_right.speak(
@@ -262,6 +265,9 @@ def run_schedule(runtime_module, torch_module, model_right, deterministic_right,
             "final_reply": final_reply,
             "selected_source": selection.get("selected_source") or "deterministic",
             "model_disabled_reason": trace.get("disabled_reason") or "",
+            "model_surface_plan_projection": deepcopy(
+                model_logic.get("model_surface_plan_projection") or {}
+            ),
             "generated_candidate_count": int(trace.get("initial_generated_count") or 0),
             "accepted_candidate_count": len(accepted),
             "accepted_candidates": accepted,

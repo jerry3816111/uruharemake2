@@ -1,0 +1,841 @@
+{
+  "generated_at": "2026-07-08T15:40:08+09:00",
+  "scope": "rightbrain_contract_projection_v1",
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "adapter_ref": "uruha_v10_all_linear_lora",
+  "seed": 20260707,
+  "schedule": {
+    "temperatures": [
+      0.5,
+      0.62,
+      0.74
+    ],
+    "top_p": [
+      0.8,
+      0.85,
+      0.9
+    ],
+    "top_k": [
+      24,
+      32,
+      48
+    ],
+    "repetition_penalties": [
+      1.1,
+      1.14,
+      1.18
+    ]
+  },
+  "candidate_count_per_case": 3,
+  "dynamic_context_anchor": "fixed_empty_for_paired_ablation",
+  "session_state_reset_per_case": true,
+  "target_case_ids": [
+    "background_family_pressure",
+    "private_do_not_mention",
+    "no_memory_plain_question"
+  ],
+  "contract_snapshots": [
+    {
+      "id": "background_family_pressure",
+      "policy": "background_only",
+      "projected_leftbrain_plan": {
+        "scene": "",
+        "intent": "",
+        "surface_act": "",
+        "dialogue_act": "",
+        "meaning": "責めずに、今日は負荷を下げる方向へ寄せる",
+        "content_units": [
+          "無理のない選択に寄せる"
+        ],
+        "style_operators": [
+          "casual",
+          "short"
+        ],
+        "grounding_terms": []
+      },
+      "projection": {
+        "policy": "background_only",
+        "mode": "semantic_contract_only",
+        "dropped_content_units": [
+          "最近の体調を踏まえる"
+        ],
+        "dropped_grounding_terms": [
+          "体調"
+        ]
+      }
+    },
+    {
+      "id": "private_do_not_mention",
+      "policy": "do_not_mention",
+      "projected_leftbrain_plan": {
+        "scene": "",
+        "intent": "",
+        "surface_act": "",
+        "dialogue_act": "",
+        "meaning": "今の話題だけを短く返す",
+        "content_units": [],
+        "style_operators": [
+          "casual",
+          "short"
+        ],
+        "grounding_terms": []
+      },
+      "projection": {
+        "policy": "do_not_mention",
+        "mode": "semantic_contract_only",
+        "dropped_content_units": [
+          "最近の体調を踏まえる",
+          "無理のない選択に寄せる"
+        ],
+        "dropped_grounding_terms": [
+          "体調"
+        ]
+      }
+    },
+    {
+      "id": "no_memory_plain_question",
+      "policy": "no_memory",
+      "projected_leftbrain_plan": {
+        "scene": "",
+        "intent": "",
+        "surface_act": "",
+        "dialogue_act": "",
+        "meaning": "分かる範囲で短く答え、分からない部分は決めつけない",
+        "content_units": [],
+        "style_operators": [
+          "casual",
+          "short"
+        ],
+        "grounding_terms": []
+      },
+      "projection": {
+        "policy": "no_memory",
+        "mode": "semantic_contract_only",
+        "dropped_content_units": [
+          "最近の体調を踏まえる",
+          "無理のない選択に寄せる"
+        ],
+        "dropped_grounding_terms": [
+          "体調"
+        ]
+      }
+    }
+  ],
+  "load_model": true,
+  "conditions": {
+    "legacy_unprojected": {
+      "name": "legacy_unprojected",
+      "schedule": {
+        "temperatures": [
+          0.5,
+          0.62,
+          0.74
+        ],
+        "top_p": [
+          0.8,
+          0.85,
+          0.9
+        ],
+        "top_k": [
+          24,
+          32,
+          48
+        ],
+        "repetition_penalties": [
+          1.1,
+          1.14,
+          1.18
+        ]
+      },
+      "duration_seconds": 57.521,
+      "summary": {
+        "case_count": 3,
+        "generated_candidate_count": 9,
+        "accepted_candidate_count": 1,
+        "raw_candidate_acceptance_rate": 0.111111,
+        "candidate_case_coverage_count": 1,
+        "candidate_case_coverage_rate": 0.333333,
+        "model_selected_case_count": 0,
+        "model_selected_case_rate": 0.0,
+        "final_quality_pass_rate": 1.0,
+        "final_language_clean_rate": 1.0,
+        "accepted_unique_reply_count": 1,
+        "accepted_duplicate_count": 0,
+        "accepted_duplicate_rate": 0.0,
+        "language_rejected_candidate_count": 7,
+        "semantic_rejected_candidate_count": 4,
+        "rejection_reason_counts": {
+          "nonstandard_cjk_surface": 5,
+          "polite_tone_drift": 1,
+          "semantic_slots_missing:0/1": 4,
+          "unexpected_ascii_leak": 2
+        }
+      },
+      "cases": [
+        {
+          "id": "background_family_pressure",
+          "category": "audited_memory",
+          "user_input": "今日は何もしたくない。どうすればいい？",
+          "deterministic_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "background_only",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 0,
+          "accepted_candidates": [],
+          "rejected_candidates": [
+            {
+              "raw_candidate": "今日の体调を考えたら、軽いものがいいかもね。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface"
+              ]
+            },
+            {
+              "raw_candidate": "今日の体调を考えたら、少し軽いことをしようね。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface"
+              ]
+            },
+            {
+              "raw_candidate": "今日の体调を考えたら、少し楽な选択肢でもいいじゃないか。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface",
+                "semantic_slots_missing:0/1"
+              ]
+            }
+          ],
+          "final_quality": {
+            "reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+            "normalized_reply": "今やるなら小さく済ませろ後で戻せる形にしとけ",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": true,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        },
+        {
+          "id": "private_do_not_mention",
+          "category": "audited_memory",
+          "user_input": "今日は何話す？",
+          "deterministic_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "selected_source": "deterministic",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "do_not_mention",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 1,
+          "accepted_candidates": [
+            {
+              "raw_candidate": "今のお腹の感じてること、無理しないようにね。",
+              "candidate": "今のお腹の感じてること、無理しないようにね。",
+              "normalized_reply": "今のお腹の感じてること無理しないようにね",
+              "quality_pass": true
+            }
+          ],
+          "rejected_candidates": [
+            {
+              "raw_candidate": "最近の體調に気をつけて、無理しないようにね。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface",
+                "semantic_slots_missing:0/1"
+              ]
+            },
+            {
+              "raw_candidate": "今のお腹の感じparalleled with 体調に気をつけて、無理しないようにね。",
+              "rejection_reasons": [
+                "unexpected_ascii_leak"
+              ]
+            }
+          ],
+          "final_quality": {
+            "reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+            "normalized_reply": "今は一個だけ決めればいい全部まとめて抱えるなって",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": true,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        },
+        {
+          "id": "no_memory_plain_question",
+          "category": "audited_memory",
+          "user_input": "今日の予定、軽くどう考えればいい？",
+          "deterministic_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "no_memory",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 0,
+          "accepted_candidates": [],
+          "rejected_candidates": [
+            {
+              "raw_candidate": "体調に気をつけて、無理しないようにね。",
+              "rejection_reasons": [
+                "semantic_slots_missing:0/1"
+              ]
+            },
+            {
+              "raw_candidate": "体調cá分かれば適当なことをするよ。後で詳しく聞こうね。",
+              "rejection_reasons": [
+                "unexpected_ascii_leak"
+              ]
+            },
+            {
+              "raw_candidate": "最近の體調を考えたら、無理しない選抎がいいでしょう。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface",
+                "polite_tone_drift",
+                "semantic_slots_missing:0/1"
+              ]
+            }
+          ],
+          "final_quality": {
+            "reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+            "normalized_reply": "今やるなら小さく済ませろ後で戻せる形にしとけ",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": null,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        }
+      ]
+    },
+    "projected_contract": {
+      "name": "projected_contract",
+      "schedule": {
+        "temperatures": [
+          0.5,
+          0.62,
+          0.74
+        ],
+        "top_p": [
+          0.8,
+          0.85,
+          0.9
+        ],
+        "top_k": [
+          24,
+          32,
+          48
+        ],
+        "repetition_penalties": [
+          1.1,
+          1.14,
+          1.18
+        ]
+      },
+      "duration_seconds": 44.238,
+      "summary": {
+        "case_count": 3,
+        "generated_candidate_count": 9,
+        "accepted_candidate_count": 5,
+        "raw_candidate_acceptance_rate": 0.555556,
+        "candidate_case_coverage_count": 2,
+        "candidate_case_coverage_rate": 0.666667,
+        "model_selected_case_count": 1,
+        "model_selected_case_rate": 0.333333,
+        "final_quality_pass_rate": 1.0,
+        "final_language_clean_rate": 1.0,
+        "accepted_unique_reply_count": 5,
+        "accepted_duplicate_count": 0,
+        "accepted_duplicate_rate": 0.0,
+        "language_rejected_candidate_count": 3,
+        "semantic_rejected_candidate_count": 3,
+        "rejection_reason_counts": {
+          "nonstandard_cjk_surface": 1,
+          "semantic_slots_missing:0/1": 3,
+          "unexpected_ascii_leak": 3,
+          "unicode_replacement_character": 1
+        }
+      },
+      "cases": [
+        {
+          "id": "background_family_pressure",
+          "category": "audited_memory",
+          "user_input": "今日は何もしたくない。どうすればいい？",
+          "deterministic_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "final_reply": "今日は負担を軽くして休もうね。",
+          "selected_source": "model",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "background_only",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 3,
+          "accepted_candidates": [
+            {
+              "raw_candidate": "今日は無理しないで、軽い活動でもいいじゃないか。",
+              "candidate": "今日は無理しないで、軽い活動でもいいじゃないか。",
+              "normalized_reply": "今日は無理しないで軽い活動でもいいじゃないか",
+              "quality_pass": true
+            },
+            {
+              "raw_candidate": "今日の負担は小さくして、ゆっくりしようね。",
+              "candidate": "今日の負担は小さくして、ゆっくりしようね。",
+              "normalized_reply": "今日の負担は小さくしてゆっくりしようね",
+              "quality_pass": true
+            },
+            {
+              "raw_candidate": "今日は負担を軽くして休もうね。",
+              "candidate": "今日は負担を軽くして休もうね。",
+              "normalized_reply": "今日は負担を軽くして休もうね",
+              "quality_pass": true
+            }
+          ],
+          "rejected_candidates": [],
+          "final_quality": {
+            "reply": "今日は負担を軽くして休もうね。",
+            "normalized_reply": "今日は負担を軽くして休もうね",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": true,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        },
+        {
+          "id": "private_do_not_mention",
+          "category": "audited_memory",
+          "user_input": "今日は何話す？",
+          "deterministic_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "selected_source": "deterministic",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "do_not_mention",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる",
+              "無理のない選択に寄せる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 2,
+          "accepted_candidates": [
+            {
+              "raw_candidate": "今のお話、ちょっと短いのよ。",
+              "candidate": "今のお話、ちょっと短いのよ。",
+              "normalized_reply": "今のお話ちょっと短いのよ",
+              "quality_pass": true
+            },
+            {
+              "raw_candidate": "今のお話、ちょっと短いんだよね。",
+              "candidate": "今のお話、ちょっと短いんだよね。",
+              "normalized_reply": "今のお話ちょっと短いんだよね",
+              "quality_pass": true
+            }
+          ],
+          "rejected_candidates": [
+            {
+              "raw_candidate": "今のお話、 kort 一个 短 回复 就 好 。",
+              "rejection_reasons": [
+                "nonstandard_cjk_surface",
+                "unexpected_ascii_leak"
+              ]
+            }
+          ],
+          "final_quality": {
+            "reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+            "normalized_reply": "今は一個だけ決めればいい全部まとめて抱えるなって",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": true,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        },
+        {
+          "id": "no_memory_plain_question",
+          "category": "audited_memory",
+          "user_input": "今日の予定、軽くどう考えればいい？",
+          "deterministic_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "model_disabled_reason": "",
+          "model_surface_plan_projection": {
+            "policy": "no_memory",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる",
+              "無理のない選択に寄せる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "generated_candidate_count": 3,
+          "accepted_candidate_count": 0,
+          "accepted_candidates": [],
+          "rejected_candidates": [
+            {
+              "raw_candidate": "今日は何も予定ないけど、何やってるの？",
+              "rejection_reasons": [
+                "semantic_slots_missing:0/1"
+              ]
+            },
+            {
+              "raw_candidate": "分かんないやけど、今日は何doing？",
+              "rejection_reasons": [
+                "unexpected_ascii_leak",
+                "semantic_slots_missing:0/1"
+              ]
+            },
+            {
+              "raw_candidate": "分かりやすい範�iglia_ ForbiddenMarker",
+              "rejection_reasons": [
+                "unicode_replacement_character",
+                "unexpected_ascii_leak",
+                "semantic_slots_missing:0/1"
+              ]
+            }
+          ],
+          "final_quality": {
+            "reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+            "normalized_reply": "今やるなら小さく済ませろ後で戻せる形にしとけ",
+            "explicit_anchor_required": false,
+            "explicit_anchor_success": null,
+            "required_marker_groups": [],
+            "required_marker_hits": [],
+            "required_marker_success": null,
+            "background_or_private_safe": null,
+            "forbidden_hits": [],
+            "forbidden_surface_leak": false,
+            "generic_template_hits": [],
+            "generic_template_hit": false,
+            "language_clean": true,
+            "unrelated_settings_template": false
+          },
+          "final_quality_pass": true
+        }
+      ]
+    }
+  },
+  "contract_metrics": {
+    "legacy_unprojected": {
+      "case_count": 3,
+      "contract_pass_count": 3,
+      "contract_pass_rate": 1.0,
+      "memory_intrusion_case_count": 0,
+      "cases": [
+        {
+          "id": "background_family_pressure",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "projection": {
+            "policy": "background_only",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "excluded_memory_terms": [
+            "家庭の話",
+            "家庭壓力",
+            "家人"
+          ],
+          "intrusion_hits": [],
+          "contract_pass": true
+        },
+        {
+          "id": "private_do_not_mention",
+          "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "selected_source": "deterministic",
+          "projection": {
+            "policy": "do_not_mention",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "excluded_memory_terms": [
+            "個人的な事情",
+            "私人資訊",
+            "秘密"
+          ],
+          "intrusion_hits": [],
+          "contract_pass": true
+        },
+        {
+          "id": "no_memory_plain_question",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "projection": {
+            "policy": "no_memory",
+            "mode": "legacy_unprojected",
+            "dropped_content_units": [],
+            "dropped_grounding_terms": []
+          },
+          "excluded_memory_terms": [],
+          "intrusion_hits": [],
+          "contract_pass": true
+        }
+      ]
+    },
+    "projected_contract": {
+      "case_count": 3,
+      "contract_pass_count": 3,
+      "contract_pass_rate": 1.0,
+      "memory_intrusion_case_count": 0,
+      "cases": [
+        {
+          "id": "background_family_pressure",
+          "final_reply": "今日は負担を軽くして休もうね。",
+          "selected_source": "model",
+          "projection": {
+            "policy": "background_only",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "excluded_memory_terms": [
+            "家庭の話",
+            "家庭壓力",
+            "家人",
+            "体調"
+          ],
+          "intrusion_hits": [],
+          "contract_pass": true
+        },
+        {
+          "id": "private_do_not_mention",
+          "final_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+          "selected_source": "deterministic",
+          "projection": {
+            "policy": "do_not_mention",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる",
+              "無理のない選択に寄せる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "excluded_memory_terms": [
+            "個人的な事情",
+            "私人資訊",
+            "秘密",
+            "体調"
+          ],
+          "intrusion_hits": [],
+          "contract_pass": true
+        },
+        {
+          "id": "no_memory_plain_question",
+          "final_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+          "selected_source": "deterministic",
+          "projection": {
+            "policy": "no_memory",
+            "mode": "semantic_contract_only",
+            "dropped_content_units": [
+              "最近の体調を踏まえる",
+              "無理のない選択に寄せる"
+            ],
+            "dropped_grounding_terms": [
+              "体調"
+            ]
+          },
+          "excluded_memory_terms": [
+            "体調"
+          ],
+          "intrusion_hits": [],
+          "contract_pass": true
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "contract_pass_count_delta": 0,
+    "memory_intrusion_case_count_delta": 0,
+    "accepted_candidate_count_delta": 4
+  },
+  "gate": {
+    "all_three_target_contracts_are_projected": true,
+    "projected_contract_does_not_reduce_contract_pass_count": true,
+    "projected_contract_has_no_memory_intrusion": true,
+    "naturalness_audit_matches_every_accepted_candidate": true,
+    "projected_candidate_audit_pass_count_improves": true,
+    "projected_final_pairwise_has_no_losses": true
+  },
+  "gate_passed": true,
+  "research_boundary": "This is a paired development-set ablation on three known conflicting contracts. The same model, adapter, cases, seed, candidate count, and conservative sampling schedule are held constant. It supports the contract-projection mechanism, not a broad claim of Japanese naturalness or benchmark improvement.",
+  "naturalness_audit": {
+    "audit_type": "transparent_non_blind_agent_audit",
+    "candidate_metrics": {
+      "legacy_unprojected": {
+        "audited_candidate_count": 1,
+        "pass_count": 0,
+        "fail_count": 1,
+        "pass_rate": 0.0
+      },
+      "projected_contract": {
+        "audited_candidate_count": 5,
+        "pass_count": 3,
+        "fail_count": 2,
+        "pass_rate": 0.6
+      }
+    },
+    "final_pairwise": {
+      "projected_wins": 1,
+      "legacy_wins": 0,
+      "ties": 2
+    },
+    "candidate_annotations": [
+      {
+        "condition": "legacy_unprojected",
+        "id": "private_do_not_mention",
+        "reply": "今のお腹の感じてること、無理しないようにね。",
+        "verdict": "fail",
+        "reasons": [
+          "unnatural_japanese",
+          "stale_health_plan_intrusion",
+          "topic_relevance_failure"
+        ]
+      },
+      {
+        "condition": "projected_contract",
+        "id": "background_family_pressure",
+        "reply": "今日は無理しないで、軽い活動でもいいじゃないか。",
+        "verdict": "pass",
+        "reasons": []
+      },
+      {
+        "condition": "projected_contract",
+        "id": "background_family_pressure",
+        "reply": "今日の負担は小さくして、ゆっくりしようね。",
+        "verdict": "pass",
+        "reasons": []
+      },
+      {
+        "condition": "projected_contract",
+        "id": "background_family_pressure",
+        "reply": "今日は負担を軽くして休もうね。",
+        "verdict": "pass",
+        "reasons": []
+      },
+      {
+        "condition": "projected_contract",
+        "id": "private_do_not_mention",
+        "reply": "今のお話、ちょっと短いのよ。",
+        "verdict": "fail",
+        "reasons": [
+          "semantic_nonanswer",
+          "unnatural_japanese"
+        ]
+      },
+      {
+        "condition": "projected_contract",
+        "id": "private_do_not_mention",
+        "reply": "今のお話、ちょっと短いんだよね。",
+        "verdict": "fail",
+        "reasons": [
+          "semantic_nonanswer",
+          "topic_relevance_failure"
+        ]
+      }
+    ],
+    "final_pair_annotations": [
+      {
+        "id": "background_family_pressure",
+        "legacy_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+        "projected_reply": "今日は負担を軽くして休もうね。",
+        "preference": "projected_contract",
+        "reasons": [
+          "more_directly_matches_rest_and_load_reduction",
+          "less_harsh_without_becoming_formal"
+        ]
+      },
+      {
+        "id": "private_do_not_mention",
+        "legacy_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+        "projected_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+        "preference": "tie",
+        "reasons": [
+          "identical_final_reply"
+        ]
+      },
+      {
+        "id": "no_memory_plain_question",
+        "legacy_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+        "projected_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+        "preference": "tie",
+        "reasons": [
+          "identical_final_reply"
+        ]
+      }
+    ],
+    "boundary": "This audit is non-blind and covers a three-case development ablation. It is not a human blind test or a general Japanese naturalness benchmark."
+  }
+}
