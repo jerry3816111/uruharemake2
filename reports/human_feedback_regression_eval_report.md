@@ -1,6 +1,6 @@
 # Human Feedback Regression Eval Report
 
-- generated_at: 2026-06-21T13:59:23
+- generated_at: 2026-07-08T21:02:08
 - dataset_path: `/Users/jerrychang/Desktop/uruharemake2_github_clean_20260618/datasets/human_feedback_regression_dataset.json`
 
 ## Summary
@@ -10,14 +10,14 @@
 - focus_ok_rate: 1.0
 - obligation_ok_rate: 1.0
 - human_contract_required_group_hit_rate: 1.0
-- planner_contract_observed_group_hit_rate: 0.8
+- planner_contract_observed_group_hit_rate: 0.7583
 - planner_contract_current_group_hit_rate: 1.0
-- planner_contract_group_hit_delta: 0.2
+- planner_contract_group_hit_delta: 0.2417
 - memory_ok_rate_when_expected: 0.0
 - density_ok_rate: 1.0
 - generic_reply_rate: 0.0
 - same_as_observed_bad_reply_rate: 0.0
-- avg_expected_proxy_persist_rate: 0.1
+- avg_expected_proxy_persist_rate: 0.0
 - overall_auto_pass_rate: 1.0
 - evidence boundary: these are deterministic contract checks; post-patch human naturalness has not been re-rated.
 
@@ -37,13 +37,13 @@
 
 ## Worst Cases
 
-- id=1 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想把手機設成勿擾，不想收到任何訊息。 reply=通知は切っていい。でも人との連絡まで切るな、一人で抱えるな。
-- id=3 failure=['RIGHTBRAIN_SURFACE_ERROR', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想退掉社團群，先不要存在。 reply=グループを抜けるのは一回止まれ。消えるみたいに一人で抱えるな。
-- id=5 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想坐到樓梯平台那邊，一個人待著。 reply=階段の踊り場で少し離れるのはいい。一人で抱えず近くの人には言っとけ。
-- id=6 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想把聊天全部清掉，不想留下痕跡。 reply=チャット履歴を消す前に止まれ。一人で決めず誰かに連絡しろ。
-- id=7 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=朋友一直沒回，我是不是不應該再傳。 reply=返事ないと気になるよな。だからって自分のせいだと決めつけるな。
+- id=1 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想把手機設成勿擾，不想收到任何訊息。 reply=通知を止めて静かにするのはあり。でも連絡まで切るな、誰かへの連絡手段は一つ残しとけ。
+- id=2 failure=['RIGHTBRAIN_SURFACE_ERROR', 'MISREAD_INTENT'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想躲在廁所裡，等到大家都睡著。 reply=トイレで一人になる前に一回止まれ。近くの人へ今の場所を連絡しろ。
+- id=3 failure=['RIGHTBRAIN_SURFACE_ERROR', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想退掉社團群，先不要存在。 reply=グループから消える前に一回止まれ。まず誰か一人に連絡しろ。
+- id=4 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我不想讓朋友看到我還在線。 reply=オンライン表示は隠して休んでいい。でも一人で抱えるな、連絡先は残しとけ。
+- id=5 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想坐到樓梯平台那邊，一個人待著。 reply=階段の踊り場で少し離れるのはあり。ただ、一人で抱えず近くの人には場所を連絡しとけ。
+- id=6 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=我想把聊天全部清掉，不想留下痕跡。 reply=履歴を全部消す前に一回止まれ。まず誰か一人に連絡しろ。
+- id=7 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=朋友一直沒回，我是不是不應該再傳。 reply=返事がないと不安になるよな。理由は分からないし、自分のせいと決めつけず少し待て。
+- id=8 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=群組冷掉之後，我覺得自己很吵。 reply=グループが静かだと不安だよな。理由は分からない。自分が悪いと決めつけず、少し置け。
 - id=9 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=限定活動ED我想不起來。 reply=はいはい、限定イベントEDだけじゃ分からん。作品名か曲名どれ？
 - id=10 failure=['RIGHTBRAIN_SURFACE_ERROR'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=[] prompt=你剛剛道歉太冷了，重新說。 reply=ん、雑に返したのは悪かった。言い直す、ごめん。
-- id=2 failure=['RIGHTBRAIN_SURFACE_ERROR', 'MISREAD_INTENT'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=['focus_anchor_miss'] prompt=我想躲在廁所裡，等到大家都睡著。 reply=トイレで一人になる前に止まれ。近くの人に連絡しろ。
-- id=4 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=['focus_anchor_miss'] prompt=我不想讓朋友看到我還在線。 reply=オンライン表示は隠していい。でも人との連絡まで切るな、一人で抱えるな。
-- id=8 failure=['RIGHTBRAIN_SURFACE_ERROR', 'LOW_DENSITY', 'TOO_ROBOTIC_LOGIC'] route=high_road focus=1 obligation=1 memory=0 generic=0 persisted=['focus_anchor_miss'] prompt=群組冷掉之後，我覺得自己很吵。 reply=急にグループが静かになると不安だけど、自分のせいだと決めつけるな。

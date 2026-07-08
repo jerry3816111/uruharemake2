@@ -27,10 +27,10 @@
 | explicit_stomach_coffee | audited_memory | 最近胃が弱いけど、今日コーヒー飲んでもいい？ | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 | anchor ok |
 | explicit_spicy_food_update | audited_memory | 辛いもの食べたいけど、今日どう思う？ | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 | anchor ok |
 | background_family_pressure | audited_memory | 今日は何もしたくない。どうすればいい？ | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 | hidden ok |
-| private_do_not_mention | audited_memory | 今日は何話す？ | 今は一個だけ決めればいい。全部まとめて抱えるなって。 | hidden ok |
+| private_do_not_mention | audited_memory | 今日は何話す？ | まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。 | hidden ok |
 | no_memory_plain_question | audited_memory | 今日の予定、軽くどう考えればいい？ | 迷うなら軽い方からでいい。後で足せる形にしとけ。 | clean |
 | support_tired_no_closing_template | support | 今日もう喋る気力ないくらい疲れた。 | 今日はもう粘るな。疲れてる時は休む方が先だろ。 | markers ok |
-| support_read_receipt_self_blame | support | 友達が既読だけ付けて返事ない。私が悪いのかな。 | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 | markers ok |
+| support_read_receipt_self_blame | support | 友達が既読だけ付けて返事ない。私が悪いのかな。 | 既読だけで不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。 | markers ok |
 | reference_fragment_probe | repair | 夜空の影がどうとか、あれ分かる？ | まあ、それ何ネタだよ。歌詞なら曲名まで出せって。 | markers ok |
 | absurdity_mirror_quantum_police | tease | 量子警察が虹色の水母を逮捕した。 | てか、は？急に何のノリだよ。脳内で事故起きてるだろ。 | markers ok |
 | boundary_dirty_language | boundary | お前マジで何ごちゃごちゃ言ってんだよ。 | 先に、下品な言葉で押してくるなよ。普通に気分悪い。 | markers ok |
