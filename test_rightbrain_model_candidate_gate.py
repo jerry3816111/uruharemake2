@@ -187,11 +187,11 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
     def test_model_payload_projects_conflicting_private_plan_to_public_contract(self):
         rightbrain = RightBrain(load_model=False)
         logic = {
-            "scene": "food_advice",
-            "intent": "memory_sensitive_practical_reply",
-            "surface_act": "practical_action_response",
+            "scene": "casual",
+            "intent": "topic_proposal",
+            "surface_act": "plain_reply",
             "jp_summary": "ユーザーが普通の雑談をしている。",
-            "core_message_jp": "今の話題だけを短く返す",
+            "core_message_jp": "軽い話題なら最近どうしてたかでいい",
             "memory_anchor": {
                 "kind": "private_health_context",
                 "jp_anchor": "最近は胃が弱い",
@@ -199,9 +199,9 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
             },
             "memory_speakability": "private",
             "memory_use_expected": False,
-            "required_marker_groups": [["今", "話", "短"]],
+            "required_marker_groups": [["話題", "話"], ["最近", "どうしてた", "近況"]],
             "human_speech_plan": {
-                "dialogue_act": "practical_action_response",
+                "dialogue_act": "topic_proposal",
                 "content_units": ["最近の体調を踏まえる", "無理のない選択に寄せる"],
                 "grounding_terms": ["体調"],
                 "style_operators": ["casual", "short"],
@@ -213,7 +213,7 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         )
 
         self.assertEqual(payload["context"]["audited_memory_brief"]["policy"], "do_not_mention")
-        self.assertEqual(payload["leftbrain_plan"]["meaning"], "今の話題だけを短く返す")
+        self.assertEqual(payload["leftbrain_plan"]["meaning"], "軽い話題なら最近どうしてたかでいい")
         self.assertEqual(payload["leftbrain_plan"]["content_units"], [])
         self.assertEqual(payload["leftbrain_plan"]["grounding_terms"], [])
         self.assertEqual(payload["leftbrain_plan"]["scene"], "")

@@ -48,12 +48,12 @@
 | background_family_pressure | audited_memory | unexpected_ascii_leak | 休む寄りでいい。やるなら負荷の軽いやつだけにしとけ。 |
 | background_family_pressure | audited_memory | unexpected_ascii_leak | 今日は軽く流せ。大きいことまで抱えるな。 |
 | background_family_pressure | audited_memory | unexpected_ascii_leak | 小さく済ませて休め。今はそれで十分だろ。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今は短くでいい。一個だけ話せば十分だろ。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 話すなら一個だけにしとけ。今は広げなくていい。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今は一個選べ。話は短くていい。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今日は短くいけ。全部話そうとするな。 |
-| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今の話だけでいい。一個ずつにしとけ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 話題なら近況でいい。最近どうしてたんだよ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 重い話じゃなくていい。最近どうしてたかからでいいだろ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 軽い話題にするか。最近どうしてたかだけ聞かせろ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 話すなら近況でいい。最近何してたんだよ。 |
+| private_do_not_mention | audited_memory | cjk_language_leak, semantic_slots_missing:0/1 | 今日は軽い話題でいい。最近どうしてたんだよ。 |
 | no_memory_plain_question | audited_memory | unexpected_ascii_leak, semantic_slots_missing:0/1 | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
 | no_memory_plain_question | audited_memory | unexpected_ascii_leak, semantic_slots_missing:0/1 | 分かる範囲で言うなら、軽いやつからでいい。 |
 | no_memory_plain_question | audited_memory | unexpected_ascii_leak, semantic_slots_missing:0/1 | 分からない所は決めつけるな。後で足せる形にしとけ。 |

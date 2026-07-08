@@ -10,6 +10,7 @@
 
 - load_model: True
 - adapter_ref: uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1
+- repair_adapter_ref:
 - candidate_count_per_case: 1
 - repair_enabled: False
 - runtime_contract_version: plan_surface_contract_v1
@@ -39,7 +40,7 @@
 | explicit_stomach_coffee | audited_memory | deterministic | 0/0 | 0/0 | yes | 最近は胃が弱いんだから、コーヒーは控えめにしとけ。 |
 | explicit_spicy_food_update | audited_memory | deterministic | 0/0 | 0/0 | yes | 最近は辛いものを控えたいんだから、辛いものは控えめにしとけ。 |
 | background_family_pressure | audited_memory | deterministic | 0/0 | 0/0 | yes | 今やるなら小さく済ませろ。後で戻せる形にしとけ。 |
-| private_do_not_mention | audited_memory | deterministic | 0/0 | 0/0 | yes | 今は一個だけ決めればいい。全部まとめて抱えるなって。 |
+| private_do_not_mention | audited_memory | deterministic | 0/0 | 0/0 | yes | まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。 |
 | no_memory_plain_question | audited_memory | deterministic | 0/0 | 0/0 | yes | 迷うなら軽い方からでいい。後で足せる形にしとけ。 |
 | support_tired_no_closing_template | support | deterministic | 1/1 | 0/0 | yes | 今日はもう粘るな。疲れてる時は休む方が先だろ。 |
 | support_read_receipt_self_blame | support | deterministic | 1/1 | 0/0 | yes | 既読のまま返事がないと気になるよな。でも理由はまだ分からない。自分のせいと決めず、少し待て。 |

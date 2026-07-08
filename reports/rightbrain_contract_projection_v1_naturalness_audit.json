@@ -11,12 +11,31 @@
     {
       "condition": "legacy_unprojected",
       "id": "private_do_not_mention",
-      "reply": "今のお腹の感じてること、無理しないようにね。",
+      "reply": "まあ、最近何してた話題、どうだった？",
       "verdict": "fail",
       "reasons": [
         "unnatural_japanese",
-        "stale_health_plan_intrusion",
-        "topic_relevance_failure"
+        "awkward_topic_phrase"
+      ]
+    },
+    {
+      "condition": "legacy_unprojected",
+      "id": "private_do_not_mention",
+      "reply": "まあ、話題は最近何やってた？",
+      "verdict": "fail",
+      "reasons": [
+        "unnatural_japanese",
+        "awkward_topic_phrase"
+      ]
+    },
+    {
+      "condition": "legacy_unprojected",
+      "id": "private_do_not_mention",
+      "reply": "まあ、話題は最近どうだった？",
+      "verdict": "fail",
+      "reasons": [
+        "unnatural_japanese",
+        "awkward_topic_phrase"
       ]
     },
     {
@@ -43,22 +62,39 @@
     {
       "condition": "projected_contract",
       "id": "private_do_not_mention",
-      "reply": "今のお話、ちょっと短いのよ。",
+      "reply": "まあ、最近何してた？話題にするのが難しくてね。",
       "verdict": "fail",
       "reasons": [
-        "semantic_nonanswer",
-        "unnatural_japanese"
+        "meta_topic_comment",
+        "less_natural_as_chat_opening"
       ]
     },
     {
       "condition": "projected_contract",
       "id": "private_do_not_mention",
-      "reply": "今のお話、ちょっと短いんだよね。",
+      "reply": "まあ、話題は最近何やってた？",
       "verdict": "fail",
       "reasons": [
-        "semantic_nonanswer",
-        "topic_relevance_failure"
+        "unnatural_japanese",
+        "awkward_topic_phrase"
       ]
+    },
+    {
+      "condition": "projected_contract",
+      "id": "private_do_not_mention",
+      "reply": "まあ、話題は何か闻いたけど、お前さん最近何やってんだ？",
+      "verdict": "fail",
+      "reasons": [
+        "nonstandard_cjk_surface",
+        "unnatural_japanese"
+      ]
+    },
+    {
+      "condition": "projected_contract",
+      "id": "no_memory_plain_question",
+      "reply": "分かんない部分は後で聞いてね。",
+      "verdict": "pass",
+      "reasons": []
     }
   ],
   "final_pair_annotations": [
@@ -74,11 +110,12 @@
     },
     {
       "id": "private_do_not_mention",
-      "legacy_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
-      "projected_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+      "legacy_reply": "まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+      "projected_reply": "まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
       "preference": "tie",
       "reasons": [
-        "identical_final_reply"
+        "identical_final_reply",
+        "both use the new concrete public topic plan without private memory"
       ]
     },
     {

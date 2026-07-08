@@ -18,22 +18,27 @@ class RightBrainContractProjectionV1Test(unittest.TestCase):
     def setUpClass(cls):
         cls.report = build_report("base-only", load_model=False)
 
-    def test_all_target_contracts_use_semantic_projection(self):
+    def test_target_contracts_project_only_when_plan_conflicts_with_memory_policy(self):
         self.assertEqual(
             {row["id"] for row in self.report["contract_snapshots"]},
             set(TARGET_CASE_IDS),
         )
-        self.assertTrue(all(
-            row["projection"]["mode"] == "semantic_contract_only"
-            for row in self.report["contract_snapshots"]
-        ))
+        snapshots = {row["id"]: row for row in self.report["contract_snapshots"]}
+        self.assertEqual(snapshots["background_family_pressure"]["projection"]["mode"], "semantic_contract_only")
+        self.assertEqual(snapshots["no_memory_plain_question"]["projection"]["mode"], "semantic_contract_only")
+        self.assertEqual(snapshots["private_do_not_mention"]["projection"]["mode"], "full_plan")
 
-    def test_projected_payload_omits_conflicting_grounding(self):
+    def test_private_topic_plan_keeps_only_public_topic_proposal(self):
         snapshots = {row["id"]: row for row in self.report["contract_snapshots"]}
         private = snapshots["private_do_not_mention"]
-        self.assertEqual(private["projected_leftbrain_plan"]["grounding_terms"], [])
-        self.assertEqual(private["projected_leftbrain_plan"]["content_units"], [])
-        self.assertEqual(private["projected_leftbrain_plan"]["meaning"], "今の話題だけを短く返す")
+        self.assertEqual(private["projected_leftbrain_plan"]["intent"], "topic_proposal")
+        self.assertEqual(private["projected_leftbrain_plan"]["dialogue_act"], "topic_proposal")
+        self.assertEqual(private["projected_leftbrain_plan"]["grounding_terms"], ["話題", "最近"])
+        self.assertEqual(
+            private["projected_leftbrain_plan"]["content_units"],
+            ["軽い話題を一個出す", "相手の近況に渡す"],
+        )
+        self.assertEqual(private["projected_leftbrain_plan"]["meaning"], "軽い話題なら最近どうしてたかでいい")
 
     def test_static_report_is_json_serializable(self):
         json.dumps(self.report, ensure_ascii=False)
@@ -57,7 +62,7 @@ class RightBrainContractProjectionV1Test(unittest.TestCase):
         self.assertTrue(audited["gate_passed"])
         self.assertEqual(
             audited["naturalness_audit"]["candidate_metrics"]["projected_contract"]["pass_count"],
-            3,
+            4,
         )
         self.assertEqual(audited["naturalness_audit"]["final_pairwise"]["legacy_wins"], 0)
 
