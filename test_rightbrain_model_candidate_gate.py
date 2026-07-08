@@ -184,6 +184,96 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertNotIn("家庭壓力", payload_text)
         self.assertNotIn("以前說", payload_text)
 
+    def test_model_payload_projects_conflicting_private_plan_to_public_contract(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "food_advice",
+            "intent": "memory_sensitive_practical_reply",
+            "surface_act": "practical_action_response",
+            "jp_summary": "ユーザーが普通の雑談をしている。",
+            "core_message_jp": "今の話題だけを短く返す",
+            "memory_anchor": {
+                "kind": "private_health_context",
+                "jp_anchor": "最近は胃が弱い",
+                "terms": ["最近は胃が弱い", "体調"],
+            },
+            "memory_speakability": "private",
+            "memory_use_expected": False,
+            "required_marker_groups": [["今", "話", "短"]],
+            "human_speech_plan": {
+                "dialogue_act": "practical_action_response",
+                "content_units": ["最近の体調を踏まえる", "無理のない選択に寄せる"],
+                "grounding_terms": ["体調"],
+                "style_operators": ["casual", "short"],
+            },
+        }
+
+        payload = json.loads(
+            rightbrain._build_model_surface_payload(logic, {"mood": 0, "trust": 32}, 80)
+        )
+
+        self.assertEqual(payload["context"]["audited_memory_brief"]["policy"], "do_not_mention")
+        self.assertEqual(payload["leftbrain_plan"]["meaning"], "今の話題だけを短く返す")
+        self.assertEqual(payload["leftbrain_plan"]["content_units"], [])
+        self.assertEqual(payload["leftbrain_plan"]["grounding_terms"], [])
+        self.assertEqual(payload["leftbrain_plan"]["scene"], "")
+        self.assertEqual(payload["leftbrain_plan"]["intent"], "")
+        self.assertEqual(logic["model_surface_plan_projection"]["mode"], "semantic_contract_only")
+
+    def test_model_payload_keeps_non_memory_plan_units_supported_by_contract(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "support",
+            "intent": "friend_no_reply",
+            "jp_summary": "既読のまま返事がないことを心配している。",
+            "core_message_jp": "理由はまだ未確定なので自分を責めずに少し待つ",
+            "memory_speakability": "no_memory",
+            "memory_use_expected": False,
+            "required_marker_groups": [["既読", "返事"], ["理由", "分から"]],
+            "human_speech_plan": {
+                "dialogue_act": "emotional_containment",
+                "content_units": ["既読の文脈を拾う", "理由は未確定", "少し待つ"],
+                "grounding_terms": ["既読"],
+            },
+        }
+
+        payload = json.loads(
+            rightbrain._build_model_surface_payload(logic, {"mood": 0, "trust": 58}, 80)
+        )
+
+        self.assertEqual(
+            payload["leftbrain_plan"]["content_units"],
+            ["既読の文脈を拾う", "理由は未確定", "少し待つ"],
+        )
+        self.assertEqual(payload["leftbrain_plan"]["grounding_terms"], ["既読"])
+        self.assertEqual(payload["leftbrain_plan"]["scene"], "support")
+        self.assertEqual(logic["model_surface_plan_projection"]["mode"], "full_plan")
+
+    def test_model_payload_keeps_full_plan_for_explicit_memory(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        logic.update(
+            {
+                "memory_anchor": {
+                    "kind": "recent_health_context",
+                    "jp_anchor": "最近は胃が弱い",
+                    "terms": ["最近は胃が弱い", "体調"],
+                },
+                "memory_speakability": "explicit_ok",
+                "memory_use_expected": True,
+            }
+        )
+
+        payload = json.loads(
+            rightbrain._build_model_surface_payload(logic, {"mood": 0, "trust": 70}, 80)
+        )
+
+        self.assertEqual(
+            payload["leftbrain_plan"]["content_units"],
+            logic["human_speech_plan"]["content_units"],
+        )
+        self.assertEqual(logic["model_surface_plan_projection"]["mode"], "full_plan")
+
     def test_default_model_loading_follows_explicit_blend_switch(self):
         self.assertEqual(_resolve_right_brain_model_loading(None), RIGHT_BRAIN_MODEL_BLEND_ENABLED)
         self.assertTrue(_resolve_right_brain_model_loading(True))

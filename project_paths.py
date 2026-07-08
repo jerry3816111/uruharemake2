@@ -276,6 +276,22 @@ RIGHTBRAIN_CASUAL_REGISTER_GATE_V2_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_casual_register_gate_v2_report.md",
 )
+RIGHTBRAIN_CONTRACT_PROJECTION_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_contract_projection_v1_report.json",
+)
+RIGHTBRAIN_CONTRACT_PROJECTION_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_contract_projection_v1_report.md",
+)
+RIGHTBRAIN_CONTRACT_PROJECTION_V1_AUDIT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_contract_projection_v1_naturalness_audit.json",
+)
+RIGHTBRAIN_CONTRACT_PROJECTION_V1_AUDIT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_contract_projection_v1_naturalness_audit.md",
+)
 ANNOTATION_CANDIDATE_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.json")
 ANNOTATION_CANDIDATE_QUEUE_MD_PATH = os.path.join(REPORTS_DIR, "annotation_candidate_queue.md")
 ANNOTATION_DRAFT_QUEUE_JSON_PATH = os.path.join(REPORTS_DIR, "annotation_draft_queue.json")

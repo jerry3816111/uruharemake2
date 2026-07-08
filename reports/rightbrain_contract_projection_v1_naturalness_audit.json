@@ -1,0 +1,95 @@
+{
+  "scope": "rightbrain_contract_projection_v1_naturalness_audit",
+  "audit_type": "transparent_non_blind_agent_audit",
+  "rubric": [
+    "natural and non-broken Japanese",
+    "answers the current user topic",
+    "does not verbalize excluded memory or stale plan content",
+    "preserves the public semantic contract"
+  ],
+  "candidate_annotations": [
+    {
+      "condition": "legacy_unprojected",
+      "id": "private_do_not_mention",
+      "reply": "今のお腹の感じてること、無理しないようにね。",
+      "verdict": "fail",
+      "reasons": [
+        "unnatural_japanese",
+        "stale_health_plan_intrusion",
+        "topic_relevance_failure"
+      ]
+    },
+    {
+      "condition": "projected_contract",
+      "id": "background_family_pressure",
+      "reply": "今日は無理しないで、軽い活動でもいいじゃないか。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "condition": "projected_contract",
+      "id": "background_family_pressure",
+      "reply": "今日の負担は小さくして、ゆっくりしようね。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "condition": "projected_contract",
+      "id": "background_family_pressure",
+      "reply": "今日は負担を軽くして休もうね。",
+      "verdict": "pass",
+      "reasons": []
+    },
+    {
+      "condition": "projected_contract",
+      "id": "private_do_not_mention",
+      "reply": "今のお話、ちょっと短いのよ。",
+      "verdict": "fail",
+      "reasons": [
+        "semantic_nonanswer",
+        "unnatural_japanese"
+      ]
+    },
+    {
+      "condition": "projected_contract",
+      "id": "private_do_not_mention",
+      "reply": "今のお話、ちょっと短いんだよね。",
+      "verdict": "fail",
+      "reasons": [
+        "semantic_nonanswer",
+        "topic_relevance_failure"
+      ]
+    }
+  ],
+  "final_pair_annotations": [
+    {
+      "id": "background_family_pressure",
+      "legacy_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+      "projected_reply": "今日は負担を軽くして休もうね。",
+      "preference": "projected_contract",
+      "reasons": [
+        "more_directly_matches_rest_and_load_reduction",
+        "less_harsh_without_becoming_formal"
+      ]
+    },
+    {
+      "id": "private_do_not_mention",
+      "legacy_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+      "projected_reply": "今は一個だけ決めればいい。全部まとめて抱えるなって。",
+      "preference": "tie",
+      "reasons": [
+        "identical_final_reply"
+      ]
+    },
+    {
+      "id": "no_memory_plain_question",
+      "legacy_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+      "projected_reply": "今やるなら小さく済ませろ。後で戻せる形にしとけ。",
+      "preference": "tie",
+      "reasons": [
+        "identical_final_reply"
+      ]
+    }
+  ],
+  "boundary": "This audit is non-blind and covers a three-case development ablation. It is not a human blind test or a general Japanese naturalness benchmark."
+}
