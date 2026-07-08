@@ -16,6 +16,7 @@ from project_paths import (
 
 
 TZ = ZoneInfo("Asia/Tokyo")
+REPORT_PATH = RIGHTBRAIN_MODEL_GATE_REPORT_JSON_PATH
 MEMORY = {
     "wisdom": "",
     "episodes": "",
