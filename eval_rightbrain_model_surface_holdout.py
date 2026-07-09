@@ -28,6 +28,13 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
+def _selection_gap(selection):
+    try:
+        return round(float(selection["best_model_score"]) - float(selection["deterministic_score"]), 4)
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 def _adapter_ref(adapter_path, base_only=False):
     if base_only:
         return "base_model_only"
@@ -154,6 +161,14 @@ def _summarize(rows, model_loaded):
     repair_accepted = sum(row["repair_accepted_count"] for row in rows)
     selected_rows = [row for row in rows if row["selected_source"] == "model"]
     fallback_rows = [row for row in rows if row["selected_source"] != "model"]
+    available_not_selected = [
+        row for row in rows if row["accepted_candidate_count"] > 0 and row["selected_source"] != "model"
+    ]
+    selection_gaps = [
+        row["model_selection_score_gap"]
+        for row in available_not_selected
+        if row.get("model_selection_score_gap") is not None
+    ]
     duplicate_count = len(rows) - len({row["final_quality"]["normalized_reply"] for row in rows})
     return {
         "case_count": len(rows),
@@ -168,6 +183,11 @@ def _summarize(rows, model_loaded):
         "effective_candidate_acceptance_rate": _safe_rate(accepted, generated),
         "model_selected_case_count": len(selected_rows),
         "model_selected_case_rate": _safe_rate(len(selected_rows), len(rows)),
+        "model_candidate_available_not_selected_count": len(available_not_selected),
+        "model_candidate_available_not_selected_rate": _safe_rate(len(available_not_selected), len(rows)),
+        "model_available_not_selected_avg_score_gap": (
+            round(sum(selection_gaps) / len(selection_gaps), 4) if selection_gaps else None
+        ),
         "deterministic_quality_pass_rate": _safe_rate(
             sum(row["deterministic_quality_pass"] for row in rows),
             len(rows),
@@ -260,6 +280,7 @@ def build_report(
         ]
         deterministic_quality = _evaluate_surface_quality(deterministic_reply, case)
         final_quality = _evaluate_surface_quality(final_reply, case)
+        selection_gap = _selection_gap(selection)
         rows.append(
             {
                 "id": case["id"],
@@ -268,6 +289,8 @@ def build_report(
                 "deterministic_reply": deterministic_reply,
                 "final_reply": final_reply,
                 "selected_source": selection.get("selected_source") or "deterministic",
+                "model_surface_selection": selection,
+                "model_selection_score_gap": selection_gap,
                 "model_disabled_reason": trace.get("disabled_reason") or "",
                 "generated_candidate_count": trace.get("initial_generated_count", 0),
                 "initial_accepted_candidate_count": trace.get("initial_accepted_count", 0),
@@ -348,6 +371,8 @@ def write_markdown(report, path):
         f"| repair_success_rate | {_fmt_pct(summary['repair_success_rate'])} | 首次失敗後，一次修正成功的比例 |",
         f"| effective_candidate_acceptance_rate | {_fmt_pct(summary['effective_candidate_acceptance_rate'])} | 加入一次修正後，候選最終可用比例 |",
         f"| model_selected_case_rate | {_fmt_pct(summary['model_selected_case_rate'])} | 模型候選實際接管最終回覆比例 |",
+        f"| model_candidate_available_not_selected_rate | {_fmt_pct(summary['model_candidate_available_not_selected_rate'])} | 有可用模型候選但仍保留 deterministic 的比例 |",
+        f"| model_available_not_selected_avg_score_gap | {summary['model_available_not_selected_avg_score_gap']} | 未接管時，最佳模型分數 - deterministic 分數；負數代表 deterministic 較強 |",
         f"| deterministic_quality_pass_rate | {_fmt_pct(summary['deterministic_quality_pass_rate'])} | deterministic baseline 品質通過率 |",
         f"| final_quality_pass_rate | {_fmt_pct(summary['final_quality_pass_rate'])} | 最終回覆品質通過率 |",
         f"| model_selected_quality_pass_rate | {_fmt_pct(summary['model_selected_quality_pass_rate'])} | 模型接管時的品質通過率 |",
@@ -357,17 +382,18 @@ def write_markdown(report, path):
         "",
         "## 個案表",
         "",
-        "| case | 類型 | selected | initial/effective | repair accepted/attempted | final pass | final reply |",
-        "|---|---|---|---:|---:|---:|---|",
+        "| case | 類型 | selected | initial/effective | score gap | repair accepted/attempted | final pass | final reply |",
+        "|---|---|---|---:|---:|---:|---:|---|",
     ]
     for row in report["cases"]:
         lines.append(
-            "| {id} | {category} | {selected} | {initial}/{effective} | {repair_acc}/{repair_try} | {passed} | {reply} |".format(
+            "| {id} | {category} | {selected} | {initial}/{effective} | {gap} | {repair_acc}/{repair_try} | {passed} | {reply} |".format(
                 id=row["id"],
                 category=row["category"],
                 selected=row["selected_source"],
                 initial=row["initial_accepted_candidate_count"],
                 effective=row["accepted_candidate_count"],
+                gap=row.get("model_selection_score_gap"),
                 repair_acc=row["repair_accepted_count"],
                 repair_try=row["repair_attempt_count"],
                 passed="yes" if row["final_quality_pass"] else "no",

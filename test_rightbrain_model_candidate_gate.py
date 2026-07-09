@@ -663,6 +663,28 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("少なく", candidate)
         self.assertIn("控え", candidate)
 
+    def test_prepare_removes_tokenizer_spaces_between_japanese_terms(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "memory",
+            "intent": "explicit_memory_answer",
+            "dialogue_act": "advice",
+            "required_marker_groups": [["胃が弱い"], ["コーヒー"], ["控えめ", "少なめ", "少なく"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "最近は 胃 が弱いでしょ、 コーヒー は 少なく 控えた方がいいよ。",
+            logic,
+            user_input="最近胃が弱いけど、今日コーヒー飲んでもいい？",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(reasons, [])
+        self.assertIn("胃が弱い", candidate)
+        self.assertIn("コーヒーは少なく控え", candidate)
+
     def test_prepare_accepts_natural_marker_paraphrase_and_normalized_cjk(self):
         rightbrain = RightBrain(load_model=False)
         logic = {
@@ -690,6 +712,37 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("体調", candidate)
         self.assertIn("辛いやつ", candidate)
         self.assertIn("避け", candidate)
+
+    def test_gate_rejects_foreign_script_and_nonstandard_punctuation(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        thai = rightbrain._model_candidate_rejection_reasons(
+            "てか、そのโนリは何だよ、わけわからない。",
+            logic,
+            80,
+        )
+        fullwidth_period = rightbrain._model_candidate_rejection_reasons(
+            "今日は無理しないで休め．",
+            logic,
+            80,
+        )
+
+        self.assertIn("foreign_script_leak", thai)
+        self.assertIn("nonstandard_punctuation", fullwidth_period)
+
+    def test_gate_rejects_model_caregiver_or_customer_service_drift(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        for reply in (
+            "今日は小さなことから始めようね。大丈夫だよ、手伝ってあげる。",
+            "今日は体調に合わせて軽いものから始めてみてはどう？",
+            "コーヒーやりませんかね？控えめにして。",
+        ):
+            with self.subTest(reply=reply):
+                reasons = rightbrain._model_candidate_rejection_reasons(reply, logic, 90)
+                self.assertIn("polite_tone_drift", reasons)
 
     def test_prepare_does_not_localize_pure_romaji_sentence(self):
         rightbrain = RightBrain(load_model=False)

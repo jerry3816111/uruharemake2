@@ -35,7 +35,10 @@ class RightBrainModelSurfaceHoldoutTest(unittest.TestCase):
         self.assertIn("final_reply", row)
         self.assertIn("deterministic_quality", row)
         self.assertIn("final_quality", row)
+        self.assertIn("model_surface_selection", row)
+        self.assertIn("model_selection_score_gap", row)
         self.assertEqual(row["selected_source"], "deterministic")
+        self.assertIsNone(row["model_selection_score_gap"])
         self.assertTrue(row["final_quality_pass"])
 
     def test_explicit_required_marker_groups_feed_model_contract(self):
