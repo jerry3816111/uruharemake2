@@ -112,6 +112,48 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
         self.assertEqual(report["case_diagnostics"][0]["model_selected_seed_delta"], -1)
         self.assertEqual(report["case_diagnostics"][0]["new_rejection_reasons"], ["polite_tone_drift"])
 
+    def test_rejection_reason_deltas_group_semantic_slot_families(self):
+        baselines = [
+            _report(
+                "old",
+                1,
+                5,
+                1,
+                reasons=["unexpected_ascii_leak", "semantic_slots_missing:1/3"],
+            ),
+            _report("old", 2, 5, 0, reasons=["semantic_slots_missing:2/3"]),
+        ]
+        promoted = [
+            _report(
+                "new",
+                1,
+                3,
+                0,
+                reasons=[
+                    "unexpected_ascii_leak",
+                    "polite_tone_drift",
+                    "semantic_slots_missing:0/3",
+                ],
+            ),
+            _report(
+                "new",
+                2,
+                4,
+                0,
+                reasons=["polite_tone_drift", "semantic_slots_missing:0/3"],
+            ),
+        ]
+
+        report = build_report(baselines, promoted)
+
+        exact = {row["reason"]: row for row in report["rejection_reason_deltas"]["exact"]}
+        family = {row["reason"]: row for row in report["rejection_reason_deltas"]["family"]}
+        self.assertEqual(exact["polite_tone_drift"]["delta"], 2)
+        self.assertEqual(exact["semantic_slots_missing:0/3"]["delta"], 2)
+        self.assertEqual(exact["semantic_slots_missing:1/3"]["delta"], -1)
+        self.assertNotIn("semantic_slots_missing", family)
+        self.assertEqual(family["polite_tone_drift"]["direction"], "regressed")
+
 
 if __name__ == "__main__":
     unittest.main()
