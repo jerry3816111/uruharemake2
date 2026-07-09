@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-07-10T03:41:32+09:00",
+  "scope": "rightbrain_candidate_gate_contrast_curriculum_v16",
+  "source_diagnostic_reports": [
+    "rightbrain_v15_candidate_gate_holdout_c3.json",
+    "rightbrain_v15_candidate_gate_holdout_c3_seed20260709.json"
+  ],
+  "source_compare_report": "rightbrain_v15_candidate_gate_compare_report.json",
+  "design": "v16 aligns supplemental SFT rows with the runtime surface_failure_watchlist. It targets PR68 regressions without reusing holdout case IDs or target replies.",
+  "curriculum_row_count": 32,
+  "family_spec_count": 8,
+  "category_counts": {
+    "support_contrast": 8,
+    "repair_contrast": 4,
+    "daily_contrast": 4,
+    "private_memory_contrast": 4,
+    "updated_preference_contrast": 4,
+    "tease_contrast": 4,
+    "no_memory_contrast": 4
+  },
+  "failure_family_counts": {
+    "semantic_slots_missing": 16,
+    "polite_tone_drift": 12,
+    "unexpected_ascii_leak": 12,
+    "cjk_language_leak": 12,
+    "unicode_replacement_character": 4,
+    "duplicate_candidate": 4,
+    "nonstandard_cjk_surface": 8,
+    "over_max_chars": 4,
+    "nonstandard_punctuation": 4
+  },
+  "source_diagnostic_family_counts": {
+    "cjk_language_leak": 9,
+    "semantic_slots_missing": 16,
+    "unexpected_ascii_leak": 18,
+    "nonstandard_cjk_surface": 8,
+    "over_max_chars": 4,
+    "polite_tone_drift": 11,
+    "unicode_replacement_character": 2,
+    "duplicate_candidate": 1,
+    "missing_japanese_surface": 1
+  },
+  "source_compare_family_counts": {
+    "semantic_slots_missing": 16,
+    "unexpected_ascii_leak": 18,
+    "cjk_language_leak": 9,
+    "polite_tone_drift": 11,
+    "nonstandard_cjk_surface": 8,
+    "unicode_replacement_character": 2,
+    "foreign_script_leak": 0,
+    "nonstandard_punctuation": 0,
+    "over_max_chars": 4
+  },
+  "skipped_counts": {},
+  "data_boundary": {
+    "holdout_case_count": 11,
+    "training_source_case_count": 8,
+    "holdout_case_overlap_count": 0,
+    "holdout_case_overlap_ids": [],
+    "holdout_target_overlap_count": 0,
+    "holdout_target_overlap_examples": [],
+    "diagnostic_only": false
+  },
+  "promotion_boundary": "這是補充訓練資料與 runtime prompt contract 的實驗準備，不是升版證據。任何用它訓練出的 adapter，都必須先通過 matched-seed model-loaded holdout，才能成為預設 RightBrain adapter。"
+}
