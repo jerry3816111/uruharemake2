@@ -52,6 +52,49 @@ def _count_reasons(rows):
     return counts
 
 
+def _reason_family(reason):
+    reason = str(reason or "")
+    if reason.startswith("semantic_slots_missing:"):
+        return "semantic_slots_missing"
+    return reason
+
+
+def _aggregate_rejection_reasons(reports, *, family=False):
+    counts = {}
+    for report in reports:
+        reason_counts = (report.get("summary") or {}).get("rejection_reason_counts") or {}
+        if not reason_counts:
+            reason_counts = {}
+            for row in report.get("cases") or []:
+                for reason in row.get("model_rejection_reasons") or []:
+                    reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        for reason, count in reason_counts.items():
+            key = _reason_family(reason) if family else str(reason)
+            counts[key] = counts.get(key, 0) + int(count or 0)
+    return counts
+
+
+def _rejection_reason_deltas(baselines, promoted, *, family=False):
+    baseline_counts = _aggregate_rejection_reasons(baselines, family=family)
+    promoted_counts = _aggregate_rejection_reasons(promoted, family=family)
+    rows = []
+    for reason in sorted(set(baseline_counts) | set(promoted_counts)):
+        before = baseline_counts.get(reason, 0)
+        after = promoted_counts.get(reason, 0)
+        if before == after:
+            continue
+        rows.append(
+            {
+                "reason": reason,
+                "baseline_count": before,
+                "candidate_count": after,
+                "delta": after - before,
+                "direction": "regressed" if after > before else "improved",
+            }
+        )
+    return sorted(rows, key=lambda row: (-abs(row["delta"]), row["reason"]))
+
+
 def _case_diagnostics(baselines, promoted):
     baseline_by_case = {}
     promoted_by_case = {}
@@ -270,6 +313,10 @@ def build_report(baselines, promoted, curriculum=None):
             "raw_candidate_acceptance_delta": acceptance_delta,
         },
         "per_seed": per_seed,
+        "rejection_reason_deltas": {
+            "exact": _rejection_reason_deltas(baselines, promoted, family=False),
+            "family": _rejection_reason_deltas(baselines, promoted, family=True),
+        },
         "case_diagnostics": _case_diagnostics(baselines, promoted),
         "decision_zh": decision_zh,
         "research_boundary": (
@@ -338,6 +385,38 @@ def write_markdown(report, output_path):
                 data_boundary["boundary_reason"],
             ]
         )
+    family_deltas = report.get("rejection_reason_deltas", {}).get("family") or []
+    if family_deltas:
+        lines.extend(
+            [
+                "",
+                "## Rejection Reason Family Delta",
+                "",
+                "| family | baseline count | candidate count | delta | direction |",
+                "|---|---:|---:|---:|---|",
+            ]
+        )
+        for row in family_deltas:
+            lines.append(
+                f"| {row['reason']} | {row['baseline_count']} | {row['candidate_count']} | "
+                f"{row['delta']:+d} | {row['direction']} |"
+            )
+    exact_deltas = report.get("rejection_reason_deltas", {}).get("exact") or []
+    if exact_deltas:
+        lines.extend(
+            [
+                "",
+                "## Rejection Reason Exact Delta",
+                "",
+                "| reason | baseline count | candidate count | delta | direction |",
+                "|---|---:|---:|---:|---|",
+            ]
+        )
+        for row in exact_deltas[:16]:
+            lines.append(
+                f"| {row['reason']} | {row['baseline_count']} | {row['candidate_count']} | "
+                f"{row['delta']:+d} | {row['direction']} |"
+            )
     diagnostics = report.get("case_diagnostics") or []
     if diagnostics:
         lines.extend(

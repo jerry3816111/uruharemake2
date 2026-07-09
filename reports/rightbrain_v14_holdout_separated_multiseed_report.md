@@ -40,6 +40,37 @@
 
 No holdout case or target overlap was detected in the supplied curriculum.
 
+## Rejection Reason Family Delta
+
+| family | baseline count | candidate count | delta | direction |
+|---|---:|---:|---:|---|
+| semantic_slots_missing | 24 | 29 | +5 | regressed |
+| polite_tone_drift | 4 | 8 | +4 | regressed |
+| unexpected_ascii_leak | 30 | 26 | -4 | improved |
+| cjk_language_leak | 3 | 6 | +3 | regressed |
+| missing_japanese_surface | 1 | 0 | -1 | improved |
+| over_max_chars | 5 | 4 | -1 | improved |
+| unicode_replacement_character | 0 | 1 | +1 | regressed |
+
+## Rejection Reason Exact Delta
+
+| reason | baseline count | candidate count | delta | direction |
+|---|---:|---:|---:|---|
+| polite_tone_drift | 4 | 8 | +4 | regressed |
+| unexpected_ascii_leak | 30 | 26 | -4 | improved |
+| cjk_language_leak | 3 | 6 | +3 | regressed |
+| semantic_slots_missing:0/1 | 7 | 10 | +3 | regressed |
+| semantic_slots_missing:2/4 | 4 | 7 | +3 | regressed |
+| semantic_slots_missing:1/3 | 1 | 3 | +2 | regressed |
+| missing_japanese_surface | 1 | 0 | -1 | improved |
+| over_max_chars | 5 | 4 | -1 | improved |
+| semantic_slots_missing:0/2 | 1 | 0 | -1 | improved |
+| semantic_slots_missing:0/4 | 1 | 0 | -1 | improved |
+| semantic_slots_missing:1/2 | 1 | 2 | +1 | regressed |
+| semantic_slots_missing:1/4 | 5 | 4 | -1 | improved |
+| semantic_slots_missing:3/4 | 2 | 1 | -1 | improved |
+| unicode_replacement_character | 0 | 1 | +1 | regressed |
+
 ## Case-level Regression Diagnostics
 
 | case | category | accepted delta | selected delta | new rejection reasons | resolved reasons |
