@@ -40,7 +40,139 @@ def _aggregate(reports):
     }
 
 
-def build_report(baselines, promoted):
+def _case_map(report):
+    return {row["id"]: row for row in report.get("cases") or []}
+
+
+def _count_reasons(rows):
+    counts = {}
+    for row in rows:
+        for reason in row.get("model_rejection_reasons") or []:
+            counts[reason] = counts.get(reason, 0) + 1
+    return counts
+
+
+def _case_diagnostics(baselines, promoted):
+    baseline_by_case = {}
+    promoted_by_case = {}
+    for report in baselines:
+        for case_id, row in _case_map(report).items():
+            baseline_by_case.setdefault(case_id, []).append(row)
+    for report in promoted:
+        for case_id, row in _case_map(report).items():
+            promoted_by_case.setdefault(case_id, []).append(row)
+
+    rows = []
+    for case_id in sorted(set(baseline_by_case) | set(promoted_by_case)):
+        baseline_rows = baseline_by_case.get(case_id, [])
+        promoted_rows = promoted_by_case.get(case_id, [])
+        baseline_accepted = sum(row.get("accepted_candidate_count", 0) for row in baseline_rows)
+        promoted_accepted = sum(row.get("accepted_candidate_count", 0) for row in promoted_rows)
+        baseline_selected = sum(1 for row in baseline_rows if row.get("selected_source") == "model")
+        promoted_selected = sum(1 for row in promoted_rows if row.get("selected_source") == "model")
+        baseline_reasons = _count_reasons(baseline_rows)
+        promoted_reasons = _count_reasons(promoted_rows)
+        if (
+            baseline_accepted == promoted_accepted
+            and baseline_selected == promoted_selected
+            and baseline_reasons == promoted_reasons
+        ):
+            continue
+        rows.append(
+            {
+                "id": case_id,
+                "category": (promoted_rows or baseline_rows)[0].get("category", ""),
+                "baseline_accepted_candidate_count": baseline_accepted,
+                "candidate_accepted_candidate_count": promoted_accepted,
+                "accepted_candidate_delta": promoted_accepted - baseline_accepted,
+                "baseline_model_selected_seed_count": baseline_selected,
+                "candidate_model_selected_seed_count": promoted_selected,
+                "model_selected_seed_delta": promoted_selected - baseline_selected,
+                "baseline_rejection_reason_counts": baseline_reasons,
+                "candidate_rejection_reason_counts": promoted_reasons,
+                "new_rejection_reasons": sorted(set(promoted_reasons) - set(baseline_reasons)),
+                "resolved_rejection_reasons": sorted(set(baseline_reasons) - set(promoted_reasons)),
+            }
+        )
+    return sorted(
+        rows,
+        key=lambda row: (
+            row["accepted_candidate_delta"],
+            row["model_selected_seed_delta"],
+            row["id"],
+        ),
+    )
+
+
+def _curriculum_rows(curriculum):
+    if not curriculum:
+        return []
+    if isinstance(curriculum, list):
+        return curriculum
+    if isinstance(curriculum, dict):
+        rows = curriculum.get("rows")
+        return rows if isinstance(rows, list) else []
+    return []
+
+
+def _curriculum_boundary(curriculum, reports):
+    rows = _curriculum_rows(curriculum)
+    if not rows:
+        return {
+            "provided": bool(curriculum),
+            "training_row_count": 0,
+            "diagnostic_only": False,
+            "holdout_case_overlap_count": 0,
+            "holdout_target_overlap_count": 0,
+        }
+
+    holdout_cases = {}
+    holdout_targets = set()
+    for report in reports:
+        for row in report.get("cases") or []:
+            case_id = str(row.get("id") or "")
+            if not case_id:
+                continue
+            holdout_cases[case_id] = row
+            for key in ("deterministic_reply", "final_reply"):
+                text = str(row.get(key) or "").strip()
+                if text:
+                    holdout_targets.add((case_id, text))
+
+    training_case_ids = {str(row.get("source_case_id") or "") for row in rows if row.get("source_case_id")}
+    training_targets = set()
+    for row in rows:
+        case_id = str(row.get("source_case_id") or "")
+        messages = row.get("messages") or []
+        if case_id and messages:
+            target = str((messages[-1] or {}).get("content") or "").strip()
+            if target:
+                training_targets.add((case_id, target))
+
+    case_overlap = sorted(training_case_ids & set(holdout_cases))
+    target_overlap = sorted(training_targets & holdout_targets)
+    return {
+        "provided": True,
+        "training_row_count": len(rows),
+        "training_source_case_count": len(training_case_ids),
+        "holdout_case_count": len(holdout_cases),
+        "holdout_case_overlap_count": len(case_overlap),
+        "holdout_case_overlap_ids": case_overlap,
+        "holdout_target_overlap_count": len(target_overlap),
+        "holdout_target_overlap_examples": [
+            {"case_id": case_id, "target": target} for case_id, target in target_overlap[:8]
+        ],
+        "diagnostic_only": bool(case_overlap or target_overlap),
+        "boundary_reason": (
+            "Candidate training data overlaps the evaluated holdout case IDs or target replies. "
+            "This comparison is useful for debugging but must not be used as promotion evidence."
+        )
+        if case_overlap or target_overlap
+        else "No holdout case or target overlap was detected in the supplied curriculum.",
+    }
+
+
+def build_report(baselines, promoted, curriculum=None):
     if not baselines or len(baselines) != len(promoted):
         raise ValueError("baseline and promoted reports must have the same non-zero count")
 
@@ -93,13 +225,15 @@ def build_report(baselines, promoted):
         and promoted_aggregate["final_generic_template_hit_rate"] == 0.0
     )
     all_seed_noninferior = all(row["raw_candidate_acceptance_delta"] >= 0 for row in per_seed)
-    promotion_recommended = (
+    metric_gate_pass = (
         len(per_seed) >= 2
         and acceptance_delta > 0
         and all_seed_noninferior
         and promoted_aggregate["model_selected_case_count"] >= baseline_aggregate["model_selected_case_count"]
         and quality_guard_pass
     )
+    data_boundary = _curriculum_boundary(curriculum, baselines + promoted)
+    promotion_recommended = metric_gate_pass and not data_boundary["diagnostic_only"]
     if promotion_recommended:
         decision_zh = (
             f"建議升版：{len(per_seed)} 個 matched seeds 合計 raw 接受率由 "
@@ -108,6 +242,13 @@ def build_report(baselines, promoted):
             f"{baseline_aggregate['model_selected_case_count']} 增至 "
             f"{promoted_aggregate['model_selected_case_count']}，且最終品質防線維持 100%。"
         )
+    elif data_boundary["diagnostic_only"]:
+        decision_zh = (
+            "不建議升版：這次比較含有訓練資料與 holdout case/target 重疊，只能作為 diagnostic/dev 證據；"
+            "即使分數上升也不能當成可上線 promotion evidence。"
+        )
+        if not metric_gate_pass:
+            decision_zh += "此外，多 seed 數字本身也未同時通過候選可靠度、接管數與最終品質門檻。"
     else:
         decision_zh = "不建議升版：多 seed 證據未同時通過候選可靠度、接管數與最終品質門檻。"
 
@@ -119,18 +260,22 @@ def build_report(baselines, promoted):
         "candidate_count_per_case": candidate_count,
         "seeds": sorted(seen_seeds),
         "promotion_recommended": promotion_recommended,
+        "metric_gate_pass": metric_gate_pass,
         "quality_guard_pass": quality_guard_pass,
         "all_seed_noninferior": all_seed_noninferior,
+        "data_boundary": data_boundary,
         "aggregate": {
             "baseline": baseline_aggregate,
             "promoted": promoted_aggregate,
             "raw_candidate_acceptance_delta": acceptance_delta,
         },
         "per_seed": per_seed,
+        "case_diagnostics": _case_diagnostics(baselines, promoted),
         "decision_zh": decision_zh,
         "research_boundary": (
             "This gate compares adapters under matched seeds and runtime candidate count. "
-            "It measures model candidate reliability and guarded integration, not human naturalness."
+            "It measures model candidate reliability and guarded integration, not human naturalness. "
+            "When a curriculum is supplied, holdout overlap is reported and blocks promotion."
         ),
     }
 
@@ -152,7 +297,9 @@ def write_markdown(report, output_path):
         f"- seeds: `{report['seeds']}`",
         f"- candidates per case: `{report['candidate_count_per_case']}`",
         f"- all seeds non-inferior: `{report['all_seed_noninferior']}`",
+        f"- metric gate pass: `{report['metric_gate_pass']}`",
         f"- final quality guard: `{report['quality_guard_pass']}`",
+        f"- diagnostic only: `{report['data_boundary']['diagnostic_only']}`",
         "",
         "## 合計結果",
         "",
@@ -175,6 +322,39 @@ def write_markdown(report, output_path):
             f"{row['baseline_model_selected_case_count']} | "
             f"{row['promoted_model_selected_case_count']} |"
         )
+    data_boundary = report["data_boundary"]
+    if data_boundary.get("provided"):
+        lines.extend(
+            [
+                "",
+                "## 資料邊界",
+                "",
+                "| 指標 | 值 |",
+                "|---|---:|",
+                f"| training rows | {data_boundary['training_row_count']} |",
+                f"| holdout case overlap | {data_boundary['holdout_case_overlap_count']} |",
+                f"| holdout target overlap | {data_boundary['holdout_target_overlap_count']} |",
+                "",
+                data_boundary["boundary_reason"],
+            ]
+        )
+    diagnostics = report.get("case_diagnostics") or []
+    if diagnostics:
+        lines.extend(
+            [
+                "",
+                "## Case-level Regression Diagnostics",
+                "",
+                "| case | category | accepted delta | selected delta | new rejection reasons | resolved reasons |",
+                "|---|---|---:|---:|---|---|",
+            ]
+        )
+        for row in diagnostics[:12]:
+            lines.append(
+                f"| {row['id']} | {row['category']} | {row['accepted_candidate_delta']:+d} | "
+                f"{row['model_selected_seed_delta']:+d} | {', '.join(row['new_rejection_reasons']) or '-'} | "
+                f"{', '.join(row['resolved_rejection_reasons']) or '-'} |"
+            )
     lines.extend(["", f"研究邊界：{report['research_boundary']}", ""])
     Path(output_path).write_text("\n".join(lines), encoding="utf-8")
 
@@ -183,13 +363,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--baseline-json", action="append", required=True)
     parser.add_argument("--promoted-json", action="append", required=True)
+    parser.add_argument("--curriculum-json", default="")
     parser.add_argument("--output-json", default=RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH)
     parser.add_argument("--output-md", default=RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_MD_PATH)
     args = parser.parse_args()
 
+    curriculum = _load_json(args.curriculum_json) if args.curriculum_json else None
     report = build_report(
         [_load_json(path) for path in args.baseline_json],
         [_load_json(path) for path in args.promoted_json],
+        curriculum=curriculum,
     )
     Path(args.output_json).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_markdown(report, args.output_md)
