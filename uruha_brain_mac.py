@@ -59,6 +59,7 @@ from rightbrain_repair_selector import (
 from rightbrain_language_quality import (
     ASCII_WORD_RE,
     CHINESE_SPECIFIC_RE,
+    FOREIGN_SCRIPT_RE,
     INSTRUCTION_MARKERS,
     NONSTANDARD_CJK_RE,
     POLITE_RE,
@@ -8241,6 +8242,7 @@ class RightBrain:
         if re.search(r"[ぁ-んァ-ヶー一-龠]", text) and re.search(r"[A-Za-z]{2,}", text):
             text = re.sub(r"\b[A-Za-z][A-Za-z0-9'_-]*\b", "", text)
             text = re.sub(r"\s+", " ", text).strip(" ,")
+        text = re.sub(r"(?<=[ぁ-んァ-ヶー一-龠])\s+(?=[ぁ-んァ-ヶー一-龠])", "", text)
         text = re.sub(r"([。！？!?])\1+", r"\1", text)
 
         if len(text) > max_chars:
@@ -11716,8 +11718,12 @@ You are Ichinose Uruha.
             reasons.append("cjk_language_leak")
         if NONSTANDARD_CJK_RE.search(reply):
             reasons.append("nonstandard_cjk_surface")
+        if FOREIGN_SCRIPT_RE.search(reply):
+            reasons.append("foreign_script_leak")
         if UNICODE_REPLACEMENT_CHAR in reply:
             reasons.append("unicode_replacement_character")
+        if any(marker in reply for marker in ["．", "｡"]):
+            reasons.append("nonstandard_punctuation")
 
         allowed_ascii = set(
             token.lower()
@@ -11743,6 +11749,8 @@ You are Ichinose Uruha.
         if any(marker.lower() in reply.lower() for marker in instruction_markers):
             reasons.append("instruction_or_plan_leak")
         if POLITE_RE.search(reply):
+            reasons.append("polite_tone_drift")
+        if re.search(r"(?:ませんかね|みてはどう|方がいいでしょう|(?:し|て)あげ(?:る|よう|たい|れば))", reply):
             reasons.append("polite_tone_drift")
         if any(marker in reply for marker in ["詫び", "お詫び", "謝罪いた"]):
             reasons.append("formal_register_drift")
@@ -11785,10 +11793,12 @@ You are Ichinose Uruha.
         reason_set = set(rejection_reasons or [])
         if "empty" in reason_set or "missing_japanese_surface" in reason_set:
             instructions.append("短い自然な日本語の返事を一つ書く")
-        if "cjk_language_leak" in reason_set or "nonstandard_cjk_surface" in reason_set:
+        if "cjk_language_leak" in reason_set or "nonstandard_cjk_surface" in reason_set or "foreign_script_leak" in reason_set:
             instructions.append("中国語を残さず日本語だけに直す")
         if "unicode_replacement_character" in reason_set:
             instructions.append("文字化けの置換文字を残さず、読める日本語に直す")
+        if "nonstandard_punctuation" in reason_set:
+            instructions.append("日本語の自然な句読点に直す")
         if "unexpected_ascii_leak" in reason_set:
             instructions.append("英字やローマ字を残さず日本語だけに直す")
         if "instruction_or_plan_leak" in reason_set:

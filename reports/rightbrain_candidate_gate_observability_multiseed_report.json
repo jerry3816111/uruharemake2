@@ -1,0 +1,75 @@
+{
+  "scope": "rightbrain_candidate_gate_observability_multiseed",
+  "seeds": [
+    "20260708",
+    "20260709"
+  ],
+  "case_count_per_seed": 11,
+  "conclusion_zh": "新 gate 主要提升候選品質邊界與 selector 可觀測性，不追求提高模型接管率；兩個 seed 的 final quality 皆維持 100%，且 20260709 擋掉更多不自然候選。selector 診斷顯示未接管候選平均分數仍低於 deterministic，因此目前不應放寬 selection margin。",
+  "rows": [
+    {
+      "seed": "20260708",
+      "before_report": "reports/rightbrain_semantic_marker_localizer_holdout_c3.json",
+      "after_report": "reports/rightbrain_candidate_gate_observability_holdout_c3.json",
+      "generated_candidate_count_before": 30,
+      "generated_candidate_count_after": 30,
+      "accepted_candidate_count_before": 16,
+      "accepted_candidate_count_after": 16,
+      "accepted_candidate_delta": 0,
+      "model_selected_case_count_before": 2,
+      "model_selected_case_count_after": 2,
+      "final_quality_pass_rate_before": 1.0,
+      "final_quality_pass_rate_after": 1.0,
+      "final_language_clean_rate_before": 1.0,
+      "final_language_clean_rate_after": 1.0,
+      "forbidden_leak_rate_before": 0.0,
+      "forbidden_leak_rate_after": 0.0,
+      "available_not_selected_after": 7,
+      "available_not_selected_avg_score_gap_after": -0.1929,
+      "new_rejection_reason_counts": {
+        "cjk_language_leak": 4,
+        "semantic_slots_missing:2/4": 2,
+        "unexpected_ascii_leak": 6,
+        "semantic_slots_missing:1/4": 1,
+        "semantic_slots_missing:3/4": 1,
+        "nonstandard_cjk_surface": 2,
+        "over_max_chars": 3,
+        "polite_tone_drift": 3,
+        "semantic_slots_missing:0/1": 2,
+        "duplicate_candidate": 1
+      }
+    },
+    {
+      "seed": "20260709",
+      "before_report": "reports/rightbrain_semantic_marker_localizer_holdout_c3_seed20260709.json",
+      "after_report": "reports/rightbrain_candidate_gate_observability_holdout_c3_seed20260709.json",
+      "generated_candidate_count_before": 30,
+      "generated_candidate_count_after": 30,
+      "accepted_candidate_count_before": 21,
+      "accepted_candidate_count_after": 16,
+      "accepted_candidate_delta": -5,
+      "model_selected_case_count_before": 2,
+      "model_selected_case_count_after": 2,
+      "final_quality_pass_rate_before": 1.0,
+      "final_quality_pass_rate_after": 1.0,
+      "final_language_clean_rate_before": 1.0,
+      "final_language_clean_rate_after": 1.0,
+      "forbidden_leak_rate_before": 0.0,
+      "forbidden_leak_rate_after": 0.0,
+      "available_not_selected_after": 8,
+      "available_not_selected_avg_score_gap_after": -0.325,
+      "new_rejection_reason_counts": {
+        "polite_tone_drift": 4,
+        "missing_japanese_surface": 1,
+        "unexpected_ascii_leak": 6,
+        "semantic_slots_missing:0/4": 1,
+        "semantic_slots_missing:3/4": 2,
+        "nonstandard_cjk_surface": 4,
+        "nonstandard_punctuation": 1,
+        "cjk_language_leak": 1,
+        "semantic_slots_missing:1/2": 1,
+        "foreign_script_leak": 1
+      }
+    }
+  ]
+}
