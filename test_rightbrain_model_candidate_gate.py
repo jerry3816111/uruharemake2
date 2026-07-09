@@ -616,6 +616,48 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         self.assertFalse(any(reason.startswith("semantic_slots_missing:") for reason in reasons))
 
+    def test_prepare_sanitizes_salvageable_ascii_before_final_gate(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "support",
+            "intent": "tired_support",
+            "dialogue_act": "emotional_containment",
+            "required_marker_groups": [["休", "無理", "疲", "寝", "回復", "しんど"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "今日は少し早めに rest しろ。疲れてるなら回復優先だろ。",
+            logic,
+            user_input="疲れた",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(reasons, [])
+        self.assertNotIn("rest", candidate.lower())
+        self.assertIn("疲", candidate)
+        self.assertIn("回復", candidate)
+
+    def test_prepare_keeps_ascii_candidate_with_chinese_pollution_rejected(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "required_marker_groups": [["胃"], ["コーヒー"], ["控え"], ["少"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "最近は gastric なので、コーヒー是少量较好哦。",
+            logic,
+            user_input="胃が弱いけどコーヒー飲みたい",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(candidate, "")
+        self.assertIn("unexpected_ascii_leak", reasons)
+        self.assertIn("cjk_language_leak", reasons)
+
     def test_surface_semantic_hits_share_colloquial_marker_variants(self):
         rightbrain = RightBrain(load_model=False)
         logic = {

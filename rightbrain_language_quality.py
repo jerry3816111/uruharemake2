@@ -7,7 +7,8 @@ import re
 JAPANESE_RE = re.compile(r"[ぁ-んァ-ヶー一-龠]")
 ASCII_WORD_RE = re.compile(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*")
 CHINESE_SPECIFIC_RE = re.compile(
-    r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]|好了|不是|我想|你的|可以|為什麼|为什么"
+    r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]"
+    r"|好了|不是|我想|你的|可以|為什麼|为什么|是少|较好|好哦|咖啡"
 )
 # Characters here use Chinese simplified/traditional forms where normal Japanese uses another glyph.
 NONSTANDARD_CJK_RE = re.compile(
