@@ -11766,6 +11766,27 @@ You are Ichinose Uruha.
             instructions.append("元の発話計画と出力契約に沿う自然な日本語へ直す")
         return instructions
 
+    def _raw_model_reasons_allow_sanitization(self, rejection_reasons, raw_reply=""):
+        reasons = [str(reason) for reason in rejection_reasons or []]
+        if "unexpected_ascii_leak" not in reasons:
+            return False
+        raw_reply = str(raw_reply or "")
+        if re.search(r"\b[A-Z]{2,}(?:\s+[A-Z]{2,})+\b", raw_reply):
+            return False
+        if re.search(
+            r"\b(?:plan|markers?|module|eventmanager|conversation|corrections|request|assistant|output|thought|system|prompt|json|yaml)\b",
+            raw_reply,
+            flags=re.IGNORECASE,
+        ):
+            return False
+        for reason in reasons:
+            if reason in {"unexpected_ascii_leak", "over_max_chars"}:
+                continue
+            if reason.startswith("semantic_slots_missing:"):
+                continue
+            return False
+        return True
+
     def _build_model_surface_repair_payload(
         self,
         original_payload,
@@ -11830,7 +11851,7 @@ You are Ichinose Uruha.
             max_chars,
             user_input=user_input,
         )
-        if raw_reasons:
+        if raw_reasons and not self._raw_model_reasons_allow_sanitization(raw_reasons, raw_reply):
             return "", raw_reasons
 
         candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)

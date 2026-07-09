@@ -50,6 +50,17 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
         self.assertEqual(report["aggregate"]["promoted"]["accepted_candidate_count"], 18)
         self.assertEqual(report["aggregate"]["raw_candidate_acceptance_delta"], 0.0667)
 
+    def test_same_adapter_gain_is_reported_as_runtime_gate_adoption(self):
+        baselines = [_report("same-adapter", 1, 5, 1), _report("same-adapter", 2, 9, 2)]
+        promoted = [_report("same-adapter", 1, 8, 1), _report("same-adapter", 2, 10, 2)]
+
+        report = build_report(baselines, promoted)
+
+        self.assertTrue(report["promotion_recommended"])
+        self.assertEqual(report["comparison_mode"], "same_adapter_runtime_gate_check")
+        self.assertIn("建議採用 runtime gate 改動", report["decision_zh"])
+        self.assertIn("模型接管數維持 3", report["decision_zh"])
+
     def test_rejects_promotion_when_one_seed_regresses(self):
         baselines = [_report("old", 1, 5, 0), _report("old", 2, 9, 1)]
         promoted = [_report("new", 1, 4, 1), _report("new", 2, 12, 2)]

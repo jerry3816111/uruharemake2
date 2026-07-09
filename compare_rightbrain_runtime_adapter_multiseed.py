@@ -279,13 +279,27 @@ def build_report(baselines, promoted, curriculum=None):
     data_boundary = _curriculum_boundary(curriculum, baselines + promoted)
     promotion_recommended = metric_gate_pass and not data_boundary["diagnostic_only"]
     if promotion_recommended:
-        decision_zh = (
-            f"建議升版：{len(per_seed)} 個 matched seeds 合計 raw 接受率由 "
-            f"{baseline_aggregate['raw_candidate_acceptance_rate']:.1%} 提升至 "
-            f"{promoted_aggregate['raw_candidate_acceptance_rate']:.1%}，模型接管數由 "
-            f"{baseline_aggregate['model_selected_case_count']} 增至 "
-            f"{promoted_aggregate['model_selected_case_count']}，且最終品質防線維持 100%。"
+        selected_before = baseline_aggregate["model_selected_case_count"]
+        selected_after = promoted_aggregate["model_selected_case_count"]
+        selected_phrase = (
+            f"由 {selected_before} 增至 {selected_after}"
+            if selected_after > selected_before
+            else f"維持 {selected_after}"
         )
+        if same_adapter_runtime_comparison:
+            decision_zh = (
+                f"建議採用 runtime gate 改動：{len(per_seed)} 個 matched seeds 合計 raw 接受率由 "
+                f"{baseline_aggregate['raw_candidate_acceptance_rate']:.1%} 提升至 "
+                f"{promoted_aggregate['raw_candidate_acceptance_rate']:.1%}，模型接管數{selected_phrase}，"
+                "且最終品質防線維持 100%。"
+            )
+        else:
+            decision_zh = (
+                f"建議升版：{len(per_seed)} 個 matched seeds 合計 raw 接受率由 "
+                f"{baseline_aggregate['raw_candidate_acceptance_rate']:.1%} 提升至 "
+                f"{promoted_aggregate['raw_candidate_acceptance_rate']:.1%}，模型接管數{selected_phrase}，"
+                "且最終品質防線維持 100%。"
+            )
     elif data_boundary["diagnostic_only"]:
         decision_zh = (
             "不建議升版：這次比較含有訓練資料與 holdout case/target 重疊，只能作為 diagnostic/dev 證據；"
