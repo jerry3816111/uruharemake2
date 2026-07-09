@@ -639,6 +639,79 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("疲", candidate)
         self.assertIn("回復", candidate)
 
+    def test_prepare_localizes_known_ascii_semantic_terms_before_gate(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "memory",
+            "intent": "explicit_memory_answer",
+            "dialogue_act": "advice",
+            "required_marker_groups": [["胃が弱い"], ["コーヒー"], ["控えめ"], ["体調", "胃", "最近"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "最近は gastric が弱いでしょ、coffee は少なく控えた方がいいよ。",
+            logic,
+            user_input="最近胃が弱いけど、今日コーヒー飲んでもいい？",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(reasons, [])
+        self.assertIn("胃", candidate)
+        self.assertIn("コーヒー", candidate)
+        self.assertIn("少なく", candidate)
+        self.assertIn("控え", candidate)
+
+    def test_prepare_accepts_natural_marker_paraphrase_and_normalized_cjk(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "memory",
+            "intent": "explicit_memory_answer",
+            "dialogue_act": "advice",
+            "required_marker_groups": [
+                ["最近は辛いものを控えたい", "辛いもの"],
+                ["辛いもの", "辛い"],
+                ["控えめ", "少なめ", "少し", "やめ", "避け"],
+                ["体調", "胃", "最近"],
+            ],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "最近の體調を考えると、辛いやつはちょっと避けてちょうだい。",
+            logic,
+            user_input="辛いもの食べたいけど、今日どう思う？",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(reasons, [])
+        self.assertIn("体調", candidate)
+        self.assertIn("辛いやつ", candidate)
+        self.assertIn("避け", candidate)
+
+    def test_prepare_does_not_localize_pure_romaji_sentence(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "memory",
+            "intent": "explicit_memory_answer",
+            "dialogue_act": "advice",
+            "required_marker_groups": [["胃"], ["コーヒー"], ["控え"], ["少"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "saikin stomach ga yowai kara coffee wa sukoshi hikaeme ni shiro.",
+            logic,
+            user_input="最近胃が弱いけど、今日コーヒー飲んでもいい？",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(candidate, "")
+        self.assertIn("missing_japanese_surface", reasons)
+
     def test_prepare_keeps_clean_semantically_complete_model_variant(self):
         rightbrain = RightBrain(load_model=False)
         logic = {
@@ -698,8 +771,8 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         )
 
         self.assertEqual(candidate, "")
-        self.assertIn("unexpected_ascii_leak", reasons)
         self.assertIn("cjk_language_leak", reasons)
+        self.assertTrue(any(reason.startswith("semantic_slots_missing:") for reason in reasons))
 
     def test_surface_semantic_hits_share_colloquial_marker_variants(self):
         rightbrain = RightBrain(load_model=False)
