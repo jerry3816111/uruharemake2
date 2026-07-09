@@ -1,0 +1,300 @@
+{
+  "generated_at": "2026-07-09T21:41:29+09:00",
+  "scope": "rightbrain_runtime_adapter_multiseed_promotion_gate",
+  "comparison_mode": "same_adapter_runtime_gate_check",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "promoted_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "candidate_count_per_case": 3,
+  "seeds": [
+    20260708,
+    20260709
+  ],
+  "promotion_recommended": true,
+  "metric_gate_pass": true,
+  "quality_guard_pass": true,
+  "all_seed_noninferior": true,
+  "data_boundary": {
+    "provided": false,
+    "training_row_count": 0,
+    "diagnostic_only": false,
+    "holdout_case_overlap_count": 0,
+    "holdout_target_overlap_count": 0
+  },
+  "aggregate": {
+    "baseline": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 31,
+      "raw_candidate_acceptance_rate": 0.5167,
+      "model_selected_case_count": 4,
+      "model_selected_case_rate": 0.1818,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 398.374
+    },
+    "promoted": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 37,
+      "raw_candidate_acceptance_rate": 0.6167,
+      "model_selected_case_count": 4,
+      "model_selected_case_rate": 0.1818,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 413.267
+    },
+    "raw_candidate_acceptance_delta": 0.1
+  },
+  "per_seed": [
+    {
+      "seed": 20260708,
+      "baseline_raw_candidate_acceptance_rate": 0.4667,
+      "promoted_raw_candidate_acceptance_rate": 0.5333,
+      "raw_candidate_acceptance_delta": 0.0666,
+      "baseline_model_selected_case_count": 2,
+      "promoted_model_selected_case_count": 2,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    },
+    {
+      "seed": 20260709,
+      "baseline_raw_candidate_acceptance_rate": 0.5667,
+      "promoted_raw_candidate_acceptance_rate": 0.7,
+      "raw_candidate_acceptance_delta": 0.1333,
+      "baseline_model_selected_case_count": 2,
+      "promoted_model_selected_case_count": 2,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    }
+  ],
+  "rejection_reason_deltas": {
+    "exact": [
+      {
+        "reason": "nonstandard_cjk_surface",
+        "baseline_count": 14,
+        "candidate_count": 4,
+        "delta": -10,
+        "direction": "improved"
+      },
+      {
+        "reason": "semantic_slots_missing:1/4",
+        "baseline_count": 5,
+        "candidate_count": 1,
+        "delta": -4,
+        "direction": "improved"
+      },
+      {
+        "reason": "semantic_slots_missing:2/4",
+        "baseline_count": 4,
+        "candidate_count": 2,
+        "delta": -2,
+        "direction": "improved"
+      },
+      {
+        "reason": "cjk_language_leak",
+        "baseline_count": 6,
+        "candidate_count": 5,
+        "delta": -1,
+        "direction": "improved"
+      },
+      {
+        "reason": "semantic_slots_missing:0/1",
+        "baseline_count": 3,
+        "candidate_count": 2,
+        "delta": -1,
+        "direction": "improved"
+      },
+      {
+        "reason": "semantic_slots_missing:3/4",
+        "baseline_count": 2,
+        "candidate_count": 3,
+        "delta": 1,
+        "direction": "regressed"
+      },
+      {
+        "reason": "unexpected_ascii_leak",
+        "baseline_count": 13,
+        "candidate_count": 12,
+        "delta": -1,
+        "direction": "improved"
+      }
+    ],
+    "family": [
+      {
+        "reason": "nonstandard_cjk_surface",
+        "baseline_count": 14,
+        "candidate_count": 4,
+        "delta": -10,
+        "direction": "improved"
+      },
+      {
+        "reason": "semantic_slots_missing",
+        "baseline_count": 16,
+        "candidate_count": 10,
+        "delta": -6,
+        "direction": "improved"
+      },
+      {
+        "reason": "cjk_language_leak",
+        "baseline_count": 6,
+        "candidate_count": 5,
+        "delta": -1,
+        "direction": "improved"
+      },
+      {
+        "reason": "unexpected_ascii_leak",
+        "baseline_count": 13,
+        "candidate_count": 12,
+        "delta": -1,
+        "direction": "improved"
+      }
+    ]
+  },
+  "case_diagnostics": [
+    {
+      "id": "no_memory_plain_question",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 1,
+      "candidate_accepted_candidate_count": 1,
+      "accepted_candidate_delta": 0,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "nonstandard_cjk_surface": 4,
+        "unexpected_ascii_leak": 3,
+        "polite_tone_drift": 1,
+        "semantic_slots_missing:0/1": 1,
+        "over_max_chars": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "unexpected_ascii_leak": 3,
+        "polite_tone_drift": 1,
+        "semantic_slots_missing:0/1": 1,
+        "over_max_chars": 1,
+        "nonstandard_cjk_surface": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": []
+    },
+    {
+      "id": "support_tired_no_closing_template",
+      "category": "support",
+      "baseline_accepted_candidate_count": 4,
+      "candidate_accepted_candidate_count": 4,
+      "accepted_candidate_delta": 0,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "nonstandard_cjk_surface": 1,
+        "polite_tone_drift": 1,
+        "unexpected_ascii_leak": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "polite_tone_drift": 1,
+        "unexpected_ascii_leak": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": [
+        "nonstandard_cjk_surface"
+      ]
+    },
+    {
+      "id": "background_family_pressure",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 3,
+      "candidate_accepted_candidate_count": 4,
+      "accepted_candidate_delta": 1,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "unexpected_ascii_leak": 2,
+        "over_max_chars": 1,
+        "nonstandard_cjk_surface": 2,
+        "semantic_slots_missing:0/1": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "unexpected_ascii_leak": 2,
+        "over_max_chars": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:0/1"
+      ]
+    },
+    {
+      "id": "explicit_spicy_food_update",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 0,
+      "candidate_accepted_candidate_count": 2,
+      "accepted_candidate_delta": 2,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "nonstandard_cjk_surface": 4,
+        "semantic_slots_missing:1/4": 3,
+        "semantic_slots_missing:2/4": 2,
+        "cjk_language_leak": 1,
+        "semantic_slots_missing:3/4": 1,
+        "unexpected_ascii_leak": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "semantic_slots_missing:3/4": 3,
+        "cjk_language_leak": 1,
+        "nonstandard_cjk_surface": 1,
+        "semantic_slots_missing:2/4": 1,
+        "unexpected_ascii_leak": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": [
+        "semantic_slots_missing:1/4"
+      ]
+    },
+    {
+      "id": "explicit_stomach_coffee",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 0,
+      "candidate_accepted_candidate_count": 3,
+      "accepted_candidate_delta": 3,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "semantic_slots_missing:3/4": 1,
+        "cjk_language_leak": 3,
+        "nonstandard_cjk_surface": 1,
+        "unexpected_ascii_leak": 3,
+        "semantic_slots_missing:2/4": 2,
+        "semantic_slots_missing:1/4": 2,
+        "missing_japanese_surface": 1,
+        "semantic_slots_missing:0/4": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "cjk_language_leak": 2,
+        "semantic_slots_missing:2/4": 1,
+        "unexpected_ascii_leak": 2,
+        "semantic_slots_missing:1/4": 1,
+        "missing_japanese_surface": 1,
+        "semantic_slots_missing:0/4": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:3/4"
+      ]
+    }
+  ],
+  "decision_zh": "建議採用 runtime gate 改動：2 個 matched seeds 合計 raw 接受率由 51.7% 提升至 61.7%，模型接管數維持 4，且最終品質防線維持 100%。",
+  "reason_delta_interpretation_zh": "baseline 與 candidate 使用同一個 adapter，因此 rejection reason 的增加可能代表 runtime checker 更嚴格抓出原本漏標的污染，而不是模型本身退步；升版仍必須看候選接受率、接管數與最終品質。",
+  "research_boundary": "This gate compares adapters under matched seeds and runtime candidate count. It measures model candidate reliability and guarded integration, not human naturalness. When a curriculum is supplied, holdout overlap is reported and blocks promotion."
+}

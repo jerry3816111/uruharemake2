@@ -8258,6 +8258,40 @@ class RightBrain:
 
         return text.strip()
 
+    def _localize_model_surface_ascii_terms(self, text):
+        text = str(text or "")
+        if not re.search(r"[ぁ-んァ-ヶー一-龠]", text):
+            return text
+        text = text.translate(
+            str.maketrans(
+                {
+                    "體": "体",
+                    "负": "負",
+                    "减": "減",
+                    "后": "後",
+                    "无": "無",
+                    "强": "強",
+                    "较": "較",
+                }
+            )
+        )
+        replacements = {
+            "coffee": "コーヒー",
+            "gastric": "胃",
+            "stomach": "胃",
+            "rest": "休む",
+            "controlled": "控えめにする",
+            "recent": "最近",
+            "doing": "してる",
+            "thinking": "考えすぎ",
+        }
+
+        def replace_token(match):
+            token = match.group(0)
+            return replacements.get(token.lower(), token)
+
+        return re.sub(r"\b[A-Za-z][A-Za-z0-9_-]*\b", replace_token, text)
+
     def _finalize_surface_reply(self, reply, logic_data, user_input, max_chars):
         reply = self._sanitize_reply(reply, max_chars=max_chars)
         if not reply:
@@ -11647,14 +11681,25 @@ You are Ichinose Uruha.
             return False
         if marker in reply:
             return True
+        compact_reply = re.sub(r"\s+", "", reply)
+        compact_marker = re.sub(r"\s+", "", marker)
+        if compact_marker and compact_marker in compact_reply:
+            return True
         variants = {
             "分から": ["分かん", "わから", "わかん", "分かってない", "分かっていない"],
             "返信": ["返事"],
             "どうしてた": ["どうしていた", "何してた", "どう過ごして"],
             "作品名": ["作品の名前", "何の作品"],
             "曲名": ["曲の名前", "何の曲"],
+            "辛いもの": ["辛い物", "辛いやつ", "辛く"],
+            "最近は辛いものを控えたい": ["辛いやつ", "辛い物", "辛く"],
+            "控えめ": ["控え", "抑え", "少なく"],
+            "少なめ": ["少なく", "控え"],
+            "最近は胃が弱い": ["胃が弱", "胃弱"],
+            "胃が弱い": ["胃が弱", "胃弱"],
+            "体調": ["體調"],
         }.get(marker, [])
-        return any(variant in reply for variant in variants)
+        return any(variant in reply or re.sub(r"\s+", "", variant) in compact_reply for variant in variants)
 
     def _semantic_group_hit(self, reply, group):
         return any(self._semantic_marker_hit(reply, marker) for marker in group)
@@ -11845,16 +11890,20 @@ You are Ichinose Uruha.
         memory_data,
         max_chars,
     ):
+        localized_raw_reply = self._localize_model_surface_ascii_terms(raw_reply)
         raw_reasons = self._model_candidate_rejection_reasons(
-            raw_reply,
+            localized_raw_reply,
             logic_data,
             max_chars,
             user_input=user_input,
         )
-        if raw_reasons and not self._raw_model_reasons_allow_sanitization(raw_reasons, raw_reply):
+        if raw_reasons and not self._raw_model_reasons_allow_sanitization(raw_reasons, localized_raw_reply):
             return "", raw_reasons
 
-        candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)
+        candidate = self._sanitize_reply(
+            localized_raw_reply,
+            max_chars=max_chars,
+        )
         direct_candidate = self._finalize_surface_reply(
             candidate,
             logic_data,
