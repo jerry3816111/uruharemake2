@@ -136,6 +136,23 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("required_marker_group", RIGHT_BRAIN_MODEL_SYSTEM_PROMPT)
         self.assertIn("audited_memory_brief", payload["context"])
         self.assertIn("persona_expression_brief", payload["context"])
+        self.assertNotIn("surface_failure_watchlist", payload)
+
+    def test_model_payload_can_include_experimental_surface_failure_watchlist(self):
+        rightbrain = RightBrain(load_model=False)
+        rightbrain.surface_watchlist_enabled = True
+        logic = reply_anxiety_logic()
+
+        payload_text = rightbrain._build_model_surface_payload(logic, {"mood": -3, "trust": 62}, 80)
+        payload = json.loads(payload_text)
+        watchlist = payload["surface_failure_watchlist"]
+
+        self.assertEqual(watchlist["priority_order"][0], "semantic_contract_first")
+        self.assertIn("semantic_slots_missing", watchlist["reject_families"])
+        self.assertIn("unexpected_ascii_leak", watchlist["reject_families"])
+        self.assertTrue(
+            any("返事/既読" in note for note in watchlist["semantic_slot_policy"])
+        )
 
     def test_model_payload_allows_only_audited_memory_surface_cues(self):
         rightbrain = RightBrain(load_model=False)

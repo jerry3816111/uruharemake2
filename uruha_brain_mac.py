@@ -201,6 +201,7 @@ RIGHT_BRAIN_MODEL_BLEND_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABL
 RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_COUNT", 3)
 RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
 RIGHT_BRAIN_MODEL_REPAIR_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED", False)
+RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED", False)
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -7935,6 +7936,7 @@ class RightBrain:
         self.model_candidate_count = max(1, RIGHT_BRAIN_MODEL_CANDIDATE_COUNT)
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
         self.model_repair_enabled = RIGHT_BRAIN_MODEL_REPAIR_ENABLED
+        self.surface_watchlist_enabled = RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
@@ -11641,6 +11643,45 @@ You are Ichinose Uruha.
         }
         return projected, trace
 
+    def _model_surface_failure_watchlist(self, logic_data=None):
+        logic_data = logic_data or {}
+        groups = self._model_required_semantic_groups(logic_data)
+        has_reply_delay = any(
+            any(str(marker) in {"返信", "返事", "既読"} for marker in group)
+            for group in groups
+        )
+        semantic_notes = [
+            "required_marker_groups を最優先する。自然さのために語意スロットを落とさない。",
+            "各 inner list から一つ以上を自然に表現する。言い換えはよいが意味は消さない。",
+        ]
+        if has_reply_delay:
+            semantic_notes.append(
+                "返事待ちの不安では、返事/既読、理由は不明、自分のせいにしない、の三点を残す。"
+            )
+        return {
+            "priority_order": [
+                "semantic_contract_first",
+                "memory_policy_second",
+                "casual_surface_third",
+            ],
+            "semantic_slot_policy": semantic_notes,
+            "reject_families": [
+                "semantic_slots_missing",
+                "unexpected_ascii_leak",
+                "cjk_language_leak",
+                "nonstandard_cjk_surface",
+                "unicode_replacement_character",
+                "polite_tone_drift",
+                "over_max_chars",
+            ],
+            "style_guard": [
+                "英字やローマ字を混ぜない",
+                "中国語や日本語で不自然な漢字を混ぜない",
+                "ですます調、接客口調、世話焼き口調にしない",
+                "文字化けや内部指示を出さない",
+            ],
+        }
+
     def _build_model_surface_payload(self, logic_data, current_psyche, max_chars, memory_data=None):
         psyche = current_psyche if isinstance(current_psyche, dict) else {}
         memory_brief = self._audited_memory_expression_brief(logic_data, memory_data)
@@ -11675,6 +11716,8 @@ You are Ichinose Uruha.
                 "no first person 私",
             ],
         }
+        if self.surface_watchlist_enabled:
+            payload["surface_failure_watchlist"] = self._model_surface_failure_watchlist(logic_data)
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
     def _semantic_marker_hit(self, reply, marker):
