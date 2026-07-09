@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-07-09T20:41:37+09:00",
+  "scope": "rightbrain_runtime_adapter_multiseed_promotion_gate",
+  "comparison_mode": "same_adapter_runtime_gate_check",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "promoted_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "candidate_count_per_case": 3,
+  "seeds": [
+    20260708,
+    20260709
+  ],
+  "promotion_recommended": false,
+  "metric_gate_pass": false,
+  "quality_guard_pass": true,
+  "all_seed_noninferior": true,
+  "data_boundary": {
+    "provided": false,
+    "training_row_count": 0,
+    "diagnostic_only": false,
+    "holdout_case_overlap_count": 0,
+    "holdout_target_overlap_count": 0
+  },
+  "aggregate": {
+    "baseline": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 18,
+      "raw_candidate_acceptance_rate": 0.3,
+      "model_selected_case_count": 3,
+      "model_selected_case_rate": 0.1364,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 467.438
+    },
+    "promoted": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 18,
+      "raw_candidate_acceptance_rate": 0.3,
+      "model_selected_case_count": 3,
+      "model_selected_case_rate": 0.1364,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "case_eval_duration_seconds": 9053.188
+    },
+    "raw_candidate_acceptance_delta": 0.0
+  },
+  "per_seed": [
+    {
+      "seed": 20260708,
+      "baseline_raw_candidate_acceptance_rate": 0.2667,
+      "promoted_raw_candidate_acceptance_rate": 0.2667,
+      "raw_candidate_acceptance_delta": 0.0,
+      "baseline_model_selected_case_count": 1,
+      "promoted_model_selected_case_count": 1,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    },
+    {
+      "seed": 20260709,
+      "baseline_raw_candidate_acceptance_rate": 0.3333,
+      "promoted_raw_candidate_acceptance_rate": 0.3333,
+      "raw_candidate_acceptance_delta": 0.0,
+      "baseline_model_selected_case_count": 2,
+      "promoted_model_selected_case_count": 2,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0
+    }
+  ],
+  "rejection_reason_deltas": {
+    "exact": [
+      {
+        "reason": "nonstandard_cjk_surface",
+        "baseline_count": 10,
+        "candidate_count": 14,
+        "delta": 4,
+        "direction": "regressed"
+      },
+      {
+        "reason": "semantic_slots_missing:0/1",
+        "baseline_count": 7,
+        "candidate_count": 6,
+        "delta": -1,
+        "direction": "improved"
+      }
+    ],
+    "family": [
+      {
+        "reason": "nonstandard_cjk_surface",
+        "baseline_count": 10,
+        "candidate_count": 14,
+        "delta": 4,
+        "direction": "regressed"
+      },
+      {
+        "reason": "semantic_slots_missing",
+        "baseline_count": 24,
+        "candidate_count": 23,
+        "delta": -1,
+        "direction": "improved"
+      }
+    ]
+  },
+  "case_diagnostics": [
+    {
+      "id": "background_family_pressure",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 3,
+      "candidate_accepted_candidate_count": 3,
+      "accepted_candidate_delta": 0,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "unexpected_ascii_leak": 2,
+        "over_max_chars": 1,
+        "nonstandard_cjk_surface": 1,
+        "semantic_slots_missing:0/1": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "unexpected_ascii_leak": 2,
+        "over_max_chars": 1,
+        "nonstandard_cjk_surface": 2,
+        "semantic_slots_missing:0/1": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": []
+    },
+    {
+      "id": "no_memory_plain_question",
+      "category": "audited_memory",
+      "baseline_accepted_candidate_count": 0,
+      "candidate_accepted_candidate_count": 0,
+      "accepted_candidate_delta": 0,
+      "baseline_model_selected_seed_count": 0,
+      "candidate_model_selected_seed_count": 0,
+      "model_selected_seed_delta": 0,
+      "baseline_rejection_reason_counts": {
+        "unexpected_ascii_leak": 4,
+        "semantic_slots_missing:0/1": 3,
+        "polite_tone_drift": 1,
+        "over_max_chars": 1,
+        "nonstandard_cjk_surface": 1
+      },
+      "candidate_rejection_reason_counts": {
+        "nonstandard_cjk_surface": 4,
+        "unexpected_ascii_leak": 4,
+        "polite_tone_drift": 1,
+        "semantic_slots_missing:0/1": 2,
+        "over_max_chars": 1
+      },
+      "new_rejection_reasons": [],
+      "resolved_rejection_reasons": []
+    }
+  ],
+  "decision_zh": "不建議升版：多 seed 證據未同時通過候選可靠度、接管數與最終品質門檻。",
+  "reason_delta_interpretation_zh": "baseline 與 candidate 使用同一個 adapter，因此 rejection reason 的增加可能代表 runtime checker 更嚴格抓出原本漏標的污染，而不是模型本身退步；升版仍必須看候選接受率、接管數與最終品質。",
+  "research_boundary": "This gate compares adapters under matched seeds and runtime candidate count. It measures model candidate reliability and guarded integration, not human naturalness. When a curriculum is supplied, holdout overlap is reported and blocks promotion."
+}

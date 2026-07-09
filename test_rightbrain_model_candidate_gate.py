@@ -548,6 +548,18 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("nonstandard_cjk_surface", simplified)
         self.assertIn("unicode_replacement_character", replacement)
 
+    def test_gate_rejects_simplified_chinese_residue_seen_in_model_outputs(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "後で聞くとかじゃなくて、今日の负荷を减らせばいい。后で戻せる。",
+            logic,
+            max_chars=90,
+        )
+
+        self.assertIn("nonstandard_cjk_surface", reasons)
+
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])
         logic = {
@@ -585,6 +597,41 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         )
 
         self.assertIn("polite_tone_drift", reasons)
+
+    def test_gate_accepts_colloquial_required_marker_variants(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "required_marker_groups": [
+                ["既読", "返事", "返信"],
+                ["理由", "分から"],
+                ["自分", "せい", "悪い"],
+            ]
+        }
+
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "既読にしててもまだ返事が来んのは分かんねんけど、自分勝手じゃないからな。",
+            logic,
+            90,
+        )
+
+        self.assertFalse(any(reason.startswith("semantic_slots_missing:") for reason in reasons))
+
+    def test_surface_semantic_hits_share_colloquial_marker_variants(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "required_marker_groups": [
+                ["返信"],
+                ["分から"],
+            ]
+        }
+
+        groups, hits = rightbrain._surface_semantic_group_hits(
+            "返事がまだ来なくても、理由は分かんねんよな。",
+            logic,
+        )
+
+        self.assertEqual(groups, [("返信",), ("分から",)])
+        self.assertEqual(hits, [True, True])
 
     def test_gate_rejects_polite_questions_missed_by_previous_pattern(self):
         rightbrain = RightBrain(load_model=False)

@@ -9802,7 +9802,7 @@ class RightBrain:
     def _surface_semantic_group_hits(self, reply, logic_data):
         reply = str(reply or "")
         groups = self._required_surface_semantic_groups(logic_data)
-        hits = [any(marker and marker in reply for marker in group) for group in groups]
+        hits = [self._semantic_group_hit(reply, group) for group in groups]
         return groups, hits
 
     def _speech_plan_variants(self, reply, logic_data, user_input, memory_data=None):
@@ -11610,6 +11610,7 @@ You are Ichinose Uruha.
         memory_brief = self._audited_memory_expression_brief(logic_data, memory_data)
         surface_plan, plan_projection = self._project_model_surface_plan(logic_data, memory_brief)
         logic_data["model_surface_plan_projection"] = plan_projection
+        required_groups = [list(group) for group in self._model_required_semantic_groups(logic_data)]
         payload = {
             "contract_version": RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
             "task": "write_one_user_facing_japanese_reply",
@@ -11628,7 +11629,7 @@ You are Ichinose Uruha.
                 "trust": psyche.get("trust", 50),
                 "max_chars": int(max_chars or 48),
             },
-            "required_marker_groups": [list(group) for group in self._model_required_semantic_groups(logic_data)],
+            "required_marker_groups": required_groups,
             "forbidden_markers": list(logic_data.get("must_avoid") or []),
             "reply_requirements": [
                 "one sentence or short chat reply",
@@ -11639,6 +11640,24 @@ You are Ichinose Uruha.
             ],
         }
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+    def _semantic_marker_hit(self, reply, marker):
+        marker = str(marker or "").strip()
+        if not marker:
+            return False
+        if marker in reply:
+            return True
+        variants = {
+            "分から": ["分かん", "わから", "わかん", "分かってない", "分かっていない"],
+            "返信": ["返事"],
+            "どうしてた": ["どうしていた", "何してた", "どう過ごして"],
+            "作品名": ["作品の名前", "何の作品"],
+            "曲名": ["曲の名前", "何の曲"],
+        }.get(marker, [])
+        return any(variant in reply for variant in variants)
+
+    def _semantic_group_hit(self, reply, group):
+        return any(self._semantic_marker_hit(reply, marker) for marker in group)
 
     def _model_candidate_rejection_reasons(self, reply, logic_data, max_chars, user_input=""):
         reply = str(reply or "").strip()
@@ -11684,7 +11703,7 @@ You are Ichinose Uruha.
             reasons.append("formal_register_drift")
 
         groups = self._model_required_semantic_groups(logic_data)
-        semantic_hits = [any(marker and marker in reply for marker in group) for group in groups]
+        semantic_hits = [self._semantic_group_hit(reply, group) for group in groups]
         if groups and not all(semantic_hits):
             reasons.append(f"semantic_slots_missing:{sum(semantic_hits)}/{len(semantic_hits)}")
 

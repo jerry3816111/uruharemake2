@@ -11,7 +11,7 @@ CHINESE_SPECIFIC_RE = re.compile(
 )
 # Characters here use Chinese simplified/traditional forms where normal Japanese uses another glyph.
 NONSTANDARD_CJK_RE = re.compile(
-    r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙]"
+    r"[调选个话这吗么们没还让给说为泠虑责应绪过样经觉开关实进问间东长门见车书风鱼鸟龙负减后]"
     r"|[无围强复简单體圍國學氣會來處變與樂臺]"
     r"|范围|範圍"
 )

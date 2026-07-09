@@ -221,6 +221,7 @@ def build_report(baselines, promoted, curriculum=None):
 
     baseline_adapter = baselines[0].get("adapter_ref")
     promoted_adapter = promoted[0].get("adapter_ref")
+    same_adapter_runtime_comparison = baseline_adapter == promoted_adapter
     candidate_count = baselines[0].get("candidate_count_per_case")
     seen_seeds = set()
     per_seed = []
@@ -298,6 +299,11 @@ def build_report(baselines, promoted, curriculum=None):
     return {
         "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "scope": "rightbrain_runtime_adapter_multiseed_promotion_gate",
+        "comparison_mode": (
+            "same_adapter_runtime_gate_check"
+            if same_adapter_runtime_comparison
+            else "adapter_promotion_gate"
+        ),
         "baseline_adapter": baseline_adapter,
         "promoted_adapter": promoted_adapter,
         "candidate_count_per_case": candidate_count,
@@ -319,6 +325,12 @@ def build_report(baselines, promoted, curriculum=None):
         },
         "case_diagnostics": _case_diagnostics(baselines, promoted),
         "decision_zh": decision_zh,
+        "reason_delta_interpretation_zh": (
+            "baseline 與 candidate 使用同一個 adapter，因此 rejection reason 的增加可能代表 runtime checker "
+            "更嚴格抓出原本漏標的污染，而不是模型本身退步；升版仍必須看候選接受率、接管數與最終品質。"
+            if same_adapter_runtime_comparison
+            else "baseline 與 candidate 使用不同 adapter，因此 rejection reason 增減主要反映候選模型輸出品質差異。"
+        ),
         "research_boundary": (
             "This gate compares adapters under matched seeds and runtime candidate count. "
             "It measures model candidate reliability and guarded integration, not human naturalness. "
@@ -330,6 +342,17 @@ def build_report(baselines, promoted, curriculum=None):
 def write_markdown(report, output_path):
     before = report["aggregate"]["baseline"]
     after = report["aggregate"]["promoted"]
+    same_adapter_runtime_gate = report.get("comparison_mode") == "same_adapter_runtime_gate_check"
+
+    def display_direction(row):
+        if (
+            same_adapter_runtime_gate
+            and row.get("reason") == "nonstandard_cjk_surface"
+            and int(row.get("delta") or 0) > 0
+        ):
+            return "stricter_detection"
+        return row["direction"]
+
     lines = [
         "# RightBrain Runtime Adapter Multi-seed Promotion Gate",
         "",
@@ -341,6 +364,7 @@ def write_markdown(report, output_path):
         "",
         f"- baseline adapter: `{report['baseline_adapter']}`",
         f"- candidate adapter: `{report['promoted_adapter']}`",
+        f"- comparison mode: `{report.get('comparison_mode', 'adapter_promotion_gate')}`",
         f"- seeds: `{report['seeds']}`",
         f"- candidates per case: `{report['candidate_count_per_case']}`",
         f"- all seeds non-inferior: `{report['all_seed_noninferior']}`",
@@ -355,6 +379,10 @@ def write_markdown(report, output_path):
         f"| raw 候選接受 | {before['accepted_candidate_count']}/{before['generated_candidate_count']} ({before['raw_candidate_acceptance_rate']:.1%}) | {after['accepted_candidate_count']}/{after['generated_candidate_count']} ({after['raw_candidate_acceptance_rate']:.1%}) |",
         f"| 模型實際接管 | {before['model_selected_case_count']}/{before['case_count']} | {after['model_selected_case_count']}/{after['case_count']} |",
         f"| 最終品質通過率 | {before['final_quality_pass_rate']:.1%} | {after['final_quality_pass_rate']:.1%} |",
+        "",
+        "## Rejection Reason 解讀",
+        "",
+        report["reason_delta_interpretation_zh"],
         "",
         "## 各 Seed",
         "",
@@ -399,7 +427,7 @@ def write_markdown(report, output_path):
         for row in family_deltas:
             lines.append(
                 f"| {row['reason']} | {row['baseline_count']} | {row['candidate_count']} | "
-                f"{row['delta']:+d} | {row['direction']} |"
+                f"{row['delta']:+d} | {display_direction(row)} |"
             )
     exact_deltas = report.get("rejection_reason_deltas", {}).get("exact") or []
     if exact_deltas:
@@ -415,7 +443,7 @@ def write_markdown(report, output_path):
         for row in exact_deltas[:16]:
             lines.append(
                 f"| {row['reason']} | {row['baseline_count']} | {row['candidate_count']} | "
-                f"{row['delta']:+d} | {row['direction']} |"
+                f"{row['delta']:+d} | {display_direction(row)} |"
             )
     diagnostics = report.get("case_diagnostics") or []
     if diagnostics:
