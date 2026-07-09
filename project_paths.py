@@ -49,6 +49,10 @@ RIGHTBRAIN_CANDIDATE_GATE_CONTRAST_CURRICULUM_V16_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_candidate_gate_contrast_curriculum_v16.json",
 )
+RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_compact_slot_curriculum_v17.json",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_curriculum_v1.json",
@@ -231,6 +235,14 @@ RIGHTBRAIN_CANDIDATE_GATE_CONTRAST_CURRICULUM_V16_REPORT_JSON_PATH = os.path.joi
 RIGHTBRAIN_CANDIDATE_GATE_CONTRAST_CURRICULUM_V16_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_candidate_gate_contrast_curriculum_v16_report.md",
+)
+RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_compact_slot_curriculum_v17_report.json",
+)
+RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_compact_slot_curriculum_v17_report.md",
 )
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
