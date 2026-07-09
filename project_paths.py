@@ -41,6 +41,10 @@ RIGHTBRAIN_HOLDOUT_SEPARATED_CURRICULUM_V14_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_holdout_separated_curriculum_v14.json",
 )
+RIGHTBRAIN_CANDIDATE_GATE_CURRICULUM_V15_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_candidate_gate_curriculum_v15.json",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_curriculum_v1.json",
@@ -207,6 +211,14 @@ RIGHTBRAIN_HOLDOUT_SEPARATED_CURRICULUM_V14_REPORT_JSON_PATH = os.path.join(
 RIGHTBRAIN_HOLDOUT_SEPARATED_CURRICULUM_V14_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_holdout_separated_curriculum_v14_report.md",
+)
+RIGHTBRAIN_CANDIDATE_GATE_CURRICULUM_V15_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_candidate_gate_curriculum_v15_report.json",
+)
+RIGHTBRAIN_CANDIDATE_GATE_CURRICULUM_V15_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_candidate_gate_curriculum_v15_report.md",
 )
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
