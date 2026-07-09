@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-07-10T04:36:55+09:00",
+  "scope": "rightbrain_compact_slot_curriculum_v17",
+  "source_diagnostic_reports": [
+    "rightbrain_v16_contrast_watchlist_holdout_c3.json",
+    "rightbrain_v16_contrast_watchlist_holdout_c3_seed20260709.json"
+  ],
+  "source_compare_report": "rightbrain_v16_contrast_watchlist_compare_report.json",
+  "design": "v17 reuses the v16 holdout-separated positive targets but removes the long surface_failure_watchlist. It tests whether compact runtime-compatible SFT improves required_marker_groups preservation without adding prompt-only rules.",
+  "curriculum_row_count": 32,
+  "family_spec_count": 8,
+  "category_counts": {
+    "support_contrast": 8,
+    "repair_contrast": 4,
+    "daily_contrast": 4,
+    "private_memory_contrast": 4,
+    "updated_preference_contrast": 4,
+    "tease_contrast": 4,
+    "no_memory_contrast": 4
+  },
+  "failure_family_counts": {
+    "semantic_slots_missing": 48,
+    "polite_tone_drift": 12,
+    "unexpected_ascii_leak": 12,
+    "cjk_language_leak": 12,
+    "unicode_replacement_character": 4,
+    "duplicate_candidate": 4,
+    "nonstandard_cjk_surface": 8,
+    "over_max_chars": 4,
+    "nonstandard_punctuation": 4
+  },
+  "source_diagnostic_family_counts": {
+    "semantic_slots_missing": 16,
+    "foreign_script_leak": 1,
+    "unexpected_ascii_leak": 13,
+    "polite_tone_drift": 8,
+    "over_max_chars": 4,
+    "cjk_language_leak": 6,
+    "nonstandard_cjk_surface": 5,
+    "duplicate_candidate": 2
+  },
+  "source_compare_family_counts": {
+    "semantic_slots_missing": 16,
+    "cjk_language_leak": 6,
+    "duplicate_candidate": 2,
+    "missing_japanese_surface": 0,
+    "nonstandard_cjk_surface": 5,
+    "nonstandard_punctuation": 0,
+    "over_max_chars": 4,
+    "polite_tone_drift": 8,
+    "unexpected_ascii_leak": 13
+  },
+  "skipped_counts": {},
+  "runtime_payload_boundary": {
+    "surface_failure_watchlist_present": false,
+    "matches_default_watchlist_flag_off": true
+  },
+  "data_boundary": {
+    "holdout_case_count": 11,
+    "training_source_case_count": 8,
+    "holdout_case_overlap_count": 0,
+    "holdout_case_overlap_ids": [],
+    "holdout_target_overlap_count": 0,
+    "holdout_target_overlap_examples": [],
+    "diagnostic_only": false
+  },
+  "promotion_boundary": "這是 compact runtime payload 的補充訓練資料，不是升版證據。任何用它訓練出的 adapter 仍必須通過 matched-seed model-loaded holdout，才能成為預設 RightBrain adapter。"
+}
