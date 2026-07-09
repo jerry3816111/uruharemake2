@@ -11855,6 +11855,21 @@ You are Ichinose Uruha.
             return "", raw_reasons
 
         candidate = self._sanitize_reply(raw_reply, max_chars=max_chars)
+        direct_candidate = self._finalize_surface_reply(
+            candidate,
+            logic_data,
+            user_input,
+            max_chars=max_chars,
+        )
+        direct_reasons = self._model_candidate_rejection_reasons(
+            direct_candidate,
+            logic_data,
+            max_chars,
+            user_input=user_input,
+        )
+        if not direct_reasons:
+            return direct_candidate, []
+
         candidate = self._refine_conversational_reply(
             candidate,
             logic_data,

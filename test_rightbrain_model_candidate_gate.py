@@ -639,6 +639,49 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertIn("疲", candidate)
         self.assertIn("回復", candidate)
 
+    def test_prepare_keeps_clean_semantically_complete_model_variant(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "daily",
+            "intent": "daily_state",
+            "dialogue_act": "daily_state_answer",
+            "required_marker_groups": [["今", "だら", "ぼー", "休ん"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "今はちょっと怠け気味かな。",
+            logic,
+            user_input="今なにしてるの？",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(reasons, [])
+        self.assertIn("怠け", candidate)
+        self.assertNotIn("だらっとしてる。話すくらいなら普通にいける", candidate)
+
+    def test_prepare_keeps_semantically_incomplete_model_variant_rejected(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = {
+            "scene": "support",
+            "intent": "tired_support",
+            "dialogue_act": "emotional_containment",
+            "required_marker_groups": [["休", "無理", "疲", "寝", "回復", "しんど"]],
+            "constraints": {"max_chars": 80},
+        }
+
+        candidate, reasons = rightbrain._prepare_model_surface_candidate(
+            "今日は少し早めに行こう。",
+            logic,
+            user_input="疲れた",
+            memory_data=MEMORY,
+            max_chars=80,
+        )
+
+        self.assertEqual(candidate, "")
+        self.assertTrue(any(reason.startswith("semantic_slots_missing:") for reason in reasons))
+
     def test_prepare_keeps_ascii_candidate_with_chinese_pollution_rejected(self):
         rightbrain = RightBrain(load_model=False)
         logic = {
