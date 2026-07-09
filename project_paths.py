@@ -33,6 +33,10 @@ RIGHTBRAIN_REJECTION_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_rejection_curriculum_v1.json",
 )
+RIGHTBRAIN_RUNTIME_REJECTION_CURRICULUM_V13_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_runtime_rejection_curriculum_v13.json",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_curriculum_v1.json",
@@ -183,6 +187,14 @@ RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
 RIGHTBRAIN_REJECTION_CURRICULUM_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_rejection_curriculum_v1_report.md",
+)
+RIGHTBRAIN_RUNTIME_REJECTION_CURRICULUM_V13_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_runtime_rejection_curriculum_v13_report.json",
+)
+RIGHTBRAIN_RUNTIME_REJECTION_CURRICULUM_V13_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_runtime_rejection_curriculum_v13_report.md",
 )
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,

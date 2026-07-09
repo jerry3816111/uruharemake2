@@ -148,7 +148,7 @@ def write_markdown(report, output_path):
         "## 控制變因",
         "",
         f"- baseline adapter: `{report['baseline_adapter']}`",
-        f"- promoted adapter: `{report['promoted_adapter']}`",
+        f"- candidate adapter: `{report['promoted_adapter']}`",
         f"- seeds: `{report['seeds']}`",
         f"- candidates per case: `{report['candidate_count_per_case']}`",
         f"- all seeds non-inferior: `{report['all_seed_noninferior']}`",
@@ -156,7 +156,7 @@ def write_markdown(report, output_path):
         "",
         "## 合計結果",
         "",
-        "| 指標 | 舊 adapter | promoted adapter |",
+        "| 指標 | baseline adapter | candidate adapter |",
         "|---|---:|---:|",
         f"| raw 候選接受 | {before['accepted_candidate_count']}/{before['generated_candidate_count']} ({before['raw_candidate_acceptance_rate']:.1%}) | {after['accepted_candidate_count']}/{after['generated_candidate_count']} ({after['raw_candidate_acceptance_rate']:.1%}) |",
         f"| 模型實際接管 | {before['model_selected_case_count']}/{before['case_count']} | {after['model_selected_case_count']}/{after['case_count']} |",
@@ -164,7 +164,7 @@ def write_markdown(report, output_path):
         "",
         "## 各 Seed",
         "",
-        "| seed | baseline raw | promoted raw | delta | baseline selected | promoted selected |",
+        "| seed | baseline raw | candidate raw | delta | baseline selected | candidate selected |",
         "|---:|---:|---:|---:|---:|---:|",
     ]
     for row in report["per_seed"]:
