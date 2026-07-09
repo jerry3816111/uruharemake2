@@ -1,6 +1,8 @@
+import tempfile
 import unittest
+from pathlib import Path
 
-from compare_rightbrain_runtime_adapter_multiseed import build_report
+from compare_rightbrain_runtime_adapter_multiseed import build_report, write_markdown
 
 
 def _report(adapter, seed, accepted, selected, *, generated=30, quality=1.0, reasons=None):
@@ -103,6 +105,31 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
         self.assertEqual(report["data_boundary"]["holdout_case_overlap_count"], 1)
         self.assertEqual(report["data_boundary"]["holdout_target_overlap_count"], 1)
         self.assertFalse(report["promotion_recommended"])
+
+    def test_curriculum_summary_report_can_be_rendered(self):
+        baselines = [_report("old", 1, 5, 0), _report("old", 2, 9, 1)]
+        promoted = [_report("new", 1, 8, 1), _report("new", 2, 10, 2)]
+        curriculum_report = {
+            "curriculum_row_count": 32,
+            "data_boundary": {
+                "holdout_case_count": 11,
+                "training_source_case_count": 8,
+                "holdout_case_overlap_count": 0,
+                "holdout_case_overlap_ids": [],
+                "holdout_target_overlap_count": 0,
+                "holdout_target_overlap_examples": [],
+                "diagnostic_only": False,
+            },
+        }
+
+        report = build_report(baselines, promoted, curriculum=curriculum_report)
+
+        self.assertEqual(report["data_boundary"]["training_row_count"], 32)
+        self.assertIn("No holdout case", report["data_boundary"]["boundary_reason"])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = Path(tmpdir) / "report.md"
+            write_markdown(report, output)
+            self.assertIn("training rows | 32", output.read_text(encoding="utf-8"))
 
     def test_case_diagnostics_surface_regressed_cases_and_new_reasons(self):
         baselines = [_report("old", 1, 5, 1, reasons=["unexpected_ascii_leak"])]
