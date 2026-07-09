@@ -159,6 +159,33 @@ def _curriculum_rows(curriculum):
 
 
 def _curriculum_boundary(curriculum, reports):
+    if isinstance(curriculum, dict) and isinstance(curriculum.get("data_boundary"), dict):
+        boundary = dict(curriculum["data_boundary"])
+        diagnostic_only = bool(
+            boundary.get("diagnostic_only")
+            or boundary.get("holdout_case_overlap_count")
+            or boundary.get("holdout_target_overlap_count")
+        )
+        boundary.setdefault("provided", True)
+        boundary.setdefault("training_row_count", curriculum.get("curriculum_row_count", 0))
+        boundary.setdefault("training_source_case_count", boundary.get("training_source_case_count", 0))
+        boundary.setdefault("holdout_case_count", boundary.get("holdout_case_count", 0))
+        boundary.setdefault("holdout_case_overlap_count", 0)
+        boundary.setdefault("holdout_case_overlap_ids", [])
+        boundary.setdefault("holdout_target_overlap_count", 0)
+        boundary.setdefault("holdout_target_overlap_examples", [])
+        boundary["diagnostic_only"] = diagnostic_only
+        boundary.setdefault(
+            "boundary_reason",
+            (
+                "Candidate training data overlaps the evaluated holdout case IDs or target replies. "
+                "This comparison is useful for debugging but must not be used as promotion evidence."
+            )
+            if diagnostic_only
+            else "No holdout case or target overlap was detected in the supplied curriculum report.",
+        )
+        return boundary
+
     rows = _curriculum_rows(curriculum)
     if not rows:
         return {
@@ -346,9 +373,8 @@ def build_report(baselines, promoted, curriculum=None):
             else "baseline 與 candidate 使用不同 adapter，因此 rejection reason 增減主要反映候選模型輸出品質差異。"
         ),
         "research_boundary": (
-            "This gate compares adapters under matched seeds and runtime candidate count. "
-            "It measures model candidate reliability and guarded integration, not human naturalness. "
-            "When a curriculum is supplied, holdout overlap is reported and blocks promotion."
+            "此 gate 在相同 seed 與相同候選數下比較 adapter。它測的是模型候選可靠度與受保護整合，"
+            "不是完整的人類自然度。若提供 curriculum report，會檢查 holdout overlap；有重疊時會阻止升版。"
         ),
     }
 
