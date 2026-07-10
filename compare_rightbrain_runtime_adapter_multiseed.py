@@ -284,7 +284,10 @@ def _curriculum_boundary(curriculum, reports):
             or boundary.get("holdout_target_overlap_count")
         )
         boundary.setdefault("provided", True)
-        boundary.setdefault("training_row_count", curriculum.get("curriculum_row_count", 0))
+        boundary.setdefault(
+            "training_row_count",
+            curriculum.get("curriculum_row_count", curriculum.get("pair_count", 0)),
+        )
         boundary.setdefault("training_source_case_count", boundary.get("training_source_case_count", 0))
         boundary.setdefault("holdout_case_count", boundary.get("holdout_case_count", 0))
         boundary.setdefault("holdout_case_overlap_count", 0)

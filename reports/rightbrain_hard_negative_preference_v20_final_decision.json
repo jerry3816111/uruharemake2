@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-07-11T04:08:40+09:00",
+  "scope": "rightbrain_hard_negative_preference_v20_final_decision",
+  "baseline_adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "candidate_adapter": "uruha_rightbrain_plan_sft_lora_v20_hard_negative_simpo_v1",
+  "dataset_evidence": {
+    "pair_count": 32,
+    "family_count": 8,
+    "single_slot_omission": true,
+    "length_matched": true,
+    "holdout_case_overlap_count": 0,
+    "holdout_target_overlap_count": 0
+  },
+  "training_evidence": {
+    "epochs": 1.0,
+    "optimizer_updates": 6,
+    "nonfinite_skips": 0,
+    "initial_unseen_chosen_preference_rate": 1.0,
+    "final_unseen_chosen_preference_rate": 1.0,
+    "initial_unseen_mean_margin": 1.2590304017066956,
+    "final_unseen_mean_margin": 1.2738060355186462,
+    "unseen_mean_margin_delta": 0.0148
+  },
+  "runtime_evidence": {
+    "seeds": [
+      20260708,
+      20260709
+    ],
+    "case_count": 22,
+    "generated_candidate_count": 60,
+    "baseline_accepted_candidate_count": 26,
+    "candidate_accepted_candidate_count": 23,
+    "baseline_raw_candidate_acceptance_rate": 0.4333,
+    "candidate_raw_candidate_acceptance_rate": 0.3833,
+    "raw_candidate_acceptance_delta": -0.05,
+    "baseline_model_selected_case_count": 3,
+    "candidate_model_selected_case_count": 2,
+    "baseline_final_quality_pass_rate": 1.0,
+    "candidate_final_quality_pass_rate": 0.9546,
+    "quality_guard_pass": false,
+    "all_seed_noninferior": false,
+    "all_seed_selection_noninferior": false,
+    "regressed_failure_families": [
+      {
+        "reason": "semantic_slots_missing",
+        "baseline_count": 10,
+        "candidate_count": 17,
+        "delta": 7,
+        "direction": "regressed"
+      },
+      {
+        "reason": "unexpected_ascii_leak",
+        "baseline_count": 12,
+        "candidate_count": 19,
+        "delta": 7,
+        "direction": "regressed"
+      },
+      {
+        "reason": "cjk_language_leak",
+        "baseline_count": 5,
+        "candidate_count": 9,
+        "delta": 4,
+        "direction": "regressed"
+      },
+      {
+        "reason": "nonstandard_cjk_surface",
+        "baseline_count": 6,
+        "candidate_count": 8,
+        "delta": 2,
+        "direction": "regressed"
+      },
+      {
+        "reason": "ascii_symbol_artifact",
+        "baseline_count": 2,
+        "candidate_count": 3,
+        "delta": 1,
+        "direction": "regressed"
+      },
+      {
+        "reason": "unicode_replacement_character",
+        "baseline_count": 0,
+        "candidate_count": 1,
+        "delta": 1,
+        "direction": "regressed"
+      }
+    ],
+    "improved_failure_families": [
+      {
+        "reason": "awkward_or_caregiver_surface",
+        "baseline_count": 5,
+        "candidate_count": 3,
+        "delta": -2,
+        "direction": "improved"
+      },
+      {
+        "reason": "polite_tone_drift",
+        "baseline_count": 7,
+        "candidate_count": 5,
+        "delta": -2,
+        "direction": "improved"
+      }
+    ]
+  },
+  "gates": {
+    "synthetic_pre_holdout_gate_passed": true,
+    "actual_model_runtime_gate_passed": false,
+    "promote_adapter": false
+  },
+  "diagnosis": {
+    "synthetic_to_runtime_transfer_gap": true,
+    "interpretation_zh": "V20 的未見 synthetic pair 在訓練前已達 100% 偏好正確率，訓練後只有極小 margin 增益；這個訊號沒有轉移到真實生成，反而使語意缺漏與語言污染增加。",
+    "next_experiment_zh": "下一輪應改用與正式 holdout 分離的開發情境，收集 V10 真實生成的自然錯誤候選作為 on-policy preference data；訓練前還要先確認未見 pair 不是 100% 飽和。"
+  },
+  "decision_zh": "V20 通過 synthetic 前置檢查，但真實模型雙 seed 退步，因此不升級；正式右腦維持 V10。",
+  "research_boundary": "這份決策證明 V20 這組資料與訓練方法未改善指定的 11-case actual-model holdout；它不代表所有 preference learning 都無效，也不代表完整人類自然度已被測量。"
+}

@@ -218,6 +218,24 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
             write_markdown(report, output)
             self.assertIn("training rows | 32", output.read_text(encoding="utf-8"))
 
+    def test_preference_pair_report_supplies_training_row_count(self):
+        baselines = [_report("old", 1, 5, 0), _report("old", 2, 9, 1)]
+        promoted = [_report("new", 1, 8, 1), _report("new", 2, 10, 2)]
+        preference_report = {
+            "pair_count": 32,
+            "data_boundary": {
+                "holdout_case_count": 11,
+                "training_source_case_count": 8,
+                "holdout_case_overlap_count": 0,
+                "holdout_target_overlap_count": 0,
+                "diagnostic_only": False,
+            },
+        }
+
+        report = build_report(baselines, promoted, curriculum=preference_report)
+
+        self.assertEqual(report["data_boundary"]["training_row_count"], 32)
+
     def test_case_diagnostics_surface_regressed_cases_and_new_reasons(self):
         baselines = [_report("old", 1, 5, 1, reasons=["unexpected_ascii_leak"])]
         promoted = [

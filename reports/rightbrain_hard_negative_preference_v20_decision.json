@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-07-11T03:52:21+09:00",
+  "scope": "rightbrain_hard_negative_preference_v20_pre_holdout_gate",
+  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v20_hard_negative_simpo_v1",
+  "gates": {
+    "dataset_pairs_are_single_slot_omissions": true,
+    "dataset_pairs_are_length_matched": true,
+    "dataset_promotion_holdout_overlap_is_zero": true,
+    "train_eval_source_overlap_is_zero": true,
+    "all_optimizer_updates_completed": true,
+    "nonfinite_training_events_are_zero": true,
+    "train_chosen_preference_rate_at_least_75pct": true,
+    "unseen_eval_chosen_preference_rate_at_least_75pct": true,
+    "unseen_eval_mean_margin_improved": true,
+    "unseen_eval_target_margin_rate_at_least_50pct": true
+  },
+  "authorize_actual_model_holdout": true,
+  "dataset_result": {
+    "pair_count": 32,
+    "mean_delta_rejected_minus_chosen": 1.34375,
+    "max_absolute_delta": 6,
+    "mean_character_similarity": 0.656641
+  },
+  "training_result": {
+    "optimizer_updates": 6,
+    "expected_optimizer_updates": 6,
+    "nonfinite_skips": 0,
+    "max_observed_gradient_norm": 706150.875,
+    "initial_eval_chosen_preference_rate": 1.0,
+    "final_eval_chosen_preference_rate": 1.0,
+    "initial_eval_mean_raw_margin": 1.2590304017066956,
+    "final_eval_mean_raw_margin": 1.2738060355186462,
+    "eval_mean_raw_margin_delta": 0.014775633811950684,
+    "final_eval_target_margin_rate": 1.0,
+    "final_train_chosen_preference_rate": 0.791667
+  },
+  "decision_zh": "允許 V20 進入 V10 對照的雙 seed 真實模型 holdout。",
+  "research_boundary": "V20 uses manually authored, length-matched synthetic hard negatives. Passing this gate only authorizes actual-model evaluation; it does not promote the adapter."
+}
