@@ -1,0 +1,526 @@
+{
+  "generated_at": "2026-07-11T02:15:11+09:00",
+  "method": "offline_direct_preference_optimization",
+  "method_reference": "https://arxiv.org/abs/2305.18290",
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "dataset_ref": "rightbrain_semantic_preference_v18.json",
+  "dataset_sha256": "e8ade04dd0cf4598b2ddf0d1c835d922dd5090c045658f3398d3f425e7095648",
+  "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "init_adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+  "output_adapter_ref": "uruha_rightbrain_plan_sft_lora_v18_semantic_dpo_v1",
+  "output_adapter_config_sha256": "246388e3da299f2e2f88011f41054db1b5ee99c9a81401592ddbe8854d893f43",
+  "output_adapter_model_sha256": "9a05cdafa4bd8bddebd14b50a69f88867f3d20413fcae9aaa1e6bbb085d38212",
+  "pair_count": 32,
+  "train_pair_count": 24,
+  "eval_pair_count": 8,
+  "train_source_ids": [
+    "v18_absurd_train_moon",
+    "v18_daily_low_energy_status",
+    "v18_group_reply_delay",
+    "v18_manga_fragment_source",
+    "v18_private_school_topic",
+    "v18_uncertain_weekend_plan"
+  ],
+  "eval_source_ids": [
+    "v18_sleep_debt_boundary",
+    "v18_throat_coffee_update"
+  ],
+  "source_overlap_count": 0,
+  "token_length_min": 525,
+  "token_length_max": 575,
+  "token_length_mean": 544.59,
+  "epochs": 1.0,
+  "learning_rate": 1e-07,
+  "beta": 0.1,
+  "grad_accum": 4,
+  "seed": 20260710,
+  "dtype": "torch.bfloat16",
+  "duration_seconds": 5995.852,
+  "target_pair_steps": 24,
+  "consumed_pair_steps": 24,
+  "optimizer_updates": 5,
+  "nonfinite_skips": 1,
+  "max_observed_gradient_norm": 153581.765625,
+  "mean_train_dpo_loss": 0.7018013571699461,
+  "initial_train_preference": {
+    "pair_count": 24,
+    "policy_chosen_preference_rate": 0.25,
+    "positive_reward_margin_rate": 0.0,
+    "mean_reward_margin": 0.0,
+    "rows": [
+      {
+        "id": "rb_semantic_preference_v18_0001",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -6.846263885498047,
+        "reference_log_ratio": -6.846263885498047,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0002",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -4.805370330810547,
+        "reference_log_ratio": -4.805370330810547,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0003",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -6.94073486328125,
+        "reference_log_ratio": -6.94073486328125,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0004",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -10.927825927734375,
+        "reference_log_ratio": -10.927825927734375,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0005",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": 6.829456329345703,
+        "reference_log_ratio": 6.829456329345703,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0006",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": 3.843994140625,
+        "reference_log_ratio": 3.843994140625,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0007",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": -15.847343444824219,
+        "reference_log_ratio": -15.847343444824219,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0008",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": -26.63622283935547,
+        "reference_log_ratio": -26.63622283935547,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0009",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": 8.777023315429688,
+        "reference_log_ratio": 8.777023315429688,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0010",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": 1.3723068237304688,
+        "reference_log_ratio": 1.3723068237304688,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0011",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": -2.2077369689941406,
+        "reference_log_ratio": -2.2077369689941406,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0012",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": -5.399066925048828,
+        "reference_log_ratio": -5.399066925048828,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0017",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -17.54030418395996,
+        "reference_log_ratio": -17.54030418395996,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0018",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -34.86156463623047,
+        "reference_log_ratio": -34.86156463623047,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0019",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -13.852882385253906,
+        "reference_log_ratio": -13.852882385253906,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0020",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": 7.817771911621094,
+        "reference_log_ratio": 7.817771911621094,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0025",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -13.112979888916016,
+        "reference_log_ratio": -13.112979888916016,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0026",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -4.467922210693359,
+        "reference_log_ratio": -4.467922210693359,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0027",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -15.018035888671875,
+        "reference_log_ratio": -15.018035888671875,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0028",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -11.834732055664062,
+        "reference_log_ratio": -11.834732055664062,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0029",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": 3.767690658569336,
+        "reference_log_ratio": 3.767690658569336,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0030",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -7.041038513183594,
+        "reference_log_ratio": -7.041038513183594,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0031",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -23.907535552978516,
+        "reference_log_ratio": -23.907535552978516,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0032",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -15.94491958618164,
+        "reference_log_ratio": -15.94491958618164,
+        "reward_margin": 0.0
+      }
+    ]
+  },
+  "initial_eval_preference": {
+    "pair_count": 8,
+    "policy_chosen_preference_rate": 0.5,
+    "positive_reward_margin_rate": 0.0,
+    "mean_reward_margin": 0.0,
+    "rows": [
+      {
+        "id": "rb_semantic_preference_v18_0013",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -7.43914794921875,
+        "reference_log_ratio": -7.43914794921875,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0014",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -12.111839294433594,
+        "reference_log_ratio": -12.111839294433594,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0015",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": 15.329452514648438,
+        "reference_log_ratio": 15.329452514648438,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0016",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -11.00589370727539,
+        "reference_log_ratio": -11.00589370727539,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0021",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 7.867244720458984,
+        "reference_log_ratio": 7.867244720458984,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0022",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": -25.160057067871094,
+        "reference_log_ratio": -25.160057067871094,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0023",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 10.48569107055664,
+        "reference_log_ratio": 10.48569107055664,
+        "reward_margin": 0.0
+      },
+      {
+        "id": "rb_semantic_preference_v18_0024",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 4.850471496582031,
+        "reference_log_ratio": 4.850471496582031,
+        "reward_margin": 0.0
+      }
+    ]
+  },
+  "final_train_preference": {
+    "pair_count": 24,
+    "policy_chosen_preference_rate": 0.25,
+    "positive_reward_margin_rate": 0.458333,
+    "mean_reward_margin": -0.010841385665116832,
+    "rows": [
+      {
+        "id": "rb_semantic_preference_v18_0001",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -8.270160675048828,
+        "reference_log_ratio": -6.846263885498047,
+        "reward_margin": -0.1423896849155426
+      },
+      {
+        "id": "rb_semantic_preference_v18_0002",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -4.64056396484375,
+        "reference_log_ratio": -4.805370330810547,
+        "reward_margin": 0.016480637714266777
+      },
+      {
+        "id": "rb_semantic_preference_v18_0003",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -6.962772369384766,
+        "reference_log_ratio": -6.94073486328125,
+        "reward_margin": -0.0022037506569176912
+      },
+      {
+        "id": "rb_semantic_preference_v18_0004",
+        "source_case_id": "v18_group_reply_delay",
+        "policy_log_ratio": -11.210674285888672,
+        "reference_log_ratio": -10.927825927734375,
+        "reward_margin": -0.028284836560487747
+      },
+      {
+        "id": "rb_semantic_preference_v18_0005",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": 5.834373474121094,
+        "reference_log_ratio": 6.829456329345703,
+        "reward_margin": -0.09950828552246094
+      },
+      {
+        "id": "rb_semantic_preference_v18_0006",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": 3.456684112548828,
+        "reference_log_ratio": 3.843994140625,
+        "reward_margin": -0.03873100504279137
+      },
+      {
+        "id": "rb_semantic_preference_v18_0007",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": -16.203125,
+        "reference_log_ratio": -15.847343444824219,
+        "reward_margin": -0.035578157752752304
+      },
+      {
+        "id": "rb_semantic_preference_v18_0008",
+        "source_case_id": "v18_manga_fragment_source",
+        "policy_log_ratio": -26.492176055908203,
+        "reference_log_ratio": -26.63622283935547,
+        "reward_margin": 0.014404678717255592
+      },
+      {
+        "id": "rb_semantic_preference_v18_0009",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": 8.79852294921875,
+        "reference_log_ratio": 8.777023315429688,
+        "reward_margin": 0.002149963518604636
+      },
+      {
+        "id": "rb_semantic_preference_v18_0010",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": 1.0348663330078125,
+        "reference_log_ratio": 1.3723068237304688,
+        "reward_margin": -0.033744048327207565
+      },
+      {
+        "id": "rb_semantic_preference_v18_0011",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": -1.4979095458984375,
+        "reference_log_ratio": -2.2077369689941406,
+        "reward_margin": 0.07098274677991867
+      },
+      {
+        "id": "rb_semantic_preference_v18_0012",
+        "source_case_id": "v18_daily_low_energy_status",
+        "policy_log_ratio": -5.637870788574219,
+        "reference_log_ratio": -5.399066925048828,
+        "reward_margin": -0.023880386725068092
+      },
+      {
+        "id": "rb_semantic_preference_v18_0017",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -17.572654724121094,
+        "reference_log_ratio": -17.54030418395996,
+        "reward_margin": -0.0032350539695471525
+      },
+      {
+        "id": "rb_semantic_preference_v18_0018",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -34.6063232421875,
+        "reference_log_ratio": -34.86156463623047,
+        "reward_margin": 0.025524139404296875
+      },
+      {
+        "id": "rb_semantic_preference_v18_0019",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": -14.28076171875,
+        "reference_log_ratio": -13.852882385253906,
+        "reward_margin": -0.042787935584783554
+      },
+      {
+        "id": "rb_semantic_preference_v18_0020",
+        "source_case_id": "v18_private_school_topic",
+        "policy_log_ratio": 7.920753479003906,
+        "reference_log_ratio": 7.817771911621094,
+        "reward_margin": 0.01029815711081028
+      },
+      {
+        "id": "rb_semantic_preference_v18_0025",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -13.295265197753906,
+        "reference_log_ratio": -13.112979888916016,
+        "reward_margin": -0.018228530883789062
+      },
+      {
+        "id": "rb_semantic_preference_v18_0026",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -3.9974708557128906,
+        "reference_log_ratio": -4.467922210693359,
+        "reward_margin": 0.047045137733221054
+      },
+      {
+        "id": "rb_semantic_preference_v18_0027",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -14.848320007324219,
+        "reference_log_ratio": -15.018035888671875,
+        "reward_margin": 0.016971588134765625
+      },
+      {
+        "id": "rb_semantic_preference_v18_0028",
+        "source_case_id": "v18_absurd_train_moon",
+        "policy_log_ratio": -11.939163208007812,
+        "reference_log_ratio": -11.834732055664062,
+        "reward_margin": -0.01044311560690403
+      },
+      {
+        "id": "rb_semantic_preference_v18_0029",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": 3.983400344848633,
+        "reference_log_ratio": 3.767690658569336,
+        "reward_margin": 0.021570969372987747
+      },
+      {
+        "id": "rb_semantic_preference_v18_0030",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -7.274282455444336,
+        "reference_log_ratio": -7.041038513183594,
+        "reward_margin": -0.02332439459860325
+      },
+      {
+        "id": "rb_semantic_preference_v18_0031",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -23.826820373535156,
+        "reference_log_ratio": -23.907535552978516,
+        "reward_margin": 0.008071518503129482
+      },
+      {
+        "id": "rb_semantic_preference_v18_0032",
+        "source_case_id": "v18_uncertain_weekend_plan",
+        "policy_log_ratio": -15.858455657958984,
+        "reference_log_ratio": -15.94491958618164,
+        "reward_margin": 0.008646393194794655
+      }
+    ]
+  },
+  "final_eval_preference": {
+    "pair_count": 8,
+    "policy_chosen_preference_rate": 0.5,
+    "positive_reward_margin_rate": 0.5,
+    "mean_reward_margin": 0.0017725944344419986,
+    "rows": [
+      {
+        "id": "rb_semantic_preference_v18_0013",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -6.7770538330078125,
+        "reference_log_ratio": -7.43914794921875,
+        "reward_margin": 0.06620941311120987
+      },
+      {
+        "id": "rb_semantic_preference_v18_0014",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -12.084754943847656,
+        "reference_log_ratio": -12.111839294433594,
+        "reward_margin": 0.00270843505859375
+      },
+      {
+        "id": "rb_semantic_preference_v18_0015",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": 15.215618133544922,
+        "reference_log_ratio": 15.329452514648438,
+        "reward_margin": -0.011383438482880592
+      },
+      {
+        "id": "rb_semantic_preference_v18_0016",
+        "source_case_id": "v18_sleep_debt_boundary",
+        "policy_log_ratio": -11.27069091796875,
+        "reference_log_ratio": -11.00589370727539,
+        "reward_margin": -0.026479721069335938
+      },
+      {
+        "id": "rb_semantic_preference_v18_0021",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 7.799335479736328,
+        "reference_log_ratio": 7.867244720458984,
+        "reward_margin": -0.006790924351662397
+      },
+      {
+        "id": "rb_semantic_preference_v18_0022",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": -24.936599731445312,
+        "reference_log_ratio": -25.160057067871094,
+        "reward_margin": 0.022345734760165215
+      },
+      {
+        "id": "rb_semantic_preference_v18_0023",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 10.517261505126953,
+        "reference_log_ratio": 10.48569107055664,
+        "reward_margin": 0.003157043596729636
+      },
+      {
+        "id": "rb_semantic_preference_v18_0024",
+        "source_case_id": "v18_throat_coffee_update",
+        "policy_log_ratio": 4.4946136474609375,
+        "reference_log_ratio": 4.850471496582031,
+        "reward_margin": -0.035585787147283554
+      }
+    ]
+  },
+  "research_boundary": "The preference pairs are synthetic and source-family separated. Promotion requires unseen actual-model multi-seed holdout evidence; DPO training metrics alone cannot promote this adapter."
+}
