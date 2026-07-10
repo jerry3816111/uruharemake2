@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T17:56:16+09:00",
+  "generated_at": "2026-07-10T17:12:58+09:00",
   "scope": "rightbrain_repair_selector_v1_eval",
   "dataset_scope": "rightbrain_repair_selection_v1",
   "model_type": "standardized_logistic_contract_reranker",
@@ -585,6 +585,100 @@
     },
     "boundary": "These are previously generated model candidates from the excluded runtime holdout. Validity is contract-based; this small set measures transfer to natural model errors, not naturalness preference."
   },
+  "human_preference_holdout": {
+    "scope": "rightbrain_selector_human_preference_v1",
+    "strict_task_count": 12,
+    "strict_candidate_count": 48,
+    "strategies": {
+      "first_blinded_candidate": {
+        "task_count": 12,
+        "top_score_hit_count": 3,
+        "top_score_hit_rate": 0.25,
+        "bottom_score_selection_count": 5,
+        "bottom_score_selection_rate": 0.416667,
+        "selected_mean_human_score_1_5": 2.3125,
+        "selected_mean_naturalness_1_5": 2.5,
+        "selected_mean_semantic_1_5": 2.166667,
+        "chat_ready_yes_rate": 0.25,
+        "chat_ready_acceptable_rate": 0.583333,
+        "selected_system_counts": {
+          "C1_GENERIC_PARAPHRASE_PROXY": 3,
+          "C2_TEMPLATE_RESPONSE": 6,
+          "S0_URUHA_RIGHTBRAIN": 3
+        }
+      },
+      "learned_selector_v1": {
+        "task_count": 12,
+        "top_score_hit_count": 3,
+        "top_score_hit_rate": 0.25,
+        "bottom_score_selection_count": 3,
+        "bottom_score_selection_rate": 0.25,
+        "selected_mean_human_score_1_5": 2.416667,
+        "selected_mean_naturalness_1_5": 2.5,
+        "selected_mean_semantic_1_5": 2.333333,
+        "chat_ready_yes_rate": 0.166667,
+        "chat_ready_acceptable_rate": 0.666667,
+        "selected_system_counts": {
+          "C1_GENERIC_PARAPHRASE_PROXY": 8,
+          "C3_DIRECT_LEFTBRAIN_OUTPUT": 1,
+          "S0_URUHA_RIGHTBRAIN": 3
+        }
+      },
+      "current_runtime_heuristic_proxy": {
+        "task_count": 12,
+        "top_score_hit_count": 5,
+        "top_score_hit_rate": 0.416667,
+        "bottom_score_selection_count": 2,
+        "bottom_score_selection_rate": 0.166667,
+        "selected_mean_human_score_1_5": 2.6875,
+        "selected_mean_naturalness_1_5": 2.916667,
+        "selected_mean_semantic_1_5": 2.583333,
+        "chat_ready_yes_rate": 0.333333,
+        "chat_ready_acceptable_rate": 0.75,
+        "selected_system_counts": {
+          "C1_GENERIC_PARAPHRASE_PROXY": 3,
+          "C2_TEMPLATE_RESPONSE": 2,
+          "S0_URUHA_RIGHTBRAIN": 7
+        }
+      },
+      "s0_full_system_candidate": {
+        "task_count": 12,
+        "top_score_hit_count": 9,
+        "top_score_hit_rate": 0.75,
+        "bottom_score_selection_count": 1,
+        "bottom_score_selection_rate": 0.083333,
+        "selected_mean_human_score_1_5": 3.125,
+        "selected_mean_naturalness_1_5": 3.166667,
+        "selected_mean_semantic_1_5": 3.25,
+        "chat_ready_yes_rate": 0.5,
+        "chat_ready_acceptable_rate": 0.833333,
+        "selected_system_counts": {
+          "S0_URUHA_RIGHTBRAIN": 12
+        }
+      },
+      "human_score_oracle": {
+        "task_count": 12,
+        "top_score_hit_count": 12,
+        "top_score_hit_rate": 1.0,
+        "bottom_score_selection_count": 0,
+        "bottom_score_selection_rate": 0.0,
+        "selected_mean_human_score_1_5": 3.208333,
+        "selected_mean_naturalness_1_5": 3.25,
+        "selected_mean_semantic_1_5": 3.333333,
+        "chat_ready_yes_rate": 0.583333,
+        "chat_ready_acceptable_rate": 0.916667,
+        "selected_system_counts": {
+          "C1_GENERIC_PARAPHRASE_PROXY": 2,
+          "C2_TEMPLATE_RESPONSE": 2,
+          "S0_URUHA_RIGHTBRAIN": 8
+        }
+      }
+    },
+    "takeover_recommended": false,
+    "decision_zh": "不可接管：learned selector 在零文字重疊人類盲評中仍落後現行 heuristic 或完整 S0 候選，維持 observe-only。",
+    "research_boundary": "Ratings come from two partial blind-rating packages completed by one rater on the same date, so there is no inter-rater reliability estimate and this is not an official benchmark. The packages use different overall rubrics; cross-package promotion therefore relies on their shared naturalness dimension and within-task top-score hits, while the overall mean is descriptive only. Exact selector-training candidate text overlaps are removed for the strict result, but semantic-family overlap may remain. The runtime heuristic is reconstructed from stored contract fields and is a proxy, not a replay of hidden runtime state. This gate can block takeover, not prove broad human naturalness. The four candidates per task are blinded system/control outputs rather than the current v10 model's runtime candidate distribution; actual-model shadow evidence remains a separate requirement."
+  },
+  "synthetic_contract_gate_passed": true,
   "gate": {
     "no_contract_fingerprint_overlap": true,
     "test_gold_selection_rate_at_least_95pct": true,
@@ -593,9 +687,11 @@
     "test_contains_semantic_drift_decoys": true,
     "test_semantic_drift_decoy_rejection_rate_is_100pct": true,
     "natural_holdout_contract_overlap_is_zero": true,
-    "natural_holdout_valid_selection_rate_is_100pct": true
+    "natural_holdout_valid_selection_rate_is_100pct": true,
+    "human_preference_report_present": true,
+    "human_preference_takeover_recommended": false
   },
-  "gate_passed": true,
+  "gate_passed": false,
   "research_boundary": "The untouched test set contains source contracts never used for training or epoch selection. The learned selector is compared with weak baselines and the deterministic contract oracle. Synthetic semantic decoys are constructed from cross-contract replies with low character overlap; their rejection does not prove open-world natural-language understanding.",
-  "conclusion_zh": "測試的是 F 右腦能否在未見過的輸出合約中，從多個回答候選挑出保留左腦語意且無污染的版本；這不會讓 ToMBench 推理本身變強，但可降低正確答案在最終表達時消失的風險。"
+  "conclusion_zh": "合成契約 gate 通過，但人類偏好 gate 未通過；selector 能排除明顯污染，不代表會選出更自然的回答，因此維持 observe-only。"
 }

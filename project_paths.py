@@ -320,6 +320,14 @@ RIGHTBRAIN_SELECTOR_ACTUAL_MODEL_SOAK_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_actual_model_soak_v1_report.md",
 )
+RIGHTBRAIN_SELECTOR_HUMAN_PREFERENCE_V1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_human_preference_v1_report.json",
+)
+RIGHTBRAIN_SELECTOR_HUMAN_PREFERENCE_V1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_selector_human_preference_v1_report.md",
+)
 RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_sampling_schedule_ablation_v1_report.json",
