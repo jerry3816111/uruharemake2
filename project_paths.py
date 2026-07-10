@@ -320,6 +320,22 @@ RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_FINAL_DECISION_REPORT_MD_PATH = os.path.
     REPORTS_DIR,
     "rightbrain_hard_negative_preference_v20_final_decision.md",
 )
+RIGHTBRAIN_PREFERENCE_CHES_V21_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_preference_ches_v21_report.json",
+)
+RIGHTBRAIN_PREFERENCE_CHES_V21_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_preference_ches_v21_report.md",
+)
+RIGHTBRAIN_PREFERENCE_LIKELIHOOD_GATE_V21_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_preference_likelihood_gate_v21_report.json",
+)
+RIGHTBRAIN_PREFERENCE_LIKELIHOOD_GATE_V21_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_preference_likelihood_gate_v21_report.md",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_curriculum_v1_report.json",
