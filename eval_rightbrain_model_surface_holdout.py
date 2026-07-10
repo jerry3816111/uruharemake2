@@ -106,7 +106,7 @@ def _evaluate_surface_quality(reply, case):
         _normalized_reply,
         _required_group_hits,
     )
-    from rightbrain_language_quality import has_awkward_surface
+    from rightbrain_language_quality import has_awkward_surface, has_response_plan_leak
 
     source = case["source_case"]
     reply = str(reply or "")
@@ -135,6 +135,7 @@ def _evaluate_surface_quality(reply, case):
         "generic_template_hit": bool(template_hits),
         "language_clean": _has_japanese(reply) and not _has_bad_language(reply),
         "awkward_surface_free": not has_awkward_surface(reply),
+        "response_plan_leak_free": not has_response_plan_leak(reply),
         "unrelated_settings_template": "設定を調整" in reply,
     }
 
@@ -143,6 +144,7 @@ def _quality_pass(quality):
     checks = [
         quality["language_clean"],
         quality["awkward_surface_free"],
+        quality["response_plan_leak_free"],
         not quality["forbidden_surface_leak"],
         not quality["generic_template_hit"],
         not quality["unrelated_settings_template"],
@@ -210,6 +212,10 @@ def _summarize(rows, model_loaded):
         ),
         "final_awkward_surface_free_rate": _safe_rate(
             sum(row["final_quality"]["awkward_surface_free"] for row in rows),
+            len(rows),
+        ),
+        "final_response_plan_leak_free_rate": _safe_rate(
+            sum(row["final_quality"]["response_plan_leak_free"] for row in rows),
             len(rows),
         ),
         "final_forbidden_surface_leak_rate": _safe_rate(
@@ -385,6 +391,7 @@ def write_markdown(report, path):
         f"| model_selected_quality_pass_rate | {_fmt_pct(summary['model_selected_quality_pass_rate'])} | 模型接管時的品質通過率 |",
         f"| final_language_clean_rate | {_fmt_pct(summary['final_language_clean_rate'])} | 最終回覆是否保持日文乾淨 |",
         f"| final_awkward_surface_free_rate | {_fmt_pct(summary['final_awkward_surface_free_rate'])} | 最終回覆是否沒有已稽核的不自然或照護者式句型 |",
+        f"| final_response_plan_leak_free_rate | {_fmt_pct(summary['final_response_plan_leak_free_rate'])} | 最終回覆是否沒有把左腦回覆方針直接說給使用者 |",
         f"| final_generic_template_hit_rate | {_fmt_pct(summary['final_generic_template_hit_rate'])} | 最終回覆是否掉進固定模板；越低越好 |",
         f"| final_normalized_duplicate_reply_rate | {_fmt_pct(summary['final_normalized_duplicate_reply_rate'])} | 正規化後重複比例；越低越好 |",
         "",
@@ -450,6 +457,7 @@ def main():
         and report["summary"]["final_quality_pass_rate"] == 1.0
         and report["summary"]["final_language_clean_rate"] == 1.0
         and report["summary"]["final_awkward_surface_free_rate"] == 1.0
+        and report["summary"]["final_response_plan_leak_free_rate"] == 1.0
         and report["summary"]["final_forbidden_surface_leak_rate"] == 0.0
         and report["summary"]["final_generic_template_hit_rate"] == 0.0
     )

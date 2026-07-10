@@ -63,6 +63,7 @@ from rightbrain_language_quality import (
     CHINESE_SPECIFIC_RE,
     FOREIGN_SCRIPT_RE,
     INSTRUCTION_MARKERS,
+    JAPANESE_RESPONSE_PLAN_LEAK_RE,
     NONSTANDARD_CJK_RE,
     POLITE_RE,
     UNICODE_REPLACEMENT_CHAR,
@@ -11078,6 +11079,8 @@ class RightBrain:
             score -= 4.0
         if any(x in reply for x in ["うちんち", "フォーマル", "行ってきますね"]):
             score -= 4.0
+        if JAPANESE_RESPONSE_PLAN_LEAK_RE.search(reply):
+            score -= 4.0
         if re.search(r"[ぁ-んァ-ヶー一-龠]", reply) and re.search(r"[A-Za-z]{2,}", reply):
             score -= 5.0
         if re.fullmatch(r"[A-Za-z0-9 ,.!?'\-]+", reply):
@@ -11795,6 +11798,8 @@ You are Ichinose Uruha.
         ]
         if any(marker.lower() in reply.lower() for marker in instruction_markers):
             reasons.append("instruction_or_plan_leak")
+        if JAPANESE_RESPONSE_PLAN_LEAK_RE.search(reply):
+            reasons.append("japanese_response_plan_leak")
         if POLITE_RE.search(reply):
             reasons.append("polite_tone_drift")
         if re.search(r"(?:ませんかね|みてはどう|方がいいでしょう|(?:し|て)あげ(?:る|よう|たい|れば))", reply):
@@ -11854,6 +11859,8 @@ You are Ichinose Uruha.
             instructions.append("半角記号や顔文字を残さず、自然な日本語の句読点に直す")
         if "instruction_or_plan_leak" in reason_set:
             instructions.append("指示や内部計画を見せず、ユーザー向けの返事だけにする")
+        if "japanese_response_plan_leak" in reason_set:
+            instructions.append("返答方針の説明をやめ、その方針でユーザーに直接話しかける")
         if "polite_tone_drift" in reason_set or "formal_register_drift" in reason_set:
             instructions.append("敬語や接客口調をやめ、自然なくだけた口調にする")
         if "awkward_or_caregiver_surface" in reason_set:

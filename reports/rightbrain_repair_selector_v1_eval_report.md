@@ -56,7 +56,7 @@
 | 方法 | 最高人類分數命中 | 平均自然度 |
 |---|---:|---:|
 | learned selector | 25.0% | 2.5/5 |
-| runtime heuristic proxy | 41.7% | 2.916667/5 |
+| runtime heuristic proxy | 58.3% | 3.166667/5 |
 | S0 full-system candidate | 75.0% | 3.166667/5 |
 
 不可接管：learned selector 在零文字重疊人類盲評中仍落後現行 heuristic 或完整 S0 候選，維持 observe-only。

@@ -328,6 +328,30 @@ RIGHTBRAIN_SELECTOR_HUMAN_PREFERENCE_V1_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_human_preference_v1_report.md",
 )
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_COMPARE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_compare_report.json",
+)
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_COMPARE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_compare_report.md",
+)
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_RUNTIME_COMPARE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_runtime_compare_report.json",
+)
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_RUNTIME_COMPARE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_runtime_compare_report.md",
+)
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_DECISION_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_decision.json",
+)
+RIGHTBRAIN_PLAN_SURFACE_BOUNDARY_DECISION_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_plan_surface_boundary_decision.md",
+)
 RIGHTBRAIN_SAMPLING_SCHEDULE_ABLATION_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_sampling_schedule_ablation_v1_report.json",

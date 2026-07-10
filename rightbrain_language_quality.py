@@ -28,6 +28,19 @@ AWKWARD_OR_CAREGIVER_SURFACE_RE = re.compile(
     r"|しててよ"
     r")"
 )
+# Japanese meta-language that describes how the system should answer instead
+# of speaking to the user. Match response-plan grammar, not isolated verbs:
+# "あとで返す" remains a valid user-facing promise.
+JAPANESE_RESPONSE_PLAN_LEAK_RE = re.compile(
+    r"(?:"
+    r"(?:よう(?:に)?|自然に|短く|直接|軽く|具体的に)"
+    r"(?:返す|聞き返す|言い直す|促す)"
+    r"|(?:不安|気持ち|関係|意図|前提|文脈|状況|誤解).{0,48}"
+    r"(?:認め|受け止め|拾).{0,48}(?:返す|聞き返す|言い直す|促す)"
+    r"|(?:を拾って|を認めて).{0,20}(?:返す|言い直す)"
+    r"|(?:作品名|曲名|名前|どの部分).{0,32}(?:確認する|聞き返す)"
+    r")"
+)
 FOREIGN_SCRIPT_RE = re.compile(r"[\u0400-\u04FF\u0E00-\u0E7F\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]")
 CHINESE_SPECIFIC_RE = re.compile(
     r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]"
@@ -76,3 +89,7 @@ def has_bad_language(text, reject_latin=True):
 
 def has_awkward_surface(text):
     return bool(AWKWARD_OR_CAREGIVER_SURFACE_RE.search(str(text or "")))
+
+
+def has_response_plan_leak(text):
+    return bool(JAPANESE_RESPONSE_PLAN_LEAK_RE.search(str(text or "")))
