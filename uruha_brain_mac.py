@@ -57,7 +57,9 @@ from rightbrain_repair_selector import (
     score_candidate as score_learned_repair_candidate,
 )
 from rightbrain_language_quality import (
+    ASCII_SYMBOL_ARTIFACT_RE,
     ASCII_WORD_RE,
+    AWKWARD_OR_CAREGIVER_SURFACE_RE,
     CHINESE_SPECIFIC_RE,
     FOREIGN_SCRIPT_RE,
     INSTRUCTION_MARKERS,
@@ -11763,6 +11765,8 @@ You are Ichinose Uruha.
             reasons.append("nonstandard_cjk_surface")
         if FOREIGN_SCRIPT_RE.search(reply):
             reasons.append("foreign_script_leak")
+        if ASCII_SYMBOL_ARTIFACT_RE.search(reply):
+            reasons.append("ascii_symbol_artifact")
         if UNICODE_REPLACEMENT_CHAR in reply:
             reasons.append("unicode_replacement_character")
         if any(marker in reply for marker in ["．", "｡"]):
@@ -11795,6 +11799,8 @@ You are Ichinose Uruha.
             reasons.append("polite_tone_drift")
         if re.search(r"(?:ませんかね|みてはどう|方がいいでしょう|(?:し|て)あげ(?:る|よう|たい|れば))", reply):
             reasons.append("polite_tone_drift")
+        if AWKWARD_OR_CAREGIVER_SURFACE_RE.search(reply):
+            reasons.append("awkward_or_caregiver_surface")
         if any(marker in reply for marker in ["詫び", "お詫び", "謝罪いた"]):
             reasons.append("formal_register_drift")
 
@@ -11844,10 +11850,14 @@ You are Ichinose Uruha.
             instructions.append("日本語の自然な句読点に直す")
         if "unexpected_ascii_leak" in reason_set:
             instructions.append("英字やローマ字を残さず日本語だけに直す")
+        if "ascii_symbol_artifact" in reason_set:
+            instructions.append("半角記号や顔文字を残さず、自然な日本語の句読点に直す")
         if "instruction_or_plan_leak" in reason_set:
             instructions.append("指示や内部計画を見せず、ユーザー向けの返事だけにする")
         if "polite_tone_drift" in reason_set or "formal_register_drift" in reason_set:
             instructions.append("敬語や接客口調をやめ、自然なくだけた口調にする")
+        if "awkward_or_caregiver_surface" in reason_set:
+            instructions.append("世話焼き口調や壊れた日本語を避け、短く自然な口語に直す")
         if any(str(reason).startswith("semantic_slots_missing:") for reason in reason_set):
             instructions.append("required_marker_groups の各グループを自然に一つ以上表現する")
         if "must_avoid_violation" in reason_set:

@@ -494,6 +494,102 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
         self.assertEqual(len(logic["model_surface_candidate_trace"]["accepted"]), 0)
 
+    def test_ascii_symbol_artifacts_are_rejected_before_selection(self):
+        rightbrain = build_rightbrain(["まあ、その部分だけで何の元ネタだというの？><<|im_end|>"])
+        logic = reply_anxiety_logic()
+        logic["intent"] = "reference_probe"
+        logic["surface_act"] = "reference_probe"
+        logic["required_marker_groups"] = [["元ネタ", "何"]]
+
+        reply = rightbrain.speak(
+            "夜空の影がどうとか、あれ分かる？",
+            logic,
+            MEMORY,
+            {"mood": 0, "trust": 50},
+        )
+
+        self.assertNotIn("><", reply)
+        self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
+        rejected = logic["model_surface_candidate_trace"]["rejected"]
+        self.assertEqual(len(rejected), 1)
+        self.assertIn("ascii_symbol_artifact", rejected[0]["rejection_reasons"])
+
+    def test_spaced_ascii_question_mark_is_rejected_before_selection(self):
+        rightbrain = build_rightbrain(["まあ、その言葉の元ネタは何 ?<|im_end|>"])
+        logic = reply_anxiety_logic()
+        logic["intent"] = "reference_probe"
+        logic["surface_act"] = "reference_probe"
+        logic["required_marker_groups"] = [["元ネタ", "何"]]
+
+        reply = rightbrain.speak(
+            "夜空の影がどうとか、あれ分かる？",
+            logic,
+            MEMORY,
+            {"mood": 0, "trust": 50},
+        )
+
+        self.assertNotIn(" ?", reply)
+        self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
+        rejected = logic["model_surface_candidate_trace"]["rejected"]
+        self.assertEqual(len(rejected), 1)
+        self.assertIn("ascii_symbol_artifact", rejected[0]["rejection_reasons"])
+
+    def test_caregiver_tone_artifacts_are_rejected_before_selection(self):
+        rightbrain = build_rightbrain(["今日のお疲れ様ね。ゆっくり休息するのも良いくらいだよ。<|im_end|>"])
+        logic = reply_anxiety_logic()
+        logic["required_marker_groups"] = [["今日"], ["休"]]
+
+        reply = rightbrain.speak(
+            "今日は何もしたくない。どうすればいい？",
+            logic,
+            MEMORY,
+            {"mood": 0, "trust": 50},
+        )
+
+        self.assertNotIn("お疲れ様", reply)
+        self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
+        rejected = logic["model_surface_candidate_trace"]["rejected"]
+        self.assertEqual(len(rejected), 1)
+        self.assertIn("awkward_or_caregiver_surface", rejected[0]["rejection_reasons"])
+
+    def test_broken_japanese_surface_is_rejected_before_selection(self):
+        rightbrain = build_rightbrain(["最近は胃が弱いでしょ、コーヒー飲むのは控えめて。胃に優しい方がいいよ。<|im_end|>"])
+        logic = reply_anxiety_logic()
+        logic["required_marker_groups"] = [["胃"], ["コーヒー"], ["控え"]]
+
+        reply = rightbrain.speak(
+            "最近胃が弱いけど、今日コーヒー飲んでもいい？",
+            logic,
+            MEMORY,
+            {"mood": 0, "trust": 50},
+        )
+
+        self.assertNotIn("控えめて", reply)
+        self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
+        rejected = logic["model_surface_candidate_trace"]["rejected"]
+        self.assertEqual(len(rejected), 1)
+        self.assertIn("awkward_or_caregiver_surface", rejected[0]["rejection_reasons"])
+
+    def test_natural_reassurance_is_not_mislabeled_as_caregiver_artifact(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "大丈夫だよ。今日はもう休め。",
+            reply_anxiety_logic(),
+            80,
+        )
+
+        self.assertNotIn("awkward_or_caregiver_surface", reasons)
+
+    def test_natural_greeting_is_not_mislabeled_as_caregiver_artifact(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "お疲れ様。今日はもう無理せず休め。",
+            reply_anxiety_logic(),
+            80,
+        )
+
+        self.assertNotIn("awkward_or_caregiver_surface", reasons)
+
     def test_high_risk_withdrawal_never_enters_model_generation(self):
         rightbrain = build_rightbrain(["モデル出力。<|im_end|>"])
         logic = reply_anxiety_logic()

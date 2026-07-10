@@ -5,7 +5,23 @@ from pathlib import Path
 from compare_rightbrain_runtime_adapter_multiseed import build_report, write_markdown
 
 
-def _report(adapter, seed, accepted, selected, *, generated=30, quality=1.0, reasons=None):
+def _report(
+    adapter,
+    seed,
+    accepted,
+    selected,
+    *,
+    generated=30,
+    quality=1.0,
+    reasons=None,
+    final_reply="今日は休め。",
+    raw_candidates=None,
+):
+    raw_candidates = (
+        [f"候補{index}" for index in range(generated)]
+        if raw_candidates is None
+        else list(raw_candidates)
+    )
     return {
         "scope": "rightbrain_model_blend_surface_holdout_eval",
         "adapter_ref": adapter,
@@ -34,7 +50,16 @@ def _report(adapter, seed, accepted, selected, *, generated=30, quality=1.0, rea
                 "selected_source": "model" if selected else "deterministic",
                 "model_rejection_reasons": list(reasons or []),
                 "deterministic_reply": "今日は休め。",
-                "final_reply": "今日は休め。",
+                "final_reply": final_reply,
+                "model_initial_rejected_candidates": [],
+                "model_accepted_candidates": [
+                    {
+                        "source": "initial",
+                        "raw_candidate": value,
+                        "candidate": value,
+                    }
+                    for value in raw_candidates
+                ],
             }
         ],
     }
@@ -53,15 +78,74 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
         self.assertEqual(report["aggregate"]["raw_candidate_acceptance_delta"], 0.0667)
 
     def test_same_adapter_gain_is_reported_as_runtime_gate_adoption(self):
-        baselines = [_report("same-adapter", 1, 5, 1), _report("same-adapter", 2, 9, 2)]
-        promoted = [_report("same-adapter", 1, 8, 1), _report("same-adapter", 2, 10, 2)]
+        baselines = [
+            _report("same-adapter", 1, 5, 1, final_reply="まあ、元ネタは何 ?"),
+            _report("same-adapter", 2, 9, 2, final_reply="それ何？><"),
+        ]
+        promoted = [
+            _report("same-adapter", 1, 4, 0, final_reply="元ネタは何？"),
+            _report("same-adapter", 2, 8, 1, final_reply="それ何？"),
+        ]
 
         report = build_report(baselines, promoted)
 
         self.assertTrue(report["promotion_recommended"])
         self.assertEqual(report["comparison_mode"], "same_adapter_runtime_gate_check")
         self.assertIn("建議採用 runtime gate 改動", report["decision_zh"])
-        self.assertIn("模型接管數維持 3", report["decision_zh"])
+        self.assertEqual(report["runtime_gate_evidence"]["fixed_final_surface_issue_count"], 2)
+        self.assertEqual(report["runtime_gate_evidence"]["introduced_final_surface_issue_count"], 0)
+        self.assertTrue(report["runtime_gate_evidence"]["raw_candidate_control"]["all_identical"])
+
+    def test_same_adapter_acceptance_gain_without_surface_fix_does_not_pass(self):
+        baselines = [_report("same-adapter", 1, 5, 1), _report("same-adapter", 2, 5, 1)]
+        promoted = [_report("same-adapter", 1, 8, 4), _report("same-adapter", 2, 8, 4)]
+
+        report = build_report(baselines, promoted)
+
+        self.assertFalse(report["promotion_recommended"])
+        self.assertEqual(report["runtime_gate_evidence"]["fixed_final_surface_issue_count"], 0)
+
+    def test_same_adapter_rejects_when_raw_candidates_change(self):
+        baselines = [
+            _report("same-adapter", 1, 8, 3, final_reply="元ネタは何 ?"),
+            _report("same-adapter", 2, 8, 3, final_reply="元ネタは何 ?"),
+        ]
+        promoted = [
+            _report("same-adapter", 1, 7, 2, final_reply="元ネタは何？", raw_candidates=["別候補"]),
+            _report("same-adapter", 2, 7, 2, final_reply="元ネタは何？", raw_candidates=["別候補"]),
+        ]
+
+        report = build_report(baselines, promoted)
+
+        self.assertFalse(report["runtime_gate_evidence"]["raw_candidate_control"]["all_identical"])
+        self.assertFalse(report["promotion_recommended"])
+
+    def test_same_adapter_rejects_unaccounted_raw_candidates(self):
+        baselines = [
+            _report("same-adapter", 1, 8, 3, final_reply="元ネタは何 ?", raw_candidates=[]),
+            _report("same-adapter", 2, 8, 3, final_reply="元ネタは何 ?", raw_candidates=[]),
+        ]
+        promoted = [
+            _report("same-adapter", 1, 7, 2, final_reply="元ネタは何？", raw_candidates=[]),
+            _report("same-adapter", 2, 7, 2, final_reply="元ネタは何？", raw_candidates=[]),
+        ]
+
+        report = build_report(baselines, promoted)
+
+        self.assertFalse(report["runtime_gate_evidence"]["raw_candidate_control"]["fully_accounted"])
+        self.assertFalse(report["promotion_recommended"])
+
+    def test_same_adapter_rejects_new_surface_issue(self):
+        baselines = [_report("same-adapter", 1, 8, 3), _report("same-adapter", 2, 8, 3)]
+        promoted = [
+            _report("same-adapter", 1, 7, 2, final_reply="元ネタは何 ?"),
+            _report("same-adapter", 2, 7, 2, final_reply="元ネタは何 ?"),
+        ]
+
+        report = build_report(baselines, promoted)
+
+        self.assertEqual(report["runtime_gate_evidence"]["introduced_final_surface_issue_count"], 2)
+        self.assertFalse(report["promotion_recommended"])
 
     def test_rejects_promotion_when_one_seed_regresses(self):
         baselines = [_report("old", 1, 5, 0), _report("old", 2, 9, 1)]

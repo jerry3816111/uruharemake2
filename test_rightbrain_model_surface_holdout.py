@@ -24,6 +24,7 @@ class RightBrainModelSurfaceHoldoutTest(unittest.TestCase):
         self.assertEqual(summary["deterministic_quality_pass_rate"], 1.0)
         self.assertEqual(summary["final_quality_pass_rate"], 1.0)
         self.assertEqual(summary["final_language_clean_rate"], 1.0)
+        self.assertEqual(summary["final_awkward_surface_free_rate"], 1.0)
         self.assertEqual(summary["final_forbidden_surface_leak_rate"], 0.0)
         self.assertEqual(summary["final_generic_template_hit_rate"], 0.0)
 

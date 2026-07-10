@@ -6,6 +6,28 @@ import re
 
 JAPANESE_RE = re.compile(r"[ぁ-んァ-ヶー一-龠]")
 ASCII_WORD_RE = re.compile(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*")
+# Surface artifacts that are not words, so ASCII_WORD_RE will not catch them.
+# These appeared in model replies such as "何 ?" and "><" and should not pass
+# as clean casual Japanese.
+ASCII_SYMBOL_ARTIFACT_RE = re.compile(
+    r"(?:"
+    r"[<>]{2,}"
+    r"|[（(]?\s*[>＜][_<＿]?[<＞]\s*[)）]?"
+    r"|(?<=[ぁ-んァ-ヶー一-龠])\s+[!?](?:\s|$)"
+    r"|[!?]\s*(?=[ぁ-んァ-ヶー一-龠])"
+    r")"
+)
+# Audited surface defects from real model output.  Keep the expressions narrow:
+# natural phrases such as "大丈夫だよ" and "お疲れ様" must remain available.
+AWKWARD_OR_CAREGIVER_SURFACE_RE = re.compile(
+    r"(?:"
+    r"今日のお疲れ様(?:ね|だね)"
+    r"|休息(?:する|して).{0,12}(?:良いくらい|いいよ|大事|わけ)"
+    r"|控えめて"
+    r"|コーヒーやりた"
+    r"|しててよ"
+    r")"
+)
 FOREIGN_SCRIPT_RE = re.compile(r"[\u0400-\u04FF\u0E00-\u0E7F\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]")
 CHINESE_SPECIFIC_RE = re.compile(
     r"[这吗么们没还让给说话這嗎麼們沒還讓說泠]"
@@ -46,6 +68,11 @@ def has_bad_language(text, reject_latin=True):
         CHINESE_SPECIFIC_RE.search(text)
         or NONSTANDARD_CJK_RE.search(text)
         or FOREIGN_SCRIPT_RE.search(text)
+        or ASCII_SYMBOL_ARTIFACT_RE.search(text)
         or UNICODE_REPLACEMENT_CHAR in text
         or (reject_latin and ASCII_WORD_RE.search(text))
     )
+
+
+def has_awkward_surface(text):
+    return bool(AWKWARD_OR_CAREGIVER_SURFACE_RE.search(str(text or "")))

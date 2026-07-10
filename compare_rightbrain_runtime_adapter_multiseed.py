@@ -1,5 +1,6 @@
 import argparse
 import json
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -8,10 +9,107 @@ from project_paths import (
     RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH,
     RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_MD_PATH,
 )
+from rightbrain_language_quality import has_awkward_surface, has_bad_language, has_japanese
 
 
 def _load_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _current_surface_issues(reply):
+    reply = str(reply or "")
+    issues = []
+    if not has_japanese(reply) or has_bad_language(reply):
+        issues.append("language_or_symbol_artifact")
+    if has_awkward_surface(reply):
+        issues.append("awkward_or_caregiver_surface")
+    return issues
+
+
+def _initial_raw_candidates(case):
+    values = []
+    for row in case.get("model_initial_rejected_candidates") or []:
+        values.append(str(row.get("raw_candidate") or ""))
+    for row in case.get("model_accepted_candidates") or []:
+        if row.get("source", "initial") == "initial":
+            values.append(str(row.get("raw_candidate") or row.get("candidate") or ""))
+    return Counter(values)
+
+
+def _raw_candidate_control(baselines, promoted):
+    mismatches = []
+    compared_case_count = 0
+    baseline_raw_candidate_count = 0
+    candidate_raw_candidate_count = 0
+    for baseline, candidate in zip(baselines, promoted):
+        baseline_cases = _case_map(baseline)
+        candidate_cases = _case_map(candidate)
+        for case_id in sorted(set(baseline_cases) | set(candidate_cases)):
+            compared_case_count += 1
+            before = _initial_raw_candidates(baseline_cases.get(case_id, {}))
+            after = _initial_raw_candidates(candidate_cases.get(case_id, {}))
+            baseline_raw_candidate_count += sum(before.values())
+            candidate_raw_candidate_count += sum(after.values())
+            if before != after:
+                mismatches.append({"seed": baseline.get("seed"), "case_id": case_id})
+    expected_baseline_count = sum(
+        int((report.get("summary") or {}).get("generated_candidate_count") or 0)
+        for report in baselines
+    )
+    expected_candidate_count = sum(
+        int((report.get("summary") or {}).get("generated_candidate_count") or 0)
+        for report in promoted
+    )
+    fully_accounted = (
+        baseline_raw_candidate_count == expected_baseline_count
+        and candidate_raw_candidate_count == expected_candidate_count
+    )
+    return {
+        "compared_case_count": compared_case_count,
+        "identical_case_count": compared_case_count - len(mismatches),
+        "baseline_raw_candidate_count": baseline_raw_candidate_count,
+        "candidate_raw_candidate_count": candidate_raw_candidate_count,
+        "expected_baseline_raw_candidate_count": expected_baseline_count,
+        "expected_candidate_raw_candidate_count": expected_candidate_count,
+        "fully_accounted": fully_accounted,
+        "all_identical": not mismatches and compared_case_count > 0 and fully_accounted,
+        "mismatches": mismatches,
+    }
+
+
+def _paired_surface_changes(baselines, promoted):
+    rows = []
+    for baseline, candidate in zip(baselines, promoted):
+        baseline_cases = _case_map(baseline)
+        candidate_cases = _case_map(candidate)
+        for case_id in sorted(set(baseline_cases) & set(candidate_cases)):
+            before_reply = str(baseline_cases[case_id].get("final_reply") or "")
+            after_reply = str(candidate_cases[case_id].get("final_reply") or "")
+            before_issues = _current_surface_issues(before_reply)
+            after_issues = _current_surface_issues(after_reply)
+            if before_issues == after_issues:
+                continue
+            rows.append(
+                {
+                    "seed": baseline.get("seed"),
+                    "case_id": case_id,
+                    "before_reply": before_reply,
+                    "after_reply": after_reply,
+                    "before_issues": before_issues,
+                    "after_issues": after_issues,
+                    "fixed": bool(before_issues and not after_issues),
+                    "introduced": bool(after_issues and not before_issues),
+                }
+            )
+    return rows
+
+
+def _safe_case_surface_rate(cases):
+    cases = list(cases or [])
+    if not cases:
+        return None
+    passed = sum(not _current_surface_issues(row.get("final_reply")) for row in cases)
+    return round(passed / len(cases), 4)
 
 
 def _aggregate(reports):
@@ -19,6 +117,10 @@ def _aggregate(reports):
     accepted = sum(row["summary"]["accepted_candidate_count"] for row in reports)
     case_count = sum(row["summary"]["case_count"] for row in reports)
     selected = sum(row["summary"]["model_selected_case_count"] for row in reports)
+    case_rows = [case for report in reports for case in report.get("cases") or []]
+    current_surface_pass_count = sum(
+        not _current_surface_issues(row.get("final_reply")) for row in case_rows
+    )
 
     def weighted_rate(metric):
         numerator = sum(row["summary"][metric] * row["summary"]["case_count"] for row in reports)
@@ -36,6 +138,10 @@ def _aggregate(reports):
         "final_language_clean_rate": weighted_rate("final_language_clean_rate"),
         "final_forbidden_surface_leak_rate": weighted_rate("final_forbidden_surface_leak_rate"),
         "final_generic_template_hit_rate": weighted_rate("final_generic_template_hit_rate"),
+        "rescored_final_surface_pass_rate": (
+            round(current_surface_pass_count / len(case_rows), 4) if case_rows else None
+        ),
+        "rescored_final_surface_issue_count": len(case_rows) - current_surface_pass_count,
         "case_eval_duration_seconds": round(sum(row.get("case_eval_duration_seconds", 0.0) for row in reports), 3),
     }
 
@@ -74,7 +180,7 @@ def _aggregate_rejection_reasons(reports, *, family=False):
     return counts
 
 
-def _rejection_reason_deltas(baselines, promoted, *, family=False):
+def _rejection_reason_deltas(baselines, promoted, *, family=False, runtime_checker_change=False):
     baseline_counts = _aggregate_rejection_reasons(baselines, family=family)
     promoted_counts = _aggregate_rejection_reasons(promoted, family=family)
     rows = []
@@ -83,13 +189,17 @@ def _rejection_reason_deltas(baselines, promoted, *, family=False):
         after = promoted_counts.get(reason, 0)
         if before == after:
             continue
+        if runtime_checker_change:
+            direction = "new_detection" if after > before else "removed_detection"
+        else:
+            direction = "regressed" if after > before else "improved"
         rows.append(
             {
                 "reason": reason,
                 "baseline_count": before,
                 "candidate_count": after,
                 "delta": after - before,
-                "direction": "regressed" if after > before else "improved",
+                "direction": direction,
             }
         )
     return sorted(rows, key=lambda row: (-abs(row["delta"]), row["reason"]))
@@ -266,6 +376,10 @@ def build_report(baselines, promoted, curriculum=None):
         seen_seeds.add(seed)
         before = baseline["summary"]
         after = candidate["summary"]
+        seed_surface_changes = _paired_surface_changes([baseline], [candidate])
+        seed_raw_control = _raw_candidate_control([baseline], [candidate])
+        before_cases = baseline.get("cases") or []
+        after_cases = candidate.get("cases") or []
         per_seed.append(
             {
                 "seed": seed,
@@ -279,11 +393,22 @@ def build_report(baselines, promoted, curriculum=None):
                 "promoted_model_selected_case_count": after["model_selected_case_count"],
                 "baseline_final_quality_pass_rate": before["final_quality_pass_rate"],
                 "promoted_final_quality_pass_rate": after["final_quality_pass_rate"],
+                "baseline_rescored_final_surface_pass_rate": _safe_case_surface_rate(before_cases),
+                "promoted_rescored_final_surface_pass_rate": _safe_case_surface_rate(after_cases),
+                "fixed_final_surface_issue_count": sum(row["fixed"] for row in seed_surface_changes),
+                "introduced_final_surface_issue_count": sum(
+                    row["introduced"] for row in seed_surface_changes
+                ),
+                "raw_candidates_identical": seed_raw_control["all_identical"],
             }
         )
 
     baseline_aggregate = _aggregate(baselines)
     promoted_aggregate = _aggregate(promoted)
+    raw_candidate_control = _raw_candidate_control(baselines, promoted)
+    paired_surface_changes = _paired_surface_changes(baselines, promoted)
+    fixed_surface_issue_count = sum(row["fixed"] for row in paired_surface_changes)
+    introduced_surface_issue_count = sum(row["introduced"] for row in paired_surface_changes)
     acceptance_delta = round(
         promoted_aggregate["raw_candidate_acceptance_rate"]
         - baseline_aggregate["raw_candidate_acceptance_rate"],
@@ -294,15 +419,29 @@ def build_report(baselines, promoted, curriculum=None):
         and promoted_aggregate["final_language_clean_rate"] == 1.0
         and promoted_aggregate["final_forbidden_surface_leak_rate"] == 0.0
         and promoted_aggregate["final_generic_template_hit_rate"] == 0.0
+        and promoted_aggregate["rescored_final_surface_pass_rate"] == 1.0
     )
     all_seed_noninferior = all(row["raw_candidate_acceptance_delta"] >= 0 for row in per_seed)
-    metric_gate_pass = (
-        len(per_seed) >= 2
-        and acceptance_delta > 0
-        and all_seed_noninferior
-        and promoted_aggregate["model_selected_case_count"] >= baseline_aggregate["model_selected_case_count"]
-        and quality_guard_pass
+    all_seed_selection_noninferior = all(
+        row["promoted_model_selected_case_count"] >= row["baseline_model_selected_case_count"]
+        for row in per_seed
     )
+    if same_adapter_runtime_comparison:
+        metric_gate_pass = (
+            len(per_seed) >= 2
+            and raw_candidate_control["all_identical"]
+            and fixed_surface_issue_count > 0
+            and introduced_surface_issue_count == 0
+            and quality_guard_pass
+        )
+    else:
+        metric_gate_pass = (
+            len(per_seed) >= 2
+            and acceptance_delta > 0
+            and all_seed_noninferior
+            and promoted_aggregate["model_selected_case_count"] >= baseline_aggregate["model_selected_case_count"]
+            and quality_guard_pass
+        )
     data_boundary = _curriculum_boundary(curriculum, baselines + promoted)
     promotion_recommended = metric_gate_pass and not data_boundary["diagnostic_only"]
     if promotion_recommended:
@@ -315,10 +454,11 @@ def build_report(baselines, promoted, curriculum=None):
         )
         if same_adapter_runtime_comparison:
             decision_zh = (
-                f"建議採用 runtime gate 改動：{len(per_seed)} 個 matched seeds 合計 raw 接受率由 "
-                f"{baseline_aggregate['raw_candidate_acceptance_rate']:.1%} 提升至 "
-                f"{promoted_aggregate['raw_candidate_acceptance_rate']:.1%}，模型接管數{selected_phrase}，"
-                "且最終品質防線維持 100%。"
+                f"建議採用 runtime gate 改動：{len(per_seed)} 個 matched seeds 的 raw candidates 完全相同，"
+                f"以同一版 checker 重評後，最終表面通過率由 "
+                f"{baseline_aggregate['rescored_final_surface_pass_rate']:.1%} 提升至 "
+                f"{promoted_aggregate['rescored_final_surface_pass_rate']:.1%}；"
+                f"修正 {fixed_surface_issue_count} 個壞輸出且未新增壞輸出。"
             )
         else:
             decision_zh = (
@@ -353,6 +493,13 @@ def build_report(baselines, promoted, curriculum=None):
         "metric_gate_pass": metric_gate_pass,
         "quality_guard_pass": quality_guard_pass,
         "all_seed_noninferior": all_seed_noninferior,
+        "all_seed_selection_noninferior": all_seed_selection_noninferior,
+        "runtime_gate_evidence": {
+            "raw_candidate_control": raw_candidate_control,
+            "fixed_final_surface_issue_count": fixed_surface_issue_count,
+            "introduced_final_surface_issue_count": introduced_surface_issue_count,
+            "paired_surface_changes": paired_surface_changes,
+        },
         "data_boundary": data_boundary,
         "aggregate": {
             "baseline": baseline_aggregate,
@@ -361,20 +508,32 @@ def build_report(baselines, promoted, curriculum=None):
         },
         "per_seed": per_seed,
         "rejection_reason_deltas": {
-            "exact": _rejection_reason_deltas(baselines, promoted, family=False),
-            "family": _rejection_reason_deltas(baselines, promoted, family=True),
+            "exact": _rejection_reason_deltas(
+                baselines,
+                promoted,
+                family=False,
+                runtime_checker_change=same_adapter_runtime_comparison,
+            ),
+            "family": _rejection_reason_deltas(
+                baselines,
+                promoted,
+                family=True,
+                runtime_checker_change=same_adapter_runtime_comparison,
+            ),
         },
         "case_diagnostics": _case_diagnostics(baselines, promoted),
         "decision_zh": decision_zh,
         "reason_delta_interpretation_zh": (
-            "baseline 與 candidate 使用同一個 adapter，因此 rejection reason 的增加可能代表 runtime checker "
-            "更嚴格抓出原本漏標的污染，而不是模型本身退步；升版仍必須看候選接受率、接管數與最終品質。"
+            "baseline 與 candidate 使用同一個 adapter，且本報告要求每題 raw candidates 完全相同。"
+            "因此新增 rejection reason 代表 checker 新抓到的表面問題，不代表模型生成能力退步；"
+            "是否採用改動由配對後的壞輸出修正數、零新增問題與最終品質防線共同決定。"
             if same_adapter_runtime_comparison
             else "baseline 與 candidate 使用不同 adapter，因此 rejection reason 增減主要反映候選模型輸出品質差異。"
         ),
         "research_boundary": (
-            "此 gate 在相同 seed 與相同候選數下比較 adapter。它測的是模型候選可靠度與受保護整合，"
-            "不是完整的人類自然度。若提供 curriculum report，會檢查 holdout overlap；有重疊時會阻止升版。"
+            "此 gate 在相同 seed、相同候選數下進行配對比較；同 adapter 的 runtime checker 比較還要求"
+            "每題 raw candidates 完全相同。它只證明已定義表面缺陷的攔截與受保護整合，"
+            "不等同完整的人類自然度。若提供 curriculum report，會檢查 holdout overlap；有重疊時會阻止升版。"
         ),
     }
 
@@ -385,13 +544,16 @@ def write_markdown(report, output_path):
     same_adapter_runtime_gate = report.get("comparison_mode") == "same_adapter_runtime_gate_check"
 
     def display_direction(row):
-        if (
-            same_adapter_runtime_gate
-            and row.get("reason") == "nonstandard_cjk_surface"
-            and int(row.get("delta") or 0) > 0
-        ):
-            return "stricter_detection"
         return row["direction"]
+
+    mode_control_lines = (
+        [
+            f"- raw candidates identical: `{report['runtime_gate_evidence']['raw_candidate_control']['all_identical']}`",
+            f"- raw candidates fully accounted: `{report['runtime_gate_evidence']['raw_candidate_control']['fully_accounted']}`",
+        ]
+        if same_adapter_runtime_gate
+        else [f"- all seeds raw-acceptance non-inferior: `{report['all_seed_noninferior']}`"]
+    )
 
     lines = [
         "# RightBrain Runtime Adapter Multi-seed Promotion Gate",
@@ -407,7 +569,7 @@ def write_markdown(report, output_path):
         f"- comparison mode: `{report.get('comparison_mode', 'adapter_promotion_gate')}`",
         f"- seeds: `{report['seeds']}`",
         f"- candidates per case: `{report['candidate_count_per_case']}`",
-        f"- all seeds non-inferior: `{report['all_seed_noninferior']}`",
+        *mode_control_lines,
         f"- metric gate pass: `{report['metric_gate_pass']}`",
         f"- final quality guard: `{report['quality_guard_pass']}`",
         f"- diagnostic only: `{report['data_boundary']['diagnostic_only']}`",
@@ -419,6 +581,7 @@ def write_markdown(report, output_path):
         f"| raw 候選接受 | {before['accepted_candidate_count']}/{before['generated_candidate_count']} ({before['raw_candidate_acceptance_rate']:.1%}) | {after['accepted_candidate_count']}/{after['generated_candidate_count']} ({after['raw_candidate_acceptance_rate']:.1%}) |",
         f"| 模型實際接管 | {before['model_selected_case_count']}/{before['case_count']} | {after['model_selected_case_count']}/{after['case_count']} |",
         f"| 最終品質通過率 | {before['final_quality_pass_rate']:.1%} | {after['final_quality_pass_rate']:.1%} |",
+        f"| 同版 checker 重評的表面通過率 | {before['rescored_final_surface_pass_rate']:.1%} | {after['rescored_final_surface_pass_rate']:.1%} |",
         "",
         "## Rejection Reason 解讀",
         "",
@@ -426,17 +589,53 @@ def write_markdown(report, output_path):
         "",
         "## 各 Seed",
         "",
-        "| seed | baseline raw | candidate raw | delta | baseline selected | candidate selected |",
-        "|---:|---:|---:|---:|---:|---:|",
     ]
-    for row in report["per_seed"]:
-        lines.append(
-            f"| {row['seed']} | {row['baseline_raw_candidate_acceptance_rate']:.1%} | "
-            f"{row['promoted_raw_candidate_acceptance_rate']:.1%} | "
-            f"{row['raw_candidate_acceptance_delta']:+.1%} | "
-            f"{row['baseline_model_selected_case_count']} | "
-            f"{row['promoted_model_selected_case_count']} |"
+    if same_adapter_runtime_gate:
+        lines.extend(
+            [
+                "| seed | raw 相同 | baseline surface | candidate surface | 修正 | 新增問題 |",
+                "|---:|---|---:|---:|---:|---:|",
+            ]
         )
+        for row in report["per_seed"]:
+            lines.append(
+                f"| {row['seed']} | {'yes' if row['raw_candidates_identical'] else 'no'} | "
+                f"{row['baseline_rescored_final_surface_pass_rate']:.1%} | "
+                f"{row['promoted_rescored_final_surface_pass_rate']:.1%} | "
+                f"{row['fixed_final_surface_issue_count']} | "
+                f"{row['introduced_final_surface_issue_count']} |"
+            )
+    else:
+        lines.extend(
+            [
+                "| seed | baseline raw | candidate raw | delta | baseline selected | candidate selected |",
+                "|---:|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for row in report["per_seed"]:
+            lines.append(
+                f"| {row['seed']} | {row['baseline_raw_candidate_acceptance_rate']:.1%} | "
+                f"{row['promoted_raw_candidate_acceptance_rate']:.1%} | "
+                f"{row['raw_candidate_acceptance_delta']:+.1%} | "
+                f"{row['baseline_model_selected_case_count']} | "
+                f"{row['promoted_model_selected_case_count']} |"
+            )
+    surface_changes = report["runtime_gate_evidence"]["paired_surface_changes"]
+    if surface_changes:
+        lines.extend(
+            [
+                "",
+                "## 配對後的最終輸出變化",
+                "",
+                "| seed | case | before issues | after issues | before | after |",
+                "|---:|---|---|---|---|---|",
+            ]
+        )
+        for row in surface_changes:
+            lines.append(
+                f"| {row['seed']} | {row['case_id']} | {', '.join(row['before_issues']) or '-'} | "
+                f"{', '.join(row['after_issues']) or '-'} | {row['before_reply']} | {row['after_reply']} |"
+            )
     data_boundary = report["data_boundary"]
     if data_boundary.get("provided"):
         lines.extend(
