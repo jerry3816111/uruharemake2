@@ -17,6 +17,7 @@ METRICS = (
     "model_selected_case_rate",
     "final_quality_pass_rate",
     "final_language_clean_rate",
+    "final_awkward_surface_free_rate",
     "final_forbidden_surface_leak_rate",
     "final_generic_template_hit_rate",
     "final_normalized_duplicate_reply_rate",
