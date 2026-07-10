@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-07-11T04:40:02+09:00",
+  "scope": "rightbrain_preference_likelihood_gate_v21_replay",
+  "method_reference": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/3df38ca67befaed9c03b95ffee07d9f8-Abstract-Conference.html",
+  "max_preferred_likelihood_decrease_rate": 0.5,
+  "replays": [
+    {
+      "label": "v19_deleted_clause_simpo",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v19_semantic_simpo_v1",
+      "original_gate_authorized_holdout": false,
+      "v21_gate_authorizes_holdout": false,
+      "preferred_likelihood": {
+        "pair_count": 8,
+        "mean_chosen_average_log_prob_delta": 0.0030896812677383423,
+        "preferred_likelihood_decreased_count": 3,
+        "preferred_likelihood_decrease_rate": 0.375,
+        "rows": [
+          {
+            "id": "rb_semantic_preference_v18_0013",
+            "chosen_average_log_prob_delta": 0.017999649047851562
+          },
+          {
+            "id": "rb_semantic_preference_v18_0014",
+            "chosen_average_log_prob_delta": 0.02167034149169922
+          },
+          {
+            "id": "rb_semantic_preference_v18_0015",
+            "chosen_average_log_prob_delta": -0.02426624298095703
+          },
+          {
+            "id": "rb_semantic_preference_v18_0016",
+            "chosen_average_log_prob_delta": -0.0023665428161621094
+          },
+          {
+            "id": "rb_semantic_preference_v18_0021",
+            "chosen_average_log_prob_delta": 0.0016669034957885742
+          },
+          {
+            "id": "rb_semantic_preference_v18_0022",
+            "chosen_average_log_prob_delta": 0.008159875869750977
+          },
+          {
+            "id": "rb_semantic_preference_v18_0023",
+            "chosen_average_log_prob_delta": -0.009313344955444336
+          },
+          {
+            "id": "rb_semantic_preference_v18_0024",
+            "chosen_average_log_prob_delta": 0.011166810989379883
+          }
+        ]
+      },
+      "added_gates": {
+        "preferred_likelihood_evidence_covers_all_unseen_pairs": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": true,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
+      },
+      "all_gates": {
+        "train_eval_source_overlap_is_zero": true,
+        "all_optimizer_updates_completed": true,
+        "nonfinite_training_events_are_zero": true,
+        "train_chosen_preference_rate_at_least_75pct": true,
+        "unseen_eval_chosen_preference_rate_at_least_75pct": true,
+        "unseen_eval_mean_margin_improved": false,
+        "unseen_eval_target_margin_rate_at_least_50pct": true,
+        "preferred_likelihood_evidence_covers_all_unseen_pairs": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": true,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
+      }
+    },
+    {
+      "label": "v20_length_matched_simpo",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v20_hard_negative_simpo_v1",
+      "original_gate_authorized_holdout": true,
+      "v21_gate_authorizes_holdout": false,
+      "preferred_likelihood": {
+        "pair_count": 8,
+        "mean_chosen_average_log_prob_delta": -0.010851040482521057,
+        "preferred_likelihood_decreased_count": 7,
+        "preferred_likelihood_decrease_rate": 0.875,
+        "rows": [
+          {
+            "id": "rb_hard_negative_preference_v20_0013",
+            "chosen_average_log_prob_delta": -0.016863107681274414
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0014",
+            "chosen_average_log_prob_delta": 0.03577899932861328
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0015",
+            "chosen_average_log_prob_delta": -0.028415918350219727
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0016",
+            "chosen_average_log_prob_delta": -0.04228401184082031
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0021",
+            "chosen_average_log_prob_delta": -0.009165167808532715
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0022",
+            "chosen_average_log_prob_delta": -0.0038001537322998047
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0023",
+            "chosen_average_log_prob_delta": -0.01940298080444336
+          },
+          {
+            "id": "rb_hard_negative_preference_v20_0024",
+            "chosen_average_log_prob_delta": -0.0026559829711914062
+          }
+        ]
+      },
+      "added_gates": {
+        "preferred_likelihood_evidence_covers_all_unseen_pairs": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": false,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": false
+      },
+      "all_gates": {
+        "train_eval_source_overlap_is_zero": true,
+        "all_optimizer_updates_completed": true,
+        "nonfinite_training_events_are_zero": true,
+        "train_chosen_preference_rate_at_least_75pct": true,
+        "unseen_eval_chosen_preference_rate_at_least_75pct": true,
+        "unseen_eval_mean_margin_improved": true,
+        "unseen_eval_target_margin_rate_at_least_50pct": true,
+        "preferred_likelihood_evidence_covers_all_unseen_pairs": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": false,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": false
+      }
+    }
+  ],
+  "changed_decision_labels": [
+    "v20_length_matched_simpo"
+  ],
+  "decision_zh": "加入 preferred-likelihood guard 後，V20 會在 actual-model holdout 前被攔下；這能抓到 margin 變好但正確回答本身機率下降的 likelihood displacement。",
+  "policy_zh": "V21 起，preference 訓練必須同時滿足：未見 pair 的 mean preferred log-prob 不下降，且至少一半 pair 的 preferred likelihood 不下降。這是本專案的保守前置 gate，只負責阻止不值得進入昂貴 runtime holdout 的 adapter。",
+  "research_boundary": "This threshold is a conservative local engineering gate calibrated on V19/V20, not a universal claim from the cited paper. Actual-model multi-seed evaluation remains mandatory for promotion."
+}
