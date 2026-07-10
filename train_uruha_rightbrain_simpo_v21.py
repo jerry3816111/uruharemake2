@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Train V21 only after the matching frozen-policy probe authorizes it."""
 
+import argparse
 import json
 from pathlib import Path
 
@@ -14,6 +15,13 @@ from train_uruha_rightbrain_simpo_v19 import main
 
 
 DEFAULT_OUTPUT_DIR = "./uruha_rightbrain_plan_sft_lora_v21_on_policy_simpo_v1"
+
+
+def requested_dataset(argv=None):
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--dataset", default=RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_DATASET_PATH)
+    args, _ = parser.parse_known_args(argv)
+    return args.dataset
 
 
 def validate_probe(
@@ -30,7 +38,7 @@ def validate_probe(
 
 
 if __name__ == "__main__":
-    validate_probe()
+    validate_probe(requested_dataset())
     raise SystemExit(
         main(
             default_dataset=RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_DATASET_PATH,

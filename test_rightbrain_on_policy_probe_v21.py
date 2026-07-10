@@ -5,7 +5,7 @@ from pathlib import Path
 
 from probe_rightbrain_on_policy_preference_v21 import build_probe_decision
 from train_uruha_rightbrain_contract_v1 import _sha256
-from train_uruha_rightbrain_simpo_v21 import validate_probe
+from train_uruha_rightbrain_simpo_v21 import requested_dataset, validate_probe
 
 
 def _dataset_summary():
@@ -35,6 +35,12 @@ def _metrics(margins):
 
 
 class RightBrainOnPolicyProbeV21Test(unittest.TestCase):
+    def test_training_guard_reads_actual_dataset_override(self):
+        self.assertEqual(
+            requested_dataset(["--epochs", "2", "--dataset", "custom.json"]),
+            "custom.json",
+        )
+
     def test_probe_allows_training_only_with_unseen_misranking(self):
         decision = build_probe_decision(
             _dataset_summary(),
