@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-07-11T02:41:03+09:00",
+  "scope": "rightbrain_semantic_preference_v19_pre_holdout_gate",
+  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v19_semantic_simpo_v1",
+  "gates": {
+    "train_eval_source_overlap_is_zero": true,
+    "all_optimizer_updates_completed": true,
+    "nonfinite_training_events_are_zero": true,
+    "train_chosen_preference_rate_at_least_75pct": true,
+    "unseen_eval_chosen_preference_rate_at_least_75pct": true,
+    "unseen_eval_mean_margin_improved": false,
+    "unseen_eval_target_margin_rate_at_least_50pct": true
+  },
+  "authorize_actual_model_holdout": false,
+  "result": {
+    "optimizer_updates": 6,
+    "expected_optimizer_updates": 6,
+    "nonfinite_skips": 0,
+    "max_observed_gradient_norm": 9106.716796875,
+    "initial_eval_chosen_preference_rate": 1.0,
+    "final_eval_chosen_preference_rate": 1.0,
+    "initial_eval_mean_raw_margin": 2.654061794281006,
+    "final_eval_mean_raw_margin": 2.6302639096975327,
+    "eval_mean_raw_margin_delta": -0.023797884583473206,
+    "final_eval_target_margin_rate": 1.0,
+    "final_train_chosen_preference_rate": 0.875
+  },
+  "decision_zh": "不允許 V19 進入真實模型 holdout：SimPO 未形成穩定的未見家族偏好改善。",
+  "diagnosis": {
+    "unseen_eval_saturated_before_training": true,
+    "interpretation_zh": "刪句 rejected 對 V10 已經太容易：訓練前 unseen chosen preference 就是 100%，訓練後平均 margin 還略降，因此不能把穩定訓練誤報成泛化提升。",
+    "next_dataset_change": "建立長度相近、文法自然、只替換一個必要語意槽位的 hard negatives，避免用刪句產生可由長度直接識別的 rejected。"
+  },
+  "research_boundary": "這是訓練穩定性與未見 synthetic preference family 的前置 gate；即使通過也不代表 adapter 可上線。"
+}

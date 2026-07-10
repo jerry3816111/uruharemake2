@@ -268,6 +268,18 @@ RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DECISION_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_semantic_preference_v18_decision.md",
 )
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v19_training_run.json",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_DECISION_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v19_decision.json",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_DECISION_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v19_decision.md",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_curriculum_v1_report.json",
