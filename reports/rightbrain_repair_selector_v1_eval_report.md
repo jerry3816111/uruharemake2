@@ -2,7 +2,7 @@
 
 ## 一句話結論
 
-測試的是 F 右腦能否在未見過的輸出合約中，從多個回答候選挑出保留左腦語意且無污染的版本；這不會讓 ToMBench 推理本身變強，但可降低正確答案在最終表達時消失的風險。
+合成契約 gate 通過，但人類偏好 gate 未通過；selector 能排除明顯污染，不代表會選出更自然的回答，因此維持 observe-only。
 
 ## 未見合約測試結果
 
@@ -21,7 +21,7 @@
 - candidate log loss: 0.601441
 - semantic drift decoys: 22
 - semantic drift decoy rejection: 100.0%
-- gate passed: `True`
+- gate passed: `False`
 
 | 門檻 | 結果 |
 |---|---|
@@ -33,6 +33,8 @@
 | test_semantic_drift_decoy_rejection_rate_is_100pct | PASS |
 | natural_holdout_contract_overlap_is_zero | PASS |
 | natural_holdout_valid_selection_rate_is_100pct | PASS |
+| human_preference_report_present | PASS |
+| human_preference_takeover_recommended | FAIL |
 
 ## 先前模型真實生成候選
 
@@ -44,6 +46,20 @@
 | deterministic_fallback | 100.0% | 0.0% |
 | learned_selector | 100.0% | 0.0% |
 | deterministic_contract_oracle | 100.0% | 0.0% |
+
+## 人類偏好 Gate
+
+- strict tasks: 12
+- strict candidates: 48
+- takeover recommended: `False`
+
+| 方法 | 最高人類分數命中 | 平均自然度 |
+|---|---:|---:|
+| learned selector | 25.0% | 2.5/5 |
+| runtime heuristic proxy | 41.7% | 2.916667/5 |
+| S0 full-system candidate | 75.0% | 3.166667/5 |
+
+不可接管：learned selector 在零文字重疊人類盲評中仍落後現行 heuristic 或完整 S0 候選，維持 observe-only。
 
 ## 重要邊界
 

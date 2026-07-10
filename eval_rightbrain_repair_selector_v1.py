@@ -17,6 +17,7 @@ from project_paths import (
     RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_MD_PATH,
     RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH,
     RIGHTBRAIN_REPAIR_SELECTOR_V1_NATURAL_HOLDOUT_SOURCE_PATH,
+    RIGHTBRAIN_SELECTOR_HUMAN_PREFERENCE_V1_REPORT_JSON_PATH,
 )
 from rightbrain_repair_selector import (
     evaluate_baselines,
@@ -33,6 +34,7 @@ MIN_TEST_GOLD_SELECTION_RATE = 0.95
 MAX_TEST_INVALID_SELECTION_RATE = 0.05
 MIN_GAIN_OVER_FIRST_CANDIDATE = 0.5
 DEFAULT_NATURAL_HOLDOUT_REPORT = RIGHTBRAIN_REPAIR_SELECTOR_V1_NATURAL_HOLDOUT_SOURCE_PATH
+DEFAULT_HUMAN_PREFERENCE_REPORT = RIGHTBRAIN_SELECTOR_HUMAN_PREFERENCE_V1_REPORT_JSON_PATH
 
 
 def _fmt_pct(value):
@@ -179,7 +181,7 @@ def evaluate_natural_holdout(selection_rows, model, natural_report):
     }
 
 
-def build_evaluation_report(rows, model, natural_report=None):
+def build_evaluation_report(rows, model, natural_report=None, human_preference_report=None):
     split_seed = int(model["split_seed"])
     splits = grouped_contract_split(rows, seed=split_seed)
     test_rows = splits["test"]
@@ -216,6 +218,34 @@ def build_evaluation_report(rows, model, natural_report=None):
                 ),
             }
         )
+    synthetic_contract_gate_passed = all(gate.values())
+    human_preference_summary = None
+    if human_preference_report:
+        strict_human = human_preference_report.get("strict_no_exact_text_overlap") or {}
+        compact_strategies = {
+            name: {
+                key: value
+                for key, value in metrics.items()
+                if key != "selections"
+            }
+            for name, metrics in (strict_human.get("strategies") or {}).items()
+        }
+        human_preference_summary = {
+            "scope": human_preference_report.get("scope"),
+            "strict_task_count": (human_preference_report.get("data") or {}).get("strict_task_count"),
+            "strict_candidate_count": (human_preference_report.get("data") or {}).get("strict_candidate_count"),
+            "strategies": compact_strategies,
+            "takeover_recommended": bool(human_preference_report.get("takeover_recommended")),
+            "decision_zh": human_preference_report.get("decision_zh"),
+            "research_boundary": human_preference_report.get("research_boundary"),
+        }
+        gate.update(
+            {
+                "human_preference_report_present": True,
+                "human_preference_takeover_recommended": human_preference_summary["takeover_recommended"],
+            }
+        )
+    gate_passed = all(gate.values())
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
         "scope": "rightbrain_repair_selector_v1_eval",
@@ -226,8 +256,10 @@ def build_evaluation_report(rows, model, natural_report=None):
         "test_strategies": strategies,
         "test_semantic_drift_decoys": semantic_decoys,
         "natural_generated_holdout": natural_holdout,
+        "human_preference_holdout": human_preference_summary,
+        "synthetic_contract_gate_passed": synthetic_contract_gate_passed,
         "gate": gate,
-        "gate_passed": all(gate.values()),
+        "gate_passed": gate_passed,
         "research_boundary": (
             "The untouched test set contains source contracts never used for training or epoch selection. "
             "The learned selector is compared with weak baselines and the deterministic contract oracle. "
@@ -235,7 +267,10 @@ def build_evaluation_report(rows, model, natural_report=None):
             "their rejection does not prove open-world natural-language understanding."
         ),
         "conclusion_zh": (
-            "測試的是 F 右腦能否在未見過的輸出合約中，從多個回答候選挑出保留左腦語意且無污染的版本；"
+            "合成契約 gate 通過，但人類偏好 gate 未通過；selector 能排除明顯污染，不代表會選出更自然的回答，"
+            "因此維持 observe-only。"
+            if human_preference_summary and not gate_passed
+            else "測試的是 F 右腦能否在未見過的輸出合約中，從多個回答候選挑出保留左腦語意且無污染的版本；"
             "這不會讓 ToMBench 推理本身變強，但可降低正確答案在最終表達時消失的風險。"
         ),
     }
@@ -308,6 +343,30 @@ def write_markdown(report, path):
                 f"| {name} | {_fmt_pct(metrics['valid_selection_rate'])} | "
                 f"{_fmt_pct(metrics['invalid_selection_rate'])} |"
             )
+    human = report.get("human_preference_holdout")
+    if human:
+        human_strategies = human.get("strategies") or {}
+        learned_human = human_strategies.get("learned_selector_v1") or {}
+        heuristic_human = human_strategies.get("current_runtime_heuristic_proxy") or {}
+        s0_human = human_strategies.get("s0_full_system_candidate") or {}
+        lines.extend(
+            [
+                "",
+                "## 人類偏好 Gate",
+                "",
+                f"- strict tasks: {human.get('strict_task_count')}",
+                f"- strict candidates: {human.get('strict_candidate_count')}",
+                f"- takeover recommended: `{human.get('takeover_recommended')}`",
+                "",
+                "| 方法 | 最高人類分數命中 | 平均自然度 |",
+                "|---|---:|---:|",
+                f"| learned selector | {_fmt_pct(learned_human.get('top_score_hit_rate'))} | {learned_human.get('selected_mean_naturalness_1_5')}/5 |",
+                f"| runtime heuristic proxy | {_fmt_pct(heuristic_human.get('top_score_hit_rate'))} | {heuristic_human.get('selected_mean_naturalness_1_5')}/5 |",
+                f"| S0 full-system candidate | {_fmt_pct(s0_human.get('top_score_hit_rate'))} | {s0_human.get('selected_mean_naturalness_1_5')}/5 |",
+                "",
+                str(human.get("decision_zh") or ""),
+            ]
+        )
     lines.extend(
         [
             "",
@@ -330,13 +389,25 @@ def main():
     parser.add_argument("--output-json", default=RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_JSON_PATH)
     parser.add_argument("--output-md", default=RIGHTBRAIN_REPAIR_SELECTOR_V1_EVAL_REPORT_MD_PATH)
     parser.add_argument("--natural-holdout-report", default=DEFAULT_NATURAL_HOLDOUT_REPORT)
+    parser.add_argument("--human-preference-report", default=DEFAULT_HUMAN_PREFERENCE_REPORT)
     args = parser.parse_args()
 
     rows = json.loads(Path(args.dataset).read_text(encoding="utf-8"))
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
     natural_report_path = Path(args.natural_holdout_report)
     natural_report = json.loads(natural_report_path.read_text(encoding="utf-8")) if natural_report_path.exists() else None
-    report = build_evaluation_report(rows, model, natural_report=natural_report)
+    human_preference_path = Path(args.human_preference_report)
+    human_preference_report = (
+        json.loads(human_preference_path.read_text(encoding="utf-8"))
+        if human_preference_path.exists()
+        else None
+    )
+    report = build_evaluation_report(
+        rows,
+        model,
+        natural_report=natural_report,
+        human_preference_report=human_preference_report,
+    )
     Path(args.output_json).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_markdown(report, args.output_md)
     print(
