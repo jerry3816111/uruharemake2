@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-07-11T07:57:16+09:00",
+  "scope": "rightbrain_on_policy_preference_v21_dataset",
+  "source_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "source_seeds": [
+    20260712,
+    20260713
+  ],
+  "raw_report_count": 2,
+  "source_report_evidence": [
+    {
+      "seed": 20260712,
+      "case_count": 16,
+      "case_ids_complete": true,
+      "model_loaded": true,
+      "generated_candidate_count": 48
+    },
+    {
+      "seed": 20260713,
+      "case_count": 16,
+      "case_ids_complete": true,
+      "model_loaded": true,
+      "generated_candidate_count": 48
+    }
+  ],
+  "development_case_count": 16,
+  "strict_chosen_case_count": 13,
+  "strict_chosen_case_ids": [
+    "v21_background_deadline_pressure",
+    "v21_cat_moon_tax",
+    "v21_current_mood",
+    "v21_headache_work",
+    "v21_invitation_reply_delay",
+    "v21_private_relationship_topic",
+    "v21_project_reply_delay",
+    "v21_recent_activity",
+    "v21_reservation_wait",
+    "v21_sleepy_assignment",
+    "v21_song_fragment",
+    "v21_toaster_mayor",
+    "v21_weather_plan"
+  ],
+  "pair_count": 28,
+  "source_family_count": 7,
+  "source_family_counts": {
+    "absurdity_tease": 5,
+    "daily_state": 3,
+    "fatigue_boundary": 3,
+    "planning_uncertainty": 5,
+    "private_background": 6,
+    "reference_repair": 2,
+    "reply_uncertainty": 4
+  },
+  "failure_reason_counts": {
+    "strict_language_clean_failed": 19,
+    "unexpected_ascii_leak": 15,
+    "polite_tone_drift": 11,
+    "semantic_slots_missing:1/2": 7,
+    "strict_semantic_slots_missing:1/2": 7,
+    "foreign_script_leak": 4,
+    "cjk_language_leak": 4,
+    "nonstandard_cjk_surface": 4,
+    "semantic_slots_missing:3/4": 2,
+    "strict_semantic_slots_missing:2/4": 2,
+    "semantic_slots_missing:0/2": 2,
+    "strict_semantic_slots_missing:0/2": 2,
+    "ascii_symbol_artifact": 2,
+    "missing_japanese_surface": 1,
+    "over_max_chars": 1,
+    "strict_semantic_slots_missing:3/4": 1,
+    "semantic_slots_missing:2/4": 1
+  },
+  "failure_family_counts": {
+    "language_pollution": 32,
+    "semantic_slots_missing": 24,
+    "ascii_leak": 17,
+    "polite_tone_drift": 11,
+    "over_max_chars": 1
+  },
+  "skipped_counts": {
+    "case_without_strict_on_policy_chosen": 9
+  },
+  "promotion_holdout_chosen_text_overlap_count": 0,
+  "promotion_holdout_chosen_text_overlap_examples": [],
+  "gates": {
+    "source_adapter_is_current_v10": true,
+    "source_report_count_is_two": true,
+    "every_source_report_covers_all_cases": true,
+    "every_source_report_loaded_real_model": true,
+    "every_source_report_has_48_candidates": true,
+    "development_case_contract_valid": true,
+    "promotion_holdout_case_overlap_is_zero": true,
+    "promotion_holdout_input_overlap_is_zero": true,
+    "promotion_holdout_chosen_text_overlap_is_zero": true,
+    "pair_count_at_least_24": true,
+    "source_family_count_at_least_6": true,
+    "strict_chosen_case_count_at_least_8": true,
+    "failure_family_count_at_least_4": true,
+    "all_chosen_are_v10_on_policy": true,
+    "all_rejected_are_v10_on_policy": true
+  },
+  "authorize_preference_probe": true,
+  "decision_zh": "V21 on-policy 資料通過來源、多樣性與 holdout 邊界 gate，可進入訓練前偏好難度 probe。",
+  "research_boundary": "Both chosen and rejected completions are sampled from the current V10 policy. Chosen labels are automatic strict-contract labels, not human preference ratings. This authorizes only a pre-training preference probe, never adapter promotion."
+}

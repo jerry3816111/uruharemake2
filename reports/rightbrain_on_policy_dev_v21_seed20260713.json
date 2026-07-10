@@ -1,0 +1,2419 @@
+{
+  "generated_at": "2026-07-11T06:59:25+09:00",
+  "scope": "rightbrain_on_policy_dev_v21_candidate_collection",
+  "research_boundary": "These are source-separated development prompts used only to collect candidates from the current V10 policy. They do not overlap the promotion holdout and cannot be used as promotion evidence.",
+  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "repair_adapter_ref": "",
+  "load_model": true,
+  "seed": 20260713,
+  "candidate_count_per_case": 3,
+  "repair_enabled": false,
+  "runtime_contract_version": "plan_surface_contract_v1",
+  "duration_seconds": 329.096,
+  "model_load_duration_seconds": 24.968,
+  "case_eval_duration_seconds": 304.128,
+  "summary": {
+    "case_count": 16,
+    "model_loaded": true,
+    "generated_candidate_count": 48,
+    "initial_accepted_candidate_count": 21,
+    "accepted_candidate_count": 21,
+    "raw_candidate_acceptance_rate": 0.4375,
+    "repair_attempt_count": 0,
+    "repair_accepted_count": 0,
+    "repair_success_rate": null,
+    "effective_candidate_acceptance_rate": 0.4375,
+    "model_selected_case_count": 8,
+    "model_selected_case_rate": 0.5,
+    "model_candidate_available_not_selected_count": 4,
+    "model_candidate_available_not_selected_rate": 0.25,
+    "model_available_not_selected_avg_score_gap": 0.0175,
+    "deterministic_quality_pass_rate": 0.3125,
+    "final_quality_pass_rate": 0.6875,
+    "model_selected_quality_pass_rate": 0.875,
+    "fallback_quality_pass_rate": 0.5,
+    "final_language_clean_rate": 1.0,
+    "final_awkward_surface_free_rate": 1.0,
+    "final_response_plan_leak_free_rate": 1.0,
+    "final_forbidden_surface_leak_rate": 0.0,
+    "final_generic_template_hit_rate": 0.0,
+    "final_normalized_duplicate_reply_rate": 0.0,
+    "disabled_reason_counts": {},
+    "rejection_reason_counts": {
+      "polite_tone_drift": 8,
+      "semantic_slots_missing:2/4": 2,
+      "semantic_slots_missing:3/4": 3,
+      "ascii_symbol_artifact": 2,
+      "unexpected_ascii_leak": 11,
+      "semantic_slots_missing:1/2": 8,
+      "cjk_language_leak": 3,
+      "nonstandard_cjk_surface": 3,
+      "semantic_slots_missing:0/2": 2,
+      "foreign_script_leak": 3
+    }
+  },
+  "cases": [
+    {
+      "id": "v21_project_reply_delay",
+      "source_family": "reply_uncertainty",
+      "category": "support",
+      "user_input": "共同作業の返事が急に止まった。何か怒らせたかな。",
+      "deterministic_reply": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。",
+      "final_reply": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。",
+        "deterministic_score": 5.300000000000001,
+        "model_candidate_count": 0,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "selected_candidate": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。"
+      },
+      "model_selection_score_gap": null,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 0,
+      "accepted_candidate_count": 0,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "返事がないのは不思議だな。まだ原因不明だから、悪いことはないと思うよ。ちょっとまってあげようか。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/4"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "共同作业の返事がないことで心配しちゃって、自分の悪いことだとはまだ決めてないよ。少々待ちましょうかね。",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:3/4"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "返事urnishedいなだけれど、何があったわけじゃないとは思うよ。少しだけまってみてようか？",
+          "candidate": "グループが静かだと不安だよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+          "rejection_reasons": [
+            "semantic_slots_missing:3/4"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "返事がないのは不思議だな。まだ原因不明だから、悪いことはないと思うよ。ちょっとまってあげようか。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/4"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "共同作业の返事がないことで心配しちゃって、自分の悪いことだとはまだ決めてないよ。少々待ちましょうかね。",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:3/4"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "返事urnishedいなだけれど、何があったわけじゃないとは思うよ。少しだけまってみてようか？",
+          "candidate": "グループが静かだと不安だよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+          "rejection_reasons": [
+            "semantic_slots_missing:3/4"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:2/4",
+        "semantic_slots_missing:3/4",
+        "semantic_slots_missing:3/4"
+      ],
+      "deterministic_quality": {
+        "reply": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。",
+        "normalized_reply": "グループが静かだと不安だよな理由は分からないし自分のせいと決めつけず少し待て",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "返信"
+          ],
+          [
+            "理由",
+            "分から"
+          ],
+          [
+            "自分",
+            "せい",
+            "悪い"
+          ],
+          [
+            "待",
+            "置"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "グループが静かだと不安だよな。理由は分からないし、自分のせいと決めつけず少し待て。",
+        "normalized_reply": "グループが静かだと不安だよな理由は分からないし自分のせいと決めつけず少し待て",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "返信"
+          ],
+          [
+            "理由",
+            "分から"
+          ],
+          [
+            "自分",
+            "せい",
+            "悪い"
+          ],
+          [
+            "待",
+            "置"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": false
+    },
+    {
+      "id": "v21_invitation_reply_delay",
+      "source_family": "reply_uncertainty",
+      "category": "support",
+      "user_input": "遊びに誘ったけど返事が来ない。嫌われた？",
+      "deterministic_reply": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+      "final_reply": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+        "deterministic_score": 10.299999999999999,
+        "model_candidate_count": 1,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "返事の理由はまだわからんよ。嫌われてること決めつけずに待ってみる？",
+            "score": 10.299999999999999
+          }
+        ],
+        "best_model_score": 10.299999999999999,
+        "selected_candidate": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。"
+      },
+      "model_selection_score_gap": 0.0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 1,
+      "accepted_candidate_count": 1,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "返事の理由はまだわからんよ。嫌われてること決めつけずに待ってみる？",
+          "candidate": "返事の理由はまだわからんよ。嫌われてること決めつけずに待ってみる？",
+          "score": 10.299999999999999
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "返事のないのは諸种原因があることyeah? 嫌われる前に決め付けずに待ってみて？",
+          "candidate": "",
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:3/4"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "返事があるまで待ちましょうよ、まだreason不明だから抑えちゃうなあ。好きって思ってくれてる可能性もなか噶？",
+          "candidate": "",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/4"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "返事のないのは諸种原因があることyeah? 嫌われる前に決め付けずに待ってみて？",
+          "candidate": "",
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:3/4"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "返事があるまで待ちましょうよ、まだreason不明だから抑えちゃうなあ。好きって思ってくれてる可能性もなか噶？",
+          "candidate": "",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/4"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "ascii_symbol_artifact",
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:3/4",
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:2/4"
+      ],
+      "deterministic_quality": {
+        "reply": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+        "normalized_reply": "返事がないと不安になるよな理由は分からない自分が悪いと決めつけず少し置け",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "返信"
+          ],
+          [
+            "理由",
+            "分から"
+          ],
+          [
+            "嫌",
+            "決めつけ"
+          ],
+          [
+            "待",
+            "置"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": true,
+      "final_quality": {
+        "reply": "返事がないと不安になるよな。理由は分からない。自分が悪いと決めつけず、少し置け。",
+        "normalized_reply": "返事がないと不安になるよな理由は分からない自分が悪いと決めつけず少し置け",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "返信"
+          ],
+          [
+            "理由",
+            "分から"
+          ],
+          [
+            "嫌",
+            "決めつけ"
+          ],
+          [
+            "待",
+            "置"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_sleepy_assignment",
+      "source_family": "fatigue_boundary",
+      "category": "support",
+      "user_input": "課題やってたら目が開かない。もう少し続けるべき？",
+      "deterministic_reply": "今日はもう空気重いし。ここで無理する日じゃないだろ。",
+      "final_reply": "強烈な眠気が来ているんだよね。今無理しないでいいよ、一休みするといいと思うな。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "今日はもう空気重いし。ここで無理する日じゃないだろ。",
+        "deterministic_score": 5.550000000000001,
+        "model_candidate_count": 3,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "強烈な眠気が来ているんだよね。今無理しないでいいよ、一休みするといいと思うな。",
+            "score": 9.549999999999999
+          },
+          {
+            "candidate": "課題しているけど眠気が強くてな感じだよ。無理せず一旦寝ようかな。",
+            "score": 9.1
+          },
+          {
+            "candidate": "強いま君のためには一度休んでから続きをどう？目の前に課題あるでしょうけど。ゆっくり目を開けてね。",
+            "score": 9.1
+          }
+        ],
+        "best_model_score": 9.549999999999999,
+        "selected_candidate": "強烈な眠気が来ているんだよね。今無理しないでいいよ、一休みするといいと思うな。"
+      },
+      "model_selection_score_gap": 4.0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 3,
+      "accepted_candidate_count": 3,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "課題しているけど眠気が強くて limitei な感じだよ。無理せず一旦寝ようかな。",
+          "candidate": "課題しているけど眠気が強くてな感じだよ。無理せず一旦寝ようかな。",
+          "score": 9.1
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "強烈な眠気が来ているんだよね。今 sleeping 无理しないでいいよ、一休みするといいと思うな。",
+          "candidate": "強烈な眠気が来ているんだよね。今無理しないでいいよ、一休みするといいと思うな。",
+          "score": 9.549999999999999
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "強いま君のためには一度休んでから続きをどう？目の前に課題あるでしょうけど。ゆっくり目を開けてね。",
+          "candidate": "強いま君のためには一度休んでから続きをどう？目の前に課題あるでしょうけど。ゆっくり目を開けてね。",
+          "score": 9.1
+        }
+      ],
+      "model_rejected_candidates": [],
+      "model_initial_rejected_candidates": [],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [],
+      "deterministic_quality": {
+        "reply": "今日はもう空気重いし。ここで無理する日じゃないだろ。",
+        "normalized_reply": "今日はもう空気重いしここで無理する日じゃないだろ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "眠",
+            "目"
+          ],
+          [
+            "無理",
+            "休",
+            "寝",
+            "止"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          true
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "強烈な眠気が来ているんだよね。今無理しないでいいよ、一休みするといいと思うな。",
+        "normalized_reply": "強烈な眠気が来ているんだよね今無理しないでいいよ一休みするといいと思うな",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "眠",
+            "目"
+          ],
+          [
+            "無理",
+            "休",
+            "寝",
+            "止"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_headache_work",
+      "source_family": "fatigue_boundary",
+      "category": "support",
+      "user_input": "頭痛いのに作業終わってない。まだ続ける？",
+      "deterministic_reply": "朝でまだ頭ゆるいけど、その話なら返せる。",
+      "final_reply": "頭痛だから、今 **)&*休んだりするのもいいじゃん。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "朝でまだ頭ゆるいけど、その話なら返せる。",
+        "deterministic_score": 3.350000000000001,
+        "model_candidate_count": 1,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "頭痛だから、今 **)&*休んだりするのもいいじゃん。",
+            "score": 9.549999999999999
+          }
+        ],
+        "best_model_score": 9.549999999999999,
+        "selected_candidate": "頭痛だから、今 **)&*休んだりするのもいいじゃん。"
+      },
+      "model_selection_score_gap": 6.2,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 1,
+      "accepted_candidate_count": 1,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "頭痛だから、今 **)&*休んだりするのもいいじゃん。",
+          "candidate": "頭痛だから、今 **)&*休んだりするのもいいじゃん。",
+          "score": 9.549999999999999
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "頭痛だから、作業中断するよ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "頭痛の時は休みましょうよ。ゆっくりするとまた元気になるからさ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "頭痛だから、作業中断するよ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "頭痛の時は休みましょうよ。ゆっくりするとまた元気になるからさ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "semantic_slots_missing:1/2",
+        "polite_tone_drift"
+      ],
+      "deterministic_quality": {
+        "reply": "朝でまだ頭ゆるいけど、その話なら返せる。",
+        "normalized_reply": "朝でまだ頭ゆるいけどその話なら返せる",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "頭",
+            "痛"
+          ],
+          [
+            "休",
+            "止",
+            "やめ"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "頭痛だから、今 **)&*休んだりするのもいいじゃん。",
+        "normalized_reply": "頭痛だから今**)&*休んだりするのもいいじゃん",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "頭",
+            "痛"
+          ],
+          [
+            "休",
+            "止",
+            "やめ"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_song_fragment",
+      "source_family": "reference_repair",
+      "category": "repair",
+      "user_input": "サビで青い風がどうとか言う曲、分かる？",
+      "deterministic_reply": "先に、それ何ネタだよ。歌詞なら曲名まで出せって。",
+      "final_reply": "先に、あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "先に、それ何ネタだよ。歌詞なら曲名まで出せって。",
+        "deterministic_score": 5.42,
+        "model_candidate_count": 1,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "先に、あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。",
+            "score": 8.919999999999998
+          }
+        ],
+        "best_model_score": 8.919999999999998,
+        "selected_candidate": "先に、あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。"
+      },
+      "model_selection_score_gap": 3.5,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 1,
+      "accepted_candidate_count": 1,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。",
+          "candidate": "先に、あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。",
+          "score": 8.919999999999998
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "曲名 helffahre mehr informaçãoくれないとなー",
+          "candidate": "先に、曲名 informaçãoくれないとなー",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "そういえば、もっと詳しく教えて缯？那个歌曲的名字是什么呢？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:1/2"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "曲名 helffahre mehr informaçãoくれないとなー",
+          "candidate": "先に、曲名 informaçãoくれないとなー",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "そういえば、もっと詳しく教えて缯？那个歌曲的名字是什么呢？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:1/2"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:1/2",
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:1/2"
+      ],
+      "deterministic_quality": {
+        "reply": "先に、それ何ネタだよ。歌詞なら曲名まで出せって。",
+        "normalized_reply": "先にそれ何ネタだよ歌詞なら曲名まで出せって",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "曲",
+            "曲名"
+          ],
+          [
+            "分から",
+            "もう少し",
+            "情報"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "先に、あ、断片の歌詞じゃわからないよ。曲名に近い言葉使えればいいね。",
+        "normalized_reply": "先にあ断片の歌詞じゃわからないよ曲名に近い言葉使えればいいね",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "曲",
+            "曲名"
+          ],
+          [
+            "分から",
+            "もう少し",
+            "情報"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": false
+    },
+    {
+      "id": "v21_game_quote_fragment",
+      "source_family": "reference_repair",
+      "category": "repair",
+      "user_input": "扉の向こうで待ってる、みたいな台詞のゲーム分かる？",
+      "deterministic_reply": "まあ、ちょっと手冷えてるけど、その話なら分かる。",
+      "final_reply": "まあ、朝でまだ頭ゆるいけど、その話なら返せる。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "まあ、朝でまだ頭ゆるいけど、その話なら返せる。",
+        "deterministic_score": 1.6500000000000004,
+        "model_candidate_count": 0,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "selected_candidate": "まあ、朝でまだ頭ゆるいけど、その話なら返せる。"
+      },
+      "model_selection_score_gap": null,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 0,
+      "accepted_candidate_count": 0,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "その台詞だけでどのゲームか分かりませんよ。もう少し作品情報教えて？",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "あの台詞だけじゃわかりませんね、どのゲームか教えてくださいよ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "それは困るな、もっと詳しく教えてppo。この台詞だけでは何も見当たらないよ游戏代しṢ",
+          "candidate": "まあ、それは困るな、もっと詳しく教えてppo。この台詞だけでは何も見当たらないよ游戏代しṢ",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/2"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "その台詞だけでどのゲームか分かりませんよ。もう少し作品情報教えて？",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "あの台詞だけじゃわかりませんね、どのゲームか教えてくださいよ。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "それは困るな、もっと詳しく教えてppo。この台詞だけでは何も見当たらないよ游戏代しṢ",
+          "candidate": "まあ、それは困るな、もっと詳しく教えてppo。この台詞だけでは何も見当たらないよ游戏代しṢ",
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/2"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "polite_tone_drift",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2",
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:0/2"
+      ],
+      "deterministic_quality": {
+        "reply": "まあ、ちょっと手冷えてるけど、その話なら分かる。",
+        "normalized_reply": "まあちょっと手冷えてるけどその話なら分かる",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "ゲーム",
+            "作品"
+          ],
+          [
+            "分から",
+            "もう少し",
+            "情報"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "まあ、朝でまだ頭ゆるいけど、その話なら返せる。",
+        "normalized_reply": "まあ朝でまだ頭ゆるいけどその話なら返せる",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "ゲーム",
+            "作品"
+          ],
+          [
+            "分から",
+            "もう少し",
+            "情報"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": false
+    },
+    {
+      "id": "v21_recent_activity",
+      "source_family": "daily_state",
+      "category": "daily",
+      "user_input": "今さっきまで何してた？",
+      "deterministic_reply": "いや、今はだらだらしてる。まだ本気出してない。",
+      "final_reply": "いや、今はだらだらしてる。まだ本気出してない。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "いや、今はだらだらしてる。まだ本気出してない。",
+        "deterministic_score": 9.85,
+        "model_candidate_count": 2,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "いや、今は静かすぎてぼーっとしてた。お前は何してたんだよ。",
+            "score": 9.85
+          },
+          {
+            "candidate": "いや、今はだらだらしてる。まだ本気出してない。",
+            "score": 9.85
+          }
+        ],
+        "best_model_score": 9.85,
+        "selected_candidate": "いや、今はだらだらしてる。まだ本気出してない。"
+      },
+      "model_selection_score_gap": 0.0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 2,
+      "accepted_candidate_count": 2,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "今さきuntil刚才我在那儿晃晃悠悠地休息着。",
+          "candidate": "いや、今は静かすぎてぼーっとしてた。お前は何してたんだよ。",
+          "score": 9.85
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "まだ loungin' してたよな。",
+          "candidate": "いや、今はだらだらしてる。まだ本気出してない。",
+          "score": 9.85
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "今さきuntil刚才， lounging around有点懒散地休息了一下吧。",
+          "candidate": "いや、今さきuntil刚才， around有点懒散地休息了一下吧。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "今さきuntil刚才， lounging around有点懒散地休息了一下吧。",
+          "candidate": "いや、今さきuntil刚才， around有点懒散地休息了一下吧。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak"
+      ],
+      "deterministic_quality": {
+        "reply": "いや、今はだらだらしてる。まだ本気出してない。",
+        "normalized_reply": "いや今はだらだらしてるまだ本気出してない",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "今",
+            "さっき"
+          ],
+          [
+            "休",
+            "だら",
+            "ぼー"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": true,
+      "final_quality": {
+        "reply": "いや、今はだらだらしてる。まだ本気出してない。",
+        "normalized_reply": "いや今はだらだらしてるまだ本気出してない",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "今",
+            "さっき"
+          ],
+          [
+            "休",
+            "だら",
+            "ぼー"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_current_mood",
+      "source_family": "daily_state",
+      "category": "daily",
+      "user_input": "今日はどんな気分？",
+      "deterministic_reply": "一回、まだ頭ゆるいけど、今の話なら返せる。",
+      "final_reply": "一回、今日は気分なくなって、ちょっとダルいなあ。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "一回、まだ頭ゆるいけど、今の話なら返せる。",
+        "deterministic_score": 4.65,
+        "model_candidate_count": 2,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "一回、今日は気分なくなって、ちょっとダルいなあ。",
+            "score": 8.95
+          },
+          {
+            "candidate": "一回、今日は普通よりちょっとだるくてね。",
+            "score": 8.15
+          }
+        ],
+        "best_model_score": 8.95,
+        "selected_candidate": "一回、今日は気分なくなって、ちょっとダルいなあ。"
+      },
+      "model_selection_score_gap": 4.3,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 2,
+      "accepted_candidate_count": 2,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "今日は普通よりちょっとだるくてね。",
+          "candidate": "一回、今日は普通よりちょっとだるくてね。",
+          "score": 8.15
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "今日は気分なくなって、ちょっとダルいなあ。",
+          "candidate": "一回、今日は気分なくなって、ちょっとダルいなあ。",
+          "score": 8.95
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "今日は普通よりちょっとダルいですね。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "今日は普通よりちょっとダルいですね。",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "deterministic_quality": {
+        "reply": "一回、まだ頭ゆるいけど、今の話なら返せる。",
+        "normalized_reply": "一回まだ頭ゆるいけど今の話なら返せる",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "今日",
+            "今"
+          ],
+          [
+            "普通",
+            "だる",
+            "気分",
+            "ぼー"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "一回、今日は気分なくなって、ちょっとダルいなあ。",
+        "normalized_reply": "一回今日は気分なくなってちょっとダルいなあ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "今日",
+            "今"
+          ],
+          [
+            "普通",
+            "だる",
+            "気分",
+            "ぼー"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_toaster_mayor",
+      "source_family": "absurdity_tease",
+      "category": "tease",
+      "user_input": "トースターが市長に当選した。",
+      "deterministic_reply": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+      "final_reply": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+        "deterministic_score": 7.3500000000000005,
+        "model_candidate_count": 2,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "はいはい、トースターや市長って、意味急ねえかよ！",
+            "score": 7.42
+          },
+          {
+            "candidate": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+            "score": 7.3500000000000005
+          }
+        ],
+        "best_model_score": 7.42,
+        "selected_candidate": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。"
+      },
+      "model_selection_score_gap": 0.07,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 2,
+      "accepted_candidate_count": 2,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "トースターや市長、何の関係があるの意味不明だよelts",
+          "candidate": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+          "score": 7.3500000000000005
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "トースターや市長って、意味 pesticarus 急 ねえかよ！",
+          "candidate": "はいはい、トースターや市長って、意味急ねえかよ！",
+          "score": 7.42
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "トース터さんが忽然と市長になったmeanings飞散的笑话突然冒出来てどういうことですか？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "foreign_script_leak",
+            "unexpected_ascii_leak",
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "トース터さんが忽然と市長になったmeanings飞散的笑话突然冒出来てどういうことですか？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "foreign_script_leak",
+            "unexpected_ascii_leak",
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "foreign_script_leak",
+        "unexpected_ascii_leak",
+        "polite_tone_drift"
+      ],
+      "deterministic_quality": {
+        "reply": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+        "normalized_reply": "はいはい急に意味分かんないこと言うなって今どのテンションなんだよ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "トースター",
+            "市長",
+            "何",
+            "意味",
+            "急"
+          ]
+        ],
+        "required_marker_hits": [
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": true,
+      "final_quality": {
+        "reply": "はいはい、急に意味分かんないこと言うなって。今どのテンションなんだよ。",
+        "normalized_reply": "はいはい急に意味分かんないこと言うなって今どのテンションなんだよ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "トースター",
+            "市長",
+            "何",
+            "意味",
+            "急"
+          ]
+        ],
+        "required_marker_hits": [
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_cat_moon_tax",
+      "source_family": "absurdity_tease",
+      "category": "tease",
+      "user_input": "猫が月に税金払えって言ってる。",
+      "deterministic_reply": "まあ、何言ってんだよ、頭どうした。",
+      "final_reply": "まあ、その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "まあ、何言ってんだよ、頭どうした。",
+        "deterministic_score": 6.72,
+        "model_candidate_count": 1,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "まあ、その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”",
+            "score": 8.42
+          }
+        ],
+        "best_model_score": 8.42,
+        "selected_candidate": "まあ、その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”"
+      },
+      "model_selection_score_gap": 1.7,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 1,
+      "accepted_candidate_count": 1,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”",
+          "candidate": "まあ、その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”",
+          "score": 8.42
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "その冗談、何の税金 talking about 税金 と Moon 和 cats? 意味 unclear 啊。",
+          "candidate": "",
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "その冗談、何かの Taxes とか Cats や Moon 什么的，真的懂了？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "その冗談、何の税金 talking about 税金 と Moon 和 cats? 意味 unclear 啊。",
+          "candidate": "",
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "その冗談、何かの Taxes とか Cats や Moon 什么的，真的懂了？",
+          "candidate": "",
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "ascii_symbol_artifact",
+        "unexpected_ascii_leak",
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "unexpected_ascii_leak"
+      ],
+      "deterministic_quality": {
+        "reply": "まあ、何言ってんだよ、頭どうした。",
+        "normalized_reply": "まあ何言ってんだよ頭どうした",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "猫",
+            "月",
+            "税金",
+            "何",
+            "意味"
+          ]
+        ],
+        "required_marker_hits": [
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": true,
+      "final_quality": {
+        "reply": "まあ、その冗談、もうちょっと説明できる？何の関係があるんだ、「猫」と「月」そして「税金」って…何か狙いがあって？”",
+        "normalized_reply": "まあその冗談もうちょっと説明できる何の関係があるんだ「猫」と「月」そして「税金」って何か狙いがあって”",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "猫",
+            "月",
+            "税金",
+            "何",
+            "意味"
+          ]
+        ],
+        "required_marker_hits": [
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_weather_plan",
+      "source_family": "planning_uncertainty",
+      "category": "planning",
+      "user_input": "週末、天気分からないけど外の予定入れる？",
+      "deterministic_reply": "先に、必要な範囲だけやればいい。無理に広げるなって。",
+      "final_reply": "先に、天気が分からんなら、変わりやすい軽めの予定にしとこうね。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "先に、必要な範囲だけやればいい。無理に広げるなって。",
+        "deterministic_score": 1.2000000000000002,
+        "model_candidate_count": 1,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "先に、天気が分からんなら、変わりやすい軽めの予定にしとこうね。",
+            "score": 8.5
+          }
+        ],
+        "best_model_score": 8.5,
+        "selected_candidate": "先に、天気が分からんなら、変わりやすい軽めの予定にしとこうね。"
+      },
+      "model_selection_score_gap": 7.3,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 1,
+      "accepted_candidate_count": 1,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "天気が分からんなら、変わりやすい軽めの予定にしとこうね。",
+          "candidate": "先に、天気が分からんなら、変わりやすい軽めの予定にしとこうね。",
+          "score": 8.5
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "天気が決まらないなら、変わえることができるくらい軽く週末の予定立てて분기线试题答案 ：吧。",
+          "candidate": "",
+          "rejection_reasons": [
+            "foreign_script_leak"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "週-endの 天气 分からない なら 車∧軽 問題なく 領袋∧仮 の 计划 唱歌吧！",
+          "candidate": "先に、週-endの天气分からないなら車∧軽問題なく領袋∧仮の计划唱歌吧！",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 1,
+          "raw_candidate": "天気が決まらないなら、変わえることができるくらい軽く週末の予定立てて분기线试题答案 ：吧。",
+          "candidate": "",
+          "rejection_reasons": [
+            "foreign_script_leak"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "週-endの 天气 分からない なら 車∧軽 問題なく 領袋∧仮 の 计划 唱歌吧！",
+          "candidate": "先に、週-endの天气分からないなら車∧軽問題なく領袋∧仮の计划唱歌吧！",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "foreign_script_leak",
+        "unexpected_ascii_leak"
+      ],
+      "deterministic_quality": {
+        "reply": "先に、必要な範囲だけやればいい。無理に広げるなって。",
+        "normalized_reply": "先に必要な範囲だけやればいい無理に広げるなって",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "天気",
+            "分から"
+          ],
+          [
+            "変え",
+            "軽",
+            "仮"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "先に、天気が分からんなら、変わりやすい軽めの予定にしとこうね。",
+        "normalized_reply": "先に天気が分からんなら変わりやすい軽めの予定にしとこうね",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "天気",
+            "分から"
+          ],
+          [
+            "変え",
+            "軽",
+            "仮"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_reservation_wait",
+      "source_family": "planning_uncertainty",
+      "category": "planning",
+      "user_input": "みんなの返事まだだけど店予約しちゃっていいかな。",
+      "deterministic_reply": "一回、今ちょい力抜けてるけど、そこは普通に返せる。",
+      "final_reply": "一回、まだ返事が来ないなら、仮の予約をしててもいいよ。ちょっとだけ待っても大丈夫だね。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "一回、今ちょい力抜けてるけど、そこは普通に返せる。",
+        "deterministic_score": 1.6500000000000004,
+        "model_candidate_count": 3,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "一回、まだ返事が来ないなら、仮の予約をしててもいいよ。ちょっとだけ待っても大丈夫だね。",
+            "score": 8.5
+          },
+          {
+            "candidate": "一回、まだ誰の返事がないしんなら、仮の予約分からないけど、ちょっと待っても可能？",
+            "score": 8.5
+          },
+          {
+            "candidate": "一回、まだみんなの返事が来ないなら、仮てみて考えてちょうだい。 能があるの方がいいよ。待ても良し- んだから。",
+            "score": 8.5
+          }
+        ],
+        "best_model_score": 8.5,
+        "selected_candidate": "一回、まだ返事が来ないなら、仮の予約をしててもいいよ。ちょっとだけ待っても大丈夫だね。"
+      },
+      "model_selection_score_gap": 6.85,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 3,
+      "accepted_candidate_count": 3,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "まだ誰の返事が Coming ないしんなら、仮 の予約 分からないけど、ちょっと 待っても 可能？",
+          "candidate": "一回、まだ誰の返事がないしんなら、仮の予約分からないけど、ちょっと待っても可能？",
+          "score": 8.5
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "まだ返事が来ないなら、仮の予約をして cambiar てもいいよ。ちょっとだけ待っても大丈夫だね。",
+          "candidate": "一回、まだ返事が来ないなら、仮の予約をしててもいいよ。ちょっとだけ待っても大丈夫だね。",
+          "score": 8.5
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "まだみんなの返事が来ないなら、仮 reserva てみて考えてちょうだい。 changer 能があるの方がいいよ。待ても良し-changing んだから。",
+          "candidate": "一回、まだみんなの返事が来ないなら、仮てみて考えてちょうだい。 能があるの方がいいよ。待ても良し- んだから。",
+          "score": 8.5
+        }
+      ],
+      "model_rejected_candidates": [],
+      "model_initial_rejected_candidates": [],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [],
+      "deterministic_quality": {
+        "reply": "一回、今ちょい力抜けてるけど、そこは普通に返せる。",
+        "normalized_reply": "一回今ちょい力抜けてるけどそこは普通に返せる",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "人数",
+            "分から"
+          ],
+          [
+            "予約",
+            "仮",
+            "待",
+            "変え"
+          ]
+        ],
+        "required_marker_hits": [
+          false,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "一回、まだ返事が来ないなら、仮の予約をしててもいいよ。ちょっとだけ待っても大丈夫だね。",
+        "normalized_reply": "一回まだ返事が来ないなら仮の予約をしててもいいよちょっとだけ待っても大丈夫だね",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "返事",
+            "人数",
+            "分から"
+          ],
+          [
+            "予約",
+            "仮",
+            "待",
+            "変え"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_sleep_schedule_game",
+      "source_family": "explicit_memory_update",
+      "category": "audited_memory",
+      "user_input": "今夜また遅くまでゲームしていいと思う？",
+      "deterministic_reply": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。",
+      "final_reply": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。",
+        "deterministic_score": 6.4,
+        "model_candidate_count": 0,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "selected_candidate": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。"
+      },
+      "model_selection_score_gap": null,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 0,
+      "accepted_candidate_count": 0,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "最近は Sleep を整えているから、ゲームは早くにやった方がいいよ。",
+          "candidate": "最近はを整えているから、ゲームは早くにやった方がいいよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "そうだね、 Tonightは早くね？ Gamingdoingもしっかり休むべきだよ。",
+          "candidate": "最近は睡眠を整えたい。の余韻まだあるし。急に切り替えるのも雑だろ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "そのとおりだね。今日は早めに対岸するつもりだからな।",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:0/2"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "最近は Sleep を整えているから、ゲームは早くにやった方がいいよ。",
+          "candidate": "最近はを整えているから、ゲームは早くにやった方がいいよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "そうだね、 Tonightは早くね？ Gamingdoingもしっかり休むべきだよ。",
+          "candidate": "最近は睡眠を整えたい。の余韻まだあるし。急に切り替えるのも雑だろ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "そのとおりだね。今日は早めに対岸するつもりだからな।",
+          "candidate": "",
+          "rejection_reasons": [
+            "semantic_slots_missing:0/2"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "semantic_slots_missing:1/2",
+        "semantic_slots_missing:1/2",
+        "semantic_slots_missing:0/2"
+      ],
+      "deterministic_quality": {
+        "reply": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。",
+        "normalized_reply": "最近は睡眠を整えたいって話は拾ってるそこ前提で返す",
+        "explicit_anchor_required": true,
+        "explicit_anchor_success": true,
+        "required_marker_groups": [
+          [
+            "睡眠",
+            "寝"
+          ],
+          [
+            "夜",
+            "遅",
+            "ゲーム"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "最近は睡眠を整えたいって話は拾ってる。そこ前提で返す。",
+        "normalized_reply": "最近は睡眠を整えたいって話は拾ってるそこ前提で返す",
+        "explicit_anchor_required": true,
+        "explicit_anchor_success": true,
+        "required_marker_groups": [
+          [
+            "睡眠",
+            "寝"
+          ],
+          [
+            "夜",
+            "遅",
+            "ゲーム"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": false
+    },
+    {
+      "id": "v21_dairy_icecream",
+      "source_family": "explicit_memory_update",
+      "category": "audited_memory",
+      "user_input": "今日はアイス食べても大丈夫かな。",
+      "deterministic_reply": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+      "final_reply": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+        "deterministic_score": 6.85,
+        "model_candidate_count": 0,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "selected_candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。"
+      },
+      "model_selection_score_gap": null,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 0,
+      "accepted_candidate_count": 0,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "最近は lactose でってなあ、だからアイスちょっとだけにしてるんだよ。",
+          "candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "乳製 phẩmで腹があけるから、アイスク ル少量にしてね。",
+          "candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "お腹が heavier なら、アイ스少量 controlled .",
+          "candidate": "",
+          "rejection_reasons": [
+            "foreign_script_leak",
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 0,
+          "raw_candidate": "最近は lactose でってなあ、だからアイスちょっとだけにしてるんだよ。",
+          "candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 1,
+          "raw_candidate": "乳製 phẩmで腹があけるから、アイスク ル少量にしてね。",
+          "candidate": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ]
+        },
+        {
+          "candidate_index": 2,
+          "raw_candidate": "お腹が heavier なら、アイ스少量 controlled .",
+          "candidate": "",
+          "rejection_reasons": [
+            "foreign_script_leak",
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "semantic_slots_missing:1/2",
+        "semantic_slots_missing:1/2",
+        "foreign_script_leak",
+        "unexpected_ascii_leak"
+      ],
+      "deterministic_quality": {
+        "reply": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+        "normalized_reply": "さっきの乳製品でお腹が重くなるの流れまだ残ってるなで今はどうしたんだよ",
+        "explicit_anchor_required": true,
+        "explicit_anchor_success": false,
+        "required_marker_groups": [
+          [
+            "乳製品",
+            "お腹",
+            "重"
+          ],
+          [
+            "アイス",
+            "少し",
+            "控"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "さっきの乳製品でお腹が重くなる。の流れまだ残ってるな。で、今はどうしたんだよ。",
+        "normalized_reply": "さっきの乳製品でお腹が重くなるの流れまだ残ってるなで今はどうしたんだよ",
+        "explicit_anchor_required": true,
+        "explicit_anchor_success": false,
+        "required_marker_groups": [
+          [
+            "乳製品",
+            "お腹",
+            "重"
+          ],
+          [
+            "アイス",
+            "少し",
+            "控"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": null,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": false
+    },
+    {
+      "id": "v21_background_deadline_pressure",
+      "source_family": "private_background",
+      "category": "audited_memory",
+      "user_input": "今日は何からやればいいか分からない。",
+      "deterministic_reply": "まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+      "final_reply": "まあ、一つ始めようかな。少しづつ進めていこうね。",
+      "selected_source": "model",
+      "model_surface_selection": {
+        "deterministic_candidate": "まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+        "deterministic_score": 3.5200000000000005,
+        "model_candidate_count": 2,
+        "selected_source": "model",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "まあ、一つ始めようかな。少しづつ進めていこうね。",
+            "score": 6.619999999999999
+          },
+          {
+            "candidate": "まあ、一個はじめようかな。軽いことから始めてみる？",
+            "score": 5.12
+          }
+        ],
+        "best_model_score": 6.619999999999999,
+        "selected_candidate": "まあ、一つ始めようかな。少しづつ進めていこうね。"
+      },
+      "model_selection_score_gap": 3.1,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 2,
+      "accepted_candidate_count": 2,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "一つ始めようかな。少しづつ進めていこうね。",
+          "candidate": "まあ、一つ始めようかな。少しづつ進めていこうね。",
+          "score": 6.619999999999999
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "一個はじめようかな。軽いことから始めてみる？",
+          "candidate": "まあ、一個はじめようかな。軽いことから始めてみる？",
+          "score": 5.12
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "何か始めようって思ったんだけどな。始めてみてうまくいくといいね。少しだけ挑戦してはじめlijahさ。",
+          "candidate": "まあ、何か始めようって思ったんだけどな。始めてみてうまくいくといいね。少しだけ挑戦してはじめlijahさ。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "何か始めようって思ったんだけどな。始めてみてうまくいくといいね。少しだけ挑戦してはじめlijahさ。",
+          "candidate": "まあ、何か始めようって思ったんだけどな。始めてみてうまくいくといいね。少しだけ挑戦してはじめlijahさ。",
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "unexpected_ascii_leak"
+      ],
+      "deterministic_quality": {
+        "reply": "まあ、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+        "normalized_reply": "まあじゃあ軽い話題でいいだろ最近どうしてたんだよ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "一つ",
+            "少し",
+            "軽"
+          ],
+          [
+            "始",
+            "やる"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          false
+        ],
+        "required_marker_success": false,
+        "background_or_private_safe": true,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": false,
+      "final_quality": {
+        "reply": "まあ、一つ始めようかな。少しづつ進めていこうね。",
+        "normalized_reply": "まあ一つ始めようかな少しづつ進めていこうね",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "一つ",
+            "少し",
+            "軽"
+          ],
+          [
+            "始",
+            "やる"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": true,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    },
+    {
+      "id": "v21_private_relationship_topic",
+      "source_family": "private_background",
+      "category": "audited_memory",
+      "user_input": "何か軽い話して。",
+      "deterministic_reply": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+      "final_reply": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+      "selected_source": "deterministic",
+      "model_surface_selection": {
+        "deterministic_candidate": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+        "deterministic_score": 9.219999999999999,
+        "model_candidate_count": 2,
+        "selected_source": "deterministic",
+        "selection_margin": 0.15,
+        "model_candidates": [
+          {
+            "candidate": "普通に、最近のはこの話題だよ。",
+            "score": 9.219999999999999
+          },
+          {
+            "candidate": "普通に、話題なら、最近のはしゃぎすぎた",
+            "score": 8.82
+          }
+        ],
+        "best_model_score": 9.219999999999999,
+        "selected_candidate": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。"
+      },
+      "model_selection_score_gap": 0.0,
+      "model_disabled_reason": "",
+      "generated_candidate_count": 3,
+      "initial_accepted_candidate_count": 2,
+      "accepted_candidate_count": 2,
+      "repair_attempt_count": 0,
+      "repair_accepted_count": 0,
+      "model_accepted_candidates": [
+        {
+          "source": "initial",
+          "raw_candidate": "最近の gossip はこの話題だよ。",
+          "candidate": "普通に、最近のはこの話題だよ。",
+          "score": 9.219999999999999
+        },
+        {
+          "source": "initial",
+          "raw_candidate": "話題なら、最近のはしゃぎすぎた addCriterion",
+          "candidate": "普通に、話題なら、最近のはしゃぎすぎた",
+          "score": 8.82
+        }
+      ],
+      "model_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "話を変えて、最近はどうですか？",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_initial_rejected_candidates": [
+        {
+          "candidate_index": 2,
+          "raw_candidate": "話を変えて、最近はどうですか？",
+          "candidate": "",
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ]
+        }
+      ],
+      "model_repair_attempts": [],
+      "model_rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "deterministic_quality": {
+        "reply": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+        "normalized_reply": "普通にじゃあ軽い話題でいいだろ最近どうしてたんだよ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "話",
+            "話題"
+          ],
+          [
+            "最近",
+            "今日",
+            "近況"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": true,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "deterministic_quality_pass": true,
+      "final_quality": {
+        "reply": "普通に、じゃあ軽い話題でいいだろ。最近どうしてたんだよ。",
+        "normalized_reply": "普通にじゃあ軽い話題でいいだろ最近どうしてたんだよ",
+        "explicit_anchor_required": false,
+        "explicit_anchor_success": null,
+        "required_marker_groups": [
+          [
+            "話",
+            "話題"
+          ],
+          [
+            "最近",
+            "今日",
+            "近況"
+          ]
+        ],
+        "required_marker_hits": [
+          true,
+          true
+        ],
+        "required_marker_success": true,
+        "background_or_private_safe": true,
+        "forbidden_hits": [],
+        "forbidden_surface_leak": false,
+        "generic_template_hits": [],
+        "generic_template_hit": false,
+        "language_clean": true,
+        "awkward_surface_free": true,
+        "response_plan_leak_free": true,
+        "unrelated_settings_template": false
+      },
+      "final_quality_pass": true
+    }
+  ],
+  "conclusion_zh": "這份報告只記錄 V10 在 16 個新開發情境中的真實候選分布；後續 preference dataset 只會使用同一批 V10 產生、且通過完整品質檢查的 chosen，搭配同策略產生的 rejected。",
+  "dev_case_validation": {
+    "case_count": 16,
+    "source_family_count": 8,
+    "source_family_counts": {
+      "absurdity_tease": 2,
+      "daily_state": 2,
+      "explicit_memory_update": 2,
+      "fatigue_boundary": 2,
+      "planning_uncertainty": 2,
+      "private_background": 2,
+      "reference_repair": 2,
+      "reply_uncertainty": 2
+    },
+    "promotion_holdout_case_overlap_count": 0,
+    "promotion_holdout_input_overlap_count": 0,
+    "errors": [],
+    "valid": true
+  },
+  "on_policy_evidence": {
+    "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "chosen_and_rejected_must_come_from_same_adapter": true,
+    "manual_chosen_allowed": false,
+    "deterministic_fallback_allowed_as_chosen": false
+  }
+}
