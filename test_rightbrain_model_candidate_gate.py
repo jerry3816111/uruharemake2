@@ -5,6 +5,7 @@ import unittest
 
 import torch
 
+from rightbrain_language_quality import has_response_plan_leak
 from uruha_brain_mac import (
     RIGHT_BRAIN_MODEL_BLEND_ENABLED,
     RIGHT_BRAIN_MODEL_CONTRACT_VERSION,
@@ -589,6 +590,74 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
         )
 
         self.assertNotIn("awkward_or_caregiver_surface", reasons)
+
+    def test_japanese_response_plan_is_rejected_before_selection(self):
+        rightbrain = build_rightbrain(
+            ["返事がない不安を認め、自分で決めつけないように返す。<|im_end|>"]
+        )
+        logic = reply_anxiety_logic()
+        logic["required_marker_groups"] = [["返事"], ["不安"], ["決めつけ"]]
+
+        reply = rightbrain.speak(
+            "返事がなくて、自分が邪魔だった気がする。",
+            logic,
+            MEMORY,
+            {"mood": 0, "trust": 50},
+        )
+
+        self.assertNotIn("ように返す", reply)
+        self.assertEqual(logic["model_surface_selection"]["selected_source"], "deterministic")
+        rejected = logic["model_surface_candidate_trace"]["rejected"]
+        self.assertEqual(len(rejected), 1)
+        self.assertIn("japanese_response_plan_leak", rejected[0]["rejection_reasons"])
+
+    def test_direct_promise_is_not_mislabeled_as_response_plan(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "あとでちゃんと返す。今は少し待って。",
+            reply_anxiety_logic(),
+            80,
+        )
+
+        self.assertNotIn("japanese_response_plan_leak", reasons)
+
+    def test_response_plan_boundary_covers_multiple_dialogue_acts(self):
+        plans = [
+            "孤立する前に止め、一人にならず誰かに連絡するように返す。",
+            "関係確認を受け止め、必要なら軽く距離を保って返す。",
+            "八期EDだけでは特定できないので、作品名か曲名を聞き返す。",
+            "ごめんを拾って言い直す。",
+            "短く直接返す。",
+            "朝の散歩のことを覚えていると自然に返す。",
+        ]
+
+        for plan in plans:
+            with self.subTest(plan=plan):
+                self.assertTrue(has_response_plan_leak(plan))
+
+    def test_response_plan_boundary_keeps_direct_user_facing_speech(self):
+        replies = [
+            "一人で抱えるな。今は誰かに連絡しろ。",
+            "話す気はある。続き、ひとつ聞かせて。",
+            "八期EDだけじゃ分からん。作品名は？",
+            "冷たく聞こえたなら悪い。ちゃんとごめん。",
+            "朝の散歩が好きなのは覚えてる。",
+        ]
+
+        for reply in replies:
+            with self.subTest(reply=reply):
+                self.assertFalse(has_response_plan_leak(reply))
+
+    def test_user_facing_reply_scores_above_response_plan(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        plan = "返事がない不安を認め、自分で決めつけないように返す。"
+        direct = "返事がなくて不安でも、自分が悪いって決めつけるな。"
+
+        self.assertGreater(
+            rightbrain._score_candidate(direct, logic),
+            rightbrain._score_candidate(plan, logic),
+        )
 
     def test_high_risk_withdrawal_never_enters_model_generation(self):
         rightbrain = build_rightbrain(["モデル出力。<|im_end|>"])

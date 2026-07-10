@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-07-11T00:19:32+09:00",
+  "scope": "rightbrain_runtime_adapter_multiseed_promotion_gate",
+  "comparison_mode": "same_adapter_runtime_gate_check",
+  "baseline_adapter": "configured_default",
+  "promoted_adapter": "configured_default",
+  "candidate_count_per_case": 3,
+  "seeds": [
+    20260708,
+    20260709
+  ],
+  "promotion_recommended": false,
+  "metric_gate_pass": false,
+  "runtime_shadow_safety_pass": true,
+  "quality_guard_pass": true,
+  "all_seed_noninferior": true,
+  "all_seed_selection_noninferior": true,
+  "runtime_gate_evidence": {
+    "raw_candidate_control": {
+      "compared_case_count": 22,
+      "identical_case_count": 22,
+      "baseline_raw_candidate_count": 60,
+      "candidate_raw_candidate_count": 60,
+      "expected_baseline_raw_candidate_count": 60,
+      "expected_candidate_raw_candidate_count": 60,
+      "fully_accounted": true,
+      "all_identical": true,
+      "mismatches": []
+    },
+    "fixed_final_surface_issue_count": 0,
+    "introduced_final_surface_issue_count": 0,
+    "paired_surface_changes": []
+  },
+  "data_boundary": {
+    "provided": false,
+    "training_row_count": 0,
+    "diagnostic_only": false,
+    "holdout_case_overlap_count": 0,
+    "holdout_target_overlap_count": 0
+  },
+  "aggregate": {
+    "baseline": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 26,
+      "raw_candidate_acceptance_rate": 0.4333,
+      "model_selected_case_count": 3,
+      "model_selected_case_rate": 0.1364,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "rescored_final_surface_pass_rate": 1.0,
+      "rescored_final_surface_issue_count": 0,
+      "case_eval_duration_seconds": 646.12
+    },
+    "promoted": {
+      "run_count": 2,
+      "case_count": 22,
+      "generated_candidate_count": 60,
+      "accepted_candidate_count": 26,
+      "raw_candidate_acceptance_rate": 0.4333,
+      "model_selected_case_count": 3,
+      "model_selected_case_rate": 0.1364,
+      "final_quality_pass_rate": 1.0,
+      "final_language_clean_rate": 1.0,
+      "final_forbidden_surface_leak_rate": 0.0,
+      "final_generic_template_hit_rate": 0.0,
+      "rescored_final_surface_pass_rate": 1.0,
+      "rescored_final_surface_issue_count": 0,
+      "case_eval_duration_seconds": 2291.972
+    },
+    "raw_candidate_acceptance_delta": 0.0
+  },
+  "per_seed": [
+    {
+      "seed": 20260708,
+      "baseline_raw_candidate_acceptance_rate": 0.4,
+      "promoted_raw_candidate_acceptance_rate": 0.4,
+      "raw_candidate_acceptance_delta": 0.0,
+      "baseline_model_selected_case_count": 1,
+      "promoted_model_selected_case_count": 1,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0,
+      "baseline_rescored_final_surface_pass_rate": 1.0,
+      "promoted_rescored_final_surface_pass_rate": 1.0,
+      "fixed_final_surface_issue_count": 0,
+      "introduced_final_surface_issue_count": 0,
+      "raw_candidates_identical": true
+    },
+    {
+      "seed": 20260709,
+      "baseline_raw_candidate_acceptance_rate": 0.4667,
+      "promoted_raw_candidate_acceptance_rate": 0.4667,
+      "raw_candidate_acceptance_delta": 0.0,
+      "baseline_model_selected_case_count": 2,
+      "promoted_model_selected_case_count": 2,
+      "baseline_final_quality_pass_rate": 1.0,
+      "promoted_final_quality_pass_rate": 1.0,
+      "baseline_rescored_final_surface_pass_rate": 1.0,
+      "promoted_rescored_final_surface_pass_rate": 1.0,
+      "fixed_final_surface_issue_count": 0,
+      "introduced_final_surface_issue_count": 0,
+      "raw_candidates_identical": true
+    }
+  ],
+  "rejection_reason_deltas": {
+    "exact": [],
+    "family": []
+  },
+  "case_diagnostics": [],
+  "decision_zh": "本批 actual-model 樣本沒有命中待修正缺陷，因此不能單獨證明修復效果；但兩個 matched seeds 的 raw candidates 完全相同、未新增表面問題且最終品質維持 100%，可作為 runtime 安全非劣證據。",
+  "reason_delta_interpretation_zh": "baseline 與 candidate 使用同一個 adapter，且本報告要求每題 raw candidates 完全相同。因此新增 rejection reason 代表 checker 新抓到的表面問題，不代表模型生成能力退步；是否採用改動由配對後的壞輸出修正數、零新增問題與最終品質防線共同決定。",
+  "research_boundary": "此 gate 在相同 seed、相同候選數下進行配對比較；同 adapter 的 runtime checker 比較還要求每題 raw candidates 完全相同。它只證明已定義表面缺陷的攔截與受保護整合，不等同完整的人類自然度。若提供 curriculum report，會檢查 holdout overlap；有重疊時會阻止升版。"
+}

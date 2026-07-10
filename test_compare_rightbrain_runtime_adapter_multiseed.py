@@ -104,6 +104,8 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
 
         self.assertFalse(report["promotion_recommended"])
         self.assertEqual(report["runtime_gate_evidence"]["fixed_final_surface_issue_count"], 0)
+        self.assertTrue(report["runtime_shadow_safety_pass"])
+        self.assertIn("安全非劣證據", report["decision_zh"])
 
     def test_same_adapter_rejects_when_raw_candidates_change(self):
         baselines = [
@@ -145,6 +147,7 @@ class RuntimeAdapterMultiseedTest(unittest.TestCase):
         report = build_report(baselines, promoted)
 
         self.assertEqual(report["runtime_gate_evidence"]["introduced_final_surface_issue_count"], 2)
+        self.assertFalse(report["runtime_shadow_safety_pass"])
         self.assertFalse(report["promotion_recommended"])
 
     def test_rejects_promotion_when_one_seed_regresses(self):

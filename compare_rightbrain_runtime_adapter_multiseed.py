@@ -9,7 +9,12 @@ from project_paths import (
     RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_JSON_PATH,
     RIGHTBRAIN_RUNTIME_ADAPTER_MULTISEED_REPORT_MD_PATH,
 )
-from rightbrain_language_quality import has_awkward_surface, has_bad_language, has_japanese
+from rightbrain_language_quality import (
+    has_awkward_surface,
+    has_bad_language,
+    has_japanese,
+    has_response_plan_leak,
+)
 
 
 def _load_json(path):
@@ -23,6 +28,8 @@ def _current_surface_issues(reply):
         issues.append("language_or_symbol_artifact")
     if has_awkward_surface(reply):
         issues.append("awkward_or_caregiver_surface")
+    if has_response_plan_leak(reply):
+        issues.append("japanese_response_plan_leak")
     return issues
 
 
@@ -421,6 +428,13 @@ def build_report(baselines, promoted, curriculum=None):
         and promoted_aggregate["final_generic_template_hit_rate"] == 0.0
         and promoted_aggregate["rescored_final_surface_pass_rate"] == 1.0
     )
+    runtime_shadow_safety_pass = (
+        same_adapter_runtime_comparison
+        and len(per_seed) >= 2
+        and raw_candidate_control["all_identical"]
+        and introduced_surface_issue_count == 0
+        and quality_guard_pass
+    )
     all_seed_noninferior = all(row["raw_candidate_acceptance_delta"] >= 0 for row in per_seed)
     all_seed_selection_noninferior = all(
         row["promoted_model_selected_case_count"] >= row["baseline_model_selected_case_count"]
@@ -474,6 +488,12 @@ def build_report(baselines, promoted, curriculum=None):
         )
         if not metric_gate_pass:
             decision_zh += "此外，多 seed 數字本身也未同時通過候選可靠度、接管數與最終品質門檻。"
+    elif runtime_shadow_safety_pass and fixed_surface_issue_count == 0:
+        decision_zh = (
+            "本批 actual-model 樣本沒有命中待修正缺陷，因此不能單獨證明修復效果；"
+            "但兩個 matched seeds 的 raw candidates 完全相同、未新增表面問題且最終品質維持 100%，"
+            "可作為 runtime 安全非劣證據。"
+        )
     else:
         decision_zh = "不建議升版：多 seed 證據未同時通過候選可靠度、接管數與最終品質門檻。"
 
@@ -491,6 +511,7 @@ def build_report(baselines, promoted, curriculum=None):
         "seeds": sorted(seen_seeds),
         "promotion_recommended": promotion_recommended,
         "metric_gate_pass": metric_gate_pass,
+        "runtime_shadow_safety_pass": runtime_shadow_safety_pass,
         "quality_guard_pass": quality_guard_pass,
         "all_seed_noninferior": all_seed_noninferior,
         "all_seed_selection_noninferior": all_seed_selection_noninferior,
@@ -571,6 +592,7 @@ def write_markdown(report, output_path):
         f"- candidates per case: `{report['candidate_count_per_case']}`",
         *mode_control_lines,
         f"- metric gate pass: `{report['metric_gate_pass']}`",
+        f"- runtime shadow safety pass: `{report['runtime_shadow_safety_pass']}`",
         f"- final quality guard: `{report['quality_guard_pass']}`",
         f"- diagnostic only: `{report['data_boundary']['diagnostic_only']}`",
         "",
