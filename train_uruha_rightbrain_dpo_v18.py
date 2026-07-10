@@ -51,10 +51,24 @@ def load_preference_rows(path):
             raise ValueError(f"Invalid prompt/source for {row_id}")
         if not chosen or not rejected or chosen == rejected:
             raise ValueError(f"Invalid chosen/rejected pair for {row_id}")
-        if int(diagnostics.get("rejected_hit_count", 0)) >= int(
-            diagnostics.get("required_group_count", 0)
-        ):
-            raise ValueError(f"Rejected completion is not semantically weaker for {row_id}")
+        required_count = int(diagnostics.get("required_group_count", 0))
+        rejected_hit_count = int(diagnostics.get("rejected_hit_count", 0))
+        semantic_preference = required_count > 0 and rejected_hit_count < required_count
+        failure_reasons = (
+            diagnostics.get("rejected_surface_failure_reasons")
+            or row.get("preference_failure_reasons")
+            or []
+        )
+        strict_surface_preference = bool(failure_reasons) and all(
+            [
+                diagnostics.get("chosen_strict_quality_pass") is True,
+                diagnostics.get("rejected_strict_quality_pass") is False,
+            ]
+        )
+        if not semantic_preference and not strict_surface_preference:
+            raise ValueError(
+                f"Rejected completion is neither semantically weaker nor a validated surface failure for {row_id}"
+            )
         seen_ids.add(row_id)
         output.append(row)
     return output

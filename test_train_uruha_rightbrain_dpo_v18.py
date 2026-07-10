@@ -93,8 +93,26 @@ class RightBrainDPOV18Test(unittest.TestCase):
             path = Path(tmpdir) / "pairs.json"
             path.write_text(json.dumps([row]), encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "not semantically weaker"):
+            with self.assertRaisesRegex(ValueError, "neither semantically weaker"):
                 load_preference_rows(path)
+
+    def test_loader_accepts_validated_on_policy_surface_failure(self):
+        row = _row(1)
+        row["pair_diagnostics"].update(
+            {
+                "rejected_hit_count": 3,
+                "chosen_strict_quality_pass": True,
+                "rejected_strict_quality_pass": False,
+                "rejected_surface_failure_reasons": ["unexpected_ascii_leak"],
+            }
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "pairs.json"
+            path.write_text(json.dumps([row]), encoding="utf-8")
+
+            loaded = load_preference_rows(path)
+
+        self.assertEqual(loaded[0]["id"], "row-1")
 
 
 if __name__ == "__main__":

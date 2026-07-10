@@ -1,0 +1,339 @@
+{
+  "generated_at": "2026-07-11T07:06:48+09:00",
+  "scope": "rightbrain_on_policy_preference_v21_pretraining_probe",
+  "method": "frozen_v10_length_normalized_preference_probe",
+  "method_reference": "https://arxiv.org/abs/2405.14734",
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "dataset_ref": "rightbrain_on_policy_preference_v21.json",
+  "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+  "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "init_adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+  "pair_count": 28,
+  "train_pair_count": 18,
+  "eval_pair_count": 10,
+  "train_source_ids": [
+    "v21_daily_state",
+    "v21_fatigue_boundary",
+    "v21_private_background",
+    "v21_reference_repair",
+    "v21_reply_uncertainty"
+  ],
+  "eval_source_ids": [
+    "v21_absurdity_tease",
+    "v21_planning_uncertainty"
+  ],
+  "source_overlap_count": 0,
+  "beta": 2.5,
+  "gamma_beta_ratio": 0.1,
+  "gamma": 0.25,
+  "seed": 20260710,
+  "dtype": "torch.bfloat16",
+  "disabled_dropout_module_count": 196,
+  "duration_seconds": 239.484,
+  "train_completion_lengths": {
+    "pair_count": 18,
+    "chosen_token_mean": 19.4444,
+    "rejected_token_mean": 20.0,
+    "chosen_token_min": 11,
+    "chosen_token_max": 38,
+    "rejected_token_min": 8,
+    "rejected_token_max": 36
+  },
+  "eval_completion_lengths": {
+    "pair_count": 10,
+    "chosen_token_mean": 28.8,
+    "rejected_token_mean": 28.0,
+    "chosen_token_min": 19,
+    "chosen_token_max": 38,
+    "rejected_token_min": 19,
+    "rejected_token_max": 38
+  },
+  "initial_train_preference": {
+    "pair_count": 18,
+    "chosen_preference_rate": 0.5,
+    "target_margin_rate": 0.5,
+    "mean_raw_preference_margin": -0.6099218130111694,
+    "mean_target_reward_margin": -1.7748045093483396,
+    "mean_loss": 3.2000646613822834,
+    "rows": [
+      {
+        "id": "rb_on_policy_preference_v21_0001",
+        "source_case_id": "v21_reply_uncertainty",
+        "chosen_average_log_prob": -2.502678871154785,
+        "rejected_average_log_prob": -1.9030349254608154,
+        "raw_preference_margin": -0.5996439456939697,
+        "target_reward_margin": -1.7491098642349243,
+        "loss": 1.9094659090042114
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0002",
+        "source_case_id": "v21_reply_uncertainty",
+        "chosen_average_log_prob": -2.502678871154785,
+        "rejected_average_log_prob": -2.7369301319122314,
+        "raw_preference_margin": 0.2342512607574463,
+        "target_reward_margin": 0.3356281518936157,
+        "loss": 0.5393482446670532
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0003",
+        "source_case_id": "v21_fatigue_boundary",
+        "chosen_average_log_prob": -1.732481837272644,
+        "rejected_average_log_prob": -2.8560993671417236,
+        "raw_preference_margin": 1.1236175298690796,
+        "target_reward_margin": 2.5590438842773438,
+        "loss": 0.07453089952468872
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0004",
+        "source_case_id": "v21_reference_repair",
+        "chosen_average_log_prob": -3.735387086868286,
+        "rejected_average_log_prob": -1.9080111980438232,
+        "raw_preference_margin": -1.827375888824463,
+        "target_reward_margin": -4.818439483642578,
+        "loss": 4.826486587524414
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0005",
+        "source_case_id": "v21_reference_repair",
+        "chosen_average_log_prob": -3.735387086868286,
+        "rejected_average_log_prob": -2.693826913833618,
+        "raw_preference_margin": -1.041560173034668,
+        "target_reward_margin": -2.85390043258667,
+        "loss": 2.9099206924438477
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0006",
+        "source_case_id": "v21_daily_state",
+        "chosen_average_log_prob": -4.6745524406433105,
+        "rejected_average_log_prob": -0.5174821019172668,
+        "raw_preference_margin": -4.157070159912109,
+        "target_reward_margin": -10.642675399780273,
+        "loss": 10.642699241638184
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0012",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -2.131683826446533,
+        "rejected_average_log_prob": -2.240739107131958,
+        "raw_preference_margin": 0.1090552806854248,
+        "target_reward_margin": 0.02263820171356201,
+        "loss": 0.6818920969963074
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0013",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -2.131683826446533,
+        "rejected_average_log_prob": -4.0534892082214355,
+        "raw_preference_margin": 1.9218053817749023,
+        "target_reward_margin": 4.554513454437256,
+        "loss": 0.010464677587151527
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0014",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -4.792710304260254,
+        "rejected_average_log_prob": -1.1447019577026367,
+        "raw_preference_margin": -3.648008346557617,
+        "target_reward_margin": -9.370020866394043,
+        "loss": 9.370105743408203
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0015",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -4.792710304260254,
+        "rejected_average_log_prob": -3.3172659873962402,
+        "raw_preference_margin": -1.4754443168640137,
+        "target_reward_margin": -3.938610792160034,
+        "loss": 3.9578988552093506
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0016",
+        "source_case_id": "v21_reply_uncertainty",
+        "chosen_average_log_prob": -0.9775042533874512,
+        "rejected_average_log_prob": -2.672650098800659,
+        "raw_preference_margin": 1.695145845413208,
+        "target_reward_margin": 3.9878644943237305,
+        "loss": 0.018369551748037338
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0017",
+        "source_case_id": "v21_reply_uncertainty",
+        "chosen_average_log_prob": -0.9775042533874512,
+        "rejected_average_log_prob": -3.468165397644043,
+        "raw_preference_margin": 2.490661144256592,
+        "target_reward_margin": 5.976653099060059,
+        "loss": 0.002534037223085761
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0018",
+        "source_case_id": "v21_fatigue_boundary",
+        "chosen_average_log_prob": -1.255924940109253,
+        "rejected_average_log_prob": -1.505482792854309,
+        "raw_preference_margin": 0.24955785274505615,
+        "target_reward_margin": 0.3738946318626404,
+        "loss": 0.523573637008667
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0019",
+        "source_case_id": "v21_fatigue_boundary",
+        "chosen_average_log_prob": -1.255924940109253,
+        "rejected_average_log_prob": -2.4835855960845947,
+        "raw_preference_margin": 1.2276606559753418,
+        "target_reward_margin": 2.8191516399383545,
+        "loss": 0.057944800704717636
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0020",
+        "source_case_id": "v21_daily_state",
+        "chosen_average_log_prob": -4.5584716796875,
+        "rejected_average_log_prob": -1.6636422872543335,
+        "raw_preference_margin": -2.894829273223877,
+        "target_reward_margin": -7.487072944641113,
+        "loss": 7.487633228302002
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0021",
+        "source_case_id": "v21_daily_state",
+        "chosen_average_log_prob": -4.5539045333862305,
+        "rejected_average_log_prob": -1.482409954071045,
+        "raw_preference_margin": -3.0714945793151855,
+        "target_reward_margin": -7.928736686706543,
+        "loss": 7.929096698760986
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0027",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -1.770617961883545,
+        "rejected_average_log_prob": -2.995497703552246,
+        "raw_preference_margin": 1.2248797416687012,
+        "target_reward_margin": 2.812199354171753,
+        "loss": 0.05833745375275612
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0028",
+        "source_case_id": "v21_private_background",
+        "chosen_average_log_prob": -4.139469623565674,
+        "rejected_average_log_prob": -1.5996689796447754,
+        "raw_preference_margin": -2.5398006439208984,
+        "target_reward_margin": -6.599501609802246,
+        "loss": 6.600861549377441
+      }
+    ]
+  },
+  "initial_eval_preference": {
+    "pair_count": 10,
+    "chosen_preference_rate": 0.4,
+    "target_margin_rate": 0.2,
+    "mean_raw_preference_margin": -0.44199581146240235,
+    "mean_target_reward_margin": -1.354989516735077,
+    "mean_loss": 1.8407002896070481,
+    "rows": [
+      {
+        "id": "rb_on_policy_preference_v21_0007",
+        "source_case_id": "v21_absurdity_tease",
+        "chosen_average_log_prob": -3.7059922218322754,
+        "rejected_average_log_prob": -2.0912322998046875,
+        "raw_preference_margin": -1.614759922027588,
+        "target_reward_margin": -4.286899566650391,
+        "loss": 4.300553321838379
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0008",
+        "source_case_id": "v21_absurdity_tease",
+        "chosen_average_log_prob": -2.5259222984313965,
+        "rejected_average_log_prob": -2.3523693084716797,
+        "raw_preference_margin": -0.1735529899597168,
+        "target_reward_margin": -0.683882474899292,
+        "loss": 1.0924453735351562
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0009",
+        "source_case_id": "v21_planning_uncertainty",
+        "chosen_average_log_prob": -2.192847490310669,
+        "rejected_average_log_prob": -2.280266523361206,
+        "raw_preference_margin": 0.08741903305053711,
+        "target_reward_margin": -0.03145241737365723,
+        "loss": 0.7089970111846924
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0010",
+        "source_case_id": "v21_planning_uncertainty",
+        "chosen_average_log_prob": -2.559692859649658,
+        "rejected_average_log_prob": -1.3623616695404053,
+        "raw_preference_margin": -1.197331190109253,
+        "target_reward_margin": -3.243328094482422,
+        "loss": 3.2816193103790283
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0011",
+        "source_case_id": "v21_planning_uncertainty",
+        "chosen_average_log_prob": -2.559692859649658,
+        "rejected_average_log_prob": -3.3346619606018066,
+        "raw_preference_margin": 0.7749691009521484,
+        "target_reward_margin": 1.687422752380371,
+        "loss": 0.16973909735679626
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0022",
+        "source_case_id": "v21_absurdity_tease",
+        "chosen_average_log_prob": -3.4122610092163086,
+        "rejected_average_log_prob": -2.6525051593780518,
+        "raw_preference_margin": -0.7597558498382568,
+        "target_reward_margin": -2.1493897438049316,
+        "loss": 2.2596380710601807
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0023",
+        "source_case_id": "v21_absurdity_tease",
+        "chosen_average_log_prob": -2.1898796558380127,
+        "rejected_average_log_prob": -0.7137775421142578,
+        "raw_preference_margin": -1.4761021137237549,
+        "target_reward_margin": -3.9402551651000977,
+        "loss": 3.9595117568969727
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0024",
+        "source_case_id": "v21_absurdity_tease",
+        "chosen_average_log_prob": -2.1898796558380127,
+        "rejected_average_log_prob": -2.2028427124023438,
+        "raw_preference_margin": 0.012963056564331055,
+        "target_reward_margin": -0.21759235858917236,
+        "loss": 0.8078499436378479
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0025",
+        "source_case_id": "v21_planning_uncertainty",
+        "chosen_average_log_prob": -2.1759285926818848,
+        "rejected_average_log_prob": -1.9247162342071533,
+        "raw_preference_margin": -0.25121235847473145,
+        "target_reward_margin": -0.8780308961868286,
+        "loss": 1.225584626197815
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0026",
+        "source_case_id": "v21_planning_uncertainty",
+        "chosen_average_log_prob": -2.1759285926818848,
+        "rejected_average_log_prob": -2.3533337116241455,
+        "raw_preference_margin": 0.17740511894226074,
+        "target_reward_margin": 0.19351279735565186,
+        "loss": 0.6010643839836121
+      }
+    ]
+  },
+  "decision": {
+    "gates": {
+      "dataset_authorized_for_probe": true,
+      "train_eval_source_overlap_is_zero": true,
+      "unseen_source_count_at_least_2": true,
+      "unseen_pair_count_at_least_4": true,
+      "unseen_preference_is_not_saturated": true,
+      "unseen_target_margin_is_not_saturated": true,
+      "unseen_contains_model_misranking": true
+    },
+    "authorize_training": true,
+    "eval_misranked_pair_count": 6,
+    "eval_below_target_margin_pair_count": 8,
+    "decision_zh": "未見來源仍有 V10 排錯的真實 pair，可進行一次保守的 on-policy SimPO 訓練。",
+    "research_boundary": "This probe measures likelihood ranking under the frozen V10 policy. It can block an uninformative training run, but it cannot prove that preference training will improve generated replies."
+  }
+}

@@ -336,6 +336,58 @@ RIGHTBRAIN_PREFERENCE_LIKELIHOOD_GATE_V21_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_preference_likelihood_gate_v21_report.md",
 )
+RIGHTBRAIN_ON_POLICY_DEV_V21_SEED1_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_dev_v21_seed20260712.json",
+)
+RIGHTBRAIN_ON_POLICY_DEV_V21_SEED1_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_dev_v21_seed20260712.md",
+)
+RIGHTBRAIN_ON_POLICY_DEV_V21_SEED2_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_dev_v21_seed20260713.json",
+)
+RIGHTBRAIN_ON_POLICY_DEV_V21_SEED2_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_dev_v21_seed20260713.md",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_on_policy_preference_v21.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v21_report.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v21_report.md",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_PROBE_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v21_probe.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_PROBE_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v21_probe.md",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V21_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v21_training_run.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V22_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v22_training_run.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_decision.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_decision.md",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_curriculum_v1_report.json",

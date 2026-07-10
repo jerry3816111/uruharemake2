@@ -85,6 +85,7 @@ def _case_inputs():
         cases.append(
             {
                 "id": case["id"],
+                "source_family": case.get("source_family", ""),
                 "category": case["category"],
                 "user_input": case["user_input"],
                 "logic": logic,
@@ -242,6 +243,10 @@ def build_report(
     candidate_count=1,
     seed=20260624,
     repair_enabled=False,
+    cases=None,
+    scope="rightbrain_model_blend_surface_holdout_eval",
+    research_boundary=None,
+    conclusion_zh=None,
 ):
     if load_model:
         _set_model_env(
@@ -260,7 +265,7 @@ def build_report(
     from uruha_brain_mac import RIGHT_BRAIN_MODEL_CONTRACT_VERSION, RightBrain
 
     started_at = time.time()
-    cases = _case_inputs()
+    cases = list(_case_inputs() if cases is None else cases)
     deterministic_right = RightBrain(load_model=False)
     model_right = RightBrain(load_model=bool(load_model))
     model_right.model_blend_enabled = bool(load_model)
@@ -297,6 +302,7 @@ def build_report(
         rows.append(
             {
                 "id": case["id"],
+                "source_family": case.get("source_family", ""),
                 "category": case["category"],
                 "user_input": case["user_input"],
                 "deterministic_reply": deterministic_reply,
@@ -326,8 +332,8 @@ def build_report(
     completed_at = time.time()
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
-        "scope": "rightbrain_model_blend_surface_holdout_eval",
-        "research_boundary": (
+        "scope": scope,
+        "research_boundary": research_boundary or (
             "This evaluates final-surface safety and quality for the same audited-memory/surface holdout. "
             "When load_model=false, it is a deterministic fallback baseline and does not claim raw model maturity. "
             "When load_model=true, raw candidates and optional one-pass contract repairs are measured separately "
@@ -345,7 +351,7 @@ def build_report(
         "case_eval_duration_seconds": round(completed_at - model_ready_at, 3),
         "summary": summary,
         "cases": rows,
-        "conclusion_zh": (
+        "conclusion_zh": conclusion_zh or (
             "這份評測把 deterministic 右腦與 model-blend 右腦放在同一套 11 題 final-surface holdout 上。"
             "報告分開計算首次候選與一次修正後的有效候選，避免把 fallback 安全性或修正效果"
             "誤報成 raw model 成熟度。"
