@@ -280,6 +280,46 @@ RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_DECISION_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_semantic_preference_v19_decision.md",
 )
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_hard_negative_preference_v20.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_report.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_report.md",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_training_run.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_DECISION_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_decision.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_DECISION_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_decision.md",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_MULTISEED_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_v20_hard_negative_multiseed_report.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_MULTISEED_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_v20_hard_negative_multiseed_report.md",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_FINAL_DECISION_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_final_decision.json",
+)
+RIGHTBRAIN_HARD_NEGATIVE_PREFERENCE_V20_FINAL_DECISION_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_hard_negative_preference_v20_final_decision.md",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_repair_curriculum_v1_report.json",

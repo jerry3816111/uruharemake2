@@ -199,13 +199,17 @@ def train_simpo(model, train_rows, eval_rows, args):
     }
 
 
-def main():
+def main(
+    default_dataset=RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DATASET_PATH,
+    default_output_dir=DEFAULT_OUTPUT_DIR,
+    default_run_report=RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_TRAINING_RUN_REPORT_PATH,
+):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default=RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DATASET_PATH)
+    parser.add_argument("--dataset", default=default_dataset)
     parser.add_argument("--base-model", default=DEFAULT_BASE_MODEL)
     parser.add_argument("--init-adapter", default=DEFAULT_INIT_ADAPTER)
-    parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--run-report", default=RIGHTBRAIN_SEMANTIC_PREFERENCE_V19_TRAINING_RUN_REPORT_PATH)
+    parser.add_argument("--output-dir", default=default_output_dir)
+    parser.add_argument("--run-report", default=default_run_report)
     parser.add_argument("--max-length", type=int, default=720)
     parser.add_argument("--eval-source-count", type=int, default=2)
     parser.add_argument("--epochs", type=float, default=1.0)
