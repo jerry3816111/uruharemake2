@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-07-11T02:18:41+09:00",
+  "scope": "rightbrain_semantic_preference_v18_pre_holdout_gate",
+  "adapter_ref": "uruha_rightbrain_plan_sft_lora_v18_semantic_dpo_v1",
+  "gates": {
+    "dataset_holdout_overlap_is_zero": true,
+    "train_eval_source_overlap_is_zero": true,
+    "all_optimizer_updates_completed": false,
+    "nonfinite_training_events_are_zero": false,
+    "train_mean_reward_margin_is_positive": false,
+    "unseen_eval_positive_margin_rate_at_least_75pct": false,
+    "unseen_eval_mean_reward_margin_is_positive": true
+  },
+  "authorize_actual_model_holdout": false,
+  "training_result": {
+    "optimizer_updates": 5,
+    "expected_optimizer_updates": 6,
+    "nonfinite_skips": 1,
+    "max_observed_gradient_norm": 153581.765625,
+    "train_positive_margin_rate": 0.458333,
+    "train_mean_reward_margin": -0.010841385665116832,
+    "eval_positive_margin_rate": 0.5,
+    "eval_mean_reward_margin": 0.0017725944344419986
+  },
+  "length_confound": {
+    "chosen_mean": 23.156,
+    "rejected_mean": 12.812,
+    "mean_delta": 10.344,
+    "chosen_longer_pair_count": 32,
+    "interpretation": "Rejected responses are constructed by deleting a semantic clause, so chosen responses are systematically longer. Summed sequence log-prob DPO therefore entangles completeness with length."
+  },
+  "decision_zh": "不允許進入真實模型 holdout：V18 DPO 未在未見語意家族上形成穩定正偏好，且訓練出現非有限梯度。",
+  "next_method": {
+    "name": "length-normalized preference optimization (SimPO-style)",
+    "reason": "使用 completion 平均 log-prob，分離語意完整度與回答長度，並移除 reference 重算成本。",
+    "paper": "https://arxiv.org/abs/2405.14734"
+  },
+  "research_boundary": "這個 gate 只檢查最佳化穩定性與未見偏好家族；訓練證據不足時會阻止昂貴的生成評測。即使通過，也仍須完成真實模型 holdout 才能升版。"
+}

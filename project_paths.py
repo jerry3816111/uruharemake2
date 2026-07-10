@@ -53,6 +53,10 @@ RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_compact_slot_curriculum_v17.json",
 )
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_semantic_preference_v18.json",
+)
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_DATASET_PATH = os.path.join(
     DATASETS_DIR,
     "rightbrain_repair_curriculum_v1.json",
@@ -243,6 +247,26 @@ RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_REPORT_JSON_PATH = os.path.join(
 RIGHTBRAIN_COMPACT_SLOT_CURRICULUM_V17_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_compact_slot_curriculum_v17_report.md",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v18_report.json",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v18_report.md",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v18_training_run.json",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DECISION_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v18_decision.json",
+)
+RIGHTBRAIN_SEMANTIC_PREFERENCE_V18_DECISION_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_semantic_preference_v18_decision.md",
 )
 RIGHTBRAIN_REPAIR_CURRICULUM_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
