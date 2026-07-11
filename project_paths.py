@@ -452,6 +452,34 @@ RIGHTBRAIN_HUMAN_PREFERENCE_CALIBRATION_V28_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_human_preference_calibration_v28.md",
 )
+RIGHTBRAIN_ON_POLICY_V29_CANDIDATE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_candidates.json",
+)
+RIGHTBRAIN_ON_POLICY_V29_CANDIDATE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_candidates.md",
+)
+RIGHTBRAIN_ON_POLICY_V29_BLIND_PACKAGE_PATH = os.path.join(
+    HUMAN_BLIND_DATA_DIR,
+    "rightbrain_on_policy_v29_blind_package.json",
+)
+RIGHTBRAIN_ON_POLICY_V29_BLIND_KEY_PATH = os.path.join(
+    HUMAN_BLIND_DATA_DIR,
+    "rightbrain_on_policy_v29_blind_key.jsonl",
+)
+RIGHTBRAIN_ON_POLICY_V29_PACKAGE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_blind_package_report.json",
+)
+RIGHTBRAIN_ON_POLICY_V29_PACKAGE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_blind_package_report.md",
+)
+RIGHTBRAIN_ON_POLICY_V29_RATINGS_PATH = os.path.join(
+    WEB_LOG_DIR,
+    "rightbrain_on_policy_v29_ratings.json",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
