@@ -749,8 +749,16 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
             ("共同作业の返事を待て。", "nonstandard_cjk_surface"),
             ("头痛の時は作業を休め。", "nonstandard_cjk_surface"),
             ("その台詞だけだと游戏が分からない。", "nonstandard_cjk_surface"),
+            ("提出まで頑张ったな。", "nonstandard_cjk_surface"),
+            ("冷蔍庫が部長になった。", "nonstandard_cjk_surface"),
+            ("冷蔜庫が部長になった。", "nonstandard_cjk_surface"),
+            ("冷蔱庫が部長になった。", "nonstandard_cjk_surface"),
+            ("冷结庫が突然变わった。", "nonstandard_cjk_surface"),
+            ("待ち合わせが遜晚している。", "nonstandard_cjk_surface"),
             ("どのゲームか分からなさそう呢。", "cjk_language_leak"),
             ("浅井小姐に聞いて。", "cjk_language_leak"),
+            ("最近看到一個面白い動画がある。", "cjk_language_leak"),
+            ('すぐに寝たい]."', "ascii_symbol_artifact"),
         ]
 
         for reply, expected_reason in cases:
@@ -761,6 +769,23 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
                     max_chars=80,
                 )
                 self.assertIn(expected_reason, reasons)
+
+        clean = [
+            "提出まで頑張ったな。",
+            "冷蔵庫が部長になった。",
+            "最近、一個だけ面白い動画を見た。",
+            "すぐに寝たい。",
+        ]
+        for reply in clean:
+            with self.subTest(clean_reply=reply):
+                reasons = rightbrain._model_candidate_rejection_reasons(
+                    reply,
+                    logic,
+                    max_chars=80,
+                )
+                self.assertNotIn("cjk_language_leak", reasons)
+                self.assertNotIn("nonstandard_cjk_surface", reasons)
+                self.assertNotIn("ascii_symbol_artifact", reasons)
 
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])

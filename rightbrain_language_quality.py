@@ -12,6 +12,7 @@ ASCII_WORD_RE = re.compile(r"[A-Za-z\u00C0-\u024F][A-Za-z0-9_\-\u00C0-\u024F]*")
 ASCII_SYMBOL_ARTIFACT_RE = re.compile(
     r"(?:"
     r"[<>]{2,}"
+    r"|[\[\]{}]"
     r"|[（(]?\s*[>＜][_<＿]?[<＞]\s*[)）]?"
     r"|(?<=[ぁ-んァ-ヶー一-龠])\s+[!?](?:\s|$)"
     r"|[!?]\s*(?=[ぁ-んァ-ヶー一-龠])"
@@ -55,8 +56,8 @@ NONSTANDARD_CJK_RE = re.compile(
 # Frozen V21/V26 reports predate these audited residues. Keep them separate so
 # historical dataset builders can reproduce their original labels while every
 # current runtime/evaluation path rejects them by default.
-AUDITED_CHINESE_SPECIFIC_RE = re.compile(r"呢|小姐")
-AUDITED_NONSTANDARD_CJK_RE = re.compile(r"[业头戏戲]")
+AUDITED_CHINESE_SPECIFIC_RE = re.compile(r"呢|小姐|看到一個|看到一个")
+AUDITED_NONSTANDARD_CJK_RE = re.compile(r"[业头戏戲张蔍蔜蔱变结]|遜晚")
 POLITE_RE = re.compile(
     r"(?:"
     r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)"
