@@ -41,15 +41,20 @@ def _metrics(
     }
 
 
-def _training_report(nonfinite_skips=0):
+def _training_report(
+    nonfinite_skips=0,
+    final_eval_positive_log_prob=-0.9,
+    initial_positive_log_prob=-1.0,
+    initial_negative_log_prob=-0.5,
+):
     initial = _metrics(
         pairwise=0.0,
         strict=0.0,
         top=0.0,
         mass=0.50,
         margin=0.0,
-        positive_log_prob=-1.0,
-        negative_log_prob=-0.5,
+        positive_log_prob=initial_positive_log_prob,
+        negative_log_prob=initial_negative_log_prob,
     )
     return {
         "output_adapter_ref": "v26",
@@ -76,7 +81,7 @@ def _training_report(nonfinite_skips=0):
             top=0.75,
             mass=0.56,
             margin=0.1,
-            positive_log_prob=-0.9,
+            positive_log_prob=final_eval_positive_log_prob,
             negative_log_prob=-1.0,
         ),
     }
@@ -96,6 +101,18 @@ class RightBrainGroupMPOV26DecisionTest(unittest.TestCase):
         self.assertFalse(report["run_actual_model_holdout"])
         self.assertFalse(report["gates"]["nonfinite_training_events_are_zero"])
         self.assertIsNone(report["selected_candidate_for_holdout"])
+
+    def test_worse_absolute_ranking_is_reported_as_rejection(self):
+        report = build_decision(
+            _training_report(
+                final_eval_positive_log_prob=-1.2,
+                initial_positive_log_prob=-0.4,
+            )
+        )
+
+        self.assertFalse(report["run_actual_model_holdout"])
+        self.assertIn("絕對錯排反而增加", report["diagnosis_zh"])
+        self.assertIn("必須拒絕", report["diagnosis_zh"])
 
 
 if __name__ == "__main__":

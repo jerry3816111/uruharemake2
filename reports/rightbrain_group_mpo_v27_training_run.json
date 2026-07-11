@@ -1,0 +1,1495 @@
+{
+  "generated_at": "2026-07-11T19:28:25+09:00",
+  "scope": "rightbrain_group_mpo_v27_training",
+  "experiment_label": "V27",
+  "method": "reference_based_group_mpo_first_order_surrogate_with_positive_nll",
+  "method_references": [
+    "https://arxiv.org/abs/2604.15602",
+    "https://proceedings.mlr.press/v267/gupta25c.html"
+  ],
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "dataset_ref": "rightbrain_group_preference_v26.json",
+  "dataset_sha256": "a44fe69b3401216fa5c1c80e0af56d8e549f3ff2db4c960881117af682b63599",
+  "probe_ref": "rightbrain_group_preference_v26_probe.json",
+  "probe_sha256": "e56c417de2aa7ebf5d61f9b89fdec8191120ac42bcd7795b99001ad663bc8ca3",
+  "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "init_adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+  "init_adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937",
+  "output_adapter_ref": "uruha_rightbrain_plan_sft_lora_v27_group_mpo_lr3e7_v1",
+  "output_adapter_config_sha256": "1dc10f2be17d1f18dd5c60bcaf3400f3f5ff7888371423993fa4b9972d4a5bee",
+  "output_adapter_model_sha256": "8b28e5ad107044fe5dcf5bbe0a98370a15b314cc0330164cb81a569a9aaf5b55",
+  "group_count": 12,
+  "train_group_count": 8,
+  "eval_group_count": 4,
+  "candidate_count": 70,
+  "train_source_ids": [
+    "v21_daily_state",
+    "v21_fatigue_boundary",
+    "v21_private_background",
+    "v21_reference_repair",
+    "v21_reply_uncertainty"
+  ],
+  "eval_source_ids": [
+    "v21_absurdity_tease",
+    "v21_planning_uncertainty"
+  ],
+  "source_overlap_count": 0,
+  "positive_nll_weight": 1.0,
+  "epochs": 1.0,
+  "learning_rate": 3e-07,
+  "beta": 2.0,
+  "weight_decay": 0.0,
+  "seed": 20260710,
+  "frozen_v10_absolute_eval_pairwise_preference_rate": 0.2647058823529412,
+  "frozen_v10_absolute_eval_misranked_pair_count": 25,
+  "optimizer_eps": 1e-06,
+  "max_gradient_norm": 0.3,
+  "max_length": 720,
+  "dtype": "torch.bfloat16",
+  "disabled_dropout_module_count": 196,
+  "duration_seconds": 1334.259,
+  "target_group_steps": 8,
+  "consumed_group_steps": 8,
+  "optimizer_updates": 8,
+  "nonfinite_skips": 0,
+  "max_observed_gradient_norm": 263296.375,
+  "mean_train_mpo_loss": 1.015371895570064,
+  "mean_train_positive_nll": 2.9458274121085806,
+  "initial_train_group_metrics": {
+    "group_count": 8,
+    "candidate_count": 46,
+    "positive_candidate_count": 19,
+    "negative_candidate_count": 27,
+    "pair_count": 53,
+    "pairwise_positive_preference_rate": 0.0,
+    "pairwise_tie_rate": 1.0,
+    "strict_positive_separation_rate": 0.0,
+    "positive_top1_rate": 0.0,
+    "mean_positive_probability_mass": 0.4270833333333333,
+    "mean_positive_negative_margin": 0.0,
+    "mean_positive_policy_average_log_prob": -3.209742972725316,
+    "mean_negative_policy_average_log_prob": -2.2531563176049128,
+    "max_abs_policy_reference_log_prob_delta": 0.0,
+    "groups": [
+      {
+        "id": "rb_group_preference_v26_0001",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_project_reply_delay",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.791759469228055,
+        "positive_probability_mass": 0.16666666666666666,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_project_reply_delay_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.502678871154785,
+            "reference_average_log_prob": -2.502678871154785,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_project_reply_delay_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.214097738265991,
+            "reference_average_log_prob": -2.214097738265991,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_project_reply_delay_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.9030349254608154,
+            "reference_average_log_prob": -1.9030349254608154,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_project_reply_delay_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.7369301319122314,
+            "reference_average_log_prob": -2.7369301319122314,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_project_reply_delay_n04",
+            "label": "negative",
+            "policy_average_log_prob": -2.4772303104400635,
+            "reference_average_log_prob": -2.4772303104400635,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_project_reply_delay_n05",
+            "label": "negative",
+            "policy_average_log_prob": -1.5842418670654297,
+            "reference_average_log_prob": -1.5842418670654297,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0002",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_invitation_reply_delay",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.791759469228055,
+        "positive_probability_mass": 0.16666666666666666,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_invitation_reply_delay_p01",
+            "label": "positive",
+            "policy_average_log_prob": -0.9775042533874512,
+            "reference_average_log_prob": -0.9775042533874512,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_invitation_reply_delay_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.468165397644043,
+            "reference_average_log_prob": -3.468165397644043,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_invitation_reply_delay_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.672650098800659,
+            "reference_average_log_prob": -2.672650098800659,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_invitation_reply_delay_n03",
+            "label": "negative",
+            "policy_average_log_prob": -1.3700203895568848,
+            "reference_average_log_prob": -1.3700203895568848,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_invitation_reply_delay_n04",
+            "label": "negative",
+            "policy_average_log_prob": -0.974229633808136,
+            "reference_average_log_prob": -0.974229633808136,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_invitation_reply_delay_n05",
+            "label": "negative",
+            "policy_average_log_prob": -3.194868564605713,
+            "reference_average_log_prob": -3.194868564605713,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0003",
+        "source_case_id": "v21_fatigue_boundary",
+        "source_prompt_id": "v21_headache_work",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6931471805599452,
+        "positive_probability_mass": 0.5,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_headache_work_p01",
+            "label": "positive",
+            "policy_average_log_prob": -1.732481837272644,
+            "reference_average_log_prob": -1.732481837272644,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_headache_work_p02",
+            "label": "positive",
+            "policy_average_log_prob": -1.255924940109253,
+            "reference_average_log_prob": -1.255924940109253,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_headache_work_p03",
+            "label": "positive",
+            "policy_average_log_prob": -1.0969232320785522,
+            "reference_average_log_prob": -1.0969232320785522,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_headache_work_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.8560993671417236,
+            "reference_average_log_prob": -2.8560993671417236,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_headache_work_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.505482792854309,
+            "reference_average_log_prob": -1.505482792854309,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_headache_work_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.4835855960845947,
+            "reference_average_log_prob": -2.4835855960845947,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0004",
+        "source_case_id": "v21_reference_repair",
+        "source_prompt_id": "v21_song_fragment",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.791759469228055,
+        "positive_probability_mass": 0.16666666666666666,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_song_fragment_p01",
+            "label": "positive",
+            "policy_average_log_prob": -3.735387086868286,
+            "reference_average_log_prob": -3.735387086868286,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_song_fragment_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.9080111980438232,
+            "reference_average_log_prob": -1.9080111980438232,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_song_fragment_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.6931581497192383,
+            "reference_average_log_prob": -2.6931581497192383,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_song_fragment_n03",
+            "label": "negative",
+            "policy_average_log_prob": -3.32340145111084,
+            "reference_average_log_prob": -3.32340145111084,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_song_fragment_n04",
+            "label": "negative",
+            "policy_average_log_prob": -2.693826913833618,
+            "reference_average_log_prob": -2.693826913833618,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_song_fragment_n05",
+            "label": "negative",
+            "policy_average_log_prob": -1.7612887620925903,
+            "reference_average_log_prob": -1.7612887620925903,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0005",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_recent_activity",
+        "positive_count": 3,
+        "negative_count": 1,
+        "mpo_loss": 0.2876820724517808,
+        "positive_probability_mass": 0.75,
+        "pair_count": 3,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_recent_activity_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.283708333969116,
+            "reference_average_log_prob": -2.283708333969116,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_recent_activity_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.5584716796875,
+            "reference_average_log_prob": -4.5584716796875,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_recent_activity_p03",
+            "label": "positive",
+            "policy_average_log_prob": -3.931105136871338,
+            "reference_average_log_prob": -3.931105136871338,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_recent_activity_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.6636422872543335,
+            "reference_average_log_prob": -1.6636422872543335,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0006",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_current_mood",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.4054651081081644,
+        "positive_probability_mass": 0.6666666666666666,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_current_mood_p01",
+            "label": "positive",
+            "policy_average_log_prob": -4.234382152557373,
+            "reference_average_log_prob": -4.234382152557373,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_current_mood_p02",
+            "label": "positive",
+            "policy_average_log_prob": -5.182809829711914,
+            "reference_average_log_prob": -5.182809829711914,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_current_mood_p03",
+            "label": "positive",
+            "policy_average_log_prob": -4.6745524406433105,
+            "reference_average_log_prob": -4.6745524406433105,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_current_mood_p04",
+            "label": "positive",
+            "policy_average_log_prob": -4.5539045333862305,
+            "reference_average_log_prob": -4.5539045333862305,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_current_mood_n01",
+            "label": "negative",
+            "policy_average_log_prob": -0.5174821019172668,
+            "reference_average_log_prob": -0.5174821019172668,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_current_mood_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.482409954071045,
+            "reference_average_log_prob": -1.482409954071045,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0011",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_background_deadline_pressure",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6931471805599452,
+        "positive_probability_mass": 0.5,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_background_deadline_pressure_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.131683826446533,
+            "reference_average_log_prob": -2.131683826446533,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_background_deadline_pressure_p02",
+            "label": "positive",
+            "policy_average_log_prob": -1.770617961883545,
+            "reference_average_log_prob": -1.770617961883545,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_background_deadline_pressure_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.533313274383545,
+            "reference_average_log_prob": -2.533313274383545,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_background_deadline_pressure_n01",
+            "label": "negative",
+            "policy_average_log_prob": -4.0534892082214355,
+            "reference_average_log_prob": -4.0534892082214355,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_background_deadline_pressure_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.240739107131958,
+            "reference_average_log_prob": -2.240739107131958,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_background_deadline_pressure_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.995497703552246,
+            "reference_average_log_prob": -2.995497703552246,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0012",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_private_relationship_topic",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6931471805599452,
+        "positive_probability_mass": 0.5,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_private_relationship_topic_p01",
+            "label": "positive",
+            "policy_average_log_prob": -4.139469623565674,
+            "reference_average_log_prob": -4.139469623565674,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_private_relationship_topic_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.897487163543701,
+            "reference_average_log_prob": -4.897487163543701,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_private_relationship_topic_p03",
+            "label": "positive",
+            "policy_average_log_prob": -4.792710304260254,
+            "reference_average_log_prob": -4.792710304260254,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_private_relationship_topic_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.3172659873962402,
+            "reference_average_log_prob": -3.3172659873962402,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_private_relationship_topic_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.1447019577026367,
+            "reference_average_log_prob": -1.1447019577026367,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_private_relationship_topic_n03",
+            "label": "negative",
+            "policy_average_log_prob": -1.5996689796447754,
+            "reference_average_log_prob": -1.5996689796447754,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      }
+    ]
+  },
+  "initial_eval_group_metrics": {
+    "group_count": 4,
+    "candidate_count": 24,
+    "positive_candidate_count": 14,
+    "negative_candidate_count": 10,
+    "pair_count": 34,
+    "pairwise_positive_preference_rate": 0.0,
+    "pairwise_tie_rate": 1.0,
+    "strict_positive_separation_rate": 0.0,
+    "positive_top1_rate": 0.0,
+    "mean_positive_probability_mass": 0.5833333333333333,
+    "mean_positive_negative_margin": 0.0,
+    "mean_positive_policy_average_log_prob": -3.588996376310076,
+    "mean_negative_policy_average_log_prob": -2.126806712150574,
+    "max_abs_policy_reference_log_prob_delta": 0.0,
+    "groups": [
+      {
+        "id": "rb_group_preference_v26_0007",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.4054651081081644,
+        "positive_probability_mass": 0.6666666666666666,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_toaster_mayor_p01",
+            "label": "positive",
+            "policy_average_log_prob": -3.7059922218322754,
+            "reference_average_log_prob": -3.7059922218322754,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_toaster_mayor_p02",
+            "label": "positive",
+            "policy_average_log_prob": -2.24306058883667,
+            "reference_average_log_prob": -2.24306058883667,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_toaster_mayor_p03",
+            "label": "positive",
+            "policy_average_log_prob": -3.4122610092163086,
+            "reference_average_log_prob": -3.4122610092163086,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_toaster_mayor_p04",
+            "label": "positive",
+            "policy_average_log_prob": -6.405307769775391,
+            "reference_average_log_prob": -6.405307769775391,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_toaster_mayor_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.0912322998046875,
+            "reference_average_log_prob": -2.0912322998046875,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_toaster_mayor_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.6525051593780518,
+            "reference_average_log_prob": -2.6525051593780518,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0008",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6931471805599452,
+        "positive_probability_mass": 0.5,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_cat_moon_tax_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.1898796558380127,
+            "reference_average_log_prob": -2.1898796558380127,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_cat_moon_tax_p02",
+            "label": "positive",
+            "policy_average_log_prob": -2.5259222984313965,
+            "reference_average_log_prob": -2.5259222984313965,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_cat_moon_tax_p03",
+            "label": "positive",
+            "policy_average_log_prob": -5.091277122497559,
+            "reference_average_log_prob": -5.091277122497559,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_cat_moon_tax_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.3523693084716797,
+            "reference_average_log_prob": -2.3523693084716797,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_cat_moon_tax_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.2028427124023438,
+            "reference_average_log_prob": -2.2028427124023438,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_cat_moon_tax_n03",
+            "label": "negative",
+            "policy_average_log_prob": -0.7137775421142578,
+            "reference_average_log_prob": -0.7137775421142578,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0009",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6931471805599452,
+        "positive_probability_mass": 0.5,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_weather_plan_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.1759285926818848,
+            "reference_average_log_prob": -2.1759285926818848,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_weather_plan_p02",
+            "label": "positive",
+            "policy_average_log_prob": -5.350673675537109,
+            "reference_average_log_prob": -5.350673675537109,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_weather_plan_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.192847490310669,
+            "reference_average_log_prob": -2.192847490310669,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_weather_plan_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.9247162342071533,
+            "reference_average_log_prob": -1.9247162342071533,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_weather_plan_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.280266523361206,
+            "reference_average_log_prob": -2.280266523361206,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_weather_plan_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.3533337116241455,
+            "reference_average_log_prob": -2.3533337116241455,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0010",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.4054651081081644,
+        "positive_probability_mass": 0.6666666666666666,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.0,
+        "responses": [
+          {
+            "id": "v21_reservation_wait_p01",
+            "label": "positive",
+            "policy_average_log_prob": -5.486651420593262,
+            "reference_average_log_prob": -5.486651420593262,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_reservation_wait_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.310967922210693,
+            "reference_average_log_prob": -4.310967922210693,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_reservation_wait_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.595486640930176,
+            "reference_average_log_prob": -2.595486640930176,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_reservation_wait_p04",
+            "label": "positive",
+            "policy_average_log_prob": -2.559692859649658,
+            "reference_average_log_prob": -2.559692859649658,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_reservation_wait_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.3346619606018066,
+            "reference_average_log_prob": -3.3346619606018066,
+            "implicit_preference_score": 0.0
+          },
+          {
+            "id": "v21_reservation_wait_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.3623616695404053,
+            "reference_average_log_prob": -1.3623616695404053,
+            "implicit_preference_score": 0.0
+          }
+        ]
+      }
+    ]
+  },
+  "final_train_group_metrics": {
+    "group_count": 8,
+    "candidate_count": 46,
+    "positive_candidate_count": 19,
+    "negative_candidate_count": 27,
+    "pair_count": 53,
+    "pairwise_positive_preference_rate": 0.5849056603773585,
+    "pairwise_tie_rate": 0.0,
+    "strict_positive_separation_rate": 0.25,
+    "positive_top1_rate": 0.625,
+    "mean_positive_probability_mass": 0.4298550547180182,
+    "mean_positive_negative_margin": 0.014353244503339128,
+    "mean_positive_policy_average_log_prob": -3.2039393249310946,
+    "mean_negative_policy_average_log_prob": -2.2565417135203325,
+    "max_abs_policy_reference_log_prob_delta": 0.06181144714355469,
+    "groups": [
+      {
+        "id": "rb_group_preference_v26_0001",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_project_reply_delay",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.7621538274271966,
+        "positive_probability_mass": 0.17167470764599874,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 1.0,
+        "strict_positive_separation": true,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.03581557273864746,
+        "responses": [
+          {
+            "id": "v21_project_reply_delay_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.495579481124878,
+            "reference_average_log_prob": -2.502678871154785,
+            "implicit_preference_score": 0.014198780059814453
+          },
+          {
+            "id": "v21_project_reply_delay_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.208037853240967,
+            "reference_average_log_prob": -2.214097738265991,
+            "implicit_preference_score": 0.012119770050048828
+          },
+          {
+            "id": "v21_project_reply_delay_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.9247684478759766,
+            "reference_average_log_prob": -1.9030349254608154,
+            "implicit_preference_score": -0.043467044830322266
+          },
+          {
+            "id": "v21_project_reply_delay_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.754457473754883,
+            "reference_average_log_prob": -2.7369301319122314,
+            "implicit_preference_score": -0.035054683685302734
+          },
+          {
+            "id": "v21_project_reply_delay_n04",
+            "label": "negative",
+            "policy_average_log_prob": -2.4862520694732666,
+            "reference_average_log_prob": -2.4772303104400635,
+            "implicit_preference_score": -0.01804351806640625
+          },
+          {
+            "id": "v21_project_reply_delay_n05",
+            "label": "negative",
+            "policy_average_log_prob": -1.596061110496521,
+            "reference_average_log_prob": -1.5842418670654297,
+            "implicit_preference_score": -0.023638486862182617
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0002",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_invitation_reply_delay",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.8327631697043685,
+        "positive_probability_mass": 0.15997092968823504,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 0.2,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": -0.04803764820098877,
+        "responses": [
+          {
+            "id": "v21_invitation_reply_delay_p01",
+            "label": "positive",
+            "policy_average_log_prob": -0.9931015968322754,
+            "reference_average_log_prob": -0.9775042533874512,
+            "implicit_preference_score": -0.031194686889648438
+          },
+          {
+            "id": "v21_invitation_reply_delay_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.459505319595337,
+            "reference_average_log_prob": -3.468165397644043,
+            "implicit_preference_score": 0.01732015609741211
+          },
+          {
+            "id": "v21_invitation_reply_delay_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.656947612762451,
+            "reference_average_log_prob": -2.672650098800659,
+            "implicit_preference_score": 0.031404972076416016
+          },
+          {
+            "id": "v21_invitation_reply_delay_n03",
+            "label": "negative",
+            "policy_average_log_prob": -1.381250262260437,
+            "reference_average_log_prob": -1.3700203895568848,
+            "implicit_preference_score": -0.022459745407104492
+          },
+          {
+            "id": "v21_invitation_reply_delay_n04",
+            "label": "negative",
+            "policy_average_log_prob": -0.9904927015304565,
+            "reference_average_log_prob": -0.974229633808136,
+            "implicit_preference_score": -0.03252613544464111
+          },
+          {
+            "id": "v21_invitation_reply_delay_n05",
+            "label": "negative",
+            "policy_average_log_prob": -3.1496307849884033,
+            "reference_average_log_prob": -3.194868564605713,
+            "implicit_preference_score": 0.09047555923461914
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0003",
+        "source_case_id": "v21_fatigue_boundary",
+        "source_prompt_id": "v21_headache_work",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6651489304664704,
+        "positive_probability_mass": 0.5141969424133406,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 1.0,
+        "strict_positive_separation": true,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.056379715601603195,
+        "responses": [
+          {
+            "id": "v21_headache_work_p01",
+            "label": "positive",
+            "policy_average_log_prob": -1.7050490379333496,
+            "reference_average_log_prob": -1.732481837272644,
+            "implicit_preference_score": 0.05486559867858887
+          },
+          {
+            "id": "v21_headache_work_p02",
+            "label": "positive",
+            "policy_average_log_prob": -1.2631473541259766,
+            "reference_average_log_prob": -1.255924940109253,
+            "implicit_preference_score": -0.014444828033447266
+          },
+          {
+            "id": "v21_headache_work_p03",
+            "label": "positive",
+            "policy_average_log_prob": -1.0775078535079956,
+            "reference_average_log_prob": -1.0969232320785522,
+            "implicit_preference_score": 0.03883075714111328
+          },
+          {
+            "id": "v21_headache_work_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.872241497039795,
+            "reference_average_log_prob": -2.8560993671417236,
+            "implicit_preference_score": -0.03228425979614258
+          },
+          {
+            "id": "v21_headache_work_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.5169192552566528,
+            "reference_average_log_prob": -1.505482792854309,
+            "implicit_preference_score": -0.0228729248046875
+          },
+          {
+            "id": "v21_headache_work_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.500950813293457,
+            "reference_average_log_prob": -2.4835855960845947,
+            "implicit_preference_score": -0.03473043441772461
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0004",
+        "source_case_id": "v21_reference_repair",
+        "source_prompt_id": "v21_song_fragment",
+        "positive_count": 1,
+        "negative_count": 5,
+        "mpo_loss": 1.7513231808433158,
+        "positive_probability_mass": 0.17354416115269666,
+        "pair_count": 5,
+        "pairwise_positive_preference_rate": 0.8,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.05148301124572754,
+        "responses": [
+          {
+            "id": "v21_song_fragment_p01",
+            "label": "positive",
+            "policy_average_log_prob": -3.722442150115967,
+            "reference_average_log_prob": -3.735387086868286,
+            "implicit_preference_score": 0.025889873504638672
+          },
+          {
+            "id": "v21_song_fragment_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.8976305723190308,
+            "reference_average_log_prob": -1.9080111980438232,
+            "implicit_preference_score": 0.02076125144958496
+          },
+          {
+            "id": "v21_song_fragment_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.7239344120025635,
+            "reference_average_log_prob": -2.6931581497192383,
+            "implicit_preference_score": -0.06155252456665039
+          },
+          {
+            "id": "v21_song_fragment_n03",
+            "label": "negative",
+            "policy_average_log_prob": -3.278064489364624,
+            "reference_average_log_prob": -3.32340145111084,
+            "implicit_preference_score": 0.09067392349243164
+          },
+          {
+            "id": "v21_song_fragment_n04",
+            "label": "negative",
+            "policy_average_log_prob": -2.755638360977173,
+            "reference_average_log_prob": -2.693826913833618,
+            "implicit_preference_score": -0.12362289428710938
+          },
+          {
+            "id": "v21_song_fragment_n05",
+            "label": "negative",
+            "policy_average_log_prob": -1.788401484489441,
+            "reference_average_log_prob": -1.7612887620925903,
+            "implicit_preference_score": -0.05422544479370117
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0005",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_recent_activity",
+        "positive_count": 3,
+        "negative_count": 1,
+        "mpo_loss": 0.28023094278235283,
+        "positive_probability_mass": 0.7556092188087652,
+        "pair_count": 3,
+        "pairwise_positive_preference_rate": 0.6666666666666666,
+        "strict_positive_separation": false,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.02991024653116862,
+        "responses": [
+          {
+            "id": "v21_recent_activity_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.2651448249816895,
+            "reference_average_log_prob": -2.283708333969116,
+            "implicit_preference_score": 0.037127017974853516
+          },
+          {
+            "id": "v21_recent_activity_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.563467025756836,
+            "reference_average_log_prob": -4.5584716796875,
+            "implicit_preference_score": -0.009990692138671875
+          },
+          {
+            "id": "v21_recent_activity_p03",
+            "label": "positive",
+            "policy_average_log_prob": -3.913769006729126,
+            "reference_average_log_prob": -3.931105136871338,
+            "implicit_preference_score": 0.03467226028442383
+          },
+          {
+            "id": "v21_recent_activity_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.668295979499817,
+            "reference_average_log_prob": -1.6636422872543335,
+            "implicit_preference_score": -0.009307384490966797
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0006",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_current_mood",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.40415826824247914,
+        "positive_probability_mass": 0.6675384627686674,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 0.625,
+        "strict_positive_separation": false,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.003359556198120117,
+        "responses": [
+          {
+            "id": "v21_current_mood_p01",
+            "label": "positive",
+            "policy_average_log_prob": -4.207784652709961,
+            "reference_average_log_prob": -4.234382152557373,
+            "implicit_preference_score": 0.05319499969482422
+          },
+          {
+            "id": "v21_current_mood_p02",
+            "label": "positive",
+            "policy_average_log_prob": -5.159722328186035,
+            "reference_average_log_prob": -5.182809829711914,
+            "implicit_preference_score": 0.04617500305175781
+          },
+          {
+            "id": "v21_current_mood_p03",
+            "label": "positive",
+            "policy_average_log_prob": -4.658961772918701,
+            "reference_average_log_prob": -4.6745524406433105,
+            "implicit_preference_score": 0.03118133544921875
+          },
+          {
+            "id": "v21_current_mood_p04",
+            "label": "positive",
+            "policy_average_log_prob": -4.581279754638672,
+            "reference_average_log_prob": -4.5539045333862305,
+            "implicit_preference_score": -0.05475044250488281
+          },
+          {
+            "id": "v21_current_mood_n01",
+            "label": "negative",
+            "policy_average_log_prob": -0.5230408310890198,
+            "reference_average_log_prob": -0.5174821019172668,
+            "implicit_preference_score": -0.01111745834350586
+          },
+          {
+            "id": "v21_current_mood_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.4612605571746826,
+            "reference_average_log_prob": -1.482409954071045,
+            "implicit_preference_score": 0.04229879379272461
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0011",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_background_deadline_pressure",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6841295343802896,
+        "positive_probability_mass": 0.5045292138215309,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.5555555555555556,
+        "strict_positive_separation": false,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.01885072390238444,
+        "responses": [
+          {
+            "id": "v21_background_deadline_pressure_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.110579013824463,
+            "reference_average_log_prob": -2.131683826446533,
+            "implicit_preference_score": 0.042209625244140625
+          },
+          {
+            "id": "v21_background_deadline_pressure_p02",
+            "label": "positive",
+            "policy_average_log_prob": -1.7633122205734253,
+            "reference_average_log_prob": -1.770617961883545,
+            "implicit_preference_score": 0.014611482620239258
+          },
+          {
+            "id": "v21_background_deadline_pressure_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.536282539367676,
+            "reference_average_log_prob": -2.533313274383545,
+            "implicit_preference_score": -0.005938529968261719
+          },
+          {
+            "id": "v21_background_deadline_pressure_n01",
+            "label": "negative",
+            "policy_average_log_prob": -4.08478307723999,
+            "reference_average_log_prob": -4.0534892082214355,
+            "implicit_preference_score": -0.06258773803710938
+          },
+          {
+            "id": "v21_background_deadline_pressure_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.2230303287506104,
+            "reference_average_log_prob": -2.240739107131958,
+            "implicit_preference_score": 0.03541755676269531
+          },
+          {
+            "id": "v21_background_deadline_pressure_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.9847474098205566,
+            "reference_average_log_prob": -2.995497703552246,
+            "implicit_preference_score": 0.021500587463378906
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0012",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_private_relationship_topic",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.7097303210224364,
+        "positive_probability_mass": 0.4917768014449112,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.0,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": -0.03293522198994955,
+        "responses": [
+          {
+            "id": "v21_private_relationship_topic_p01",
+            "label": "positive",
+            "policy_average_log_prob": -4.150355339050293,
+            "reference_average_log_prob": -4.139469623565674,
+            "implicit_preference_score": -0.02177143096923828
+          },
+          {
+            "id": "v21_private_relationship_topic_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.915228843688965,
+            "reference_average_log_prob": -4.897487163543701,
+            "implicit_preference_score": -0.035483360290527344
+          },
+          {
+            "id": "v21_private_relationship_topic_p03",
+            "label": "positive",
+            "policy_average_log_prob": -4.792132377624512,
+            "reference_average_log_prob": -4.792710304260254,
+            "implicit_preference_score": 0.001155853271484375
+          },
+          {
+            "id": "v21_private_relationship_topic_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.3018524646759033,
+            "reference_average_log_prob": -3.3172659873962402,
+            "implicit_preference_score": 0.030827045440673828
+          },
+          {
+            "id": "v21_private_relationship_topic_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.1438490152359009,
+            "reference_average_log_prob": -1.1447019577026367,
+            "implicit_preference_score": 0.0017058849334716797
+          },
+          {
+            "id": "v21_private_relationship_topic_n03",
+            "label": "negative",
+            "policy_average_log_prob": -1.5945820808410645,
+            "reference_average_log_prob": -1.5996689796447754,
+            "implicit_preference_score": 0.010173797607421875
+          }
+        ]
+      }
+    ]
+  },
+  "final_eval_group_metrics": {
+    "group_count": 4,
+    "candidate_count": 24,
+    "positive_candidate_count": 14,
+    "negative_candidate_count": 10,
+    "pair_count": 34,
+    "pairwise_positive_preference_rate": 0.6176470588235294,
+    "pairwise_tie_rate": 0.0,
+    "strict_positive_separation_rate": 0.25,
+    "positive_top1_rate": 0.5,
+    "mean_positive_probability_mass": 0.5875969610043552,
+    "mean_positive_negative_margin": 0.019005020459493,
+    "mean_positive_policy_average_log_prob": -3.571768913950239,
+    "mean_negative_policy_average_log_prob": -2.1221522390842438,
+    "max_abs_policy_reference_log_prob_delta": 0.08411169052124023,
+    "groups": [
+      {
+        "id": "rb_group_preference_v26_0007",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.39615251926933426,
+        "positive_probability_mass": 0.6729040572752508,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 0.625,
+        "strict_positive_separation": false,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.027445197105407715,
+        "responses": [
+          {
+            "id": "v21_toaster_mayor_p01",
+            "label": "positive",
+            "policy_average_log_prob": -3.688889503479004,
+            "reference_average_log_prob": -3.7059922218322754,
+            "implicit_preference_score": 0.03420543670654297
+          },
+          {
+            "id": "v21_toaster_mayor_p02",
+            "label": "positive",
+            "policy_average_log_prob": -2.218397378921509,
+            "reference_average_log_prob": -2.24306058883667,
+            "implicit_preference_score": 0.049326419830322266
+          },
+          {
+            "id": "v21_toaster_mayor_p03",
+            "label": "positive",
+            "policy_average_log_prob": -3.3820242881774902,
+            "reference_average_log_prob": -3.4122610092163086,
+            "implicit_preference_score": 0.06047344207763672
+          },
+          {
+            "id": "v21_toaster_mayor_p04",
+            "label": "positive",
+            "policy_average_log_prob": -6.32119607925415,
+            "reference_average_log_prob": -6.405307769775391,
+            "implicit_preference_score": 0.16822338104248047
+          },
+          {
+            "id": "v21_toaster_mayor_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.0841922760009766,
+            "reference_average_log_prob": -2.0912322998046875,
+            "implicit_preference_score": 0.014080047607421875
+          },
+          {
+            "id": "v21_toaster_mayor_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.608933210372925,
+            "reference_average_log_prob": -2.6525051593780518,
+            "implicit_preference_score": 0.0871438980102539
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0008",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.7069560882136454,
+        "positive_probability_mass": 0.4931429989808659,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.2222222222222222,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": -0.02752633889516195,
+        "responses": [
+          {
+            "id": "v21_cat_moon_tax_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.1825754642486572,
+            "reference_average_log_prob": -2.1898796558380127,
+            "implicit_preference_score": 0.014608383178710938
+          },
+          {
+            "id": "v21_cat_moon_tax_p02",
+            "label": "positive",
+            "policy_average_log_prob": -2.5450375080108643,
+            "reference_average_log_prob": -2.5259222984313965,
+            "implicit_preference_score": -0.03823041915893555
+          },
+          {
+            "id": "v21_cat_moon_tax_p03",
+            "label": "positive",
+            "policy_average_log_prob": -5.076586723327637,
+            "reference_average_log_prob": -5.091277122497559,
+            "implicit_preference_score": 0.02938079833984375
+          },
+          {
+            "id": "v21_cat_moon_tax_n01",
+            "label": "negative",
+            "policy_average_log_prob": -2.355504035949707,
+            "reference_average_log_prob": -2.3523693084716797,
+            "implicit_preference_score": -0.0062694549560546875
+          },
+          {
+            "id": "v21_cat_moon_tax_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.1811535358428955,
+            "reference_average_log_prob": -2.2028427124023438,
+            "implicit_preference_score": 0.043378353118896484
+          },
+          {
+            "id": "v21_cat_moon_tax_n03",
+            "label": "negative",
+            "policy_average_log_prob": -0.6881631016731262,
+            "reference_average_log_prob": -0.7137775421142578,
+            "implicit_preference_score": 0.051228880882263184
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0009",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "positive_count": 3,
+        "negative_count": 3,
+        "mpo_loss": 0.6780852675426325,
+        "positive_probability_mass": 0.5075879576370399,
+        "pair_count": 9,
+        "pairwise_positive_preference_rate": 0.6666666666666666,
+        "strict_positive_separation": false,
+        "positive_top1": false,
+        "mean_positive_negative_margin": 0.030948559443155922,
+        "responses": [
+          {
+            "id": "v21_weather_plan_p01",
+            "label": "positive",
+            "policy_average_log_prob": -2.171391010284424,
+            "reference_average_log_prob": -2.1759285926818848,
+            "implicit_preference_score": 0.009075164794921875
+          },
+          {
+            "id": "v21_weather_plan_p02",
+            "label": "positive",
+            "policy_average_log_prob": -5.349205017089844,
+            "reference_average_log_prob": -5.350673675537109,
+            "implicit_preference_score": 0.00293731689453125
+          },
+          {
+            "id": "v21_weather_plan_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.1943657398223877,
+            "reference_average_log_prob": -2.192847490310669,
+            "implicit_preference_score": -0.0030364990234375
+          },
+          {
+            "id": "v21_weather_plan_n01",
+            "label": "negative",
+            "policy_average_log_prob": -1.959377646446228,
+            "reference_average_log_prob": -1.9247162342071533,
+            "implicit_preference_score": -0.06932282447814941
+          },
+          {
+            "id": "v21_weather_plan_n02",
+            "label": "negative",
+            "policy_average_log_prob": -2.2723429203033447,
+            "reference_average_log_prob": -2.280266523361206,
+            "implicit_preference_score": 0.015847206115722656
+          },
+          {
+            "id": "v21_weather_plan_n03",
+            "label": "negative",
+            "policy_average_log_prob": -2.368530750274658,
+            "reference_average_log_prob": -2.3533337116241455,
+            "implicit_preference_score": -0.03039407730102539
+          }
+        ]
+      },
+      {
+        "id": "rb_group_preference_v26_0010",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "positive_count": 4,
+        "negative_count": 2,
+        "mpo_loss": 0.39044916856183565,
+        "positive_probability_mass": 0.6767528301242642,
+        "pair_count": 8,
+        "pairwise_positive_preference_rate": 1.0,
+        "strict_positive_separation": true,
+        "positive_top1": true,
+        "mean_positive_negative_margin": 0.04515266418457031,
+        "responses": [
+          {
+            "id": "v21_reservation_wait_p01",
+            "label": "positive",
+            "policy_average_log_prob": -5.439706325531006,
+            "reference_average_log_prob": -5.486651420593262,
+            "implicit_preference_score": 0.09389019012451172
+          },
+          {
+            "id": "v21_reservation_wait_p02",
+            "label": "positive",
+            "policy_average_log_prob": -4.294114112854004,
+            "reference_average_log_prob": -4.310967922210693,
+            "implicit_preference_score": 0.033707618713378906
+          },
+          {
+            "id": "v21_reservation_wait_p03",
+            "label": "positive",
+            "policy_average_log_prob": -2.596158742904663,
+            "reference_average_log_prob": -2.595486640930176,
+            "implicit_preference_score": -0.0013442039489746094
+          },
+          {
+            "id": "v21_reservation_wait_p04",
+            "label": "positive",
+            "policy_average_log_prob": -2.545116901397705,
+            "reference_average_log_prob": -2.559692859649658,
+            "implicit_preference_score": 0.02915191650390625
+          },
+          {
+            "id": "v21_reservation_wait_n01",
+            "label": "negative",
+            "policy_average_log_prob": -3.3354861736297607,
+            "reference_average_log_prob": -3.3346619606018066,
+            "implicit_preference_score": -0.0016484260559082031
+          },
+          {
+            "id": "v21_reservation_wait_n02",
+            "label": "negative",
+            "policy_average_log_prob": -1.367838740348816,
+            "reference_average_log_prob": -1.3623616695404053,
+            "implicit_preference_score": -0.010954141616821289
+          }
+        ]
+      }
+    ]
+  },
+  "research_boundary": "This implements the reference-based MPO group loss and first-order surrogate described by GroupDPO, using local groups of 4-6 V10 responses and automatic strict-contract labels. It is not a full-paper reproduction and cannot establish broad human preference without actual-generation holdout evidence."
+}

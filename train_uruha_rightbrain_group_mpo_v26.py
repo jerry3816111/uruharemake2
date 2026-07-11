@@ -395,18 +395,23 @@ def train_group_mpo(model, train_groups, eval_groups, args):
     }
 
 
-def main():
+def main(
+    default_output_dir=DEFAULT_OUTPUT_DIR,
+    default_run_report=RIGHTBRAIN_GROUP_MPO_V26_TRAINING_RUN_REPORT_PATH,
+    default_learning_rate=1e-7,
+    default_experiment_label="V26",
+):
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", default=RIGHTBRAIN_GROUP_PREFERENCE_V26_DATASET_PATH)
     parser.add_argument("--probe", default=RIGHTBRAIN_GROUP_PREFERENCE_V26_PROBE_JSON_PATH)
     parser.add_argument("--base-model", default=DEFAULT_BASE_MODEL)
     parser.add_argument("--init-adapter", default=DEFAULT_INIT_ADAPTER)
-    parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--run-report", default=RIGHTBRAIN_GROUP_MPO_V26_TRAINING_RUN_REPORT_PATH)
+    parser.add_argument("--output-dir", default=default_output_dir)
+    parser.add_argument("--run-report", default=default_run_report)
     parser.add_argument("--max-length", type=int, default=720)
     parser.add_argument("--eval-source-count", type=int, default=2)
     parser.add_argument("--epochs", type=float, default=1.0)
-    parser.add_argument("--learning-rate", type=float, default=1e-7)
+    parser.add_argument("--learning-rate", type=float, default=default_learning_rate)
     parser.add_argument("--beta", type=float, default=2.0)
     parser.add_argument("--positive-nll-weight", type=float, default=1.0)
     parser.add_argument("--weight-decay", type=float, default=0.0)
@@ -458,6 +463,11 @@ def main():
         "eval_source_ids": eval_sources,
         "source_overlap_count": len(set(train_sources) & set(eval_sources)),
         "positive_nll_weight": args.positive_nll_weight,
+        "epochs": args.epochs,
+        "learning_rate": args.learning_rate,
+        "beta": args.beta,
+        "weight_decay": args.weight_decay,
+        "seed": args.seed,
         "frozen_v10_absolute_eval_pairwise_preference_rate": probe[
             "initial_eval_absolute_group_metrics"
         ]["pairwise_positive_preference_rate"],
@@ -487,7 +497,8 @@ def main():
     tokenizer.save_pretrained(output_dir)
     report = {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
-        "scope": "rightbrain_group_mpo_v26_training",
+        "scope": f"rightbrain_group_mpo_{default_experiment_label.lower()}_training",
+        "experiment_label": default_experiment_label,
         "method": "reference_based_group_mpo_first_order_surrogate_with_positive_nll",
         "method_references": [
             "https://arxiv.org/abs/2604.15602",

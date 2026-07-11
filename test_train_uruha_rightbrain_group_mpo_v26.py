@@ -13,9 +13,17 @@ from train_uruha_rightbrain_group_mpo_v26 import (
     validate_probe,
     validate_probe_split,
 )
+from train_uruha_rightbrain_group_mpo_v27 import (
+    DEFAULT_LEARNING_RATE as V27_LEARNING_RATE,
+    DEFAULT_OUTPUT_DIR as V27_OUTPUT_DIR,
+)
 
 
 class RightBrainGroupMPOV26Test(unittest.TestCase):
+    def test_v27_changes_only_the_declared_learning_rate_output(self):
+        self.assertEqual(V27_LEARNING_RATE, 3e-7)
+        self.assertIn("v27_group_mpo_lr3e7", V27_OUTPUT_DIR)
+
     def test_surrogate_coefficients_match_direct_mpo_gradient(self):
         scores = torch.tensor(
             [0.2, -0.1, 0.3, -0.4],
