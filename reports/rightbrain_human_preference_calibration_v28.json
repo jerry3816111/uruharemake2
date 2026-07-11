@@ -1,0 +1,708 @@
+{
+  "generated_at": "2026-07-11T19:49:02+09:00",
+  "scope": "rightbrain_human_preference_calibration_v28",
+  "method_references": [
+    "https://arxiv.org/abs/2403.04132",
+    "https://proceedings.mlr.press/v235/tajwar24a.html",
+    "https://aclanthology.org/2024.acl-long.745/"
+  ],
+  "method": {
+    "primary_label": "blinded human final decision",
+    "cross_package_score_policy": "V15 four-dimensional scores and V16 two-dimensional scores are summarized separately; they are never collapsed into one shared scalar.",
+    "automatic_comparison_policy": "Programmatic pass versus human decisions is descriptive because candidate system identity is a measured confound.",
+    "training_policy": "Preference training requires at least two distinct candidates from the same current policy for one prompt, within-policy label variation, source integrity, and zero promotion-holdout overlap."
+  },
+  "summary": {
+    "source_count": 2,
+    "completed_task_count": 19,
+    "candidate_rating_count": 76,
+    "unique_candidate_text_count_within_task": 57,
+    "category_count": 5,
+    "category_counts": {
+      "protective_brake": 32,
+      "reference_probe": 8,
+      "relationship_temperature": 8,
+      "repair": 4,
+      "reply_anxiety": 24
+    },
+    "system_counts": {
+      "C1_GENERIC_PARAPHRASE_PROXY": 19,
+      "C2_TEMPLATE_RESPONSE": 19,
+      "C3_DIRECT_LEFTBRAIN_OUTPUT": 19,
+      "S0_URUHA_RIGHTBRAIN": 19
+    },
+    "human_decision_counts": {
+      "borderline": 34,
+      "no": 26,
+      "yes": 16
+    },
+    "programmatic_pass_count": 19,
+    "programmatic_fail_count": 57,
+    "rater_count": 1
+  },
+  "source_summaries": [
+    {
+      "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+      "source_package": "rightbrain_meaning_unseen_v15_fresh_after_reply_priority_repair",
+      "designed_task_count": 40,
+      "rating_row_count": 160,
+      "completed_candidate_count": 48,
+      "completed_task_count": 12,
+      "incomplete_candidate_count": 112,
+      "missing_join_count": 0,
+      "missing_join_ids": [],
+      "hashes": {
+        "ratings_sha256": "47aa1330830b4ce4779fb58e4d40471f21c385955bbaf55331a9a4cdbfa5e82c",
+        "key_sha256": "e19c39e272dd39a96a8ae3e42bc706840248c64a4bb87f4d55c0e88e923c33ae",
+        "sheet_sha256": "21b646091d131aaacc6d66e4499510e91533e9f8601f81f70832f0dddeb3716a"
+      },
+      "timestamp_precision": "date_only"
+    },
+    {
+      "source_id": "v16_followup_compact_partial_2026_05_24",
+      "source_package": "rightbrain_meaning_v16_followup_compact_blind_rating",
+      "designed_task_count": 12,
+      "rating_row_count": 48,
+      "completed_candidate_count": 28,
+      "completed_task_count": 7,
+      "incomplete_candidate_count": 20,
+      "missing_join_count": 0,
+      "missing_join_ids": [],
+      "hashes": {
+        "ratings_sha256": "4c59b2c5bb9bc18e313bde89a8ceea9f05fc2bdf19d14b0042adc17bb5717be1",
+        "key_sha256": "2d892500fc5d9621f088d436d4e4fde2bafa3bdb70a0e3f4d069858d194f41c8",
+        "sheet_sha256": "b68e9928504cee251c3cda14e3783594225ee086ebc72589487545ac34d6cb70"
+      },
+      "timestamp_precision": "date_only"
+    }
+  ],
+  "holdout_evidence": {
+    "reports": [
+      {
+        "ref": "rightbrain_plan_surface_boundary_holdout_c3.json",
+        "sha256": "e9bf3ebfa9f3f3819cee82246aa9c87d8c50b2ef8e631c12e694e3fbc78954d7"
+      },
+      {
+        "ref": "rightbrain_plan_surface_boundary_holdout_c3_seed20260709.json",
+        "sha256": "8c5cb8132653e83866f0ae8e202c451041a5a3844327328a847e74b8c555a056"
+      }
+    ],
+    "input_overlap_count": 0,
+    "input_overlaps": [],
+    "output_overlap_count": 0,
+    "output_overlaps": []
+  },
+  "cross_system_programmatic_calibration": {
+    "strict_human_yes": {
+      "true_positive": 9,
+      "false_positive": 10,
+      "true_negative": 50,
+      "false_negative": 7,
+      "precision": 0.47368421052631576,
+      "recall": 0.5625,
+      "specificity": 0.8333333333333334,
+      "balanced_accuracy": 0.6979166666666667,
+      "matthews_correlation": 0.37267799624996495
+    },
+    "human_acceptable_yes_or_borderline": {
+      "true_positive": 17,
+      "false_positive": 2,
+      "true_negative": 24,
+      "false_negative": 33,
+      "precision": 0.8947368421052632,
+      "recall": 0.34,
+      "specificity": 0.9230769230769231,
+      "balanced_accuracy": 0.6315384615384616,
+      "matthews_correlation": 0.2882306768491569
+    },
+    "causal_interpretation_allowed": false
+  },
+  "system_identity_confound": {
+    "programmatic_pass_systems": [
+      "S0_URUHA_RIGHTBRAIN"
+    ],
+    "programmatic_fail_systems": [
+      "C1_GENERIC_PARAPHRASE_PROXY",
+      "C2_TEMPLATE_RESPONSE",
+      "C3_DIRECT_LEFTBRAIN_OUTPUT"
+    ],
+    "programmatic_pass_identical_to_s0_identity": true,
+    "within_s0_programmatic_label_values": [
+      true
+    ],
+    "within_s0_human_decision_counts": {
+      "borderline": 8,
+      "no": 2,
+      "yes": 9
+    }
+  },
+  "within_policy_preference_evidence": {
+    "policy_system_id": "S0_URUHA_RIGHTBRAIN",
+    "candidate_count": 19,
+    "task_count": 19,
+    "multi_candidate_task_count": 0,
+    "pair_count": 0
+  },
+  "duplicate_candidate_evidence": {
+    "exact_duplicate_text_group_count": 19,
+    "duplicate_rating_disagreement_group_count": 11,
+    "duplicate_rating_disagreement_rate": 0.5789473684210527,
+    "duplicate_decision_disagreement_group_count": 7,
+    "duplicate_decision_disagreement_rate": 0.3684210526315789,
+    "disagreement_examples": [
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0001",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0001__B",
+          "rb_unseen15_0001__C"
+        ],
+        "decisions": [
+          "borderline",
+          "no"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 4.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 4.0
+          },
+          {
+            "semantic_completeness_1_5": 4.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 4.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0002",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0002__B",
+          "rb_unseen15_0002__D"
+        ],
+        "decisions": [
+          "borderline",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 4.0
+          },
+          {
+            "semantic_completeness_1_5": 3.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 3.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0005",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0005__B",
+          "rb_unseen15_0005__D"
+        ],
+        "decisions": [
+          "no",
+          "no"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 1.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 1.0,
+            "user_facing_ok_1_5": 1.0
+          },
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0006",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0006__A",
+          "rb_unseen15_0006__C"
+        ],
+        "decisions": [
+          "borderline",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 2.0
+          },
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0008",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0008__B",
+          "rb_unseen15_0008__D"
+        ],
+        "decisions": [
+          "no",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          },
+          {
+            "semantic_completeness_1_5": 3.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      }
+    ],
+    "decision_disagreement_examples": [
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0001",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0001__B",
+          "rb_unseen15_0001__C"
+        ],
+        "decisions": [
+          "borderline",
+          "no"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 4.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 4.0
+          },
+          {
+            "semantic_completeness_1_5": 4.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 4.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0008",
+        "output_text": "孤立する前に止め、一人にならず誰かか連絡先を使うように返す。",
+        "review_ids": [
+          "rb_unseen15_0008__B",
+          "rb_unseen15_0008__D"
+        ],
+        "decisions": [
+          "no",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          },
+          {
+            "semantic_completeness_1_5": 3.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0009",
+        "output_text": "返事がない不安を認め、自分で決めつけないように返す。",
+        "review_ids": [
+          "rb_unseen15_0009__A",
+          "rb_unseen15_0009__D"
+        ],
+        "decisions": [
+          "borderline",
+          "no"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 3.0
+          },
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0010",
+        "output_text": "返事がない不安を認め、自分で決めつけないように返す。",
+        "review_ids": [
+          "rb_unseen15_0010__A",
+          "rb_unseen15_0010__C"
+        ],
+        "decisions": [
+          "no",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          },
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 3.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      },
+      {
+        "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+        "task_id": "rb_unseen15_0012",
+        "output_text": "返事がない不安を認め、自分で決めつけないように返す。",
+        "review_ids": [
+          "rb_unseen15_0012__B",
+          "rb_unseen15_0012__D"
+        ],
+        "decisions": [
+          "no",
+          "borderline"
+        ],
+        "scores": [
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 2.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          },
+          {
+            "semantic_completeness_1_5": 2.0,
+            "naturalness_1_5": 3.0,
+            "style_consistency_1_5": 2.0,
+            "user_facing_ok_1_5": 2.0
+          }
+        ]
+      }
+    ]
+  },
+  "package_specific_dimension_summaries": [
+    {
+      "source_id": "v15_fresh_after_reply_priority_repair_partial_2026_05_24",
+      "score_fields": [
+        "naturalness_1_5",
+        "semantic_completeness_1_5",
+        "style_consistency_1_5",
+        "user_facing_ok_1_5"
+      ],
+      "systems": [
+        {
+          "system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+          "candidate_count": 12,
+          "dimension_means": {
+            "naturalness_1_5": 2.4166666666666665,
+            "semantic_completeness_1_5": 2.25,
+            "style_consistency_1_5": 2.3333333333333335,
+            "user_facing_ok_1_5": 2.4166666666666665
+          }
+        },
+        {
+          "system_id": "C2_TEMPLATE_RESPONSE",
+          "candidate_count": 12,
+          "dimension_means": {
+            "naturalness_1_5": 1.8333333333333333,
+            "semantic_completeness_1_5": 1.5833333333333333,
+            "style_consistency_1_5": 1.75,
+            "user_facing_ok_1_5": 1.5
+          }
+        },
+        {
+          "system_id": "C3_DIRECT_LEFTBRAIN_OUTPUT",
+          "candidate_count": 12,
+          "dimension_means": {
+            "naturalness_1_5": 2.5,
+            "semantic_completeness_1_5": 2.1666666666666665,
+            "style_consistency_1_5": 2.3333333333333335,
+            "user_facing_ok_1_5": 2.1666666666666665
+          }
+        },
+        {
+          "system_id": "S0_URUHA_RIGHTBRAIN",
+          "candidate_count": 12,
+          "dimension_means": {
+            "naturalness_1_5": 3.1666666666666665,
+            "semantic_completeness_1_5": 3.25,
+            "style_consistency_1_5": 3.0833333333333335,
+            "user_facing_ok_1_5": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "v16_followup_compact_partial_2026_05_24",
+      "score_fields": [
+        "human_likeness_1_5",
+        "semantic_understanding_1_5"
+      ],
+      "systems": [
+        {
+          "system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+          "candidate_count": 7,
+          "dimension_means": {
+            "human_likeness_1_5": 2.5714285714285716,
+            "semantic_understanding_1_5": 2.5714285714285716
+          }
+        },
+        {
+          "system_id": "C2_TEMPLATE_RESPONSE",
+          "candidate_count": 7,
+          "dimension_means": {
+            "human_likeness_1_5": 3.0,
+            "semantic_understanding_1_5": 1.8571428571428572
+          }
+        },
+        {
+          "system_id": "C3_DIRECT_LEFTBRAIN_OUTPUT",
+          "candidate_count": 7,
+          "dimension_means": {
+            "human_likeness_1_5": 2.5714285714285716,
+            "semantic_understanding_1_5": 2.4285714285714284
+          }
+        },
+        {
+          "system_id": "S0_URUHA_RIGHTBRAIN",
+          "candidate_count": 7,
+          "dimension_means": {
+            "human_likeness_1_5": 3.4285714285714284,
+            "semantic_understanding_1_5": 3.4285714285714284
+          }
+        }
+      ]
+    }
+  ],
+  "explicit_blind_preference_pairs": {
+    "pair_count": 7,
+    "error_count": 0,
+    "errors": [],
+    "pairs": [
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0013",
+        "input": "他沒回我，我覺得自己很多餘。",
+        "best_review_id": "rb_unseen15_0013__D",
+        "best_system_id": "S0_URUHA_RIGHTBRAIN",
+        "best_output_text": "返事がなくて不安でも、自分が余計だって決めつけるな。",
+        "best_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 3.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0013__A",
+        "worst_system_id": "C2_TEMPLATE_RESPONSE",
+        "worst_output_text": "それは大変だね。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 2.0,
+          "human_likeness_1_5": 2.0
+        },
+        "worst_decision": "borderline"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0016",
+        "input": "群裡沒人接話，我是不是把氣氛弄壞。",
+        "best_review_id": "rb_unseen15_0016__D",
+        "best_system_id": "S0_URUHA_RIGHTBRAIN",
+        "best_output_text": "返事がないと不安でも、空気を壊したって決めつけるな。",
+        "best_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 3.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0016__C",
+        "worst_system_id": "C2_TEMPLATE_RESPONSE",
+        "worst_output_text": "それは大変だね。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 1.0,
+          "human_likeness_1_5": 2.0
+        },
+        "worst_decision": "no"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0017",
+        "input": "第八季ED是哪首？",
+        "best_review_id": "rb_unseen15_0017__A",
+        "best_system_id": "C2_TEMPLATE_RESPONSE",
+        "best_output_text": "何の元ネタ？",
+        "best_scores": {
+          "semantic_understanding_1_5": 2.0,
+          "human_likeness_1_5": 4.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0017__C",
+        "worst_system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+        "worst_output_text": "八期EDだけでは特定できないので、作品名か曲名を聞き返す。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 2.0,
+          "human_likeness_1_5": 2.0
+        },
+        "worst_decision": "borderline"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0022",
+        "input": "限定活動ED我想不起來。",
+        "best_review_id": "rb_unseen15_0022__B",
+        "best_system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+        "best_output_text": "限定イベントEDだけでは特定できないので、作品名か曲名を聞き返す。",
+        "best_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 3.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0022__C",
+        "worst_system_id": "C2_TEMPLATE_RESPONSE",
+        "worst_output_text": "何の元ネタ？",
+        "worst_scores": {
+          "semantic_understanding_1_5": 1.0,
+          "human_likeness_1_5": 3.0
+        },
+        "worst_decision": "borderline"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0024",
+        "input": "你還會想聽我說下去嗎。",
+        "best_review_id": "rb_unseen15_0024__C",
+        "best_system_id": "C2_TEMPLATE_RESPONSE",
+        "best_output_text": "気にしすぎだよ。",
+        "best_scores": {
+          "semantic_understanding_1_5": 2.0,
+          "human_likeness_1_5": 3.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0024__D",
+        "worst_system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+        "worst_output_text": "関係確認を受け止め、必要なら軽く距離を保って返す。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 4.0,
+          "human_likeness_1_5": 3.0
+        },
+        "worst_decision": "borderline"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0028",
+        "input": "我去別人那邊掛一下你會管嗎。",
+        "best_review_id": "rb_unseen15_0028__B",
+        "best_system_id": "C2_TEMPLATE_RESPONSE",
+        "best_output_text": "気にしすぎだよ。",
+        "best_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 4.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0028__D",
+        "worst_system_id": "C3_DIRECT_LEFTBRAIN_OUTPUT",
+        "worst_output_text": "関係確認を受け止め、必要なら軽く距離を保って返す。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 2.0,
+          "human_likeness_1_5": 2.0
+        },
+        "worst_decision": "no"
+      },
+      {
+        "source_id": "v16_followup_compact_partial_2026_05_24",
+        "task_id": "rb_unseen15_0031",
+        "input": "你剛剛道歉太冷了，重新說。",
+        "best_review_id": "rb_unseen15_0031__B",
+        "best_system_id": "C1_GENERIC_PARAPHRASE_PROXY",
+        "best_output_text": "ごめんを拾って言い直す。",
+        "best_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 4.0
+        },
+        "best_decision": "yes",
+        "worst_review_id": "rb_unseen15_0031__C",
+        "worst_system_id": "S0_URUHA_RIGHTBRAIN",
+        "worst_output_text": "冷たく聞こえたなら悪い。ちゃんとごめん。",
+        "worst_scores": {
+          "semantic_understanding_1_5": 3.0,
+          "human_likeness_1_5": 3.0
+        },
+        "worst_decision": "borderline"
+      }
+    ]
+  },
+  "integrity_gates": {
+    "source_hashes_match_existing_evidence_report": true,
+    "all_completed_rows_have_key_labels": true,
+    "all_source_joins_are_complete": true,
+    "every_completed_task_has_four_candidate_ratings": true,
+    "promotion_holdout_input_overlap_is_zero": true,
+    "promotion_holdout_output_overlap_is_zero": true,
+    "explicit_best_worst_pairs_have_no_errors": true
+  },
+  "preference_training_gates": {
+    "source_hashes_match_existing_evidence_report": true,
+    "all_completed_rows_have_key_labels": true,
+    "all_source_joins_are_complete": true,
+    "every_completed_task_has_four_candidate_ratings": true,
+    "promotion_holdout_input_overlap_is_zero": true,
+    "promotion_holdout_output_overlap_is_zero": true,
+    "explicit_best_worst_pairs_have_no_errors": true,
+    "within_policy_pair_count_is_positive": false,
+    "within_policy_programmatic_label_has_both_values": false,
+    "programmatic_pass_is_not_identical_to_system_identity": false,
+    "exact_duplicate_human_decisions_are_consistent": false
+  },
+  "authorize_preference_training": false,
+  "population_human_preference_claim_gates": {
+    "training_data_gate_passed": false,
+    "at_least_two_independent_raters_available": false,
+    "inter_rater_reliability_is_available": false,
+    "population_sampling_design_is_available": false
+  },
+  "authorize_population_human_preference_claim": false,
+  "decision_zh": "現有盲評足以證明自動 contract pass 不等於人類偏好，但不能直接拿來訓練 V28：同一題只有一個 S0 右腦候選，within-policy 偏好對為 0，而且 programmatic pass 與 S0 系統身分完全重合。正式右腦維持 V10。",
+  "next_evidence_step_zh": "先在全新 development prompts 上由 V10 每題產生多個匿名候選，再收集同 policy 的成對偏好；promotion holdout 保持未觸碰。建立至少兩位獨立評分者後，才可主張一般人類偏好而非單一使用者偏好。",
+  "research_boundary": "This is a partial single-rater pilot. Cross-system confusion metrics are descriptive and confounded by candidate-system construction. The report authorizes neither preference training nor a population-level claim about human likeness."
+}

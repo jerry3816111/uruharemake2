@@ -444,6 +444,14 @@ RIGHTBRAIN_GROUP_MPO_V27_COMPARISON_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_group_mpo_v27_comparison.md",
 )
+RIGHTBRAIN_HUMAN_PREFERENCE_CALIBRATION_V28_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_preference_calibration_v28.json",
+)
+RIGHTBRAIN_HUMAN_PREFERENCE_CALIBRATION_V28_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_preference_calibration_v28.md",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
