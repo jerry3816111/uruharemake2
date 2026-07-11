@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-07-11T16:32:09+09:00",
+  "scope": "rightbrain_group_preference_v26_dataset",
+  "method": "cross_seed_unordered_positive_negative_response_groups",
+  "method_references": [
+    "https://proceedings.mlr.press/v267/gupta25c.html",
+    "https://arxiv.org/abs/2604.15602"
+  ],
+  "source_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "source_seeds": [
+    20260712,
+    20260713
+  ],
+  "source_report_evidence": [
+    {
+      "seed": 20260712,
+      "case_count": 16,
+      "case_ids_complete": true,
+      "model_loaded": true,
+      "generated_candidate_count": 48
+    },
+    {
+      "seed": 20260713,
+      "case_count": 16,
+      "case_ids_complete": true,
+      "model_loaded": true,
+      "generated_candidate_count": 48
+    }
+  ],
+  "development_case_count": 16,
+  "raw_unique_candidate_count": 94,
+  "raw_positive_count": 39,
+  "raw_negative_count": 55,
+  "group_count": 12,
+  "positive_candidate_count": 33,
+  "negative_candidate_count": 37,
+  "training_candidate_count": 70,
+  "group_size_min": 4,
+  "group_size_max": 6,
+  "group_size_mean": 5.833333333333333,
+  "source_family_count": 7,
+  "source_family_counts": {
+    "absurdity_tease": 2,
+    "daily_state": 2,
+    "fatigue_boundary": 1,
+    "planning_uncertainty": 2,
+    "private_background": 2,
+    "reference_repair": 1,
+    "reply_uncertainty": 2
+  },
+  "skipped_counts": {
+    "group_without_negative": 1,
+    "candidate_without_contrast": 24,
+    "group_without_positive": 3
+  },
+  "label_conflict_count": 0,
+  "label_conflict_examples": [],
+  "excluded_promotion_holdout_candidate_count": 0,
+  "excluded_promotion_holdout_candidate_examples": [],
+  "gates": {
+    "source_adapter_is_current_v10": true,
+    "source_report_count_is_two": true,
+    "source_seeds_are_unique": true,
+    "every_source_report_covers_all_cases": true,
+    "every_source_report_loaded_real_model": true,
+    "every_source_report_has_48_candidates": true,
+    "development_case_contract_valid": true,
+    "promotion_holdout_case_overlap_is_zero": true,
+    "promotion_holdout_input_overlap_is_zero": true,
+    "promotion_holdout_candidate_text_overlap_is_zero": true,
+    "candidate_label_conflict_count_is_zero": true,
+    "group_count_at_least_10": true,
+    "candidate_count_at_least_60": true,
+    "source_family_count_at_least_6": true,
+    "every_group_has_positive_and_negative": true,
+    "minimum_group_size_at_least_4": true,
+    "all_candidates_are_v10_on_policy": true
+  },
+  "authorize_group_probe": true,
+  "decision_zh": "V10 真實候選已形成來源隔離的多回答群組，可進入凍結 V10 的訓練前群組 probe。",
+  "research_boundary": "Responses are grouped by automatic strict-contract pass/fail labels from the current V10 policy. Multiple positives are intentionally unordered so training does not force one canonical reply. These labels measure contract realization, not broad human preference.",
+  "dataset_ref": "rightbrain_group_preference_v26.json",
+  "dataset_sha256": "a44fe69b3401216fa5c1c80e0af56d8e549f3ff2db4c960881117af682b63599",
+  "source_reports": [
+    {
+      "ref": "rightbrain_on_policy_dev_v21_seed20260712.json",
+      "sha256": "269e73b591220c3b3e47a35e187ffc0df1d73a501685d2ec7a03566a1c9273e2"
+    },
+    {
+      "ref": "rightbrain_on_policy_dev_v21_seed20260713.json",
+      "sha256": "c4b35e4e543c752d24521ae2b77925d720a0ec7b08041a99cb81e45004291da1"
+    }
+  ]
+}
