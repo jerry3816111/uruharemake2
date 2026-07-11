@@ -11,6 +11,8 @@ from pathlib import Path
 
 from rightbrain_language_quality import (
     ASCII_WORD_RE as LATIN_TOKEN_RE,
+    AUDITED_CHINESE_SPECIFIC_RE,
+    AUDITED_NONSTANDARD_CJK_RE,
     CHINESE_SPECIFIC_RE,
     INSTRUCTION_MARKERS,
     JAPANESE_RE,
@@ -133,8 +135,14 @@ def extract_candidate_features(text, payload):
     japanese_count = len(JAPANESE_CHAR_RE.findall(text))
     kana_count = len(KANA_RE.findall(text))
     latin_count = len(LATIN_TOKEN_RE.findall(text))
-    chinese_count = len(CHINESE_SPECIFIC_RE.findall(text))
-    nonstandard_count = len(NONSTANDARD_CJK_RE.findall(text)) + text.count(UNICODE_REPLACEMENT_CHAR)
+    chinese_count = len(CHINESE_SPECIFIC_RE.findall(text)) + len(
+        AUDITED_CHINESE_SPECIFIC_RE.findall(text)
+    )
+    nonstandard_count = (
+        len(NONSTANDARD_CJK_RE.findall(text))
+        + len(AUDITED_NONSTANDARD_CJK_RE.findall(text))
+        + text.count(UNICODE_REPLACEMENT_CHAR)
+    )
     polite_count = len(POLITE_RE.findall(text))
     instruction_count = sum(text.lower().count(marker.lower()) for marker in INSTRUCTION_MARKERS)
     forbidden_count = _count_occurrences(text, forbidden)

@@ -57,6 +57,38 @@ class RightBrainAuditedMemorySurfaceEvalTest(unittest.TestCase):
         self.assertTrue(_has_bad_language("今日はBODY CHEMISTRYを見る。"))
         self.assertFalse(_has_bad_language("今日は無理しないで休め。"))
 
+    def test_external_quality_rejects_audited_v10_cjk_residue(self):
+        polluted = [
+            "共同作业の返事を待て。",
+            "头痛の時は作業を休め。",
+            "その台詞だけだと游戏が分からない。",
+            "どのゲームか分からなさそう呢。",
+            "浅井小姐に聞いて。",
+        ]
+        clean = [
+            "共同作業の返事を待て。",
+            "頭痛の時は作業を休め。",
+            "そのゲームは分からない。",
+            "浅井さんに聞いて。",
+        ]
+
+        self.assertTrue(all(_has_bad_language(text) for text in polluted))
+        self.assertTrue(all(not _has_bad_language(text) for text in clean))
+
+    def test_historical_policy_only_bypasses_newly_audited_residue(self):
+        self.assertFalse(
+            _has_bad_language(
+                "共同作业の返事を待て。",
+                include_audited_residue=False,
+            )
+        )
+        self.assertTrue(
+            _has_bad_language(
+                "今天怎么样？",
+                include_audited_residue=False,
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

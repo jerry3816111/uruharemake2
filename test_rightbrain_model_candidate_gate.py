@@ -742,6 +742,26 @@ class TestRightBrainModelCandidateGate(unittest.TestCase):
 
         self.assertIn("nonstandard_cjk_surface", reasons)
 
+    def test_gate_rejects_additional_audited_v10_cjk_residue(self):
+        rightbrain = RightBrain(load_model=False)
+        logic = reply_anxiety_logic()
+        cases = [
+            ("共同作业の返事を待て。", "nonstandard_cjk_surface"),
+            ("头痛の時は作業を休め。", "nonstandard_cjk_surface"),
+            ("その台詞だけだと游戏が分からない。", "nonstandard_cjk_surface"),
+            ("どのゲームか分からなさそう呢。", "cjk_language_leak"),
+            ("浅井小姐に聞いて。", "cjk_language_leak"),
+        ]
+
+        for reply, expected_reason in cases:
+            with self.subTest(reply=reply):
+                reasons = rightbrain._model_candidate_rejection_reasons(
+                    reply,
+                    logic,
+                    max_chars=80,
+                )
+                self.assertIn(expected_reason, reasons)
+
     def test_model_is_disabled_without_structured_semantic_contract(self):
         rightbrain = build_rightbrain(["今日は休め。<|im_end|>"])
         logic = {

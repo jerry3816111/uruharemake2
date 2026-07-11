@@ -90,7 +90,7 @@ def _candidate_text(row):
     return str(row.get("candidate") or row.get("raw_candidate") or "").strip()
 
 
-def _strict_candidate_pool(raw_case, case):
+def _strict_candidate_pool(raw_case, case, include_audited_residue=True):
     strict_accepted = []
     strict_rejected = []
     for row in raw_case.get("model_accepted_candidates") or []:
@@ -99,7 +99,11 @@ def _strict_candidate_pool(raw_case, case):
         text = _candidate_text(row)
         if not text:
             continue
-        quality = _evaluate_surface_quality(text, case)
+        quality = _evaluate_surface_quality(
+            text,
+            case,
+            include_audited_residue=include_audited_residue,
+        )
         reasons = _strict_quality_reasons(quality)
         record = {
             "text": text,
@@ -116,7 +120,11 @@ def _strict_candidate_pool(raw_case, case):
         text = str(row.get("raw_candidate") or "").strip()
         if not text:
             continue
-        quality = _evaluate_surface_quality(text, case)
+        quality = _evaluate_surface_quality(
+            text,
+            case,
+            include_audited_residue=include_audited_residue,
+        )
         reasons = list(row.get("rejection_reasons") or [])
         reasons.extend(_strict_quality_reasons(quality))
         strict_rejected.append(
@@ -209,7 +217,11 @@ def build_pairs(raw_reports, cases=None, promotion_holdout_outputs=None):
             case = case_map.get(raw_case.get("id"))
             if case is None:
                 raise ValueError(f"Unexpected V21 case in raw report: {raw_case.get('id')}")
-            accepted, rejected = _strict_candidate_pool(raw_case, case)
+            accepted, rejected = _strict_candidate_pool(
+                raw_case,
+                case,
+                include_audited_residue=False,
+            )
             if not accepted:
                 skipped["case_without_strict_on_policy_chosen"] += 1
                 continue

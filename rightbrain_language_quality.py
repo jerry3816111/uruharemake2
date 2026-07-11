@@ -52,6 +52,11 @@ NONSTANDARD_CJK_RE = re.compile(
     r"|[无围强复简单體圍國學氣會來處變與樂臺]"
     r"|范围|範圍"
 )
+# Frozen V21/V26 reports predate these audited residues. Keep them separate so
+# historical dataset builders can reproduce their original labels while every
+# current runtime/evaluation path rejects them by default.
+AUDITED_CHINESE_SPECIFIC_RE = re.compile(r"呢|小姐")
+AUDITED_NONSTANDARD_CJK_RE = re.compile(r"[业头戏戲]")
 POLITE_RE = re.compile(
     r"(?:"
     r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)"
@@ -75,11 +80,18 @@ def has_japanese(text):
     return bool(JAPANESE_RE.search(str(text or "")))
 
 
-def has_bad_language(text, reject_latin=True):
+def has_bad_language(text, reject_latin=True, include_audited_residue=True):
     text = str(text or "")
     return bool(
         CHINESE_SPECIFIC_RE.search(text)
         or NONSTANDARD_CJK_RE.search(text)
+        or (
+            include_audited_residue
+            and (
+                AUDITED_CHINESE_SPECIFIC_RE.search(text)
+                or AUDITED_NONSTANDARD_CJK_RE.search(text)
+            )
+        )
         or FOREIGN_SCRIPT_RE.search(text)
         or ASCII_SYMBOL_ARTIFACT_RE.search(text)
         or UNICODE_REPLACEMENT_CHAR in text

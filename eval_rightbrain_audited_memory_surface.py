@@ -187,8 +187,11 @@ def _has_japanese(text):
     return has_japanese(text)
 
 
-def _has_bad_language(text):
-    return has_bad_language(text)
+def _has_bad_language(text, include_audited_residue=True):
+    return has_bad_language(
+        text,
+        include_audited_residue=include_audited_residue,
+    )
 
 
 def _contains_anchor(reply, case):

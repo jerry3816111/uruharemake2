@@ -59,6 +59,8 @@ from rightbrain_repair_selector import (
 from rightbrain_language_quality import (
     ASCII_SYMBOL_ARTIFACT_RE,
     ASCII_WORD_RE,
+    AUDITED_CHINESE_SPECIFIC_RE,
+    AUDITED_NONSTANDARD_CJK_RE,
     AWKWARD_OR_CAREGIVER_SURFACE_RE,
     CHINESE_SPECIFIC_RE,
     FOREIGN_SCRIPT_RE,
@@ -11762,9 +11764,9 @@ You are Ichinose Uruha.
         if not re.search(r"[ぁ-んァ-ヶー一-龠]", reply):
             reasons.append("missing_japanese_surface")
 
-        if CHINESE_SPECIFIC_RE.search(reply):
+        if CHINESE_SPECIFIC_RE.search(reply) or AUDITED_CHINESE_SPECIFIC_RE.search(reply):
             reasons.append("cjk_language_leak")
-        if NONSTANDARD_CJK_RE.search(reply):
+        if NONSTANDARD_CJK_RE.search(reply) or AUDITED_NONSTANDARD_CJK_RE.search(reply):
             reasons.append("nonstandard_cjk_surface")
         if FOREIGN_SCRIPT_RE.search(reply):
             reasons.append("foreign_script_leak")

@@ -97,7 +97,7 @@ def _case_inputs():
     return cases
 
 
-def _evaluate_surface_quality(reply, case):
+def _evaluate_surface_quality(reply, case, include_audited_residue=True):
     from eval_rightbrain_audited_memory_surface import (
         _contains_anchor,
         _forbidden_hits,
@@ -134,7 +134,11 @@ def _evaluate_surface_quality(reply, case):
         "forbidden_surface_leak": bool(forbidden_hits),
         "generic_template_hits": template_hits,
         "generic_template_hit": bool(template_hits),
-        "language_clean": _has_japanese(reply) and not _has_bad_language(reply),
+        "language_clean": _has_japanese(reply)
+        and not _has_bad_language(
+            reply,
+            include_audited_residue=include_audited_residue,
+        ),
         "awkward_surface_free": not has_awkward_surface(reply),
         "response_plan_leak_free": not has_response_plan_leak(reply),
         "unrelated_settings_template": "設定を調整" in reply,
