@@ -112,6 +112,7 @@ def tokenize_pair(row, tokenizer, max_length):
     return {
         "id": row["id"],
         "source_case_id": row["source_case_id"],
+        "source_prompt_id": row.get("source_prompt_id") or row["source_case_id"],
         "chosen": _tokenize_completion(
             row["prompt_messages"],
             row["chosen"],

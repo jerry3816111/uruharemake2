@@ -1,13 +1,39 @@
 {
-  "generated_at": "2026-07-11T07:54:18+09:00",
+  "generated_at": "2026-07-11T16:06:01+09:00",
   "scope": "rightbrain_on_policy_preference_training_decision",
   "runtime_adapter_before": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
   "runtime_adapter_after": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
-  "candidate_count": 2,
+  "candidate_count": 5,
   "candidates": [
     {
       "label": "V21 1-epoch",
       "adapter_ref": "uruha_rightbrain_plan_sft_lora_v21_on_policy_simpo_v1",
+      "method": "length_normalized_reference_free_simpo",
+      "prompt_balance_enabled": false,
+      "chosen_nll_weight": 0.0,
+      "factor_cell": "pairwise",
+      "training_controls": {
+        "base_model": "Qwen/Qwen2.5-7B-Instruct",
+        "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+        "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "epochs": 1.0,
+        "learning_rate": 1e-07,
+        "beta": 2.5,
+        "gamma_beta_ratio": 0.1,
+        "grad_accum": 4,
+        "seed": 20260710,
+        "train_source_ids": [
+          "v21_daily_state",
+          "v21_fatigue_boundary",
+          "v21_private_background",
+          "v21_reference_repair",
+          "v21_reply_uncertainty"
+        ],
+        "eval_source_ids": [
+          "v21_absurdity_tease",
+          "v21_planning_uncertainty"
+        ]
+      },
       "epochs": 1.0,
       "learning_rate": 1e-07,
       "optimizer_updates": 5,
@@ -82,11 +108,38 @@
         "unseen_mean_preferred_log_prob_non_decreasing": true,
         "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
       },
+      "numerically_complete": true,
       "authorize_actual_model_holdout": false
     },
     {
       "label": "V22 3-epoch",
       "adapter_ref": "uruha_rightbrain_plan_sft_lora_v22_on_policy_simpo_3epoch_v1",
+      "method": "length_normalized_reference_free_simpo",
+      "prompt_balance_enabled": false,
+      "chosen_nll_weight": 0.0,
+      "factor_cell": "pairwise",
+      "training_controls": {
+        "base_model": "Qwen/Qwen2.5-7B-Instruct",
+        "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+        "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "epochs": 3.0,
+        "learning_rate": 1e-07,
+        "beta": 2.5,
+        "gamma_beta_ratio": 0.1,
+        "grad_accum": 4,
+        "seed": 20260710,
+        "train_source_ids": [
+          "v21_daily_state",
+          "v21_fatigue_boundary",
+          "v21_private_background",
+          "v21_reference_repair",
+          "v21_reply_uncertainty"
+        ],
+        "eval_source_ids": [
+          "v21_absurdity_tease",
+          "v21_planning_uncertainty"
+        ]
+      },
       "epochs": 3.0,
       "learning_rate": 1e-07,
       "optimizer_updates": 14,
@@ -161,13 +214,469 @@
         "unseen_mean_preferred_log_prob_non_decreasing": true,
         "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
       },
+      "numerically_complete": true,
+      "authorize_actual_model_holdout": false
+    },
+    {
+      "label": "V23 prompt-balanced",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v23_prompt_balanced_simpo_v1",
+      "method": "length_normalized_reference_free_simpo_prompt_balanced",
+      "prompt_balance_enabled": true,
+      "chosen_nll_weight": 0.0,
+      "factor_cell": "prompt_balanced",
+      "training_controls": {
+        "base_model": "Qwen/Qwen2.5-7B-Instruct",
+        "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+        "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "epochs": 3.0,
+        "learning_rate": 1e-07,
+        "beta": 2.5,
+        "gamma_beta_ratio": 0.1,
+        "grad_accum": 4,
+        "seed": 20260710,
+        "train_source_ids": [
+          "v21_daily_state",
+          "v21_fatigue_boundary",
+          "v21_private_background",
+          "v21_reference_repair",
+          "v21_reply_uncertainty"
+        ],
+        "eval_source_ids": [
+          "v21_absurdity_tease",
+          "v21_planning_uncertainty"
+        ]
+      },
+      "epochs": 3.0,
+      "learning_rate": 1e-07,
+      "optimizer_updates": 14,
+      "expected_optimizer_updates": 14,
+      "nonfinite_skips": 0,
+      "max_observed_gradient_norm": 4693620.5,
+      "initial_eval_chosen_preference_rate": 0.4,
+      "final_train_chosen_preference_rate": 0.5,
+      "final_eval_chosen_preference_rate": 0.3,
+      "initial_eval_target_margin_rate": 0.2,
+      "final_eval_target_margin_rate": 0.2,
+      "initial_eval_mean_raw_margin": -0.44199581146240235,
+      "final_eval_mean_raw_margin": -0.4475722908973694,
+      "eval_mean_raw_margin_delta": -0.00557647943496703,
+      "preferred_likelihood": {
+        "pair_count": 10,
+        "mean_chosen_average_log_prob_delta": 0.004659533500671387,
+        "preferred_likelihood_decreased_count": 4,
+        "preferred_likelihood_decrease_rate": 0.4,
+        "rows": [
+          {
+            "id": "rb_on_policy_preference_v21_0007",
+            "chosen_average_log_prob_delta": 0.042942047119140625
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0008",
+            "chosen_average_log_prob_delta": -0.029684782028198242
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0009",
+            "chosen_average_log_prob_delta": -0.002878904342651367
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0010",
+            "chosen_average_log_prob_delta": 0.005184650421142578
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0011",
+            "chosen_average_log_prob_delta": 0.005184650421142578
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0022",
+            "chosen_average_log_prob_delta": 0.0214536190032959
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0023",
+            "chosen_average_log_prob_delta": -0.004403352737426758
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0024",
+            "chosen_average_log_prob_delta": -0.004403352737426758
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0025",
+            "chosen_average_log_prob_delta": 0.006600379943847656
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0026",
+            "chosen_average_log_prob_delta": 0.006600379943847656
+          }
+        ]
+      },
+      "gates": {
+        "train_eval_source_overlap_is_zero": true,
+        "all_optimizer_updates_completed": true,
+        "nonfinite_training_events_are_zero": true,
+        "train_chosen_preference_rate_at_least_75pct": false,
+        "unseen_chosen_preference_rate_at_least_75pct": false,
+        "unseen_mean_margin_improved": false,
+        "unseen_target_margin_rate_at_least_50pct": false,
+        "preferred_likelihood_evidence_is_complete": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": true,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
+      },
+      "numerically_complete": true,
+      "authorize_actual_model_holdout": false
+    },
+    {
+      "label": "V24 balanced + chosen-NLL",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v24_prompt_balanced_nll_simpo_v1",
+      "method": "length_normalized_reference_free_simpo_prompt_balanced_chosen_nll",
+      "prompt_balance_enabled": true,
+      "chosen_nll_weight": 1.0,
+      "factor_cell": "prompt_balanced_chosen_nll",
+      "training_controls": {
+        "base_model": "Qwen/Qwen2.5-7B-Instruct",
+        "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+        "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "epochs": 3.0,
+        "learning_rate": 1e-07,
+        "beta": 2.5,
+        "gamma_beta_ratio": 0.1,
+        "grad_accum": 4,
+        "seed": 20260710,
+        "train_source_ids": [
+          "v21_daily_state",
+          "v21_fatigue_boundary",
+          "v21_private_background",
+          "v21_reference_repair",
+          "v21_reply_uncertainty"
+        ],
+        "eval_source_ids": [
+          "v21_absurdity_tease",
+          "v21_planning_uncertainty"
+        ]
+      },
+      "epochs": 3.0,
+      "learning_rate": 1e-07,
+      "optimizer_updates": 14,
+      "expected_optimizer_updates": 14,
+      "nonfinite_skips": 0,
+      "max_observed_gradient_norm": 2702753.0,
+      "initial_eval_chosen_preference_rate": 0.4,
+      "final_train_chosen_preference_rate": 0.5,
+      "final_eval_chosen_preference_rate": 0.4,
+      "initial_eval_target_margin_rate": 0.2,
+      "final_eval_target_margin_rate": 0.2,
+      "initial_eval_mean_raw_margin": -0.44199581146240235,
+      "final_eval_mean_raw_margin": -0.42824764251708985,
+      "eval_mean_raw_margin_delta": 0.0137481689453125,
+      "preferred_likelihood": {
+        "pair_count": 10,
+        "mean_chosen_average_log_prob_delta": 0.015019512176513672,
+        "preferred_likelihood_decreased_count": 1,
+        "preferred_likelihood_decrease_rate": 0.1,
+        "rows": [
+          {
+            "id": "rb_on_policy_preference_v21_0007",
+            "chosen_average_log_prob_delta": 0.02119159698486328
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0008",
+            "chosen_average_log_prob_delta": -0.019333839416503906
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0009",
+            "chosen_average_log_prob_delta": 0.008149862289428711
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0010",
+            "chosen_average_log_prob_delta": 0.01946568489074707
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0011",
+            "chosen_average_log_prob_delta": 0.01946568489074707
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0022",
+            "chosen_average_log_prob_delta": 0.02802872657775879
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0023",
+            "chosen_average_log_prob_delta": 0.014458656311035156
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0024",
+            "chosen_average_log_prob_delta": 0.014458656311035156
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0025",
+            "chosen_average_log_prob_delta": 0.022155046463012695
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0026",
+            "chosen_average_log_prob_delta": 0.022155046463012695
+          }
+        ]
+      },
+      "gates": {
+        "train_eval_source_overlap_is_zero": true,
+        "all_optimizer_updates_completed": true,
+        "nonfinite_training_events_are_zero": true,
+        "train_chosen_preference_rate_at_least_75pct": false,
+        "unseen_chosen_preference_rate_at_least_75pct": false,
+        "unseen_mean_margin_improved": true,
+        "unseen_target_margin_rate_at_least_50pct": false,
+        "preferred_likelihood_evidence_is_complete": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": true,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
+      },
+      "numerically_complete": true,
+      "authorize_actual_model_holdout": false
+    },
+    {
+      "label": "V25 pairwise + chosen-NLL",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v25_pairwise_nll_simpo_v1",
+      "method": "length_normalized_reference_free_simpo_chosen_nll",
+      "prompt_balance_enabled": false,
+      "chosen_nll_weight": 1.0,
+      "factor_cell": "pairwise_chosen_nll",
+      "training_controls": {
+        "base_model": "Qwen/Qwen2.5-7B-Instruct",
+        "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+        "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "epochs": 3.0,
+        "learning_rate": 1e-07,
+        "beta": 2.5,
+        "gamma_beta_ratio": 0.1,
+        "grad_accum": 4,
+        "seed": 20260710,
+        "train_source_ids": [
+          "v21_daily_state",
+          "v21_fatigue_boundary",
+          "v21_private_background",
+          "v21_reference_repair",
+          "v21_reply_uncertainty"
+        ],
+        "eval_source_ids": [
+          "v21_absurdity_tease",
+          "v21_planning_uncertainty"
+        ]
+      },
+      "epochs": 3.0,
+      "learning_rate": 1e-07,
+      "optimizer_updates": 13,
+      "expected_optimizer_updates": 14,
+      "nonfinite_skips": 1,
+      "max_observed_gradient_norm": 376961.4375,
+      "initial_eval_chosen_preference_rate": 0.4,
+      "final_train_chosen_preference_rate": 0.5,
+      "final_eval_chosen_preference_rate": 0.4,
+      "initial_eval_target_margin_rate": 0.2,
+      "final_eval_target_margin_rate": 0.2,
+      "initial_eval_mean_raw_margin": -0.44199581146240235,
+      "final_eval_mean_raw_margin": -0.43040010929107664,
+      "eval_mean_raw_margin_delta": 0.011595702171325717,
+      "preferred_likelihood": {
+        "pair_count": 10,
+        "mean_chosen_average_log_prob_delta": 0.006139564514160156,
+        "preferred_likelihood_decreased_count": 2,
+        "preferred_likelihood_decrease_rate": 0.2,
+        "rows": [
+          {
+            "id": "rb_on_policy_preference_v21_0007",
+            "chosen_average_log_prob_delta": 0.021868467330932617
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0008",
+            "chosen_average_log_prob_delta": -0.01210784912109375
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0009",
+            "chosen_average_log_prob_delta": -0.01721978187561035
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0010",
+            "chosen_average_log_prob_delta": 0.007909774780273438
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0011",
+            "chosen_average_log_prob_delta": 0.007909774780273438
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0022",
+            "chosen_average_log_prob_delta": 0.01798248291015625
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0023",
+            "chosen_average_log_prob_delta": 0.005602836608886719
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0024",
+            "chosen_average_log_prob_delta": 0.005602836608886719
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0025",
+            "chosen_average_log_prob_delta": 0.011923551559448242
+          },
+          {
+            "id": "rb_on_policy_preference_v21_0026",
+            "chosen_average_log_prob_delta": 0.011923551559448242
+          }
+        ]
+      },
+      "gates": {
+        "train_eval_source_overlap_is_zero": true,
+        "all_optimizer_updates_completed": false,
+        "nonfinite_training_events_are_zero": false,
+        "train_chosen_preference_rate_at_least_75pct": false,
+        "unseen_chosen_preference_rate_at_least_75pct": false,
+        "unseen_mean_margin_improved": true,
+        "unseen_target_margin_rate_at_least_50pct": false,
+        "preferred_likelihood_evidence_is_complete": true,
+        "unseen_mean_preferred_log_prob_non_decreasing": true,
+        "unseen_preferred_likelihood_decrease_rate_at_most_50pct": true
+      },
+      "numerically_complete": false,
       "authorize_actual_model_holdout": false
     }
   ],
+  "factorial_analysis": {
+    "design": "2x2_prompt_balance_by_chosen_nll",
+    "complete_four_cell_design": true,
+    "selected_control_signature": {
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+      "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "epochs": 3.0,
+      "learning_rate": 1e-07,
+      "beta": 2.5,
+      "gamma_beta_ratio": 0.1,
+      "grad_accum": 4,
+      "seed": 20260710,
+      "train_source_ids": [
+        "v21_daily_state",
+        "v21_fatigue_boundary",
+        "v21_private_background",
+        "v21_reference_repair",
+        "v21_reply_uncertainty"
+      ],
+      "eval_source_ids": [
+        "v21_absurdity_tease",
+        "v21_planning_uncertainty"
+      ]
+    },
+    "cells": {
+      "pairwise": {
+        "label": "V22 3-epoch",
+        "prompt_balance_enabled": false,
+        "chosen_nll_weight": 0.0,
+        "final_eval_chosen_preference_rate": 0.4,
+        "final_eval_target_margin_rate": 0.2,
+        "eval_mean_raw_margin_delta": 0.012513542175292991,
+        "mean_chosen_average_log_prob_delta": 0.014738869667053223,
+        "optimizer_updates": 14,
+        "expected_optimizer_updates": 14,
+        "nonfinite_skips": 0,
+        "numerically_complete": true
+      },
+      "prompt_balanced": {
+        "label": "V23 prompt-balanced",
+        "prompt_balance_enabled": true,
+        "chosen_nll_weight": 0.0,
+        "final_eval_chosen_preference_rate": 0.3,
+        "final_eval_target_margin_rate": 0.2,
+        "eval_mean_raw_margin_delta": -0.00557647943496703,
+        "mean_chosen_average_log_prob_delta": 0.004659533500671387,
+        "optimizer_updates": 14,
+        "expected_optimizer_updates": 14,
+        "nonfinite_skips": 0,
+        "numerically_complete": true
+      },
+      "prompt_balanced_chosen_nll": {
+        "label": "V24 balanced + chosen-NLL",
+        "prompt_balance_enabled": true,
+        "chosen_nll_weight": 1.0,
+        "final_eval_chosen_preference_rate": 0.4,
+        "final_eval_target_margin_rate": 0.2,
+        "eval_mean_raw_margin_delta": 0.0137481689453125,
+        "mean_chosen_average_log_prob_delta": 0.015019512176513672,
+        "optimizer_updates": 14,
+        "expected_optimizer_updates": 14,
+        "nonfinite_skips": 0,
+        "numerically_complete": true
+      },
+      "pairwise_chosen_nll": {
+        "label": "V25 pairwise + chosen-NLL",
+        "prompt_balance_enabled": false,
+        "chosen_nll_weight": 1.0,
+        "final_eval_chosen_preference_rate": 0.4,
+        "final_eval_target_margin_rate": 0.2,
+        "eval_mean_raw_margin_delta": 0.011595702171325717,
+        "mean_chosen_average_log_prob_delta": 0.006139564514160156,
+        "optimizer_updates": 13,
+        "expected_optimizer_updates": 14,
+        "nonfinite_skips": 1,
+        "numerically_complete": false
+      }
+    },
+    "missing_cells": [],
+    "comparisons": [
+      {
+        "id": "prompt_balance_without_nll",
+        "changed_factor": "prompt balance",
+        "baseline": "V22 3-epoch",
+        "treatment": "V23 prompt-balanced",
+        "valid_single_factor_comparison": true,
+        "exclusion_reason_zh": null,
+        "final_eval_preference_delta_pp": -10.0,
+        "final_eval_target_margin_delta_pp": 0.0,
+        "eval_mean_margin_gain_difference": -0.01809002161026002,
+        "preferred_log_prob_gain_difference": -0.010079336166381837
+      },
+      {
+        "id": "chosen_nll_without_balance",
+        "changed_factor": "chosen NLL",
+        "baseline": "V22 3-epoch",
+        "treatment": "V25 pairwise + chosen-NLL",
+        "valid_single_factor_comparison": false,
+        "exclusion_reason_zh": "至少一組發生非有限梯度或少做 optimizer update，不能當作乾淨因果比較。",
+        "final_eval_preference_delta_pp": 0.0,
+        "final_eval_target_margin_delta_pp": 0.0,
+        "eval_mean_margin_gain_difference": -0.000917840003967274,
+        "preferred_log_prob_gain_difference": -0.008599305152893068
+      },
+      {
+        "id": "chosen_nll_with_balance",
+        "changed_factor": "chosen NLL",
+        "baseline": "V23 prompt-balanced",
+        "treatment": "V24 balanced + chosen-NLL",
+        "valid_single_factor_comparison": true,
+        "exclusion_reason_zh": null,
+        "final_eval_preference_delta_pp": 10.0,
+        "final_eval_target_margin_delta_pp": 0.0,
+        "eval_mean_margin_gain_difference": 0.01932464838027953,
+        "preferred_log_prob_gain_difference": 0.010359978675842286
+      },
+      {
+        "id": "prompt_balance_with_nll",
+        "changed_factor": "prompt balance",
+        "baseline": "V25 pairwise + chosen-NLL",
+        "treatment": "V24 balanced + chosen-NLL",
+        "valid_single_factor_comparison": false,
+        "exclusion_reason_zh": "至少一組發生非有限梯度或少做 optimizer update，不能當作乾淨因果比較。",
+        "final_eval_preference_delta_pp": 0.0,
+        "final_eval_target_margin_delta_pp": 0.0,
+        "eval_mean_margin_gain_difference": 0.002152466773986783,
+        "preferred_log_prob_gain_difference": 0.008879947662353515
+      }
+    ],
+    "research_boundary": "This is a one-seed local 2x2 ablation. Only comparisons with complete optimizer updates and zero non-finite events support a single-factor interpretation; none establish broad human preference."
+  },
   "authorized_candidate_count": 0,
   "selected_adapter": null,
   "run_actual_model_holdout": false,
   "decision_zh": "沒有候選通過未見偏好學習 gate；不執行昂貴 runtime holdout，正式右腦維持 V10。",
-  "diagnosis_zh": "on-policy 資料確實揭露 V10 的自然錯誤，但目前 pair-level SimPO 沒有把未見偏好率推高；增加 epoch 只放大梯度，沒有改善正確排序。下一輪應平衡每個 source prompt 的總梯度，避免同一 prompt 因 rejected 候選較多而被重複加權。",
+  "diagnosis_zh": "單獨加入 prompt 平衡後，未見偏好率變化 -10.0 pp，沒有形成正向證據。在 prompt 平衡固定開啟時，chosen NLL 使未見偏好率變化 +10.0 pp，但仍須通過絕對 gate 才能上線。含數值異常候選的比較已排除因果解讀，不用不完整訓練替候選加分。目前證據只支持 chosen NLL 可降低退化風險，不支持這批 pairwise 資料已讓右腦學會穩定偏好排序；正式右腦維持 V10。",
+  "research_references": [
+    "https://github.com/princeton-nlp/SimPO",
+    "https://proceedings.mlr.press/v267/gupta25c.html",
+    "https://arxiv.org/abs/2604.15602"
+  ],
   "research_boundary": "Automatic strict-contract labels measure semantic and surface contract realization, not broad human preference. Failing this gate blocks promotion; passing it would still require independent multi-seed generation and the untouched promotion holdout."
 }
