@@ -1,0 +1,491 @@
+{
+  "generated_at": "2026-07-11T13:12:36+09:00",
+  "method": "length_normalized_reference_free_simpo_prompt_balanced",
+  "method_reference": "https://arxiv.org/abs/2405.14734",
+  "grouping_references": [
+    "https://proceedings.mlr.press/v267/gupta25c.html",
+    "https://arxiv.org/abs/2604.15602"
+  ],
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "dataset_ref": "rightbrain_on_policy_preference_v21.json",
+  "dataset_sha256": "a0da2aa763a9d088f985e885ac7d0c6793493eeb05f2782050e6ed6f8c3ed485",
+  "init_adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+  "init_adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+  "output_adapter_ref": "uruha_rightbrain_plan_sft_lora_v23_prompt_balanced_simpo_v1",
+  "output_adapter_config_sha256": "76957d6f266c40301ca2aea7fca36c57ffb3e304e3b411043826787010b440f0",
+  "output_adapter_model_sha256": "8fe3796b3f15005b50d7f18f24c46eb7df24ba8579a34aa55ed3628295ae68e2",
+  "pair_count": 28,
+  "train_pair_count": 18,
+  "eval_pair_count": 10,
+  "train_source_ids": [
+    "v21_daily_state",
+    "v21_fatigue_boundary",
+    "v21_private_background",
+    "v21_reference_repair",
+    "v21_reply_uncertainty"
+  ],
+  "eval_source_ids": [
+    "v21_absurdity_tease",
+    "v21_planning_uncertainty"
+  ],
+  "source_overlap_count": 0,
+  "prompt_balance": {
+    "enabled": true,
+    "pair_count": 18,
+    "prompt_count": 8,
+    "pair_counts_by_prompt": {
+      "v21_background_deadline_pressure": 3,
+      "v21_current_mood": 2,
+      "v21_headache_work": 3,
+      "v21_invitation_reply_delay": 2,
+      "v21_private_relationship_topic": 3,
+      "v21_project_reply_delay": 2,
+      "v21_recent_activity": 1,
+      "v21_song_fragment": 2
+    },
+    "pre_balance_prompt_contribution_ratio": 3.0,
+    "target_total_weight_per_prompt": 2.25,
+    "sample_weight_min": 0.75,
+    "sample_weight_max": 2.25,
+    "sample_weight_mean": 1.0,
+    "prompt_weight_totals": {
+      "v21_background_deadline_pressure": 2.25,
+      "v21_current_mood": 2.25,
+      "v21_headache_work": 2.25,
+      "v21_invitation_reply_delay": 2.25,
+      "v21_private_relationship_topic": 2.25,
+      "v21_project_reply_delay": 2.25,
+      "v21_recent_activity": 2.25,
+      "v21_song_fragment": 2.25
+    },
+    "post_balance_prompt_weight_spread": 0.0
+  },
+  "epochs": 3.0,
+  "learning_rate": 1e-07,
+  "beta": 2.5,
+  "gamma_beta_ratio": 0.1,
+  "gamma": 0.25,
+  "grad_accum": 4,
+  "disabled_dropout_module_count": 196,
+  "seed": 20260710,
+  "dtype": "torch.bfloat16",
+  "duration_seconds": 1890.841,
+  "target_pair_steps": 54,
+  "consumed_pair_steps": 54,
+  "optimizer_updates": 14,
+  "nonfinite_skips": 0,
+  "max_observed_gradient_norm": 4693620.5,
+  "mean_train_simpo_loss": 3.1983447678137087,
+  "mean_train_weighted_simpo_loss": 3.6180140746809126,
+  "initial_eval_preference": {
+    "pair_count": 10,
+    "chosen_preference_rate": 0.4,
+    "target_margin_rate": 0.2,
+    "mean_raw_preference_margin": -0.44199581146240235,
+    "mean_target_reward_margin": -1.354989516735077,
+    "mean_loss": 1.8407002896070481,
+    "rows": [
+      {
+        "id": "rb_on_policy_preference_v21_0007",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "chosen_average_log_prob": -3.7059922218322754,
+        "rejected_average_log_prob": -2.0912322998046875,
+        "raw_preference_margin": -1.614759922027588,
+        "target_reward_margin": -4.286899566650391,
+        "loss": 4.300553321838379
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0008",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.5259222984313965,
+        "rejected_average_log_prob": -2.3523693084716797,
+        "raw_preference_margin": -0.1735529899597168,
+        "target_reward_margin": -0.683882474899292,
+        "loss": 1.0924453735351562
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0009",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.192847490310669,
+        "rejected_average_log_prob": -2.280266523361206,
+        "raw_preference_margin": 0.08741903305053711,
+        "target_reward_margin": -0.03145241737365723,
+        "loss": 0.7089970111846924
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0010",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "chosen_average_log_prob": -2.559692859649658,
+        "rejected_average_log_prob": -1.3623616695404053,
+        "raw_preference_margin": -1.197331190109253,
+        "target_reward_margin": -3.243328094482422,
+        "loss": 3.2816193103790283
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0011",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "chosen_average_log_prob": -2.559692859649658,
+        "rejected_average_log_prob": -3.3346619606018066,
+        "raw_preference_margin": 0.7749691009521484,
+        "target_reward_margin": 1.687422752380371,
+        "loss": 0.16973909735679626
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0022",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "chosen_average_log_prob": -3.4122610092163086,
+        "rejected_average_log_prob": -2.6525051593780518,
+        "raw_preference_margin": -0.7597558498382568,
+        "target_reward_margin": -2.1493897438049316,
+        "loss": 2.2596380710601807
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0023",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.1898796558380127,
+        "rejected_average_log_prob": -0.7137775421142578,
+        "raw_preference_margin": -1.4761021137237549,
+        "target_reward_margin": -3.9402551651000977,
+        "loss": 3.9595117568969727
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0024",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.1898796558380127,
+        "rejected_average_log_prob": -2.2028427124023438,
+        "raw_preference_margin": 0.012963056564331055,
+        "target_reward_margin": -0.21759235858917236,
+        "loss": 0.8078499436378479
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0025",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.1759285926818848,
+        "rejected_average_log_prob": -1.9247162342071533,
+        "raw_preference_margin": -0.25121235847473145,
+        "target_reward_margin": -0.8780308961868286,
+        "loss": 1.225584626197815
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0026",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.1759285926818848,
+        "rejected_average_log_prob": -2.3533337116241455,
+        "raw_preference_margin": 0.17740511894226074,
+        "target_reward_margin": 0.19351279735565186,
+        "loss": 0.6010643839836121
+      }
+    ]
+  },
+  "final_train_preference": {
+    "pair_count": 18,
+    "chosen_preference_rate": 0.5,
+    "target_margin_rate": 0.5,
+    "mean_raw_preference_margin": -0.6019288367695279,
+    "mean_target_reward_margin": -1.7548220422532823,
+    "mean_loss": 3.184931106348005,
+    "rows": [
+      {
+        "id": "rb_on_policy_preference_v21_0001",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_project_reply_delay",
+        "chosen_average_log_prob": -2.50386905670166,
+        "rejected_average_log_prob": -1.9150079488754272,
+        "raw_preference_margin": -0.5888611078262329,
+        "target_reward_margin": -1.7221527099609375,
+        "loss": 1.8865488767623901
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0002",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_project_reply_delay",
+        "chosen_average_log_prob": -2.50386905670166,
+        "rejected_average_log_prob": -2.7710859775543213,
+        "raw_preference_margin": 0.26721692085266113,
+        "target_reward_margin": 0.41804230213165283,
+        "loss": 0.5058136582374573
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0003",
+        "source_case_id": "v21_fatigue_boundary",
+        "source_prompt_id": "v21_headache_work",
+        "chosen_average_log_prob": -1.73371160030365,
+        "rejected_average_log_prob": -2.8699162006378174,
+        "raw_preference_margin": 1.1362046003341675,
+        "target_reward_margin": 2.5905115604400635,
+        "loss": 0.07230363041162491
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0004",
+        "source_case_id": "v21_reference_repair",
+        "source_prompt_id": "v21_song_fragment",
+        "chosen_average_log_prob": -3.707435131072998,
+        "rejected_average_log_prob": -1.895297646522522,
+        "raw_preference_margin": -1.812137484550476,
+        "target_reward_margin": -4.780343532562256,
+        "loss": 4.78870153427124
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0005",
+        "source_case_id": "v21_reference_repair",
+        "source_prompt_id": "v21_song_fragment",
+        "chosen_average_log_prob": -3.707435131072998,
+        "rejected_average_log_prob": -2.7526750564575195,
+        "raw_preference_margin": -0.9547600746154785,
+        "target_reward_margin": -2.6369001865386963,
+        "loss": 2.7060370445251465
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0006",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_current_mood",
+        "chosen_average_log_prob": -4.692033767700195,
+        "rejected_average_log_prob": -0.5243788957595825,
+        "raw_preference_margin": -4.167654991149902,
+        "target_reward_margin": -10.669137954711914,
+        "loss": 10.669160842895508
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0012",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_background_deadline_pressure",
+        "chosen_average_log_prob": -2.1143763065338135,
+        "rejected_average_log_prob": -2.258810520172119,
+        "raw_preference_margin": 0.14443421363830566,
+        "target_reward_margin": 0.11108553409576416,
+        "loss": 0.639146089553833
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0013",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_background_deadline_pressure",
+        "chosen_average_log_prob": -2.1143763065338135,
+        "rejected_average_log_prob": -4.0528950691223145,
+        "raw_preference_margin": 1.938518762588501,
+        "target_reward_margin": 4.596296787261963,
+        "loss": 0.010038603097200394
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0014",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_private_relationship_topic",
+        "chosen_average_log_prob": -4.797727584838867,
+        "rejected_average_log_prob": -1.195838451385498,
+        "raw_preference_margin": -3.601889133453369,
+        "target_reward_margin": -9.254722595214844,
+        "loss": 9.254817962646484
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0015",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_private_relationship_topic",
+        "chosen_average_log_prob": -4.797727584838867,
+        "rejected_average_log_prob": -3.2979602813720703,
+        "raw_preference_margin": -1.4997673034667969,
+        "target_reward_margin": -3.999418258666992,
+        "loss": 4.017578601837158
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0016",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_invitation_reply_delay",
+        "chosen_average_log_prob": -0.9892967343330383,
+        "rejected_average_log_prob": -2.669548273086548,
+        "raw_preference_margin": 1.6802515983581543,
+        "target_reward_margin": 3.950629234313965,
+        "loss": 0.01905984617769718
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0017",
+        "source_case_id": "v21_reply_uncertainty",
+        "source_prompt_id": "v21_invitation_reply_delay",
+        "chosen_average_log_prob": -0.9892967343330383,
+        "rejected_average_log_prob": -3.481733560562134,
+        "raw_preference_margin": 2.4924368858337402,
+        "target_reward_margin": 5.98109245300293,
+        "loss": 0.0025228597223758698
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0018",
+        "source_case_id": "v21_fatigue_boundary",
+        "source_prompt_id": "v21_headache_work",
+        "chosen_average_log_prob": -1.2747514247894287,
+        "rejected_average_log_prob": -1.5149357318878174,
+        "raw_preference_margin": 0.24018430709838867,
+        "target_reward_margin": 0.3504607677459717,
+        "loss": 0.5331916213035583
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0019",
+        "source_case_id": "v21_fatigue_boundary",
+        "source_prompt_id": "v21_headache_work",
+        "chosen_average_log_prob": -1.2747514247894287,
+        "rejected_average_log_prob": -2.4944210052490234,
+        "raw_preference_margin": 1.2196695804595947,
+        "target_reward_margin": 2.7991738319396973,
+        "loss": 0.05908016115427017
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0020",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_recent_activity",
+        "chosen_average_log_prob": -4.528964519500732,
+        "rejected_average_log_prob": -1.6343661546707153,
+        "raw_preference_margin": -2.8945984840393066,
+        "target_reward_margin": -7.4864959716796875,
+        "loss": 7.487056255340576
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0021",
+        "source_case_id": "v21_daily_state",
+        "source_prompt_id": "v21_current_mood",
+        "chosen_average_log_prob": -4.578653335571289,
+        "rejected_average_log_prob": -1.4958547353744507,
+        "raw_preference_margin": -3.082798480987549,
+        "target_reward_margin": -7.956995964050293,
+        "loss": 7.957345962524414
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0027",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_background_deadline_pressure",
+        "chosen_average_log_prob": -1.769364595413208,
+        "rejected_average_log_prob": -2.9817733764648438,
+        "raw_preference_margin": 1.2124087810516357,
+        "target_reward_margin": 2.781022071838379,
+        "loss": 0.06013049557805061
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0028",
+        "source_case_id": "v21_private_background",
+        "source_prompt_id": "v21_private_relationship_topic",
+        "chosen_average_log_prob": -4.155674457550049,
+        "rejected_average_log_prob": -1.5920968055725098,
+        "raw_preference_margin": -2.563577651977539,
+        "target_reward_margin": -6.658944129943848,
+        "loss": 6.660225868225098
+      }
+    ]
+  },
+  "final_eval_preference": {
+    "pair_count": 10,
+    "chosen_preference_rate": 0.3,
+    "target_margin_rate": 0.2,
+    "mean_raw_preference_margin": -0.4475722908973694,
+    "mean_target_reward_margin": -1.3689307272434235,
+    "mean_loss": 1.8514672964811325,
+    "rows": [
+      {
+        "id": "rb_on_policy_preference_v21_0007",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "chosen_average_log_prob": -3.6630501747131348,
+        "rejected_average_log_prob": -2.071894884109497,
+        "raw_preference_margin": -1.5911552906036377,
+        "target_reward_margin": -4.227888107299805,
+        "loss": 4.242365837097168
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0008",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.5556070804595947,
+        "rejected_average_log_prob": -2.3680264949798584,
+        "raw_preference_margin": -0.18758058547973633,
+        "target_reward_margin": -0.7189514636993408,
+        "loss": 1.1158888339996338
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0009",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.1957263946533203,
+        "rejected_average_log_prob": -2.2532858848571777,
+        "raw_preference_margin": 0.05755949020385742,
+        "target_reward_margin": -0.10610127449035645,
+        "loss": 0.7476043105125427
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0010",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "chosen_average_log_prob": -2.5545082092285156,
+        "rejected_average_log_prob": -1.351487398147583,
+        "raw_preference_margin": -1.2030208110809326,
+        "target_reward_margin": -3.257552146911621,
+        "loss": 3.2953126430511475
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0011",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_reservation_wait",
+        "chosen_average_log_prob": -2.5545082092285156,
+        "rejected_average_log_prob": -3.3444058895111084,
+        "raw_preference_margin": 0.7898976802825928,
+        "target_reward_margin": 1.724744200706482,
+        "loss": 0.1640036404132843
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0022",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_toaster_mayor",
+        "chosen_average_log_prob": -3.3908073902130127,
+        "rejected_average_log_prob": -2.6349411010742188,
+        "raw_preference_margin": -0.755866289138794,
+        "target_reward_margin": -2.1396656036376953,
+        "loss": 2.2509334087371826
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0023",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.1942830085754395,
+        "rejected_average_log_prob": -0.6807353496551514,
+        "raw_preference_margin": -1.513547658920288,
+        "target_reward_margin": -4.03386926651001,
+        "loss": 4.051420211791992
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0024",
+        "source_case_id": "v21_absurdity_tease",
+        "source_prompt_id": "v21_cat_moon_tax",
+        "chosen_average_log_prob": -2.1942830085754395,
+        "rejected_average_log_prob": -2.175501823425293,
+        "raw_preference_margin": -0.018781185150146484,
+        "target_reward_margin": -0.2969529628753662,
+        "loss": 0.8526060581207275
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0025",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.169328212738037,
+        "rejected_average_log_prob": -1.9323023557662964,
+        "raw_preference_margin": -0.23702585697174072,
+        "target_reward_margin": -0.8425646424293518,
+        "loss": 1.2006618976593018
+      },
+      {
+        "id": "rb_on_policy_preference_v21_0026",
+        "source_case_id": "v21_planning_uncertainty",
+        "source_prompt_id": "v21_weather_plan",
+        "chosen_average_log_prob": -2.169328212738037,
+        "rejected_average_log_prob": -2.353125810623169,
+        "raw_preference_margin": 0.18379759788513184,
+        "target_reward_margin": 0.2094939947128296,
+        "loss": 0.5938761234283447
+      }
+    ]
+  },
+  "research_boundary": "Prompt balancing is a local inverse-multiplicity weighting ablation motivated by multi-preference research; it is not a reproduction of AMPO or GroupDPO. Promotion still requires source-separated preference gates and matched-seed actual-model holdouts against V10."
+}

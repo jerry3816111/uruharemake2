@@ -30,6 +30,7 @@ def _row(index, source="source-a"):
     return {
         "id": f"row-{index}",
         "source_case_id": source,
+        "source_prompt_id": f"prompt-{index}",
         "prompt_messages": [
             {"role": "system", "content": "system"},
             {"role": "user", "content": "user"},
@@ -82,6 +83,7 @@ class RightBrainDPOV18Test(unittest.TestCase):
         tokenized = tokenize_pair(_row(1), FakeTokenizer(), max_length=64)
 
         chosen = tokenized["chosen"]
+        self.assertEqual(tokenized["source_prompt_id"], "prompt-1")
         self.assertEqual(chosen["completion_mask"].shape, chosen["input_ids"].shape)
         self.assertGreater(chosen["completion_token_count"], 0)
         self.assertFalse(bool(chosen["completion_mask"][0, 0]))

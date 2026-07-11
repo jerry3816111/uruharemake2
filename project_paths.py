@@ -380,6 +380,18 @@ RIGHTBRAIN_ON_POLICY_PREFERENCE_V22_TRAINING_RUN_REPORT_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_v22_training_run.json",
 )
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V23_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v23_training_run.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V24_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v24_training_run.json",
+)
+RIGHTBRAIN_ON_POLICY_PREFERENCE_V25_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_preference_v25_training_run.json",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
