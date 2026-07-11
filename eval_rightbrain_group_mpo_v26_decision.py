@@ -96,6 +96,7 @@ def absolute_policy_ranking(metrics):
 
 
 def build_decision(training_report):
+    experiment_label = str(training_report.get("experiment_label") or "V26")
     initial_train = training_report["initial_train_group_metrics"]
     initial_eval = training_report["initial_eval_group_metrics"]
     final_train = training_report["final_train_group_metrics"]
@@ -168,16 +169,31 @@ def build_decision(training_report):
         final_eval_absolute["pairwise_positive_preference_rate"]
         - initial_eval_absolute["pairwise_positive_preference_rate"]
     )
-    diagnosis_zh = (
-        f"相對 reference 的未見排序達 {final_eval['pairwise_positive_preference_rate']:.1%}，"
-        f"但模型絕對排序只由 {initial_eval_absolute['pairwise_positive_preference_rate']:.1%} "
+    diagnosis_prefix = (
+        f"相對 reference 的未見排序為 {final_eval['pairwise_positive_preference_rate']:.1%}，"
+        f"模型絕對排序由 {initial_eval_absolute['pairwise_positive_preference_rate']:.1%} "
         f"變為 {final_eval_absolute['pairwise_positive_preference_rate']:.1%} "
-        f"({absolute_eval_delta:+.1%})，正集合機率僅增加 {positive_mass_gain:+.2%}。"
-        "這證明更新方向多數正確，但幅度不足以翻轉原本錯排，不能把相對分數當成實際能力提升。"
+        f"({absolute_eval_delta:+.1%})，正集合機率變化 {positive_mass_gain:+.2%}。"
     )
+    if absolute_eval_delta < 0:
+        diagnosis_zh = (
+            diagnosis_prefix
+            + "絕對錯排反而增加，這個候選必須拒絕；不能把相對 reference 的位移誤報為實際能力提升。"
+        )
+    elif absolute_eval_delta == 0:
+        diagnosis_zh = (
+            diagnosis_prefix
+            + "絕對錯排沒有任何翻轉，只能說更新幅度不足；相對分數不是實際能力提升。"
+        )
+    else:
+        diagnosis_zh = (
+            diagnosis_prefix
+            + "絕對排序已有正向翻轉，但仍需全部預設 gate 通過才能進入實際生成比較。"
+        )
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
-        "scope": "rightbrain_group_mpo_v26_training_decision",
+        "scope": f"rightbrain_group_mpo_{experiment_label.lower()}_training_decision",
+        "experiment_label": experiment_label,
         "runtime_adapter_before": RUNTIME_ADAPTER,
         "runtime_adapter_after": RUNTIME_ADAPTER,
         "candidate_adapter": training_report["output_adapter_ref"],
@@ -225,14 +241,15 @@ def build_decision(training_report):
             "positive_likelihood": likelihood,
         },
         "decision_zh": (
-            "V26 通過群組排序、正回答機率與數值穩定 gate，可進入未觸碰的雙 seed runtime holdout；尚未授權上線。"
+            f"{experiment_label} 通過群組排序、正回答機率與數值穩定 gate，可進入未觸碰的雙 seed runtime holdout；尚未授權上線。"
             if authorized
-            else "V26 未通過群組訓練 gate，不執行 runtime holdout，正式右腦維持 V10。"
+            else f"{experiment_label} 未通過群組訓練 gate，不執行 runtime holdout，正式右腦維持 V10。"
         ),
         "diagnosis_zh": diagnosis_zh,
         "next_experiment_zh": (
-            "下一個可歸因實驗只把 learning rate 從 1e-7 提高到 3e-7；資料、MPO、NLL、seed、epoch "
-            "與全部 gate 固定。V26 的 0 次非有限事件支持測試較大更新，但不保證 V27 會通過。"
+            "先執行未觸碰的雙 seed runtime holdout，不再調整訓練參數。"
+            if authorized
+            else "候選仍未達 promotion gate；下一個實驗必須依失敗 gate 選擇單一變因，不能直接上線。"
         ),
         "research_boundary": (
             "Passing these likelihood gates would authorize only actual-generation comparison against V10. "
@@ -246,7 +263,7 @@ def build_decision(training_report):
 def write_markdown(report, path):
     metrics = report["metrics"]
     lines = [
-        "# RightBrain V26 Group MPO 決策",
+        f"# RightBrain {report['experiment_label']} Group MPO 決策",
         "",
         "## 結論",
         "",
@@ -286,11 +303,15 @@ def write_markdown(report, path):
     Path(path).write_text("\n".join(lines), encoding="utf-8")
 
 
-def main():
+def main(
+    default_training_report=RIGHTBRAIN_GROUP_MPO_V26_TRAINING_RUN_REPORT_PATH,
+    default_output_json=RIGHTBRAIN_GROUP_MPO_V26_DECISION_JSON_PATH,
+    default_output_md=RIGHTBRAIN_GROUP_MPO_V26_DECISION_MD_PATH,
+):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--training-report", default=RIGHTBRAIN_GROUP_MPO_V26_TRAINING_RUN_REPORT_PATH)
-    parser.add_argument("--output-json", default=RIGHTBRAIN_GROUP_MPO_V26_DECISION_JSON_PATH)
-    parser.add_argument("--output-md", default=RIGHTBRAIN_GROUP_MPO_V26_DECISION_MD_PATH)
+    parser.add_argument("--training-report", default=default_training_report)
+    parser.add_argument("--output-json", default=default_output_json)
+    parser.add_argument("--output-md", default=default_output_md)
     args = parser.parse_args()
     training_report = json.loads(Path(args.training_report).read_text(encoding="utf-8"))
     report = build_decision(training_report)

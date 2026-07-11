@@ -424,6 +424,26 @@ RIGHTBRAIN_GROUP_MPO_V26_DECISION_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_group_mpo_v26_decision.md",
 )
+RIGHTBRAIN_GROUP_MPO_V27_TRAINING_RUN_REPORT_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_group_mpo_v27_training_run.json",
+)
+RIGHTBRAIN_GROUP_MPO_V27_DECISION_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_group_mpo_v27_decision.json",
+)
+RIGHTBRAIN_GROUP_MPO_V27_DECISION_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_group_mpo_v27_decision.md",
+)
+RIGHTBRAIN_GROUP_MPO_V27_COMPARISON_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_group_mpo_v27_comparison.json",
+)
+RIGHTBRAIN_GROUP_MPO_V27_COMPARISON_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_group_mpo_v27_comparison.md",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
