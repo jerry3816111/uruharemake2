@@ -130,7 +130,11 @@ def build_groups(raw_reports=None, cases=None, promotion_holdout_outputs=None):
             raw_case = raw_case_map.get(case["id"])
             if raw_case is None:
                 continue
-            accepted, rejected = _strict_candidate_pool(raw_case, case)
+            accepted, rejected = _strict_candidate_pool(
+                raw_case,
+                case,
+                include_audited_residue=False,
+            )
             for row in accepted:
                 _merge_candidate(
                     candidates,

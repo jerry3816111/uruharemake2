@@ -58,6 +58,20 @@ class RightBrainRepairSelectorTest(unittest.TestCase):
         features = extract_candidate_features("今日は无理しないで休め。範�", row["contract_payload"])
         self.assertGreater(features["nonstandard_cjk_density"], 0.0)
 
+    def test_surface_features_include_newly_audited_v10_residue(self):
+        row = self.rows[0]
+        nonstandard = extract_candidate_features(
+            "共同作业の返事を待て。",
+            row["contract_payload"],
+        )
+        chinese = extract_candidate_features(
+            "どのゲームか分からなさそう呢。",
+            row["contract_payload"],
+        )
+
+        self.assertGreater(nonstandard["nonstandard_cjk_density"], 0.0)
+        self.assertGreater(chinese["chinese_marker_density"], 0.0)
+
     def test_semantic_features_prefer_current_leftbrain_meaning(self):
         payload = {
             "context": {"max_chars": 80},
