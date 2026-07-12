@@ -480,6 +480,14 @@ RIGHTBRAIN_ON_POLICY_V29_RATINGS_PATH = os.path.join(
     WEB_LOG_DIR,
     "rightbrain_on_policy_v29_ratings.json",
 )
+RIGHTBRAIN_ON_POLICY_V29_ANALYSIS_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_human_analysis.json",
+)
+RIGHTBRAIN_ON_POLICY_V29_ANALYSIS_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_on_policy_v29_human_analysis.md",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
