@@ -500,6 +500,14 @@ RIGHTBRAIN_HUMAN_ON_POLICY_PREFERENCE_V30_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_human_on_policy_preference_v30.md",
 )
+RIGHTBRAIN_HUMAN_PREFERENCE_V31_PROBE_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_preference_v31_frozen_probe.json",
+)
+RIGHTBRAIN_HUMAN_PREFERENCE_V31_PROBE_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_preference_v31_frozen_probe.md",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",
