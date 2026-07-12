@@ -48,6 +48,11 @@ def _dataset_report(pair_count):
         "source_family_count": pair_count,
         "dataset_file_sha256": "a" * 64,
         "dataset_canonical_sha256": "b" * 64,
+        "source_evidence": {
+            "package_file_sha256": "c" * 64,
+            "key_file_sha256": "d" * 64,
+            "ratings_file_sha256": "e" * 64,
+        },
     }
 
 
@@ -116,6 +121,10 @@ class RightBrainHumanPreferenceV31Test(unittest.TestCase):
         self.assertFalse(report["decision"]["authorize_runtime_promotion"])
         self.assertFalse(report["training_performed"])
         self.assertEqual(report["optimizer_updates"], 0)
+        self.assertEqual(
+            report["dataset_evidence"]["v30_source_evidence"],
+            _dataset_report(len(rows))["source_evidence"],
+        )
 
     def test_one_misranking_is_diagnostic_not_training_trigger(self):
         rows = [

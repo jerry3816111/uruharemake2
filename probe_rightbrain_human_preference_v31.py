@@ -296,6 +296,7 @@ def build_probe_report(
             "dataset_canonical_sha256": dataset_report.get(
                 "dataset_canonical_sha256"
             ),
+            "v30_source_evidence": dataset_report.get("source_evidence") or {},
         },
         "adapter_evidence": adapter_evidence,
         "model_metadata": model_metadata,
@@ -439,6 +440,7 @@ def main(argv=None):
         default=RIGHTBRAIN_HUMAN_PREFERENCE_V31_PROBE_MD_PATH,
     )
     args = parser.parse_args(argv)
+    _remove_stale_outputs((args.output_json, args.output_md))
 
     required_paths = {
         "dataset": args.dataset,
@@ -449,7 +451,6 @@ def main(argv=None):
     }
     missing = [name for name, path in required_paths.items() if not Path(path).is_file()]
     if missing:
-        _remove_stale_outputs((args.output_json, args.output_md))
         print(
             json.dumps(
                 {"status": "waiting_for_v30_human_evidence", "missing": missing},
