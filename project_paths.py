@@ -488,6 +488,18 @@ RIGHTBRAIN_ON_POLICY_V29_ANALYSIS_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_v29_human_analysis.md",
 )
+RIGHTBRAIN_HUMAN_ON_POLICY_PREFERENCE_V30_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "rightbrain_human_on_policy_preference_v30.json",
+)
+RIGHTBRAIN_HUMAN_ON_POLICY_PREFERENCE_V30_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_on_policy_preference_v30.json",
+)
+RIGHTBRAIN_HUMAN_ON_POLICY_PREFERENCE_V30_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_human_on_policy_preference_v30.md",
+)
 RIGHTBRAIN_ON_POLICY_PREFERENCE_DECISION_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_on_policy_preference_decision.json",

@@ -5,6 +5,7 @@ import argparse
 import json
 import math
 import random
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -30,9 +31,36 @@ from train_uruha_rightbrain_contract_v1 import (
 TZ = ZoneInfo("Asia/Tokyo")
 DEFAULT_INIT_ADAPTER = "./uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"
 DEFAULT_OUTPUT_DIR = "./uruha_rightbrain_plan_sft_lora_v18_semantic_dpo_v1"
+HUMAN_PREFERENCE_RULE = "single_rater_blinded_same_policy_decisive_choice"
+HUMAN_PREFERENCE_TRAINING_ROLE = "rightbrain_v10_human_on_policy_preference_v30"
+HUMAN_PREFERENCE_ADAPTER = "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
-def load_preference_rows(path):
+def _valid_human_preference_evidence(row):
+    evidence = row.get("human_preference_evidence") or {}
+    diagnostics = row.get("pair_diagnostics") or {}
+    chosen_id = str(evidence.get("chosen_candidate_id") or "")
+    rejected_id = str(evidence.get("rejected_candidate_id") or "")
+    return all(
+        [
+            row.get("training_role") == HUMAN_PREFERENCE_TRAINING_ROLE,
+            row.get("on_policy_adapter_ref") == HUMAN_PREFERENCE_ADAPTER,
+            bool(SHA256_RE.fullmatch(str(row.get("on_policy_adapter_sha256") or ""))),
+            bool(str(evidence.get("comparison_id") or "")),
+            evidence.get("human_choice") in {"left_better", "right_better"},
+            bool(chosen_id),
+            bool(rejected_id),
+            chosen_id != rejected_id,
+            bool(SHA256_RE.fullmatch(str(evidence.get("package_sha256") or ""))),
+            evidence.get("single_rater") is True,
+            diagnostics.get("chosen_hard_surface_pass") is True,
+            diagnostics.get("rejected_hard_surface_pass") is True,
+        ]
+    )
+
+
+def load_preference_rows(path, allow_human_preference=False):
     rows = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(rows, list) or not rows:
         raise ValueError("Preference dataset must be a non-empty JSON list")
@@ -65,7 +93,14 @@ def load_preference_rows(path):
                 diagnostics.get("rejected_strict_quality_pass") is False,
             ]
         )
-        if not semantic_preference and not strict_surface_preference:
+        human_rule = row.get("preference_rule") == HUMAN_PREFERENCE_RULE
+        if human_rule and not (
+            allow_human_preference and _valid_human_preference_evidence(row)
+        ):
+            raise ValueError(
+                f"Human preference row lacks authorized evidence for {row_id}"
+            )
+        if not human_rule and not semantic_preference and not strict_surface_preference:
             raise ValueError(
                 f"Rejected completion is neither semantically weaker nor a validated surface failure for {row_id}"
             )
