@@ -160,6 +160,22 @@ LONGMEMEVAL_EVIDENCE_LEDGER_DEVELOPMENT_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "longmemeval_evidence_ledger_development_report.md",
 )
+LONGMEMEVAL_EVIDENCE_LEDGER_HELDOUT_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_evidence_ledger_heldout_report.json",
+)
+LONGMEMEVAL_EVIDENCE_LEDGER_HELDOUT_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_evidence_ledger_heldout_report.md",
+)
+LONGMEMEVAL_EVIDENCE_LEDGER_HELDOUT_ANALYSIS_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_evidence_ledger_heldout_analysis.json",
+)
+LONGMEMEVAL_EVIDENCE_LEDGER_HELDOUT_ANALYSIS_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_evidence_ledger_heldout_analysis.md",
+)
 REPLY_DIVERSITY_REPORT_PATH = os.path.join(REPORTS_DIR, "reply_diversity_report.json")
 RUNTIME_DYNAMICS_REPORT_PATH = os.path.join(REPORTS_DIR, "runtime_dynamics_report.json")
 STRESS_EVAL_REPORT_PATH = os.path.join(REPORTS_DIR, "stress_eval_report_10000.json")
