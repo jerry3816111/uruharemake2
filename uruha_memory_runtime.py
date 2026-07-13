@@ -1,12 +1,131 @@
 import re
 import datetime
 
+MEMORY_SCORING_PROFILES = frozenset({"legacy", "v2"})
+MEMORY_CONTENT_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "be",
+        "been",
+        "but",
+        "by",
+        "can",
+        "did",
+        "do",
+        "does",
+        "for",
+        "from",
+        "had",
+        "has",
+        "have",
+        "he",
+        "her",
+        "his",
+        "how",
+        "i",
+        "in",
+        "is",
+        "it",
+        "me",
+        "my",
+        "of",
+        "on",
+        "or",
+        "she",
+        "that",
+        "the",
+        "their",
+        "them",
+        "they",
+        "this",
+        "to",
+        "was",
+        "were",
+        "what",
+        "when",
+        "where",
+        "which",
+        "who",
+        "why",
+        "will",
+        "with",
+        "would",
+        "you",
+        "your",
+        "user",
+        "assistant",
+        "time",
+    }
+)
+
+
 def memory_tokens(text):
     """提取用於計算相關性的 token (包含中日文與英數)."""
     if not text:
         return []
     tokens = re.findall(r"[A-Za-z0-9_]+|[\u3040-\u30ff\u4e00-\u9fff]{1,4}", text.lower())
     return [token for token in tokens if len(token.strip()) >= 1]
+
+
+def memory_content_tokens(value):
+    """Return content-bearing tokens for lexical memory relevance."""
+    tokens = memory_tokens(value) if isinstance(value, str) else list(value or [])
+    return {
+        token
+        for token in tokens
+        if token not in MEMORY_CONTENT_STOPWORDS
+        and (not token.isascii() or len(token) > 1 or token.isdigit())
+    }
+
+
+def distance_similarity(distance, scoring_profile="v2"):
+    """Convert Chroma distance to a bounded monotonic similarity."""
+    if scoring_profile not in MEMORY_SCORING_PROFILES:
+        raise ValueError(f"Unknown memory scoring profile: {scoring_profile}")
+    if distance is None:
+        return 0.22
+    distance = max(0.0, float(distance))
+    if scoring_profile == "legacy":
+        return max(0.0, 1.0 - min(1.0, distance))
+    return 1.0 / (1.0 + distance)
+
+
+def lexical_overlap_bonus(query_tokens, text, scoring_profile="v2"):
+    """Score lexical evidence without letting long memories saturate."""
+    if scoring_profile not in MEMORY_SCORING_PROFILES:
+        raise ValueError(f"Unknown memory scoring profile: {scoring_profile}")
+    if scoring_profile == "legacy":
+        overlap = len(set(query_tokens) & set(memory_tokens(text)))
+        return min(0.45, overlap * 0.09)
+    query = memory_content_tokens(query_tokens)
+    memory = memory_content_tokens(text)
+    if not query or not memory:
+        return 0.0
+    cosine_overlap = len(query & memory) / ((len(query) * len(memory)) ** 0.5)
+    return min(0.45, 0.45 * cosine_overlap)
+
+
+def explicit_self_relevance_bonus(candidate):
+    """Use explicit ownership metadata instead of guessing from surface words."""
+    metadata = candidate.get("metadata") or {}
+    explicit = metadata.get("self_relevance")
+    if explicit is True:
+        return 0.16
+    try:
+        if explicit is not None and float(explicit) >= 0.5:
+            return 0.16
+    except (TypeError, ValueError):
+        pass
+    if candidate.get("source") == "profile":
+        return 0.16
+    owner = str(metadata.get("owner") or metadata.get("subject") or "").lower()
+    return 0.16 if owner in {"self", "uruha", "一ノ瀬うるは"} else 0.0
+
 
 def clean_fact_value(value):
     """清理事實描述中的多餘標點符號."""
@@ -162,25 +281,27 @@ def assess_memory_speakability(anchor, user_input="", trust=50):
         "gravity_multiplier": 0.25,
     }
 
-def attention_factors(candidate, query_tokens, now):
+def attention_factor_values(candidate, query_tokens, now, scoring_profile="v2"):
     """
-    拆解記憶候選者的注意力來源.
+    Return full-precision attention factors used to rank a memory candidate.
 
-    這層對應人類的「注意力閘門」：不是只看向量相似度，而是同時看情緒強度、
-    自我相關性、未完成事件與危險訊號。
+    Keeping full precision here prevents display rounding from changing which
+    memories enter working memory.
     """
+    if scoring_profile not in MEMORY_SCORING_PROFILES:
+        raise ValueError(f"Unknown memory scoring profile: {scoring_profile}")
     metadata = candidate.get("metadata") or {}
     text = str(candidate.get("text", "") or "")
 
-    distance = candidate.get("distance")
-    if distance is None:
-        similarity_score = 0.22
-    else:
-        similarity_score = max(0.0, 1.0 - min(1.0, float(distance)))
-
-    text_tokens = memory_tokens(text)
-    overlap = len(set(query_tokens) & set(text_tokens))
-    overlap_bonus = min(0.45, overlap * 0.09)
+    similarity_score = distance_similarity(
+        candidate.get("distance"),
+        scoring_profile=scoring_profile,
+    )
+    overlap_bonus = lexical_overlap_bonus(
+        query_tokens,
+        text,
+        scoring_profile=scoring_profile,
+    )
 
     recency_bonus = 0.0
     timestamp = metadata.get("timestamp")
@@ -223,22 +344,27 @@ def attention_factors(candidate, query_tokens, now):
         except Exception:
             continue
 
-    self_relevance_terms = [
-        "うち",
-        "一ノ瀬",
-        "Uruha",
-        "uruha",
-        "ユーザー",
-        "使用者",
-        "相手",
-        "好き",
-        "嫌い",
-        "覚えて",
-        "remember",
-        "名前",
-        "name",
-    ]
-    self_relevance_bonus = 0.16 if any(term in text for term in self_relevance_terms) else 0.0
+    if scoring_profile == "legacy":
+        self_relevance_terms = [
+            "うち",
+            "一ノ瀬",
+            "Uruha",
+            "uruha",
+            "ユーザー",
+            "使用者",
+            "相手",
+            "好き",
+            "嫌い",
+            "覚えて",
+            "remember",
+            "名前",
+            "name",
+        ]
+        self_relevance_bonus = (
+            0.16 if any(term in text for term in self_relevance_terms) else 0.0
+        )
+    else:
+        self_relevance_bonus = explicit_self_relevance_bonus(candidate)
 
     unresolved_bonus = 0.0
     if metadata.get("unresolved") or metadata.get("open_loop") or metadata.get("pending"):
@@ -283,24 +409,42 @@ def attention_factors(candidate, query_tokens, now):
         - brevity_penalty
         - decay_penalty
     )
-    score = raw_score * max(0.3, min(1.0, decay_multiplier))
+    bounded_decay_multiplier = max(0.3, min(1.0, decay_multiplier))
     return {
-        "similarity": round(similarity_score, 4),
-        "overlap": round(overlap_bonus, 4),
-        "recency": round(recency_bonus, 4),
-        "strength": round(strength_bonus, 4),
-        "source_bias": round(source_bias, 4),
-        "emotional": round(emotional_bonus, 4),
-        "self_relevance": round(self_relevance_bonus, 4),
-        "unresolved": round(unresolved_bonus, 4),
-        "threat": round(threat_bonus, 4),
-        "brevity_penalty": round(brevity_penalty, 4),
-        "decay_penalty": round(decay_penalty, 4),
-        "decay_multiplier": round(max(0.3, min(1.0, decay_multiplier)), 4),
-        "score": round(score, 4),
+        "similarity": similarity_score,
+        "overlap": overlap_bonus,
+        "recency": recency_bonus,
+        "strength": strength_bonus,
+        "source_bias": source_bias,
+        "emotional": emotional_bonus,
+        "self_relevance": self_relevance_bonus,
+        "unresolved": unresolved_bonus,
+        "threat": threat_bonus,
+        "brevity_penalty": brevity_penalty,
+        "decay_penalty": decay_penalty,
+        "decay_multiplier": bounded_decay_multiplier,
+        "score": raw_score * bounded_decay_multiplier,
     }
 
-def salience_score(candidate, query_tokens, now):
+
+def attention_factors(candidate, query_tokens, now, scoring_profile="v2"):
+    """
+    拆解記憶候選者的注意力來源.
+
+    這層對應人類的「注意力閘門」：不是只看向量相似度，而是同時看情緒強度、
+    自我相關性、未完成事件與危險訊號。回傳值供紀錄與顯示使用，因此統一四捨五入；
+    實際排序使用 ``attention_factor_values`` 的完整精度。
+    """
+    values = attention_factor_values(
+        candidate,
+        query_tokens,
+        now,
+        scoring_profile=scoring_profile,
+    )
+    return {key: round(value, 4) for key, value in values.items()}
+
+
+def salience_score(candidate, query_tokens, now, scoring_profile="v2"):
     """
     計算記憶候選者的顯著性分數 (Salience Score).
 
@@ -313,12 +457,24 @@ def salience_score(candidate, query_tokens, now):
     - 長度懲罰 (Brevity Penalty)
     - 衰減 (Decay)
     """
-    return attention_factors(candidate, query_tokens, now)["score"]
+    return attention_factors(
+        candidate,
+        query_tokens,
+        now,
+        scoring_profile=scoring_profile,
+    )["score"]
 
-def build_working_memory(text, candidates, working_memory_limit=5):
+def build_working_memory(
+    text,
+    candidates,
+    working_memory_limit=5,
+    *,
+    reference_time=None,
+    scoring_profile="v2",
+):
     """從候選記憶中挑選最顯著的放入 Working Memory."""
     query_tokens = memory_tokens(text)
-    now = datetime.datetime.now()
+    now = reference_time or datetime.datetime.now()
 
     scored = []
     seen = set()
@@ -333,12 +489,25 @@ def build_working_memory(text, candidates, working_memory_limit=5):
         seen.add(key)
 
         item = dict(candidate)
-        item["attention_factors"] = attention_factors(item, query_tokens, now)
+        factor_values = attention_factor_values(
+            item,
+            query_tokens,
+            now,
+            scoring_profile=scoring_profile,
+        )
+        item["attention_factors"] = {
+            key: round(value, 4) for key, value in factor_values.items()
+        }
         item["score"] = item["attention_factors"]["score"]
-        scored.append(item)
+        ranking_score = (
+            item["score"]
+            if scoring_profile == "legacy"
+            else factor_values["score"]
+        )
+        scored.append((ranking_score, item))
 
-    scored.sort(key=lambda item: item["score"], reverse=True)
-    return scored[:working_memory_limit]
+    scored.sort(key=lambda pair: pair[0], reverse=True)
+    return [item for _, item in scored[:working_memory_limit]]
 
 def working_memory_summary(items, working_memory_limit=5):
     """產生 Working Memory 的文字摘要."""

@@ -179,6 +179,15 @@ RIGHT_BRAIN_REPAIR_ADAPTER_PATH = _normalize_right_brain_adapter_path(
 SCENE_VALUES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 WORKING_MEMORY_LIMIT = 5
 WORKING_MEMORY_RETRIEVAL_LIMIT = _env_int("URUHA_WORKING_MEMORY_RETRIEVAL_LIMIT", 20)
+WORKING_MEMORY_SCORING_PROFILE = os.getenv(
+    "URUHA_WORKING_MEMORY_SCORING_PROFILE",
+    "v2",
+).strip().lower()
+if WORKING_MEMORY_SCORING_PROFILE not in umr.MEMORY_SCORING_PROFILES:
+    raise ValueError(
+        "URUHA_WORKING_MEMORY_SCORING_PROFILE must be one of: "
+        + ", ".join(sorted(umr.MEMORY_SCORING_PROFILES))
+    )
 LOW_ROAD_MOOD_THRESHOLD = -72
 PLANNER_MAX_TICKS = 3
 AUTONOMOUS_IDLE_SECONDS = _env_float("URUHA_AUTONOMOUS_IDLE_SECONDS", 45)
@@ -395,6 +404,7 @@ class MemoryManager:
             "recent_dialogue": self._recent_dialogue_summary(),
             "recent_turns": list(self.session_turns[-8:]),
             "short_term_summary": self._short_term_summary(),
+            "working_memory_scoring_profile": WORKING_MEMORY_SCORING_PROFILE,
             "working_memory_items": working_memory,
             "working_memory_summary": self._working_memory_summary(working_memory),
         }
@@ -407,6 +417,7 @@ class MemoryManager:
             "recent_turns": list(self.session_turns[-8:]),
             "short_term_summary": self._short_term_summary(),
             "short_term_buffer": list(self.short_term_buffer[-8:]),
+            "working_memory_scoring_profile": WORKING_MEMORY_SCORING_PROFILE,
             "procedural_summary": self._procedural_summary(),
             "pending_consolidation_turns": max(0, len(self.session_turns) - self._consolidated_turn_index),
             "last_consolidation_at": self._last_consolidation_at,
@@ -444,7 +455,12 @@ class MemoryManager:
         return umr.memory_tokens(text)
 
     def _salience_score(self, candidate, query_tokens, now):
-        return umr.salience_score(candidate, query_tokens, now)
+        return umr.salience_score(
+            candidate,
+            query_tokens,
+            now,
+            scoring_profile=WORKING_MEMORY_SCORING_PROFILE,
+        )
 
     def _build_working_memory(self, text):
         candidates = []
@@ -456,7 +472,12 @@ class MemoryManager:
         candidates.extend(self._query_collection_candidates(self.procedural_col, text, "procedural", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
         candidates.extend(self._query_collection_candidates(self.kb_col, text, "knowledge", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
 
-        return umr.build_working_memory(text, candidates, working_memory_limit=WORKING_MEMORY_LIMIT)
+        return umr.build_working_memory(
+            text,
+            candidates,
+            working_memory_limit=WORKING_MEMORY_LIMIT,
+            scoring_profile=WORKING_MEMORY_SCORING_PROFILE,
+        )
 
     def _collection_for_name(self, name):
         return {

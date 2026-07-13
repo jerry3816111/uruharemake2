@@ -128,6 +128,30 @@ LONGMEMEVAL_RETRIEVAL_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "longmemeval_retrieval_baseline_report.md",
 )
+LONGMEMEVAL_DEVELOPMENT_CANDIDATE_CACHE_PATH = os.path.join(
+    LONGMEMEVAL_EXTERNAL_DIR,
+    "longmemeval_development_candidates_v1.json",
+)
+LONGMEMEVAL_FROZEN_CANDIDATE_CACHE_PATH = os.path.join(
+    LONGMEMEVAL_EXTERNAL_DIR,
+    "longmemeval_frozen_candidates_v1.json",
+)
+LONGMEMEVAL_SALIENCE_DEVELOPMENT_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_salience_development_report.json",
+)
+LONGMEMEVAL_SALIENCE_DEVELOPMENT_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_salience_development_report.md",
+)
+LONGMEMEVAL_SALIENCE_HELDOUT_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_salience_heldout_report.json",
+)
+LONGMEMEVAL_SALIENCE_HELDOUT_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_salience_heldout_report.md",
+)
 REPLY_DIVERSITY_REPORT_PATH = os.path.join(REPORTS_DIR, "reply_diversity_report.json")
 RUNTIME_DYNAMICS_REPORT_PATH = os.path.join(REPORTS_DIR, "runtime_dynamics_report.json")
 STRESS_EVAL_REPORT_PATH = os.path.join(REPORTS_DIR, "stress_eval_report_10000.json")

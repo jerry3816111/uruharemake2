@@ -69,6 +69,68 @@ class TestMemoryRuntimeHelpers(unittest.TestCase):
         query_tokens = ["test"]
         score = umr.salience_score(candidate, query_tokens, now)
         self.assertGreater(score, 0)
+
+    def test_v2_distance_remains_monotonic_beyond_one(self):
+        self.assertGreater(
+            umr.distance_similarity(1.1, scoring_profile="v2"),
+            umr.distance_similarity(1.8, scoring_profile="v2"),
+        )
+        self.assertGreater(umr.distance_similarity(1.8, scoring_profile="v2"), 0.0)
+        self.assertEqual(umr.distance_similarity(1.1, scoring_profile="legacy"), 0.0)
+
+    def test_v2_lexical_overlap_is_length_normalized(self):
+        long_memory = "tea " + " ".join(f"noise{index}" for index in range(80))
+
+        bonus = umr.lexical_overlap_bonus(
+            ["tea", "favorite"],
+            long_memory,
+            scoring_profile="v2",
+        )
+
+        self.assertGreater(bonus, 0.0)
+        self.assertLess(bonus, 0.45)
+
+    def test_v2_self_relevance_requires_explicit_metadata(self):
+        generic = {
+            "source": "episode",
+            "text": "User: remember my name",
+            "metadata": {},
+        }
+        explicit = {
+            "source": "episode",
+            "text": "ordinary memory",
+            "metadata": {"self_relevance": True},
+        }
+
+        self.assertEqual(umr.explicit_self_relevance_bonus(generic), 0.0)
+        self.assertEqual(umr.explicit_self_relevance_bonus(explicit), 0.16)
+
+    def test_legacy_profile_preserves_frozen_surface_word_heuristic(self):
+        now = datetime.datetime(2024, 1, 2, 9, 0, 0)
+        candidate = {
+            "source": "episode",
+            "text": "User: remember my name",
+            "distance": 1.2,
+            "metadata": {"timestamp": "2024-01-01 09:00:00"},
+        }
+
+        legacy = umr.attention_factors(
+            candidate,
+            ["remember", "name"],
+            now,
+            scoring_profile="legacy",
+        )
+        current = umr.attention_factors(
+            candidate,
+            ["remember", "name"],
+            now,
+            scoring_profile="v2",
+        )
+
+        self.assertEqual(legacy["self_relevance"], 0.16)
+        self.assertEqual(current["self_relevance"], 0.0)
+        self.assertEqual(legacy["similarity"], 0.0)
+        self.assertGreater(current["similarity"], 0.0)
         
     def test_build_working_memory_top_k(self):
         candidates = [
