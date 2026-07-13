@@ -391,6 +391,7 @@ def evaluate_item(collection, row, candidate_k=20):
         row["question"],
         candidates,
         working_memory_limit=len(candidates),
+        scoring_profile="legacy",
     )
     salience_ids = [
         item["metadata"]["benchmark_session_id"] for item in salience_items
