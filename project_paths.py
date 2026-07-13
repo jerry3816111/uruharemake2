@@ -111,6 +111,23 @@ MEMORY_CONTRADICTION_CORRECTION_REPORT_JSON_PATH = os.path.join(REPORTS_DIR, "me
 MEMORY_CONTRADICTION_CORRECTION_REPORT_MD_PATH = os.path.join(REPORTS_DIR, "memory_contradiction_correction_report.md")
 MEMORY_UPDATE_OVERWRITE_REPORT_JSON_PATH = os.path.join(REPORTS_DIR, "memory_update_overwrite_report.json")
 MEMORY_UPDATE_OVERWRITE_REPORT_MD_PATH = os.path.join(REPORTS_DIR, "memory_update_overwrite_report.md")
+LONGMEMEVAL_EXTERNAL_DIR = os.path.join(BASE_DIR, "external_data", "longmemeval")
+LONGMEMEVAL_S_CLEANED_DATASET_PATH = os.path.join(
+    LONGMEMEVAL_EXTERNAL_DIR,
+    "longmemeval_s_cleaned.json",
+)
+LONGMEMEVAL_CHROMA_CACHE_DIR = os.path.join(
+    LONGMEMEVAL_EXTERNAL_DIR,
+    "chroma_session_index",
+)
+LONGMEMEVAL_RETRIEVAL_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_retrieval_baseline_report.json",
+)
+LONGMEMEVAL_RETRIEVAL_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "longmemeval_retrieval_baseline_report.md",
+)
 REPLY_DIVERSITY_REPORT_PATH = os.path.join(REPORTS_DIR, "reply_diversity_report.json")
 RUNTIME_DYNAMICS_REPORT_PATH = os.path.join(REPORTS_DIR, "runtime_dynamics_report.json")
 STRESS_EVAL_REPORT_PATH = os.path.join(REPORTS_DIR, "stress_eval_report_10000.json")
