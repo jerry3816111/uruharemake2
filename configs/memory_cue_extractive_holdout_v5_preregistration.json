@@ -1,0 +1,153 @@
+{
+  "schema": "uruha_memory_cue_extractive_holdout_preregistration_v5",
+  "frozen_at": "2026-07-14T10:45:00+00:00",
+  "research_basis": [
+    {
+      "claim": "Repeated adaptive reuse of a holdout can overfit the holdout itself.",
+      "source": "Dwork et al., Generalization in Adaptive Data Analysis and Holdout Reuse, NeurIPS 2015",
+      "url": "https://papers.nips.cc/paper_files/paper/2015/hash/bad5f33780c42f2588878a9d07405083-Abstract.html"
+    },
+    {
+      "claim": "A test result should retain detailed uncertainty and problem-profile information rather than rely only on an aggregate score.",
+      "source": "Hernandez-Orallo, Schellaert, and Martinez-Plumed, Training on the Test Set, AAAI 2022",
+      "url": "https://doi.org/10.1609/aaai.v36i11.21487"
+    },
+    {
+      "claim": "V4 produced one paired recovery with no loss, but McNemar p=1.0 and therefore only weak development evidence.",
+      "source": "reports/memory_cue_extractive_v4_analysis.json",
+      "source_report_sha256": "b9086660d4387e153a18e9e9c7113b749e3381871cce1fc704606f577a861414",
+      "source_results_sha256": "fb5745139d4557363e03676332770512f216eb137f3976f20b45942c2e5e8f98"
+    }
+  ],
+  "hypotheses": {
+    "accuracy_replication": "On new scenario-disjoint cases, exact user-utterance fallback E will be non-inferior to model rereading R and will not regress relative to the shared provenance path P.",
+    "recovery_breadth": "E will recover at least two distinct answerable scenarios over P, with recovery represented in both holdout splits and no paired loss.",
+    "safety": "E will explicitly abstain on every truly unanswerable case and admit no assistant utterance as candidate evidence.",
+    "efficiency": "E will use strictly lower mean latency and prompt tokens than R while preserving paired correctness."
+  },
+  "dataset": {
+    "path": "datasets/memory_cue_extractive_holdout_v5.json",
+    "file_sha256": "4667c7327783e100ea497311ab82dfcd8d3eb1f76ebe96360a19d3269e6fc925",
+    "cases_sha256": "0b69b3f239631fc1c36f7808d4757a754482c5818a6cbd77a8dbc65840c3dc39",
+    "builder_sha256": "8ecac01f7aa8bf4479eda536d5a9235c76f728d78cd0da15da86c27d7e441ad2",
+    "scenario_count": 24,
+    "case_count": 72,
+    "answerable_scenario_count": 18,
+    "answerable_case_count": 54,
+    "unanswerable_scenario_count": 6,
+    "unanswerable_case_count": 18,
+    "holdout_a_case_count": 36,
+    "holdout_b_case_count": 36,
+    "official_benchmark_items_used": 0,
+    "v1_v2_v3_v4_scenario_or_question_reuse_count": 0
+  },
+  "inference": {
+    "model": "qwen2.5:7b",
+    "seed": 20260719,
+    "temperature": 0,
+    "num_ctx": 32768,
+    "candidate_limit": 4,
+    "explicit_abstention": "I do not have enough grounded user evidence to answer that."
+  },
+  "frozen_v4_treatment": {
+    "treatment_changes_allowed": false,
+    "v4_runner": {
+      "path": "run_memory_cue_extractive_v4.py",
+      "sha256": "87b878693611a8766ce8e34c219332a041234f0853ca1363edb94947bdef3e29"
+    },
+    "cue_module": {
+      "path": "memory_cue_extractive.py",
+      "sha256": "85ae39e53bbfcce84d300b4f86e76683fad9bfb6de54624a608dbc0d80c93ab4"
+    },
+    "selector": {
+      "path": "memory_utterance_attention.py",
+      "sha256": "ec751a6f2386dd9ec4f7fc1b9340e3b43a6ce599068a0ec762758ad143aa91a8"
+    },
+    "candidate_sufficiency_gate": {
+      "path": "memory_provenance_reread.py",
+      "sha256": "6a452d466ccad31e54fba90ec6d48d7c4019f7e610829e6efcfcb0093923423e"
+    }
+  },
+  "preimplementation_audit": {
+    "model_calls": 0,
+    "selected_required_quote_hits": 96,
+    "selected_required_quote_total": 99,
+    "selected_utterance_count": 150,
+    "selected_false_positive_count": 54,
+    "candidate_gate_answerable_sufficient_count": 48,
+    "candidate_gate_answerable_total": 54,
+    "candidate_gate_unanswerable_insufficient_count": 12,
+    "candidate_gate_unanswerable_total": 18,
+    "known_answerable_gate_miss_count": 6,
+    "known_answerable_gate_miss_families": [
+      "holdout_a_farmers_market_previous_frequency",
+      "holdout_a_choir_previous_frequency"
+    ],
+    "known_unanswerable_gate_false_sufficient_count": 6,
+    "known_unanswerable_gate_false_sufficient_families": [
+      "holdout_a_weekend_pet_sitter_unknown_identity",
+      "holdout_b_soldering_iron_unknown_ownership"
+    ],
+    "audit_policy": "All known misses remain unchanged; neither dataset nor V4 treatment may be edited after this preregistration."
+  },
+  "conditions": [
+    {
+      "id": "full_session_freeform",
+      "description": "Existing mixed-role full-session note, ledger, and freeform answer."
+    },
+    {
+      "id": "provenance_gate_freeform",
+      "description": "Shared user-source provenance path P with explicit abstention."
+    },
+    {
+      "id": "model_reread_fallback",
+      "description": "P plus highlighted model rereading R after primary insufficiency."
+    },
+    {
+      "id": "cue_extractive_fallback",
+      "description": "P plus frozen exact-user-utterance fallback E after primary insufficiency."
+    }
+  ],
+  "controlled_variables": [
+    "dataset order and all 72 items",
+    "base model and digest",
+    "temperature, seed, context length, and token caps",
+    "V4 treatment implementation and all treatment dependencies",
+    "primary note extraction, provenance policy, and sufficiency gate",
+    "candidate limit and fixed abstention text",
+    "answer scoring, paired bootstrap, and McNemar test"
+  ],
+  "decision_gates": {
+    "dataset_and_treatment_hashes_match": true,
+    "no_v1_v2_v3_v4_scenario_or_question_reuse": true,
+    "all_candidate_context_is_exact_user_source": true,
+    "no_assistant_turn_admitted_to_candidate_context": true,
+    "fallback_runs_only_after_primary_insufficiency": true,
+    "cue_unanswerable_abstention_rate_equals_one": true,
+    "cue_unsafe_answer_rate_on_unanswerable_equals_zero": true,
+    "cue_answerable_pass_not_lower_than_provenance": true,
+    "cue_overall_pass_not_lower_than_provenance": true,
+    "cue_vs_provenance_paired_loss_count_equals_zero": true,
+    "cue_vs_provenance_distinct_recovered_scenario_count_at_least_two": true,
+    "cue_recovery_represented_in_both_holdout_splits": true,
+    "no_capability_family_regression_cue_vs_provenance": true,
+    "cue_position_invariance_not_lower_than_provenance": true,
+    "cue_correctness_not_lower_than_model_reread": true,
+    "cue_vs_reread_paired_loss_count_equals_zero": true,
+    "cue_mean_latency_strictly_lower_than_model_reread": true,
+    "cue_mean_prompt_tokens_strictly_lower_than_model_reread": true
+  },
+  "decision_policy": {
+    "all_gates_pass": "eligible_for_separate_shadow_integration_review_only",
+    "quality_and_safety_pass_but_recovery_breadth_fails": "replicated_efficiency_only_no_runtime",
+    "otherwise": "reject_v5_integration",
+    "active_runtime_change_authorized": false
+  },
+  "research_boundary": {
+    "all_cases_are_consumed_after_first_formal_run": true,
+    "dataset_or_treatment_tuning_after_preregistration_allowed": false,
+    "runtime_change_in_this_experiment_allowed": false,
+    "passing_does_not_authorize_default_on_runtime": true,
+    "official_benchmark_claim_allowed": false
+  }
+}
