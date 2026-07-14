@@ -1,0 +1,175 @@
+{
+  "schema": "uruha_memory_highlight_span_analysis_v2",
+  "source_report": "reports/memory_highlight_span_v2_report.json",
+  "source_results_sha256": "46f873a55313f461456f252c2a2349ba82ded6e4a154f2f681aa122eb4fa76af",
+  "verification": {
+    "report_complete": true,
+    "result_count_matches": true,
+    "results_sha256_matches": true,
+    "official_items_zero": true,
+    "v1_cases_not_reused": true,
+    "consumed_heldout_not_reused": true,
+    "runtime_not_authorized": true,
+    "implementation_hashes_match": true
+  },
+  "implementation_verification": {
+    "runner_sha256": true,
+    "highlight_span_module_sha256": true,
+    "attention_module_sha256": true,
+    "ledger_module_sha256": true,
+    "v1_runner_dependency_sha256": true,
+    "ollama_runner_dependency_sha256": true,
+    "hash_io_dependency_sha256": true,
+    "dataset_builder_sha256": true,
+    "dataset_sha256": true,
+    "preregistration_sha256": true
+  },
+  "overall": {
+    "full_session_freeform": {
+      "semantic_case_pass_rate": 0.9722222222222222,
+      "gold_evidence_quote_recall": 0.8888888888888888,
+      "position_invariant_scenario_rate": 0.9166666666666666
+    },
+    "highlighted_full_session_freeform": {
+      "semantic_case_pass_rate": 0.9722222222222222,
+      "gold_evidence_quote_recall": 0.9722222222222222,
+      "position_invariant_scenario_rate": 0.9166666666666666
+    },
+    "highlighted_full_session_span_contract": {
+      "semantic_case_pass_rate": 0.9722222222222222,
+      "gold_evidence_quote_recall": 0.9722222222222222,
+      "position_invariant_scenario_rate": 0.9166666666666666
+    }
+  },
+  "attention_integrity": {
+    "target_utterance_recall": 1.0,
+    "selection_precision": 0.9814814814814815,
+    "full_context_restoration_rate": 1.0,
+    "controller_markup_leak_case_count": 1
+  },
+  "paired_complementarity": {
+    "both_pass": 34,
+    "control_only": 1,
+    "highlight_only": 1,
+    "either_control_or_highlight_pass_count": 36,
+    "evidence_union_coverage_count": 36,
+    "total": 36
+  },
+  "span_contract": {
+    "overall_valid_rate": 0.9722222222222222,
+    "upstream_available_count": 35,
+    "valid_when_upstream_available_count": 35,
+    "valid_when_upstream_available_rate": 1.0,
+    "semantic_when_upstream_available_count": 35,
+    "semantic_when_upstream_available_rate": 1.0
+  },
+  "failure_categories": {
+    "assistant_acknowledgement_misread_as_user_fact": 1,
+    "controller_markup_copied_into_quote": 2,
+    "semantic_pass": 105
+  },
+  "failure_rows": [
+    {
+      "case_id": "dev_therapy_current_time__end",
+      "split": "development",
+      "capability": "current_time",
+      "position": "end",
+      "condition": "full_session_freeform",
+      "category": "assistant_acknowledgement_misread_as_user_fact",
+      "response": "The current therapy appointment time is 2026-07-13 18:00:00.",
+      "note_generation": "{\n  \"relevant\": true,\n  \"facts\": [\n    {\n      \"source_role\": \"assistant\",\n      \"quote\": \"I will keep that detail in context (2).\",\n      \"attribute\": \"appointment time\"\n    }\n  ]\n}",
+      "contract_errors": null
+    },
+    {
+      "case_id": "transfer_grocery_previous_frequency__middle",
+      "split": "transfer",
+      "capability": "previous_frequency",
+      "position": "middle",
+      "condition": "highlighted_full_session_freeform",
+      "category": "controller_markup_copied_into_quote",
+      "response": "",
+      "note_generation": "{\n  \"relevant\": true,\n  \"facts\": [\n    {\n      \"source_role\": \"user\",\n      \"quote\": \"<memory-highlight rank=\\\"2\\\">It comes every two weeks now; before the update, it arrived once a month.</memory-highlight>\",\n      \"attribute\": \"frequency\"\n    }\n  ]\n}",
+      "contract_errors": null
+    },
+    {
+      "case_id": "transfer_grocery_previous_frequency__middle",
+      "split": "transfer",
+      "capability": "previous_frequency",
+      "position": "middle",
+      "condition": "highlighted_full_session_span_contract",
+      "category": "controller_markup_copied_into_quote",
+      "response": "",
+      "note_generation": "{\n  \"relevant\": true,\n  \"facts\": [\n    {\n      \"source_role\": \"user\",\n      \"quote\": \"<memory-highlight rank=\\\"2\\\">It comes every two weeks now; before the update, it arrived once a month.</memory-highlight>\",\n      \"attribute\": \"frequency\"\n    }\n  ]\n}",
+      "contract_errors": [
+        "missing_ledger"
+      ]
+    }
+  ],
+  "paired_analysis": [
+    {
+      "control": "full_session_freeform",
+      "treatment": "highlighted_full_session_freeform",
+      "n": 36,
+      "control_rate": 0.9722222222222222,
+      "treatment_rate": 0.9722222222222222,
+      "delta": 0.0,
+      "mcnemar": {
+        "wins": 1,
+        "losses": 1,
+        "discordant": 2,
+        "p_value": 1.0
+      },
+      "paired_bootstrap_95_ci": [
+        -0.08333333333333333,
+        0.08333333333333333
+      ]
+    },
+    {
+      "control": "highlighted_full_session_freeform",
+      "treatment": "highlighted_full_session_span_contract",
+      "n": 36,
+      "control_rate": 0.9722222222222222,
+      "treatment_rate": 0.9722222222222222,
+      "delta": 0.0,
+      "mcnemar": {
+        "wins": 0,
+        "losses": 0,
+        "discordant": 0,
+        "p_value": 1.0
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "gates": {
+    "dataset_hash_match": true,
+    "all_highlighted_contexts_restore_exactly": true,
+    "all_source_quotes_grounded": false,
+    "all_span_contracts_valid": false,
+    "all_required_slots_complete": false,
+    "all_admitted_spans_grounded": false,
+    "highlight_development_semantic_pass_not_lower_than_control": true,
+    "highlight_transfer_semantic_pass_not_lower_than_control": false,
+    "span_development_semantic_pass_not_lower_than_highlight": true,
+    "span_transfer_semantic_pass_not_lower_than_highlight": true,
+    "no_capability_family_regression_for_either_change": false,
+    "position_invariance_not_lower_for_either_change": true
+  },
+  "decision": "reject_v2_runtime_integration",
+  "causal_conclusions": [
+    "Keeping the full session prevented the nine extraction losses seen in V1, but inline highlight markup was copied into one otherwise correct quote and was properly rejected by source grounding.",
+    "Highlighting fixed one control failure where an assistant acknowledgement was misread as the user's appointment time, but introduced one different transfer failure, so its paired net semantic gain was zero.",
+    "Control and highlight failures were complementary: at least one path had the answer-bearing evidence in all 36 cases. This supports evidence arbitration or a confidence-triggered second read, not unconditional trust in either path.",
+    "The controller-owned span contract was valid and semantically correct in all 35 cases with an upstream ledger, including same-quote comparisons and explicit negation, but it cannot recover evidence that extraction discarded."
+  ],
+  "next_experiment_constraints": [
+    "Use new scenarios; V2 cases are consumed development evidence.",
+    "Strip only controller-owned highlight tags from generated quotes before exact grounding, and accept the repair only when the stripped quote aligns to source.",
+    "Add a provenance sufficiency check that distrusts assistant acknowledgements as user-memory values and triggers an attention-guided second read.",
+    "Keep the span contract after evidence arbitration, because its conditional 35/35 result does not justify removing it.",
+    "Measure the extra latency and token cost of any second read.",
+    "Do not change runtime until a new untouched comparison passes every gate."
+  ]
+}
