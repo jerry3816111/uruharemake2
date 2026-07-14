@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_memory_utterance_attention_preregistration_v1",
+  "frozen_at": "2026-07-14T00:00:00+00:00",
+  "dataset": {
+    "path": "datasets/memory_utterance_attention_v1.json",
+    "file_sha256": "513c4eb42de97abdb451989df6635b1c55d0fa91c40197360b189a54132a4a19",
+    "cases_sha256": "5347f700c48477b05655804cf88b73e8ad7d3daa56fefc9abd16d1e711f81d15",
+    "scenario_count": 12,
+    "case_count": 36,
+    "official_benchmark_items_used": 0
+  },
+  "inference": {
+    "model": "qwen2.5:7b",
+    "seed": 20260714,
+    "temperature": 0,
+    "num_ctx": 32768,
+    "utterance_limit": 4
+  },
+  "conditions": [
+    {
+      "id": "full_session_freeform",
+      "changed_component": "none",
+      "note_extraction": "full_session",
+      "answer_realization": "freeform"
+    },
+    {
+      "id": "utterance_attention_freeform",
+      "changed_component": "utterance_attention",
+      "note_extraction": "query_aware_user_utterances",
+      "answer_realization": "freeform"
+    },
+    {
+      "id": "utterance_attention_proposition",
+      "changed_component": "typed_answer_proposition",
+      "note_extraction": "query_aware_user_utterances",
+      "answer_realization": "source_anchored_proposition"
+    }
+  ],
+  "primary_metrics": [
+    "gold_evidence_quote_recall",
+    "required_answer_span_hit",
+    "relation_hit",
+    "semantic_case_pass",
+    "position_invariant_scenario_pass"
+  ],
+  "integrity_metrics": [
+    "structured_parse_rate",
+    "grounded_quote_rate",
+    "proposition_grounding_rate",
+    "empty_response_rate",
+    "latency_seconds"
+  ],
+  "paired_comparisons": [
+    "utterance_attention_freeform - full_session_freeform",
+    "utterance_attention_proposition - utterance_attention_freeform"
+  ],
+  "decision_gates": {
+    "dataset_hash_match": true,
+    "all_source_quotes_grounded": true,
+    "all_valid_proposition_spans_grounded": true,
+    "development_semantic_pass_not_lower_than_control": true,
+    "transfer_semantic_pass_not_lower_than_control": true,
+    "no_capability_family_regression": true,
+    "position_invariance_not_lower_than_control": true
+  },
+  "research_boundary": {
+    "development_only": true,
+    "transfer_is_internal_diagnostic": true,
+    "external_heldout_claim_allowed": false,
+    "runtime_change_authorized": false,
+    "consumed_longmemeval_heldout_reuse_allowed": false
+  }
+}

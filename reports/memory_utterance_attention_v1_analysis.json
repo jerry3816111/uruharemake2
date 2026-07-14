@@ -1,0 +1,143 @@
+{
+  "schema": "uruha_memory_utterance_attention_analysis_v1",
+  "source_report": "reports/memory_utterance_attention_v1_report.json",
+  "source_results_sha256": "5569dc7444d24a09e219e66eaada77b2e2fe33420245516fa554ebcb5450a3a0",
+  "verification": {
+    "report_complete": true,
+    "result_count_matches": true,
+    "results_sha256_matches": true,
+    "official_items_zero": true,
+    "consumed_heldout_not_reused": true,
+    "runtime_not_authorized": true,
+    "implementation_hashes_match": true
+  },
+  "implementation_verification": {
+    "runner_sha256": true,
+    "attention_module_sha256": true,
+    "ledger_module_sha256": true,
+    "dataset_sha256": true,
+    "preregistration_sha256": true
+  },
+  "selection_stage": {
+    "gold_utterance_hits": 72,
+    "gold_utterance_total": 72,
+    "recall": 1.0
+  },
+  "extraction_stage": {
+    "full_session_evidence_recall": 0.9722222222222222,
+    "attention_only_evidence_recall": 0.75,
+    "attention_only_missing_case_ids": [
+      "dev_running_previous_frequency__beginning",
+      "dev_running_previous_frequency__middle",
+      "dev_running_previous_frequency__end",
+      "dev_houseplant_current_count__beginning",
+      "dev_houseplant_current_count__middle",
+      "dev_houseplant_current_count__end",
+      "transfer_pet_historical_ownership__beginning",
+      "transfer_pet_historical_ownership__middle",
+      "transfer_pet_historical_ownership__end"
+    ]
+  },
+  "answer_stage": {
+    "control_semantic_pass": 0.8333333333333334,
+    "attention_semantic_pass": 0.6388888888888888,
+    "proposition_semantic_pass": 0.3888888888888889,
+    "proposition_failure_categories": {
+      "model_owned_contract_field_invalid": 6,
+      "semantic_pass": 14,
+      "single_event_cannot_express_before_and_current": 6,
+      "upstream_evidence_or_ledger_missing": 9,
+      "valid_contract_but_strict_span_metric_miss": 1
+    },
+    "strict_metric_boundary_cases": [
+      {
+        "case_id": "dev_spare_key_location__end",
+        "response": "cedar drawer.",
+        "required_spans": [
+          "inside the cedar drawer"
+        ]
+      }
+    ],
+    "admitted_proposition_claim_count": 27,
+    "admitted_proposition_span_grounding_rate": 1.0,
+    "gate_semantics_audit": "The frozen report gate named all_valid_proposition_spans_grounded was implemented as all proposition contracts valid. That is stricter than its name. All admitted spans were checked separately here; changing the label or logic would not change the rejection because four other preregistered gates fail."
+  },
+  "capability_deltas": {
+    "change_direction": {
+      "attention_minus_control": 0.16666666666666663,
+      "proposition_minus_attention": -1.0
+    },
+    "current_count": {
+      "attention_minus_control": -0.5,
+      "proposition_minus_attention": 0.0
+    },
+    "current_location": {
+      "attention_minus_control": 0.0,
+      "proposition_minus_attention": 0.0
+    },
+    "current_time": {
+      "attention_minus_control": 0.16666666666666663,
+      "proposition_minus_attention": -0.5
+    },
+    "historical_yes_no": {
+      "attention_minus_control": -0.5,
+      "proposition_minus_attention": 0.5
+    },
+    "previous_frequency": {
+      "attention_minus_control": -0.5,
+      "proposition_minus_attention": -0.5
+    }
+  },
+  "paired_analysis": [
+    {
+      "control": "full_session_freeform",
+      "treatment": "utterance_attention_freeform",
+      "n": 36,
+      "control_rate": 0.8333333333333334,
+      "treatment_rate": 0.6388888888888888,
+      "delta": -0.19444444444444453,
+      "mcnemar": {
+        "wins": 2,
+        "losses": 9,
+        "discordant": 11,
+        "p_value": 0.0654296875
+      },
+      "paired_bootstrap_95_ci": [
+        -0.3611111111111111,
+        -0.027777777777777776
+      ]
+    },
+    {
+      "control": "utterance_attention_freeform",
+      "treatment": "utterance_attention_proposition",
+      "n": 36,
+      "control_rate": 0.6388888888888888,
+      "treatment_rate": 0.3888888888888889,
+      "delta": -0.24999999999999994,
+      "mcnemar": {
+        "wins": 3,
+        "losses": 12,
+        "discordant": 15,
+        "p_value": 0.03515625
+      },
+      "paired_bootstrap_95_ci": [
+        -0.4444444444444444,
+        -0.05555555555555555
+      ]
+    }
+  ],
+  "decision": "reject_v1_runtime_integration",
+  "causal_conclusions": [
+    "Query-aware selection found every frozen target utterance, so selection was not the observed bottleneck in this experiment.",
+    "Replacing the full session with selected utterances removed discourse context and caused nine repeated extraction failures; attention must augment rather than replace source context.",
+    "A ledger event assigns one evidence role to an entire quote, but six comparison cases encoded before and current values in the same quote; answer roles must bind to source spans, not only whole events.",
+    "The model should not choose system-known contract fields such as answer type, required roles, or whether a nonrelational question has a relation."
+  ],
+  "next_experiment_constraints": [
+    "Use new scenarios; V1 cases cannot serve as a promotion holdout again.",
+    "Keep the full source session and add selected utterances as explicit highlights.",
+    "Represent old/current values as separately grounded source spans.",
+    "Let the controller define slot names and relation constraints; let the model only bind spans.",
+    "Keep runtime unchanged until a new untouched comparison passes every gate."
+  ]
+}
