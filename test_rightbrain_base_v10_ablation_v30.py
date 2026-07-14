@@ -6,6 +6,7 @@ from analyze_rightbrain_base_v10_ablation_v30 import (
     classify_rejection,
     exact_mcnemar_p,
     paired_effect,
+    sha256_file,
     summarize_condition,
 )
 from run_rightbrain_base_v10_ablation_v30 import (
@@ -118,10 +119,10 @@ class RightBrainBaseV10FormalResultTest(unittest.TestCase):
     def test_paired_result_is_exact_and_inconclusive(self):
         paired = self.analysis["paired_effect"]
         self.assertEqual(paired["pair_count"], 36)
-        self.assertEqual(paired["base_only_wins"], 6)
-        self.assertEqual(paired["v10_wins"], 7)
-        self.assertAlmostEqual(paired["strict_case_coverage_delta"], -1 / 36)
-        self.assertEqual(paired["mcnemar_exact_p"], 1.0)
+        self.assertEqual(paired["base_only_wins"], 7)
+        self.assertEqual(paired["v10_wins"], 4)
+        self.assertAlmostEqual(paired["strict_case_coverage_delta"], 3 / 36)
+        self.assertAlmostEqual(paired["mcnemar_exact_p"], 0.548828125)
         self.assertLess(paired["cluster_bootstrap_95"]["lower_95"], 0)
         self.assertGreater(paired["cluster_bootstrap_95"]["upper_95"], 0)
 
@@ -131,6 +132,45 @@ class RightBrainBaseV10FormalResultTest(unittest.TestCase):
         self.assertGreater(summaries["base_only"]["semantic_omission_rate"], 0.75)
         self.assertTrue(self.analysis["diagnosis"]["shared_semantic_failure"])
         self.assertTrue(self.analysis["diagnosis"]["shared_hard_surface_failure"])
+        self.assertEqual(
+            self.analysis["diagnosis"]["adapter_effect"],
+            "inconclusive_small_base_edge",
+        )
+        self.assertIn(
+            "Base-only 在整體覆蓋率上小幅領先",
+            self.analysis["diagnosis"]["interpretation_zh"],
+        )
+        self.assertFalse(
+            self.analysis["posthoc_nonblind_surface_audit"][
+                "affects_formal_score"
+            ]
+        )
+        self.assertTrue(
+            self.analysis["posthoc_nonblind_surface_audit"][
+                "examples_source_verified"
+            ]
+        )
+        self.assertEqual(
+            len(self.analysis["posthoc_nonblind_surface_audit"]["examples"]),
+            3,
+        )
+
+    def test_all_six_condition_reports_are_hash_bound(self):
+        hashes = self.analysis["condition_report_sha256"]
+        self.assertEqual(set(hashes), {"v10_adapter", "base_only"})
+        self.assertTrue(all(len(rows) == 3 for rows in hashes.values()))
+        for condition, rows in hashes.items():
+            for seed, expected_digest in rows.items():
+                report_path = (
+                    ROOT
+                    / "reports"
+                    / f"rightbrain_base_v10_ablation_v30_{condition}_seed{seed}.json"
+                )
+                self.assertEqual(
+                    sha256_file(report_path),
+                    expected_digest,
+                    f"raw report changed after analysis: {report_path.name}",
+                )
 
     def test_preregistration_category_typo_fails_closed(self):
         self.assertEqual(self.analysis["observed_dataset_shape"]["category_count"], 9)

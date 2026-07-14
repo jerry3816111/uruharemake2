@@ -364,11 +364,35 @@ def build_analysis(preregistration, amendment, reports, root=ROOT):
         if authorize_blind
         else "keep_v10_no_runtime_change"
     )
+    report_sha256 = {
+        condition: {
+            str(seed): sha256_file(
+                Path(root)
+                / "reports"
+                / f"rightbrain_base_v10_ablation_v30_{condition}_seed{seed}.json"
+            )
+            for seed in preregistration["frozen_inputs"]["seeds"]
+        }
+        for condition in CONDITIONS
+    }
+    base_has_edge = paired["strict_case_coverage_delta"] > 0
+    if base_has_edge:
+        interpretation_zh = (
+            "Base-only 在整體覆蓋率上小幅領先，但配對檢定不顯著且信賴區間跨過零；"
+            "V10 較能壓住敬語漂移，卻有更高的語言/格式硬失敗。兩組都有超過七成的"
+            "必要語意遺失，因此不能據此關閉 LoRA，也不能把增加 epoch 當成已被證明的答案。"
+        )
+    else:
+        interpretation_zh = (
+            "V10 在整體覆蓋率上小幅領先，但配對檢定不顯著且信賴區間跨過零；"
+            "兩組都有超過七成的必要語意遺失與大量語言/格式硬失敗。"
+            "因此不能把這個小差距當成 adapter 已成熟，也不能直接增加 epoch。"
+        )
     diagnosis = {
         "adapter_effect": (
-            "inconclusive_small_v10_edge"
-            if paired["strict_case_coverage_delta"] < 0
-            else "inconclusive_small_base_edge"
+            "inconclusive_small_base_edge"
+            if base_has_edge
+            else "inconclusive_small_v10_edge"
         ),
         "shared_semantic_failure": (
             v10["semantic_omission_rate"] >= 0.5
@@ -381,12 +405,41 @@ def build_analysis(preregistration, amendment, reports, root=ROOT):
         "v10_polite_drift_delta_vs_base": (
             v10["polite_tone_drift_rate"] - base["polite_tone_drift_rate"]
         ),
-        "interpretation_zh": (
-            "V10 只在整體覆蓋率上小幅領先，差異不顯著；它較能壓住敬語漂移，"
-            "但兩組都有超過七成的必要語意遺失與超過四成的語言/格式硬失敗。"
-            "因此不能靠關閉 LoRA 解決，也不能把增加 epoch 當成已被證明的答案。"
-        ),
+        "interpretation_zh": interpretation_zh,
     }
+    posthoc_examples = [
+        {
+            "condition": "v10_adapter",
+            "case_id": "v29_burned_omelet",
+            "reply": "オム梨スを一回焦がして料理に向いているとは限らんよ。",
+            "issue": "malformed_food_word",
+        },
+        {
+            "condition": "v10_adapter",
+            "case_id": "v29_food_mood",
+            "reply": "てか、今なら塩気が強くて軽めのもの食べた気持ちいいな。",
+            "issue": "unnatural_collocation",
+        },
+        {
+            "condition": "base_only",
+            "case_id": "v29_conversation_burden",
+            "reply": "先に、話をするのはいつも面倒かな？違うよ、ただ気が楽わけだね。「 」",
+            "issue": "malformed_grammar_and_residue",
+        },
+    ]
+    accepted_by_condition_case = defaultdict(set)
+    for condition, condition_reports in reports.items():
+        for report in condition_reports:
+            for row in report["cases"]:
+                for candidate in row.get("model_accepted_candidates") or []:
+                    accepted_by_condition_case[(condition, row["id"])].add(
+                        str(candidate.get("candidate") or "")
+                    )
+    posthoc_examples_source_verified = all(
+        example["reply"]
+        in accepted_by_condition_case[(example["condition"], example["case_id"])]
+        for example in posthoc_examples
+    )
     return {
         "schema": "uruha_rightbrain_base_v10_ablation_analysis_v30",
         "evidence_protocol": "amended_current_gate_rerun",
@@ -396,6 +449,7 @@ def build_analysis(preregistration, amendment, reports, root=ROOT):
         "amendment_sha256": sha256_file(AMENDMENT_PATH),
         "historical_v10_reports_excluded": True,
         "invalidated_interim_analysis": amendment["invalidated_interim_analysis"],
+        "condition_report_sha256": report_sha256,
         "verification": verification,
         "condition_summary": summaries,
         "paired_effect": paired,
@@ -413,6 +467,16 @@ def build_analysis(preregistration, amendment, reports, root=ROOT):
             ],
         },
         "diagnosis": diagnosis,
+        "posthoc_nonblind_surface_audit": {
+            "affects_formal_score": False,
+            "review_type": "agent_nonblind_diagnostic",
+            "examples_source_verified": posthoc_examples_source_verified,
+            "examples": posthoc_examples,
+            "interpretation": (
+                "Strict-gate acceptance is an engineering contract upper bound, not a human-naturalness score. "
+                "These examples motivate a separate representation experiment and later blind validation."
+            ),
+        },
         "authorize_human_blind_review": authorize_blind,
         "authorize_runtime_change": False,
         "decision": decision,
@@ -437,12 +501,12 @@ def render_markdown(analysis):
     lines = [
         "# 右腦 V30：V10 LoRA 對原始 Qwen 7B 的單一變因實驗",
         "",
-            "## 實驗問題",
+        "## 實驗問題",
         "",
-            "相同 Qwen2.5-7B、12 個情境、三個 seed、payload、採樣與 gate；唯一差別是 V10 LoRA 開或關。",
-            "",
-            "舊 V10 報告因 gate 版本不同已排除；本表只使用 V30 runner 在現行 gate 下重新產生的兩組結果。",
-            "",
+        "相同 Qwen2.5-7B、12 個情境、三個 seed、payload、採樣與 gate；唯一差別是 V10 LoRA 開或關。",
+        "",
+        "舊 V10 報告因 gate 版本不同已排除；本表只使用 V30 runner 在現行 gate 下重新產生的兩組結果。",
+        "",
         "## 總結果",
         "",
         "| 指標 | V10 LoRA | Base-only |",
@@ -467,7 +531,8 @@ def render_markdown(analysis):
             "",
             f"- Base-only 勝：{paired['base_only_wins']} 組",
             f"- V10 勝：{paired['v10_wins']} 組",
-            f"- 覆蓋率差：{_fmt_pct(paired['strict_case_coverage_delta'])}",
+            "- Base-only 相對 V10 覆蓋率差："
+            f"{_fmt_pct(paired['strict_case_coverage_delta'])} 個百分點",
             f"- McNemar exact p：{paired['mcnemar_exact_p']:.4f}",
             "- 95% case-cluster bootstrap："
             f"[{_fmt_pct(paired['cluster_bootstrap_95']['lower_95'])}, "
@@ -496,6 +561,12 @@ def render_markdown(analysis):
             "但此 metadata mismatch 仍保留為失敗檢查，不事後修稿。",
             "- 下一個研究動作：先比較日文精簡的前語言訊息與現行混合語言 JSON payload，"
             "再決定是否需要重新訓練；不直接增加 epoch。",
+            "",
+            "## 自動 gate 的限制",
+            "",
+            "通過 gate 仍不等於自然日文。例如 V10 仍出現「オム梨ス」與"
+            "「食べた気持ちいいな」，Base-only 也有殘缺文法。這些是非盲、事後診斷，"
+            "不回改正式分數，只證明目前自動通過率仍是上限估計，不能冒充真人自然度。",
             "",
             "## 證據邊界",
             "",
