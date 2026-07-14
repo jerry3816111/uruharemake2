@@ -1,0 +1,154 @@
+{
+  "schema": "uruha_rightbrain_preverbal_payload_preregistration_v31",
+  "created_at": "2026-07-14T21:30:00+09:00",
+  "status": "preregistered_before_serializer_implementation",
+  "research_question": "When the model, adapter, semantic content, cases, seeds, sampling, and gate are fixed, do target-language labels and/or a line-oriented preverbal-message serialization improve RightBrain semantic realization over the current mixed-language JSON payload?",
+  "motivation": {
+    "v30_result": "Both V10 and base-only omitted required semantics on more than 75% of raw candidates, so adapter choice alone did not explain the shared failure.",
+    "current_payload": "The user payload contains Japanese dynamic meaning inside English-keyed JSON and English fixed instructions.",
+    "theory_boundary": "Preverbal message is an operational software label for the already-decided meaning passed from planning to formulation. This experiment does not establish biological equivalence to human speech production.",
+    "external_evidence": [
+      {
+        "title": "A Fair Comparison without Translationese: English vs. Target-language Instructions for Multilingual LLMs",
+        "url": "https://aclanthology.org/2025.naacl-short.55/",
+        "relevance": "Instruction-language effects are task-dependent; target-language instructions are not universally better, so language must be isolated experimentally."
+      },
+      {
+        "title": "Does Prompt Formatting Have Any Impact on LLM Performance?",
+        "url": "https://arxiv.org/abs/2411.10541",
+        "relevance": "Prompt format can materially change model performance and no format is universally optimal, motivating a crossed format factor."
+      },
+      {
+        "title": "Qwen2.5 Technical Report",
+        "url": "https://arxiv.org/abs/2412.15115",
+        "relevance": "The active base model is multilingual and instruction-tuned, but the report does not establish an optimal Japanese payload representation."
+      }
+    ]
+  },
+  "frozen_inputs": {
+    "base_commit": "f079d39c938ee0020f37fa01fe208352dbcd0406",
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "base_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+    "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937",
+    "runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "df52685d8ce31ed1065780571a6b07c9ebc166dc5336771a6214412c033d3f48"
+    },
+    "evaluator": {
+      "path": "eval_rightbrain_model_surface_holdout.py",
+      "sha256": "a177eb5b3306b910c5287f28ae5459b4cc1781fc9db2190d35e1e80980afab7d"
+    },
+    "case_module": {
+      "path": "rightbrain_on_policy_dev_cases_v29.py",
+      "sha256": "6b75fdb1c2064be9491e0677444b2aa310469e7150100f4cb8dc8cdb082edbc9"
+    },
+    "case_count": 12,
+    "source_family_count": 12,
+    "category_count": 9,
+    "seeds": [
+      20260712,
+      20260713,
+      20260714
+    ],
+    "candidate_count_per_case": 3,
+    "repair_enabled": false,
+    "system_prompt_unchanged": true,
+    "gate_unchanged": true
+  },
+  "design": {
+    "type": "paired_2x2_factorial",
+    "factors": {
+      "instruction_label_language": [
+        "mixed_english_labels",
+        "japanese_labels"
+      ],
+      "serialization": [
+        "json",
+        "line_message"
+      ]
+    },
+    "conditions": {
+      "mixed_json_control": {
+        "instruction_label_language": "mixed_english_labels",
+        "serialization": "json",
+        "definition": "Exact current _build_model_surface_payload output."
+      },
+      "japanese_json": {
+        "instruction_label_language": "japanese_labels",
+        "serialization": "json",
+        "definition": "Same canonical leaves and hierarchy; structural labels and finite instruction vocabulary are rendered in Japanese."
+      },
+      "mixed_lines": {
+        "instruction_label_language": "mixed_english_labels",
+        "serialization": "line_message",
+        "definition": "Same canonical leaves rendered as deterministic path-value lines with current mixed labels."
+      },
+      "japanese_lines": {
+        "instruction_label_language": "japanese_labels",
+        "serialization": "line_message",
+        "definition": "Same canonical leaves rendered as deterministic path-value lines with Japanese labels."
+      }
+    },
+    "controlled_variables": [
+      "base model and revision",
+      "V10 adapter and weights",
+      "system prompt",
+      "dynamic semantic leaves",
+      "case order",
+      "seed",
+      "three sampling settings",
+      "candidate preparation and strict gate",
+      "repair disabled",
+      "maximum output tokens and output character limit"
+    ],
+    "representation_integrity": [
+      "Every condition must be generated from the exact current control JSON payload.",
+      "The ordered dynamic semantic fingerprint must match across all four conditions.",
+      "Every scalar leaf path in the canonical payload must have one represented counterpart; empty containers must remain explicit.",
+      "No condition may add examples, answer text, case-specific advice, or new memory content."
+    ]
+  },
+  "outcomes": {
+    "primary_unit": "seed_case_pair",
+    "primary_success": "At least one of three initial candidates passes the unchanged strict gate.",
+    "primary_metric": "strict_case_coverage_rate",
+    "secondary_metrics": [
+      "raw_candidate_acceptance_rate",
+      "semantic_omission_rate",
+      "hard_surface_failure_rate",
+      "polite_tone_drift_rate",
+      "prompt_character_count",
+      "prompt_token_count"
+    ],
+    "preregistered_pairwise_contrasts": [
+      "japanese_json - mixed_json_control",
+      "mixed_lines - mixed_json_control",
+      "japanese_lines - japanese_json",
+      "japanese_lines - mixed_lines",
+      "japanese_lines - mixed_json_control"
+    ],
+    "statistics": {
+      "paired_binary_test": "two-sided exact McNemar",
+      "multiple_comparison_control": "Holm correction over the first four isolated-factor contrasts",
+      "uncertainty": "case-cluster bootstrap 95% confidence interval with 10000 samples",
+      "candidate_level_boundary": "Candidate-level rates are descriptive because three candidates from one seed-case are not independent."
+    }
+  },
+  "advance_gate": {
+    "scope": "authorize_only_a_new_source_separated_holdout",
+    "best_condition_selection": "Highest strict case coverage, then lower semantic omission, then lower hard-surface failure, then lower prompt-token count.",
+    "requirements": {
+      "all_source_and_representation_checks_pass": true,
+      "strict_case_coverage_delta_vs_control_at_least": 0.10,
+      "strict_case_coverage_noninferior_in_every_seed": true,
+      "semantic_omission_delta_vs_control_at_most": -0.05,
+      "hard_surface_failure_delta_vs_control_at_most": 0.02,
+      "holm_adjusted_mcnemar_p_at_most": 0.05
+    },
+    "runtime_change_authorized": false,
+    "human_blind_review_authorized": false
+  },
+  "research_boundary": "These are previously observed V29 development cases. A passing condition can authorize only a fresh source-separated holdout. It cannot promote runtime, prove human likeness, prove a cognitive theory, or justify retraining."
+}
