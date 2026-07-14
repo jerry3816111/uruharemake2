@@ -1,0 +1,264 @@
+{
+  "schema": "uruha_rightbrain_qwen35_migration_preregistration_v33",
+  "created_at": "2026-07-15T01:00:03+09:00",
+  "status": "preregistered_before_fresh_holdout_authoring_and_formal_inference",
+  "repository_commit": "8bd52aadc704a2b39e89605547f805ca6554d1d4",
+  "research_question": "Can a locally quantized Qwen3.5-9B improve general semantic realization and embodied-action planning over the locally quantized Qwen2.5-7B deployment candidate while remaining usable on the project's 32 GB personal computer, without treating those gains as evidence of individual-person identity fidelity?",
+  "project_hierarchy": {
+    "general_human_capable_substrate": [
+      "perception and input interpretation",
+      "working and long-term memory control",
+      "self, other, and situation models",
+      "reasoning and response planning",
+      "semantic realization and self-monitoring",
+      "validated embodied-action planning"
+    ],
+    "individual_identity_layer": [
+      "autobiographical experience",
+      "stable values and preferences",
+      "relationship-specific history",
+      "personality dynamics",
+      "characteristic but non-template language habits"
+    ],
+    "interpretation_rule": "A system must first preserve generally competent cognition and communication. Surface-style imitation alone is neither a person nor a replicated individual; individual fidelity must be evaluated separately after general competence passes."
+  },
+  "official_sources": [
+    {
+      "title": "Qwen3.5 official announcement",
+      "url": "https://qwen.ai/blog?id=qwen3.5",
+      "use": "Documents the model family's multilingual and agentic positioning. Vendor claims are not accepted as project results."
+    },
+    {
+      "title": "Qwen3.5-9B official model card",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "use": "Defines the candidate model and its supported usage."
+    },
+    {
+      "title": "Qwen function-calling documentation",
+      "url": "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+      "use": "Defines the official tool-calling interface family used to motivate a separate action-contract evaluation."
+    },
+    {
+      "title": "MLX-LM",
+      "url": "https://github.com/ml-explore/mlx-lm",
+      "use": "Potential later Apple-silicon path for quantized inference and LoRA or QLoRA; not used in Stage 1."
+    }
+  ],
+  "known_before_preregistration": {
+    "screening_is_not_formal_evidence": true,
+    "rightbrain_screening": {
+      "case_count": 12,
+      "qwen2_5_strict_accepted": 10,
+      "qwen3_5_strict_accepted": 12,
+      "qwen2_5_semantic_slot_hit_rate": 0.9677,
+      "qwen3_5_semantic_slot_hit_rate": 1.0,
+      "qwen2_5_mean_latency_seconds": 2.397,
+      "qwen3_5_mean_latency_seconds": 3.861
+    },
+    "vrm_tool_screening": {
+      "case_count": 10,
+      "qwen2_5_exact_tool_sets": 8,
+      "qwen3_5_exact_tool_sets": 10
+    },
+    "limitations": [
+      "The cases were development screening cases rather than a frozen source-separated holdout.",
+      "Qwen3.5 had no person-specific adapter, so identity fidelity was not evaluated.",
+      "Automatic contract acceptance did not establish natural Japanese or human likeness.",
+      "These observed screening results cannot be reused as V33 formal outcomes."
+    ]
+  },
+  "frozen_environment": {
+    "hardware": {
+      "model_identifier": "Mac14,10",
+      "chip": "Apple M2 Pro",
+      "unified_memory_bytes": 34359738368,
+      "cpu_core_count": 12
+    },
+    "ollama_version": "0.31.1",
+    "conditions": {
+      "qwen2_5_7b_quantized_control": {
+        "ollama_tag": "qwen2.5:7b",
+        "blob_sha256": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "blob_bytes": 4683073952,
+        "persona_adapter": "none"
+      },
+      "qwen3_5_9b_quantized_treatment": {
+        "ollama_tag": "qwen3.5:9b",
+        "blob_sha256": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+        "blob_bytes": 6594462816,
+        "persona_adapter": "none",
+        "thinking": false
+      }
+    },
+    "runtime_reference": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "df52685d8ce31ed1065780571a6b07c9ebc166dc5336771a6214412c033d3f48"
+    },
+    "v32_verifier_reference": {
+      "path": "rightbrain_semantic_verifier_v32.py",
+      "sha256": "5cc46b268c60c31212bbefbf7b8b6862ef0fa9c56cf38b1be91699ac14043f75",
+      "condition": "lemma_polarity",
+      "runtime_integration": false
+    }
+  },
+  "stage_1_design": {
+    "type": "paired_local_deployment_candidate_comparison",
+    "causal_boundary": "The model family, parameter count, quantized artifact, tokenizer, renderer, and parser differ together. This is a practical deployment comparison, not a single-variable causal ablation of parameter count.",
+    "fresh_holdout": {
+      "authoring_time": "after_this_preregistration_and_before_any_v33_model_inference",
+      "rightbrain_case_count": 48,
+      "rightbrain_category_count": 12,
+      "rightbrain_cases_per_category": 4,
+      "action_case_count": 120,
+      "action_family_count": 6,
+      "action_cases_per_family": 20,
+      "source_separation": [
+        "No exact input may occur in V21, V29, prior human-blind sheets, V30, V31, V32 calibration data, or the informal screening cases.",
+        "Case identifiers, user inputs, semantic contracts, forbidden content, expected action calls, and no-action labels are committed before formal inference.",
+        "The holdout commit must precede the runner-result commit."
+      ],
+      "rightbrain_categories": [
+        "support_without_overreach",
+        "relationship_reassurance",
+        "gentle_boundary",
+        "uncertainty_and_clarification",
+        "fact_correction",
+        "reversible_planning",
+        "small_win_response",
+        "minor_failure_reframe",
+        "casual_self_state",
+        "humor_and_teasing",
+        "memory_update_use",
+        "private_memory_suppression"
+      ],
+      "action_families": [
+        "single_explicit_action",
+        "multiple_compatible_actions",
+        "no_action_conversation",
+        "negated_action",
+        "ambiguous_or_conflicting_action",
+        "invalid_or_safety_blocked_action"
+      ]
+    },
+    "rightbrain_generation": {
+      "system_prompt": "exact current RIGHT_BRAIN_MODEL_SYSTEM_PROMPT",
+      "payload": "exact current plan_surface_contract_v1 JSON payload",
+      "seeds": [20260715, 20260716, 20260717],
+      "candidate_count_per_seed_case": 3,
+      "temperatures": [0.82, 0.96, 1.08],
+      "top_p": [0.92, 0.95, 0.98],
+      "top_k": [64, 96, 128],
+      "maximum_output_tokens": 96,
+      "context_tokens": 4096,
+      "repair_enabled": false,
+      "post_generation_policy": "Raw output is scored first. Existing deterministic sanitization is reported separately and cannot erase a raw failure."
+    },
+    "action_generation": {
+      "temperature": 0,
+      "seed": 20260715,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 128,
+      "tools": [
+        "set_expression(neutral|happy|sad|angry|surprised)",
+        "play_motion(idle|wave|nod|shake_head|point)",
+        "set_gaze(left|right|user|down)"
+      ],
+      "execution": "No tool is executed. Only parsed calls are scored against the frozen action contract."
+    },
+    "controlled_variables": [
+      "Mac hardware and Ollama version",
+      "case order and case text",
+      "system prompts and tool schemas",
+      "payload leaves, context window, output limits, seeds, and sampling values",
+      "memory state, mood, trust, and maximum reply characters",
+      "scoring code and report schema",
+      "one loaded model at a time and identical warm-up policy"
+    ]
+  },
+  "outcomes": {
+    "general_communication": {
+      "primary_unit": "seed_case_pair",
+      "primary_metric": "raw_semantic_contract_coverage_rate",
+      "secondary_metrics": [
+        "v32_lemma_polarity_semantic_recall",
+        "raw_strict_surface_acceptance_rate",
+        "hard_surface_failure_rate",
+        "polite_or_service_register_rate",
+        "private_memory_intrusion_rate",
+        "template_repetition_rate"
+      ]
+    },
+    "embodied_action": {
+      "primary_unit": "action_case",
+      "primary_metric": "exact_tool_call_set_and_argument_accuracy",
+      "secondary_metrics": [
+        "no_action_specificity",
+        "required_action_recall",
+        "false_action_rate",
+        "negation_violation_rate",
+        "invalid_tool_or_argument_rate"
+      ]
+    },
+    "local_resources": {
+      "metrics": [
+        "model_blob_bytes",
+        "cold_start_seconds",
+        "warm_generation_p50_seconds",
+        "warm_generation_p95_seconds",
+        "Ollama_reported_resident_size",
+        "peak_process_resident_memory_bytes"
+      ]
+    },
+    "statistics": {
+      "paired_binary_test": "two-sided exact McNemar test",
+      "rightbrain_uncertainty": "case-cluster bootstrap 95% confidence interval retaining all seeds and candidates for each resampled case",
+      "action_uncertainty": "action-family-stratified bootstrap 95% confidence interval",
+      "candidate_rows_are_independent": false,
+      "all_failures_and_unparsed_outputs_are_retained": true
+    }
+  },
+  "stage_1_advance_gate": {
+    "decision_if_all_pass": "authorize_qwen3_5_persona_adapter_experiment_only",
+    "requirements": {
+      "all_hash_source_separation_and_accounting_checks_pass": true,
+      "rightbrain_raw_semantic_coverage_delta_vs_qwen2_5_at_least": 0.0,
+      "rightbrain_hard_surface_failure_delta_vs_qwen2_5_at_most": 0.02,
+      "private_memory_intrusion_count": 0,
+      "action_exact_accuracy_delta_vs_qwen2_5_at_least": 0.05,
+      "action_no_action_specificity_delta_vs_qwen2_5_at_least": 0.0,
+      "negation_violation_count": 0,
+      "warm_generation_median_seconds_at_most": 5.0,
+      "warm_generation_slowdown_ratio_vs_qwen2_5_at_most": 1.75,
+      "model_blob_bytes_at_most": 8589934592
+    },
+    "runtime_change_authorized": false,
+    "persona_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "training_authorized": "Only a separately preregistered Qwen3.5 persona-adapter experiment using source-separated training, development, and holdout data."
+  },
+  "stage_2_identity_policy": {
+    "status": "not_yet_preregistered",
+    "required_conditions": [
+      "Qwen3.5-9B base without persona adapter",
+      "the same Qwen3.5-9B base with the new persona adapter",
+      "current Qwen2.5-7B plus V10 as an operational reference, not a matched causal control"
+    ],
+    "required_axes": [
+      "semantic preservation",
+      "natural Japanese",
+      "non-template variation",
+      "stable values and preferences",
+      "relationship- and memory-consistent behavior",
+      "target-person identity fidelity",
+      "latency and peak memory"
+    ],
+    "human_review_rule": "Automatic gates must pass before requesting a small source-blind human comparison. General naturalness and target-person fidelity must be scored as separate questions."
+  },
+  "architecture_boundary": {
+    "speech_path": "cognitive planner -> speech plan -> persona surface formulator -> text and TTS",
+    "action_path": "cognitive planner -> structured action plan -> allowlisted validator -> VRM bridge",
+    "prohibited_shortcut": "The persona surface formulator must not directly execute unrestricted functions or infer hidden memory merely to sound more like the target person.",
+    "shared_model_option": "A future deployment may share one quantized base model and switch logical role prompts or adapters sequentially, but speech and action evidence must remain separately observable and ablatable."
+  },
+  "research_boundary": "Passing Stage 1 would show that Qwen3.5-9B is a stronger local candidate for general realization and action-contract tasks under this deployment comparison. It would not show that the system is a person, that it replicates a particular individual, or that Qwen3.5 should replace the production runtime."
+}
