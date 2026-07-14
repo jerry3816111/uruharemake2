@@ -1,0 +1,558 @@
+{
+  "schema": "uruha_memory_cue_extractive_holdout_analysis_v5",
+  "source_report": "reports/memory_cue_extractive_holdout_v5_report.json",
+  "source_report_sha256": "602149c93d78ca4163464cb2a021fd255cb8a6fa04609c4d84228a4a97ee4a95",
+  "source_results_sha256": "36af4799b6da4d6eb75a179e79ef7448f696e4e1f4971f91d72fc3d178f3bd1d",
+  "verification": {
+    "report_sha256_matches": true,
+    "report_complete": true,
+    "result_count_matches": true,
+    "result_ids_unique_and_match_dataset": true,
+    "results_sha256_matches": true,
+    "dataset_file_sha256_matches": true,
+    "dataset_cases_sha256_matches": true,
+    "model_digest_matches": true,
+    "decision_is_efficiency_only": true,
+    "quality_and_safety_pass": true,
+    "only_preregistered_breadth_gates_failed": true,
+    "all_gates_did_not_pass": true,
+    "runtime_not_authorized": true,
+    "no_official_or_prior_case_reuse": true,
+    "candidate_source_integrity_passed": true,
+    "implementation_hashes_match": true
+  },
+  "implementation_verification": {
+    "v5_runner_sha256": true,
+    "v4_runner_sha256": true,
+    "cue_module_sha256": true,
+    "provenance_module_sha256": true,
+    "attention_module_sha256": true,
+    "ledger_module_sha256": true,
+    "ollama_runner_dependency_sha256": true,
+    "dataset_builder_sha256": true,
+    "dataset_sha256": true,
+    "preregistration_sha256": true
+  },
+  "condition_summary": {
+    "full_session_freeform": {
+      "answerable_pass_count": 42,
+      "answerable_total": 54,
+      "answerable_pass_rate": 0.7777777777777778,
+      "unanswerable_abstention_count": 0,
+      "unanswerable_total": 18,
+      "unanswerable_abstention_rate": 0.0,
+      "overall_pass_count": 42,
+      "overall_total": 72,
+      "overall_pass_rate": 0.5833333333333334,
+      "mean_latency_seconds": 14.460472222222222,
+      "mean_prompt_tokens": 1590.7777777777778,
+      "mean_completion_tokens": 262.6388888888889,
+      "position_invariant_scenario_rate": 0.5833333333333334
+    },
+    "provenance_gate_freeform": {
+      "answerable_pass_count": 36,
+      "answerable_total": 54,
+      "answerable_pass_rate": 0.6666666666666666,
+      "unanswerable_abstention_count": 18,
+      "unanswerable_total": 18,
+      "unanswerable_abstention_rate": 1.0,
+      "overall_pass_count": 54,
+      "overall_total": 72,
+      "overall_pass_rate": 0.75,
+      "mean_latency_seconds": 11.528083333333333,
+      "mean_prompt_tokens": 1439.513888888889,
+      "mean_completion_tokens": 214.54166666666666,
+      "position_invariant_scenario_rate": 0.75
+    },
+    "model_reread_fallback": {
+      "answerable_pass_count": 36,
+      "answerable_total": 54,
+      "answerable_pass_rate": 0.6666666666666666,
+      "unanswerable_abstention_count": 17,
+      "unanswerable_total": 18,
+      "unanswerable_abstention_rate": 0.9444444444444444,
+      "overall_pass_count": 53,
+      "overall_total": 72,
+      "overall_pass_rate": 0.7361111111111112,
+      "mean_latency_seconds": 15.216402777777777,
+      "mean_prompt_tokens": 1870.125,
+      "mean_completion_tokens": 282.3333333333333,
+      "position_invariant_scenario_rate": 0.7083333333333334
+    },
+    "cue_extractive_fallback": {
+      "answerable_pass_count": 38,
+      "answerable_total": 54,
+      "answerable_pass_rate": 0.7037037037037037,
+      "unanswerable_abstention_count": 18,
+      "unanswerable_total": 18,
+      "unanswerable_abstention_rate": 1.0,
+      "overall_pass_count": 56,
+      "overall_total": 72,
+      "overall_pass_rate": 0.7777777777777778,
+      "mean_latency_seconds": 11.660833333333333,
+      "mean_prompt_tokens": 1472.9722222222222,
+      "mean_completion_tokens": 215.95833333333334,
+      "position_invariant_scenario_rate": 0.75
+    }
+  },
+  "paired_effects": {
+    "cue_vs_provenance": {
+      "both_pass": 54,
+      "treatment_only": 2,
+      "control_only": 0,
+      "neither_pass": 16,
+      "treatment_win_case_ids": [
+        "holdout_b_precollege_guitar_nonownership__middle",
+        "holdout_b_precollege_guitar_nonownership__end"
+      ],
+      "treatment_loss_case_ids": []
+    },
+    "cue_vs_provenance_overall": {
+      "metric": "overall_cognitive_case_pass",
+      "control": "provenance_gate_freeform",
+      "treatment": "cue_extractive_fallback",
+      "n": 72,
+      "control_rate": 0.75,
+      "treatment_rate": 0.7777777777777778,
+      "delta": 0.02777777777777779,
+      "mcnemar": {
+        "wins": 2,
+        "losses": 0,
+        "discordant": 2,
+        "p_value": 0.5
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.06944444444444445
+      ]
+    },
+    "cue_vs_provenance_answerable": {
+      "metric": "answerable_semantic_case_pass",
+      "control": "provenance_gate_freeform",
+      "treatment": "cue_extractive_fallback",
+      "n": 54,
+      "control_rate": 0.6666666666666666,
+      "treatment_rate": 0.7037037037037037,
+      "delta": 0.03703703703703709,
+      "mcnemar": {
+        "wins": 2,
+        "losses": 0,
+        "discordant": 2,
+        "p_value": 0.5
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.09259259259259259
+      ]
+    },
+    "cue_vs_reread": {
+      "both_pass": 53,
+      "treatment_only": 3,
+      "control_only": 0,
+      "neither_pass": 16,
+      "treatment_win_case_ids": [
+        "holdout_a_weekend_pet_sitter_unknown_identity__end",
+        "holdout_b_precollege_guitar_nonownership__middle",
+        "holdout_b_precollege_guitar_nonownership__end"
+      ],
+      "treatment_loss_case_ids": []
+    },
+    "cue_vs_reread_overall": {
+      "metric": "overall_cognitive_case_pass",
+      "control": "model_reread_fallback",
+      "treatment": "cue_extractive_fallback",
+      "n": 72,
+      "control_rate": 0.7361111111111112,
+      "treatment_rate": 0.7777777777777778,
+      "delta": 0.04166666666666663,
+      "mcnemar": {
+        "wins": 3,
+        "losses": 0,
+        "discordant": 3,
+        "p_value": 0.25
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.09722222222222222
+      ]
+    },
+    "cue_vs_reread_answerable": {
+      "metric": "answerable_semantic_case_pass",
+      "control": "model_reread_fallback",
+      "treatment": "cue_extractive_fallback",
+      "n": 54,
+      "control_rate": 0.6666666666666666,
+      "treatment_rate": 0.7037037037037037,
+      "delta": 0.03703703703703709,
+      "mcnemar": {
+        "wins": 2,
+        "losses": 0,
+        "discordant": 2,
+        "p_value": 0.5
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.09259259259259259
+      ]
+    }
+  },
+  "fallback_attribution": {
+    "trigger_count": 26,
+    "answerable_trigger_count": 8,
+    "unanswerable_trigger_count": 18,
+    "candidate_sufficient_count": 8,
+    "semantic_recovery_count": 2,
+    "distinct_recovered_scenario_count": 1,
+    "recovery_splits": [
+      "holdout_b"
+    ],
+    "recovery_case_ids": [
+      "holdout_b_precollege_guitar_nonownership__middle",
+      "holdout_b_precollege_guitar_nonownership__end"
+    ],
+    "candidate_gate_false_sufficient_unanswerable_count": 6,
+    "final_abstention_after_false_sufficient_gate_count": 6,
+    "candidate_exact_user_source_rate": 1.0,
+    "candidate_assistant_admission_rate": 0.0
+  },
+  "cue_vs_reread_efficiency": {
+    "mean_latency_seconds_saved": 3.555569444444444,
+    "mean_latency_reduction_rate": 0.23366688542426348,
+    "mean_prompt_tokens_saved": 397.1527777777778,
+    "mean_prompt_token_reduction_rate": 0.21236696893404336
+  },
+  "remaining_answerable_failures": {
+    "count": 16,
+    "counts": {
+      "answer_realization_incomplete": 7,
+      "candidate_sufficiency_false_negative": 6,
+      "exact_span_order_sensitivity": 3
+    },
+    "cases": [
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_vaccination_card_current_location__beginning",
+        "scenario_id": "holdout_a_vaccination_card_current_location",
+        "split": "holdout_a",
+        "capability": "current_location",
+        "position": "beginning",
+        "question": "Where is my vaccination card currently stored?",
+        "expected_answer_spans": [
+          "clear sleeve behind my passport"
+        ],
+        "response": "behind my passport",
+        "answer_token_coverage": 0.6,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_vaccination_card_current_location__middle",
+        "scenario_id": "holdout_a_vaccination_card_current_location",
+        "split": "holdout_a",
+        "capability": "current_location",
+        "position": "middle",
+        "question": "Where is my vaccination card currently stored?",
+        "expected_answer_spans": [
+          "clear sleeve behind my passport"
+        ],
+        "response": "behind my passport",
+        "answer_token_coverage": 0.6,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_vaccination_card_current_location__end",
+        "scenario_id": "holdout_a_vaccination_card_current_location",
+        "split": "holdout_a",
+        "capability": "current_location",
+        "position": "end",
+        "question": "Where is my vaccination card currently stored?",
+        "expected_answer_spans": [
+          "clear sleeve behind my passport"
+        ],
+        "response": "behind my passport",
+        "answer_token_coverage": 0.6,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_farmers_market_previous_frequency__beginning",
+        "scenario_id": "holdout_a_farmers_market_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "beginning",
+        "question": "How often did I visit the farmers market before changing jobs?",
+        "expected_answer_spans": [
+          "every other Sunday"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_farmers_market_previous_frequency__middle",
+        "scenario_id": "holdout_a_farmers_market_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "middle",
+        "question": "How often did I visit the farmers market before changing jobs?",
+        "expected_answer_spans": [
+          "every other Sunday"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_farmers_market_previous_frequency__end",
+        "scenario_id": "holdout_a_farmers_market_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "end",
+        "question": "How often did I visit the farmers market before changing jobs?",
+        "expected_answer_spans": [
+          "every other Sunday"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_premove_rice_cooker_ownership__beginning",
+        "scenario_id": "holdout_a_premove_rice_cooker_ownership",
+        "split": "holdout_a",
+        "capability": "historical_yes_no",
+        "position": "beginning",
+        "question": "Before moving into this apartment, did I own a rice cooker?",
+        "expected_answer_spans": [
+          "rice cooker"
+        ],
+        "response": "Yes.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_premove_rice_cooker_ownership__middle",
+        "scenario_id": "holdout_a_premove_rice_cooker_ownership",
+        "split": "holdout_a",
+        "capability": "historical_yes_no",
+        "position": "middle",
+        "question": "Before moving into this apartment, did I own a rice cooker?",
+        "expected_answer_spans": [
+          "rice cooker"
+        ],
+        "response": "Yes.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_a_premove_rice_cooker_ownership__end",
+        "scenario_id": "holdout_a_premove_rice_cooker_ownership",
+        "split": "holdout_a",
+        "capability": "historical_yes_no",
+        "position": "end",
+        "question": "Before moving into this apartment, did I own a rice cooker?",
+        "expected_answer_spans": [
+          "rice cooker"
+        ],
+        "response": "Yes.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_choir_previous_frequency__beginning",
+        "scenario_id": "holdout_a_choir_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "beginning",
+        "question": "How often did choir rehearsal happen before it became weekly?",
+        "expected_answer_spans": [
+          "three evenings per month"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_choir_previous_frequency__middle",
+        "scenario_id": "holdout_a_choir_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "middle",
+        "question": "How often did choir rehearsal happen before it became weekly?",
+        "expected_answer_spans": [
+          "three evenings per month"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "candidate_sufficiency_false_negative",
+        "case_id": "holdout_a_choir_previous_frequency__end",
+        "scenario_id": "holdout_a_choir_previous_frequency",
+        "split": "holdout_a",
+        "capability": "previous_frequency",
+        "position": "end",
+        "question": "How often did choir rehearsal happen before it became weekly?",
+        "expected_answer_spans": [
+          "three evenings per month"
+        ],
+        "response": "I do not have enough grounded user evidence to answer that.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": false,
+        "fallback_triggered": true,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "exact_span_order_sensitivity",
+        "case_id": "holdout_b_insurance_policy_current_location__beginning",
+        "scenario_id": "holdout_b_insurance_policy_current_location",
+        "split": "holdout_b",
+        "capability": "current_location",
+        "position": "beginning",
+        "question": "Where is my insurance policy document now?",
+        "expected_answer_spans": [
+          "black binder on the bottom shelf"
+        ],
+        "response": "The insurance policy document is currently on the bottom shelf, in the black binder.",
+        "answer_token_coverage": 1.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "exact_span_order_sensitivity",
+        "case_id": "holdout_b_insurance_policy_current_location__middle",
+        "scenario_id": "holdout_b_insurance_policy_current_location",
+        "split": "holdout_b",
+        "capability": "current_location",
+        "position": "middle",
+        "question": "Where is my insurance policy document now?",
+        "expected_answer_spans": [
+          "black binder on the bottom shelf"
+        ],
+        "response": "The insurance policy document is currently on the bottom shelf, in the black binder.",
+        "answer_token_coverage": 1.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "exact_span_order_sensitivity",
+        "case_id": "holdout_b_insurance_policy_current_location__end",
+        "scenario_id": "holdout_b_insurance_policy_current_location",
+        "split": "holdout_b",
+        "capability": "current_location",
+        "position": "end",
+        "question": "Where is my insurance policy document now?",
+        "expected_answer_spans": [
+          "black binder on the bottom shelf"
+        ],
+        "response": "The insurance policy document is currently on the bottom shelf, in the black binder.",
+        "answer_token_coverage": 1.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      },
+      {
+        "layer": "answer_realization_incomplete",
+        "case_id": "holdout_b_precollege_guitar_nonownership__beginning",
+        "scenario_id": "holdout_b_precollege_guitar_nonownership",
+        "split": "holdout_b",
+        "capability": "historical_yes_no",
+        "position": "beginning",
+        "question": "Before starting college, did I own a guitar?",
+        "expected_answer_spans": [
+          "guitar"
+        ],
+        "response": "No.",
+        "answer_token_coverage": 0.0,
+        "gate_sufficient": true,
+        "fallback_triggered": false,
+        "required_slot_span_hit": false,
+        "polarity_hit": true,
+        "relation_hit": true
+      }
+    ]
+  },
+  "failed_preregistered_gates": [
+    "cue_vs_provenance_distinct_recovered_scenario_count_at_least_two",
+    "cue_recovery_represented_in_both_holdout_splits"
+  ],
+  "decision": "preserve_runtime_replication_failed_breadth",
+  "runtime_change_authorized": false,
+  "claim_strength": "replicated_efficiency_and_local_recovery_only",
+  "causal_conclusions": [
+    "E 相對 P 多答對 72 題中的 2 題且沒有逐題退步，但兩題只是 holdout B 同一情境的不同位置，因此沒有重現廣泛回想效果。",
+    "E 對 18/18 個不可回答案例都正確拒答，也沒有混入 assistant 發言；但候選充分性 gate 本身誤把 6 題判成可回答，是最終回答層再次拒答才形成最後一道安全防線。",
+    "E 相對模型重讀多通過 3 題、沒有退步，而且延遲與 prompt tokens 都更低；因此本次重現的是效率和局部品質，不是廣泛檢索能力。",
+    "剩餘 16 個可回答失敗分成：6 個 gate 假陰性、7 個回答實現不完整，以及 3 個固定 span 詞序敏感分數；這三層必須分開評估。"
+  ],
+  "next_experiment_constraints": [
+    "V5 的預註冊廣度門檻失敗，不得整合進 runtime。",
+    "72 個 V5 案例都已是用過的評估證據，之後不得用來調參或修規則。",
+    "另建開發集測試通用頻率正規化與完整回答契約，不在 V5 題目上補洞。",
+    "固定原本 exact-span 分數，同時預註冊語意等價指標，避免把詞序差異誤判成記憶失敗。",
+    "未來任何 runtime 提案都必須使用新的情境不重疊 holdout，並維持明確拒答安全。"
+  ]
+}
