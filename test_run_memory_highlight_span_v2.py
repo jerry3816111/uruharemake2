@@ -5,6 +5,7 @@ from pathlib import Path
 
 from run_memory_highlight_span_v2 import (
     CONDITIONS,
+    _polarity_hit,
     build_analysis,
     extract_note,
     load_protocol,
@@ -79,6 +80,15 @@ class RunMemoryHighlightSpanV2Test(unittest.TestCase):
         self.assertEqual(dataset_path, DATASET)
         self.assertEqual(len(dataset["cases"]), 36)
         self.assertEqual(protocol["dataset"]["cases_sha256"], dataset["cases_sha256"])
+
+    def test_polarity_metric_accepts_normal_punctuation_but_not_prefix_words(self):
+        for response in ("Yes", "Yes.", "Yes, because the source says so.", "Yes - support."):
+            self.assertTrue(_polarity_hit("yes", response), response)
+        for response in ("No", "No.", "No, the record is explicit.", "No - support."):
+            self.assertTrue(_polarity_hit("no", response), response)
+        self.assertFalse(_polarity_hit("yes", "Yesterday I checked."))
+        self.assertFalse(_polarity_hit("no", "Nobody answered."))
+        self.assertTrue(_polarity_hit("none", "any response"))
 
     def test_highlighted_note_keeps_full_context_and_grounds_original_quote(self):
         case = self.dataset["cases"][0]

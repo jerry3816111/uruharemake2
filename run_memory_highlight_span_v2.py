@@ -4,6 +4,7 @@
 import argparse
 import datetime as dt
 import json
+import re
 import statistics
 import time
 from collections import defaultdict
@@ -211,9 +212,9 @@ def _polarity_hit(polarity, response):
         return True
     normalized = str(response or "").strip().lower()
     if polarity == "yes":
-        return normalized == "yes" or normalized.startswith(("yes ", "yes-", "yes -"))
+        return bool(re.match(r"^yes\b", normalized))
     if polarity == "no":
-        return normalized == "no" or normalized.startswith(("no ", "no-", "no -"))
+        return bool(re.match(r"^no\b", normalized))
     return False
 
 
