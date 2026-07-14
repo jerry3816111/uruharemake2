@@ -1,0 +1,188 @@
+{
+  "schema": "uruha_memory_cue_extractive_preregistration_v4",
+  "frozen_at": "2026-07-14T09:12:00+00:00",
+  "research_basis": [
+    {
+      "claim": "Recall depends on retrieval cues that match how an event was encoded.",
+      "source": "Tulving and Thomson, Encoding Specificity and Retrieval Processes in Episodic Memory (1973)",
+      "url": "https://doi.org/10.1037/h0020071"
+    },
+    {
+      "claim": "Extractive compression can select useful source sentences and return no augmentation when evidence is irrelevant.",
+      "source": "RECOMP, ICLR 2024",
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/bda88ed2892f5e61c9a9bf215c566913-Abstract-Conference.html"
+    },
+    {
+      "claim": "Retrieval should be triggered only when the current generation lacks required knowledge.",
+      "source": "FLARE, EMNLP 2023",
+      "url": "https://aclanthology.org/2023.emnlp-main.495/"
+    },
+    {
+      "claim": "Remembering includes judgments about the source of information and those judgments can fail.",
+      "source": "Johnson, Hashtroudi, and Lindsay, Source Monitoring (1993)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8346328/"
+    }
+  ],
+  "hypothesis": {
+    "primary": "When the normal evidence ledger is insufficient, answering from a small query-aligned set of exact user utterances will recover more answerable memories than rerunning the same extractor over highlighted full context.",
+    "safety": "The same path must retain perfect abstention on truly unanswerable cases because only user-source utterances are eligible and uncertainty-only candidates are rejected.",
+    "efficiency": "Direct extractive fallback should use less latency and fewer prompt tokens than model-based rereading plus ledger reconstruction."
+  },
+  "dataset": {
+    "path": "datasets/memory_cue_extractive_v4.json",
+    "file_sha256": "ac744e0f9493ffb4ba470754e8473d04238be4e86c06fbcd6b8b67b155de130a",
+    "cases_sha256": "44b3f662775e5819ddeaa9fd3af4ff2990dd6687fc01a9cc64d4ae7e51b690e6",
+    "scenario_count": 16,
+    "case_count": 48,
+    "answerable_case_count": 36,
+    "unanswerable_case_count": 12,
+    "development_case_count": 24,
+    "transfer_case_count": 24,
+    "official_benchmark_items_used": 0,
+    "v1_case_reuse_count": 0,
+    "v2_case_reuse_count": 0,
+    "v3_case_reuse_count": 0
+  },
+  "inference": {
+    "model": "qwen2.5:7b",
+    "seed": 20260717,
+    "temperature": 0,
+    "num_ctx": 32768,
+    "candidate_limit": 4,
+    "explicit_abstention": "I do not have enough grounded user evidence to answer that."
+  },
+  "frozen_preimplementation_components": {
+    "selector": {
+      "module": "memory_utterance_attention.py",
+      "module_sha256": "ec751a6f2386dd9ec4f7fc1b9340e3b43a6ce599068a0ec762758ad143aa91a8",
+      "function": "rank_user_utterances",
+      "tuning_on_v4_allowed": false,
+      "gold_utterance_hits": 91,
+      "gold_utterance_total": 96,
+      "selected_utterance_count": 96,
+      "false_positive_count": 5
+    },
+    "candidate_sufficiency_gate": {
+      "module": "memory_provenance_reread.py",
+      "module_sha256": "6a452d466ccad31e54fba90ec6d48d7c4019f7e610829e6efcfcb0093923423e",
+      "function": "evaluate_evidence_sufficiency",
+      "tuning_on_v4_allowed": false,
+      "answerable_sufficient_count": 33,
+      "answerable_total": 36,
+      "unanswerable_insufficient_count": 12,
+      "unanswerable_total": 12,
+      "known_miss_case_ids": [
+        "dev_lap_pool_previous_frequency__beginning",
+        "dev_lap_pool_previous_frequency__middle",
+        "dev_lap_pool_previous_frequency__end"
+      ],
+      "known_miss_reason": "The existing generic frequency gate does not recognize 'three mornings a week'; V4 will not tune it after seeing the dataset."
+    }
+  },
+  "conditions": [
+    {
+      "id": "full_session_freeform",
+      "changed_component": "none",
+      "primary_path": "existing full-session note, mixed-role ledger, freeform answer",
+      "fallback": "none",
+      "explicit_abstention": false
+    },
+    {
+      "id": "provenance_gate_freeform",
+      "changed_component": "authoritative user-source filter and sufficiency gate",
+      "primary_path": "reuse full-session note, rebuild user-only ledger, freeform answer when sufficient",
+      "fallback": "fixed abstention",
+      "explicit_abstention": true
+    },
+    {
+      "id": "model_reread_fallback",
+      "changed_component": "fallback method only",
+      "primary_path": "identical to provenance_gate_freeform",
+      "fallback": "highlight full context, rerun note extraction and ledger, then answer or abstain",
+      "explicit_abstention": true
+    },
+    {
+      "id": "cue_extractive_fallback",
+      "changed_component": "fallback method only",
+      "primary_path": "identical to provenance_gate_freeform",
+      "fallback": "select exact user utterances with frozen query cues, reject uncertainty-only candidates, answer directly from those verbatim sources or abstain",
+      "explicit_abstention": true
+    }
+  ],
+  "controlled_variables": [
+    "dataset and item order",
+    "base model and model digest",
+    "temperature, seed, context length, and token caps",
+    "primary full-session note extraction",
+    "authoritative user-source policy",
+    "primary evidence sufficiency gate",
+    "fixed abstention text",
+    "answer scoring and paired statistics",
+    "candidate limit",
+    "full original session retained outside fallback"
+  ],
+  "candidate_contract": {
+    "gold_visible_to_selector_or_gate": false,
+    "allowed_source_role": "user",
+    "source_text_may_be_rewritten": false,
+    "assistant_turns_may_enter_candidate_context": false,
+    "fallback_trigger": "primary user ledger is insufficient",
+    "candidate_gate": "existing generic answer-shape sufficiency over exact selected user utterances",
+    "candidate_answer": "one concise answer generated from candidate user utterances only",
+    "remaining_insufficiency": "fixed explicit abstention"
+  },
+  "primary_metrics": [
+    "answerable_semantic_case_pass",
+    "unanswerable_explicit_abstention_accuracy",
+    "overall_cognitive_case_pass",
+    "unsafe_answer_rate_on_unanswerable",
+    "false_abstention_rate_on_answerable",
+    "fallback_trigger_rate",
+    "fallback_recovery_rate",
+    "position_invariant_scenario_pass"
+  ],
+  "integrity_and_cost_metrics": [
+    "candidate_gold_utterance_recall",
+    "candidate_context_user_source_rate",
+    "candidate_context_exact_source_rate",
+    "assistant_turn_admission_rate",
+    "fallback_runs_only_after_primary_insufficiency",
+    "latency_seconds",
+    "prompt_tokens",
+    "completion_tokens"
+  ],
+  "paired_comparisons": [
+    "provenance_gate_freeform - full_session_freeform",
+    "model_reread_fallback - provenance_gate_freeform",
+    "cue_extractive_fallback - provenance_gate_freeform",
+    "cue_extractive_fallback - model_reread_fallback"
+  ],
+  "decision_gates": {
+    "dataset_hash_match": true,
+    "no_v1_v2_v3_scenario_or_question_reuse": true,
+    "all_candidate_context_is_exact_user_source": true,
+    "no_assistant_turn_admitted_to_candidate_context": true,
+    "fallback_runs_only_after_primary_insufficiency": true,
+    "cue_unanswerable_abstention_rate_equals_one": true,
+    "cue_unsafe_answer_rate_on_unanswerable_equals_zero": true,
+    "cue_answerable_pass_strictly_higher_than_provenance": true,
+    "cue_overall_pass_strictly_higher_than_provenance": true,
+    "cue_development_answerable_not_lower_than_provenance": true,
+    "cue_transfer_answerable_not_lower_than_provenance": true,
+    "no_capability_family_regression_cue_vs_provenance": true,
+    "cue_position_invariance_not_lower_than_provenance": true,
+    "cue_fallback_recovery_rate_greater_than_zero": true,
+    "cue_mean_latency_not_higher_than_model_reread": true,
+    "cue_mean_prompt_tokens_not_higher_than_model_reread": true
+  },
+  "research_boundary": {
+    "development_only": true,
+    "transfer_is_internal_diagnostic": true,
+    "external_heldout_claim_allowed": false,
+    "runtime_change_authorized": false,
+    "v1_v2_v3_results_may_not_promote_v4": true,
+    "consumed_longmemeval_heldout_reuse_allowed": false,
+    "passing_action": "eligible_for_new_untouched_evaluation_only",
+    "failure_action": "preserve_result_and reject_runtime_integration"
+  }
+}

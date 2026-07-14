@@ -1,0 +1,393 @@
+{
+  "schema": "uruha_memory_cue_extractive_analysis_v4",
+  "source_report": "reports/memory_cue_extractive_v4_report.json",
+  "source_report_sha256": "b9086660d4387e153a18e9e9c7113b749e3381871cce1fc704606f577a861414",
+  "source_results_sha256": "fb5745139d4557363e03676332770512f216eb137f3976f20b45942c2e5e8f98",
+  "verification": {
+    "report_sha256_matches": true,
+    "report_complete": true,
+    "result_count_matches": true,
+    "result_ids_unique_and_match_dataset": true,
+    "results_sha256_matches": true,
+    "dataset_file_sha256_matches": true,
+    "dataset_cases_sha256_matches": true,
+    "model_digest_matches": true,
+    "all_preregistered_gates_pass": true,
+    "decision_is_untouched_evaluation_only": true,
+    "runtime_not_authorized": true,
+    "no_official_or_prior_case_reuse": true,
+    "candidate_rows_exist": true,
+    "candidate_context_exact_user_only": true,
+    "frozen_selector_hash_matches": true,
+    "frozen_candidate_gate_hash_matches": true,
+    "implementation_hashes_match": true
+  },
+  "implementation_verification": {
+    "runner_sha256": true,
+    "cue_module_sha256": true,
+    "v3_runner_dependency_sha256": true,
+    "provenance_module_sha256": true,
+    "attention_module_sha256": true,
+    "ledger_module_sha256": true,
+    "ollama_runner_dependency_sha256": true,
+    "dataset_builder_sha256": true,
+    "dataset_sha256": true,
+    "preregistration_sha256": true
+  },
+  "condition_summary": {
+    "full_session_freeform": {
+      "answerable_pass_count": 28,
+      "answerable_total": 36,
+      "answerable_pass_rate": 0.7777777777777778,
+      "unanswerable_abstention_count": 0,
+      "unanswerable_total": 12,
+      "unanswerable_abstention_rate": 0.0,
+      "overall_pass_count": 28,
+      "overall_total": 48,
+      "overall_pass_rate": 0.5833333333333334,
+      "mean_latency_seconds": 14.064708333333334,
+      "mean_prompt_tokens": 1571.7708333333333,
+      "position_invariant_scenario_rate": 0.5
+    },
+    "provenance_gate_freeform": {
+      "answerable_pass_count": 25,
+      "answerable_total": 36,
+      "answerable_pass_rate": 0.6944444444444444,
+      "unanswerable_abstention_count": 12,
+      "unanswerable_total": 12,
+      "unanswerable_abstention_rate": 1.0,
+      "overall_pass_count": 37,
+      "overall_total": 48,
+      "overall_pass_rate": 0.7708333333333334,
+      "mean_latency_seconds": 11.164854166666666,
+      "mean_prompt_tokens": 1433.3958333333333,
+      "position_invariant_scenario_rate": 0.6875
+    },
+    "model_reread_fallback": {
+      "answerable_pass_count": 26,
+      "answerable_total": 36,
+      "answerable_pass_rate": 0.7222222222222222,
+      "unanswerable_abstention_count": 12,
+      "unanswerable_total": 12,
+      "unanswerable_abstention_rate": 1.0,
+      "overall_pass_count": 38,
+      "overall_total": 48,
+      "overall_pass_rate": 0.7916666666666666,
+      "mean_latency_seconds": 13.614458333333333,
+      "mean_prompt_tokens": 1785.3125,
+      "position_invariant_scenario_rate": 0.75
+    },
+    "cue_extractive_fallback": {
+      "answerable_pass_count": 26,
+      "answerable_total": 36,
+      "answerable_pass_rate": 0.7222222222222222,
+      "unanswerable_abstention_count": 12,
+      "unanswerable_total": 12,
+      "unanswerable_abstention_rate": 1.0,
+      "overall_pass_count": 38,
+      "overall_total": 48,
+      "overall_pass_rate": 0.7916666666666666,
+      "mean_latency_seconds": 11.203125,
+      "mean_prompt_tokens": 1439.875,
+      "position_invariant_scenario_rate": 0.75
+    }
+  },
+  "paired_effects": {
+    "provenance_vs_control": {
+      "both_pass": 25,
+      "treatment_only": 12,
+      "control_only": 3,
+      "neither_pass": 8,
+      "treatment_win_case_ids": [
+        "dev_house_key_unknown_location__beginning",
+        "dev_house_key_unknown_location__middle",
+        "dev_house_key_unknown_location__end",
+        "dev_houseplants_unknown_count__beginning",
+        "dev_houseplants_unknown_count__middle",
+        "dev_houseplants_unknown_count__end",
+        "transfer_garage_code_unknown_count__beginning",
+        "transfer_garage_code_unknown_count__middle",
+        "transfer_garage_code_unknown_count__end",
+        "transfer_emergency_contact_unknown_identity__beginning",
+        "transfer_emergency_contact_unknown_identity__middle",
+        "transfer_emergency_contact_unknown_identity__end"
+      ],
+      "treatment_loss_case_ids": [
+        "dev_lap_pool_previous_frequency__beginning",
+        "dev_lap_pool_previous_frequency__middle",
+        "dev_lap_pool_previous_frequency__end"
+      ]
+    },
+    "cue_vs_provenance": {
+      "both_pass": 37,
+      "treatment_only": 1,
+      "control_only": 0,
+      "neither_pass": 10,
+      "treatment_win_case_ids": [
+        "transfer_dentist_current_time__end"
+      ],
+      "treatment_loss_case_ids": []
+    },
+    "cue_vs_reread": {
+      "both_pass": 38,
+      "treatment_only": 0,
+      "control_only": 0,
+      "neither_pass": 10,
+      "treatment_win_case_ids": [],
+      "treatment_loss_case_ids": []
+    },
+    "cue_vs_provenance_formal": {
+      "metric": "overall_cognitive_case_pass",
+      "control": "provenance_gate_freeform",
+      "treatment": "cue_extractive_fallback",
+      "n": 48,
+      "control_rate": 0.7708333333333334,
+      "treatment_rate": 0.7916666666666666,
+      "delta": 0.02083333333333326,
+      "mcnemar": {
+        "wins": 1,
+        "losses": 0,
+        "discordant": 1,
+        "p_value": 1.0
+      },
+      "paired_bootstrap_95_ci": [
+        0.0,
+        0.0625
+      ]
+    }
+  },
+  "fallback_attribution": {
+    "trigger_count": 16,
+    "answerable_trigger_count": 4,
+    "unanswerable_trigger_count": 12,
+    "candidate_sufficient_count": 1,
+    "cue_recovery_count": 1,
+    "reread_recovery_count": 1,
+    "cue_recovery_case_ids": [
+      "transfer_dentist_current_time__end"
+    ],
+    "reread_recovery_case_ids": [
+      "transfer_dentist_current_time__end"
+    ],
+    "trigger_case_ids": [
+      "dev_lap_pool_previous_frequency__beginning",
+      "dev_lap_pool_previous_frequency__middle",
+      "dev_lap_pool_previous_frequency__end",
+      "dev_house_key_unknown_location__beginning",
+      "dev_house_key_unknown_location__middle",
+      "dev_house_key_unknown_location__end",
+      "dev_houseplants_unknown_count__beginning",
+      "dev_houseplants_unknown_count__middle",
+      "dev_houseplants_unknown_count__end",
+      "transfer_dentist_current_time__end",
+      "transfer_garage_code_unknown_count__beginning",
+      "transfer_garage_code_unknown_count__middle",
+      "transfer_garage_code_unknown_count__end",
+      "transfer_emergency_contact_unknown_identity__beginning",
+      "transfer_emergency_contact_unknown_identity__middle",
+      "transfer_emergency_contact_unknown_identity__end"
+    ],
+    "exact_user_source_rate": 1.0,
+    "assistant_admission_rate": 0.0
+  },
+  "cue_vs_reread": {
+    "semantic_pass_vectors_identical": true,
+    "response_difference_count": 1,
+    "response_difference_case_ids": [
+      "transfer_dentist_current_time__end"
+    ],
+    "mean_latency_seconds_saved": 2.4113333333333333,
+    "mean_latency_reduction_rate": 0.17711562768747685,
+    "mean_prompt_tokens_saved": 345.4375,
+    "mean_prompt_token_reduction_rate": 0.19348853492035709
+  },
+  "remaining_answerable_failures": {
+    "count": 10,
+    "groups": {
+      "current_count_scope_mismatch": {
+        "count": 3,
+        "cases": [
+          {
+            "case_id": "dev_water_bottles_current_count__beginning",
+            "scenario_id": "dev_water_bottles_current_count",
+            "split": "development",
+            "capability": "current_count",
+            "position": "beginning",
+            "question": "How many stainless steel water bottles do I have now?",
+            "response": "Insufficient evidence to determine the number of stainless steel water bottles. The provided evidence only states the current total count of water bottles, which includes a new blue one making the total seven, but does not specify the type of material for these bottles.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": true,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          },
+          {
+            "case_id": "dev_water_bottles_current_count__middle",
+            "scenario_id": "dev_water_bottles_current_count",
+            "split": "development",
+            "capability": "current_count",
+            "position": "middle",
+            "question": "How many stainless steel water bottles do I have now?",
+            "response": "Insufficient evidence to determine the number of stainless steel water bottles. The provided evidence only mentions a total count of seven water bottles, but does not specify the material of these bottles.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": true,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          },
+          {
+            "case_id": "dev_water_bottles_current_count__end",
+            "scenario_id": "dev_water_bottles_current_count",
+            "split": "development",
+            "capability": "current_count",
+            "position": "end",
+            "question": "How many stainless steel water bottles do I have now?",
+            "response": "Insufficient evidence to determine the number of stainless steel water bottles. The provided evidence only indicates a total count of seven water bottles, but does not specify the material of these bottles.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": true,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          }
+        ],
+        "root_cause": "The ledger and answer gate passed, but the answer generator narrowed the remembered water-bottle set against a material qualifier and refused the grounded count."
+      },
+      "previous_frequency_normalization": {
+        "count": 3,
+        "cases": [
+          {
+            "case_id": "dev_lap_pool_previous_frequency__beginning",
+            "scenario_id": "dev_lap_pool_previous_frequency",
+            "split": "development",
+            "capability": "previous_frequency",
+            "position": "beginning",
+            "question": "How often did I swim before changing to the Saturday schedule?",
+            "response": "I do not have enough grounded user evidence to answer that.",
+            "gate_sufficient": false,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": true,
+            "fallback_semantic_recovered": false
+          },
+          {
+            "case_id": "dev_lap_pool_previous_frequency__middle",
+            "scenario_id": "dev_lap_pool_previous_frequency",
+            "split": "development",
+            "capability": "previous_frequency",
+            "position": "middle",
+            "question": "How often did I swim before changing to the Saturday schedule?",
+            "response": "I do not have enough grounded user evidence to answer that.",
+            "gate_sufficient": false,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": true,
+            "fallback_semantic_recovered": false
+          },
+          {
+            "case_id": "dev_lap_pool_previous_frequency__end",
+            "scenario_id": "dev_lap_pool_previous_frequency",
+            "split": "development",
+            "capability": "previous_frequency",
+            "position": "end",
+            "question": "How often did I swim before changing to the Saturday schedule?",
+            "response": "I do not have enough grounded user evidence to answer that.",
+            "gate_sufficient": false,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": true,
+            "fallback_semantic_recovered": false
+          }
+        ],
+        "root_cause": "The frozen generic sufficiency gate does not normalize the natural frequency phrase 'three mornings a week', so both fallbacks abstain."
+      },
+      "historical_yes_no_answer_contract": {
+        "count": 4,
+        "cases": [
+          {
+            "case_id": "dev_precamera_binoculars_ownership__beginning",
+            "scenario_id": "dev_precamera_binoculars_ownership",
+            "split": "development",
+            "capability": "historical_yes_no",
+            "position": "beginning",
+            "question": "Before buying my camera, did I own binoculars?",
+            "response": "Before buying the camera, you owned binoculars.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": true,
+            "polarity_hit": false,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          },
+          {
+            "case_id": "transfer_predog_rabbit_nonownership__beginning",
+            "scenario_id": "transfer_predog_rabbit_nonownership",
+            "split": "transfer",
+            "capability": "historical_yes_no",
+            "position": "beginning",
+            "question": "Before adopting my dog, did I own a rabbit?",
+            "response": "No.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          },
+          {
+            "case_id": "transfer_predog_rabbit_nonownership__middle",
+            "scenario_id": "transfer_predog_rabbit_nonownership",
+            "split": "transfer",
+            "capability": "historical_yes_no",
+            "position": "middle",
+            "question": "Before adopting my dog, did I own a rabbit?",
+            "response": "No.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          },
+          {
+            "case_id": "transfer_predog_rabbit_nonownership__end",
+            "scenario_id": "transfer_predog_rabbit_nonownership",
+            "split": "transfer",
+            "capability": "historical_yes_no",
+            "position": "end",
+            "question": "Before adopting my dog, did I own a rabbit?",
+            "response": "No.",
+            "gate_sufficient": true,
+            "required_slot_span_hit": false,
+            "polarity_hit": true,
+            "relation_hit": true,
+            "fallback_triggered": false,
+            "fallback_semantic_recovered": null
+          }
+        ],
+        "root_cause": "One polarity error and three bare 'No.' answers remain. The evidence was available, but the final answer did not preserve the requested entity."
+      }
+    }
+  },
+  "decision": "proceed_to_new_untouched_evaluation_only",
+  "runtime_change_authorized": false,
+  "claim_strength": "weak_positive_development_evidence",
+  "causal_conclusions": [
+    "E improved P by one of 48 cases (+2.08 percentage points), but the paired McNemar p-value is 1.0 and the bootstrap interval includes zero.",
+    "E and R have identical correctness on all 48 cases. E's demonstrated advantage is efficiency, not higher accuracy than model rereading.",
+    "E recovered one end-position current-time case while preserving 12/12 unanswerable abstentions and admitting no assistant source.",
+    "Ten answerable failures remain in count scope, natural frequency, and historical yes/no realization; most are not retrieval failures."
+  ],
+  "next_experiment_constraints": [
+    "Do not modify runtime from V4; the report explicitly authorizes only a new untouched evaluation.",
+    "Treat all 48 V4 cases and both pilots as consumed development evidence.",
+    "Freeze the V4 implementation and preregister a new scenario-disjoint holdout before running it.",
+    "Require more than one paired recovery and report uncertainty before any runtime promotion.",
+    "Evaluate answer-contract failures separately from retrieval so a better surface answer is not misattributed to memory retrieval."
+  ]
+}
