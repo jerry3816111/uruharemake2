@@ -8,6 +8,7 @@ from memory_evidence_ledger import LEDGER_SCHEMA
 from run_memory_provenance_reread_v3 import (
     CONDITIONS,
     _evidence_recall,
+    _semantic_span_present,
     build_analysis,
     load_protocol,
     render_markdown,
@@ -160,6 +161,32 @@ class RunMemoryProvenanceRereadV3Test(unittest.TestCase):
         }
         self.assertEqual(_evidence_recall(case, shortest), 1.0)
         self.assertEqual(_evidence_recall(case, paraphrase), 0.0)
+
+    def test_semantic_span_metric_handles_compound_numbers_and_cadence_order(self):
+        self.assertTrue(
+            _semantic_span_present(
+                "twenty-five minutes",
+                "Before the change it took 25 minutes.",
+            )
+        )
+        self.assertTrue(
+            _semantic_span_present(
+                "five times a week",
+                "The number of takeout meals per week was 5.",
+            )
+        )
+        self.assertTrue(
+            _semantic_span_present(
+                "twice a week",
+                "The current frequency is 2 per week.",
+            )
+        )
+        self.assertFalse(
+            _semantic_span_present(
+                "five times a week",
+                "The current frequency is 2 per week.",
+            )
+        )
 
     def test_run_case_rereads_only_after_primary_insufficiency_and_repairs_markup(self):
         case = next(

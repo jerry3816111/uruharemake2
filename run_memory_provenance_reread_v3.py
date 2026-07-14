@@ -61,6 +61,44 @@ CONDITIONS = (
     "adaptive_provenance_reread_freeform",
     "adaptive_provenance_reread_span_contract",
 )
+_SMALL_NUMBERS = {
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+    "once": 1,
+    "twice": 2,
+    "thrice": 3,
+}
+_TENS_NUMBERS = {
+    "twenty": 20,
+    "thirty": 30,
+    "forty": 40,
+    "fifty": 50,
+    "sixty": 60,
+    "seventy": 70,
+    "eighty": 80,
+    "ninety": 90,
+}
+_CADENCE_UNITS = frozenset(
+    {"morning", "evening", "day", "week", "month", "year"}
+)
 
 
 def load_protocol(preregistration_path=PREREGISTRATION_PATH):
@@ -266,6 +304,43 @@ def _polarity_hit(polarity, response):
     return False
 
 
+def _normalize_semantic_metric_text(value):
+    text = str(value or "").lower().replace("’", "'")
+    compound = re.compile(
+        rf"\b({'|'.join(_TENS_NUMBERS)})[- ]({'|'.join(_SMALL_NUMBERS)})\b"
+    )
+    text = compound.sub(
+        lambda match: str(
+            _TENS_NUMBERS[match.group(1)] + _SMALL_NUMBERS[match.group(2)]
+        ),
+        text,
+    )
+    for word, number in {**_TENS_NUMBERS, **_SMALL_NUMBERS}.items():
+        text = re.sub(rf"\b{word}\b", str(number), text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def _semantic_span_present(span, response):
+    """Accept lexical spans plus number/cadence-preserving surface variants."""
+    if _span_present(span, response):
+        return True
+    target = _normalize_semantic_metric_text(span)
+    observed = _normalize_semantic_metric_text(response)
+    if target and f" {target} " in f" {observed} ":
+        return True
+    target_tokens = set(target.split())
+    observed_tokens = set(observed.split())
+    target_numbers = {token for token in target_tokens if token.isdigit()}
+    target_cadence = target_tokens & _CADENCE_UNITS
+    return bool(
+        target_numbers
+        and target_cadence
+        and target_numbers.issubset(observed_tokens)
+        and target_cadence.issubset(observed_tokens)
+    )
+
+
 def _evidence_recall(case, ledger):
     observed = {
         str(event.get("source_quote") or "")
@@ -309,7 +384,7 @@ def score_condition(case, artifact, fixed_abstention):
     abstained = explicit_abstention_detected(response, fixed_abstention)
     if answerable:
         span_hits = [
-            _span_present(span, response)
+            _semantic_span_present(span, response)
             for span in case["gold"]["slot_spans"].values()
         ]
         required_slot_hit = all(span_hits)
