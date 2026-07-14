@@ -17,6 +17,9 @@ JSON_PATH = ROOT / "reports" / "rightbrain_qwen35_migration_v33_analysis.json"
 MD_PATH = ROOT / "reports" / "rightbrain_qwen35_migration_v33_analysis.md"
 DATASET_PATH = ROOT / "datasets" / "rightbrain_qwen35_migration_v33_holdout.json"
 PREREG_PATH = ROOT / "configs" / "rightbrain_qwen35_migration_v33_preregistration.json"
+AMENDMENT_PATH = ROOT / "configs" / "rightbrain_qwen35_migration_v33_analysis_amendment.json"
+INITIAL_JSON_PATH = ROOT / "reports" / "rightbrain_qwen35_migration_v33_initial_analysis.json"
+INITIAL_MD_PATH = ROOT / "reports" / "rightbrain_qwen35_migration_v33_initial_analysis.md"
 CONTROL = "qwen2_5_7b_quantized_control"
 TREATMENT = "qwen3_5_9b_quantized_treatment"
 
@@ -95,6 +98,19 @@ def _rightbrain_strict_map(rows):
     return {key: any(values) for key, values in grouped.items()}
 
 
+def memory_policy_counts(rows):
+    private_rows = [row for row in rows if row["category"] == "private_memory_suppression"]
+    private_intrusions = sum(row["score"]["private_memory_intrusion"] for row in private_rows)
+    all_residue = sum(row["score"]["private_memory_intrusion"] for row in rows)
+    return {
+        "private_candidate_count": len(private_rows),
+        "private_memory_intrusion_count": private_intrusions,
+        "private_memory_intrusion_rate": _safe_rate(private_intrusions, len(private_rows)),
+        "forbidden_or_internal_residue_count": all_residue,
+        "forbidden_or_internal_residue_rate": _safe_rate(all_residue, len(rows)),
+    }
+
+
 def summarize_rightbrain(rows):
     coverage = _rightbrain_coverage_map(rows)
     strict = _rightbrain_strict_map(rows)
@@ -110,7 +126,7 @@ def summarize_rightbrain(rows):
     reason_counts = Counter(
         reason for row in rows for reason in row["score"]["current_gate_rejection_reasons"]
     )
-    return {
+    summary = {
         "candidate_count": len(rows),
         "seed_case_pair_count": len(coverage),
         "raw_semantic_contract_coverage_rate": _safe_rate(sum(coverage.values()), len(coverage)),
@@ -128,10 +144,6 @@ def summarize_rightbrain(rows):
         "polite_or_service_register_rate": _safe_rate(
             sum(row["score"]["polite_or_service_register"] for row in rows), len(rows)
         ),
-        "private_memory_intrusion_count": sum(row["score"]["private_memory_intrusion"] for row in rows),
-        "private_memory_intrusion_rate": _safe_rate(
-            sum(row["score"]["private_memory_intrusion"] for row in rows), len(rows)
-        ),
         "normalized_duplicate_candidate_rate": _safe_rate(duplicate_count, len(normalized)),
         "warm_generation_median_seconds": statistics.median(warm_latencies),
         "warm_generation_p95_seconds": sorted(warm_latencies)[int(0.95 * (len(warm_latencies) - 1))],
@@ -141,6 +153,8 @@ def summarize_rightbrain(rows):
         },
         "rejection_reason_counts": dict(reason_counts.most_common()),
     }
+    summary.update(memory_policy_counts(rows))
+    return summary
 
 
 def summarize_actions(rows):
@@ -229,6 +243,7 @@ def analyze(raw_path=RAW_PATH):
     raw = json.loads(raw_path.read_text(encoding="utf-8"))
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     prereg = json.loads(PREREG_PATH.read_text(encoding="utf-8"))
+    amendment = json.loads(AMENDMENT_PATH.read_text(encoding="utf-8"))
     right_rows = {
         condition: [row for row in raw["rightbrain_rows"] if row["condition"] == condition]
         for condition in (CONTROL, TREATMENT)
@@ -278,6 +293,11 @@ def analyze(raw_path=RAW_PATH):
             row["path_exists"] and row["size_matches"] and row["sha256_matches"]
             for row in blob_verification.values()
         ),
+        "raw_report_sha256_matches_amendment": _sha256(raw_path) == amendment["raw_report_sha256"],
+        "initial_analysis_sha256_matches_amendment": INITIAL_JSON_PATH.exists()
+        and _sha256(INITIAL_JSON_PATH) == amendment["initial_analysis_sha256"],
+        "initial_markdown_sha256_matches_amendment": INITIAL_MD_PATH.exists()
+        and _sha256(INITIAL_MD_PATH) == amendment["initial_markdown_sha256"],
     }
 
     control_right = right_summary[CONTROL]
@@ -319,6 +339,10 @@ def analyze(raw_path=RAW_PATH):
         "raw_report_path": str(raw_path.relative_to(ROOT)),
         "raw_report_sha256": _sha256(raw_path),
         "preregistration_sha256": _sha256(PREREG_PATH),
+        "analysis_amendment_path": str(AMENDMENT_PATH.relative_to(ROOT)),
+        "analysis_amendment_sha256": _sha256(AMENDMENT_PATH),
+        "initial_analysis_path": str(INITIAL_JSON_PATH.relative_to(ROOT)),
+        "initial_analysis_sha256": _sha256(INITIAL_JSON_PATH),
         "dataset_sha256": _sha256(DATASET_PATH),
         "verification": verification,
         "blob_verification": blob_verification,
@@ -337,6 +361,7 @@ def analyze(raw_path=RAW_PATH):
             action_rows[CONTROL], action_rows[TREATMENT], lambda row: row["score"]["exact_match"]
         ),
         "evidence_boundary": prereg["research_boundary"],
+        "amendment_boundary": amendment["research_boundary"],
     }
 
 
@@ -356,6 +381,7 @@ def render_markdown(report):
         f"| V32 語意槽命中 | {_fmt_pct(control_right['v32_semantic_slot_recall'])} | {_fmt_pct(treatment_right['v32_semantic_slot_recall'])} | {_fmt_pct(treatment_right['v32_semantic_slot_recall'] - control_right['v32_semantic_slot_recall'])} |",
         f"| 硬性表面失敗 | {_fmt_pct(control_right['hard_surface_failure_rate'])} | {_fmt_pct(treatment_right['hard_surface_failure_rate'])} | {_fmt_pct(treatment_right['hard_surface_failure_rate'] - control_right['hard_surface_failure_rate'])} |",
         f"| 私密記憶洩漏 | {control_right['private_memory_intrusion_count']} | {treatment_right['private_memory_intrusion_count']} | {treatment_right['private_memory_intrusion_count'] - control_right['private_memory_intrusion_count']} |",
+        f"| 禁止詞／內部殘留 | {control_right['forbidden_or_internal_residue_count']} | {treatment_right['forbidden_or_internal_residue_count']} | {treatment_right['forbidden_or_internal_residue_count'] - control_right['forbidden_or_internal_residue_count']} |",
         f"| VRM 動作完全正確 | {_fmt_pct(control_action['exact_tool_call_set_and_argument_accuracy'])} | {_fmt_pct(treatment_action['exact_tool_call_set_and_argument_accuracy'])} | {_fmt_pct(report['action_paired']['treatment_delta'])} |",
         f"| 不該動作時正確 | {_fmt_pct(control_action['no_action_specificity'])} | {_fmt_pct(treatment_action['no_action_specificity'])} | {_fmt_pct(treatment_action['no_action_specificity'] - control_action['no_action_specificity'])} |",
         f"| 否定命令違反 | {control_action['negation_violation_count']} | {treatment_action['negation_violation_count']} | {treatment_action['negation_violation_count'] - control_action['negation_violation_count']} |",
@@ -397,6 +423,12 @@ def render_markdown(report):
             "",
             report["evidence_boundary"],
             "",
+            "## 事後分析修正",
+            "",
+            "初版把所有類別的禁止詞命中都命名為私密記憶洩漏；修正版只在 private_memory_suppression 類別計算該指標，其他命中另列為禁止詞／內部殘留。原始輸出與其他分數未改，初版分析完整保留。",
+            "",
+            report["amendment_boundary"],
+            "",
         ]
     )
     return "\n".join(lines)
@@ -408,6 +440,15 @@ def main():
     parser.add_argument("--json", type=Path, default=JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=MD_PATH)
     args = parser.parse_args()
+    amendment = json.loads(AMENDMENT_PATH.read_text(encoding="utf-8"))
+    if not INITIAL_JSON_PATH.exists():
+        if not args.json.exists() or _sha256(args.json) != amendment["initial_analysis_sha256"]:
+            raise ValueError("Cannot preserve the preregistered initial V33 analysis snapshot")
+        INITIAL_JSON_PATH.write_bytes(args.json.read_bytes())
+    if not INITIAL_MD_PATH.exists():
+        if not args.markdown.exists() or _sha256(args.markdown) != amendment["initial_markdown_sha256"]:
+            raise ValueError("Cannot preserve the preregistered initial V33 markdown snapshot")
+        INITIAL_MD_PATH.write_bytes(args.markdown.read_bytes())
     report = analyze(args.raw)
     args.json.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     args.markdown.write_text(render_markdown(report), encoding="utf-8")
