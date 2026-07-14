@@ -1,4 +1,6 @@
+import json
 import unittest
+from pathlib import Path
 
 from analyze_rightbrain_base_v10_ablation_v30 import (
     classify_rejection,
@@ -10,6 +12,9 @@ from run_rightbrain_base_v10_ablation_v30 import (
     load_preregistration,
     verify_preregistered_sources,
 )
+
+
+ROOT = Path(__file__).resolve().parent
 
 
 def _case(case_id, accepted, reasons=(), category="support"):
@@ -91,6 +96,54 @@ class RightBrainBaseV10AblationV30Test(unittest.TestCase):
         self.assertEqual(effect["strict_case_coverage_delta"], 0.5)
         self.assertEqual(effect["mcnemar_exact_p"], 1.0)
         self.assertEqual(exact_mcnemar_p(6, 0), 0.03125)
+
+
+class RightBrainBaseV10FormalResultTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        path = ROOT / "reports/rightbrain_base_v10_ablation_v30_analysis.json"
+        if not path.is_file():
+            raise unittest.SkipTest("Formal V30 analysis has not been generated")
+        cls.analysis = json.loads(path.read_text(encoding="utf-8"))
+        if cls.analysis.get("evidence_protocol") != "amended_current_gate_rerun":
+            raise unittest.SkipTest("Corrected V30 analysis has not been generated")
+
+    def test_negative_runtime_decision_is_preserved(self):
+        self.assertEqual(
+            self.analysis["decision"], "keep_v10_no_runtime_change"
+        )
+        self.assertFalse(self.analysis["authorize_runtime_change"])
+        self.assertFalse(self.analysis["authorize_human_blind_review"])
+
+    def test_paired_result_is_exact_and_inconclusive(self):
+        paired = self.analysis["paired_effect"]
+        self.assertEqual(paired["pair_count"], 36)
+        self.assertEqual(paired["base_only_wins"], 6)
+        self.assertEqual(paired["v10_wins"], 7)
+        self.assertAlmostEqual(paired["strict_case_coverage_delta"], -1 / 36)
+        self.assertEqual(paired["mcnemar_exact_p"], 1.0)
+        self.assertLess(paired["cluster_bootstrap_95"]["lower_95"], 0)
+        self.assertGreater(paired["cluster_bootstrap_95"]["upper_95"], 0)
+
+    def test_shared_failure_not_misreported_as_v10_maturity(self):
+        summaries = self.analysis["condition_summary"]
+        self.assertGreater(summaries["v10_adapter"]["semantic_omission_rate"], 0.75)
+        self.assertGreater(summaries["base_only"]["semantic_omission_rate"], 0.75)
+        self.assertTrue(self.analysis["diagnosis"]["shared_semantic_failure"])
+        self.assertTrue(self.analysis["diagnosis"]["shared_hard_surface_failure"])
+
+    def test_preregistration_category_typo_fails_closed(self):
+        self.assertEqual(self.analysis["observed_dataset_shape"]["category_count"], 9)
+        self.assertEqual(
+            self.analysis["observed_dataset_shape"]["preregistered_category_count"],
+            8,
+        )
+        self.assertFalse(
+            self.analysis["verification"]["preregistered_category_count_matches"]
+        )
+        self.assertFalse(
+            self.analysis["blind_review_gates"]["all_hash_and_shape_checks_pass"]
+        )
 
 
 if __name__ == "__main__":

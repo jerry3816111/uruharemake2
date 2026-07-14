@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 PREREG_PATH = ROOT / "configs/rightbrain_base_v10_ablation_v30_preregistration.json"
+AMENDMENT_PATH = ROOT / "configs/rightbrain_base_v10_ablation_v30_amendment.json"
 DEFAULT_JSON = ROOT / "reports/rightbrain_base_v10_ablation_v30_analysis.json"
 DEFAULT_MD = ROOT / "reports/rightbrain_base_v10_ablation_v30_analysis.md"
 CONDITIONS = ("v10_adapter", "base_only")
@@ -224,23 +225,21 @@ def cluster_bootstrap_delta(paired_rows, samples=10000, seed=20260730):
 
 
 def _load_reports(preregistration, root=ROOT):
-    v10_reports = []
-    base_reports = []
-    for row in preregistration["frozen_v10_reports"]:
-        v10_reports.append(
-            json.loads((Path(root) / row["path"]).read_text(encoding="utf-8"))
-        )
-    for seed in preregistration["frozen_inputs"]["seeds"]:
-        path = (
-            Path(root)
-            / "reports"
-            / f"rightbrain_base_v10_ablation_v30_base_only_seed{seed}.json"
-        )
-        base_reports.append(json.loads(path.read_text(encoding="utf-8")))
-    return {"v10_adapter": v10_reports, "base_only": base_reports}
+    reports = {condition: [] for condition in CONDITIONS}
+    for condition in CONDITIONS:
+        for seed in preregistration["frozen_inputs"]["seeds"]:
+            path = (
+                Path(root)
+                / "reports"
+                / f"rightbrain_base_v10_ablation_v30_{condition}_seed{seed}.json"
+            )
+            reports[condition].append(
+                json.loads(path.read_text(encoding="utf-8"))
+            )
+    return reports
 
 
-def verify_evidence(preregistration, reports, root=ROOT):
+def verify_evidence(preregistration, amendment, reports, root=ROOT):
     checks = {}
     for name, entry in preregistration["frozen_inputs"].items():
         if not isinstance(entry, dict) or "path" not in entry:
@@ -249,32 +248,45 @@ def verify_evidence(preregistration, reports, root=ROOT):
         checks[f"{name}_sha256_matches"] = (
             path.is_file() and sha256_file(path) == entry["sha256"]
         )
-    for row, report in zip(
-        preregistration["frozen_v10_reports"], reports["v10_adapter"]
-    ):
+    for row in preregistration["frozen_v10_reports"]:
         path = Path(root) / row["path"]
-        checks[f"v10_seed_{row['seed']}_sha256_matches"] = (
+        checks[f"historical_v10_seed_{row['seed']}_sha256_matches"] = (
             sha256_file(path) == row["sha256"]
         )
-        checks[f"v10_seed_{row['seed']}_metadata_matches"] = (
-            report.get("seed") == row["seed"]
-            and report.get("adapter_ref")
-            == preregistration["conditions"]["v10_adapter"]["adapter_ref"]
+    for row in amendment["frozen_base_only_reports"]:
+        path = Path(root) / row["path"]
+        checks[f"amended_base_seed_{row['seed']}_sha256_matches"] = (
+            path.is_file() and sha256_file(path) == row["sha256"]
         )
     expected_seeds = preregistration["frozen_inputs"]["seeds"]
     prereg_sha = sha256_file(PREREG_PATH)
-    for report, seed in zip(reports["base_only"], expected_seeds):
-        checks[f"base_seed_{seed}_formal_run_complete"] = (
-            report.get("formal_run_complete") is True
-        )
-        checks[f"base_seed_{seed}_metadata_matches"] = (
-            report.get("seed") == seed
-            and report.get("condition") == "base_only"
-            and report.get("adapter_ref") == "base_model_only"
-            and report.get("preregistration_sha256") == prereg_sha
-        )
+    observed_first = reports["v10_adapter"][0]["cases"]
+    observed_categories = {row.get("category") for row in observed_first}
+    observed_source_families = {row.get("source_family") for row in observed_first}
+    checks["preregistered_case_count_matches"] = len(observed_first) == preregistration[
+        "frozen_inputs"
+    ]["case_count"]
+    checks["preregistered_source_family_count_matches"] = len(
+        observed_source_families
+    ) == preregistration["frozen_inputs"]["source_family_count"]
+    checks["preregistered_category_count_matches"] = len(
+        observed_categories
+    ) == preregistration["frozen_inputs"]["category_count"]
     for condition in CONDITIONS:
         condition_reports = reports[condition]
+        expected_adapter = preregistration["conditions"][condition]["adapter_ref"]
+        for report, seed in zip(condition_reports, expected_seeds):
+            checks[f"{condition}_seed_{seed}_formal_run_complete"] = (
+                report.get("formal_run_complete") is True
+            )
+            checks[f"{condition}_seed_{seed}_metadata_matches"] = (
+                report.get("seed") == seed
+                and report.get("condition") == condition
+                and report.get("adapter_ref") == expected_adapter
+                and report.get("preregistration_sha256") == prereg_sha
+                and report.get("runner_sha256")
+                == amendment["corrective_design"]["runner_sha256"]
+            )
         checks[f"{condition}_seeds_match"] = [
             report.get("seed") for report in condition_reports
         ] == expected_seeds
@@ -293,6 +305,13 @@ def verify_evidence(preregistration, reports, root=ROOT):
             * preregistration["frozen_inputs"]["candidate_count_per_case"]
             for report in condition_reports
         )
+        checks[f"{condition}_candidate_accounting_matches"] = all(
+            int(row.get("initial_accepted_candidate_count") or 0)
+            + len(row.get("model_initial_rejected_candidates") or [])
+            == int(row.get("generated_candidate_count") or 0)
+            for report in condition_reports
+            for row in report.get("cases") or []
+        )
     checks["cross_condition_case_ids_match"] = all(
         [row["id"] for row in v10_report["cases"]]
         == [row["id"] for row in base_report["cases"]]
@@ -303,8 +322,10 @@ def verify_evidence(preregistration, reports, root=ROOT):
     return checks
 
 
-def build_analysis(preregistration, reports, root=ROOT):
-    verification = verify_evidence(preregistration, reports, root=root)
+def build_analysis(preregistration, amendment, reports, root=ROOT):
+    verification = verify_evidence(
+        preregistration, amendment, reports, root=root
+    )
     summaries = {
         condition: summarize_condition(condition_reports)
         for condition, condition_reports in reports.items()
@@ -343,17 +364,62 @@ def build_analysis(preregistration, reports, root=ROOT):
         if authorize_blind
         else "keep_v10_no_runtime_change"
     )
+    diagnosis = {
+        "adapter_effect": (
+            "inconclusive_small_v10_edge"
+            if paired["strict_case_coverage_delta"] < 0
+            else "inconclusive_small_base_edge"
+        ),
+        "shared_semantic_failure": (
+            v10["semantic_omission_rate"] >= 0.5
+            and base["semantic_omission_rate"] >= 0.5
+        ),
+        "shared_hard_surface_failure": (
+            v10["hard_surface_failure_rate"] >= 0.25
+            and base["hard_surface_failure_rate"] >= 0.25
+        ),
+        "v10_polite_drift_delta_vs_base": (
+            v10["polite_tone_drift_rate"] - base["polite_tone_drift_rate"]
+        ),
+        "interpretation_zh": (
+            "V10 只在整體覆蓋率上小幅領先，差異不顯著；它較能壓住敬語漂移，"
+            "但兩組都有超過七成的必要語意遺失與超過四成的語言/格式硬失敗。"
+            "因此不能靠關閉 LoRA 解決，也不能把增加 epoch 當成已被證明的答案。"
+        ),
+    }
     return {
         "schema": "uruha_rightbrain_base_v10_ablation_analysis_v30",
+        "evidence_protocol": "amended_current_gate_rerun",
         "preregistration_path": str(PREREG_PATH.relative_to(ROOT)),
         "preregistration_sha256": sha256_file(PREREG_PATH),
+        "amendment_path": str(AMENDMENT_PATH.relative_to(ROOT)),
+        "amendment_sha256": sha256_file(AMENDMENT_PATH),
+        "historical_v10_reports_excluded": True,
+        "invalidated_interim_analysis": amendment["invalidated_interim_analysis"],
         "verification": verification,
         "condition_summary": summaries,
         "paired_effect": paired,
         "blind_review_gates": gates,
+        "observed_dataset_shape": {
+            "case_count": len(reports["v10_adapter"][0]["cases"]),
+            "source_family_count": len(
+                {row.get("source_family") for row in reports["v10_adapter"][0]["cases"]}
+            ),
+            "category_count": len(
+                {row.get("category") for row in reports["v10_adapter"][0]["cases"]}
+            ),
+            "preregistered_category_count": preregistration["frozen_inputs"][
+                "category_count"
+            ],
+        },
+        "diagnosis": diagnosis,
         "authorize_human_blind_review": authorize_blind,
         "authorize_runtime_change": False,
         "decision": decision,
+        "next_research_action": (
+            "Preregister a compact Japanese-only preverbal-message payload experiment against the "
+            "unchanged current payload before any additional adapter training."
+        ),
         "research_boundary": (
             "This diagnostic matched ablation can retain V10 or authorize a new human blind review. "
             "It cannot establish human likeness, justify benchmark claims, or promote base-only runtime."
@@ -371,10 +437,12 @@ def render_markdown(analysis):
     lines = [
         "# 右腦 V30：V10 LoRA 對原始 Qwen 7B 的單一變因實驗",
         "",
-        "## 實驗問題",
+            "## 實驗問題",
         "",
-        "相同 Qwen2.5-7B、12 個情境、三個 seed、payload、採樣與 gate；唯一差別是 V10 LoRA 開或關。",
-        "",
+            "相同 Qwen2.5-7B、12 個情境、三個 seed、payload、採樣與 gate；唯一差別是 V10 LoRA 開或關。",
+            "",
+            "舊 V10 報告因 gate 版本不同已排除；本表只使用 V30 runner 在現行 gate 下重新產生的兩組結果。",
+            "",
         "## 總結果",
         "",
         "| 指標 | V10 LoRA | Base-only |",
@@ -420,6 +488,15 @@ def render_markdown(analysis):
             "",
             "這次自動結果不會直接改 runtime。即使 Base-only 通過，也只能進入新的同政策人類盲評。",
             "",
+            "## 診斷",
+            "",
+            analysis["diagnosis"]["interpretation_zh"],
+            "",
+            "- 注意：預註冊把類別數寫成 8，固定案例實際為 9；案例內容與 hash 未變，"
+            "但此 metadata mismatch 仍保留為失敗檢查，不事後修稿。",
+            "- 下一個研究動作：先比較日文精簡的前語言訊息與現行混合語言 JSON payload，"
+            "再決定是否需要重新訓練；不直接增加 epoch。",
+            "",
             "## 證據邊界",
             "",
             analysis["research_boundary"],
@@ -434,8 +511,9 @@ def main():
     parser.add_argument("--output-md", default=DEFAULT_MD)
     args = parser.parse_args()
     preregistration = json.loads(PREREG_PATH.read_text(encoding="utf-8"))
+    amendment = json.loads(AMENDMENT_PATH.read_text(encoding="utf-8"))
     reports = _load_reports(preregistration)
-    analysis = build_analysis(preregistration, reports)
+    analysis = build_analysis(preregistration, amendment, reports)
     Path(args.output_json).write_text(
         json.dumps(analysis, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

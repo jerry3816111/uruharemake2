@@ -1,0 +1,64 @@
+{
+  "schema": "uruha_rightbrain_base_v10_ablation_amendment_v30",
+  "amended_at": "2026-07-14T21:03:00+09:00",
+  "original_preregistration": "configs/rightbrain_base_v10_ablation_v30_preregistration.json",
+  "reason": "The frozen historical V10 reports were generated under an earlier acceptance gate even though their files were committed after the current nonstandard-CJK hardening. They cannot be compared to newly generated base-only reports under the current gate.",
+  "discovered_after_base_inference": true,
+  "invalidated_interim_analysis": {
+    "path": "reports/rightbrain_base_v10_ablation_v30_analysis.json",
+    "sha256": "0195fdda3bf4dec0310af7d49991a38a92b2807e1d4f19640bb67c9dd371723c",
+    "reason": "V10 and base-only candidate acceptance used different gate versions."
+  },
+  "direct_evidence": [
+    {
+      "case_id": "v29_report_submitted",
+      "historically_accepted": "普通に、報告書の提出、やったね！頑张りだよ。",
+      "current_gate_rejection": ["nonstandard_cjk_surface"]
+    },
+    {
+      "case_id": "v29_fridge_manager",
+      "historically_accepted": "普通に、冷蔍庫が突然部長になる意味は何だよ？",
+      "current_gate_rejection": ["nonstandard_cjk_surface"]
+    },
+    {
+      "case_id": "v29_late_meetup",
+      "historically_accepted": "待ち合わせが遜晚していて、理由を聞くまでは焦らないで。",
+      "current_gate_rejection": ["nonstandard_cjk_surface"]
+    }
+  ],
+  "frozen_base_only_reports": [
+    {
+      "seed": 20260712,
+      "path": "reports/rightbrain_base_v10_ablation_v30_base_only_seed20260712.json",
+      "sha256": "064547dc513eb555a91855fd6ab6eba6913cfcdb67dfdabcc2aa9115de3eaef4"
+    },
+    {
+      "seed": 20260713,
+      "path": "reports/rightbrain_base_v10_ablation_v30_base_only_seed20260713.json",
+      "sha256": "09d52a381446aed8b16bcebbc5e6f48a3f424b33d837338843c6f3241f98339a"
+    },
+    {
+      "seed": 20260714,
+      "path": "reports/rightbrain_base_v10_ablation_v30_base_only_seed20260714.json",
+      "sha256": "037a183a6339615475720dd527d2eac518fa38e04c1d63e07263c03beb5beaf1"
+    }
+  ],
+  "corrective_design": {
+    "action": "Regenerate V10 with the already committed V30 runner under the exact current runtime gate.",
+    "runner_path": "run_rightbrain_base_v10_ablation_v30.py",
+    "runner_sha256": "920b05c3634b592fd09fcf0a42a711db475654167db7b95651585d0b0ee0f850",
+    "conditions_changed": false,
+    "cases_changed": false,
+    "seeds_changed": false,
+    "sampling_changed": false,
+    "metrics_changed": false,
+    "decision_thresholds_changed": false,
+    "runtime_change_authorized": false
+  },
+  "required_corrective_outputs": [
+    "reports/rightbrain_base_v10_ablation_v30_v10_adapter_seed20260712.json",
+    "reports/rightbrain_base_v10_ablation_v30_v10_adapter_seed20260713.json",
+    "reports/rightbrain_base_v10_ablation_v30_v10_adapter_seed20260714.json"
+  ],
+  "research_boundary": "Because the mismatch was discovered after base-only generation, the corrected comparison remains diagnostic. It can veto a runtime change and identify a next experiment, but it cannot promote either condition or make a confirmatory human-likeness claim."
+}
