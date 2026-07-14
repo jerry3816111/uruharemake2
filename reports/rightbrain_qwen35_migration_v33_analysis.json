@@ -1,0 +1,4543 @@
+{
+  "schema": "uruha_rightbrain_qwen35_migration_analysis_v33",
+  "raw_report_path": "reports/rightbrain_qwen35_migration_v33_raw.json",
+  "raw_report_sha256": "bbdee181d5645f0b3fc8607857d991c13043418a16f11e21905fc1957b4f312f",
+  "preregistration_sha256": "a853fce99f9f02ff3c31f62e0e9e8b066bae456fd721b5b3d3e186e0849dec79",
+  "analysis_amendment_path": "configs/rightbrain_qwen35_migration_v33_analysis_amendment.json",
+  "analysis_amendment_sha256": "7a0a5dcfac5d8fa8044edd9c738395995f9ed5c91299c6a0a88f41e94061bc72",
+  "initial_analysis_path": "reports/rightbrain_qwen35_migration_v33_initial_analysis.json",
+  "initial_analysis_sha256": "1682c0e90d1978bb99830305816489c4a48f6be8a7afcafd8acbfd92d98840ea",
+  "dataset_sha256": "a3863af00ddc58387570e0cb7f92fcb7b8b1b0c097cf3522397b82a4349abb74",
+  "verification": {
+    "run_completed": true,
+    "preregistration_sha256_matches": true,
+    "dataset_sha256_matches": true,
+    "dataset_preregistration_sha256_matches": true,
+    "rightbrain_row_count_matches": true,
+    "action_row_count_matches": true,
+    "rightbrain_keys_unique": true,
+    "action_keys_unique": true,
+    "rightbrain_category_accounting_matches": true,
+    "action_family_accounting_matches": true,
+    "model_blob_hashes_match": true,
+    "raw_report_sha256_matches_amendment": true,
+    "initial_analysis_sha256_matches_amendment": true,
+    "initial_markdown_sha256_matches_amendment": true
+  },
+  "blob_verification": {
+    "qwen2_5_7b_quantized_control": {
+      "path_exists": true,
+      "size_matches": true,
+      "sha256_matches": true
+    },
+    "qwen3_5_9b_quantized_treatment": {
+      "path_exists": true,
+      "size_matches": true,
+      "sha256_matches": true
+    }
+  },
+  "rightbrain_summary": {
+    "qwen2_5_7b_quantized_control": {
+      "candidate_count": 432,
+      "seed_case_pair_count": 144,
+      "raw_semantic_contract_coverage_rate": 0.8263888888888888,
+      "raw_strict_surface_coverage_rate": 0.6111111111111112,
+      "candidate_semantic_contract_pass_rate": 0.5115740740740741,
+      "v32_semantic_slot_recall": 0.768185451638689,
+      "raw_current_gate_pass_rate": 0.2824074074074074,
+      "hard_surface_failure_rate": 0.5115740740740741,
+      "polite_or_service_register_rate": 0.10416666666666667,
+      "normalized_duplicate_candidate_rate": 0.011574074074074073,
+      "warm_generation_median_seconds": 1.103784,
+      "warm_generation_p95_seconds": 2.528415,
+      "per_category_semantic_coverage": {
+        "casual_self_state": 1.0,
+        "fact_correction": 0.16666666666666666,
+        "gentle_boundary": 0.8333333333333334,
+        "humor_and_teasing": 1.0,
+        "memory_update_use": 0.9166666666666666,
+        "minor_failure_reframe": 1.0,
+        "private_memory_suppression": 0.6666666666666666,
+        "relationship_reassurance": 0.9166666666666666,
+        "reversible_planning": 0.6666666666666666,
+        "small_win_response": 0.9166666666666666,
+        "support_without_overreach": 0.9166666666666666,
+        "uncertainty_and_clarification": 0.9166666666666666
+      },
+      "rejection_reason_counts": {
+        "unexpected_ascii_leak": 206,
+        "semantic_slots_missing:2/3": 140,
+        "semantic_slots_missing:1/3": 53,
+        "polite_tone_drift": 45,
+        "nonstandard_cjk_surface": 37,
+        "cjk_language_leak": 20,
+        "semantic_slots_missing:0/3": 16,
+        "over_max_chars": 15,
+        "ascii_symbol_artifact": 12,
+        "semantic_slots_missing:1/2": 8,
+        "missing_japanese_surface": 6,
+        "foreign_script_leak": 3,
+        "japanese_response_plan_leak": 3,
+        "semantic_slots_missing:0/2": 3,
+        "awkward_or_caregiver_surface": 1
+      },
+      "private_candidate_count": 36,
+      "private_memory_intrusion_count": 0,
+      "private_memory_intrusion_rate": 0.0,
+      "forbidden_or_internal_residue_count": 0,
+      "forbidden_or_internal_residue_rate": 0.0
+    },
+    "qwen3_5_9b_quantized_treatment": {
+      "candidate_count": 432,
+      "seed_case_pair_count": 144,
+      "raw_semantic_contract_coverage_rate": 0.9930555555555556,
+      "raw_strict_surface_coverage_rate": 0.8333333333333334,
+      "candidate_semantic_contract_pass_rate": 0.8449074074074074,
+      "v32_semantic_slot_recall": 0.9368505195843325,
+      "raw_current_gate_pass_rate": 0.44675925925925924,
+      "hard_surface_failure_rate": 0.22685185185185186,
+      "polite_or_service_register_rate": 0.1597222222222222,
+      "normalized_duplicate_candidate_rate": 0.0,
+      "warm_generation_median_seconds": 4.473193,
+      "warm_generation_p95_seconds": 6.547584,
+      "per_category_semantic_coverage": {
+        "casual_self_state": 1.0,
+        "fact_correction": 1.0,
+        "gentle_boundary": 1.0,
+        "humor_and_teasing": 1.0,
+        "memory_update_use": 1.0,
+        "minor_failure_reframe": 1.0,
+        "private_memory_suppression": 1.0,
+        "relationship_reassurance": 0.9166666666666666,
+        "reversible_planning": 1.0,
+        "small_win_response": 1.0,
+        "support_without_overreach": 1.0,
+        "uncertainty_and_clarification": 1.0
+      },
+      "rejection_reason_counts": {
+        "over_max_chars": 124,
+        "polite_tone_drift": 69,
+        "unexpected_ascii_leak": 68,
+        "semantic_slots_missing:2/3": 60,
+        "ascii_symbol_artifact": 27,
+        "nonstandard_cjk_surface": 14,
+        "semantic_slots_missing:1/3": 10,
+        "cjk_language_leak": 6,
+        "semantic_slots_missing:1/2": 4,
+        "foreign_script_leak": 4,
+        "nonstandard_punctuation": 2,
+        "semantic_slots_missing:0/3": 2,
+        "instruction_or_plan_leak": 1,
+        "awkward_or_caregiver_surface": 1
+      },
+      "private_candidate_count": 36,
+      "private_memory_intrusion_count": 0,
+      "private_memory_intrusion_rate": 0.0,
+      "forbidden_or_internal_residue_count": 1,
+      "forbidden_or_internal_residue_rate": 0.0023148148148148147
+    }
+  },
+  "rightbrain_paired": {
+    "pair_count": 144,
+    "control_wins": 1,
+    "treatment_wins": 25,
+    "ties": 118,
+    "control_rate": 0.8263888888888888,
+    "treatment_rate": 0.9930555555555556,
+    "treatment_delta": 0.16666666666666674,
+    "mcnemar_exact_p": 8.046627044677734e-07,
+    "case_cluster_bootstrap_95": {
+      "samples": 10000,
+      "lower_95": 0.09027777777777779,
+      "upper_95": 0.2569444444444444
+    }
+  },
+  "action_summary": {
+    "qwen2_5_7b_quantized_control": {
+      "case_count": 120,
+      "exact_tool_call_set_and_argument_accuracy": 0.6833333333333333,
+      "no_action_case_count": 70,
+      "no_action_specificity": 0.5428571428571428,
+      "mean_required_action_recall": 0.9533333333333334,
+      "false_action_rate": 0.30833333333333335,
+      "negation_violation_count": 0,
+      "invalid_tool_or_argument_count": 0,
+      "warm_generation_median_seconds": 1.107365,
+      "warm_generation_p95_seconds": 2.736254,
+      "per_family_exact_accuracy": {
+        "ambiguous_or_conflicting_action": 0.3,
+        "invalid_or_safety_blocked_action": 0.8,
+        "multiple_compatible_actions": 0.8,
+        "negated_action": 0.45,
+        "no_action_conversation": 0.8,
+        "single_explicit_action": 0.95
+      }
+    },
+    "qwen3_5_9b_quantized_treatment": {
+      "case_count": 120,
+      "exact_tool_call_set_and_argument_accuracy": 0.5166666666666667,
+      "no_action_case_count": 70,
+      "no_action_specificity": 0.24285714285714285,
+      "mean_required_action_recall": 0.9666666666666667,
+      "false_action_rate": 0.475,
+      "negation_violation_count": 2,
+      "invalid_tool_or_argument_count": 0,
+      "warm_generation_median_seconds": 3.9519130000000002,
+      "warm_generation_p95_seconds": 6.652124,
+      "per_family_exact_accuracy": {
+        "ambiguous_or_conflicting_action": 0.1,
+        "invalid_or_safety_blocked_action": 0.35,
+        "multiple_compatible_actions": 0.8,
+        "negated_action": 0.55,
+        "no_action_conversation": 0.35,
+        "single_explicit_action": 0.95
+      }
+    }
+  },
+  "action_paired": {
+    "pair_count": 120,
+    "control_wins": 26,
+    "treatment_wins": 6,
+    "ties": 88,
+    "control_rate": 0.6833333333333333,
+    "treatment_rate": 0.5166666666666667,
+    "treatment_delta": -0.16666666666666663,
+    "mcnemar_exact_p": 0.0005350527353584766
+  },
+  "resource_summary": {
+    "qwen2_5_7b_quantized_control": {
+      "model_tag": "qwen2.5:7b",
+      "blob_bytes": 4683073952,
+      "cold_start_wall_seconds": 5.168359,
+      "max_ollama_process_rss_bytes": 6622183424,
+      "resident_snapshots": [
+        {
+          "name": "qwen2.5:7b",
+          "size_bytes": 4740716952,
+          "size_vram_bytes": 4740716952,
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "7.6B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "qwen3_5_9b_quantized_treatment": {
+      "model_tag": "qwen3.5:9b",
+      "blob_bytes": 6594462816,
+      "cold_start_wall_seconds": 7.709836,
+      "max_ollama_process_rss_bytes": 11106402304,
+      "resident_snapshots": [
+        {
+          "name": "qwen3.5:9b",
+          "size_bytes": 5649538743,
+          "size_vram_bytes": 5649538743,
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "9.7B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    }
+  },
+  "warm_generation_slowdown_ratio": 4.05259815326187,
+  "advance_gates": {
+    "all_hash_source_separation_and_accounting_checks_pass": true,
+    "rightbrain_raw_semantic_coverage_delta_vs_qwen2_5_at_least_0": true,
+    "rightbrain_hard_surface_failure_delta_vs_qwen2_5_at_most_2pp": true,
+    "private_memory_intrusion_count_is_0": true,
+    "action_exact_accuracy_delta_vs_qwen2_5_at_least_5pp": false,
+    "action_no_action_specificity_not_lower": false,
+    "negation_violation_count_is_0": false,
+    "warm_generation_median_seconds_at_most_5": true,
+    "warm_generation_slowdown_ratio_at_most_1_75": false,
+    "model_blob_bytes_at_most_8gib": true
+  },
+  "decision": "do_not_authorize_qwen3_5_persona_adapter_experiment",
+  "rightbrain_examples": {
+    "treatment_wins": [
+      {
+        "key": [
+          "v33_boundary_account_borrow",
+          20260716,
+          2
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260716,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280716,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームのアカウントは貸すのは難しいよ。ご理解願いたいな।",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 1,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:1/2"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムのアカウントは貸すのは難しいよご理解願いたいな।",
+            "character_count": 28
+          },
+          "response_metrics": {
+            "wall_seconds": 0.983377,
+            "total_duration_ns": 982353292,
+            "load_duration_ns": 136276333,
+            "prompt_eval_count": 530,
+            "prompt_eval_duration_ns": 41786000,
+            "eval_count": 21,
+            "eval_duration_ns": 800888000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260716,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280716,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームの**ACCOUNT は****LOANS する方なしで、つまり ****KUREN AI!! (Game account **account, not allowed to lend)**</|> | -> wait. The marker group instruction requires *natural* inclusion of phrases from the inner lists: [\"アカウント\"] and [貸せ，\"lend\", \"無理\". Let me re-read carefully.]\n\nCorrected thought process for generation strategy by thinking in Japanese logic (RightBrain):\n- **Goal",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "ascii_symbol_artifact",
+              "unexpected_ascii_leak",
+              "over_max_chars"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムの**accountは****loansする方なしでつまり****kurenai(gameaccount**accountnotallowedtolend)**<|>|>wait.themarkergroupinstructionrequires*natural*inclusionofphrasesfromtheinnerlists:[アカウント]and[貸せlend無理.letmerereadcarefully.]correctedthoughtprocessforgenerationstrategybythinkinginjapaneselogic(rightbrain):**goal",
+            "character_count": 367
+          },
+          "response_metrics": {
+            "wall_seconds": 7.319494,
+            "total_duration_ns": 7317815166,
+            "load_duration_ns": 237239041,
+            "prompt_eval_count": 499,
+            "prompt_eval_duration_ns": 2231915000,
+            "eval_count": 96,
+            "eval_duration_ns": 4845465000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_early_call",
+          20260715,
+          1
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "明日早いから、长电话不打了。少话 today 就挂了吧。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長く",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 1,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "cjk_language_leak",
+              "nonstandard_cjk_surface",
+              "unexpected_ascii_leak",
+              "semantic_slots_missing:1/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "明日早いから长电话不打了少话today就挂了吧",
+            "character_count": 28
+          },
+          "response_metrics": {
+            "wall_seconds": 0.863533,
+            "total_duration_ns": 862279541,
+            "load_duration_ns": 136660625,
+            "prompt_eval_count": 541,
+            "prompt_eval_duration_ns": 42242000,
+            "eval_count": 18,
+            "eval_duration_ns": 680210000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "あ、もう朝早いから明日ね。今はちょっとだけ話そうか？長電話は切りましょうよ！それとも少し行こうかな♪ 🌞✨ ☕️🤸‍♀️💡😄😊😉☁️⛅",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長く",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "polite_tone_drift"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": true,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "あもう朝早いから明日ね今はちょっとだけ話そうか長電話は切りましょうよそれとも少し行こうかな♪🌞✨☕️🤸‍♀️💡😄😊😉☁️⛅",
+            "character_count": 67
+          },
+          "response_metrics": {
+            "wall_seconds": 5.438047,
+            "total_duration_ns": 5436750959,
+            "load_duration_ns": 236394625,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2350602000,
+            "eval_count": 57,
+            "eval_duration_ns": 2846735000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_early_call",
+          20260717,
+          1
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "明日早いので、长電話はしないで済ませましょうか。今日は kortete にしようかな。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長く",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "nonstandard_cjk_surface",
+              "unexpected_ascii_leak",
+              "polite_tone_drift",
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": true,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "明日早いので长電話はしないで済ませましょうか今日はkorteteにしようかな",
+            "character_count": 43
+          },
+          "response_metrics": {
+            "wall_seconds": 1.093824,
+            "total_duration_ns": 1092556625,
+            "load_duration_ns": 133342917,
+            "prompt_eval_count": 541,
+            "prompt_eval_duration_ns": 41598000,
+            "eval_count": 24,
+            "eval_duration_ns": 914455000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "あすも早いのに今から長いんだな？もう少し話すか今日で切るよ。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "lemma",
+                    "marker": "長く",
+                    "matched_surface": "長い",
+                    "marker_lemma": "長い",
+                    "matched_lemma": "長い",
+                    "marker_negative": false,
+                    "reply_negative": false
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "lemma",
+                    "marker": "今日は",
+                    "matched_surface": "今日",
+                    "marker_lemma": "今日",
+                    "matched_lemma": "今日",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "あすも早いのに今から長いんだなもう少し話すか今日で切るよ",
+            "character_count": 30
+          },
+          "response_metrics": {
+            "wall_seconds": 3.562456,
+            "total_duration_ns": 3561150000,
+            "load_duration_ns": 241327083,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2350572000,
+            "eval_count": 20,
+            "eval_duration_ns": 965950000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_early_call",
+          20260717,
+          2
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "明日は早いし、長話するのはsistodayいいよね。少しだけ-talk就好。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長く",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "unexpected_ascii_leak",
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "明日は早いし長話するのはsistodayいいよね少しだけtalk就好",
+            "character_count": 38
+          },
+          "response_metrics": {
+            "wall_seconds": 0.962832,
+            "total_duration_ns": 961902208,
+            "load_duration_ns": 128680500,
+            "prompt_eval_count": 541,
+            "prompt_eval_duration_ns": 38612000,
+            "eval_count": 21,
+            "eval_duration_ns": 791181000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_early_call",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "朝明細じゃなきゃダメなのに長話なんかしないで、もう少しだけね？いやもう今日は切って行ける時間だからちょっとだけでも良いけど。明日早くからね😅 早急な連絡はまた後で！あっ待ちます今日終わっちゃえちゃった感じだよlong call ってのも無理だし長くかかるし少しも出来ないよ切らなきゃならないんだから",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "明日",
+                  "早"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "明日",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "早",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "長電話",
+                  "長く"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "長電話",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "長く",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "少し",
+                  "今日は",
+                  "切"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "切",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "unexpected_ascii_leak",
+              "over_max_chars"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "朝明細じゃなきゃダメなのに長話なんかしないでもう少しだけねいやもう今日は切って行ける時間だからちょっとだけでも良いけど明日早くからね😅早急な連絡はまた後であっ待ちます今日終わっちゃえちゃった感じだよlongcallってのも無理だし長くかかるし少しも出来ないよ切らなきゃならないんだから",
+            "character_count": 149
+          },
+          "response_metrics": {
+            "wall_seconds": 6.369009,
+            "total_duration_ns": 6367479667,
+            "load_duration_ns": 242825625,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2365779000,
+            "eval_count": 75,
+            "eval_duration_ns": 3755940000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_hair_touch",
+          20260715,
+          0
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_hair_touch",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "急に髪を触るの嫌なので、 distancing するよ。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "髪",
+                  "触"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "髪",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "触",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "急",
+                  "嫌",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "急",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "嫌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "距離",
+                  "やめ"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "距離",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "unexpected_ascii_leak",
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "急に髪を触るの嫌なのでdistancingするよ",
+            "character_count": 28
+          },
+          "response_metrics": {
+            "wall_seconds": 2.117189,
+            "total_duration_ns": 2116213459,
+            "load_duration_ns": 121975292,
+            "prompt_eval_count": 519,
+            "prompt_eval_duration_ns": 1365731000,
+            "eval_count": 17,
+            "eval_duration_ns": 622022000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_hair_touch",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "もうちょっと距離取って、髪に急に触るのいやだから無理しないで。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "髪",
+                  "触"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "髪",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "触",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "急",
+                  "嫌",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "急",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "嫌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "距離",
+                  "やめ"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "距離",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [],
+            "current_gate_raw_pass": true,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "もうちょっと距離取って髪に急に触るのいやだから無理しないで",
+            "character_count": 31
+          },
+          "response_metrics": {
+            "wall_seconds": 3.355958,
+            "total_duration_ns": 3353839250,
+            "load_duration_ns": 237587542,
+            "prompt_eval_count": 499,
+            "prompt_eval_duration_ns": 2230529000,
+            "eval_count": 18,
+            "eval_duration_ns": 869510000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_hair_touch",
+          20260715,
+          1
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_hair_touch",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "髪に触れられるのは急で嫌だから、遠慮して。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "髪",
+                  "触"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "髪",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "触",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "急",
+                  "嫌",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "急",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "嫌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "距離",
+                  "やめ"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "距離",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "髪に触れられるのは急で嫌だから遠慮して",
+            "character_count": 21
+          },
+          "response_metrics": {
+            "wall_seconds": 0.783738,
+            "total_duration_ns": 782406458,
+            "load_duration_ns": 132722666,
+            "prompt_eval_count": 519,
+            "prompt_eval_duration_ns": 43382000,
+            "eval_count": 16,
+            "eval_duration_ns": 603043000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_hair_touch",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "あ、ちょっと待って！髪に触る前に距離を取ってくれない？急な無理は嫌だし触られやめて。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "髪",
+                  "触"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "髪",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "触",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "急",
+                  "嫌",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "急",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "嫌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "距離",
+                  "やめ"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "距離",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [],
+            "current_gate_raw_pass": true,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "あちょっと待って髪に触る前に距離を取ってくれない急な無理は嫌だし触られやめて",
+            "character_count": 42
+          },
+          "response_metrics": {
+            "wall_seconds": 3.821231,
+            "total_duration_ns": 3820013583,
+            "load_duration_ns": 243201958,
+            "prompt_eval_count": 499,
+            "prompt_eval_duration_ns": 2254239000,
+            "eval_count": 27,
+            "eval_duration_ns": 1319535000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      }
+    ],
+    "control_wins": [
+      {
+        "key": [
+          "v33_boundary_account_borrow",
+          20260715,
+          1
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームのアカウントは貸せないよ。ちょっと無理だな。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [],
+            "current_gate_raw_pass": true,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムのアカウントは貸せないよちょっと無理だな",
+            "character_count": 25
+          },
+          "response_metrics": {
+            "wall_seconds": 0.894762,
+            "total_duration_ns": 893672458,
+            "load_duration_ns": 121150875,
+            "prompt_eval_count": 530,
+            "prompt_eval_duration_ns": 39924000,
+            "eval_count": 19,
+            "eval_duration_ns": 729155000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260715,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームの**アカウント**は今日もやっぱりちょっと、借りることはできないから。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 1,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:1/2"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムの**アカウント**は今日もやっぱりちょっと借りることはできないから",
+            "character_count": 39
+          },
+          "response_metrics": {
+            "wall_seconds": 3.311242,
+            "total_duration_ns": 3310341333,
+            "load_duration_ns": 230949208,
+            "prompt_eval_count": 499,
+            "prompt_eval_duration_ns": 2209817000,
+            "eval_count": 18,
+            "eval_duration_ns": 866937000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_account_borrow",
+          20260717,
+          1
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームのアカウントは貸せないから、今日はお願い impossible 呢。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "cjk_language_leak",
+              "unexpected_ascii_leak"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムのアカウントは貸せないから今日はお願いimpossible呢",
+            "character_count": 37
+          },
+          "response_metrics": {
+            "wall_seconds": 0.942728,
+            "total_duration_ns": 941482416,
+            "load_duration_ns": 137469500,
+            "prompt_eval_count": 530,
+            "prompt_eval_duration_ns": 41856000,
+            "eval_count": 20,
+            "eval_duration_ns": 759216000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_account_borrow",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 1,
+          "sampling": {
+            "temperature": 0.96,
+            "top_p": 0.95,
+            "top_k": 96,
+            "repeat_penalty": 1.26,
+            "seed": 20270717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "ゲームの**-account-** は今日は特に忙しいし、いりないよね？その分時間は確保するけど、正直に言って今すぐ借りにくいくらい無理なんだからね。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "アカウント"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "アカウント",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "貸せ",
+                  "貸さ",
+                  "無理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸せ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "貸さ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "無理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 1,
+            "semantic_group_count": 2,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "unexpected_ascii_leak",
+              "semantic_slots_missing:1/2"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "ゲムの**account**は今日は特に忙しいしいりないよねその分時間は確保するけど正直に言って今すぐ借りにくいくらい無理なんだからね",
+            "character_count": 75
+          },
+          "response_metrics": {
+            "wall_seconds": 4.381038,
+            "total_duration_ns": 4379525667,
+            "load_duration_ns": 239957584,
+            "prompt_eval_count": 499,
+            "prompt_eval_duration_ns": 2210023000,
+            "eval_count": 39,
+            "eval_duration_ns": 1926416000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_boundary_sleepy_game",
+          20260717,
+          2
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_boundary_sleepy_game",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "う~ん、もう一試合一晩 relaciones, 眠いので今日は休むよ。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "眠"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "眠",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "一試合",
+                  "ゲーム"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "一試合",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "ゲーム",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "休",
+                  "今日は",
+                  "やめ"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "休",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "unexpected_ascii_leak"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": true,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "うんもう一試合一晩relaciones眠いので今日は休むよ",
+            "character_count": 35
+          },
+          "response_metrics": {
+            "wall_seconds": 1.05344,
+            "total_duration_ns": 1052097125,
+            "load_duration_ns": 122078875,
+            "prompt_eval_count": 536,
+            "prompt_eval_duration_ns": 41997000,
+            "eval_count": 23,
+            "eval_duration_ns": 884813000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_boundary_sleepy_game",
+          "category": "gentle_boundary",
+          "seed": 20260717,
+          "candidate_index": 2,
+          "sampling": {
+            "temperature": 1.08,
+            "top_p": 0.98,
+            "top_k": 128,
+            "repeat_penalty": 1.32,
+            "seed": 20280717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "もうなんてんよ、全然きつくね〜😴 ゲームの今の一試合はぐったりなんで今日は一休憩しなよ🙈 やめるもん! 🛑✨💤",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "眠"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "眠",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "一試合",
+                  "ゲーム"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "一試合",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "ゲーム",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "休",
+                  "今日は",
+                  "やめ"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "休",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "今日は",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "やめ",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "もうなんてんよ全然きつくね〜😴ゲムの今の一試合はぐったりなんで今日は一休憩しなよ🙈やめるもん🛑✨💤",
+            "character_count": 55
+          },
+          "response_metrics": {
+            "wall_seconds": 4.649558,
+            "total_duration_ns": 4647687583,
+            "load_duration_ns": 262520000,
+            "prompt_eval_count": 516,
+            "prompt_eval_duration_ns": 2354141000,
+            "eval_count": 41,
+            "eval_duration_ns": 2027579000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_clarify_red_sign_restaurant",
+          20260715,
+          0
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_clarify_red_sign_restaurant",
+          "category": "uncertainty_and_clarification",
+          "seed": 20260715,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "赤い看板だけではお店を決めるのは難しいよ。場所やメニューも教えてもらえると助かるな。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "店",
+                  "看板"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "店",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "看板",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "分から",
+                  "決め"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "分から",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "決め",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "場所",
+                  "料理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "場所",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "料理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [],
+            "current_gate_raw_pass": true,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "赤い看板だけではお店を決めるのは難しいよ場所やメニュも教えてもらえると助かるな",
+            "character_count": 42
+          },
+          "response_metrics": {
+            "wall_seconds": 2.540221,
+            "total_duration_ns": 2538813250,
+            "load_duration_ns": 133079208,
+            "prompt_eval_count": 525,
+            "prompt_eval_duration_ns": 1363455000,
+            "eval_count": 27,
+            "eval_duration_ns": 1035967000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_clarify_red_sign_restaurant",
+          "category": "uncertainty_and_clarification",
+          "seed": 20260715,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260715,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "赤い**看板**の店は決まらなくて、どこで何が食べられたか教えて？場所も料理もいいかも。",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "店",
+                  "看板"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "店",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "看板",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "分から",
+                  "決め"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "分から",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "決め",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "場所",
+                  "料理"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "場所",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "料理",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "赤い**看板**の店は決まらなくてどこで何が食べられたか教えて場所も料理もいいかも",
+            "character_count": 44
+          },
+          "response_metrics": {
+            "wall_seconds": 3.802179,
+            "total_duration_ns": 3800842416,
+            "load_duration_ns": 240641958,
+            "prompt_eval_count": 503,
+            "prompt_eval_duration_ns": 2236759000,
+            "eval_count": 27,
+            "eval_duration_ns": 1306917000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_clarify_violin_song",
+          20260717,
+          0
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_clarify_violin_song",
+          "category": "uncertainty_and_clarification",
+          "seed": 20260717,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "曲を特定するのは難しいですね。もっと情報ちょうだい、例えば歌声や聞こえた場所について教えてくれない？",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "曲"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "曲",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "情報",
+                  "分から",
+                  "足り"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "情報",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "分から",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "足り",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "歌",
+                  "場所",
+                  "もう少し"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "歌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "場所",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "もう少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [
+              "polite_tone_drift"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": true,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "曲を特定するのは難しいですねもっと情報ちょうだい例えば歌声や聞こえた場所について教えてくれない",
+            "character_count": 50
+          },
+          "response_metrics": {
+            "wall_seconds": 1.239779,
+            "total_duration_ns": 1238767875,
+            "load_duration_ns": 132213083,
+            "prompt_eval_count": 523,
+            "prompt_eval_duration_ns": 41253000,
+            "eval_count": 27,
+            "eval_duration_ns": 1062077000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_clarify_violin_song",
+          "category": "uncertainty_and_clarification",
+          "seed": 20260717,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "バイオリンの冒頭だけじゃ曲が決まらず、歌词や聴いた場所はもうちょっと教えて？",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "曲"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "曲",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "情報",
+                  "分から",
+                  "足り"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "情報",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "分から",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "足り",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "歌",
+                  "場所",
+                  "もう少し"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "歌",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "場所",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "もう少し",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "バイオリンの冒頭だけじゃ曲が決まらず歌词や聴いた場所はもうちょっと教えて",
+            "character_count": 38
+          },
+          "response_metrics": {
+            "wall_seconds": 3.524881,
+            "total_duration_ns": 3523840125,
+            "load_duration_ns": 238025042,
+            "prompt_eval_count": 496,
+            "prompt_eval_duration_ns": 2240245000,
+            "eval_count": 22,
+            "eval_duration_ns": 1042497000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": [
+          "v33_correction_green_case",
+          20260717,
+          0
+        ],
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_correction_green_case",
+          "category": "fact_correction",
+          "seed": 20260717,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "スマホケースの色は緑だと覚えておこう。間違ってなかったね！",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "緑"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "緑",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "ケース"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "ケース",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "間違",
+                  "覚え",
+                  "訂正"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "間違",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "覚え",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "訂正",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 3,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": true,
+            "current_gate_rejection_reasons": [],
+            "current_gate_raw_pass": true,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "スマホケスの色は緑だと覚えておこう間違ってなかったね",
+            "character_count": 29
+          },
+          "response_metrics": {
+            "wall_seconds": 0.90187,
+            "total_duration_ns": 900017792,
+            "load_duration_ns": 131545584,
+            "prompt_eval_count": 503,
+            "prompt_eval_duration_ns": 42261000,
+            "eval_count": 19,
+            "eval_duration_ns": 723046000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_correction_green_case",
+          "category": "fact_correction",
+          "seed": 20260717,
+          "candidate_index": 0,
+          "sampling": {
+            "temperature": 0.82,
+            "top_p": 0.92,
+            "top_k": 64,
+            "repeat_penalty": 1.2,
+            "seed": 20260717,
+            "num_ctx": 4096,
+            "num_predict": 96
+          },
+          "raw_reply": "スマホケースのグリーンで合ってたね、私の勘違いだったわ。これじゃ覚え直した感じ！👌",
+          "score": {
+            "semantic_groups": [
+              {
+                "markers": [
+                  "緑"
+                ],
+                "hit": false,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "緑",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "ケース"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "ケース",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              },
+              {
+                "markers": [
+                  "間違",
+                  "覚え",
+                  "訂正"
+                ],
+                "hit": true,
+                "traces": [
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "間違",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": true,
+                    "condition": "lemma_polarity",
+                    "mode": "legacy",
+                    "marker": "覚え",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  },
+                  {
+                    "hit": false,
+                    "condition": "lemma_polarity",
+                    "mode": "none",
+                    "marker": "訂正",
+                    "matched_surface": "",
+                    "marker_lemma": "",
+                    "matched_lemma": "",
+                    "marker_negative": null,
+                    "reply_negative": null
+                  }
+                ]
+              }
+            ],
+            "semantic_group_hit_count": 2,
+            "semantic_group_count": 3,
+            "semantic_contract_pass": false,
+            "current_gate_rejection_reasons": [
+              "semantic_slots_missing:2/3"
+            ],
+            "current_gate_raw_pass": false,
+            "hard_surface_failure": false,
+            "polite_or_service_register": false,
+            "private_or_forbidden_memory_hits": [],
+            "private_memory_intrusion": false,
+            "normalized_reply": "スマホケスのグリンで合ってたね私の勘違いだったわこれじゃ覚え直した感じ👌",
+            "character_count": 41
+          },
+          "response_metrics": {
+            "wall_seconds": 3.698361,
+            "total_duration_ns": 3696600750,
+            "load_duration_ns": 236292916,
+            "prompt_eval_count": 483,
+            "prompt_eval_duration_ns": 2207678000,
+            "eval_count": 26,
+            "eval_duration_ns": 1249651000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      }
+    ]
+  },
+  "action_examples": {
+    "treatment_wins": [
+      {
+        "key": "v33_action_ambiguous_15",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_15",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "neutral"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.060249,
+            "total_duration_ns": 1058763583,
+            "load_duration_ns": 148684917,
+            "prompt_eval_count": 327,
+            "prompt_eval_duration_ns": 152562000,
+            "eval_count": 20,
+            "eval_duration_ns": 755045000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_15",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "了解しました。表情は変更しません。何か他のアクションが必要でしょうか？",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 3.353077,
+            "total_duration_ns": 3351646666,
+            "load_duration_ns": 240843833,
+            "prompt_eval_count": 519,
+            "prompt_eval_duration_ns": 2396204000,
+            "eval_count": 15,
+            "eval_duration_ns": 711552000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_20",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_20",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "neutral"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.059029,
+            "total_duration_ns": 1057684125,
+            "load_duration_ns": 140993667,
+            "prompt_eval_count": 329,
+            "prompt_eval_duration_ns": 150905000,
+            "eval_count": 20,
+            "eval_duration_ns": 763197000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_20",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "承知いたしました。後ほどご指示をお待ちしております。",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 3.258541,
+            "total_duration_ns": 3257481125,
+            "load_duration_ns": 236377750,
+            "prompt_eval_count": 521,
+            "prompt_eval_duration_ns": 2412978000,
+            "eval_count": 13,
+            "eval_duration_ns": 605344000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_multi_happy_nod_user",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_multi_happy_nod_user",
+          "family": "multiple_compatible_actions",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "happy"
+                }
+              },
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "nod"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 3,
+            "actual_call_count": 2,
+            "required_action_recall": 0.6666666666666666,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.850634,
+            "total_duration_ns": 1848400208,
+            "load_duration_ns": 136332458,
+            "prompt_eval_count": 333,
+            "prompt_eval_duration_ns": 153060000,
+            "eval_count": 40,
+            "eval_duration_ns": 1556493000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_multi_happy_nod_user",
+          "family": "multiple_compatible_actions",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "happy"
+                }
+              },
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "user"
+                }
+              },
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "nod"
+                }
+              }
+            ],
+            "exact_match": true,
+            "expected_call_count": 3,
+            "actual_call_count": 3,
+            "required_action_recall": 1.0,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 6.658837,
+            "total_duration_ns": 6657491917,
+            "load_duration_ns": 244189125,
+            "prompt_eval_count": 522,
+            "prompt_eval_duration_ns": 2466532000,
+            "eval_count": 79,
+            "eval_duration_ns": 3943766000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_negated_no_surprise",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_negated_no_surprise",
+          "family": "negated_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "neutral"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.041009,
+            "total_duration_ns": 1039476792,
+            "load_duration_ns": 137916417,
+            "prompt_eval_count": 329,
+            "prompt_eval_duration_ns": 148298000,
+            "eval_count": 20,
+            "eval_duration_ns": 750709000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_negated_no_surprise",
+          "family": "negated_action",
+          "raw_content": "了解しました、表情を変えません。",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 3.01473,
+            "total_duration_ns": 3013516958,
+            "load_duration_ns": 233374500,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2425115000,
+            "eval_count": 8,
+            "eval_duration_ns": 352400000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_negated_user_not_left",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_negated_user_not_left",
+          "family": "negated_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "right"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 1,
+            "actual_call_count": 1,
+            "required_action_recall": 0.0,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.104558,
+            "total_duration_ns": 1103183083,
+            "load_duration_ns": 141844208,
+            "prompt_eval_count": 330,
+            "prompt_eval_duration_ns": 152228000,
+            "eval_count": 21,
+            "eval_duration_ns": 806853000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_negated_user_not_left",
+          "family": "negated_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "user"
+                }
+              }
+            ],
+            "exact_match": true,
+            "expected_call_count": 1,
+            "actual_call_count": 1,
+            "required_action_recall": 1.0,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.94197,
+            "total_duration_ns": 3940746709,
+            "load_duration_ns": 239164375,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2446526000,
+            "eval_count": 26,
+            "eval_duration_ns": 1252282000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_single_point_there",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_single_point_there",
+          "family": "single_explicit_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "right"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 1,
+            "actual_call_count": 1,
+            "required_action_recall": 0.0,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 1.104098,
+            "total_duration_ns": 1102947291,
+            "load_duration_ns": 137961458,
+            "prompt_eval_count": 326,
+            "prompt_eval_duration_ns": 151618000,
+            "eval_count": 21,
+            "eval_duration_ns": 810879000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_single_point_there",
+          "family": "single_explicit_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "point"
+                }
+              }
+            ],
+            "exact_match": true,
+            "expected_call_count": 1,
+            "actual_call_count": 1,
+            "required_action_recall": 1.0,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.915145,
+            "total_duration_ns": 3913911042,
+            "load_duration_ns": 238661250,
+            "prompt_eval_count": 518,
+            "prompt_eval_duration_ns": 2364030000,
+            "eval_count": 27,
+            "eval_duration_ns": 1308579000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      }
+    ],
+    "control_wins": [
+      {
+        "key": "v33_action_ambiguous_07",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_07",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "请明确您的请求，您是希望我让avatar指向某个方向还是执行某种动作？",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 1.056621,
+            "total_duration_ns": 1055338500,
+            "load_duration_ns": 142715250,
+            "prompt_eval_count": 330,
+            "prompt_eval_duration_ns": 153741000,
+            "eval_count": 20,
+            "eval_duration_ns": 756401000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_07",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "point"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.974712,
+            "total_duration_ns": 3973172958,
+            "load_duration_ns": 229516625,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2423646000,
+            "eval_count": 27,
+            "eval_duration_ns": 1316891000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_08",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_08",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "None of the provided functions are necessary for the current request, as no specific action or change is required. If you need any further assistance with setting expressions, motions, or gaze targets, feel free to give me explicit instructions!",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 2.109794,
+            "total_duration_ns": 2107690875,
+            "load_duration_ns": 141670209,
+            "prompt_eval_count": 329,
+            "prompt_eval_duration_ns": 153029000,
+            "eval_count": 46,
+            "eval_duration_ns": 1810736000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_08",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "idle"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.972193,
+            "total_duration_ns": 3971051458,
+            "load_duration_ns": 236986916,
+            "prompt_eval_count": 519,
+            "prompt_eval_duration_ns": 2405228000,
+            "eval_count": 27,
+            "eval_duration_ns": 1326046000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_09",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_09",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "どちらの表情にしますか？を確認したいのですが、選択肢として「happy」や「angry」を使用できます。「happy」という文字列を入力すると笑顔になります。「angry」という文字列を入力すると怒った顔になります。例えば、「happy」ですと返答します。",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 3.013733,
+            "total_duration_ns": 3012573250,
+            "load_duration_ns": 138394500,
+            "prompt_eval_count": 333,
+            "prompt_eval_duration_ns": 153913000,
+            "eval_count": 69,
+            "eval_duration_ns": 2717784000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_09",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_expression",
+                "arguments": {
+                  "expression": "happy"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.998229,
+            "total_duration_ns": 3996766042,
+            "load_duration_ns": 255311709,
+            "prompt_eval_count": 522,
+            "prompt_eval_duration_ns": 2471387000,
+            "eval_count": 26,
+            "eval_duration_ns": 1267181000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_11",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_11",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": " Vaults of Pergamum, let's consider where to direct the avatar's gaze. Would you like the avatar to look at the user, to the left, to the right, down, or should I keep it neutral?",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 2.163387,
+            "total_duration_ns": 2162255417,
+            "load_duration_ns": 116834209,
+            "prompt_eval_count": 330,
+            "prompt_eval_duration_ns": 156853000,
+            "eval_count": 47,
+            "eval_duration_ns": 1885264000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_11",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "left"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.930444,
+            "total_duration_ns": 3929064583,
+            "load_duration_ns": 237208042,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2429854000,
+            "eval_count": 26,
+            "eval_duration_ns": 1259307000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_16",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_16",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "目前还不清楚您是否希望我挥手，您可以明确一下您的请求。",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 0.895516,
+            "total_duration_ns": 894386459,
+            "load_duration_ns": 143519417,
+            "prompt_eval_count": 329,
+            "prompt_eval_duration_ns": 146242000,
+            "eval_count": 16,
+            "eval_duration_ns": 602210000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_16",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "play_motion",
+                "arguments": {
+                  "motion": "wave"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.995101,
+            "total_duration_ns": 3993618417,
+            "load_duration_ns": 235838542,
+            "prompt_eval_count": 520,
+            "prompt_eval_duration_ns": 2439701000,
+            "eval_count": 27,
+            "eval_duration_ns": 1315172000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      },
+      {
+        "key": "v33_action_ambiguous_19",
+        "control": {
+          "condition": "qwen2_5_7b_quantized_control",
+          "model_tag": "qwen2.5:7b",
+          "case_id": "v33_action_ambiguous_19",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "portun\n{\"name\": \"set_gaze\", \"arguments\": {\"target\": \"down\"}}\n</tool_call>",
+          "score": {
+            "actual_calls": [],
+            "exact_match": true,
+            "expected_call_count": 0,
+            "actual_call_count": 0,
+            "required_action_recall": null,
+            "extra_call_count": 0,
+            "false_action": false,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": true
+          },
+          "response_metrics": {
+            "wall_seconds": 1.078447,
+            "total_duration_ns": 1077319666,
+            "load_duration_ns": 135167333,
+            "prompt_eval_count": 328,
+            "prompt_eval_duration_ns": 151481000,
+            "eval_count": 21,
+            "eval_duration_ns": 788347000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        },
+        "treatment": {
+          "condition": "qwen3_5_9b_quantized_treatment",
+          "model_tag": "qwen3.5:9b",
+          "case_id": "v33_action_ambiguous_19",
+          "family": "ambiguous_or_conflicting_action",
+          "raw_content": "",
+          "score": {
+            "actual_calls": [
+              {
+                "name": "set_gaze",
+                "arguments": {
+                  "target": "left"
+                }
+              }
+            ],
+            "exact_match": false,
+            "expected_call_count": 0,
+            "actual_call_count": 1,
+            "required_action_recall": null,
+            "extra_call_count": 1,
+            "false_action": true,
+            "forbidden_call_hits": [],
+            "negation_violation": false,
+            "invalid_tool_or_argument": false,
+            "no_action_correct": false
+          },
+          "response_metrics": {
+            "wall_seconds": 3.89537,
+            "total_duration_ns": 3893894709,
+            "load_duration_ns": 224794459,
+            "prompt_eval_count": 519,
+            "prompt_eval_duration_ns": 2407898000,
+            "eval_count": 26,
+            "eval_duration_ns": 1258236000
+          },
+          "transport_attempts": 1,
+          "prior_transport_errors": []
+        }
+      }
+    ]
+  },
+  "evidence_boundary": "Passing Stage 1 would show that Qwen3.5-9B is a stronger local candidate for general realization and action-contract tasks under this deployment comparison. It would not show that the system is a person, that it replicates a particular individual, or that Qwen3.5 should replace the production runtime.",
+  "amendment_boundary": "This amendment corrects metric scope after observing results and therefore cannot strengthen the original evidence claim. Both the initial and corrected analyses must remain available."
+}

@@ -4,6 +4,7 @@ from analyze_rightbrain_qwen35_migration_v33 import (
     _paired_binary,
     exact_mcnemar,
     expected_holdout_accounting,
+    memory_policy_counts,
 )
 
 
@@ -45,6 +46,22 @@ class AnalyzeRightBrainQwen35MigrationV33Test(unittest.TestCase):
                 "action_families": {"explicit": 20, "negated": 20},
             },
         )
+
+    def test_private_intrusion_is_scoped_to_private_category(self):
+        rows = [
+            {
+                "category": "memory_update_use",
+                "score": {"private_memory_intrusion": True},
+            },
+            {
+                "category": "private_memory_suppression",
+                "score": {"private_memory_intrusion": False},
+            },
+        ]
+        counts = memory_policy_counts(rows)
+        self.assertEqual(counts["private_memory_intrusion_count"], 0)
+        self.assertEqual(counts["forbidden_or_internal_residue_count"], 1)
+        self.assertEqual(counts["private_candidate_count"], 1)
 
 
 if __name__ == "__main__":
