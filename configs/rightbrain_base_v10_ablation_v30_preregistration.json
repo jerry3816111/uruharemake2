@@ -1,0 +1,145 @@
+{
+  "schema": "uruha_rightbrain_base_v10_ablation_preregistration_v30",
+  "frozen_at": "2026-07-14T20:29:50+09:00",
+  "repository_commit": "0c6fffb7f5c4e897b157c77c37b703ae47694da6",
+  "research_question": "Does the active V10 LoRA improve current-schema RightBrain surface realization over its exact Qwen2.5-7B base model, or does the adapter reduce Japanese and semantic reliability?",
+  "research_basis": [
+    {
+      "claim": "LoRA inference is additive: the adapted model is the base model plus a learned low-rank update, so disabling the adapter is a matched causal ablation of that update.",
+      "source": "Hu et al., LoRA: Low-Rank Adaptation of Large Language Models, ICLR 2022",
+      "url": "https://openreview.net/forum?id=nZeVKeeFYf9"
+    },
+    {
+      "claim": "PEFT supports disabling attached adapters to run the base model under the same host model and inference interface.",
+      "source": "Hugging Face PEFT model documentation",
+      "url": "https://huggingface.co/docs/peft/package_reference/peft_model"
+    },
+    {
+      "claim": "The active V10 final continuation stage used 0.12 epoch and was initialized from V8; the V10 label is not an epoch count.",
+      "source": "reports/rightbrain_contract_v1_training_run.json"
+    }
+  ],
+  "design_status": "diagnostic_matched_ablation",
+  "known_before_base_inference": {
+    "v10_results_already_observed": true,
+    "base_only_v29_model_calls": 0,
+    "implication": "This can diagnose adapter contribution on frozen V29 cases, but it is not an untouched promotion holdout and cannot authorize runtime promotion."
+  },
+  "conditions": {
+    "v10_adapter": {
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "base_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    },
+    "base_only": {
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "base_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "adapter_ref": "base_model_only"
+    }
+  },
+  "frozen_inputs": {
+    "case_module": {
+      "path": "rightbrain_on_policy_dev_cases_v29.py",
+      "sha256": "6b75fdb1c2064be9491e0677444b2aa310469e7150100f4cb8dc8cdb082edbc9"
+    },
+    "evaluator": {
+      "path": "eval_rightbrain_model_surface_holdout.py",
+      "sha256": "a177eb5b3306b910c5287f28ae5459b4cc1781fc9db2190d35e1e80980afab7d"
+    },
+    "runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "df52685d8ce31ed1065780571a6b07c9ebc166dc5336771a6214412c033d3f48"
+    },
+    "case_count": 12,
+    "source_family_count": 12,
+    "category_count": 8,
+    "seeds": [
+      20260712,
+      20260713,
+      20260714
+    ],
+    "candidate_count_per_case": 3,
+    "seed_case_pair_count_per_condition": 36,
+    "generated_candidate_count_per_condition": 108,
+    "sampling": {
+      "temperatures": [0.82, 0.96, 1.08],
+      "top_p": [0.92, 0.95, 0.98],
+      "top_k": [64, 96, 128],
+      "repetition_penalties": [1.2, 1.26, 1.32],
+      "no_repeat_ngram_size": 3
+    }
+  },
+  "frozen_v10_reports": [
+    {
+      "seed": 20260712,
+      "path": "reports/rightbrain_on_policy_v29_candidates.json",
+      "sha256": "b299a44c1f62a539415eb3a01225ec6b6fec2cd2cc3aaae9e6afcc39a4da28c2"
+    },
+    {
+      "seed": 20260713,
+      "path": "reports/rightbrain_on_policy_v29_candidates_seed20260713.json",
+      "sha256": "7cfd1c0a01979fa52c90d97659589cd2fa2f9dbfdc97929941dce7dbf40b79b5"
+    },
+    {
+      "seed": 20260714,
+      "path": "reports/rightbrain_on_policy_v29_candidates_seed20260714.json",
+      "sha256": "f91bc4e8ac1eae38ffb7e305b593627c7e9a6901bdb3f36de2f8f553a9fe3327"
+    }
+  ],
+  "controlled_variables": [
+    "base model and local model revision",
+    "all 12 V29 cases and their order",
+    "system prompt and current plan_surface_contract_v1 payload",
+    "three random seeds and three sampling settings per case",
+    "candidate gate, semantic marker groups, and style checks",
+    "candidate count, maximum reply length, memory policy, and psyche values",
+    "scoring and paired analysis code"
+  ],
+  "independent_variable": "Whether the active V10 LoRA low-rank update is applied.",
+  "primary_unit": "One seed-case pair; success means at least one of three raw candidates passes the unchanged strict gate.",
+  "metrics": {
+    "primary": [
+      "strict_case_coverage_rate",
+      "paired_base_only_wins",
+      "paired_v10_wins",
+      "paired_mcnemar_exact_p"
+    ],
+    "secondary": [
+      "raw_candidate_acceptance_rate",
+      "hard_surface_failure_rate",
+      "semantic_omission_rate",
+      "polite_tone_drift_rate",
+      "duplicate_candidate_rate",
+      "per_seed_strict_case_coverage_rate"
+    ]
+  },
+  "analysis_policy": {
+    "paired_test": "exact two-sided McNemar test over the 36 matched seed-case pairs",
+    "uncertainty": "case-cluster bootstrap 95% interval over the 12 cases, retaining all three seeds per sampled case",
+    "candidate_rows_are_not_treated_as_independent_for_significance": true,
+    "all_rejection_reasons_are_reported": true
+  },
+  "blind_review_gate": {
+    "all_hash_and_shape_checks_pass": true,
+    "base_strict_case_coverage_delta_at_least": 0.1,
+    "base_strict_case_coverage_not_lower_in_any_seed": true,
+    "base_hard_surface_failure_rate_not_higher": true,
+    "base_semantic_omission_rate_increase_at_most": 0.02,
+    "interpretation": "Passing authorizes only a same-policy human blind package comparing accepted base-only and V10 candidates."
+  },
+  "decision_policy": {
+    "blind_review_gate_passes": "authorize_human_blind_base_vs_v10_only",
+    "otherwise": "keep_v10_no_runtime_change",
+    "active_runtime_change_authorized": false,
+    "adapter_retraining_authorized": false
+  },
+  "research_boundary": {
+    "official_benchmark_claim_allowed": false,
+    "human_likeness_claim_allowed": false,
+    "runtime_promotion_allowed": false,
+    "v29_cases_may_be_tuned_after_base_results": false,
+    "negative_result_must_be_preserved": true
+  }
+}
