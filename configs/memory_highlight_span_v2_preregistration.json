@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_memory_highlight_span_preregistration_v2",
+  "frozen_at": "2026-07-14T07:20:00+00:00",
+  "dataset": {
+    "path": "datasets/memory_highlight_span_v2.json",
+    "file_sha256": "48e56f2e403d3cb5859dad075869085e4d633e17c16565a7090d03b2e1a0b75a",
+    "cases_sha256": "c1a464badc4dbb284e338d0fd257a908d4947149f1938eb3abd2f59827f7e35c",
+    "scenario_count": 12,
+    "case_count": 36,
+    "development_case_count": 18,
+    "transfer_case_count": 18,
+    "official_benchmark_items_used": 0,
+    "v1_case_reuse_count": 0
+  },
+  "inference": {
+    "model": "qwen2.5:7b",
+    "seed": 20260715,
+    "temperature": 0,
+    "num_ctx": 32768,
+    "highlight_limit": 4
+  },
+  "frozen_selector": {
+    "module": "memory_utterance_attention.py",
+    "function": "rank_user_utterances",
+    "tuning_on_v2_allowed": false,
+    "known_preimplementation_audit": {
+      "gold_utterance_hits": 72,
+      "gold_utterance_total": 72,
+      "selected_utterance_count": 74,
+      "false_positive_count": 2,
+      "note": "Two position-dependent adjacent false positives are retained rather than tuned away."
+    }
+  },
+  "conditions": [
+    {
+      "id": "full_session_freeform",
+      "changed_component": "none",
+      "source_context": "unaltered_full_session",
+      "note_extraction": "full_session",
+      "ledger": "grounded_evidence_ledger_v3",
+      "answer_realization": "freeform"
+    },
+    {
+      "id": "highlighted_full_session_freeform",
+      "changed_component": "evidence_highlight_only",
+      "source_context": "unaltered_full_session_plus_inline_highlight_tags",
+      "note_extraction": "full_session",
+      "ledger": "grounded_evidence_ledger_v3",
+      "answer_realization": "freeform"
+    },
+    {
+      "id": "highlighted_full_session_span_contract",
+      "changed_component": "answer_span_slot_binding_only",
+      "source_context": "reuse_highlighted_full_session",
+      "note_extraction": "reuse_highlighted_condition_note",
+      "ledger": "reuse_highlighted_condition_ledger",
+      "answer_realization": "controller_owned_span_slot_contract"
+    }
+  ],
+  "primary_metrics": [
+    "attention_selection_precision",
+    "attention_selection_recall",
+    "gold_evidence_quote_recall",
+    "required_slot_span_hit",
+    "polarity_hit",
+    "relation_hit",
+    "semantic_case_pass",
+    "position_invariant_scenario_pass"
+  ],
+  "integrity_metrics": [
+    "full_context_restoration_exact",
+    "structured_parse_rate",
+    "grounded_quote_rate",
+    "ledger_grounded_rate",
+    "span_contract_valid_rate",
+    "span_slot_complete_rate",
+    "span_grounding_rate",
+    "empty_response_rate",
+    "latency_seconds",
+    "prompt_tokens",
+    "completion_tokens"
+  ],
+  "paired_comparisons": [
+    "highlighted_full_session_freeform - full_session_freeform",
+    "highlighted_full_session_span_contract - highlighted_full_session_freeform"
+  ],
+  "decision_gates": {
+    "dataset_hash_match": true,
+    "all_highlighted_contexts_restore_exactly": true,
+    "all_source_quotes_grounded": true,
+    "all_span_contracts_valid": true,
+    "all_required_slots_complete": true,
+    "all_admitted_spans_grounded": true,
+    "highlight_development_semantic_pass_not_lower_than_control": true,
+    "highlight_transfer_semantic_pass_not_lower_than_control": true,
+    "span_development_semantic_pass_not_lower_than_highlight": true,
+    "span_transfer_semantic_pass_not_lower_than_highlight": true,
+    "no_capability_family_regression_for_either_change": true,
+    "position_invariance_not_lower_for_either_change": true
+  },
+  "research_boundary": {
+    "development_only": true,
+    "transfer_is_internal_diagnostic": true,
+    "external_heldout_claim_allowed": false,
+    "runtime_change_authorized": false,
+    "v1_results_may_be_used_as_promotion_evidence": false,
+    "consumed_longmemeval_heldout_reuse_allowed": false
+  }
+}
