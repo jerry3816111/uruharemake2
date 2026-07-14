@@ -41,6 +41,20 @@ HARD_SURFACE_REASONS = {
     "over_max_chars",
     "response_plan_leak",
 }
+CONDITION_LABELS_ZH = {
+    "mixed_json_control": "現行混合標籤 JSON（對照組）",
+    "japanese_json": "日文標籤 JSON",
+    "mixed_lines": "現行混合標籤行式訊息",
+    "japanese_lines": "日文標籤行式訊息",
+}
+GATE_LABELS_ZH = {
+    "all_source_and_representation_checks_pass": "來源與表示完整性全部通過",
+    "strict_case_coverage_delta_vs_control_at_least_10pp": "嚴格覆蓋率至少改善 10 個百分點",
+    "strict_case_coverage_noninferior_in_every_seed": "每個 seed 都不低於對照組",
+    "semantic_omission_improves_at_least_5pp": "語意遺漏至少改善 5 個百分點",
+    "hard_surface_failure_increase_at_most_2pp": "表面硬失敗最多增加 2 個百分點",
+    "holm_adjusted_mcnemar_p_at_most_005": "Holm 校正後配對檢定 p <= 0.05",
+}
 
 
 def sha256_file(path):
@@ -505,8 +519,22 @@ def _fmt_pct(value):
     return "n/a" if value is None else f"{100 * value:.1f}%"
 
 
+def _fmt_pp(value):
+    return "n/a" if value is None else f"{100 * value:+.1f} pp"
+
+
 def render_markdown(analysis):
     summaries = analysis["condition_summary"]
+    control = summaries[CONTROL]
+    best_name = analysis["best_noncontrol_condition"]
+    best = summaries[best_name]
+    per_seed_deltas = {
+        seed: (
+            best["per_seed"][seed]["strict_case_coverage_rate"]
+            - control["per_seed"][seed]["strict_case_coverage_rate"]
+        )
+        for seed in control["per_seed"]
+    }
     lines = [
         "# 右腦 V31：語言 × 訊息格式配對實驗",
         "",
@@ -521,16 +549,29 @@ def render_markdown(analysis):
     for condition in CONDITIONS:
         summary = summaries[condition]
         lines.append(
-            f"| {condition} | {_fmt_pct(summary['strict_case_coverage_rate'])} | "
+            f"| {CONDITION_LABELS_ZH[condition]} | "
+            f"{_fmt_pct(summary['strict_case_coverage_rate'])} | "
             f"{_fmt_pct(summary['raw_candidate_acceptance_rate'])} | "
             f"{_fmt_pct(summary['semantic_omission_rate'])} | "
             f"{_fmt_pct(summary['hard_surface_failure_rate'])} | "
             f"{summary['mean_prompt_token_count']:.1f} |"
         )
-    lines.extend(["", "## 預註冊配對差異", ""])
-    for key, effect in analysis["contrasts"].items():
+    lines.extend(
+        [
+            "",
+            "嚴格覆蓋率以 36 個 seed-case 配對為單位；raw 通過率以 108 個候選回答為單位。",
+            "",
+            "## 預註冊配對差異",
+            "",
+            "以下差異的單位是百分點（pp），不是相對百分比。",
+            "",
+        ]
+    )
+    for effect in analysis["contrasts"].values():
         lines.append(
-            f"- `{key}`: {_fmt_pct(effect['strict_case_coverage_delta'])}，"
+            f"- {CONDITION_LABELS_ZH[effect['treatment']]} - "
+            f"{CONDITION_LABELS_ZH[effect['reference']]}："
+            f"{_fmt_pp(effect['strict_case_coverage_delta'])}，"
             f"McNemar p={effect['mcnemar_exact_p']:.4f}，"
             f"Holm p={effect['holm_adjusted_mcnemar_p']:.4f}，"
             f"95% CI=[{_fmt_pct(effect['cluster_bootstrap_95']['lower_95'])}, "
@@ -541,28 +582,47 @@ def render_markdown(analysis):
             "",
             "## 因素診斷",
             "",
-            f"- 日文標籤在兩種格式都同方向改善：{analysis['factor_diagnosis']['japanese_label_effect_same_direction_across_formats']}",
-            f"- 行式格式在兩種語言都同方向改善：{analysis['factor_diagnosis']['line_format_effect_same_direction_across_languages']}",
-            f"- 預註冊規則選出的最佳非 control：`{analysis['best_noncontrol_condition']}`",
+            f"- 日文標籤在兩種格式都同方向改善：{'是' if analysis['factor_diagnosis']['japanese_label_effect_same_direction_across_formats'] else '否'}",
+            f"- 行式格式在兩種語言都同方向改善：{'是' if analysis['factor_diagnosis']['line_format_effect_same_direction_across_languages'] else '否'}",
+            f"- 預註冊規則選出的最佳非對照條件：{CONDITION_LABELS_ZH[best_name]}",
+            "",
+            "### 最佳條件在各 seed 的差異",
+            "",
+            "| seed | 對照組 | 最佳條件 | 差異（pp） |",
+            "|---:|---:|---:|---:|",
+        ]
+    )
+    for seed, delta in per_seed_deltas.items():
+        lines.append(
+            f"| {seed} | "
+            f"{_fmt_pct(control['per_seed'][seed]['strict_case_coverage_rate'])} | "
+            f"{_fmt_pct(best['per_seed'][seed]['strict_case_coverage_rate'])} | "
+            f"{_fmt_pp(delta)} |"
+        )
+    lines.extend(
+        [
+            "",
+            "觀察到的改善在三個 seed 並不平均；這也是不能只看總分就改 runtime 的原因。",
             "",
             "## 晉級門檻",
             "",
         ]
     )
     for name, value in analysis["advance_gates"].items():
-        lines.append(f"- {name}: {value}")
+        lines.append(f"- {'通過' if value else '未通過'}：{GATE_LABELS_ZH[name]}")
     lines.extend(
         [
             "",
             "## 決定",
             "",
-            f"**{analysis['decision']}**",
+            "**維持現行 payload，不修改正式聊天 runtime。**",
             "",
-            "本輪不直接改 runtime，也不要求人類盲測。只有全部門檻通過才准建立全新來源分離 holdout。",
+            "行式訊息有值得保留的候選訊號，但 Holm 校正後 p=0.4614，且 95% 信賴區間跨過 0。",
+            "因此本輪不改 runtime、不要求人類盲測，也不建立新 holdout。",
             "",
             "## 證據邊界",
             "",
-            analysis["research_boundary"],
+            "這 12 個情境是先前已觀察過的 V29 開發案例。結果只能診斷表示法方向，不能證明更像人類、不能證明認知理論，也不能授權重訓或上線。",
         ]
     )
     return "\n".join(lines) + "\n"

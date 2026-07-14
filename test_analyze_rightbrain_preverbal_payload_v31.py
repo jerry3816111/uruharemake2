@@ -1,11 +1,18 @@
+import json
 import unittest
 
 from analyze_rightbrain_preverbal_payload_v31 import (
+    AMENDMENT_PATH,
+    DEFAULT_JSON,
+    PREREG_PATH,
     _select_best_noncontrol,
+    build_analysis,
     cluster_bootstrap_delta,
     exact_mcnemar_p,
     holm_adjust,
+    load_reports,
     paired_effect,
+    render_markdown,
     summarize_condition,
 )
 
@@ -138,6 +145,59 @@ class AnalyzeRightBrainPreverbalPayloadV31Test(unittest.TestCase):
             },
         }
         self.assertEqual(_select_best_noncontrol(summaries), "japanese_json")
+
+    def test_checked_in_formal_result_recomputes_exactly_and_does_not_advance(self):
+        preregistration = json.loads(PREREG_PATH.read_text(encoding="utf-8"))
+        amendment = json.loads(AMENDMENT_PATH.read_text(encoding="utf-8"))
+        reports = load_reports(preregistration)
+        recomputed = build_analysis(preregistration, amendment, reports)
+        checked_in = json.loads(DEFAULT_JSON.read_text(encoding="utf-8"))
+
+        self.assertEqual(recomputed, checked_in)
+        self.assertTrue(all(recomputed["verification"].values()))
+        self.assertEqual(recomputed["best_noncontrol_condition"], "mixed_lines")
+        self.assertAlmostEqual(
+            recomputed["condition_summary"]["mixed_json_control"][
+                "strict_case_coverage_rate"
+            ],
+            10 / 36,
+        )
+        self.assertAlmostEqual(
+            recomputed["condition_summary"]["mixed_lines"][
+                "strict_case_coverage_rate"
+            ],
+            17 / 36,
+        )
+        best_effect = recomputed["contrasts"][
+            "mixed_lines__minus__mixed_json_control"
+        ]
+        self.assertEqual(best_effect["treatment_wins"], 10)
+        self.assertEqual(best_effect["reference_wins"], 3)
+        self.assertAlmostEqual(
+            best_effect["strict_case_coverage_delta"],
+            7 / 36,
+        )
+        self.assertAlmostEqual(
+            best_effect["holm_adjusted_mcnemar_p"],
+            0.46142578125,
+        )
+        self.assertFalse(
+            recomputed["advance_gates"][
+                "holm_adjusted_mcnemar_p_at_most_005"
+            ]
+        )
+        self.assertFalse(recomputed["authorize_source_separated_holdout"])
+        self.assertFalse(recomputed["authorize_runtime_change"])
+        self.assertFalse(recomputed["authorize_human_blind_review"])
+        self.assertEqual(
+            recomputed["decision"],
+            "keep_current_payload_no_runtime_change",
+        )
+        markdown = render_markdown(recomputed)
+        self.assertIn("+19.4 pp", markdown)
+        self.assertIn("未通過：Holm 校正後配對檢定", markdown)
+        self.assertIn("不修改正式聊天 runtime", markdown)
+        self.assertNotIn("19.4%，McNemar", markdown)
 
 
 if __name__ == "__main__":
