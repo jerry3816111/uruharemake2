@@ -1,0 +1,26 @@
+{
+  "schema": "uruha_rightbrain_semantic_verifier_amendment_v32",
+  "created_at": "2026-07-15T00:18:00+09:00",
+  "timing": "after the first full calibration score was observed",
+  "initial_analysis_path": "reports/rightbrain_semantic_verifier_v32_initial_analysis.json",
+  "initial_analysis_sha256": "2564d88ff78ca3d706ccc0ebea88d9f6def951199db80e2845f164cb419d74ba",
+  "pre_fix_commit": "4af4006e31805d7b58847836db28fc237cc4ec03",
+  "pre_fix_matcher_sha256": "47f4d8f0b7e99dc23b3394aa42ceefa460eac8ae5807f58dccbb5c6f06e88495",
+  "observed_bug": {
+    "case_id": "negation_did",
+    "marker": "やった",
+    "reply": "まだやってない。",
+    "cause": "OpenJTalk analyzes the connective て in やってない as a verb with lemma てる. The polarity scan stopped at that token before reaching the following ない auxiliary.",
+    "effect": "lemma_polarity introduced one critical false positive and was excluded before the advance gates could be evaluated."
+  },
+  "amendment": {
+    "change": "While scanning the immediate inflection chain, treat surface て with lemma てる as a grammatical connector and continue to the following token; still stop at every other new content token.",
+    "dataset_changed": false,
+    "labels_changed": false,
+    "thresholds_changed": false,
+    "selection_rule_changed": false,
+    "reading_rule_changed": false,
+    "v31_evidence_changed": false
+  },
+  "evidence_boundary": "Because this correction was chosen after observing the calibration result, the corrected V32 result remains developmental and can authorize only the already-declared fresh source-separated verifier holdout. It cannot authorize runtime integration."
+}

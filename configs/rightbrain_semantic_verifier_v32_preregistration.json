@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_rightbrain_semantic_verifier_preregistration_v32",
+  "created_at": "2026-07-14T23:50:00+09:00",
+  "status": "preregistered_before_matcher_implementation_or_scoring",
+  "research_question": "Can a conservative Japanese morphology-aware semantic matcher reduce lexical-gate false negatives without introducing new critical false positives, before any runtime integration?",
+  "motivation": {
+    "observed_problem": "V31 rejected a natural candidate containing お疲れ when the required marker was おつかれ, and current substring matching is also insensitive to inflection and proposition polarity.",
+    "project_relevance": "The same matcher affects both research metrics and whether a model-generated reply may replace the deterministic fallback, so verifier error can look like model error and can suppress otherwise usable conversation.",
+    "not_test_specific": "The treatment uses Japanese morphological features and polarity checks rather than adding V29 answer strings or case IDs.",
+    "external_evidence": [
+      {
+        "title": "Large Language Models Can Be Easily Distracted by Irrelevant Context",
+        "url": "https://proceedings.mlr.press/v202/shi23a.html",
+        "relevance": "Motivates reducing misleading or redundant lexical checks, but does not prove this matcher will improve UruhaBrain."
+      },
+      {
+        "title": "Stages in the speaking process",
+        "url": "https://pure.mpg.de/pubman/item/item_64582/component/file_468527/Levelt_Stages_1987.pdf",
+        "relevance": "Separates a preverbal communicative message from linguistic formulation; V32 tests only the software boundary between intended concepts and surface wording, not biological equivalence."
+      },
+      {
+        "title": "pyopenjtalk",
+        "url": "https://pypi.org/project/pyopenjtalk/",
+        "relevance": "The installed OpenJTalk frontend exposes Japanese dictionary forms and readings used for the shadow treatment."
+      }
+    ]
+  },
+  "frozen_inputs": {
+    "base_commit": "3ea4bf69f2250a47463ebeacf25c69d18ea40bef",
+    "runtime_path": "uruha_brain_mac.py",
+    "runtime_sha256": "df52685d8ce31ed1065780571a6b07c9ebc166dc5336771a6214412c033d3f48",
+    "v29_case_module_path": "rightbrain_on_policy_dev_cases_v29.py",
+    "v29_case_module_sha256": "6b75fdb1c2064be9491e0677444b2aa310469e7150100f4cb8dc8cdb082edbc9",
+    "calibration_dataset_path": "datasets/rightbrain_semantic_verifier_calibration_v32.json",
+    "calibration_dataset_sha256": "f42f119ee380025357b4f4d463853580e13c2555e646c95a3120951c9bef19be",
+    "calibration_case_count": 48,
+    "calibration_positive_count": 24,
+    "calibration_negative_count": 24,
+    "v31_analysis_path": "reports/rightbrain_preverbal_payload_v31_analysis.json",
+    "v31_analysis_sha256": "15c6762f780c4f6b9e7efe1282f4f4c73d8bdaa5d3c2844fc449080a679ec12b",
+    "v31_report_count": 12,
+    "v31_candidate_count": 432,
+    "v31_report_sha256": {
+      "rightbrain_preverbal_payload_v31_japanese_json_seed20260712.json": "11fb5e0d092d1fd4e548816c2399e0825905ff3a98f12860079c15c0f449b70a",
+      "rightbrain_preverbal_payload_v31_japanese_json_seed20260713.json": "226aa389a8a6873e95a5463f83c477c672663da056a8ae126e9a9be322a05b17",
+      "rightbrain_preverbal_payload_v31_japanese_json_seed20260714.json": "c8a576b36e3a9d91d1efe7afe09829f59c2b6acbe273f512985da890c9b98614",
+      "rightbrain_preverbal_payload_v31_japanese_lines_seed20260712.json": "9662ae520b3096c239d3b8ce1a74055090f7c7caa205e6c04301d6f1341be4b9",
+      "rightbrain_preverbal_payload_v31_japanese_lines_seed20260713.json": "91a3432aa708fcf3f6e7f89cdcd8446916c5682ee6a94433516408e682bf5358",
+      "rightbrain_preverbal_payload_v31_japanese_lines_seed20260714.json": "ec5b2d581afdcfc1594d666c5296590fc5caa5aa6ed92d3639f0def90ea34472",
+      "rightbrain_preverbal_payload_v31_mixed_json_control_seed20260712.json": "34dc25015c73e594e3b02ae770a9ae5ab6d9a865b4043759313a341e7f0b4d26",
+      "rightbrain_preverbal_payload_v31_mixed_json_control_seed20260713.json": "3f811cda4ad125ce8d6544d8e9728d81e8154e1308065604964477b979ff05a1",
+      "rightbrain_preverbal_payload_v31_mixed_json_control_seed20260714.json": "35fd0b38546011de28c2bb1ea485f8efcfa03185ede715f2536b41c6213935ad",
+      "rightbrain_preverbal_payload_v31_mixed_lines_seed20260712.json": "2d52cbdfa9999627447cf8ff6def01ffdca58a81c3911e0219d541dfa468a6e8",
+      "rightbrain_preverbal_payload_v31_mixed_lines_seed20260713.json": "cd6a3fcf89c51149b5bcab963c7bfed5215d9e9eaab04c5317a08ece51cb648a",
+      "rightbrain_preverbal_payload_v31_mixed_lines_seed20260714.json": "1cf62af9190e817931c89f5d0a2bfd5b4b8af996ddb21439a1443bef0b7ee184"
+    },
+    "pyopenjtalk_version": "0.3.4.dev2"
+  },
+  "conditions": {
+    "legacy_control": {
+      "definition": "The frozen current RightBrain._semantic_marker_hit behavior from the bound runtime."
+    },
+    "lemma_polarity": {
+      "definition": "Legacy behavior plus dictionary-form matching for Japanese content words, with matched adjective/verb polarity required to agree. No pronunciation-only matching."
+    },
+    "lemma_polarity_reading": {
+      "definition": "lemma_polarity plus pronunciation matching for kana markers against kanji surface forms; retained as a risk-bearing exploratory condition because homophones may create false positives."
+    }
+  },
+  "controlled_variables": [
+    "same marker and reply text",
+    "same calibration labels",
+    "same 432 frozen V31 raw candidates",
+    "same required marker groups from the frozen V29 cases",
+    "same non-semantic rejection reasons",
+    "no model generation, retraining, prompt change, answer rewriting, or human rating"
+  ],
+  "outcomes": {
+    "primary": [
+      "calibration_positive_recall",
+      "calibration_negative_specificity",
+      "new_critical_false_positive_count"
+    ],
+    "secondary": [
+      "per_family_accuracy",
+      "V31 newly recovered semantic-only candidate count",
+      "V31 newly accepted candidate count after preserving all other rejection reasons",
+      "V31 strict seed-case coverage delta by payload condition",
+      "match-mode distribution"
+    ],
+    "candidate_boundary": "V31 candidate results are retrospective diagnostics from previously observed development cases, not an independent holdout."
+  },
+  "selection_rule": {
+    "order": [
+      "discard any treatment with a new critical false positive",
+      "discard any treatment with negative specificity below legacy control",
+      "among remaining treatments choose highest positive recall",
+      "then choose fewer pronunciation-only matches",
+      "then choose lower implementation complexity"
+    ]
+  },
+  "advance_gate": {
+    "scope": "authorize_only_a_new_source_separated_verifier_holdout",
+    "requirements": {
+      "all_hash_and_accounting_checks_pass": true,
+      "positive_recall_delta_vs_legacy_at_least": 0.20,
+      "negative_specificity_not_below_legacy": true,
+      "new_critical_false_positive_count": 0,
+      "all_v31_newly_accepted_candidates_have_no_other_rejection_reason": true,
+      "v31_strict_case_coverage_noninferior_in_every_payload_condition": true
+    },
+    "runtime_change_authorized": false,
+    "model_retraining_authorized": false,
+    "human_blind_review_authorized": false
+  },
+  "research_boundary": "This is an internally authored calibration set plus retrospective frozen V31 candidates. Passing can justify only a fresh source-separated verifier holdout. It cannot promote runtime, establish semantic entailment in general, prove human-like cognition, or validate pronunciation matching across Japanese homophones."
+}
