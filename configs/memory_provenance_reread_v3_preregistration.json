@@ -1,0 +1,152 @@
+{
+  "schema": "uruha_memory_provenance_reread_preregistration_v3",
+  "frozen_at": "2026-07-14T08:09:55+00:00",
+  "dataset": {
+    "path": "datasets/memory_provenance_reread_v3.json",
+    "file_sha256": "e9ce06826cf68e37b03656500b2f5b64caf1a9bb620d7597fcd63f08241c64e2",
+    "cases_sha256": "329b3df20845434b494f5a97330d5fbac18616c789d7f39e7128a8a49c12e1f3",
+    "scenario_count": 16,
+    "case_count": 48,
+    "answerable_case_count": 36,
+    "unanswerable_case_count": 12,
+    "development_case_count": 24,
+    "transfer_case_count": 24,
+    "official_benchmark_items_used": 0,
+    "v1_case_reuse_count": 0,
+    "v2_case_reuse_count": 0
+  },
+  "inference": {
+    "model": "qwen2.5:7b",
+    "seed": 20260716,
+    "temperature": 0,
+    "num_ctx": 32768,
+    "highlight_limit": 4,
+    "explicit_abstention": "I do not have enough grounded user evidence to answer that."
+  },
+  "frozen_selector": {
+    "module": "memory_utterance_attention.py",
+    "function": "rank_user_utterances",
+    "tuning_on_v3_allowed": false,
+    "known_preimplementation_audit": {
+      "gold_utterance_hits": 96,
+      "gold_utterance_total": 96,
+      "selected_utterance_count": 96,
+      "false_positive_count": 0
+    }
+  },
+  "conditions": [
+    {
+      "id": "full_session_freeform",
+      "changed_component": "none",
+      "source_context": "unaltered_full_session",
+      "note_extraction": "existing_full_session_note",
+      "source_policy": "existing_mixed_role_pipeline",
+      "sufficiency_gate": false,
+      "adaptive_reread": false,
+      "answer_realization": "freeform"
+    },
+    {
+      "id": "provenance_gate_only_freeform",
+      "changed_component": "authoritative_user_source_filter_and_sufficiency_gate",
+      "source_context": "reuse_unaltered_full_session_note",
+      "note_extraction": "reuse_control_note_then_rebuild_user_only_ledger",
+      "source_policy": "user_self_report_is_authoritative_for_autobiographical_memory",
+      "sufficiency_gate": true,
+      "adaptive_reread": false,
+      "answer_realization": "freeform_or_explicit_abstention"
+    },
+    {
+      "id": "adaptive_provenance_reread_freeform",
+      "changed_component": "low_sufficiency_triggered_full_context_reread",
+      "source_context": "reuse_primary_pass_then_highlight_full_context_only_if_insufficient",
+      "note_extraction": "safe_markup_repair_then_user_only_evidence_merge",
+      "source_policy": "same_as_provenance_gate_only",
+      "sufficiency_gate": true,
+      "adaptive_reread": true,
+      "answer_realization": "freeform_or_explicit_abstention"
+    },
+    {
+      "id": "adaptive_provenance_reread_span_contract",
+      "changed_component": "controller_owned_source_span_contract_only",
+      "source_context": "reuse_adaptive_condition",
+      "note_extraction": "reuse_adaptive_condition",
+      "source_policy": "same_as_adaptive_condition",
+      "sufficiency_gate": true,
+      "adaptive_reread": true,
+      "answer_realization": "source_span_contract_or_explicit_abstention"
+    }
+  ],
+  "generic_sufficiency_contract": {
+    "gold_visible_to_gate": false,
+    "required_source_role": "user",
+    "reject_pure_uncertainty": true,
+    "answer_shape_checks": {
+      "time": "explicit clock time",
+      "count": "explicit numeric quantity",
+      "frequency": "explicit cadence or recurring interval",
+      "location": "explicit placement phrase",
+      "yes_no": "explicit ownership or non-ownership proposition",
+      "compare": "at least two numeric endpoints plus temporal or change language"
+    },
+    "fallback_rule": "run_highlighted_second_read_only_when_primary_user_evidence_is_insufficient",
+    "remaining_insufficiency_rule": "emit_fixed_explicit_abstention"
+  },
+  "primary_metrics": [
+    "answerable_semantic_case_pass",
+    "unanswerable_explicit_abstention_accuracy",
+    "overall_cognitive_case_pass",
+    "unsafe_answer_rate_on_unanswerable",
+    "false_abstention_rate_on_answerable",
+    "gold_user_evidence_quote_recall",
+    "authoritative_user_evidence_rate",
+    "primary_gate_trigger_rate",
+    "fallback_recovery_rate",
+    "position_invariant_scenario_pass"
+  ],
+  "integrity_metrics": [
+    "full_context_restoration_exact",
+    "markup_repair_attempt_rate",
+    "markup_repair_grounding_rate",
+    "assistant_fact_admission_rate",
+    "structured_parse_rate",
+    "grounded_quote_rate",
+    "ledger_grounded_rate",
+    "span_contract_valid_rate_conditional_on_sufficient_evidence",
+    "span_grounding_rate",
+    "latency_seconds",
+    "prompt_tokens",
+    "completion_tokens"
+  ],
+  "paired_comparisons": [
+    "provenance_gate_only_freeform - full_session_freeform",
+    "adaptive_provenance_reread_freeform - provenance_gate_only_freeform",
+    "adaptive_provenance_reread_freeform - full_session_freeform",
+    "adaptive_provenance_reread_span_contract - adaptive_provenance_reread_freeform"
+  ],
+  "decision_gates": {
+    "dataset_hash_match": true,
+    "all_highlighted_contexts_restore_exactly": true,
+    "all_markup_repairs_exactly_grounded": true,
+    "no_assistant_only_fact_admitted_to_treatment_ledgers": true,
+    "provenance_gate_unanswerable_abstention_rate_equals_one": true,
+    "adaptive_unanswerable_abstention_rate_equals_one": true,
+    "span_unanswerable_abstention_rate_equals_one": true,
+    "adaptive_answerable_false_abstention_rate_equals_zero": true,
+    "adaptive_development_answerable_pass_not_lower_than_control": true,
+    "adaptive_transfer_answerable_pass_not_lower_than_control": true,
+    "adaptive_overall_cognitive_pass_not_lower_than_control": true,
+    "no_capability_family_regression_adaptive_vs_control": true,
+    "span_overall_cognitive_pass_not_lower_than_adaptive": true,
+    "position_invariance_not_lower_adaptive_vs_control": true,
+    "fallback_runs_only_after_primary_insufficiency": true
+  },
+  "research_boundary": {
+    "development_only": true,
+    "transfer_is_internal_diagnostic": true,
+    "external_heldout_claim_allowed": false,
+    "runtime_change_authorized": false,
+    "v1_or_v2_results_may_be_used_as_v3_promotion_evidence": false,
+    "consumed_longmemeval_heldout_reuse_allowed": false,
+    "passing_action": "eligible_for_new_untouched_evaluation_only"
+  }
+}
