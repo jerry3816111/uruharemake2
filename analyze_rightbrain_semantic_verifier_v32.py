@@ -6,6 +6,7 @@ from collections import Counter, defaultdict
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 from rightbrain_on_policy_dev_cases_v29 import case_inputs
 from rightbrain_semantic_verifier_v32 import CONDITIONS, match_group, match_marker
@@ -14,6 +15,7 @@ from uruha_brain_mac import RightBrain
 
 ROOT = Path(__file__).resolve().parent
 PREREG_PATH = ROOT / "configs/rightbrain_semantic_verifier_v32_preregistration.json"
+AMENDMENT_PATH = ROOT / "configs/rightbrain_semantic_verifier_v32_amendment.json"
 DEFAULT_JSON = ROOT / "reports/rightbrain_semantic_verifier_v32_analysis.json"
 DEFAULT_MD = ROOT / "reports/rightbrain_semantic_verifier_v32_analysis.md"
 SEMANTIC_REASON_PREFIX = "semantic_slots_missing:"
@@ -60,7 +62,7 @@ def load_v31_reports(preregistration):
     ]
 
 
-def verify_sources(preregistration, calibration, reports):
+def verify_sources(preregistration, amendment, calibration, reports):
     frozen = preregistration["frozen_inputs"]
     checks = {
         "runtime_sha256_matches": sha256_file(ROOT / frozen["runtime_path"])
@@ -88,7 +90,25 @@ def verify_sources(preregistration, calibration, reports):
         )
         == frozen["calibration_negative_count"],
         "v31_report_count_matches": len(reports) == frozen["v31_report_count"],
+        "initial_analysis_sha256_matches_amendment": sha256_file(
+            ROOT / amendment["initial_analysis_path"]
+        )
+        == amendment["initial_analysis_sha256"],
     }
+    pre_fix_source = subprocess.run(
+        [
+            "git",
+            "show",
+            f"{amendment['pre_fix_commit']}:rightbrain_semantic_verifier_v32.py",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    checks["pre_fix_matcher_sha256_matches_amendment"] = (
+        hashlib.sha256(pre_fix_source).hexdigest()
+        == amendment["pre_fix_matcher_sha256"]
+    )
     expected_hashes = frozen["v31_report_sha256"]
     checks["all_v31_report_hashes_match"] = all(
         sha256_file(ROOT / "reports" / name) == digest
@@ -404,8 +424,13 @@ def _select_treatment(calibration_summaries):
     )
 
 
-def build_analysis(preregistration, calibration, reports):
-    verification = verify_sources(preregistration, calibration, reports)
+def build_analysis(preregistration, amendment, calibration, reports):
+    verification = verify_sources(
+        preregistration,
+        amendment,
+        calibration,
+        reports,
+    )
     legacy_hit = _legacy_matcher()
     calibration_summaries, calibration_rows = analyze_calibration(
         calibration,
@@ -457,6 +482,8 @@ def build_analysis(preregistration, calibration, reports):
         "schema": "uruha_rightbrain_semantic_verifier_analysis_v32",
         "preregistration_path": str(PREREG_PATH.relative_to(ROOT)),
         "preregistration_sha256": sha256_file(PREREG_PATH),
+        "amendment_path": str(AMENDMENT_PATH.relative_to(ROOT)),
+        "amendment_sha256": sha256_file(AMENDMENT_PATH),
         "implementation_path": "rightbrain_semantic_verifier_v32.py",
         "implementation_sha256": sha256_file(
             ROOT / "rightbrain_semantic_verifier_v32.py"
@@ -570,9 +597,10 @@ def main():
     parser.add_argument("--output-md", default=DEFAULT_MD)
     args = parser.parse_args()
     preregistration = load_preregistration()
+    amendment = json.loads(AMENDMENT_PATH.read_text(encoding="utf-8"))
     calibration = load_calibration(preregistration)
     reports = load_v31_reports(preregistration)
-    analysis = build_analysis(preregistration, calibration, reports)
+    analysis = build_analysis(preregistration, amendment, calibration, reports)
     Path(args.output_json).write_text(
         json.dumps(analysis, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

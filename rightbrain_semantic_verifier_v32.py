@@ -70,6 +70,8 @@ def _content_tokens(tokens):
 def _has_following_negation(tokens, index):
     for token in tokens[index + 1 : index + 4]:
         if token.pos in CONTENT_POS:
+            if token.surface == "て" and token.lemma == "てる":
+                continue
             break
         if token.lemma in NEGATION_LEMMAS or token.surface in NEGATION_LEMMAS:
             return True

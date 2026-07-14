@@ -63,6 +63,15 @@ class RightBrainSemanticVerifierV32Test(unittest.TestCase):
         )
         self.assertFalse(trace.hit)
 
+    def test_contracted_te_chain_reaches_following_negation(self):
+        trace = match_marker(
+            "まだやってない。",
+            "やった",
+            "lemma_polarity",
+            self.legacy_hit,
+        )
+        self.assertFalse(trace.hit)
+
     def test_negative_marker_can_match_negative_inflection(self):
         trace = match_marker(
             "理由はまだ分かんない。",
