@@ -273,7 +273,15 @@ def _evidence_recall(case, ledger):
         if event.get("source_role") == "user"
     }
     gold = case["gold"]["required_evidence_quotes"]
-    return sum(quote in observed for quote in gold) / len(gold) if gold else 1.0
+    hits = sum(
+        any(
+            candidate
+            and (candidate in quote or quote in candidate)
+            for candidate in observed
+        )
+        for quote in gold
+    )
+    return hits / len(gold) if gold else 1.0
 
 
 def _note_integrity(notes):

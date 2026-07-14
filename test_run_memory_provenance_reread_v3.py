@@ -7,6 +7,7 @@ from pathlib import Path
 from memory_evidence_ledger import LEDGER_SCHEMA
 from run_memory_provenance_reread_v3 import (
     CONDITIONS,
+    _evidence_recall,
     build_analysis,
     load_protocol,
     render_markdown,
@@ -132,6 +133,33 @@ class RunMemoryProvenanceRereadV3Test(unittest.TestCase):
         self.assertEqual(called, [])
         self.assertTrue(artifact["used_explicit_abstention"])
         self.assertEqual(artifact["validation"]["errors"], ["evidence_gate_insufficient"])
+
+    def test_evidence_recall_accepts_shortest_verbatim_sentence_not_paraphrase(self):
+        case = {
+            "gold": {
+                "required_evidence_quotes": [
+                    "No, that was only your guess. I keep them in the bottom pantry drawer now."
+                ]
+            }
+        }
+        shortest = {
+            "events": [
+                {
+                    "source_role": "user",
+                    "source_quote": "I keep them in the bottom pantry drawer now.",
+                }
+            ]
+        }
+        paraphrase = {
+            "events": [
+                {
+                    "source_role": "user",
+                    "source_quote": "The cards are stored in a lower pantry compartment.",
+                }
+            ]
+        }
+        self.assertEqual(_evidence_recall(case, shortest), 1.0)
+        self.assertEqual(_evidence_recall(case, paraphrase), 0.0)
 
     def test_run_case_rereads_only_after_primary_insufficiency_and_repairs_markup(self):
         case = next(
