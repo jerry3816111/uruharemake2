@@ -1,0 +1,131 @@
+{
+  "schema": "uruha_event_role_governor_development_closure_v59",
+  "closed_at": "2026-07-16T01:52:10+09:00",
+  "status": "completed_development_candidate_passed",
+  "frozen_run_commit": "6c4988d99a408d8e8c48e1fd1c7535b06038af63",
+  "artifact_bindings": {
+    "preregistration": "configs/event_role_governor_v59_preregistration.json",
+    "preregistration_sha256": "76462ee53c46ee53042088100390a0bf78feb1ed792f2d6d85f9ee742445a6fc",
+    "replay_harness_lock": "configs/event_role_governor_v59_replay_harness_lock.json",
+    "replay_harness_lock_sha256": "4975df7c3ade43c88b2a4b8b0530c50f7144e1e2181734a40a713e482ff3e83e",
+    "dataset": "datasets/relation_safety_state_v58_holdout.json",
+    "dataset_sha256": "e1e30602197a91273b128234ffa162d8e293a756580c56f59b41d8fe3054621a",
+    "source_raw": "reports/relation_safety_state_v58_holdout_raw.json",
+    "source_raw_sha256": "862157b856c0521649840208e0865895c5bea61fed77ff56b7decba101f15fdf",
+    "control_implementation": "relation_safety_state_v58.py",
+    "control_implementation_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "candidate_implementation": "event_role_governor_v59.py",
+    "candidate_implementation_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "runner": "run_event_role_governor_v59_development.py",
+    "runner_sha256": "114fabf11ad6d58f0f1fd6babecc09466214df12faad07411104c32a60d5f8ca",
+    "analyzer": "analyze_event_role_governor_v59_development.py",
+    "analyzer_sha256": "bfa5b56baacaed8ba70039492d4746060758383367a48aab61131e95a89f01dc",
+    "raw_report": "reports/event_role_governor_v59_development_raw.json",
+    "raw_report_sha256": "6a37c63d8933b2c6f7525f53ccfe4248367387fc339e41e55be12715b7ecf06c",
+    "analysis_report": "reports/event_role_governor_v59_development_analysis.json",
+    "analysis_report_sha256": "ef1205cb7443cd8543584ebb532083eb873185c0c4f99d5a84cef8ad423635b3",
+    "human_readable_report": "reports/event_role_governor_v59_development_analysis.md",
+    "human_readable_report_sha256": "8547a6cd700f18b375b523fe444b6cbadb1da8138b43caf5810df3ed132d804e"
+  },
+  "execution_accounting": {
+    "case_count": 64,
+    "grounded_target_count": 87,
+    "new_model_calls": 0,
+    "reused_frozen_local_model_outputs": 87,
+    "paid_api_used": false,
+    "physical_vrm_actions_executed": 0
+  },
+  "control_result": {
+    "system": "V58 state plus frozen V57 compiler",
+    "correct_commitments": 82,
+    "commitment_accuracy": 0.9425287356321839,
+    "requested_precision": 0.85,
+    "requested_recall": 1.0,
+    "ordered_exact_count": 60,
+    "ordered_exact_accuracy": 0.9375,
+    "false_action_case_count": 3,
+    "no_action_specificity": 0.9411764705882353,
+    "required_call_recall": 0.9411764705882353
+  },
+  "candidate_result": {
+    "system": "V59 event-role state plus the same frozen V57 compiler",
+    "correct_commitments": 85,
+    "commitment_accuracy": 0.9770114942528736,
+    "requested_precision": 1.0,
+    "requested_recall": 1.0,
+    "ordered_exact_count": 63,
+    "ordered_exact_accuracy": 0.984375,
+    "false_action_case_count": 0,
+    "no_action_specificity": 1.0,
+    "required_call_recall": 0.9411764705882353
+  },
+  "matched_effect": {
+    "state_correct_count_delta": 3,
+    "state_accuracy_percentage_point_delta": 3.4482758620689653,
+    "ordered_exact_count_delta": 3,
+    "ordered_exact_percentage_point_delta": 4.6875,
+    "false_action_case_count_delta": -3,
+    "state_fix_count": 3,
+    "state_regression_count": 0,
+    "case_fix_count": 3,
+    "case_regression_count": 0,
+    "contrast_regression_count": 0,
+    "required_call_recall_delta": 0.0
+  },
+  "prespecified_fixes": [
+    {
+      "case_id": "v58h_tatoeba_120769",
+      "relation": "embedded_speech_content",
+      "meaning": "The request governs the speech act 教えて, not the third-party smile event.",
+      "passed": true
+    },
+    {
+      "case_id": "v58h_tatoeba_13065884",
+      "relation": "third_party_habitual_description",
+      "meaning": "The recurring smile belongs to an explicit third party and is not a current command.",
+      "passed": true
+    },
+    {
+      "case_id": "v58h_tatoeba_13070403",
+      "relation": "past_experiential_description",
+      "meaning": "The smile belongs to a friend in a past experience and is not a current command.",
+      "passed": true
+    }
+  ],
+  "preserved_residuals": {
+    "shared_fallback_label_errors": {
+      "case_id": "v58h_tatoeba_10784018",
+      "target_ids": [
+        "gaze.left",
+        "gaze.right"
+      ],
+      "expected": "mentioned",
+      "actual": "negated",
+      "final_action_plan_still_correct": true,
+      "reason_separate": "V59 changes deterministic event roles, not the shared fallback model."
+    },
+    "compiler_only_valid_action_miss": {
+      "case_id": "v58h_tatoeba_201634",
+      "state_commitment": "requested",
+      "compiler_block_reason": "unresolved_model_only_request",
+      "missing_coverage": "explicit request morphology ending in おくれ",
+      "reason_separate": "Changing V59 state relations would not repair a frozen compiler authorization gap."
+    }
+  },
+  "decision": "authorize_independent_v59_event_role_holdout",
+  "causal_interpretation": "On consumed V58 evidence, adding only event owner, directive governor, and event time removed all three deterministic false actions without reducing valid-action recall or regressing any previously correct target, case, or controlled contrast. This supports the representation hypothesis but is not fresh generalization evidence.",
+  "next_experiment_order": [
+    "Construct and freeze a new independent V59 holdout with unseen embedded-speech, third-party habitual, past-experiential, and direct-request contrast sentences.",
+    "Run the matched V58 versus V59 comparison on that independent holdout without post-run tuning.",
+    "Keep the おくれ compiler-coverage repair as a separate single-variable experiment.",
+    "After deterministic state and compiler issues are isolated, freeze a broader fallback-only residual set before comparing free local model sizes."
+  ],
+  "evidence_boundary": "This is a zero-model replay on consumed data. It authorizes only construction of an independent V59 holdout. It does not authorize runtime integration, shadow deployment, physical VRM execution, complete right-brain claims, whole-system readiness, VTuber replication claims, or broad human-likeness claims.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
