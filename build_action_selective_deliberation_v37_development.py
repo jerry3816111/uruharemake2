@@ -90,6 +90,8 @@ def build():
                 "expected_frames": frames,
                 "expected_derived_state": _derived_state(frames),
                 "expected_calls": case["expected_calls"],
+                "forbidden_calls": case["forbidden_calls"],
+                "expected_no_action": case["expected_no_action"],
                 "expected_deliberation": bool(risk_sources),
                 "expected_risk_sources": risk_sources,
             }

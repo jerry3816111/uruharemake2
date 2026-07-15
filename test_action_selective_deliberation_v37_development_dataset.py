@@ -39,6 +39,8 @@ class ActionSelectiveDeliberationV37DatasetTests(unittest.TestCase):
             source = source_by_id[case["id"]]
             self.assertEqual(case["user_input"], source["user_input"])
             self.assertEqual(case["expected_calls"], source["expected_calls"])
+            self.assertEqual(case["forbidden_calls"], source["forbidden_calls"])
+            self.assertEqual(case["expected_no_action"], source["expected_no_action"])
 
     def test_unsupported_is_an_attribute_not_a_synthetic_frame(self):
         unsupported = [
