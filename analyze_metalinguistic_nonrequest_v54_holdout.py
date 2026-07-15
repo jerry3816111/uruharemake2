@@ -345,7 +345,11 @@ def analyze(raw, dataset, config):
             "without a locked state or execution regression. Only a no-actuation shadow design "
             "is authorized; runtime and physical VRM execution remain disabled."
         )
-    elif state_gate["passed"] and attribution["compiler_only_failure_count"]:
+    elif (
+        state_gate["passed"]
+        and matched_gate["passed"]
+        and attribution["compiler_only_failure_count"]
+    ):
         decision = "freeze_v54_state_preregister_compiler_repair"
         interpretation = (
             "The V54 discourse-state component passed, but correct requested states were lost in "

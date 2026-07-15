@@ -20,8 +20,8 @@ from run_precise_target_mentions_v52 import (
     build_prompts,
 )
 from run_rightbrain_qwen35_migration_v33 import _unload_model
-from run_selective_discourse_state_v53 import select_commitment
 from run_target_event_map_v51 import build_candidate_rows
+from selective_discourse_state_v53 import select_commitment
 
 
 ROOT = Path(__file__).resolve().parent
@@ -151,6 +151,11 @@ def run(output=DEFAULT_OUTPUT):
         raise ValueError("V54 holdout grounded target count drift")
 
     snapshot = _model_snapshot(config)
+    judgment_config = {
+        **v52_config,
+        "fixed_model": config["fixed_model"],
+        "fixed_carrier": config["fixed_carrier"],
+    }
     v51_prompt = build_prompts(
         v52_config, v51_config, v45_config, v44_lock
     )["v51_event_map_control"]
@@ -172,7 +177,7 @@ def run(output=DEFAULT_OUTPUT):
                 "v51_event_map_control",
                 candidate_row,
                 candidate,
-                v52_config,
+                judgment_config,
                 v45_config,
                 {"v51_event_map_control": v51_prompt},
                 snapshot,
