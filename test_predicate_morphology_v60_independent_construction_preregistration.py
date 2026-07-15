@@ -40,6 +40,7 @@ class PredicateMorphologyV60IndependentConstructionPreregistrationTests(
         historical = {
             int(line.split("\t", 1)[0])
             for path in (ROOT / "datasets" / "sources").glob("tatoeba_jpn_v*.tsv")
+            if path.name != "tatoeba_jpn_v60_selected.tsv"
             for line in path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         }
