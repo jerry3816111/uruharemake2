@@ -1,0 +1,890 @@
+{
+  "schema": "uruha_domain_separated_action_contract_development_analysis_v40",
+  "evidence_status": "development_only_on_retired_v37_cases",
+  "model_inference_performed": true,
+  "single_changed_factor": "model output contract and its matching instructions",
+  "conditions": {
+    "v39_replay_control": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.8889,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.5316,
+      "failure_count": 0,
+      "failures": [],
+      "trace_warning_case_count": 4,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "invalid_domain"
+              ],
+              "raw_frame": {
+                "domain": "expression | motion | gaze | other",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "evidence_not_exact_input_substring"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "カメラを一周回って"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "v40_domain_separated_candidate": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.5556,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 0.4167,
+      "trace_wellformed_rate": 0.0833,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.4757,
+      "p95_latency_seconds": 5.4078,
+      "failure_count": 16,
+      "failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "user_input": "挨拶代わりに一度手を振ってくれる？",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "user_input": "うんって感じで首を縦に動かして。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "nod"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "user_input": "前の方を指で示してくれる？",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "user_input": "ちょっと、にこっとして。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "user_input": "目線をこっちにちょうだい。",
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "user_input": "顔をいつもの普通の表情へ戻して。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "user_input": "笑った顔でこちらを見て。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "user_input": "驚いた表情のまま右へ視線を向けて。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "surprised"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "user_input": "悲しい顔で少し下を見て。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "sad"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "down"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "user_input": "表情を普通に戻して待機姿勢にして。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "user_input": "怒った顔をしながら首を横に振って。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "angry"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "user_input": "こっちを見ながら一度手を振って。",
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "user_input": "下は見ず、こっちだけ見て。",
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "user_input": "うなずかないで、首を横に振って。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "actual_calls": []
+        }
+      ],
+      "trace_warning_case_count": 12,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "action": "wave",
+                "evidence": "手を振る"
+              }
+            },
+            {
+              "index": 1,
+              "source": "gaze_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "target": "user",
+                "evidence": "挨拶代わりに"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "首を縦に",
+                "value": "nod"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "action": "point",
+                "evidence": "指で示"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "expression_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "value": "neutral",
+                "evidence": "普通の表情"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "expression_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "value": "sad",
+                "evidence": "悲しい顔"
+              }
+            },
+            {
+              "index": 1,
+              "source": "gaze_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "value": "down",
+                "evidence": "少し下を見て"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "expression_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "少し疲れた",
+                "value": "neutral"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "unsupported_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "type": "other",
+                "value": "neutral"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "action": "shake_head",
+                "evidence": "首を横に振って"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "expression_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "value": "neutral",
+                "evidence": "普通の表情"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "両腕を",
+                "value": "unsupported"
+              }
+            },
+            {
+              "index": 1,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "頭の上まで上げて。",
+                "value": "unsupported"
+              }
+            },
+            {
+              "index": 2,
+              "source": "unsupported_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "evidence": "両腕を頭の上まで上げて。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "カメラを",
+                "frame_type": "unsupported"
+              }
+            },
+            {
+              "index": 1,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "一周回って",
+                "frame_type": "unsupported"
+              }
+            },
+            {
+              "index": 2,
+              "source": "unsupported_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "evidence": "カメラを一周回して。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "warnings": [
+            {
+              "index": 0,
+              "source": "motion_frames",
+              "reasons": [
+                "frame_fields_mismatch"
+              ],
+              "raw_frame": {
+                "evidence": "相手を蹴る",
+                "action_type": "kick"
+              }
+            }
+          ]
+        }
+      ],
+      "fatal_parse_case_count": 21,
+      "fatal_parse_cases": [
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "errors": [
+            "root_fields_mismatch"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "expression_frames_not_array",
+            "gaze_frames_not_array",
+            "motion_frames_not_array",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "errors": [
+            "root_fields_mismatch",
+            "unsupported_frames_not_array"
+          ]
+        }
+      ]
+    }
+  },
+  "trace_attribution": {
+    "fixed_v39_warning_cases": [
+      "v34c_action_none_explicit_none",
+      "v34c_action_none_expression"
+    ],
+    "persistent_warning_cases": [
+      "v34c_action_invalid_camera",
+      "v34c_action_negated_nod_shake"
+    ],
+    "new_warning_cases": [
+      "v34c_action_invalid_arms",
+      "v34c_action_invalid_kick",
+      "v34c_action_multi_sad_down",
+      "v34c_action_negated_angry_neutral",
+      "v34c_action_negated_happy",
+      "v34c_action_none_music",
+      "v34c_action_single_neutral",
+      "v34c_action_single_nod_colloquial",
+      "v34c_action_single_point",
+      "v34c_action_single_wave"
+    ],
+    "action_regressions_from_perfect_v39": [
+      "v34c_action_single_wave",
+      "v34c_action_single_nod_colloquial",
+      "v34c_action_single_point",
+      "v34c_action_single_smile_colloquial",
+      "v34c_action_single_eyes_colloquial",
+      "v34c_action_single_neutral",
+      "v34c_action_multi_happy_user",
+      "v34c_action_multi_surprised_right",
+      "v34c_action_multi_sad_down",
+      "v34c_action_multi_neutral_idle",
+      "v34c_action_multi_angry_shake",
+      "v34c_action_multi_wave_user",
+      "v34c_action_negated_down_user",
+      "v34c_action_negated_nod_shake",
+      "v34c_action_negated_angry_neutral",
+      "v34c_action_negated_point_wave"
+    ]
+  },
+  "candidate_gate": {
+    "passed": false,
+    "checks": {
+      "compiled_call_exact_accuracy": false,
+      "no_action_specificity": true,
+      "required_action_recall": false,
+      "false_action_rate": true,
+      "negation_violation_count": true,
+      "unsupported_execution_count": true,
+      "execution_parse_success_rate": false,
+      "trace_wellformed_rate": false,
+      "accepted_call_anchor_coverage": true,
+      "ungrounded_execution_count": true,
+      "model_passes_per_case": true,
+      "median_latency_seconds": true,
+      "p95_latency_seconds": true
+    },
+    "failed_checks": [
+      "compiled_call_exact_accuracy",
+      "required_action_recall",
+      "execution_parse_success_rate",
+      "trace_wellformed_rate"
+    ]
+  },
+  "development_gate_passed": false,
+  "fresh_holdout_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "decision": "do_not_advance_v40_domain_separated_contract"
+}
