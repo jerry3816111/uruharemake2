@@ -1,0 +1,134 @@
+{
+  "schema": "uruha_relation_bound_event_graph_independent_holdout_closure_v56",
+  "closed_at": "2026-07-16T00:15:00+09:00",
+  "evidence_status": "independent_external_and_frozen_compositional_holdout_completed_and_consumed",
+  "bound_artifacts": {
+    "preregistration": "configs/relation_bound_event_graph_v56_holdout_preregistration.json",
+    "preregistration_sha256": "bad868748983673ee72e77bc3e13816a48a33b3794dcd7c6c0ad8a62f6398959",
+    "raw_report": "reports/relation_bound_event_graph_v56_holdout_raw.json",
+    "raw_report_sha256": "cc1ba6eedc46075f2a6063a47136ae842752dcb0402c1cd141ec3a51411468d3",
+    "analysis_report": "reports/relation_bound_event_graph_v56_holdout_analysis.json",
+    "analysis_report_sha256": "83d48af0f3a1ae528002f695f10a5d9367fb9f9ba7b1d2c13957645d142b0a42",
+    "human_readable_report": "reports/relation_bound_event_graph_v56_holdout_analysis.md",
+    "human_readable_report_sha256": "8ef1aafbc1215a47e3e759361e6ca7fee164797e2daf33d5ccff37609c4c0445"
+  },
+  "freeze_proof": {
+    "runner_commit": "38e75d88cb8c44f856e62599290bab8a714eeccf",
+    "freeze_pr": "https://github.com/jerry3816111/uruharemake2/pull/136",
+    "dataset_frozen_before_inference": true,
+    "gate_frozen_before_inference": true
+  },
+  "frozen_scope": {
+    "case_count": 64,
+    "grounded_target_count": 81,
+    "external_exact_case_count": 32,
+    "controlled_compositional_case_count": 32,
+    "controlled_cases_official_corpus": false,
+    "base_model_pretraining_exclusion_guaranteed": false,
+    "local_model": "qwen3.5:4b",
+    "model_calls": 81,
+    "paid_api_used": false,
+    "shared_fallback_reused_by_v54_and_v56": true,
+    "v54_additional_model_calls": 0,
+    "v56_additional_model_calls": 0
+  },
+  "headline_metrics": {
+    "fresh_v51_model_control": {
+      "commitment": "65/81 (80.25%)",
+      "exact_calls": "51/64 (79.69%)",
+      "false_actions": 7
+    },
+    "v54_matched_control": {
+      "commitment": "73/81 (90.12%)",
+      "exact_calls": "53/64 (82.81%)",
+      "false_actions": 7
+    },
+    "v56_deterministic": {
+      "commitment": "79/81 (97.53%)",
+      "exact_calls": "60/64 (93.75%)",
+      "false_actions": 1
+    },
+    "v56_hybrid": {
+      "commitment": "80/81 (98.77%)",
+      "exact_calls": "60/64 (93.75%)",
+      "false_actions": 1,
+      "requested_precision": "34/35 (97.14%)",
+      "requested_recall": "34/34 (100.00%)"
+    }
+  },
+  "source_results": {
+    "external_exact": {
+      "v56_commitment": "37/37 (100.00%)",
+      "v56_exact_calls": "31/32 (96.88%)",
+      "v56_false_actions": 0
+    },
+    "controlled_compositional": {
+      "v56_commitment": "43/44 (97.73%)",
+      "v56_exact_calls": "29/32 (90.62%)",
+      "v56_false_actions": 1
+    }
+  },
+  "selective_state": {
+    "coverage": "80/81 (98.77%)",
+    "resolved_accuracy": "79/80 (98.75%)",
+    "fallback_count": 1,
+    "fallback_accuracy": "1/1 (100.00%)"
+  },
+  "matched_effect_vs_v54": {
+    "commitment_correct_delta": 7,
+    "exact_call_delta": 7,
+    "false_action_delta": -6,
+    "semantic_fixes": 7,
+    "semantic_regressions": 0,
+    "call_fixes": 7,
+    "call_regressions": 0
+  },
+  "remaining_failures": {
+    "semantic_failure_count": 1,
+    "semantic_failure": {
+      "case_id": "v56h_description_02",
+      "target_id": "gaze.right",
+      "expected": "mentioned",
+      "predicted": "requested",
+      "cause": "The inherited V54 explicit_request_force crossed from the later expression request into an earlier descriptive gaze event even though V56 produced no directive relation for that gaze event."
+    },
+    "compiler_only_failure_count": 3,
+    "compiler_only_failure_case_ids": [
+      "v56h_idle_01",
+      "v56h_idle_04",
+      "v56h_tatoeba_125613"
+    ],
+    "compiler_failure_classes": [
+      "Positive motion.idle directives are suppressed because the V48 compiler reparses surface negation after V56 already resolved a requested idle event.",
+      "A shared directive over left and right gaze is suppressed because V48 treats every same-domain multi-value request as a conflict rather than an ordered action sequence."
+    ],
+    "mixed_semantic_and_compiler_failure_case_ids": [
+      "v56h_description_02"
+    ],
+    "fallback_model_error_count": 0
+  },
+  "gate_results": {
+    "state_component_passed": true,
+    "matched_comparison_passed": true,
+    "end_to_end_passed": false,
+    "failed_end_to_end_checks": [
+      "false_action_count"
+    ]
+  },
+  "decision": "freeze_v56_state_preregister_relation_authorized_compiler_repair",
+  "interpretation": "V56's event-relation representation generalized on this bounded action-perception holdout and improved materially over the matched V54 architecture without a semantic or call regression. It is not end-to-end ready: the frozen V48 compiler discards valid semantic authorization in three cases, and one inherited requested state lacks a supporting V56 directive relation and creates a false action.",
+  "next_experiment": {
+    "name": "relation_authorized_action_compiler",
+    "one_variable_change": "Keep V56 states, dataset, model outputs, candidate grounding, ontology, and scoring frozen; replace only V48 surface-text authorization with compilation from V56 typed event relations plus exact anchor grounding.",
+    "expected_effect": "Compile positive idle requests, preserve intentionally shared or ordered same-domain directives, and reject a requested frame that has no directive relation. The development target is 64/64 exact calls, zero false actions, and no call regression on consumed evidence.",
+    "development_evidence_is_consumed": true,
+    "new_independent_holdout_required_before_shadow": true,
+    "model_size_change_planned": false,
+    "reason_model_size_not_changed": "The only V56 fallback target was correct and none of the remaining failures was attributed to the shared fallback model."
+  },
+  "post_run_tuning_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "broad_human_likeness_claim_authorized": false
+}
