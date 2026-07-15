@@ -1,0 +1,81 @@
+{
+  "schema": "uruha_target_event_map_closure_v51",
+  "closed_at": "2026-07-15T21:07:06+09:00",
+  "evidence_status": "development_only_on_retired_v45_holdout",
+  "bound_artifacts": {
+    "preregistration": "configs/target_event_map_v51_preregistration.json",
+    "preregistration_sha256": "e1522280dfc6ba8c5daae7245a864e4f1fe148d7d112a8197487fe28ea3ca36a",
+    "event_map": "target_event_map_v51.py",
+    "event_map_sha256": "ab44ca41d0a1228d6e527ab96c1f181c8a9f717e282c4ecac60fed09fc6622fb",
+    "runner": "run_target_event_map_v51.py",
+    "runner_sha256": "7f7c7524a2fe2c7b61197619e57c58a6fc5742bdf0e02dbd1bfaf82bde1e1d1a",
+    "analyzer": "analyze_target_event_map_v51.py",
+    "analyzer_sha256": "135e684edbb0afd38c855f9fc31ccc5bd843eb218d505ae59bf5eac6de6ca5ac",
+    "raw_report": "reports/target_event_map_v51_development_raw.json",
+    "raw_report_sha256": "f0d2eeeb2312ab153dea070fe28c628f375c0fc9ea022411c2381055448da3ab",
+    "analysis_report": "reports/target_event_map_v51_development_analysis.json",
+    "analysis_report_sha256": "f105d997f63ef5834940f567bbd18181fd034db0b937ae2dd2297b50d161ee87",
+    "markdown_report": "reports/target_event_map_v51_development_analysis.md",
+    "markdown_report_sha256": "f67dc79ec15ecf9bb0f581265be2958b7c63bfc0896e5dbacfc12dfc2a9b7bd9"
+  },
+  "matched_result": {
+    "control": {
+      "commitment_correct": "50/61",
+      "compiled_call_exact": "42/48",
+      "false_action_count": 2,
+      "no_action_specificity": 0.8947
+    },
+    "target_event_map_candidate": {
+      "commitment_correct": "54/61",
+      "compiled_call_exact": "46/48",
+      "false_action_count": 0,
+      "no_action_specificity": 1.0
+    },
+    "delta": {
+      "commitment_correct_count": 4,
+      "compiled_call_exact_count": 4,
+      "false_action_count": -2,
+      "fixed_semantic_count": 5,
+      "semantic_regression_count": 1,
+      "fixed_call_count": 5,
+      "call_regression_count": 1
+    }
+  },
+  "regression": {
+    "case_id": "v45h_negation_02",
+    "target_id": "gaze.right",
+    "user_input": "左じゃなくて右を見て。",
+    "gold_commitment": "requested",
+    "control": "requested",
+    "candidate": "negated",
+    "observed_representation_issue": "The broad gaze.left grounding anchor spans the later right target text even though V48 correctly assigns the negation marker only to gaze.left. The event map exposes both target_id and broad anchor_text, which can give the 4B model conflicting evidence."
+  },
+  "historical_control_boundary": {
+    "v46_recompiled_with_v48_call_exact": "43/48",
+    "v46_recompiled_with_v48_false_action_count": 1,
+    "v51_new_control_call_exact": "42/48",
+    "v51_new_control_false_action_count": 2,
+    "interpretation": "The V51 matched comparison is internally controlled, but it is not an exact reproduction of the historical V46 output because V51 used a separately frozen seed and context window. Historical and V51 control scores must not be merged as if they were the same run."
+  },
+  "gate_result": {
+    "candidate_absolute_gate_passed": true,
+    "matched_comparison_gate_passed": false,
+    "development_gate_passed": false,
+    "failed_checks": [
+      "semantic_regression_count",
+      "call_regression_count"
+    ]
+  },
+  "decision": "reject_v51_due_to_one_preregistered_regression",
+  "interpretation": "The answer-free event representation produced a large matched development gain and removed both observed false actions, so explicit target-local structure is useful. It still cannot advance because one previously correct contrastive replacement regressed. The problem is now localized to separating a precise target mention span from a broader predicate-grounding span, not to model size alone.",
+  "next_research": {
+    "authorized": true,
+    "scope": "Preregister a separate precise-target-mention representation experiment. Keep the V51 prompt, model, event ordering, taxonomy, and V48 compiler fixed; change only how each grounded occurrence distinguishes its exact target mention from broad predicate evidence.",
+    "v51_prompt_or_result_tuning_authorized": false,
+    "fresh_holdout_authorized": false
+  },
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
