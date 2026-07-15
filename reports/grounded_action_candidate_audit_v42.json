@@ -1,0 +1,1530 @@
+{
+  "schema": "uruha_grounded_action_candidate_audit_v42",
+  "evidence_status": "retired_development_feasibility_audit_no_model_inference",
+  "dataset": "datasets/action_selective_deliberation_v37_development.json",
+  "case_count": 36,
+  "summary": {
+    "supported_expected_target_count": 38,
+    "candidate_target_count": 38,
+    "true_positive_target_count": 38,
+    "missing_target_count": 0,
+    "extra_target_count": 0,
+    "supported_target_recall": 1.0,
+    "candidate_precision": 1.0,
+    "matched_target_evidence_coverage": 0.9737,
+    "case_exact_candidate_set_rate": 1.0,
+    "empty_supported_target_specificity": 1.0,
+    "expected_unsupported_frame_count_out_of_scope": 6
+  },
+  "rows": [
+    {
+      "case_id": "v34c_action_single_wave",
+      "family": "single_explicit_action",
+      "user_input": "挨拶代わりに一度手を振ってくれる？",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_single_nod_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "うんって感じで首を縦に動かして。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "nod"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "うんって感じで",
+              "pattern": "(?:うん|はい)(?:って|という)?(?:感じ|ふう|風|みたい)(?:で|に)?"
+            },
+            {
+              "start": 7,
+              "end": 10,
+              "text": "首を縦",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "nod"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "nod"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_single_point",
+      "family": "single_explicit_action",
+      "user_input": "前の方を指で示してくれる？",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "point"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 4,
+              "end": 9,
+              "text": "指で示して",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "point"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "point"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_single_smile_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "ちょっと、にこっとして。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "happy"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 7,
+              "text": "にこ",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "目線をこっちにちょうだい。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "user"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "目線をこっち",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_single_neutral",
+      "family": "single_explicit_action",
+      "user_input": "顔をいつもの普通の表情へ戻して。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "neutral"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "顔をいつもの普通",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            },
+            {
+              "start": 2,
+              "end": 11,
+              "text": "いつもの普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 9,
+              "end": 13,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "neutral"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "neutral"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_happy_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "笑った顔でこちらを見て。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "happy"
+        },
+        {
+          "domain": "gaze",
+          "value": "user"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "笑った",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 10,
+              "text": "こちらを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "happy"
+        ],
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "happy"
+        ],
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_surprised_right",
+      "family": "multiple_compatible_actions",
+      "user_input": "驚いた表情のまま右へ視線を向けて。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "surprised"
+        },
+        {
+          "domain": "gaze",
+          "value": "right"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "surprised",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "驚",
+              "pattern": "(?:驚|びっくり)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 14,
+              "text": "右へ視線を向",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "surprised"
+        ],
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "surprised"
+        ],
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_sad_down",
+      "family": "multiple_compatible_actions",
+      "user_input": "悲しい顔で少し下を見て。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "sad"
+        },
+        {
+          "domain": "gaze",
+          "value": "down"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "sad",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "悲し",
+              "pattern": "(?:悲し|泣き顔)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 7,
+              "end": 10,
+              "text": "下を見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "sad"
+        ],
+        [
+          "gaze",
+          "down"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "sad"
+        ],
+        [
+          "gaze",
+          "down"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_neutral_idle",
+      "family": "multiple_compatible_actions",
+      "user_input": "表情を普通に戻して待機姿勢にして。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "neutral"
+        },
+        {
+          "domain": "motion",
+          "value": "idle"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "表情を普通に戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        },
+        {
+          "domain": "motion",
+          "value": "idle",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 11,
+              "text": "待機",
+              "pattern": "(?:待機|アイドル|じっとして|動かずにいて|動かないでいて|そのままの姿勢)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "neutral"
+        ],
+        [
+          "motion",
+          "idle"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "neutral"
+        ],
+        [
+          "motion",
+          "idle"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_angry_shake",
+      "family": "multiple_compatible_actions",
+      "user_input": "怒った顔をしながら首を横に振って。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "angry"
+        },
+        {
+          "domain": "motion",
+          "value": "shake_head"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 12,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "angry"
+        ],
+        [
+          "motion",
+          "shake_head"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "angry"
+        ],
+        [
+          "motion",
+          "shake_head"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_multi_wave_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "こっちを見ながら一度手を振って。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "user"
+        },
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 5,
+              "text": "こっちを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        },
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "user"
+        ],
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "user"
+        ],
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_gesture",
+      "family": "no_action_conversation",
+      "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_expression",
+      "family": "no_action_conversation",
+      "user_input": "今日は表情の変化について話したい。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_direction",
+      "family": "no_action_conversation",
+      "user_input": "左右を見る癖って性格に関係あるのかな。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "left"
+        },
+        {
+          "domain": "gaze",
+          "value": "right"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 4,
+              "text": "左右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 1,
+              "end": 4,
+              "text": "右を見",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "left"
+        ],
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "left"
+        ],
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_music",
+      "family": "no_action_conversation",
+      "user_input": "少し疲れたから、静かな曲の話をしよう。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_hypothetical",
+      "family": "no_action_conversation",
+      "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "happy"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 4,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_none_explicit_none",
+      "family": "no_action_conversation",
+      "user_input": "動作は頼まないから、そのまま雑談しよう。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_wave",
+      "family": "negated_action",
+      "user_input": "今は手を振るのをやめて。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_happy",
+      "family": "negated_action",
+      "user_input": "笑顔には変えないで。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "happy"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_down_user",
+      "family": "negated_action",
+      "user_input": "下は見ず、こっちだけ見て。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "down"
+        },
+        {
+          "domain": "gaze",
+          "value": "user"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "下は見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 11,
+              "text": "こっちだけ見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "down"
+        ],
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "down"
+        ],
+        [
+          "gaze",
+          "user"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_nod_shake",
+      "family": "negated_action",
+      "user_input": "うなずかないで、首を横に振って。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "nod"
+        },
+        {
+          "domain": "motion",
+          "value": "shake_head"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        },
+        {
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "nod"
+        ],
+        [
+          "motion",
+          "shake_head"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "nod"
+        ],
+        [
+          "motion",
+          "shake_head"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_angry_neutral",
+      "family": "negated_action",
+      "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "angry"
+        },
+        {
+          "domain": "expression",
+          "value": "neutral"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 14,
+              "text": "普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 12,
+              "end": 16,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "angry"
+        ],
+        [
+          "expression",
+          "neutral"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "angry"
+        ],
+        [
+          "expression",
+          "neutral"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_negated_point_wave",
+      "family": "negated_action",
+      "user_input": "指差しはなしで、一回手を振って。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "point"
+        },
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "指差",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        },
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "point"
+        ],
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "point"
+        ],
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_wave",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "手を振るかは、もう少し後で決める。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "wave"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "wave"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_smile",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "笑顔にするか、まだ迷ってる。",
+      "expected_supported_targets": [
+        {
+          "domain": "expression",
+          "value": "happy"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "expression",
+          "happy"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_direction",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "左を見るか右を見るかは保留。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "left"
+        },
+        {
+          "domain": "gaze",
+          "value": "right"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "左を見るか右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 6,
+              "text": "見るか右",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "left"
+        ],
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "left"
+        ]
+      ],
+      "evidence_missing_targets": [
+        [
+          "gaze",
+          "right"
+        ]
+      ],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_cancel",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "うなずいて。いや、今の頼みは取り消し。",
+      "expected_supported_targets": [
+        {
+          "domain": "motion",
+          "value": "nod"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "motion",
+          "nod"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "motion",
+          "nod"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_if",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "もし下を向いてって頼んだら変かな。",
+      "expected_supported_targets": [
+        {
+          "domain": "gaze",
+          "value": "down"
+        }
+      ],
+      "candidate_targets": [
+        {
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "下を向",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ],
+      "true_positive_targets": [
+        [
+          "gaze",
+          "down"
+        ]
+      ],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [
+        [
+          "gaze",
+          "down"
+        ]
+      ],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_ambiguous_expression",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "表情は今ここで決めなくていいよ。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 0
+    },
+    {
+      "case_id": "v34c_action_invalid_crouch",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "その場でしゃがんで。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    },
+    {
+      "case_id": "v34c_action_invalid_arms",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "両腕を頭の上まで上げて。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    },
+    {
+      "case_id": "v34c_action_invalid_screen",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "画面を閉じて。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    },
+    {
+      "case_id": "v34c_action_invalid_mail",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "今すぐメールを送って。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    },
+    {
+      "case_id": "v34c_action_invalid_camera",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "カメラを一周回して。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    },
+    {
+      "case_id": "v34c_action_invalid_kick",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "相手を蹴る動作をして。",
+      "expected_supported_targets": [],
+      "candidate_targets": [],
+      "true_positive_targets": [],
+      "missing_targets": [],
+      "extra_targets": [],
+      "evidence_covered_targets": [],
+      "evidence_missing_targets": [],
+      "expected_unsupported_frame_count": 1
+    }
+  ]
+}
