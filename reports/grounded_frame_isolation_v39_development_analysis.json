@@ -1,0 +1,305 @@
+{
+  "schema": "uruha_grounded_frame_isolation_development_analysis_v39",
+  "evidence_status": "post_failure_development_replay_on_frozen_v37_primary_outputs",
+  "model_inference_performed": false,
+  "conditions": {
+    "full_v38_control": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.9722,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.9545,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 0.9167,
+      "trace_wellformed_rate": 0.8889,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.5316,
+      "failure_count": 1,
+      "failures": [
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "user_input": "うんって感じで首を縦に動かして。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "nod"
+              }
+            }
+          ],
+          "actual_calls": []
+        }
+      ],
+      "trace_warning_case_count": 1,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            "duplicate_frame_target"
+          ]
+        }
+      ]
+    },
+    "colloquial_anchor_only": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 0.9167,
+      "trace_wellformed_rate": 0.8889,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.5316,
+      "failure_count": 0,
+      "failures": [],
+      "trace_warning_case_count": 1,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            "duplicate_frame_target"
+          ]
+        }
+      ]
+    },
+    "frame_isolation_only": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.9722,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.9545,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.8889,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.5316,
+      "failure_count": 1,
+      "failures": [
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "user_input": "うんって感じで首を縦に動かして。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "nod"
+              }
+            }
+          ],
+          "actual_calls": []
+        }
+      ],
+      "trace_warning_case_count": 4,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "invalid_domain"
+              ],
+              "raw_frame": {
+                "domain": "expression | motion | gaze | other",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "evidence_not_exact_input_substring"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "カメラを一周回って"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "full_v39_candidate": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.8889,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "model_passes_per_case": 1.0,
+      "median_latency_seconds": 3.5316,
+      "failure_count": 0,
+      "failures": [],
+      "trace_warning_case_count": 4,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "invalid_domain"
+              ],
+              "raw_frame": {
+                "domain": "expression | motion | gaze | other",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "evidence_not_exact_input_substring"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "カメラを一周回って"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "causal_attribution": {
+    "colloquial_anchor_only": {
+      "fixed_control_failures": [
+        "v34c_action_single_nod_colloquial"
+      ],
+      "regressed_control_passes": []
+    },
+    "frame_isolation_only": {
+      "fixed_control_failures": [],
+      "regressed_control_passes": []
+    },
+    "full_v39_candidate": {
+      "fixed_control_failures": [
+        "v34c_action_single_nod_colloquial"
+      ],
+      "regressed_control_passes": []
+    }
+  },
+  "candidate_gate": {
+    "passed": false,
+    "checks": {
+      "compiled_call_exact_accuracy": true,
+      "no_action_specificity": true,
+      "required_action_recall": true,
+      "false_action_rate": true,
+      "negation_violation_count": true,
+      "unsupported_execution_count": true,
+      "execution_parse_success_rate": true,
+      "trace_wellformed_rate": false,
+      "accepted_call_anchor_coverage": true,
+      "ungrounded_execution_count": true,
+      "model_passes_per_case": true,
+      "median_latency_seconds": true
+    },
+    "failed_checks": [
+      "trace_wellformed_rate"
+    ]
+  },
+  "development_gate_passed": false,
+  "fresh_holdout_authorized": false,
+  "runtime_change_authorized": false,
+  "decision": "do_not_advance_v39_grounded_frame_isolation"
+}
