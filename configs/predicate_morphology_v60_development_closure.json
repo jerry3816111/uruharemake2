@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_predicate_morphology_development_closure_v60",
+  "closed_at": "2026-07-16T02:54:39+09:00",
+  "status": "passed_exact_preregistered_zero_model_replay",
+  "frozen_run_commit": "f762c916940266c9eedc12b9530d4dcd12649f84",
+  "artifact_bindings": {
+    "raw": "reports/predicate_morphology_v60_development_raw.json",
+    "raw_sha256": "abeb3cbd28b4a1b23d87410f98fe6da71855a8f9e7276622d008ce106c61e9a2",
+    "analysis": "reports/predicate_morphology_v60_development_analysis.json",
+    "analysis_sha256": "ed85fb29e976e38dda7a745ac47e7f6e0e3cc4010861a2739e2f8c81abc70aae",
+    "markdown": "reports/predicate_morphology_v60_development_analysis.md",
+    "markdown_sha256": "920e45936348175ffab83e66fe404fc2f3bb9d70d036b083a564ea0ae837b4b8",
+    "replay_harness_lock": "configs/predicate_morphology_v60_replay_harness_lock.json",
+    "replay_harness_lock_sha256": "a4bde6277aeb5039612239c83ade6cf35567e489d0f27ea2a0407d1627f6017c"
+  },
+  "execution_accounting": {
+    "target_count": 73,
+    "case_count": 72,
+    "model_calls": 0,
+    "paid_api_used": false,
+    "physical_vrm_actions_executed": 0
+  },
+  "control_result": {
+    "condition": "V59 state with frozen V57 compiler",
+    "state_correct": 67,
+    "state_total": 73,
+    "ordered_exact": 68,
+    "case_total": 72,
+    "false_action_cases": 4,
+    "required_call_recall": 1.0
+  },
+  "candidate_result": {
+    "condition": "V60 predicate morphology with frozen V57 compiler",
+    "state_correct": 71,
+    "state_total": 73,
+    "ordered_exact": 72,
+    "case_total": 72,
+    "false_action_cases": 0,
+    "required_call_recall": 1.0,
+    "direct_focus_request_detected": 14,
+    "direct_focus_request_total": 14,
+    "role_slots_correct": 280,
+    "role_slots_total": 280
+  },
+  "matched_effect": {
+    "state_fixes": 4,
+    "state_regressions": 0,
+    "case_fixes": 4,
+    "case_regressions": 0,
+    "false_action_reduction": 4
+  },
+  "prespecified_residuals": [
+    {
+      "case_id": "v59h_tatoeba_13066287",
+      "cause": "compositional target-local negation remains outside predicate-morphology scope",
+      "actual": "negated",
+      "expected": "mentioned"
+    },
+    {
+      "case_id": "v59h_third_party_habitual_description_11",
+      "cause": "the frozen shared model fallback labels a habitual nod as negated",
+      "actual": "negated",
+      "expected": "mentioned"
+    }
+  ],
+  "decision": "authorize_second_fresh_v60_independent_holdout",
+  "next_confirmation_requirements": [
+    "Use sentences and provenance not present in the V59 holdout or V60 development probes.",
+    "Include completed benefactive, current directive, explicit third-party polite benefactive, omitted-subject request, negative, embedded-speech, and full-predicate contrasts.",
+    "Freeze construction audit, gates, runner, analyzer, and hashes before any V60 result is produced.",
+    "Reuse one shared local-model fallback per target and the same V57 compiler for both matched conditions."
+  ],
+  "evidence_boundary": "This is consumed-data development evidence. It verifies the prespecified deterministic mechanism on the old holdout but does not establish fresh generalization, runtime safety, complete right-brain quality, or human-like cognition.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
