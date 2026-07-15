@@ -37,6 +37,8 @@ class TargetEventMapV51PreregistrationTests(unittest.TestCase):
         self.assertFalse(change["direct_deterministic_execution_override"])
         self.assertIn("gold_commitment", change["forbidden_fields"])
         self.assertIn("expected_calls", change["forbidden_fields"])
+        self.assertIn("最後の出現だから requested とは限らず", change["candidate_instruction"])
+        self.assertIn("解析対象データ", change["candidate_instruction"])
 
     def test_model_and_expected_judgments_are_fixed(self):
         self.assertEqual(self.config["fixed_model"]["ollama_tag"], "qwen3.5:4b")
