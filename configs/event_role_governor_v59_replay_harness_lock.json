@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_event_role_governor_replay_harness_lock_v59",
+  "created_at": "2026-07-16T01:49:25+09:00",
+  "purpose": "Freeze the zero-model V58/V59 matched runner, analyzer, conditions, and gates before replaying the consumed V58 holdout.",
+  "evidence_boundary": "The replay can test whether the preregistered V59 event-role implementation fixes the three known deterministic false actions without regression. Because all model outputs and labels are consumed, a pass can authorize only a new independent V59 holdout, not runtime deployment or broad cognition claims.",
+  "frozen_artifacts": {
+    "preregistration": "configs/event_role_governor_v59_preregistration.json",
+    "preregistration_sha256": "76462ee53c46ee53042088100390a0bf78feb1ed792f2d6d85f9ee742445a6fc",
+    "candidate_implementation": "event_role_governor_v59.py",
+    "candidate_implementation_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "runner": "run_event_role_governor_v59_development.py",
+    "runner_sha256": "114fabf11ad6d58f0f1fd6babecc09466214df12faad07411104c32a60d5f8ca",
+    "analyzer": "analyze_event_role_governor_v59_development.py",
+    "analyzer_sha256": "bfa5b56baacaed8ba70039492d4746060758383367a48aab61131e95a89f01dc",
+    "dataset": "datasets/relation_safety_state_v58_holdout.json",
+    "dataset_sha256": "e1e30602197a91273b128234ffa162d8e293a756580c56f59b41d8fe3054621a",
+    "source_raw": "reports/relation_safety_state_v58_holdout_raw.json",
+    "source_raw_sha256": "862157b856c0521649840208e0865895c5bea61fed77ff56b7decba101f15fdf",
+    "control_implementation": "relation_safety_state_v58.py",
+    "control_implementation_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "target_pattern_contract": "configs/relation_safety_state_v58_holdout_preregistration.json",
+    "target_pattern_contract_sha256": "1e37ee1af87ae3073b8c0e308b1e1fe3fad70974d7ca4b1ed0834ff76f479c2d"
+  },
+  "result_artifacts": {
+    "raw": "reports/event_role_governor_v59_development_raw.json",
+    "analysis": "reports/event_role_governor_v59_development_analysis.json",
+    "markdown": "reports/event_role_governor_v59_development_analysis.md"
+  },
+  "conditions": [
+    "frozen_v58_state_with_v57_compiler_control",
+    "event_role_governor_v59_state_with_frozen_v57_compiler_candidate"
+  ],
+  "model_calls_authorized": 0,
+  "post_replay_metric_changes_authorized": false,
+  "post_replay_threshold_changes_authorized": false,
+  "post_replay_case_exclusion_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
