@@ -1,0 +1,125 @@
+{
+  "schema": "uruha_precise_target_mentions_fresh_holdout_closure_v52",
+  "closed_at": "2026-07-15T22:28:00+09:00",
+  "evidence_status": "project_fresh_external_and_controlled_holdout_failed",
+  "bound_artifacts": {
+    "preregistration": "configs/precise_target_mentions_v52_holdout_preregistration.json",
+    "preregistration_sha256": "19660e04d0a8d21c40c668a762d7e62f535db84b9ff0e0022bef7e1bb64e22c5",
+    "dataset": "datasets/precise_target_mentions_v52_holdout.json",
+    "dataset_sha256": "175915b4cdb99cb24d66049653d5a32d637a5e2f28218b19b14ecc1f009c22f4",
+    "external_source_snapshot": "datasets/sources/tatoeba_jpn_v52_selected.tsv",
+    "external_source_snapshot_sha256": "175137a22cb2292810ec0c0f4c757cfd1117a5a8b0821c301020c0e2794c8207",
+    "raw_report": "reports/precise_target_mentions_v52_holdout_raw.json",
+    "raw_report_sha256": "060ed8e3d4cb055009338c7d17ef2a2cb7057c185d94b090ecaede7ab4b5bc3d",
+    "analysis_report": "reports/precise_target_mentions_v52_holdout_analysis.json",
+    "analysis_report_sha256": "a1f9cbd4cf16772227adf80687d37a1fc26ae4a99e504889097d6fc9ec106182",
+    "markdown_report": "reports/precise_target_mentions_v52_holdout_analysis.md",
+    "markdown_report_sha256": "8ecce40ed456066d8a0e15ae51aae612e134a1cda636c3fe04a7c1856b59bc48",
+    "conclusion": "reports/precise_target_mentions_v52_holdout_conclusion.md",
+    "conclusion_sha256": "fbd337db5eff8e02fc344219b40aee81312f7d6207a07b02e40fa8f8a6898cca"
+  },
+  "frozen_scope": {
+    "case_count": 64,
+    "grounded_target_count": 85,
+    "external_exact_case_count": 24,
+    "controlled_authored_case_count": 40,
+    "judgment_count": 170,
+    "construction_gate_passed": true,
+    "representation_gate_passed": true,
+    "model": "qwen3.5:4b",
+    "paid_api": false,
+    "base_model_pretraining_exclusion_guaranteed": false
+  },
+  "overall_result": {
+    "v51_event_map_control": {
+      "commitment_correct": "67/85",
+      "commitment_accuracy": 0.7882,
+      "compiled_call_exact": "56/64",
+      "compiled_call_exact_accuracy": 0.875,
+      "false_action_count": 2,
+      "no_action_specificity": 0.9394
+    },
+    "precise_target_mentions_candidate": {
+      "commitment_correct": "66/85",
+      "commitment_accuracy": 0.7765,
+      "compiled_call_exact": "54/64",
+      "compiled_call_exact_accuracy": 0.8438,
+      "false_action_count": 3,
+      "no_action_specificity": 0.9091
+    },
+    "candidate_delta": {
+      "commitment_correct_count": -1,
+      "compiled_call_exact_count": -2,
+      "false_action_count": 1,
+      "fixed_semantic_count": 3,
+      "semantic_regression_count": 4,
+      "fixed_call_count": 0,
+      "call_regression_count": 2
+    },
+    "paired_target_mcnemar_two_sided_exact_p": 1.0
+  },
+  "subgroup_result": {
+    "external_exact": {
+      "control_compiled_call_exact": "22/24",
+      "candidate_compiled_call_exact": "21/24",
+      "control_false_action_count": 1,
+      "candidate_false_action_count": 2
+    },
+    "controlled_authored": {
+      "control_compiled_call_exact": "34/40",
+      "candidate_compiled_call_exact": "33/40"
+    },
+    "controlled_cross_target_precision": {
+      "control_compiled_call_exact": "4/5",
+      "candidate_compiled_call_exact": "3/5",
+      "candidate_call_delta": -1
+    }
+  },
+  "candidate_fixes": [
+    "v52x_correction_03: motion.nod",
+    "v52x_mention_03: motion.nod",
+    "v52x_multi_03: motion.nod"
+  ],
+  "candidate_regressions": [
+    "v52x_injection_02: motion.wave",
+    "v52x_mention_05: motion.shake_head",
+    "v52x_precision_04: motion.nod",
+    "v52x_tatoeba_11027985: gaze.user"
+  ],
+  "new_external_false_action": {
+    "case_id": "v52x_tatoeba_11027985",
+    "user_input": "犬が遊びたいオーラ全開でこっちを見てる。",
+    "expected": "mentioned and no call",
+    "v51_control": "mentioned and no call",
+    "v52_candidate": "requested and set_gaze(user)"
+  },
+  "gate_result": {
+    "candidate_absolute_gate_passed": false,
+    "subgroup_gate_passed": false,
+    "matched_comparison_gate_passed": false,
+    "fresh_holdout_gate_passed": false
+  },
+  "decision": "reject_v52_due_to_fresh_regression_preregister_state_machine",
+  "interpretation": "V52's development-only one-call gain did not generalize. On frozen project-fresh data it reduced exact calls, increased false actions, and regressed the prespecified cross-target family. Exact target mentions remain useful as auditable perception data, but the 4B model cannot be trusted to infer all six discourse states from this prompt representation.",
+  "next_architecture": {
+    "name": "explicit_per_target_discourse_state_machine_with_selective_model_fallback",
+    "deterministic_states": [
+      "quoted_or_descriptive_mention",
+      "question_without_action_request",
+      "explicit_negation",
+      "same_target_cancellation",
+      "cross_target_replacement",
+      "conditional_hypothesis",
+      "pending_choice",
+      "positive_current_request"
+    ],
+    "model_role": "Only unresolved cases may reach the model. A model result cannot bypass the deterministic compiler or directly actuate VRM output.",
+    "frozen_holdout_may_be_used_for_tuning": false,
+    "new_independent_holdout_required": true
+  },
+  "fresh_project_generalization_claim_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
