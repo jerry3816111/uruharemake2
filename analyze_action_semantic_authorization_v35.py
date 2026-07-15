@@ -225,7 +225,7 @@ def analyze(raw_path=DEFAULT_RAW):
     return {
         "schema": "uruha_action_semantic_authorization_development_analysis_v35",
         "evidence_status": "development_only_not_confirmation",
-        "source_report": str(Path(raw_path).relative_to(ROOT)),
+        "source_report": str(Path(raw_path).resolve().relative_to(ROOT)),
         "baselines": baselines,
         "candidates": candidates,
         "selected_candidate": selected,
