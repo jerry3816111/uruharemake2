@@ -27,6 +27,7 @@ class GroundedCommitmentClassifierV42PreregistrationTests(unittest.TestCase):
             ("fixed_development_dataset", "fixed_development_dataset_sha256"),
             ("fixed_ontology_source", "fixed_ontology_source_sha256"),
             ("fixed_ontology_config", "fixed_ontology_config_sha256"),
+            ("fixed_v39_primary_control_source", "fixed_v39_primary_control_sha256"),
         ):
             self.assertEqual(_sha256(ROOT / scope[source_key]), scope[hash_key])
 
@@ -37,6 +38,7 @@ class GroundedCommitmentClassifierV42PreregistrationTests(unittest.TestCase):
         self.assertIn("gold commitment", unit["gold_exclusion"])
         self.assertIn("benchmark identity", unit["gold_exclusion"])
         self.assertFalse(unit["examples_in_prompt"])
+        self.assertIn("fail closed", unit["case_failure_rule"])
 
     def test_unsupported_detection_is_explicitly_separate(self):
         audit = self.config["feasibility_audit"]

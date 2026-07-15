@@ -55,6 +55,8 @@
     "fixed_ontology_source_sha256": "84ecdda08440e018aaf1aa8861dae5ae888d396e6e0d23f8211794c7d335c09c",
     "fixed_ontology_config": "configs/grounded_frame_isolation_v39_preregistration.json",
     "fixed_ontology_config_sha256": "6137742d5f69cc30426e1aef3de55af78f039a312156dbef0c1cbc0db7b31c36",
+    "fixed_v39_primary_control_source": "reports/action_selective_deliberation_v37_development_raw.json",
+    "fixed_v39_primary_control_sha256": "8cd0d189bad860c03d1084e113adf608017047579ff6852db578a0c108c8ecba",
     "development_status": "retired_and_already_observed",
     "development_results_cannot_authorize_runtime": true
   },
@@ -79,6 +81,7 @@
     "final_commitment_rule": "Classify the final status of the target after reading the entire utterance, including corrections and cancellations.",
     "evidence_rule": "Choose one index from the supplied exact anchor spans; the model never rewrites evidence text.",
     "no_candidate_rule": "If the ontology grounds no supported target, make no classifier call and propose no supported action.",
+    "case_failure_rule": "If any grounded target judgment in one utterance is unparseable, fail closed for the entire utterance and propose no supported action.",
     "gold_exclusion": [
       "gold commitment",
       "gold frames",
