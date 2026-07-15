@@ -1,0 +1,112 @@
+{
+  "schema": "uruha_mention_bound_discourse_operators_development_preregistration_v55",
+  "created_at": "2026-07-15T23:45:00+09:00",
+  "research_question": "On consumed V54 evidence, can binding pending, hypothetical, request, correction, finite-assertion, and execution-prohibition operators to the target mention or clause fix the attributed semantic errors without changing any previously correct target?",
+  "architecture_change": "V54 used several sentence-wide lexical decisions. V55 keeps V54 frozen, then adds typed operators bound to the focus target's clause/event: local request force, local finite assertion, local pending/hypothetical scope, quoted-target execution prohibition, and correction to a later requested action even across domains.",
+  "human_cognitive_rationale": "Humans do not normally apply every uncertainty word or request ending in a sentence to every mentioned action. The intervention represents which event an operator modifies before selecting a commitment, rather than asking a larger model to reinterpret the whole sentence.",
+  "evidence_boundary": "This is development replay on the already consumed independent V54 holdout with frozen V51 outputs. It can reject V55 or authorize construction of a new holdout, but cannot establish fresh generalization or runtime readiness.",
+  "frozen_inputs": {
+    "implementation": "mention_bound_discourse_operators_v55.py",
+    "implementation_sha256": "7d1d11ba16b7ca3ae365f41def7a6d6efd750e5ec0ddbb5d73548facd6553114",
+    "runner": "run_mention_bound_discourse_operators_v55.py",
+    "runner_sha256": "52ffb9c64c648730e3397c91358ddd75f4b9c84878698e0c8ee546eb247fdf5b",
+    "analyzer": "analyze_mention_bound_discourse_operators_v55.py",
+    "analyzer_sha256": "c702a45426838d8f0555639d2bb0ac94b9a8cc686ad0f4f945666715991d6aa6",
+    "dataset": "datasets/metalinguistic_nonrequest_v54_holdout.json",
+    "dataset_sha256": "a7fa415fdafed701b161085095ce0d2579d29a8773518a91140e5782d8e41830",
+    "v54_raw": "reports/metalinguistic_nonrequest_v54_holdout_raw.json",
+    "v54_raw_sha256": "dde72fcc8fe4d3c443b9c87616e0d471d321eed61d89b8a4f8fe6763e6060ba8",
+    "v54_analysis": "reports/metalinguistic_nonrequest_v54_holdout_analysis.json",
+    "v54_analysis_sha256": "2f636277e8c04580c2ff20f49c90708d83abf8908a1beb3d161a0ff01db3a113",
+    "v54_closure": "configs/metalinguistic_nonrequest_v54_holdout_closure.json",
+    "v54_closure_sha256": "3d56a3e8cebc6d195a3948b572796d26ea1fe3dc4bda2d4706508475fb46ff83",
+    "v54_implementation": "metalinguistic_nonrequest_v54.py",
+    "v54_implementation_sha256": "9e73fde855db81fef51afb3aca8c6cac241e403345f2b10536cc9209689ebc2b",
+    "v53_implementation": "selective_discourse_state_v53.py",
+    "v53_implementation_sha256": "cd5fe6038af25c01585491c88bfa3f2d933ec28ae22fe10776605a1475dcba2b",
+    "v52_config": "configs/precise_target_mentions_v52_preregistration.json",
+    "v52_config_sha256": "585252540943b82a635dbb185434928722d37447b4b63e079669e5268082b533",
+    "case_count": 64,
+    "grounded_target_count": 76,
+    "frozen_v54_correct_target_count": 70,
+    "frozen_v54_exact_call_count": 60
+  },
+  "conditions": [
+    "frozen_v54_hybrid_control",
+    "v55_deterministic_operator_only",
+    "v55_selective_operator_with_frozen_v51_fallback"
+  ],
+  "model_calls_authorized": false,
+  "target_mention_patterns": {
+    "expression.angry": "(?:険しい顔|怒)",
+    "expression.happy": "(?:笑顔|微笑|にこ|笑)",
+    "expression.neutral": "(?:ニュートラル|いつも通り|いつもの|無表情|普通|標準|真顔|元)",
+    "expression.sad": "(?:泣き顔|悲し)",
+    "expression.surprised": "(?:びっくり|驚)",
+    "gaze.down": "下",
+    "gaze.left": "左",
+    "gaze.right": "右",
+    "gaze.user": "(?:会話相手|こちら|こっち|正面|カメラ|目線|私|俺|僕|目)",
+    "motion.idle": "(?:そのままの姿勢|動かない|動かず|じっと|アイドル|待機)",
+    "motion.nod": "(?:うなず|頷|首[^、。！？!?]{0,8}縦|うん|はい)",
+    "motion.point": "(?:指差|指)",
+    "motion.shake_head": "(?:頭[^、。！？!?]{0,8}左右|首[^、。！？!?]{0,8}横|いやいや|違うって|かぶり)",
+    "motion.wave": "手[^、。！？!?]{0,8}振"
+  },
+  "targeted_development_failures": [
+    {
+      "case_id": "v54h_tatoeba_12574337",
+      "target_id": "motion.point",
+      "failure_class": "pending_scope_leakage"
+    },
+    {
+      "case_id": "v54h_tatoeba_13056462",
+      "target_id": "expression.neutral",
+      "failure_class": "request_force_leakage"
+    },
+    {
+      "case_id": "v54h_meta_04",
+      "target_id": "motion.wave",
+      "failure_class": "execution_prohibition_paraphrase"
+    },
+    {
+      "case_id": "v54h_mixed_04",
+      "target_id": "gaze.right",
+      "failure_class": "cross_domain_correction"
+    },
+    {
+      "case_id": "v54h_tatoeba_148428",
+      "target_id": "motion.shake_head",
+      "failure_class": "unresolved_finite_assertion"
+    },
+    {
+      "case_id": "v54h_tatoeba_13492141",
+      "target_id": "motion.nod",
+      "failure_class": "unresolved_finite_assertion"
+    }
+  ],
+  "development_gates": {
+    "coverage_at_least": 0.95,
+    "resolved_accuracy_at_least": 0.98,
+    "hybrid_commitment_accuracy_at_least": 0.98,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall": 1.0,
+    "compiled_call_exact_accuracy_at_least": 0.9688,
+    "no_action_specificity": 1.0,
+    "false_action_count": 0,
+    "targeted_correct_count": 6,
+    "targeted_fixed_count_at_least": 6,
+    "commitment_correct_count_delta_at_least": 6,
+    "semantic_regression_count": 0,
+    "compiled_call_exact_count_delta_at_least": 2,
+    "call_regression_count": 0
+  },
+  "decision_rule": {
+    "pass": "Only if every gate passes. A pass authorizes a new independent V55 holdout and separate compiler-repair design, not runtime or physical execution.",
+    "semantic_regression": "Reject V55 immediately; do not trade aggregate gain for a previously correct semantic regression.",
+    "other_failure": "Reject V55 under this preregistration and do not tune it on the consumed V54 data."
+  },
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
