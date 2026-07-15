@@ -1,0 +1,118 @@
+{
+  "schema": "uruha_commitment_model_capacity_preregistration_v46",
+  "created_at": "2026-07-15T17:28:00+09:00",
+  "research_question": "Does a smaller or larger locally runnable model execute the same narrow commitment-classification contract more safely and accurately than qwen3.5:4b, without changing the prompt, carrier, candidate grounder, compiler, or data?",
+  "evidence_boundary": "This is a development-only operational model comparison on the consumed V45 holdout, which is now retired into development data. It cannot provide a new holdout or generalization claim. Model family and quantization differ, so the result cannot be attributed to parameter count alone.",
+  "frozen_retired_development_inputs": {
+    "v45_closure": "configs/discourse_state_perception_v45_holdout_closure.json",
+    "v45_closure_sha256": "0e49eeb193ef10b8424fc480b2889d57167ead9fe7817835affdd8f6b95c6160",
+    "dataset": "datasets/discourse_state_perception_v45_holdout.json",
+    "dataset_sha256": "a626da4c44181cd5dc0891c28ee4204ab9082d1009fa0df795de60f505363cbf",
+    "candidate_audit": "reports/discourse_state_perception_v45_holdout_audit.json",
+    "candidate_audit_sha256": "b35afbe12472fe9798d61b5def06d5ce105a0200443fc116063bc273afa29f1a",
+    "v45_analysis": "reports/discourse_state_perception_v45_holdout_analysis.json",
+    "v45_analysis_sha256": "11d8f5743e95f4cfc1e2af14b51524084b2198261c6bf29e193a6279da996a16",
+    "v45_config": "configs/discourse_state_perception_v45_preregistration.json",
+    "v45_config_sha256": "a0b0df8f7af2705c1327586cdf6fc02c4358b0d7b105777b68c485f8303b8881",
+    "v44_lock": "configs/commitment_target_isolation_v44_semantic_lock.json",
+    "v44_lock_sha256": "e1b9ccda2f6c70e4a8f41190c9e30a2c3164b55ab91666dd157cbe512744db02",
+    "v45_prompt_builder": "run_discourse_state_perception_v45.py",
+    "v45_prompt_builder_sha256": "d76d798ab16ab384be2ab83eaf380e8697e3329bf38adf14a421ac187258538b",
+    "case_count": 48,
+    "candidate_target_count": 63,
+    "supported_target_count": 61
+  },
+  "model_conditions": [
+    {
+      "condition": "qwen35_0_8b",
+      "ollama_tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "parameter_size": "873.44M",
+      "quantization": "Q8_0",
+      "blob_bytes": 1036046583
+    },
+    {
+      "condition": "qwen35_2b",
+      "ollama_tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "parameter_size": "2.3B",
+      "quantization": "Q8_0",
+      "blob_bytes": 2741192820
+    },
+    {
+      "condition": "qwen35_4b_reference",
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "parameter_size": "4.7B",
+      "quantization": "Q4_K_M",
+      "blob_bytes": 3389983735
+    },
+    {
+      "condition": "qwen35_9b",
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "parameter_size": "9.7B",
+      "quantization": "Q4_K_M",
+      "blob_bytes": 6594474711
+    },
+    {
+      "condition": "qwen25_7b_historical",
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "parameter_size": "7.6B",
+      "quantization": "Q4_K_M",
+      "blob_bytes": 4683087332
+    }
+  ],
+  "fixed_generation": {
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260746,
+    "context_tokens": 2048,
+    "maximum_output_tokens": 48,
+    "carrier": "two_field_object_schema",
+    "prompt_condition": "taxonomy_plus_discourse_signals_candidate"
+  },
+  "expected_judgment_count": 315,
+  "taxonomy_boundary_tags": [
+    "cessation",
+    "referential_withdrawal",
+    "pending_choice",
+    "conditional_hypothesis"
+  ],
+  "eligibility_gates": {
+    "classifier_parse_success_rate_at_least": 0.95,
+    "commitment_accuracy_at_least": 0.85,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall_at_least": 0.95,
+    "compiled_call_exact_accuracy_at_least": 0.95,
+    "no_action_specificity": 1.0,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "extra_candidate_requested_count": 0,
+    "median_case_latency_seconds_at_most": 8.0,
+    "p95_case_latency_seconds_at_most": 15.0
+  },
+  "selection_rule": {
+    "step_1": "Discard every model that fails any eligibility gate.",
+    "step_2": "Find the highest supported-target commitment-correct count among eligible models.",
+    "step_3": "Keep eligible models within one correct target of that highest count.",
+    "step_4": "Among the remaining models, select the lowest median case latency; break an exact latency tie by lower blob_bytes.",
+    "no_eligible_model": "Reject the model-capacity-only hypothesis and authorize architecture decomposition development, not runtime integration."
+  },
+  "interpretation_rules": {
+    "smaller_model_selected": "Supports task-capacity matching as a development hypothesis, but still requires a fresh V46 holdout.",
+    "larger_model_selected": "Supports additional model capacity for this narrow task, subject to local latency and a fresh V46 holdout.",
+    "historical_model_selected": "Supports model-family or instruction-following differences, not parameter count alone.",
+    "no_model_selected": "The fixed prompt-plus-single-classifier architecture is the limiting factor; do not solve it by silently increasing model size."
+  },
+  "prompt_or_parser_tuning_after_run_authorized": false,
+  "fresh_holdout_claim_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
