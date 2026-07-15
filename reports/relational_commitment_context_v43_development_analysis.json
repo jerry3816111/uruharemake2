@@ -1,0 +1,2894 @@
+{
+  "schema": "uruha_relational_commitment_context_development_analysis_v43",
+  "evidence_status": "causal_ablation_on_retired_v42_development_targets",
+  "v42_evidence_index_control": {
+    "case_count": 36,
+    "candidate_target_recall": 1.0,
+    "candidate_precision": 1.0,
+    "classifier_target_count": 38,
+    "classifier_parse_success_rate": 0.9474,
+    "commitment_accuracy": 0.7895,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall": 0.7273,
+    "supported_frame_case_exact_rate": 0.8056,
+    "selected_evidence_support_rate": 0.8947,
+    "compiled_call_exact_accuracy": 0.8611,
+    "no_action_specificity": 1.0,
+    "required_action_recall": 0.7273,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "mean_classifier_calls_per_case": 1.0556,
+    "median_case_latency_seconds": 1.7304,
+    "p95_case_latency_seconds": 3.5195,
+    "parse_failure_target_count": 2,
+    "parse_failure_targets": [
+      {
+        "case_id": "v34c_action_single_neutral",
+        "target_id": "expression.neutral",
+        "errors": [
+          "evidence_index_out_of_range"
+        ]
+      },
+      {
+        "case_id": "v34c_action_ambiguous_cancel",
+        "target_id": "motion.nod",
+        "errors": [
+          "evidence_index_out_of_range"
+        ]
+      }
+    ],
+    "commitment_failure_count": 8,
+    "commitment_failures": [
+      {
+        "case_id": "v34c_action_single_neutral",
+        "target_id": "expression.neutral",
+        "gold_commitment": "requested",
+        "predicted_commitment": null,
+        "parse_errors": [
+          "evidence_index_out_of_range"
+        ]
+      },
+      {
+        "case_id": "v34c_action_multi_surprised_right",
+        "target_id": "expression.surprised",
+        "gold_commitment": "requested",
+        "predicted_commitment": "mentioned",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_multi_sad_down",
+        "target_id": "expression.sad",
+        "gold_commitment": "requested",
+        "predicted_commitment": "mentioned",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_multi_angry_shake",
+        "target_id": "expression.angry",
+        "gold_commitment": "requested",
+        "predicted_commitment": "mentioned",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_multi_angry_shake",
+        "target_id": "motion.shake_head",
+        "gold_commitment": "requested",
+        "predicted_commitment": "negated",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_negated_wave",
+        "target_id": "motion.wave",
+        "gold_commitment": "cancelled",
+        "predicted_commitment": "negated",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_negated_nod_shake",
+        "target_id": "motion.shake_head",
+        "gold_commitment": "requested",
+        "predicted_commitment": "negated",
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_ambiguous_cancel",
+        "target_id": "motion.nod",
+        "gold_commitment": "cancelled",
+        "predicted_commitment": null,
+        "parse_errors": [
+          "evidence_index_out_of_range"
+        ]
+      }
+    ],
+    "frame_failure_case_count": 7,
+    "frame_failures": [
+      {
+        "case_id": "v34c_action_single_neutral",
+        "expected": [
+          [
+            "expression",
+            "neutral",
+            "requested"
+          ]
+        ],
+        "actual": [],
+        "parse_errors": [
+          "invalid_target_judgment:expression.neutral"
+        ]
+      },
+      {
+        "case_id": "v34c_action_multi_surprised_right",
+        "expected": [
+          [
+            "expression",
+            "surprised",
+            "requested"
+          ],
+          [
+            "gaze",
+            "right",
+            "requested"
+          ]
+        ],
+        "actual": [
+          [
+            "expression",
+            "surprised",
+            "mentioned"
+          ],
+          [
+            "gaze",
+            "right",
+            "requested"
+          ]
+        ],
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_multi_sad_down",
+        "expected": [
+          [
+            "expression",
+            "sad",
+            "requested"
+          ],
+          [
+            "gaze",
+            "down",
+            "requested"
+          ]
+        ],
+        "actual": [
+          [
+            "expression",
+            "sad",
+            "mentioned"
+          ],
+          [
+            "gaze",
+            "down",
+            "requested"
+          ]
+        ],
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_multi_angry_shake",
+        "expected": [
+          [
+            "expression",
+            "angry",
+            "requested"
+          ],
+          [
+            "motion",
+            "shake_head",
+            "requested"
+          ]
+        ],
+        "actual": [
+          [
+            "expression",
+            "angry",
+            "mentioned"
+          ],
+          [
+            "motion",
+            "shake_head",
+            "negated"
+          ]
+        ],
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_negated_wave",
+        "expected": [
+          [
+            "motion",
+            "wave",
+            "cancelled"
+          ]
+        ],
+        "actual": [
+          [
+            "motion",
+            "wave",
+            "negated"
+          ]
+        ],
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_negated_nod_shake",
+        "expected": [
+          [
+            "motion",
+            "nod",
+            "negated"
+          ],
+          [
+            "motion",
+            "shake_head",
+            "requested"
+          ]
+        ],
+        "actual": [
+          [
+            "motion",
+            "nod",
+            "negated"
+          ],
+          [
+            "motion",
+            "shake_head",
+            "negated"
+          ]
+        ],
+        "parse_errors": []
+      },
+      {
+        "case_id": "v34c_action_ambiguous_cancel",
+        "expected": [
+          [
+            "motion",
+            "nod",
+            "cancelled"
+          ]
+        ],
+        "actual": [],
+        "parse_errors": [
+          "invalid_target_judgment:motion.nod"
+        ]
+      }
+    ]
+  },
+  "conditions": {
+    "commitment_only_candidate": {
+      "case_count": 36,
+      "candidate_target_recall": 1.0,
+      "candidate_precision": 1.0,
+      "classifier_target_count": 38,
+      "classifier_parse_success_rate": 0.0263,
+      "commitment_accuracy": 0.0263,
+      "requested_commitment_precision": 1.0,
+      "requested_commitment_recall": 0.0455,
+      "supported_frame_case_exact_rate": 0.3056,
+      "selected_evidence_support_rate": 0.0263,
+      "compiled_call_exact_accuracy": 0.5833,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.0455,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "mean_classifier_calls_per_case": 1.0556,
+      "median_case_latency_seconds": 1.4334,
+      "p95_case_latency_seconds": 3.2229,
+      "parse_failure_target_count": 37,
+      "parse_failure_targets": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "target_id": "gaze.down",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        }
+      ],
+      "commitment_failure_count": 37,
+      "commitment_failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "target_id": "expression.happy",
+          "gold_commitment": "hypothetical",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "cancelled",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "target_id": "expression.happy",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "root_not_object",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "target_id": "expression.happy",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "gold_commitment": "cancelled",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "target_id": "gaze.down",
+          "gold_commitment": "hypothetical",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        }
+      ],
+      "frame_failure_case_count": 25,
+      "frame_failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "expected": [
+            [
+              "motion",
+              "point",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.point"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "expected": [
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "requested"
+            ],
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy",
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "expected": [
+            [
+              "expression",
+              "surprised",
+              "requested"
+            ],
+            [
+              "gaze",
+              "right",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.surprised",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "expected": [
+            [
+              "expression",
+              "sad",
+              "requested"
+            ],
+            [
+              "gaze",
+              "down",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.sad",
+            "invalid_target_judgment:gaze.down"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "expected": [
+            [
+              "expression",
+              "neutral",
+              "requested"
+            ],
+            [
+              "motion",
+              "idle",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.neutral",
+            "invalid_target_judgment:motion.idle"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "expected": [
+            [
+              "expression",
+              "angry",
+              "requested"
+            ],
+            [
+              "motion",
+              "shake_head",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.angry",
+            "invalid_target_judgment:motion.shake_head"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "expected": [
+            [
+              "gaze",
+              "user",
+              "requested"
+            ],
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.user",
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "mentioned"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "expected": [
+            [
+              "gaze",
+              "left",
+              "mentioned"
+            ],
+            [
+              "gaze",
+              "right",
+              "mentioned"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.left",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "hypothetical"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "cancelled"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "negated"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "expected": [
+            [
+              "gaze",
+              "down",
+              "negated"
+            ],
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.down",
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "negated"
+            ],
+            [
+              "motion",
+              "shake_head",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod",
+            "invalid_target_judgment:motion.shake_head"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "expected": [
+            [
+              "expression",
+              "angry",
+              "negated"
+            ],
+            [
+              "expression",
+              "neutral",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.angry",
+            "invalid_target_judgment:expression.neutral"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "expected": [
+            [
+              "motion",
+              "point",
+              "negated"
+            ],
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.point",
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "ambiguous"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "ambiguous"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "expected": [
+            [
+              "gaze",
+              "left",
+              "ambiguous"
+            ],
+            [
+              "gaze",
+              "right",
+              "ambiguous"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.left",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "cancelled"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "expected": [
+            [
+              "gaze",
+              "down",
+              "hypothetical"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.down"
+          ]
+        }
+      ],
+      "target_predictions": [
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "target_id": "gaze.down",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "target_id": "expression.neutral",
+          "commitment": "requested"
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        }
+      ]
+    },
+    "relational_context_candidate": {
+      "case_count": 36,
+      "candidate_target_recall": 1.0,
+      "candidate_precision": 1.0,
+      "classifier_target_count": 38,
+      "classifier_parse_success_rate": 0.1053,
+      "commitment_accuracy": 0.0789,
+      "requested_commitment_precision": 0.0,
+      "requested_commitment_recall": 0.0,
+      "supported_frame_case_exact_rate": 0.3611,
+      "selected_evidence_support_rate": 0.1053,
+      "compiled_call_exact_accuracy": 0.5556,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "mean_classifier_calls_per_case": 1.0556,
+      "median_case_latency_seconds": 1.7308,
+      "p95_case_latency_seconds": 4.2142,
+      "parse_failure_target_count": 34,
+      "parse_failure_targets": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "target_id": "expression.neutral",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "errors": [
+            "invalid_commitment"
+          ]
+        }
+      ],
+      "commitment_failure_count": 35,
+      "commitment_failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "target_id": "expression.neutral",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "gold_commitment": "mentioned",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "cancelled",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "gold_commitment": "negated",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "requested",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "target_id": "expression.happy",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": "mentioned",
+          "parse_errors": []
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "gold_commitment": "ambiguous",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "gold_commitment": "cancelled",
+          "predicted_commitment": null,
+          "parse_errors": [
+            "invalid_commitment"
+          ]
+        }
+      ],
+      "frame_failure_case_count": 23,
+      "frame_failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "expected": [
+            [
+              "motion",
+              "point",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.point"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "expected": [
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "expected": [
+            [
+              "expression",
+              "neutral",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.neutral"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "requested"
+            ],
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.happy",
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "expected": [
+            [
+              "expression",
+              "surprised",
+              "requested"
+            ],
+            [
+              "gaze",
+              "right",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.surprised",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "expected": [
+            [
+              "expression",
+              "sad",
+              "requested"
+            ],
+            [
+              "gaze",
+              "down",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.sad",
+            "invalid_target_judgment:gaze.down"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "expected": [
+            [
+              "expression",
+              "neutral",
+              "requested"
+            ],
+            [
+              "motion",
+              "idle",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.neutral",
+            "invalid_target_judgment:motion.idle"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "expected": [
+            [
+              "expression",
+              "angry",
+              "requested"
+            ],
+            [
+              "motion",
+              "shake_head",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.angry",
+            "invalid_target_judgment:motion.shake_head"
+          ]
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "expected": [
+            [
+              "gaze",
+              "user",
+              "requested"
+            ],
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.user",
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "mentioned"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "expected": [
+            [
+              "gaze",
+              "left",
+              "mentioned"
+            ],
+            [
+              "gaze",
+              "right",
+              "mentioned"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.left",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "cancelled"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "expected": [
+            [
+              "gaze",
+              "down",
+              "negated"
+            ],
+            [
+              "gaze",
+              "user",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.down",
+            "invalid_target_judgment:gaze.user"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "negated"
+            ],
+            [
+              "motion",
+              "shake_head",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod",
+            "invalid_target_judgment:motion.shake_head"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "expected": [
+            [
+              "expression",
+              "angry",
+              "negated"
+            ],
+            [
+              "expression",
+              "neutral",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:expression.angry",
+            "invalid_target_judgment:expression.neutral"
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "expected": [
+            [
+              "motion",
+              "point",
+              "negated"
+            ],
+            [
+              "motion",
+              "wave",
+              "requested"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.point",
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "expected": [
+            [
+              "motion",
+              "wave",
+              "ambiguous"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.wave"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "expected": [
+            [
+              "expression",
+              "happy",
+              "ambiguous"
+            ]
+          ],
+          "actual": [
+            [
+              "expression",
+              "happy",
+              "mentioned"
+            ]
+          ],
+          "parse_errors": []
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "expected": [
+            [
+              "gaze",
+              "left",
+              "ambiguous"
+            ],
+            [
+              "gaze",
+              "right",
+              "ambiguous"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:gaze.left",
+            "invalid_target_judgment:gaze.right"
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "expected": [
+            [
+              "motion",
+              "nod",
+              "cancelled"
+            ]
+          ],
+          "actual": [],
+          "parse_errors": [
+            "invalid_target_judgment:motion.nod"
+          ]
+        }
+      ],
+      "target_predictions": [
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.left",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "target_id": "gaze.down",
+          "commitment": "hypothetical"
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "target_id": "expression.happy",
+          "commitment": "mentioned"
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "expression.angry",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "target_id": "motion.shake_head",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "expression.neutral",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "target_id": "motion.idle",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "expression.sad",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "target_id": "gaze.down",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "expression.surprised",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.angry",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "target_id": "expression.neutral",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.down",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "target_id": "expression.happy",
+          "commitment": "negated"
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "target_id": "motion.shake_head",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.point",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.left",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "target_id": "gaze.right",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "target_id": "motion.wave",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "target_id": "expression.happy",
+          "commitment": "hypothetical"
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "target_id": "gaze.user",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "target_id": "expression.neutral",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "target_id": "motion.nod",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "target_id": "motion.point",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "target_id": "expression.happy",
+          "commitment": null
+        },
+        {
+          "case_id": "v34c_action_single_wave",
+          "target_id": "motion.wave",
+          "commitment": null
+        }
+      ]
+    }
+  },
+  "relational_attribution": {
+    "fixed_commitments_vs_commitment_only": [
+      {
+        "case_id": "v34c_action_none_hypothetical",
+        "target_id": "expression.happy"
+      },
+      {
+        "case_id": "v34c_action_negated_happy",
+        "target_id": "expression.happy"
+      },
+      {
+        "case_id": "v34c_action_ambiguous_if",
+        "target_id": "gaze.down"
+      }
+    ],
+    "regressed_commitments_vs_commitment_only": [
+      {
+        "case_id": "v34c_action_single_neutral",
+        "target_id": "expression.neutral"
+      }
+    ]
+  },
+  "candidate_gate": {
+    "passed": false,
+    "checks": {
+      "candidate_target_recall": true,
+      "candidate_precision": true,
+      "classifier_parse_success_rate": false,
+      "commitment_accuracy": false,
+      "requested_commitment_precision": false,
+      "requested_commitment_recall": false,
+      "supported_frame_case_exact_rate": false,
+      "selected_evidence_support_rate": false,
+      "compiled_call_exact_accuracy": false,
+      "no_action_specificity": true,
+      "required_action_recall": false,
+      "false_action_rate": true,
+      "negation_violation_count": true,
+      "unsupported_execution_count": true,
+      "accepted_call_anchor_coverage": true,
+      "ungrounded_execution_count": true,
+      "mean_classifier_calls_per_case": true,
+      "median_case_latency_seconds": true,
+      "p95_case_latency_seconds": true
+    },
+    "failed_checks": [
+      "classifier_parse_success_rate",
+      "commitment_accuracy",
+      "requested_commitment_precision",
+      "requested_commitment_recall",
+      "supported_frame_case_exact_rate",
+      "selected_evidence_support_rate",
+      "compiled_call_exact_accuracy",
+      "required_action_recall"
+    ]
+  },
+  "development_gate_passed": false,
+  "fresh_holdout_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "decision": "do_not_advance_v43_relational_commitment_context"
+}
