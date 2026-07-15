@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_precise_target_mentions_closure_v52",
+  "closed_at": "2026-07-15T21:53:26+09:00",
+  "evidence_status": "development_only_on_retired_v45_holdout",
+  "bound_artifacts": {
+    "preregistration": "configs/precise_target_mentions_v52_preregistration.json",
+    "preregistration_sha256": "585252540943b82a635dbb185434928722d37447b4b63e079669e5268082b533",
+    "implementation": "precise_target_mentions_v52.py",
+    "implementation_sha256": "94f96ba5761c500908b3709a5ad4949f71556a359f3f89c7517c888168348fe1",
+    "runner": "run_precise_target_mentions_v52.py",
+    "runner_sha256": "0ad0802d796feb39efa494a71af51915456f390be12e0b3ca5e0de32f93e62ed",
+    "analyzer": "analyze_precise_target_mentions_v52.py",
+    "analyzer_sha256": "207bb4c396048d9c5aecbb36c0578e29b625d2a3c50fdffa926b5e7096f8794f",
+    "raw_report": "reports/precise_target_mentions_v52_development_raw.json",
+    "raw_report_sha256": "0ea6577df0d104bc05883a64d29f03a16805d65b2165187aac71e5e1c3e42b33",
+    "analysis_report": "reports/precise_target_mentions_v52_development_analysis.json",
+    "analysis_report_sha256": "6277f1d550f3a04d43e0d9dea0f5c8f50aa19904bd4611877c691cee0d1c115d",
+    "markdown_report": "reports/precise_target_mentions_v52_development_analysis.md",
+    "markdown_report_sha256": "27ad85ed82ceff9a29dce893bf4ed04a8e8300a97e6d956bdd17405924975adb"
+  },
+  "representation_result": {
+    "grounded_occurrence_count": 66,
+    "covered_occurrence_count": 66,
+    "fallback_occurrence_count": 0,
+    "mention_inside_predicate_evidence_rate": 1.0,
+    "cross_target_mention_overlap_count": 0,
+    "gate_passed": true
+  },
+  "matched_result": {
+    "v51_event_map_control": {
+      "commitment_correct": "54/61",
+      "compiled_call_exact": "46/48",
+      "false_action_count": 0,
+      "no_action_specificity": 1.0
+    },
+    "precise_target_mentions_candidate": {
+      "commitment_correct": "55/61",
+      "compiled_call_exact": "47/48",
+      "false_action_count": 0,
+      "no_action_specificity": 1.0
+    },
+    "delta": {
+      "commitment_correct_count": 1,
+      "compiled_call_exact_count": 1,
+      "false_action_count": 0,
+      "fixed_semantic_count": 1,
+      "semantic_regression_count": 0,
+      "fixed_call_count": 1,
+      "call_regression_count": 0
+    }
+  },
+  "causal_fix": {
+    "case_id": "v45h_negation_02",
+    "target_id": "gaze.right",
+    "user_input": "左じゃなくて右を見て。",
+    "control": "negated",
+    "candidate": "requested",
+    "explanation": "V52 represented left and right as separate exact target mentions while retaining the broad predicate evidence for provenance. This removed the cross-target contrast regression without changing the compiler or commitment answer directly."
+  },
+  "remaining_call_failure": {
+    "case_id": "v45h_evidence_04",
+    "user_input": "うなずかないで。いや、やっぱりうなずいて。",
+    "expected": "play_motion(nod)",
+    "actual": "no_call",
+    "boundary": "This consumed example cannot be used to tune V52. It remains a prespecified analysis target for a future independent architecture experiment only after the fresh V52 holdout."
+  },
+  "gate_result": {
+    "representation_gate_passed": true,
+    "candidate_absolute_gate_passed": true,
+    "matched_comparison_gate_passed": true,
+    "development_gate_passed": true
+  },
+  "decision": "authorize_fresh_v52_holdout_construction",
+  "interpretation": "The representation-level causal hypothesis passed on consumed development data: precise target mentions improved one exact call, preserved zero false actions, and introduced no regression. This is not fresh evidence and does not authorize runtime. The next valid question is whether the effect survives an unseen frozen set with external or human-authored items.",
+  "fresh_holdout": {
+    "construction_authorized": true,
+    "minimum_case_count": 64,
+    "external_or_human_authored_subset_required": true,
+    "freeze_before_model_inference": true,
+    "claim_authorized": false
+  },
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
