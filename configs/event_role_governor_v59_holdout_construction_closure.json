@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_event_role_governor_independent_holdout_construction_closure_v59",
+  "closed_at": "2026-07-16T02:08:51+09:00",
+  "status": "completed_construction_passed",
+  "original_preregistration": {
+    "commit": "3f4114a7c10096d5e3bd29a0c86a535d73f5c9a3",
+    "sha256": "ac666d3cf7b03a01a119633565e109826af98b45ba11aa930aae836dce9a8d17"
+  },
+  "artifact_bindings": {
+    "amended_preregistration": "configs/event_role_governor_v59_holdout_construction_preregistration.json",
+    "amended_preregistration_sha256": "1059482bfc158c0e48f1ea0d78b8f8a2eb0de47cdbe684fd6814f4c9f731dcdf",
+    "source_snapshot": "datasets/sources/tatoeba_jpn_v59_selected.tsv",
+    "source_snapshot_sha256": "9f17c6c0d84aa7fb2f8ff192663edb4a20275445a1651016bea805257b35bc7b",
+    "builder": "build_event_role_governor_v59_holdout.py",
+    "builder_sha256": "0f118faf5cbcac2280e6c6c35453f6925da6e2f538b0e86773c788e3c629c4ad",
+    "auditor": "audit_event_role_governor_v59_holdout.py",
+    "auditor_sha256": "c2b20791babf5d197f13263ac927079337aa0c8651e3f0cfe07523e4393ee7a0",
+    "dataset": "datasets/event_role_governor_v59_holdout.json",
+    "dataset_sha256": "c4534be30f860ca3c2191834f2a3e0a12056530344d666c4c48a9ea189a18512",
+    "audit_json": "reports/event_role_governor_v59_holdout_audit.json",
+    "audit_json_sha256": "6341aab635325a30675608fd084ca9b19333d7b126d51c63f58c5680735345a3",
+    "audit_markdown": "reports/event_role_governor_v59_holdout_audit.md",
+    "audit_markdown_sha256": "6d78f5f8f4c18fe110f523ad125b5b0379c3658dfdf48d94cb45b4f7005ea326",
+    "frame_to_call_dependency": "action_selective_deliberation_v37.py",
+    "frame_to_call_dependency_sha256": "4ec523897df88f53e5349ee8ad3a05eaa3ddc2be313b5ec07be10fb01d869d82",
+    "anchor_ontology_dependency": "action_candidate_perception_v47.py",
+    "anchor_ontology_dependency_sha256": "bdc3189ebe10f72f86763f42baeebac4f1241a3b1bb39b8c03812601051000ef",
+    "grounding_dependency": "grounded_commitment_classifier_v42.py",
+    "grounding_dependency_sha256": "07dad7a7e9fcd861f9e3bed7ad1176f5224b9edcd044a3f1fab1d6eff13c1d5b",
+    "mention_audit_dependency": "precise_target_mentions_v52.py",
+    "mention_audit_dependency_sha256": "94f96ba5761c500908b3709a5ad4949f71556a359f3f89c7517c888168348fe1",
+    "mention_inventory": "configs/relation_safety_state_v58_holdout_preregistration.json",
+    "mention_inventory_sha256": "1e37ee1af87ae3073b8c0e308b1e1fe3fad70974d7ca4b1ed0834ff76f479c2d"
+  },
+  "construction_result": {
+    "case_count": 72,
+    "grounded_target_count": 73,
+    "distinct_target_type_count": 14,
+    "external_exact_case_count": 16,
+    "controlled_researcher_authored_case_count": 56,
+    "controlled_family_count": 4,
+    "requested_target_count": 14,
+    "mentioned_target_count": 59,
+    "action_case_count": 14,
+    "no_action_case_count": 58,
+    "historical_exact_input_overlap_count": 0,
+    "historical_near_duplicate_count_at_94_percent": 0,
+    "maximum_historical_similarity": 0.75,
+    "prior_external_source_id_overlap_count": 0,
+    "grounded_occurrence_mention_coverage": 1.0,
+    "mention_fallback_occurrence_count": 0,
+    "cross_target_mention_overlap_count": 0,
+    "all_audit_checks_passed": true
+  },
+  "provenance": {
+    "external_exact": "Sixteen exact Japanese sentences from the frozen Tatoeba snapshot, with sentence IDs and source metadata retained.",
+    "controlled": "Fifty-six researcher-authored minimal contrasts. No model assistance or human blind review was used, and these cases are not claimed as official corpus items.",
+    "base_model_pretraining_exclusion_guaranteed": false
+  },
+  "pre_evaluation_correction_log": {
+    "first_audit_status": "failed",
+    "first_failed_checks": [
+      "candidate_target_sets_exact"
+    ],
+    "corrections": [
+      {
+        "slot": "external_exact_expression_happy",
+        "before": "Tatoeba 9943358: トムはよく笑う。",
+        "expected_targets": [
+          "expression.happy"
+        ],
+        "observed_targets": [],
+        "after": "Tatoeba 13070297: 少年は笑顔で振り返った。",
+        "preserved_variables": [
+          "external_exact provenance",
+          "expression.happy target",
+          "mentioned commitment",
+          "no-action label"
+        ]
+      },
+      {
+        "slot": "controlled_direct_focus_request_contrast.expression.happy",
+        "before": "彼女に向けて、いつも通り笑ってください。",
+        "expected_targets": [
+          "expression.happy"
+        ],
+        "observed_targets": [
+          "expression.happy",
+          "expression.neutral"
+        ],
+        "after": "彼女に向けて、毎回笑ってください。",
+        "preserved_variables": [
+          "controlled family",
+          "expression.happy target",
+          "requested commitment",
+          "action label"
+        ]
+      }
+    ],
+    "v58_state_evaluated_before_correction": false,
+    "v59_state_evaluated_before_correction": false,
+    "compiler_evaluated_before_correction": false,
+    "model_inference_used_before_correction": false,
+    "score_gate_relaxed": false,
+    "family_or_label_changed": false,
+    "correction_followed_preregistered_failure_routing": true
+  },
+  "decision": "authorize_independent_v59_evaluator_preregistration_only",
+  "causal_interpretation": "The completed artifact is a balanced, provenance-separated, nontrivial holdout with both required actions and required abstentions. It has not been seen by V58, V59, the V57 compiler, or an evaluation model, so it is eligible for a separately frozen matched comparison.",
+  "evidence_boundary": "Construction PASS is not a model result. It authorizes only preregistration and freezing of the independent V58-versus-V59 evaluator. It does not authorize inference before that freeze, runtime integration, shadow deployment, physical VRM execution, complete-right-brain claims, or broad human-likeness claims.",
+  "model_or_state_evaluation_performed": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
