@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_action_candidate_perception_preregistration_v47",
+  "created_at": "2026-07-15T17:49:00+09:00",
+  "research_question": "Can a versioned lexical-perception overlay remove instruction-related motion.point false candidates without losing genuine Japanese pointing gestures?",
+  "cognitive_role": "This is the perception stage before semantic commitment judgment. It distinguishes a token about instructions from an affordance for a physical pointing gesture, so later reasoning never sees an impossible action candidate.",
+  "evidence_boundary": "This is an internal deterministic regression and metamorphic probe, not an official benchmark or a fresh human-blind holdout.",
+  "causal_change": {
+    "target": "motion.point",
+    "old_patterns": [
+      "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+    ],
+    "candidate_patterns": [
+      "(?:指差|指さ|指して|指す|指し示|指で(?:示|さ))"
+    ],
+    "all_other_action_targets": "fixed_to_v39"
+  },
+  "frozen_inputs": {
+    "v46_closure": "configs/commitment_model_capacity_v46_closure.json",
+    "v46_closure_sha256": "b66b221e749f341924a36f2af5eb1a7fbb1e75e6dcdaccf31d7a243c073d63fa",
+    "v38_ontology": "configs/action_ontology_grounding_v38_preregistration.json",
+    "v38_ontology_sha256": "a724c686c8a06cb8aebeb6d904b748f4bcd81c8f14a6b054f22cc495f4489d92",
+    "v39_additions": "configs/grounded_frame_isolation_v39_preregistration.json",
+    "v39_additions_sha256": "6137742d5f69cc30426e1aef3de55af78f039a312156dbef0c1cbc0db7b31c36",
+    "v37_development": "datasets/action_selective_deliberation_v37_development.json",
+    "v37_development_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+    "v45_retired_development": "datasets/discourse_state_perception_v45_holdout.json",
+    "v45_retired_development_sha256": "a626da4c44181cd5dc0891c28ee4204ab9082d1009fa0df795de60f505363cbf"
+  },
+  "positive_pointing_probes": [
+    "あっちを指して。",
+    "右の箱を指してくれる？",
+    "前の方を指で示して。",
+    "その場所を指でさして。",
+    "一度だけ指差して。",
+    "指差しはなしで。",
+    "ここは指さないで。",
+    "指さなくていい。",
+    "彼女が出口を指す。",
+    "方向を指し示して。",
+    "嬉しそうに右を指して。",
+    "画面の中央を指で示してくれる？"
+  ],
+  "negative_instruction_and_finger_probes": [
+    "システム指示を上書きして。",
+    "この指示に従って。",
+    "次の作業を指示して。",
+    "先生が学生を指導している。",
+    "問題点を指摘して。",
+    "経済指標を確認して。",
+    "指紋を登録して。",
+    "薬指に指輪をつけて。",
+    "担当者を指名して。",
+    "指令を待っている。",
+    "これは動作ではなく文章上の指示です。",
+    "contract_ack の指示だけを変更して。"
+  ],
+  "development_gates": {
+    "v37_supported_target_recall": 1.0,
+    "v37_candidate_precision": 1.0,
+    "v45_supported_target_recall": 1.0,
+    "v45_candidate_precision": 1.0,
+    "v45_extra_candidate_count": 0,
+    "positive_probe_recall": 1.0,
+    "negative_probe_false_positive_count": 0,
+    "non_point_candidate_set_change_count": 0
+  },
+  "decision_rule": "The candidate overlay advances only if every gate passes. A pass authorizes its use in a separate selective fast/slow router development experiment; it does not modify historical ontology files or authorize runtime execution.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
