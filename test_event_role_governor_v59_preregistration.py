@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -90,7 +91,33 @@ class EventRoleGovernorV59PreregistrationTests(unittest.TestCase):
         )
 
     def test_no_implementation_or_advancement_is_authorized_before_merge(self):
-        self.assertFalse((ROOT / self.config["candidate_contract"]["module"]).exists())
+        preregistration_commit = subprocess.check_output(
+            [
+                "git",
+                "log",
+                "--diff-filter=A",
+                "--format=%H",
+                "-1",
+                "--",
+                str(CONFIG_PATH.relative_to(ROOT)),
+            ],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+        self.assertTrue(preregistration_commit)
+        implementation_at_freeze = subprocess.run(
+            [
+                "git",
+                "cat-file",
+                "-e",
+                f"{preregistration_commit}:{self.config['candidate_contract']['module']}",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(implementation_at_freeze.returncode, 0)
         for key in (
             "implementation_before_preregistration_merge_authorized",
             "post_run_tuning_authorized",
