@@ -1,0 +1,188 @@
+{
+  "schema": "uruha_action_intent_frame_preregistration_v36",
+  "created_at": "2026-07-15T13:47:05+09:00",
+  "status": "preregistered_before_dataset_annotation_and_before_model_inference",
+  "repository_parent_commit": "6ebe0c7f9f4c3a66a3d874bf800a8529ca430ee5",
+  "project_alignment": {
+    "human_like_goal": "Represent the user's current commitment, negation, cancellation, and mentioned-but-not-requested actions before converting language into motor commands.",
+    "competence_goal": "Increase exact action behavior without sacrificing no-action safety or local-PC latency.",
+    "non_goal": "This experiment does not claim general human cognition, personality, memory, or production VRM readiness."
+  },
+  "research_basis": [
+    {
+      "title": "Global FrameNet",
+      "url": "https://www.globalframenet.org/",
+      "use": "Frame Semantics models lexical meaning against an evoked scene and its related concepts, motivating an observable utterance-level frame rather than independent call approval."
+    },
+    {
+      "title": "Towards Scalable Multi-Domain Conversational Agents: The Schema-Guided Dialogue Dataset",
+      "url": "https://doi.org/10.1609/aaai.v34i05.6394",
+      "use": "Schema-guided dialogue predicts intents and slots from natural-language API descriptions and separates dialogue state from service calls."
+    },
+    {
+      "title": "Official Schema-Guided Dialogue Dataset repository",
+      "url": "https://github.com/google-research-datasets/dstc8-schema-guided-dialogue",
+      "use": "Defines schemas, turn frames, active intent, slot values, actions, and service calls as distinct observable structures."
+    },
+    {
+      "title": "Qwen Function Calling documentation",
+      "url": "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+      "use": "Separates model-generated function-call messages from application-side checking and execution."
+    }
+  ],
+  "v35_stop_evidence": {
+    "conclusion": "reports/action_semantic_authorization_v35_conclusion.md",
+    "conclusion_sha256": "1603795e972fd2ad177b91aa2696f4b13543868a3a5eee195b53bfca2e745330",
+    "reason_for_new_representation": [
+      "A per-proposed-call authorizer can remove a bad call but cannot restore an omitted requested action.",
+      "Independent call verdicts can lose coordination, correction, cancellation, and negation scope across clauses.",
+      "Adding more prompt text or phrase aliases is prohibited by the V35 stop rule."
+    ]
+  },
+  "development_source": {
+    "evidence_status": "development_only_retired_v34_confirmation",
+    "dataset": "datasets/rightbrain_role_specialization_v34_confirmation.json",
+    "dataset_sha256": "a45919164c9416622b6f582d9f85ad163878127057743fe4935ea343008f7a14",
+    "direct_call_baselines": "reports/rightbrain_role_specialization_v34_confirmation_raw.json",
+    "direct_call_baselines_sha256": "27cb82de4f3b39ada42d2952662946e5df54f8c3a1230180e5e71cd754a6b8a4",
+    "case_count": 36,
+    "family_count": 6,
+    "reuse_disclosure": "All labels and prior failures are known. This source may select the representation and model but cannot confirm runtime readiness."
+  },
+  "frame_contract": {
+    "utterance_states": [
+      "explicit_current_request",
+      "no_current_action",
+      "ambiguous_or_cancelled",
+      "unsupported_or_unsafe"
+    ],
+    "frames": [
+      "expression",
+      "motion",
+      "gaze",
+      "unsupported"
+    ],
+    "commitments": [
+      "requested",
+      "mentioned",
+      "hypothetical",
+      "negated",
+      "cancelled",
+      "ambiguous",
+      "unsupported"
+    ],
+    "expression_values": [
+      "neutral",
+      "happy",
+      "sad",
+      "angry",
+      "surprised"
+    ],
+    "motion_values": [
+      "idle",
+      "wave",
+      "nod",
+      "shake_head",
+      "point"
+    ],
+    "gaze_values": [
+      "left",
+      "right",
+      "user",
+      "down"
+    ],
+    "unsupported_value": "unsupported",
+    "evidence_rule": "Each frame must include a non-empty, exact, continuous substring copied from user_input.",
+    "compiler_rule": "Only valid requested frames under explicit_current_request may compile to allowlisted calls. Other commitments remain observable but never execute.",
+    "parser_failure_rule": "Any malformed, incomplete, duplicate, contradictory, or evidence-invalid frame causes fail-closed compilation for the entire utterance."
+  },
+  "model_conditions": {
+    "qwen3_5_0_8b_lower_bound": {
+      "ollama_tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "blob_bytes": 1036046583,
+      "thinking": false,
+      "role": "lower_bound_retested_because_the_representation_changed"
+    },
+    "qwen3_5_2b_candidate": {
+      "ollama_tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "blob_bytes": 2741192820,
+      "thinking": false,
+      "role": "small_local_candidate"
+    },
+    "qwen3_5_4b_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "thinking": false,
+      "role": "medium_local_candidate"
+    },
+    "qwen2_5_7b_matched_reference": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "blob_bytes": 4683087332,
+      "role": "matched_model_comparison_against_v34_direct_function_calling"
+    },
+    "qwen3_5_9b_matched_upper_reference": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "blob_bytes": 6594474711,
+      "thinking": false,
+      "role": "matched_model_comparison_and_capacity_reference"
+    }
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260718,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 256,
+    "json_schema_requested_from_ollama": true,
+    "exact_output_fields_also_written_in_text_prompt": true,
+    "action_examples_in_prompt": false,
+    "persona_adapter": "none",
+    "compute_cost": "existing_local_models_only"
+  },
+  "development_gates_per_model": {
+    "compiled_call_exact_accuracy_at_least": 0.9,
+    "no_action_specificity_at_least": 0.95,
+    "required_action_recall_at_least": 0.9,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "invalid_tool_or_argument_rate": 0.0,
+    "utterance_state_accuracy_at_least": 0.9,
+    "joint_frame_exact_accuracy_at_least": 0.8,
+    "requested_frame_precision_at_least": 0.95,
+    "requested_frame_recall_at_least": 0.9,
+    "commitment_frame_micro_f1_at_least": 0.85,
+    "parse_success_rate_at_least": 0.99,
+    "compiled_evidence_validity_rate": 1.0,
+    "median_latency_seconds_at_most": 3.0,
+    "p95_latency_seconds_at_most": 6.0
+  },
+  "matched_comparison": {
+    "qwen2_5_7b": "V34 direct function calling versus V36 frame parsing plus deterministic compilation on identical cases.",
+    "qwen3_5_9b": "V34 direct function calling versus V36 frame parsing plus deterministic compilation on identical cases.",
+    "causal_boundary": "The matched comparisons estimate the effect of the interaction representation and compiler for the same model artifact. Cross-size comparisons remain practical deployment comparisons, not causal parameter-count claims."
+  },
+  "selection_rule": "Advance every model passing all gates. The default fresh-confirmation candidate is the smallest artifact among passers; matched larger models remain controls. If no model passes, do not author a fresh holdout and diagnose the frame representation.",
+  "fresh_confirmation_policy": {
+    "authorized_only_after_development_pass": true,
+    "minimum_case_count": 48,
+    "must_include": [
+      "unseen colloquial paraphrases",
+      "multiple coordinated supported actions",
+      "mixed positive and negated actions",
+      "late cancellation",
+      "discussion and hypothetical mentions",
+      "supported plus unsupported mixed requests",
+      "prompt-injection-like text treated as data"
+    ],
+    "freeze_rule": "Preregister gates, then commit dataset and hashes before any finalist inference."
+  },
+  "runtime_change_authorized": false,
+  "vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
