@@ -1,0 +1,172 @@
+{
+  "schema": "uruha_event_role_governor_independent_holdout_closure_v59",
+  "closed_at": "2026-07-16T02:32:07+09:00",
+  "status": "completed_independent_holdout_rejected",
+  "frozen_run_commit": "112b8581dbe410926b9fae89ce3fb49fdb0cbc6d",
+  "artifact_bindings": {
+    "preregistration": "configs/event_role_governor_v59_holdout_preregistration.json",
+    "preregistration_sha256": "8310ace9cbd358f022b4b856f525d2348f74d677e65cd398e9e6bc5272ec9900",
+    "harness_lock": "configs/event_role_governor_v59_holdout_harness_lock.json",
+    "harness_lock_sha256": "1724d484a194baaf03516030e9a7886ef638c71d5b462696de23ea66aa55a64a",
+    "dataset": "datasets/event_role_governor_v59_holdout.json",
+    "dataset_sha256": "c4534be30f860ca3c2191834f2a3e0a12056530344d666c4c48a9ea189a18512",
+    "external_source_snapshot": "datasets/sources/tatoeba_jpn_v59_selected.tsv",
+    "external_source_snapshot_sha256": "9f17c6c0d84aa7fb2f8ff192663edb4a20275445a1651016bea805257b35bc7b",
+    "runner": "run_event_role_governor_v59_holdout.py",
+    "runner_sha256": "e6fa98870b84f50bb406c2258abdee678412b00ee027be53411817b97055cf76",
+    "analyzer": "analyze_event_role_governor_v59_holdout.py",
+    "analyzer_sha256": "ab0d5910e8caf013ece0c3692fb2a2794da748d5ea83a7fdb58b7bac002ed827",
+    "control_implementation": "relation_safety_state_v58.py",
+    "control_implementation_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "candidate_implementation": "event_role_governor_v59.py",
+    "candidate_implementation_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "raw_report": "reports/event_role_governor_v59_holdout_raw.json",
+    "raw_report_sha256": "d9baee6cb129dba17148fca965bd7708a502252a790d85dc381f9297284ded8c",
+    "analysis_report": "reports/event_role_governor_v59_holdout_analysis.json",
+    "analysis_report_sha256": "f56d421824337197d3014d9035edd507c6106f56562e4997d2fa81095182dea8",
+    "human_readable_report": "reports/event_role_governor_v59_holdout_analysis.md",
+    "human_readable_report_sha256": "8e0265a6c9b8c7819d4f1e1036b093cb090676446e3e52a2fe8bbe286e4b8a3d"
+  },
+  "execution_accounting": {
+    "case_count": 72,
+    "grounded_target_count": 73,
+    "model_calls_made": 73,
+    "transport_attempts": 73,
+    "transport_error_count": 0,
+    "parse_failure_count": 0,
+    "paid_api_used": false,
+    "physical_vrm_actions_executed": 0,
+    "model_tag": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
+  },
+  "control_result": {
+    "system": "V58 state plus frozen V57 compiler",
+    "correct_commitments": 46,
+    "commitment_accuracy": 0.6301369863013698,
+    "requested_precision": 0.358974358974359,
+    "requested_recall": 1.0,
+    "ordered_exact_count": 48,
+    "ordered_exact_accuracy": 0.6666666666666666,
+    "false_action_case_count": 24,
+    "no_action_specificity": 0.5862068965517241,
+    "required_call_recall": 1.0
+  },
+  "candidate_result": {
+    "system": "V59 event-role state plus the same frozen V57 compiler",
+    "correct_commitments": 67,
+    "commitment_accuracy": 0.9178082191780822,
+    "requested_precision": 0.7777777777777778,
+    "requested_recall": 1.0,
+    "ordered_exact_count": 68,
+    "ordered_exact_accuracy": 0.9444444444444444,
+    "action_ordered_exact_count": 14,
+    "action_ordered_exact_accuracy": 1.0,
+    "false_action_case_count": 4,
+    "no_action_specificity": 0.9310344827586207,
+    "required_call_recall": 1.0,
+    "external_exact_accuracy": 0.75,
+    "controlled_exact_accuracy": 1.0
+  },
+  "event_role_result": {
+    "expected_relation_detected_count": 42,
+    "expected_relation_target_count": 42,
+    "expected_relation_coverage": 1.0,
+    "each_relation_family_coverage": 1.0,
+    "contrast_blocking_relation_target_count": 0,
+    "direct_focus_request_detected_count": 11,
+    "direct_focus_request_target_count": 14,
+    "direct_focus_request_recall": 0.7857142857142857,
+    "role_slot_correct_count": 261,
+    "role_slot_count": 280,
+    "role_slot_accuracy": 0.9321428571428572
+  },
+  "matched_effect": {
+    "state_correct_count_delta": 21,
+    "state_fix_count": 21,
+    "state_regression_count": 0,
+    "ordered_exact_count_delta": 20,
+    "case_fix_count": 20,
+    "case_regression_count": 0,
+    "false_action_case_count_delta": -20,
+    "required_call_recall_delta": 0.0,
+    "two_sided_exact_mcnemar_p": 0.0000019073486328125
+  },
+  "failed_preregistered_checks": [
+    "state_correct_count",
+    "state_commitment_accuracy",
+    "state_requested_precision",
+    "compiler_ordered_exact_count",
+    "compiler_ordered_exact_accuracy",
+    "compiler_no_action_specificity",
+    "compiler_false_actions",
+    "compiler_external_accuracy",
+    "event_role_direct_focus_recall",
+    "event_role_slot_accuracy"
+  ],
+  "failure_attribution": {
+    "deterministic_false_action_gap": {
+      "count": 4,
+      "case_ids": [
+        "v59h_tatoeba_87104",
+        "v59h_tatoeba_89563",
+        "v59h_tatoeba_96980",
+        "v59h_tatoeba_10550376"
+      ],
+      "shared_fallback_for_all_four": "mentioned",
+      "candidate_commitment_for_all_four": "requested",
+      "cause": "Each sentence has an explicit third-party owner and past benefactive morphology such as てくれた, but no retrospective adverb. V59 therefore left event_time unknown, emitted no past-experiential relation, and preserved V58's false local-directive state.",
+      "model_size_is_primary_cause": false,
+      "compiler_is_primary_cause": false
+    },
+    "direct_request_role_span_gap": {
+      "count": 3,
+      "case_ids": [
+        "v59h_direct_focus_request_contrast_01",
+        "v59h_direct_focus_request_contrast_04",
+        "v59h_direct_focus_request_contrast_05"
+      ],
+      "final_actions_still_correct": true,
+      "cause": "The grounded mention spans stopped at 怒, 悲し, or 驚, leaving 顔 inside the tail inspected by the direct-request matcher. The matcher therefore missed the full expression predicate even though inherited V58 state and V57 compilation still executed the valid command."
+    },
+    "benefactive_request_boundary_gap": {
+      "count": 7,
+      "final_actions_still_correct": true,
+      "cause": "The request-marker pattern matched bare くれ inside past benefactive くれて, so directive_governor became unknown rather than none. Past-experiential relations still prevented action, but the internal role representation was wrong."
+    },
+    "shared_fallback_semantic_residual": {
+      "count": 1,
+      "case_id": "v59h_third_party_habitual_description_11",
+      "expected": "mentioned",
+      "fallback_and_candidate": "negated",
+      "final_action_plan_correct": true,
+      "reason_not_next_variable": "This is one non-action state-label residual. Four deterministic false actions are the higher-priority blocker, so changing model size now would mix variables and would not repair the primary failure."
+    },
+    "compositional_negation_residual": {
+      "count": 1,
+      "case_id": "v59h_tatoeba_13066287",
+      "input": "大変な状況にも関わらず、彼はいつも笑顔を絶やさない。",
+      "expected": "mentioned",
+      "candidate": "negated",
+      "final_action_plan_correct": true,
+      "cause": "Target-local negation treated 絶やさない as negating 笑顔 rather than asserting the continued presence of a smile. This is a separate compositional-negation problem."
+    }
+  },
+  "decision": "reject_v59_independent_advancement_and_attribute_failure",
+  "causal_interpretation": "V59 produced a large, statistically clear paired improvement and generalized all three intended relations, but it failed the preregistered zero-false-action and role-slot gates. The independent evidence supports the owner-governor-time direction while rejecting this implementation as sufficient or deployable.",
+  "next_experiment_order": [
+    "Preregister one V60 event-aspect and predicate-boundary variable on non-holdout development examples: infer past from completed benefactive morphology without requiring a temporal adverb, distinguish benefactive くれて or くれた from imperative くれ, and derive direct requests from the complete grounded predicate rather than a truncated mention tail.",
+    "Implement V60 without case IDs, exact holdout strings, answer tables, model-size changes, compiler changes, memory, or identity prompts.",
+    "Replay the consumed V59 holdout only as development evidence, then construct a second fresh independent holdout before any advancement claim.",
+    "Keep compositional negation and the single shared-fallback label error as separate residual experiments. Compare free local model sizes only after deterministic event-role and compiler errors are removed."
+  ],
+  "evidence_boundary": "This failed independent holdout authorizes only a new preregistered representation experiment. It does not authorize post-run threshold changes, case removal, runtime integration, shadow deployment, physical VRM execution, complete-right-brain claims, or broad human-likeness claims.",
+  "post_run_threshold_change_authorized": false,
+  "post_run_case_exclusion_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
