@@ -1,0 +1,32 @@
+{
+  "schema": "uruha_relation_safety_state_replay_harness_lock_v58",
+  "created_at": "2026-07-16T01:20:00+09:00",
+  "purpose": "Freeze the zero-model development runner and analyzer before replaying the consumed V57 holdout.",
+  "evidence_boundary": "This lock prevents post-result changes to conditions and metrics. The replay remains consumed-data development evidence and cannot establish fresh generalization or authorize deployment.",
+  "frozen_artifacts": {
+    "preregistration": "configs/relation_safety_state_v58_preregistration.json",
+    "preregistration_sha256": "af5955530bfad44e4230a074ebb7010ff34725a3661aeb1b8af292403cf053fc",
+    "implementation": "relation_safety_state_v58.py",
+    "implementation_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "runner": "run_relation_safety_state_v58_development.py",
+    "runner_sha256": "143c036669d86a5efd28f54f454755df877faedc954b2374a75c578e419224d0",
+    "analyzer": "analyze_relation_safety_state_v58_development.py",
+    "analyzer_sha256": "c29dc6e420f4c9a3141721411d5470c7354f15ae8a47857d35f2730d57178ed8",
+    "dataset": "datasets/relation_authorized_action_compiler_v57_holdout.json",
+    "dataset_sha256": "646828f2026a7722872c8a7bf1dadfc88c53fc9ef090b2492fa0251d7c3b65f0",
+    "source_raw": "reports/relation_authorized_action_compiler_v57_holdout_raw.json",
+    "source_raw_sha256": "924a8883e5482789bc00bce426f38ac9423050ae4f43670924f1299cb5db92dd",
+    "frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b"
+  },
+  "conditions": [
+    "frozen_v56_state_with_v57_compiler_control",
+    "relation_safety_v58_state_with_frozen_v57_compiler_candidate"
+  ],
+  "model_calls_authorized": 0,
+  "post_replay_metric_changes_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "broad_human_likeness_claim_authorized": false
+}
