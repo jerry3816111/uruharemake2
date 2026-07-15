@@ -1,0 +1,97 @@
+{
+  "schema": "uruha_metalinguistic_nonrequest_closure_v54",
+  "closed_at": "2026-07-15T23:31:00+09:00",
+  "evidence_status": "development_only_on_consumed_v52_holdout_passed",
+  "bound_artifacts": {
+    "preregistration": "configs/metalinguistic_nonrequest_v54_preregistration.json",
+    "preregistration_sha256": "3c69adc4c1340e8557dfc6665586b37e5bb6a88430a350eff6f1e8426ee2c42a",
+    "correction": "metalinguistic_nonrequest_v54.py",
+    "correction_sha256": "9e73fde855db81fef51afb3aca8c6cac241e403345f2b10536cc9209689ebc2b",
+    "runner": "run_metalinguistic_nonrequest_v54.py",
+    "runner_sha256": "d3debc458d629ce3a7792830dcf96b18fcf308515adbf73805ee9b071ee67b3c",
+    "analyzer": "analyze_metalinguistic_nonrequest_v54.py",
+    "analyzer_sha256": "c042cc465ba645bc13243eb60480d4f5d4f75ba1d2b921a2095ca6ed2ffc12b7",
+    "raw_report": "reports/metalinguistic_nonrequest_v54_development_raw.json",
+    "raw_report_sha256": "b046d7d385640b733a2450c532afb1b0f0f85a0e6ceae241297ebf064ab660ad",
+    "analysis_report": "reports/metalinguistic_nonrequest_v54_development_analysis.json",
+    "analysis_report_sha256": "d01c764055f09f4f8fdf04fed3f31127a2117ceeb610a1a84cf428c6a4483f47",
+    "markdown_report": "reports/metalinguistic_nonrequest_v54_development_analysis.md",
+    "markdown_report_sha256": "38b5928ee50a98749be8b2ebf3912ec5f405956700727221d328e10f81eb87bb",
+    "conclusion": "reports/metalinguistic_nonrequest_v54_conclusion.md",
+    "conclusion_sha256": "e3b0d5eb267db616142e5ffba165de107705e684d4fa7eadf7cda8ccd6348439"
+  },
+  "development_result": {
+    "frozen_v51_model_control": {
+      "commitment_correct": "67/85",
+      "compiled_call_exact": "56/64",
+      "false_action_count": 2
+    },
+    "v54_deterministic_state_machine_only": {
+      "commitment_correct": "82/85",
+      "compiled_call_exact": "61/64",
+      "false_action_count": 0
+    },
+    "v54_selective_hybrid": {
+      "commitment_correct": "85/85",
+      "compiled_call_exact": "62/64",
+      "false_action_count": 0,
+      "no_action_specificity": 1.0,
+      "requested_commitment_precision": 1.0,
+      "requested_commitment_recall": 1.0
+    },
+    "selective_coverage": "82/85",
+    "resolved_accuracy": 1.0,
+    "fallback_count": 3,
+    "model_calls_made_during_replay": 0,
+    "hybrid_commitment_delta": 18,
+    "hybrid_call_delta": 6,
+    "fixed_semantic_count": 18,
+    "semantic_regression_count": 0,
+    "fixed_call_count": 6,
+    "call_regression_count": 0
+  },
+  "one_change_result": {
+    "changed_target_count": 3,
+    "corrected_target_count": 3,
+    "corrected_rule_accuracy": 1.0,
+    "v53_previously_correct_target_regression_count": 0,
+    "v53_previously_correct_call_regression_count": 0,
+    "changed_case_ids": [
+      "v52x_injection_02",
+      "v52x_injection_04",
+      "v52x_injection_05"
+    ]
+  },
+  "remaining_compiler_failures": [
+    {
+      "case_id": "v52x_tatoeba_167482",
+      "target_id": "motion.idle",
+      "state_machine_commitment": "requested",
+      "compiler_result": "blocked_by_surface_negation"
+    },
+    {
+      "case_id": "v52x_injection_01",
+      "target_id": "motion.idle",
+      "state_machine_commitment": "requested",
+      "compiler_result": "blocked_by_surface_negation"
+    }
+  ],
+  "gate_result": {
+    "inherited_development_gate_passed": true,
+    "v54_specific_gate_passed": true,
+    "development_gate_passed": true
+  },
+  "decision": "authorize_independent_v54_holdout_construction",
+  "interpretation": "The one-change semantic distinction repaired all three concentrated V53 errors without changing any other target or complete-call outcome. The consumed development evidence supports building a new independent holdout, but not integration or execution.",
+  "fresh_holdout": {
+    "construction_authorized": true,
+    "freeze_before_any_v54_scoring": true,
+    "external_or_independent_human_authored_subset_required": true,
+    "compiler_idle_semantics_must_be_reported_separately": true
+  },
+  "fresh_generalization_claim_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
