@@ -1,0 +1,111 @@
+{
+  "schema": "uruha_qwen2b_binary_carrier_preregistration_v50",
+  "created_at": "2026-07-15T20:43:00+09:00",
+  "research_question": "Was qwen3.5:2b's V49 failure caused by the boolean output carrier rather than by the immediate-execution decision itself?",
+  "project_effect": "Separate mechanical output compatibility from semantic ability before deciding whether the 2B model deserves a fresh semantic holdout.",
+  "evidence_boundary": "The probe contains only explicit labels to copy. It can select a transport carrier and authorize construction of a new V51 holdout, but it cannot measure action understanding or authorize runtime.",
+  "frozen_inputs": {
+    "v49_closure": "configs/binary_execution_gate_v49_closure.json",
+    "v49_closure_sha256": "8433d7686f245aa779e5abffbbd2504d3729b35836158f9ad7276d97df8f91eb",
+    "v49_raw": "reports/binary_execution_gate_v49_development_raw.json",
+    "v49_raw_sha256": "1709fe3268ad823eae883eeb9c8525156b0bdba43ae1ce941ba22e8093595a1f",
+    "v44_carrier_module": "commitment_carrier_v44.py",
+    "v44_carrier_module_sha256": "773a8c27ec5302d92ccd16a676fc7d6254b889b59626ba2640ea5d6c9314f5ae",
+    "v44_carrier_analysis": "reports/commitment_carrier_v44_probe_analysis.json",
+    "v44_carrier_analysis_sha256": "2cdf9068b0c229ac43ad403759631c16197a53c56856ae5777cd189b901e3797",
+    "format_probe_dataset": "datasets/qwen2b_binary_carrier_v50_format_probe.json",
+    "format_probe_dataset_sha256": "05ada1b03a345bb386207f4bc77897fb26d48976798e82318b1223065a5a6d02",
+    "format_probe_case_count": 12,
+    "v49_qwen2b_schema_echo_count": 61,
+    "v49_qwen2b_judgment_count": 61
+  },
+  "frozen_model": {
+    "ollama_tag": "qwen3.5:2b",
+    "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+    "parameter_size": "2.3B",
+    "quantization": "Q8_0",
+    "blob_bytes": 2741192820,
+    "thinking": false
+  },
+  "fixed_generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260750,
+    "context_tokens": 1024,
+    "maximum_output_tokens": 32
+  },
+  "carrier_order": [
+    "boolean_two_field_control",
+    "enum_two_field_candidate",
+    "enum_single_field_candidate",
+    "scalar_enum_candidate"
+  ],
+  "carriers": {
+    "boolean_two_field_control": {
+      "instruction": "This is a non-semantic transport probe. Do not infer anything. Copy source_decision by mapping execute to execute_now=true and do_not_execute to execute_now=false. Set contract_ack to v50. Return only the exact JSON object and no explanation or Markdown.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "execute_now": {"type": "boolean"},
+          "contract_ack": {"type": "string", "const": "v50"}
+        },
+        "required": ["execute_now", "contract_ack"],
+        "additionalProperties": false
+      },
+      "selection_candidate": false
+    },
+    "enum_two_field_candidate": {
+      "instruction": "This is a non-semantic transport probe. Do not infer anything. Copy source_decision exactly into decision, set contract_ack to v50, and return only the exact JSON object with no explanation or Markdown.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "decision": {"type": "string", "enum": ["execute", "do_not_execute"]},
+          "contract_ack": {"type": "string", "enum": ["v50"]}
+        },
+        "required": ["decision", "contract_ack"],
+        "additionalProperties": false
+      },
+      "selection_candidate": true
+    },
+    "enum_single_field_candidate": {
+      "instruction": "This is a non-semantic transport probe. Do not infer anything. Copy source_decision exactly into decision and return only the exact JSON object with no explanation or Markdown.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "decision": {"type": "string", "enum": ["execute", "do_not_execute"]}
+        },
+        "required": ["decision"],
+        "additionalProperties": false
+      },
+      "selection_candidate": true
+    },
+    "scalar_enum_candidate": {
+      "instruction": "This is a non-semantic transport probe. Do not infer anything. Return source_decision as the exact top-level JSON string and no explanation or Markdown.",
+      "schema": {
+        "type": "string",
+        "enum": ["execute", "do_not_execute"]
+      },
+      "selection_candidate": true
+    }
+  },
+  "fair_latency_protocol": "Unload the model, run one unscored warm-up for each carrier, then run all 12 scored cases.",
+  "gates": {
+    "parse_success_rate": 1.0,
+    "source_decision_fidelity": 1.0,
+    "single_result_rate": 1.0,
+    "unexpected_content_rate": 0.0,
+    "p95_latency_seconds_at_most": 4.0
+  },
+  "selection_priority": [
+    "enum_two_field_candidate",
+    "enum_single_field_candidate",
+    "scalar_enum_candidate"
+  ],
+  "selection_rule": "Evaluate every carrier against all gates. Ignore the rejected V49 boolean control for selection. Choose the first eligible carrier in selection_priority, preferring a versioned two-field enum over weaker fallbacks.",
+  "expected_scored_call_count": 48,
+  "semantic_prompt_tuning_authorized": false,
+  "v51_fresh_holdout_construction_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}

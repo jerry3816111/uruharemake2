@@ -1,0 +1,1867 @@
+{
+  "schema": "uruha_qwen2b_binary_carrier_probe_raw_v50",
+  "evidence_status": "frozen_nonsemantic_qwen2b_format_probe",
+  "started_at": "2026-07-15T20:45:01+09:00",
+  "completed_at": "2026-07-15T20:46:03+09:00",
+  "runner_commit": "f9f887f7e14ee48f51443bcfd0214171a9954099",
+  "preregistration_sha256": "6be22d77a0645d629010810f75edbd8bedda2e8f145470d50695c2085b912499",
+  "dataset_sha256": "05ada1b03a345bb386207f4bc77897fb26d48976798e82318b1223065a5a6d02",
+  "carrier_instruction_sha256": {
+    "boolean_two_field_control": "8d828cb12ba325f95c2796a8964c4713427bd52e084ee5afe45cbb13af99384b",
+    "enum_two_field_candidate": "6412bc084f57a60e911ccf223fc1b3ea457df775746efb69ff8cad8b029a263f",
+    "enum_single_field_candidate": "23ff06626c1bbd2c0dda0e417d2f2ece6c4220aba9f97af7874de6d6c3ce6de9",
+    "scalar_enum_candidate": "debc2093645aecf0f602961c1ee0386b766d99bcbeb994036b8ceb2e3b7fd64a"
+  },
+  "model_snapshot": {
+    "model_tag": "qwen3.5:2b",
+    "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+    "size": 2741192820,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "2.3B",
+      "quantization_level": "Q8_0",
+      "context_length": 262144,
+      "embedding_length": 2048
+    },
+    "thinking": false
+  },
+  "warmup_rows": [
+    {
+      "carrier": "boolean_two_field_control",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 3.779279,
+          "total_duration_ns": 3778313166,
+          "load_duration_ns": 2859459208,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 188361000,
+          "eval_count": 32,
+          "eval_duration_ns": 690711000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 3.250882,
+          "total_duration_ns": 3249697792,
+          "load_duration_ns": 2368426709,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 172207000,
+          "eval_count": 32,
+          "eval_duration_ns": 671554000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 3.210155,
+          "total_duration_ns": 3209118375,
+          "load_duration_ns": 2341220083,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 147792000,
+          "eval_count": 32,
+          "eval_duration_ns": 683579000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.959583,
+          "total_duration_ns": 2958565625,
+          "load_duration_ns": 2338965583,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 122026000,
+          "eval_count": 22,
+          "eval_duration_ns": 460672000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    }
+  ],
+  "probe_rows": [
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_01",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.955071,
+          "total_duration_ns": 954389375,
+          "load_duration_ns": 228136833,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 24858000,
+          "eval_count": 32,
+          "eval_duration_ns": 666165000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_02",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"execute_now\": false}, \"required\": [\"execute_now\", \""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.116767,
+          "total_duration_ns": 1115828292,
+          "load_duration_ns": 205877375,
+          "prompt_eval_count": 147,
+          "prompt_eval_duration_ns": 174285000,
+          "eval_count": 32,
+          "eval_duration_ns": 698416000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_03",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": {\""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.093403,
+          "total_duration_ns": 1092435542,
+          "load_duration_ns": 203510125,
+          "prompt_eval_count": 146,
+          "prompt_eval_duration_ns": 174080000,
+          "eval_count": 32,
+          "eval_duration_ns": 676774000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_04",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.094936,
+          "total_duration_ns": 1093666125,
+          "load_duration_ns": 206329125,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 171573000,
+          "eval_count": 32,
+          "eval_duration_ns": 679302000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_05",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.11139,
+          "total_duration_ns": 1110409375,
+          "load_duration_ns": 203939208,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 174764000,
+          "eval_count": 32,
+          "eval_duration_ns": 694954000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_06",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": {\""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.09323,
+          "total_duration_ns": 1091766083,
+          "load_duration_ns": 205496250,
+          "prompt_eval_count": 146,
+          "prompt_eval_duration_ns": 178218000,
+          "eval_count": 32,
+          "eval_duration_ns": 671913000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_07",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": {\""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.093761,
+          "total_duration_ns": 1092786541,
+          "load_duration_ns": 208425666,
+          "prompt_eval_count": 147,
+          "prompt_eval_duration_ns": 172803000,
+          "eval_count": 32,
+          "eval_duration_ns": 675569000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_08",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.075931,
+          "total_duration_ns": 1074973583,
+          "load_duration_ns": 206980000,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 170999000,
+          "eval_count": 32,
+          "eval_duration_ns": 661071000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_09",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.1097,
+          "total_duration_ns": 1107678709,
+          "load_duration_ns": 204676125,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 174370000,
+          "eval_count": 32,
+          "eval_duration_ns": 691761000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_10",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": {\""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.094859,
+          "total_duration_ns": 1093878583,
+          "load_duration_ns": 205376667,
+          "prompt_eval_count": 147,
+          "prompt_eval_duration_ns": 173320000,
+          "eval_count": 32,
+          "eval_duration_ns": 677822000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_11",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"execute_now\": false}, \"required\": [\"execute_now\", \""
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.120233,
+          "total_duration_ns": 1119204042,
+          "load_duration_ns": 206724167,
+          "prompt_eval_count": 148,
+          "prompt_eval_duration_ns": 174230000,
+          "eval_count": 32,
+          "eval_duration_ns": 701938000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "boolean_two_field_control",
+      "case_id": "v50_carrier_12",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"const\": \"v50\", \"type\": \"string\"}, \"execute_now\": true"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.09177,
+          "total_duration_ns": 1090758541,
+          "load_duration_ns": 204798375,
+          "prompt_eval_count": 144,
+          "prompt_eval_duration_ns": 172126000,
+          "eval_count": 32,
+          "eval_duration_ns": 677219000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_01",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.958124,
+          "total_duration_ns": 957203458,
+          "load_duration_ns": 203192792,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 27160000,
+          "eval_count": 32,
+          "eval_duration_ns": 690891000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_02",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"do_not_execute\"}, \"required\": [\"decision\","
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.100406,
+          "total_duration_ns": 1099467250,
+          "load_duration_ns": 206694667,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 174109000,
+          "eval_count": 32,
+          "eval_duration_ns": 681932000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_03",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"enum\": [\"v50\"], \"type\": \"string\"}, \"decision\": {\"enum"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.087485,
+          "total_duration_ns": 1086384041,
+          "load_duration_ns": 203084125,
+          "prompt_eval_count": 144,
+          "prompt_eval_duration_ns": 171224000,
+          "eval_count": 32,
+          "eval_duration_ns": 675668000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_04",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.090276,
+          "total_duration_ns": 1089288833,
+          "load_duration_ns": 207712708,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 170871000,
+          "eval_count": 32,
+          "eval_duration_ns": 673685000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_05",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.095515,
+          "total_duration_ns": 1094496042,
+          "load_duration_ns": 205224000,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 171345000,
+          "eval_count": 32,
+          "eval_duration_ns": 681774000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_06",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"do_not_execute\"}, \"required\": [\"decision\","
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.090959,
+          "total_duration_ns": 1090055916,
+          "load_duration_ns": 207452916,
+          "prompt_eval_count": 144,
+          "prompt_eval_duration_ns": 171512000,
+          "eval_count": 32,
+          "eval_duration_ns": 674838000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_07",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"enum\": [\"v50\"], \"type\": \"string\"}, \"decision\": {\"enum"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.091578,
+          "total_duration_ns": 1090692042,
+          "load_duration_ns": 207370584,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 171303000,
+          "eval_count": 32,
+          "eval_duration_ns": 675228000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_08",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.097505,
+          "total_duration_ns": 1096447084,
+          "load_duration_ns": 205593084,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 168438000,
+          "eval_count": 32,
+          "eval_duration_ns": 686433000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_09",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.117586,
+          "total_duration_ns": 1116631459,
+          "load_duration_ns": 207078417,
+          "prompt_eval_count": 143,
+          "prompt_eval_duration_ns": 176052000,
+          "eval_count": 32,
+          "eval_duration_ns": 697115000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_10",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"enum\": [\"v50\"], \"type\": \"string\"}, \"decision\": {\"enum"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.094699,
+          "total_duration_ns": 1093520875,
+          "load_duration_ns": 204655167,
+          "prompt_eval_count": 145,
+          "prompt_eval_duration_ns": 174594000,
+          "eval_count": 32,
+          "eval_duration_ns": 678462000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_11",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": {\"enum\": [\"v50\"], \"type\": \"string\"}, \"decision\": {\"enum"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.099206,
+          "total_duration_ns": 1098228500,
+          "load_duration_ns": 203215625,
+          "prompt_eval_count": 146,
+          "prompt_eval_duration_ns": 171905000,
+          "eval_count": 32,
+          "eval_duration_ns": 686165000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_two_field_candidate",
+      "case_id": "v50_carrier_12",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"contract_ack\": \"v50\", \"decision\": \"execute\"}, \"required\": [\"decision\", \"contract"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.09135,
+          "total_duration_ns": 1090367167,
+          "load_duration_ns": 207338667,
+          "prompt_eval_count": 142,
+          "prompt_eval_duration_ns": 171956000,
+          "eval_count": 32,
+          "eval_duration_ns": 674849000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_01",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.979548,
+          "total_duration_ns": 978633791,
+          "load_duration_ns": 202610458,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 25800000,
+          "eval_count": 32,
+          "eval_duration_ns": 713844000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_02",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.058072,
+          "total_duration_ns": 1057110708,
+          "load_duration_ns": 207249167,
+          "prompt_eval_count": 114,
+          "prompt_eval_duration_ns": 149745000,
+          "eval_count": 32,
+          "eval_duration_ns": 663810000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_03",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.063607,
+          "total_duration_ns": 1062568334,
+          "load_duration_ns": 205122334,
+          "prompt_eval_count": 113,
+          "prompt_eval_duration_ns": 146079000,
+          "eval_count": 32,
+          "eval_duration_ns": 674456000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_04",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.060973,
+          "total_duration_ns": 1059976625,
+          "load_duration_ns": 206838625,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 142494000,
+          "eval_count": 32,
+          "eval_duration_ns": 674592000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_05",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.078436,
+          "total_duration_ns": 1076863792,
+          "load_duration_ns": 202690209,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 148329000,
+          "eval_count": 32,
+          "eval_duration_ns": 688515000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_06",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.072546,
+          "total_duration_ns": 1071419000,
+          "load_duration_ns": 206945625,
+          "prompt_eval_count": 113,
+          "prompt_eval_duration_ns": 148102000,
+          "eval_count": 32,
+          "eval_duration_ns": 679573000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_07",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.080805,
+          "total_duration_ns": 1079804667,
+          "load_duration_ns": 213480792,
+          "prompt_eval_count": 114,
+          "prompt_eval_duration_ns": 148115000,
+          "eval_count": 32,
+          "eval_duration_ns": 682144000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_08",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.082357,
+          "total_duration_ns": 1081365500,
+          "load_duration_ns": 206257041,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 149550000,
+          "eval_count": 32,
+          "eval_duration_ns": 687328000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_09",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.080227,
+          "total_duration_ns": 1079121208,
+          "load_duration_ns": 208157833,
+          "prompt_eval_count": 112,
+          "prompt_eval_duration_ns": 146390000,
+          "eval_count": 32,
+          "eval_duration_ns": 685728000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_10",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.072392,
+          "total_duration_ns": 1071248959,
+          "load_duration_ns": 206881250,
+          "prompt_eval_count": 114,
+          "prompt_eval_duration_ns": 148411000,
+          "eval_count": 32,
+          "eval_duration_ns": 679327000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_11",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.072225,
+          "total_duration_ns": 1070935375,
+          "load_duration_ns": 207195416,
+          "prompt_eval_count": 115,
+          "prompt_eval_duration_ns": 147906000,
+          "eval_count": 32,
+          "eval_duration_ns": 676379000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "enum_single_field_candidate",
+      "case_id": "v50_carrier_12",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"additionalProperties\": false, \"properties\": {\"decision\": {\"enum\": [\"execute\", \"do_not_execute\"], \"type\": \"string\"}}, \"required"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_not_object",
+            "invalid_decision"
+          ],
+          "decision": null,
+          "result_count": 0,
+          "single_result": false,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.087798,
+          "total_duration_ns": 1086794500,
+          "load_duration_ns": 207457458,
+          "prompt_eval_count": 111,
+          "prompt_eval_duration_ns": 146125000,
+          "eval_count": 32,
+          "eval_duration_ns": 676742000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_01",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.73346,
+          "total_duration_ns": 732532875,
+          "load_duration_ns": 203933417,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 26828000,
+          "eval_count": 22,
+          "eval_duration_ns": 464778000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_02",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.875522,
+          "total_duration_ns": 874441834,
+          "load_duration_ns": 205774209,
+          "prompt_eval_count": 86,
+          "prompt_eval_duration_ns": 123679000,
+          "eval_count": 24,
+          "eval_duration_ns": 508224000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_03",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.868457,
+          "total_duration_ns": 867398542,
+          "load_duration_ns": 206324000,
+          "prompt_eval_count": 85,
+          "prompt_eval_duration_ns": 124247000,
+          "eval_count": 24,
+          "eval_duration_ns": 499355000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_04",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.82925,
+          "total_duration_ns": 828332375,
+          "load_duration_ns": 204725500,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 120961000,
+          "eval_count": 22,
+          "eval_duration_ns": 465317000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_05",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"transport_type\":\"non_semantic_transport_probe\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "transport_type": "non_semantic_transport_probe"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.918412,
+          "total_duration_ns": 917325667,
+          "load_duration_ns": 202899625,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 121648000,
+          "eval_count": 26,
+          "eval_duration_ns": 555180000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_06",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.867949,
+          "total_duration_ns": 866950584,
+          "load_duration_ns": 206733459,
+          "prompt_eval_count": 85,
+          "prompt_eval_duration_ns": 122334000,
+          "eval_count": 24,
+          "eval_duration_ns": 499873000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_07",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.545614,
+          "total_duration_ns": 544615667,
+          "load_duration_ns": 204938500,
+          "prompt_eval_count": 86,
+          "prompt_eval_duration_ns": 121455000,
+          "eval_count": 9,
+          "eval_duration_ns": 182212000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_08",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.833106,
+          "total_duration_ns": 832107666,
+          "load_duration_ns": 206957541,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 121669000,
+          "eval_count": 22,
+          "eval_duration_ns": 466858000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_09",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.815958,
+          "total_duration_ns": 815008916,
+          "load_duration_ns": 204995000,
+          "prompt_eval_count": 84,
+          "prompt_eval_duration_ns": 118629000,
+          "eval_count": 22,
+          "eval_duration_ns": 454649000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_10",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.543581,
+          "total_duration_ns": 542368708,
+          "load_duration_ns": 205999833,
+          "prompt_eval_count": 86,
+          "prompt_eval_duration_ns": 121268000,
+          "eval_count": 9,
+          "eval_duration_ns": 178172000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_11",
+      "source_decision": "do_not_execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"source_decision\":\"do_not_execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "source_decision": "do_not_execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.544148,
+          "total_duration_ns": 543068625,
+          "load_duration_ns": 203353375,
+          "prompt_eval_count": 87,
+          "prompt_eval_duration_ns": 124533000,
+          "eval_count": 9,
+          "eval_duration_ns": 178288000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "carrier": "scalar_enum_candidate",
+      "case_id": "v50_carrier_12",
+      "source_decision": "execute",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"carrier_schema\":{\"enum\":[\"execute\",\"do_not_execute\"],\"type\":\"string\"},\"source_decision\":\"execute\"}"
+        },
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_decision"
+          ],
+          "decision": {
+            "carrier_schema": {
+              "enum": [
+                "execute",
+                "do_not_execute"
+              ],
+              "type": "string"
+            },
+            "source_decision": "execute"
+          },
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 0.815591,
+          "total_duration_ns": 814488500,
+          "load_duration_ns": 205466333,
+          "prompt_eval_count": 83,
+          "prompt_eval_duration_ns": 120921000,
+          "eval_count": 22,
+          "eval_duration_ns": 452075000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    }
+  ]
+}
