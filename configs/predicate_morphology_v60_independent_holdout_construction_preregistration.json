@@ -1,0 +1,162 @@
+{
+  "schema": "uruha_predicate_morphology_independent_holdout_construction_preregistration_v60",
+  "created_at": "2026-07-16T03:00:00+09:00",
+  "research_question": "Does V60 predicate morphology generalize beyond the consumed V59 holdout to fresh Japanese predicate forms while preserving real embodied-action requests and suppressing third-party descriptions?",
+  "evidence_boundary": "This document freezes data construction only. No V59 state, V60 state, compiler, or model result may be produced until the completed dataset and construction audit are separately closed and the evaluation gates and harness are merged.",
+  "frozen_candidate": {
+    "implementation": "predicate_morphology_v60.py",
+    "implementation_sha256": "e2ba1d7116fff85907eb73d6f68047cf00c42f792133a1bd6baa74de4577b178",
+    "development_closure": "configs/predicate_morphology_v60_development_closure.json",
+    "development_closure_sha256": "e51c5f53e166809420c686b4d7c0dd1567361b4bd67a749f6a03209911e054fb"
+  },
+  "external_source": {
+    "source_name": "Tatoeba Japanese detailed sentences export",
+    "download_url": "https://downloads.tatoeba.org/exports/per_language/jpn/jpn_sentences_detailed.tsv.bz2",
+    "snapshot_last_modified": "2026-07-11T06:27:14Z",
+    "download_sha256": "30c7a77475b0af1c43f57950303cf200e06045931cb7dae915954c5581c19a50",
+    "selected_sentence_ids": [
+      77061,
+      88830,
+      89236,
+      89369,
+      105809,
+      106208,
+      140700,
+      141579,
+      147040,
+      187634,
+      226224,
+      1487199,
+      7422030,
+      9510760,
+      9824718,
+      11578540,
+      13038799,
+      13146797,
+      13176060
+    ],
+    "case_count": 19,
+    "grounded_target_count": 22,
+    "selection_method": "Researcher-selected exact Japanese sentences containing independently interpretable expression, gaze, or gesture predicates. Selection used only corpus text, source metadata, historical-overlap checks, and ontology-groundability checks.",
+    "official_labels_provided": false,
+    "labels_are_researcher_authored": true,
+    "base_model_pretraining_exclusion_guaranteed": false,
+    "license_problem_rows_allowed": false
+  },
+  "controlled_matrix": {
+    "source_type": "controlled_researcher_authored",
+    "model_assistance_used": false,
+    "human_blind_review_used": false,
+    "official_corpus_claimed": false,
+    "target_ids_per_family": [
+      "expression.angry",
+      "expression.happy",
+      "expression.neutral",
+      "expression.sad",
+      "expression.surprised",
+      "gaze.down",
+      "gaze.left",
+      "gaze.right",
+      "gaze.user",
+      "motion.idle",
+      "motion.nod",
+      "motion.point",
+      "motion.shake_head",
+      "motion.wave"
+    ],
+    "families": {
+      "controlled_completed_benefactive_without_time_adverb": {
+        "case_count": 14,
+        "expected_commitment": "mentioned",
+        "expected_action": false,
+        "expected_predicate_force": "completed_benefactive",
+        "expected_relation": "third_party_completed_benefactive_description"
+      },
+      "controlled_explicit_third_party_polite_benefactive": {
+        "case_count": 14,
+        "expected_commitment": "mentioned",
+        "expected_action": false,
+        "expected_predicate_force": "declarative",
+        "expected_relation": "third_party_polite_benefactive_description"
+      },
+      "controlled_omitted_subject_current_request": {
+        "case_count": 14,
+        "expected_commitment": "requested",
+        "expected_action": true,
+        "expected_predicate_force": "current_directive",
+        "expected_relation": null
+      },
+      "controlled_negative_benefactive_or_focus_event": {
+        "case_count": 14,
+        "expected_commitment": "negated",
+        "expected_action": false,
+        "expected_predicate_force": "declarative",
+        "expected_relation": null
+      },
+      "controlled_embedded_speech_request": {
+        "case_count": 14,
+        "expected_commitment": "mentioned",
+        "expected_action": false,
+        "expected_predicate_force": "declarative",
+        "expected_relation": "embedded_speech_content"
+      },
+      "controlled_full_predicate_direct_request": {
+        "case_count": 14,
+        "expected_commitment": "requested",
+        "expected_action": true,
+        "expected_predicate_force": "current_directive",
+        "expected_relation": null
+      },
+      "controlled_nonbenefactive_third_party_declarative": {
+        "case_count": 14,
+        "expected_commitment": "mentioned",
+        "expected_action": false,
+        "expected_predicate_force": "declarative",
+        "expected_relation": null
+      }
+    },
+    "case_count": 98,
+    "grounded_target_count": 98
+  },
+  "frozen_totals": {
+    "case_count": 117,
+    "grounded_target_count": 120,
+    "expected_action_case_count": 29,
+    "expected_no_action_case_count": 88
+  },
+  "historical_exclusion": {
+    "exclude_all_tatoeba_ids_in": "datasets/sources/tatoeba_jpn_v*.tsv",
+    "exclude_exact_text_from": [
+      "datasets/relation_safety_state_v58_holdout.json",
+      "datasets/event_role_governor_v59_holdout.json",
+      "test_predicate_morphology_v60.py"
+    ],
+    "normalized_near_duplicate_similarity_at_or_above": 0.94,
+    "allowed_historical_exact_overlap_count": 0,
+    "allowed_historical_near_duplicate_count": 0
+  },
+  "construction_audit": {
+    "allowed": [
+      "source snapshot hash and selected-row metadata",
+      "case and target counts",
+      "gold-label schema and expected-call derivation",
+      "V47 ontology grounding only",
+      "historical source-ID, exact-text, and near-duplicate checks"
+    ],
+    "forbidden": [
+      "V59 state evaluation",
+      "V60 state evaluation",
+      "V57 compiler evaluation",
+      "local or remote model inference",
+      "inspection of any system answer"
+    ],
+    "replacement_policy": "A construction failure may be repaired before dataset closure using corpus text and ontology groundability only. Every replacement and reason must be recorded, and no failed system output may guide the replacement."
+  },
+  "construction_before_preregistration_merge_authorized": false,
+  "evaluation_before_dataset_closure_authorized": false,
+  "model_calls_authorized": 0,
+  "runtime_change_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
