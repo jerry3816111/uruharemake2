@@ -1,0 +1,188 @@
+{
+  "schema": "uruha_predicate_morphology_independent_holdout_preregistration_v60",
+  "created_at": "2026-07-16T03:18:00+09:00",
+  "research_question": "Does answer-free V60 focus-predicate morphology improve fresh embodied-action authorization over V59 when both conditions share one local-model fallback per target and the same V57 compiler?",
+  "causal_hypothesis": "V59 over-authorizes positive third-party benefactive predicates because it does not represent finite predicate force and aspect, and it misses some direct requests when the grounded target mention is shorter than the full predicate. V60 should improve state and final-action accuracy without suppressing real requests.",
+  "conditions": [
+    "fresh_v59_state_with_frozen_v57_compiler_control",
+    "fresh_v60_state_with_frozen_v57_compiler_candidate"
+  ],
+  "single_variable": "focus_predicate_morphology",
+  "matched_controls": [
+    "same user input and case order",
+    "same one fresh local-model fallback per grounded target",
+    "same model snapshot, prompt, temperature, top_p, seed, context, and output budget",
+    "same grounded candidates and target mention inventory",
+    "same V57 action compiler and action ontology",
+    "same scoring code and gold labels hidden from runner"
+  ],
+  "fixed_model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "parameter_size": "4.7B",
+    "quantization": "Q4_K_M",
+    "blob_bytes": 3389983735,
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260760,
+    "context_tokens": 3072,
+    "maximum_output_tokens": 48,
+    "paid_api": false
+  },
+  "fixed_carrier": "two_field_object_schema",
+  "model_call_budget": 120,
+  "frozen_inputs": {
+    "construction_closure": "configs/predicate_morphology_v60_independent_holdout_construction_closure.json",
+    "construction_closure_sha256": "9e9118859ca101735bdb4307da9c5caea4292d52f5510f148d21a1a42f7e7873",
+    "construction_preregistration": "configs/predicate_morphology_v60_independent_holdout_construction_preregistration.json",
+    "construction_preregistration_sha256": "534a47b2a5fa66a22d03d62cdce495a50af0ee27ef8e9fa439e12ca7b1a0ebc8",
+    "dataset": "datasets/predicate_morphology_v60_independent_holdout.json",
+    "dataset_sha256": "c2c3daa25d64f79f33ec92767b1322aba8464442b09801fb16b60e37b0162ee5",
+    "external_source_snapshot": "datasets/sources/tatoeba_jpn_v60_selected.tsv",
+    "external_source_snapshot_sha256": "7754c8a8ba890c39dde49eefa026c0829084f4a5d16b4fe94ea21414e434a3d9",
+    "construction_audit": "reports/predicate_morphology_v60_independent_holdout_audit.json",
+    "construction_audit_sha256": "e745ab6c17ca61271ac6440217b4b24d15c101c6a7cac7cb71b332a884c1afbe",
+    "v59_state_control": "event_role_governor_v59.py",
+    "v59_state_control_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "v60_state_candidate": "predicate_morphology_v60.py",
+    "v60_state_candidate_sha256": "e2ba1d7116fff85907eb73d6f68047cf00c42f792133a1bd6baa74de4577b178",
+    "v57_frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "v57_frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "target_pattern_contract": "configs/relation_safety_state_v58_holdout_preregistration.json",
+    "target_pattern_contract_sha256": "1e37ee1af87ae3073b8c0e308b1e1fe3fad70974d7ca4b1ed0834ff76f479c2d",
+    "v52_prompt_config": "configs/precise_target_mentions_v52_preregistration.json",
+    "v52_prompt_config_sha256": "585252540943b82a635dbb185434928722d37447b4b63e079669e5268082b533",
+    "v51_prompt_config": "configs/target_event_map_v51_preregistration.json",
+    "v51_prompt_config_sha256": "e1522280dfc6ba8c5daae7245a864e4f1fe148d7d112a8197487fe28ea3ca36a",
+    "v45_discourse_config": "configs/discourse_state_perception_v45_preregistration.json",
+    "v45_discourse_config_sha256": "a0b0df8f7af2705c1327586cdf6fc02c4358b0d7b105777b68c485f8303b8881",
+    "v44_semantic_lock": "configs/commitment_target_isolation_v44_semantic_lock.json",
+    "v44_semantic_lock_sha256": "e1b9ccda2f6c70e4a8f41190c9e30a2c3164b55ab91666dd157cbe512744db02",
+    "case_count": 117,
+    "grounded_target_count": 120,
+    "external_exact_case_count": 19,
+    "external_exact_target_count": 22,
+    "controlled_case_count": 98,
+    "controlled_target_count": 98,
+    "requested_target_count": 29,
+    "action_case_count": 29,
+    "no_action_case_count": 88
+  },
+  "expected_morphology_by_family": {
+    "controlled_completed_benefactive_without_time_adverb": {
+      "predicate_force": "completed_benefactive",
+      "event_aspect": "completed",
+      "event_owner": "third_party",
+      "request_governor": "none",
+      "direct_focus_request": false,
+      "relation_types": ["third_party_completed_benefactive_description"]
+    },
+    "controlled_explicit_third_party_polite_benefactive": {
+      "predicate_force": "declarative",
+      "event_aspect": "unknown",
+      "event_owner": "third_party",
+      "request_governor": "none",
+      "direct_focus_request": false,
+      "relation_types": ["third_party_polite_benefactive_description"]
+    },
+    "controlled_omitted_subject_current_request": {
+      "predicate_force": "current_directive",
+      "event_aspect": "current",
+      "event_owner": "addressee",
+      "request_governor": "focus_event",
+      "direct_focus_request": true,
+      "relation_types": []
+    },
+    "controlled_negative_benefactive_or_focus_event": {
+      "predicate_force": "declarative",
+      "event_aspect": "unknown",
+      "event_owner": "third_party",
+      "request_governor": "none",
+      "direct_focus_request": false,
+      "relation_types": []
+    },
+    "controlled_embedded_speech_request": {
+      "predicate_force": "declarative",
+      "event_aspect": "unknown",
+      "event_owner": "third_party",
+      "request_governor": "speech_act",
+      "direct_focus_request": false,
+      "relation_types": ["embedded_speech_content"]
+    },
+    "controlled_full_predicate_direct_request": {
+      "predicate_force": "current_directive",
+      "event_aspect": "current",
+      "event_owner": "addressee",
+      "request_governor": "focus_event",
+      "direct_focus_request": true,
+      "relation_types": []
+    },
+    "controlled_nonbenefactive_third_party_declarative": {
+      "predicate_force": "declarative",
+      "event_aspect": "unknown",
+      "event_owner": "third_party",
+      "request_governor": "none",
+      "direct_focus_request": false,
+      "relation_types": []
+    }
+  },
+  "candidate_state_gates": {
+    "correct_commitment_count_at_least": 114,
+    "commitment_accuracy_at_least": 0.95,
+    "requested_precision": 1.0,
+    "requested_recall_at_least": 0.9655172413793104,
+    "external_target_accuracy_at_least": 0.8181818181818182,
+    "controlled_target_accuracy_at_least": 0.9795918367346939
+  },
+  "candidate_compiler_gates": {
+    "ordered_exact_count_at_least": 113,
+    "ordered_exact_accuracy_at_least": 0.9658119658119658,
+    "action_ordered_exact_accuracy_at_least": 0.9655172413793104,
+    "required_call_recall_at_least": 0.9655172413793104,
+    "no_action_specificity": 1.0,
+    "false_action_case_count": 0,
+    "external_exact_accuracy_at_least": 0.8947368421052632,
+    "controlled_exact_accuracy_at_least": 0.9795918367346939,
+    "authorization_provenance_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "commitment_mutation_count": 0
+  },
+  "morphology_generalization_gates": {
+    "controlled_slot_accuracy_at_least": 0.98,
+    "each_controlled_family_slot_accuracy_at_least": 0.95,
+    "completed_relation_recall_at_least": 0.9285714285714286,
+    "polite_description_relation_recall_at_least": 0.9285714285714286,
+    "omitted_subject_direct_request_recall_at_least": 0.9285714285714286,
+    "full_predicate_direct_request_recall_at_least": 0.9285714285714286,
+    "embedded_speech_relation_recall_at_least": 0.9285714285714286,
+    "negative_positive_relation_false_positive_count": 0,
+    "nonbenefactive_relation_false_positive_count": 0
+  },
+  "matched_comparison_gates": {
+    "state_correct_count_delta_at_least": 14,
+    "ordered_exact_count_delta_at_least": 14,
+    "case_fix_count_at_least": 14,
+    "state_regression_count_at_most": 0,
+    "case_regression_count_at_most": 0,
+    "false_action_case_count_delta_at_most": -14,
+    "required_call_recall_delta_at_least": 0.0,
+    "two_sided_exact_mcnemar_p_at_most": 0.05
+  },
+  "decision_rule": {
+    "all_gates_pass": "seal V60 predicate morphology for this bounded action-authorization slice and permit a separate runtime-shadow integration preregistration",
+    "absolute_gate_failure": "reject V60 advancement and attribute the failure by external source, controlled family, state, morphology, or compiler",
+    "matched_gain_failure": "retain V60 as an engineering candidate only; do not claim causal improvement over V59",
+    "any_valid_request_regression": "reject runtime advancement regardless of aggregate score",
+    "model_semantic_only_residual": "do not change model size unless the deterministic V60 structure is correct and the frozen fallback is the remaining cause"
+  },
+  "holdout_inference_before_harness_freeze_authorized": false,
+  "post_run_tuning_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "post_run_case_exclusion_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
