@@ -20,7 +20,7 @@ def parse_commitment_only(raw_reply):
     if set(payload) != {"commitment"}:
         errors.append("root_fields_mismatch")
     commitment = payload.get("commitment")
-    if commitment not in COMMITMENTS:
+    if not isinstance(commitment, str) or commitment not in COMMITMENTS:
         errors.append("invalid_commitment")
     return {
         "parse_success": not errors,

@@ -31,10 +31,14 @@ class RelationalCommitmentContextV43Tests(unittest.TestCase):
             json.dumps({"commitment": "requested", "evidence_index": 0})
         )
         invalid = parse_commitment_only(json.dumps({"commitment": "execute"}))
+        nested = parse_commitment_only(
+            json.dumps({"commitment": {"value": "requested"}})
+        )
         self.assertTrue(valid["parse_success"])
         self.assertEqual(valid["commitment"], "requested")
         self.assertIn("root_fields_mismatch", extra["errors"])
         self.assertIn("invalid_commitment", invalid["errors"])
+        self.assertIn("invalid_commitment", nested["errors"])
 
     def test_requested_evidence_prefers_latest_non_negated_anchor(self):
         text = "手を振らないで。でも最後に手を振って。"
