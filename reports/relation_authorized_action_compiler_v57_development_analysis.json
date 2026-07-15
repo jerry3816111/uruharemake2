@@ -1,0 +1,159 @@
+{
+  "schema": "uruha_relation_authorized_action_compiler_development_analysis_v57",
+  "evidence_status": "development_replay_on_consumed_v56_holdout",
+  "conditions": {
+    "v56_with_frozen_v48_compiler_control": {
+      "case_count": 64,
+      "exact_call_count": 60,
+      "exact_call_accuracy": 0.9375,
+      "call_failure_count": 4,
+      "call_failures": [
+        {
+          "case_id": "v56h_tatoeba_125613",
+          "family": "external_tatoeba_action_boundary",
+          "user_input": "通りを横断する前に左右を見なさい。",
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "left"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v56h_description_02",
+          "family": "controlled_local_description",
+          "user_input": "先ほど右を向きましたが、今は笑ってほしい。",
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            }
+          ],
+          "actual_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v56h_idle_01",
+          "family": "controlled_positive_idle",
+          "user_input": "今は動かないでいてください。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "actual_calls": []
+        },
+        {
+          "case_id": "v56h_idle_04",
+          "family": "controlled_positive_idle",
+          "user_input": "動かずにいて。",
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "actual_calls": []
+        }
+      ],
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.8824,
+      "false_action_count": 1,
+      "negation_violation_count": 0,
+      "accepted_call_anchor_coverage": 1.0,
+      "authorization_provenance_coverage": 0.0,
+      "ungrounded_execution_count": 0,
+      "unresolved_model_only_execution_count": 0,
+      "commitment_mutation_count": 0
+    },
+    "v56_with_relation_authorized_v57_compiler_candidate": {
+      "case_count": 64,
+      "exact_call_count": 64,
+      "exact_call_accuracy": 1.0,
+      "call_failure_count": 0,
+      "call_failures": [],
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_count": 0,
+      "negation_violation_count": 0,
+      "accepted_call_anchor_coverage": 1.0,
+      "authorization_provenance_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "unresolved_model_only_execution_count": 0,
+      "commitment_mutation_count": 0
+    }
+  },
+  "comparison": {
+    "exact_call_count_delta": 4,
+    "false_action_count_delta": -1,
+    "fixed_call_case_ids": [
+      "v56h_description_02",
+      "v56h_idle_01",
+      "v56h_idle_04",
+      "v56h_tatoeba_125613"
+    ],
+    "fixed_call_count": 4,
+    "call_regression_case_ids": [],
+    "call_regression_count": 0
+  },
+  "targeted_fixed_call_case_ids": [
+    "v56h_description_02",
+    "v56h_idle_01",
+    "v56h_idle_04",
+    "v56h_tatoeba_125613"
+  ],
+  "gate": {
+    "passed": true,
+    "checks": {
+      "frozen_commitment_correct_count": true,
+      "frozen_commitment_mutation_count": true,
+      "candidate_exact_call_count": true,
+      "candidate_exact_call_accuracy": true,
+      "candidate_no_action_specificity": true,
+      "candidate_required_action_recall": true,
+      "candidate_false_action_count": true,
+      "candidate_negation_violation_count": true,
+      "candidate_accepted_call_anchor_coverage": true,
+      "candidate_authorization_provenance_coverage": true,
+      "candidate_ungrounded_execution_count": true,
+      "targeted_fixed_call_count": true,
+      "call_regression_count": true,
+      "unresolved_model_only_execution_count": true
+    },
+    "failed_checks": []
+  },
+  "decision": "authorize_independent_v57_compiler_holdout",
+  "fresh_holdout_claim_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "broad_human_likeness_claim_authorized": false
+}
