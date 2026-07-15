@@ -1,0 +1,91 @@
+{
+  "schema": "uruha_discourse_state_perception_holdout_lock_v45",
+  "created_at": "2026-07-15T17:00:12+09:00",
+  "authorization_provenance": {
+    "development_preregistration": "configs/discourse_state_perception_v45_preregistration.json",
+    "development_preregistration_sha256": "a0b0df8f7af2705c1327586cdf6fc02c4358b0d7b105777b68c485f8303b8881",
+    "development_raw": "reports/discourse_state_perception_v45_development_raw.json",
+    "development_raw_sha256": "350ac5b0b9992345acec7f963413583f9937aa59c79334528a8007f048907d7d",
+    "development_analysis": "reports/discourse_state_perception_v45_development_analysis.json",
+    "development_analysis_sha256": "dc24f6808defbba2464aaec86019c2b89008bfddc8c6aec20b25fe8a3e03c591",
+    "development_gate_passed": true
+  },
+  "frozen_implementations": {
+    "v45_detector": "discourse_state_perception_v45.py",
+    "v45_detector_sha256": "c69ffdf964c21e3eb33fa0a94f2ed29cba010a2f916ffbc1adae5f05c426f1e4",
+    "v45_runner": "run_discourse_state_perception_v45.py",
+    "v45_runner_sha256": "d76d798ab16ab384be2ab83eaf380e8697e3329bf38adf14a421ac187258538b",
+    "v44_semantic_lock": "configs/commitment_target_isolation_v44_semantic_lock.json",
+    "v44_semantic_lock_sha256": "e1b9ccda2f6c70e4a8f41190c9e30a2c3164b55ab91666dd157cbe512744db02",
+    "v44_runner": "run_commitment_target_isolation_v44.py",
+    "v44_runner_sha256": "f160533a8a42bf566a9fe6735436c92f8e0705e547d1fc9f814ad9f129dee212"
+  },
+  "frozen_holdout": {
+    "dataset": "datasets/discourse_state_perception_v45_holdout.json",
+    "dataset_sha256": "a626da4c44181cd5dc0891c28ee4204ab9082d1009fa0df795de60f505363cbf",
+    "builder": "build_discourse_state_v45_holdout.py",
+    "builder_sha256": "a614504246b9d5ead162dd868ff40d9aa5e73d03c0f6a57cb9d2c46fe1f0c4cd",
+    "construction_audit": "reports/discourse_state_perception_v45_holdout_audit.json",
+    "construction_audit_sha256": "b35afbe12472fe9798d61b5def06d5ce105a0200443fc116063bc273afa29f1a",
+    "audit_runner": "audit_discourse_state_v45_holdout.py",
+    "audit_runner_sha256": "3e46fe7a4f5675b35edb691786feddbbf65f0a1ef16dd51e24edbfd09e77b221",
+    "case_count": 48,
+    "family_count": 8,
+    "minimum_cases_per_family": 6,
+    "exact_development_utterance_overlap_count": 0,
+    "candidate_target_recall": 1.0,
+    "candidate_precision": 0.9683,
+    "construction_gate_passed": true
+  },
+  "matched_conditions": {
+    "v44_scope_control": "Frozen V44 final focus-isolated scope condition, evaluated on the holdout with the same model/generation/carrier as the candidate.",
+    "v45_discourse_candidate": "Frozen V45 taxonomy and discourse-signal candidate, with no prompt, ontology, parser, detector, or carrier changes after holdout freeze."
+  },
+  "fixed_model_and_generation": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260745,
+    "context_tokens": 2048,
+    "maximum_output_tokens": 48,
+    "carrier": "two_field_object_schema"
+  },
+  "taxonomy_boundary_tags": [
+    "cessation",
+    "referential_withdrawal",
+    "pending_choice",
+    "conditional_hypothesis"
+  ],
+  "candidate_absolute_gates": {
+    "candidate_target_recall_at_least": 0.95,
+    "candidate_precision_at_least": 0.95,
+    "classifier_parse_success_rate_at_least": 0.95,
+    "commitment_accuracy_at_least": 0.9,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall_at_least": 0.95,
+    "supported_frame_case_exact_rate_at_least": 0.85,
+    "selected_evidence_support_rate_at_least": 0.9,
+    "compiled_call_exact_accuracy_at_least": 0.95,
+    "no_action_specificity": 1.0,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "extra_candidate_requested_count": 0,
+    "median_case_latency_seconds_at_most": 4.5,
+    "p95_case_latency_seconds_at_most": 10.0
+  },
+  "matched_comparison_gates": {
+    "commitment_accuracy_delta_vs_control_at_least": 0.02,
+    "taxonomy_boundary_correct_count_delta_at_least": 1,
+    "semantic_regression_count_at_most": 0
+  },
+  "decision_rule": "The V45 candidate must pass every absolute gate and every matched comparison gate. A pass authorizes only a new supported-action shadow-integration change and regression monitoring; it does not authorize physical VRM execution. Any failure stops V45 without prompt, ontology, parser, or detector tuning on this holdout.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "holdout_has_been_observed_by_model": false
+}
