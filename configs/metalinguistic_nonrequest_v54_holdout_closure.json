@@ -1,0 +1,76 @@
+{
+  "schema": "uruha_metalinguistic_nonrequest_independent_holdout_closure_v54",
+  "closed_at": "2026-07-15T23:15:00+09:00",
+  "preregistration": "configs/metalinguistic_nonrequest_v54_holdout_preregistration.json",
+  "raw_report": "reports/metalinguistic_nonrequest_v54_holdout_raw.json",
+  "raw_report_sha256": "dde72fcc8fe4d3c443b9c87616e0d471d321eed61d89b8a4f8fe6763e6060ba8",
+  "analysis_report": "reports/metalinguistic_nonrequest_v54_holdout_analysis.json",
+  "analysis_report_sha256": "2f636277e8c04580c2ff20f49c90708d83abf8908a1beb3d161a0ff01db3a113",
+  "human_readable_report": "reports/metalinguistic_nonrequest_v54_holdout_analysis.md",
+  "human_readable_report_sha256": "8a652de64659266dd99861f06fd7b0a610c799bdc2d402391a6d637600d0dc39",
+  "evidence_status": "independent_holdout_completed_and_consumed",
+  "model_accounting": {
+    "local_model": "qwen3.5:4b",
+    "model_calls": 76,
+    "paid_api_used": false,
+    "v54_additional_model_calls": 0
+  },
+  "headline_metrics": {
+    "fresh_v51_commitment": "60/76 (78.95%)",
+    "v54_hybrid_commitment": "70/76 (92.11%)",
+    "fresh_v51_exact_calls": "56/64 (87.50%)",
+    "v54_hybrid_exact_calls": "60/64 (93.75%)",
+    "fresh_v51_false_actions": 4,
+    "v54_hybrid_false_actions": 3,
+    "v54_deterministic_coverage": "66/76 (86.84%)",
+    "v54_resolved_accuracy": "62/66 (93.94%)",
+    "v54_fallback_accuracy": "8/10 (80.00%)"
+  },
+  "matched_effect": {
+    "commitment_correct_delta": 10,
+    "exact_call_delta": 4,
+    "false_action_delta": -1,
+    "semantic_fixes": 11,
+    "semantic_regressions": 1,
+    "call_fixes": 5,
+    "call_regressions": 1
+  },
+  "failure_attribution": {
+    "representation_failures": 0,
+    "resolved_state_errors": 4,
+    "fallback_model_errors": 2,
+    "compiler_only_failures": 1,
+    "mixed_semantic_and_compiler_failure_cases": 3,
+    "resolved_state_error_case_ids": [
+      "v54h_tatoeba_12574337",
+      "v54h_tatoeba_13056462",
+      "v54h_meta_04",
+      "v54h_mixed_04"
+    ],
+    "fallback_model_error_case_ids": [
+      "v54h_tatoeba_148428",
+      "v54h_tatoeba_13492141"
+    ],
+    "compiler_only_failure_case_ids": [
+      "v54h_mixed_02"
+    ]
+  },
+  "gates": {
+    "construction_passed": true,
+    "state_component_passed": false,
+    "matched_comparison_passed": false,
+    "end_to_end_passed": false
+  },
+  "decision": "preregister_local_model_size_comparison_on_frozen_abstentions",
+  "decision_boundary": "The model-size comparison is diagnostic only. Perfectly fixing both fallback errors would raise V54 to 72/76 (94.74%), still below the locked 95% hybrid commitment gate because four resolved state errors remain.",
+  "next_experiments": [
+    "Compare installed free local Qwen3.5 0.8B, 2B, frozen 4B, and 9B models only on the 10 frozen V54 abstentions.",
+    "After model diagnosis, preregister a structural successor for pending-scope, addressee/request-force, execution-prohibition paraphrase, and cross-domain correction errors.",
+    "Repair positive motion.idle compilation separately because correct requested state is currently blocked by the frozen V48 surface-negation compiler."
+  ],
+  "post_run_tuning_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
