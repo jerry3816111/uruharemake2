@@ -1,0 +1,123 @@
+{
+  "schema": "uruha_relation_bound_event_graph_development_preregistration_v56",
+  "created_at": "2026-07-15T23:42:05+09:00",
+  "research_question": "On consumed V54 evidence, can typed event relations recover the six attributed V54 semantic failures and all seven rejected V55 regressions without changing any correct V54 semantic target?",
+  "architecture_change": "Start from frozen V54, then represent local directive, shared directive, local description, conditional governance, local pending or hypothetical scope, execution prohibition, and cross-event replacement as typed relations over each grounded target event. V56 does not inherit V55's broad finite-assertion regex.",
+  "human_cognitive_rationale": "Understanding an utterance requires relations, not only nearby words. A condition can govern a later action, a final imperative can share force with a coordinated earlier action, and a descriptive predicate can remain local even when another clause contains a request.",
+  "evidence_boundary": "This is development replay on the already consumed V54 holdout. It can reject V56 or authorize a new independent holdout, but cannot establish fresh generalization, right-brain quality, broad human likeness, runtime readiness, or physical execution safety.",
+  "frozen_inputs": {
+    "implementation": "relation_bound_event_graph_v56.py",
+    "implementation_sha256": "b30e03a21b563725b8a2abfae04092be75ebfc864d0e1d1d2d446d0ca6754669",
+    "runner": "run_relation_bound_event_graph_v56.py",
+    "runner_sha256": "4544ac51a4318f5c2f295e8e77992866104809e8e3928bcef01cf8cb62079fda",
+    "analyzer": "analyze_relation_bound_event_graph_v56.py",
+    "analyzer_sha256": "7bf610ec176844caeae7a0a23c5b17fb5a73bbf3cb392b18edb0b9696ab61c63",
+    "dataset": "datasets/metalinguistic_nonrequest_v54_holdout.json",
+    "dataset_sha256": "a7fa415fdafed701b161085095ce0d2579d29a8773518a91140e5782d8e41830",
+    "v54_raw": "reports/metalinguistic_nonrequest_v54_holdout_raw.json",
+    "v54_raw_sha256": "dde72fcc8fe4d3c443b9c87616e0d471d321eed61d89b8a4f8fe6763e6060ba8",
+    "v54_closure": "configs/metalinguistic_nonrequest_v54_holdout_closure.json",
+    "v54_closure_sha256": "3d56a3e8cebc6d195a3948b572796d26ea1fe3dc4bda2d4706508475fb46ff83",
+    "v55_raw": "reports/mention_bound_discourse_operators_v55_development_raw.json",
+    "v55_raw_sha256": "b25007c26884619dc84b603f1bb47228eb9d1993d18563c941b164312ace2f88",
+    "v55_closure": "configs/mention_bound_discourse_operators_v55_closure.json",
+    "v55_closure_sha256": "33cdc153818630810c3729a8ffca9c9c776ef37d84464fff998c06bf12eaf87f",
+    "v52_config": "configs/precise_target_mentions_v52_preregistration.json",
+    "v52_config_sha256": "585252540943b82a635dbb185434928722d37447b4b63e079669e5268082b533",
+    "case_count": 64,
+    "grounded_target_count": 76,
+    "frozen_v54_correct_target_count": 70,
+    "frozen_v54_exact_call_count": 60,
+    "rejected_v55_correct_target_count": 68,
+    "rejected_v55_exact_call_count": 54
+  },
+  "conditions": [
+    "frozen_v54_hybrid_control",
+    "frozen_rejected_v55_hybrid",
+    "v56_deterministic_relation_graph_only",
+    "v56_selective_relation_graph_with_frozen_v51_fallback"
+  ],
+  "model_calls_authorized": false,
+  "target_mention_patterns": {
+    "expression.angry": "(?:険しい顔|怒)",
+    "expression.happy": "(?:笑顔|微笑|にこ|笑)",
+    "expression.neutral": "(?:ニュートラル|いつも通り|いつもの|無表情|普通|標準|真顔|元)",
+    "expression.sad": "(?:泣き顔|悲し)",
+    "expression.surprised": "(?:びっくり|驚)",
+    "gaze.down": "下",
+    "gaze.left": "左",
+    "gaze.right": "右",
+    "gaze.user": "(?:会話相手|こちら|こっち|正面|カメラ|目線|私|俺|僕|目)",
+    "motion.idle": "(?:そのままの姿勢|動かない|動かず|じっと|アイドル|待機)",
+    "motion.nod": "(?:うなず|頷|首[^、。！？!?]{0,8}縦|うん|はい)",
+    "motion.point": "(?:指差|指)",
+    "motion.shake_head": "(?:頭[^、。！？!?]{0,8}左右|首[^、。！？!?]{0,8}横|いやいや|違うって|かぶり)",
+    "motion.wave": "手[^、。！？!?]{0,8}振"
+  },
+  "targeted_v54_failures": [
+    {
+      "case_id": "v54h_tatoeba_12574337",
+      "target_id": "motion.point",
+      "relation_needed": "local_description_over_unrelated_pending"
+    },
+    {
+      "case_id": "v54h_tatoeba_13056462",
+      "target_id": "expression.neutral",
+      "relation_needed": "local_description_over_unrelated_request"
+    },
+    {
+      "case_id": "v54h_meta_04",
+      "target_id": "motion.wave",
+      "relation_needed": "quoted_execution_prohibition"
+    },
+    {
+      "case_id": "v54h_mixed_04",
+      "target_id": "gaze.right",
+      "relation_needed": "cross_event_replacement"
+    },
+    {
+      "case_id": "v54h_tatoeba_148428",
+      "target_id": "motion.shake_head",
+      "relation_needed": "explanatory_event_description"
+    },
+    {
+      "case_id": "v54h_tatoeba_13492141",
+      "target_id": "motion.nod",
+      "relation_needed": "past_event_description"
+    }
+  ],
+  "v55_regression_cases": [
+    {"case_id": "v54h_contrast_01", "target_id": "gaze.left"},
+    {"case_id": "v54h_contrast_03", "target_id": "motion.wave"},
+    {"case_id": "v54h_direct_04", "target_id": "motion.wave"},
+    {"case_id": "v54h_multi_04", "target_id": "gaze.right"},
+    {"case_id": "v54h_tatoeba_152144", "target_id": "gaze.user"},
+    {"case_id": "v54h_tatoeba_5100", "target_id": "gaze.user"},
+    {"case_id": "v54h_unresolved_01", "target_id": "gaze.left"}
+  ],
+  "development_gates": {
+    "coverage_at_least": 0.95,
+    "resolved_accuracy_at_least": 0.98,
+    "hybrid_commitment_accuracy_at_least": 1.0,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall": 1.0,
+    "compiled_call_exact_accuracy_at_least": 0.9688,
+    "no_action_specificity": 1.0,
+    "false_action_count": 0,
+    "targeted_correct_count": 6,
+    "targeted_fixed_count_at_least": 6,
+    "v55_regression_cases_correct_count": 7,
+    "commitment_correct_count_delta_at_least": 6,
+    "semantic_regression_count": 0,
+    "compiled_call_exact_count_delta_at_least": 2,
+    "call_regression_count": 0
+  },
+  "decision_rule": {
+    "pass": "Only if every gate passes. A pass authorizes a new independent V56 holdout and separate compiler-repair design, not runtime or physical execution.",
+    "semantic_regression": "Reject V56 immediately; a typed relation cannot trade away a correct V54 target.",
+    "other_failure": "Reject V56 under this preregistration and do not tune it on the consumed V54 evidence."
+  },
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
