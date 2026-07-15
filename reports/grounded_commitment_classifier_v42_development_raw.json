@@ -1,0 +1,3880 @@
+{
+  "schema": "uruha_grounded_commitment_classifier_development_raw_v42",
+  "evidence_status": "model_selection_on_retired_development_targets",
+  "collection_method": "one_narrow_deterministic_judgment_per_grounded_supported_target",
+  "started_at": "2026-07-15T15:54:59+09:00",
+  "completed_at": "2026-07-15T15:57:27+09:00",
+  "runner_commit": "d315f0c09d0e36ef7846a25992d8a364cc174ee6",
+  "preregistration_sha256": "d1441b2a9c3506e945239f7f3f06b5976b5145547236e66a4db9c05ad244c6f7",
+  "dataset_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+  "audit_sha256": "0de4b5d2afe206acf669a1d0adc385703a2f08683ae055c9a10968d3df60ba0b",
+  "system_prompt_sha256": "ca094a38686e8ea9fba98f7dcda0112c97ede5862672e0beed113201164c5743",
+  "model_snapshots": {
+    "commitment_qwen3_5_0_8b": {
+      "model_tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "size": 1036046583,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "873.44M",
+        "quantization_level": "Q8_0",
+        "context_length": 262144,
+        "embedding_length": 1024
+      },
+      "thinking": false
+    },
+    "commitment_qwen3_5_2b": {
+      "model_tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "size": 2741192820,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "2.3B",
+        "quantization_level": "Q8_0",
+        "context_length": 262144,
+        "embedding_length": 2048
+      },
+      "thinking": false
+    },
+    "commitment_qwen3_5_4b": {
+      "model_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "size": 3389983735,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "4.7B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2560
+      },
+      "thinking": false
+    }
+  },
+  "candidate_rows": [
+    {
+      "case_id": "v34c_action_single_wave",
+      "family": "single_explicit_action",
+      "user_input": "挨拶代わりに一度手を振ってくれる？",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_nod_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "うんって感じで首を縦に動かして。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "うんって感じで",
+              "pattern": "(?:うん|はい)(?:って|という)?(?:感じ|ふう|風|みたい)(?:で|に)?"
+            },
+            {
+              "start": 7,
+              "end": 10,
+              "text": "首を縦",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_point",
+      "family": "single_explicit_action",
+      "user_input": "前の方を指で示してくれる？",
+      "candidates": [
+        {
+          "target_id": "motion.point",
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 4,
+              "end": 9,
+              "text": "指で示して",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_smile_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "ちょっと、にこっとして。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 7,
+              "text": "にこ",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "目線をこっちにちょうだい。",
+      "candidates": [
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "目線をこっち",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_neutral",
+      "family": "single_explicit_action",
+      "user_input": "顔をいつもの普通の表情へ戻して。",
+      "candidates": [
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "顔をいつもの普通",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            },
+            {
+              "start": 2,
+              "end": 11,
+              "text": "いつもの普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 9,
+              "end": 13,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_happy_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "笑った顔でこちらを見て。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "笑った",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 10,
+              "text": "こちらを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_surprised_right",
+      "family": "multiple_compatible_actions",
+      "user_input": "驚いた表情のまま右へ視線を向けて。",
+      "candidates": [
+        {
+          "target_id": "expression.surprised",
+          "domain": "expression",
+          "value": "surprised",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "驚",
+              "pattern": "(?:驚|びっくり)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 14,
+              "text": "右へ視線を向",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_sad_down",
+      "family": "multiple_compatible_actions",
+      "user_input": "悲しい顔で少し下を見て。",
+      "candidates": [
+        {
+          "target_id": "expression.sad",
+          "domain": "expression",
+          "value": "sad",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "悲し",
+              "pattern": "(?:悲し|泣き顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 7,
+              "end": 10,
+              "text": "下を見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_neutral_idle",
+      "family": "multiple_compatible_actions",
+      "user_input": "表情を普通に戻して待機姿勢にして。",
+      "candidates": [
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "表情を普通に戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.idle",
+          "domain": "motion",
+          "value": "idle",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 11,
+              "text": "待機",
+              "pattern": "(?:待機|アイドル|じっとして|動かずにいて|動かないでいて|そのままの姿勢)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_angry_shake",
+      "family": "multiple_compatible_actions",
+      "user_input": "怒った顔をしながら首を横に振って。",
+      "candidates": [
+        {
+          "target_id": "expression.angry",
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.shake_head",
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 12,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_wave_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "こっちを見ながら一度手を振って。",
+      "candidates": [
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 5,
+              "text": "こっちを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_gesture",
+      "family": "no_action_conversation",
+      "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_expression",
+      "family": "no_action_conversation",
+      "user_input": "今日は表情の変化について話したい。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_none_direction",
+      "family": "no_action_conversation",
+      "user_input": "左右を見る癖って性格に関係あるのかな。",
+      "candidates": [
+        {
+          "target_id": "gaze.left",
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 4,
+              "text": "左右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 1,
+              "end": 4,
+              "text": "右を見",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_music",
+      "family": "no_action_conversation",
+      "user_input": "少し疲れたから、静かな曲の話をしよう。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_none_hypothetical",
+      "family": "no_action_conversation",
+      "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 4,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_explicit_none",
+      "family": "no_action_conversation",
+      "user_input": "動作は頼まないから、そのまま雑談しよう。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_negated_wave",
+      "family": "negated_action",
+      "user_input": "今は手を振るのをやめて。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_happy",
+      "family": "negated_action",
+      "user_input": "笑顔には変えないで。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_down_user",
+      "family": "negated_action",
+      "user_input": "下は見ず、こっちだけ見て。",
+      "candidates": [
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "下は見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 11,
+              "text": "こっちだけ見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_nod_shake",
+      "family": "negated_action",
+      "user_input": "うなずかないで、首を横に振って。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.shake_head",
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_angry_neutral",
+      "family": "negated_action",
+      "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+      "candidates": [
+        {
+          "target_id": "expression.angry",
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 14,
+              "text": "普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 12,
+              "end": 16,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_point_wave",
+      "family": "negated_action",
+      "user_input": "指差しはなしで、一回手を振って。",
+      "candidates": [
+        {
+          "target_id": "motion.point",
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "指差",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_wave",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "手を振るかは、もう少し後で決める。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_smile",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "笑顔にするか、まだ迷ってる。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_direction",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "左を見るか右を見るかは保留。",
+      "candidates": [
+        {
+          "target_id": "gaze.left",
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "左を見るか右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 6,
+              "text": "見るか右",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_cancel",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "うなずいて。いや、今の頼みは取り消し。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_if",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "もし下を向いてって頼んだら変かな。",
+      "candidates": [
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "下を向",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_expression",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "表情は今ここで決めなくていいよ。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_crouch",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "その場でしゃがんで。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_arms",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "両腕を頭の上まで上げて。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_screen",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "画面を閉じて。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_mail",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "今すぐメールを送って。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_camera",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "カメラを一周回して。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_kick",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "相手を蹴る動作をして。",
+      "candidates": []
+    }
+  ],
+  "judgment_rows": [
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 2.382289,
+          "total_duration_ns": 2381176000,
+          "load_duration_ns": 1842825750,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 167049000,
+          "eval_count": 27,
+          "eval_duration_ns": 332644000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.724314,
+          "total_duration_ns": 723314833,
+          "load_duration_ns": 204605542,
+          "prompt_eval_count": 313,
+          "prompt_eval_duration_ns": 149170000,
+          "eval_count": 27,
+          "eval_duration_ns": 332444000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.730971,
+          "total_duration_ns": 729758541,
+          "load_duration_ns": 205568750,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 144591000,
+          "eval_count": 27,
+          "eval_duration_ns": 329331000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.667109,
+          "total_duration_ns": 666006417,
+          "load_duration_ns": 206830458,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 145435000,
+          "eval_count": 22,
+          "eval_duration_ns": 273421000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"ユーザーの発言は、特定の動作（目線の変更）を要求する命令であり、その実行が前提条件として成立しているため、「requested」カテゴリに分類されます",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.196051,
+          "total_duration_ns": 1195097042,
+          "load_duration_ns": 205646875,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 146000000,
+          "eval_count": 64,
+          "eval_duration_ns": 806401000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\"commitment\": \"mentioned\", \"evidence_index\": 0}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 0.585206,
+          "total_duration_ns": 584338583,
+          "load_duration_ns": 206336125,
+          "prompt_eval_count": 319,
+          "prompt_eval_duration_ns": 146353000,
+          "eval_count": 16,
+          "eval_duration_ns": 193220000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.651929,
+          "total_duration_ns": 650835041,
+          "load_duration_ns": 206465750,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 142631000,
+          "eval_count": 22,
+          "eval_duration_ns": 263737000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.647392,
+          "total_duration_ns": 646333833,
+          "load_duration_ns": 206382833,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 141392000,
+          "eval_count": 22,
+          "eval_duration_ns": 261057000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「表情」に関する具体的な描写であり、その内容（右へ視線を向ける）が target の domain に該当する。これは話題として述べただ",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.18942,
+          "total_duration_ns": 1188438083,
+          "load_duration_ns": 208337916,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 146422000,
+          "eval_count": 64,
+          "eval_duration_ns": 796854000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.734655,
+          "total_duration_ns": 733477834,
+          "load_duration_ns": 207051917,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 149121000,
+          "eval_count": 27,
+          "eval_duration_ns": 340453000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"悲しい顔で少し下を見て\\\" は、感情表現（表情）の具体的な描写であり、実行依頼ではありません。target の値は「sad」",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.18959,
+          "total_duration_ns": 1188346959,
+          "load_duration_ns": 205662500,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 145086000,
+          "eval_count": 64,
+          "eval_duration_ns": 799285000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"悲しい顔で少し下を見て\\\" は、target の domain 'gaze' に該当する具体的な動作（目線が下に向いている）を",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.193571,
+          "total_duration_ns": 1192614375,
+          "load_duration_ns": 204788834,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 147009000,
+          "eval_count": 64,
+          "eval_duration_ns": 802936000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「待機姿勢」の指示であり、これは明確な実行対象です。target の value が 'neutral' と指定されており、この状態はユーザー",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.210444,
+          "total_duration_ns": 1209371959,
+          "load_duration_ns": 216419292,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 142446000,
+          "eval_count": 64,
+          "eval_duration_ns": 812919000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「表情を普通に戻して待機姿勢にして」という具体的な動作指示を含み、これは実行依頼（requested）として明確に指定されています。target",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.183016,
+          "total_duration_ns": 1181805042,
+          "load_duration_ns": 205383792,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 146828000,
+          "eval_count": 64,
+          "eval_duration_ns": 791315000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「怒った顔をしながら」という表現で、その状態を明確に示す。target の value が angry と一致し、この文脈",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.19646,
+          "total_duration_ns": 1195462458,
+          "load_duration_ns": 204832125,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 145545000,
+          "eval_count": 64,
+          "eval_duration_ns": 806416000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.664642,
+          "total_duration_ns": 663701667,
+          "load_duration_ns": 207333500,
+          "prompt_eval_count": 303,
+          "prompt_eval_duration_ns": 146321000,
+          "eval_count": 22,
+          "eval_duration_ns": 272600000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.735897,
+          "total_duration_ns": 734744750,
+          "load_duration_ns": 208434583,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 144664000,
+          "eval_count": 27,
+          "eval_duration_ns": 341963000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"こっちを見ながら一度手を振って\\\" は、動作の具体的な内容（手）を明確に示す。target の domain 'motion' に基づ",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.174916,
+          "total_duration_ns": 1173871791,
+          "load_duration_ns": 210315208,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 145426000,
+          "eval_count": 64,
+          "eval_duration_ns": 780144000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.715013,
+          "total_duration_ns": 714116625,
+          "load_duration_ns": 207226583,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 140951000,
+          "eval_count": 27,
+          "eval_duration_ns": 328328000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"ユーザーの発言は「左右を見る癖」について、特定の性格に関する肯定的な問いかけであり、実行を要求する命令ではありません。これは話題として述べただけで",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.184672,
+          "total_duration_ns": 1183496500,
+          "load_duration_ns": 205947458,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 141958000,
+          "eval_count": 64,
+          "eval_duration_ns": 797714000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"ユーザーの発言は「左右を見る癖って性格に関係あるのかな」という問いかけであり、これは事実関係や主張として述べただけで実行依頼ではありません。",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.213088,
+          "total_duration_ns": 1212010958,
+          "load_duration_ns": 207460458,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 148106000,
+          "eval_count": 64,
+          "eval_duration_ns": 806263000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「もし...だったら」の仮定条件を提示しており、実行は前提として行われる可能性が高いが、明確な否定（〜しない）や撤回がない",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.193769,
+          "total_duration_ns": 1192816417,
+          "load_duration_ns": 206257042,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 145115000,
+          "eval_count": 64,
+          "eval_duration_ns": 804246000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"今は手を振るのをやめて\\\" は、動作の目的（手を止める）と対象（手の振動）が明確に示されています",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.180203,
+          "total_duration_ns": 1178882042,
+          "load_duration_ns": 205632708,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 142850000,
+          "eval_count": 64,
+          "eval_duration_ns": 791227000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.678228,
+          "total_duration_ns": 676954459,
+          "load_duration_ns": 209953000,
+          "prompt_eval_count": 295,
+          "prompt_eval_duration_ns": 141416000,
+          "eval_count": 23,
+          "eval_duration_ns": 288658000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"下は見ず、こっちだけ見て\\\" は「下」を指す命令であり、「見ず」という否定形が含まれており、実行しない",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.207074,
+          "total_duration_ns": 1205845916,
+          "load_duration_ns": 206692416,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 146968000,
+          "eval_count": 64,
+          "eval_duration_ns": 814753000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"ユーザーの発言は「下は見ず、こっちだけ見て」という指示を含みましたが、これは実行を要求する命令ではありません。代わりに話題として述べただけであり",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.202739,
+          "total_duration_ns": 1201747833,
+          "load_duration_ns": 206623375,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 144648000,
+          "eval_count": 64,
+          "eval_duration_ns": 812001000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.737793,
+          "total_duration_ns": 736788666,
+          "load_duration_ns": 209236625,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 147655000,
+          "eval_count": 27,
+          "eval_duration_ns": 341689000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.663262,
+          "total_duration_ns": 661863041,
+          "load_duration_ns": 205199375,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 144669000,
+          "eval_count": 22,
+          "eval_duration_ns": 273587000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input は「怒った顔じゃなく、普通の表情へ戻して」という具体的な指示を含み、実行を要求する（requested）ため、「committed」の",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.20415,
+          "total_duration_ns": 1203095500,
+          "load_duration_ns": 205644000,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 144355000,
+          "eval_count": 64,
+          "eval_duration_ns": 813414000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0,\n  \"reasoning\": \"user_input は「怒った顔じゃなく、普通の表情へ戻して」という明確な指示を含んでいます。これは発話全体での肯定依頼（requested）であり",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.216062,
+          "total_duration_ns": 1215083875,
+          "load_duration_ns": 207395375,
+          "prompt_eval_count": 312,
+          "prompt_eval_duration_ns": 144544000,
+          "eval_count": 64,
+          "eval_duration_ns": 824952000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": null\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.737084,
+          "total_duration_ns": 736110417,
+          "load_duration_ns": 205520333,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 148299000,
+          "eval_count": 26,
+          "eval_duration_ns": 331867000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.735243,
+          "total_duration_ns": 734050291,
+          "load_duration_ns": 207209625,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 144939000,
+          "eval_count": 27,
+          "eval_duration_ns": 342833000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.7292,
+          "total_duration_ns": 728012500,
+          "load_duration_ns": 208411334,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 146440000,
+          "eval_count": 27,
+          "eval_duration_ns": 334448000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"笑顔にするか、まだ迷ってる\\\" は明確な実行依頼（「笑える」を要求）であり、「まだ迷ってる」という状態は条件",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.211932,
+          "total_duration_ns": 1211208292,
+          "load_duration_ns": 207678167,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 150563000,
+          "eval_count": 64,
+          "eval_duration_ns": 813655000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"左を見るか右を見るかは保留\\\" は、明確に「実行しない」ことを示唆しており、「left」という具体的な選択肢は存在するが、",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.227969,
+          "total_duration_ns": 1227308417,
+          "load_duration_ns": 209681459,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 142304000,
+          "eval_count": 64,
+          "eval_duration_ns": 838997000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1,\n  \"reasoning\": \"user_input \\\"左を見るか右を見るかは保留\\\" は、明確に「実行しない」ことを示唆しており、「left」と「right」のどちらかを指定する",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.265636,
+          "total_duration_ns": 1264935459,
+          "load_duration_ns": 240035042,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 146370000,
+          "eval_count": 64,
+          "eval_duration_ns": 840117000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.74656,
+          "total_duration_ns": 745858375,
+          "load_duration_ns": 206779416,
+          "prompt_eval_count": 306,
+          "prompt_eval_duration_ns": 145746000,
+          "eval_count": 27,
+          "eval_duration_ns": 354920000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_0_8b",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 0.761051,
+          "total_duration_ns": 760396750,
+          "load_duration_ns": 207042083,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 146627000,
+          "eval_count": 28,
+          "eval_duration_ns": 368613000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"requested\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 3.386193,
+          "total_duration_ns": 3385344417,
+          "load_duration_ns": 2599471917,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 300529000,
+          "eval_count": 22,
+          "eval_duration_ns": 448790000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.996639,
+          "total_duration_ns": 995409542,
+          "load_duration_ns": 204289625,
+          "prompt_eval_count": 313,
+          "prompt_eval_duration_ns": 307274000,
+          "eval_count": 22,
+          "eval_duration_ns": 446363000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"requested\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.006,
+          "total_duration_ns": 1004933500,
+          "load_duration_ns": 204559209,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 302665000,
+          "eval_count": 22,
+          "eval_duration_ns": 460786000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.021708,
+          "total_duration_ns": 1020405833,
+          "load_duration_ns": 206311458,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 310063000,
+          "eval_count": 22,
+          "eval_duration_ns": 465368000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"requested\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.012606,
+          "total_duration_ns": 1011589666,
+          "load_duration_ns": 206550375,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 302809000,
+          "eval_count": 22,
+          "eval_duration_ns": 462930000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\"commitment\":\"ambiguous\", \"evidence_index\":1}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.857851,
+          "total_duration_ns": 856681375,
+          "load_duration_ns": 208320083,
+          "prompt_eval_count": 319,
+          "prompt_eval_duration_ns": 307676000,
+          "eval_count": 15,
+          "eval_duration_ns": 301800000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.008911,
+          "total_duration_ns": 1007376083,
+          "load_duration_ns": 209011000,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 305644000,
+          "eval_count": 22,
+          "eval_duration_ns": 455435000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.020873,
+          "total_duration_ns": 1019609625,
+          "load_duration_ns": 207618167,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 300068000,
+          "eval_count": 22,
+          "eval_duration_ns": 473000000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.017037,
+          "total_duration_ns": 1015468416,
+          "load_duration_ns": 210922583,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 305109000,
+          "eval_count": 22,
+          "eval_duration_ns": 462953000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.024903,
+          "total_duration_ns": 1023737625,
+          "load_duration_ns": 204042292,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 302106000,
+          "eval_count": 22,
+          "eval_duration_ns": 460708000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.007118,
+          "total_duration_ns": 1006128584,
+          "load_duration_ns": 205659792,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 307150000,
+          "eval_count": 22,
+          "eval_duration_ns": 456280000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.021706,
+          "total_duration_ns": 1020509000,
+          "load_duration_ns": 209234500,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 306518000,
+          "eval_count": 22,
+          "eval_duration_ns": 466993000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"requested\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.009291,
+          "total_duration_ns": 1007931833,
+          "load_duration_ns": 206771666,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 306934000,
+          "eval_count": 22,
+          "eval_duration_ns": 454223000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.00872,
+          "total_duration_ns": 1007687167,
+          "load_duration_ns": 207053834,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 305406000,
+          "eval_count": 22,
+          "eval_duration_ns": 457698000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.015842,
+          "total_duration_ns": 1014412250,
+          "load_duration_ns": 204483875,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 304345000,
+          "eval_count": 22,
+          "eval_duration_ns": 467168000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.001265,
+          "total_duration_ns": 1000074209,
+          "load_duration_ns": 205754000,
+          "prompt_eval_count": 303,
+          "prompt_eval_duration_ns": 306175000,
+          "eval_count": 22,
+          "eval_duration_ns": 450238000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.02628,
+          "total_duration_ns": 1025012833,
+          "load_duration_ns": 208954916,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 303079000,
+          "eval_count": 22,
+          "eval_duration_ns": 473402000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 0.994068,
+          "total_duration_ns": 992950833,
+          "load_duration_ns": 203746208,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 304476000,
+          "eval_count": 22,
+          "eval_duration_ns": 446280000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.006621,
+          "total_duration_ns": 1005247292,
+          "load_duration_ns": 206383500,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 303303000,
+          "eval_count": 22,
+          "eval_duration_ns": 458355000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.035829,
+          "total_duration_ns": 1034790000,
+          "load_duration_ns": 206739333,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 310072000,
+          "eval_count": 22,
+          "eval_duration_ns": 468251000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.018629,
+          "total_duration_ns": 1017303208,
+          "load_duration_ns": 209210625,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 305647000,
+          "eval_count": 22,
+          "eval_duration_ns": 463687000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.01534,
+          "total_duration_ns": 1014171416,
+          "load_duration_ns": 211028666,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 301384000,
+          "eval_count": 22,
+          "eval_duration_ns": 463682000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.038618,
+          "total_duration_ns": 1037067375,
+          "load_duration_ns": 209811792,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 302079000,
+          "eval_count": 23,
+          "eval_duration_ns": 487583000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.040573,
+          "total_duration_ns": 1039568916,
+          "load_duration_ns": 209306625,
+          "prompt_eval_count": 295,
+          "prompt_eval_duration_ns": 303694000,
+          "eval_count": 23,
+          "eval_duration_ns": 489152000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "```json\n{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}\n```",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "invalid_json",
+            "root_fields_mismatch",
+            "invalid_commitment",
+            "evidence_index_not_integer"
+          ],
+          "commitment": null,
+          "evidence_index": null
+        },
+        "response_metrics": {
+          "wall_seconds": 1.125089,
+          "total_duration_ns": 1123882167,
+          "load_duration_ns": 206875334,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 306250000,
+          "eval_count": 27,
+          "eval_duration_ns": 571613000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.031932,
+          "total_duration_ns": 1030171708,
+          "load_duration_ns": 208742083,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 305614000,
+          "eval_count": 23,
+          "eval_duration_ns": 477177000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.028028,
+          "total_duration_ns": 1027015292,
+          "load_duration_ns": 206830792,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 302522000,
+          "eval_count": 23,
+          "eval_duration_ns": 478897000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.020047,
+          "total_duration_ns": 1019058042,
+          "load_duration_ns": 207646375,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 312883000,
+          "eval_count": 22,
+          "eval_duration_ns": 461065000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.037501,
+          "total_duration_ns": 1036488750,
+          "load_duration_ns": 210683625,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 301532000,
+          "eval_count": 23,
+          "eval_duration_ns": 486280000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"requested\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.050355,
+          "total_duration_ns": 1049449708,
+          "load_duration_ns": 207358166,
+          "prompt_eval_count": 312,
+          "prompt_eval_duration_ns": 306064000,
+          "eval_count": 22,
+          "eval_duration_ns": 480726000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.012769,
+          "total_duration_ns": 1011930875,
+          "load_duration_ns": 207723291,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 303993000,
+          "eval_count": 22,
+          "eval_duration_ns": 460976000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"mentioned\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.018187,
+          "total_duration_ns": 1017275334,
+          "load_duration_ns": 207592709,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 305441000,
+          "eval_count": 22,
+          "eval_duration_ns": 466138000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.012038,
+          "total_duration_ns": 1010294375,
+          "load_duration_ns": 203343916,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 301295000,
+          "eval_count": 22,
+          "eval_duration_ns": 468914000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.007338,
+          "total_duration_ns": 1006359875,
+          "load_duration_ns": 206261250,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 302322000,
+          "eval_count": 22,
+          "eval_duration_ns": 461582000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.01287,
+          "total_duration_ns": 1011837459,
+          "load_duration_ns": 204660625,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 301287000,
+          "eval_count": 22,
+          "eval_duration_ns": 469229000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"ambiguous\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "ambiguous",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 0.994619,
+          "total_duration_ns": 993551625,
+          "load_duration_ns": 206423375,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 300520000,
+          "eval_count": 22,
+          "eval_duration_ns": 449395000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"cancelled\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "cancelled",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.002341,
+          "total_duration_ns": 1001091250,
+          "load_duration_ns": 210535250,
+          "prompt_eval_count": 306,
+          "prompt_eval_duration_ns": 305757000,
+          "eval_count": 22,
+          "eval_duration_ns": 446619000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_2b",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "{\n  \"commitment\": \"negated\",\n  \"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "negated",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.03149,
+          "total_duration_ns": 1030338083,
+          "load_duration_ns": 204657958,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 304509000,
+          "eval_count": 23,
+          "eval_duration_ns": 483918000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 4.117888,
+          "total_duration_ns": 4116756459,
+          "load_duration_ns": 2603725334,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 848268000,
+          "eval_count": 20,
+          "eval_duration_ns": 626952000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.718382,
+          "total_duration_ns": 1717097584,
+          "load_duration_ns": 205726167,
+          "prompt_eval_count": 313,
+          "prompt_eval_duration_ns": 852382000,
+          "eval_count": 20,
+          "eval_duration_ns": 619887000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.72573,
+          "total_duration_ns": 1724783625,
+          "load_duration_ns": 208528791,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 855152000,
+          "eval_count": 20,
+          "eval_duration_ns": 623456000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.719963,
+          "total_duration_ns": 1718859250,
+          "load_duration_ns": 207192167,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 843875000,
+          "eval_count": 20,
+          "eval_duration_ns": 628215000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.702145,
+          "total_duration_ns": 1700843833,
+          "load_duration_ns": 206596667,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 843906000,
+          "eval_count": 20,
+          "eval_duration_ns": 613125000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\"commitment\":\"requested\",\"evidence_index\":3}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "requested",
+          "evidence_index": 3
+        },
+        "response_metrics": {
+          "wall_seconds": 1.49707,
+          "total_duration_ns": 1495710917,
+          "load_duration_ns": 209830542,
+          "prompt_eval_count": 319,
+          "prompt_eval_duration_ns": 859949000,
+          "eval_count": 13,
+          "eval_duration_ns": 387036000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.711168,
+          "total_duration_ns": 1709976125,
+          "load_duration_ns": 207448083,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 842982000,
+          "eval_count": 20,
+          "eval_duration_ns": 621116000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.714377,
+          "total_duration_ns": 1712984792,
+          "load_duration_ns": 210097333,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 846745000,
+          "eval_count": 20,
+          "eval_duration_ns": 619067000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.713949,
+          "total_duration_ns": 1712666292,
+          "load_duration_ns": 204849958,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 848993000,
+          "eval_count": 20,
+          "eval_duration_ns": 621303000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.705412,
+          "total_duration_ns": 1703502250,
+          "load_duration_ns": 206549542,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 833994000,
+          "eval_count": 20,
+          "eval_duration_ns": 624881000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.732486,
+          "total_duration_ns": 1731403208,
+          "load_duration_ns": 204850166,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 850061000,
+          "eval_count": 20,
+          "eval_duration_ns": 619954000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.70594,
+          "total_duration_ns": 1704884583,
+          "load_duration_ns": 204378500,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 852501000,
+          "eval_count": 20,
+          "eval_duration_ns": 609452000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.720079,
+          "total_duration_ns": 1719260084,
+          "load_duration_ns": 207077417,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 840560000,
+          "eval_count": 20,
+          "eval_duration_ns": 633695000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.716107,
+          "total_duration_ns": 1715223333,
+          "load_duration_ns": 207590083,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 847659000,
+          "eval_count": 20,
+          "eval_duration_ns": 621804000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.716739,
+          "total_duration_ns": 1715750625,
+          "load_duration_ns": 205940833,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 860458000,
+          "eval_count": 20,
+          "eval_duration_ns": 610408000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.7559,
+          "total_duration_ns": 1754975459,
+          "load_duration_ns": 208350917,
+          "prompt_eval_count": 303,
+          "prompt_eval_duration_ns": 846414000,
+          "eval_count": 21,
+          "eval_duration_ns": 662334000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.776795,
+          "total_duration_ns": 1776101333,
+          "load_duration_ns": 208054166,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 856666000,
+          "eval_count": 20,
+          "eval_duration_ns": 672533000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.716644,
+          "total_duration_ns": 1715745959,
+          "load_duration_ns": 207183584,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 849250000,
+          "eval_count": 20,
+          "eval_duration_ns": 622664000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.718339,
+          "total_duration_ns": 1716924917,
+          "load_duration_ns": 209842584,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 845070000,
+          "eval_count": 20,
+          "eval_duration_ns": 624313000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.726579,
+          "total_duration_ns": 1725500833,
+          "load_duration_ns": 206803041,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 862982000,
+          "eval_count": 20,
+          "eval_duration_ns": 618095000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"mentioned\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.708538,
+          "total_duration_ns": 1707437250,
+          "load_duration_ns": 206518917,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 842467000,
+          "eval_count": 20,
+          "eval_duration_ns": 620195000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"hypothetical\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.787827,
+          "total_duration_ns": 1786515250,
+          "load_duration_ns": 209937708,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 848176000,
+          "eval_count": 22,
+          "eval_duration_ns": 689919000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.750494,
+          "total_duration_ns": 1749281125,
+          "load_duration_ns": 209220125,
+          "prompt_eval_count": 298,
+          "prompt_eval_duration_ns": 853080000,
+          "eval_count": 21,
+          "eval_duration_ns": 649136000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.76445,
+          "total_duration_ns": 1763450584,
+          "load_duration_ns": 207220459,
+          "prompt_eval_count": 295,
+          "prompt_eval_duration_ns": 844503000,
+          "eval_count": 21,
+          "eval_duration_ns": 652433000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.747441,
+          "total_duration_ns": 1746372208,
+          "load_duration_ns": 208809250,
+          "prompt_eval_count": 299,
+          "prompt_eval_duration_ns": 850047000,
+          "eval_count": 21,
+          "eval_duration_ns": 649434000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.720245,
+          "total_duration_ns": 1718586791,
+          "load_duration_ns": 203779583,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 856352000,
+          "eval_count": 20,
+          "eval_duration_ns": 619700000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.756771,
+          "total_duration_ns": 1755580959,
+          "load_duration_ns": 209795709,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 855575000,
+          "eval_count": 21,
+          "eval_duration_ns": 651928000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.762689,
+          "total_duration_ns": 1761473667,
+          "load_duration_ns": 209098042,
+          "prompt_eval_count": 305,
+          "prompt_eval_duration_ns": 850688000,
+          "eval_count": 21,
+          "eval_duration_ns": 662343000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.754818,
+          "total_duration_ns": 1753549750,
+          "load_duration_ns": 203553000,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 860315000,
+          "eval_count": 21,
+          "eval_duration_ns": 650645000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.718011,
+          "total_duration_ns": 1716730667,
+          "load_duration_ns": 208245167,
+          "prompt_eval_count": 312,
+          "prompt_eval_duration_ns": 852341000,
+          "eval_count": 20,
+          "eval_duration_ns": 617857000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"negated\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.747852,
+          "total_duration_ns": 1746728542,
+          "load_duration_ns": 204494542,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 857211000,
+          "eval_count": 21,
+          "eval_duration_ns": 646085000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"requested\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.708108,
+          "total_duration_ns": 1706868541,
+          "load_duration_ns": 207877875,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 847134000,
+          "eval_count": 20,
+          "eval_duration_ns": 613078000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"ambiguous\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.735048,
+          "total_duration_ns": 1734173500,
+          "load_duration_ns": 207523125,
+          "prompt_eval_count": 301,
+          "prompt_eval_duration_ns": 854753000,
+          "eval_count": 20,
+          "eval_duration_ns": 633685000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"ambiguous\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.714135,
+          "total_duration_ns": 1712590417,
+          "load_duration_ns": 203868459,
+          "prompt_eval_count": 297,
+          "prompt_eval_duration_ns": 849057000,
+          "eval_count": 20,
+          "eval_duration_ns": 621555000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"ambiguous\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.701865,
+          "total_duration_ns": 1700207666,
+          "load_duration_ns": 204429291,
+          "prompt_eval_count": 302,
+          "prompt_eval_duration_ns": 837985000,
+          "eval_count": 20,
+          "eval_duration_ns": 619255000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"ambiguous\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.72032,
+          "total_duration_ns": 1719035834,
+          "load_duration_ns": 204613917,
+          "prompt_eval_count": 300,
+          "prompt_eval_duration_ns": 851705000,
+          "eval_count": 20,
+          "eval_duration_ns": 623367000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"cancelled\",\n\"evidence_index\": 1\n}",
+        "parsed": {
+          "parse_success": false,
+          "errors": [
+            "evidence_index_out_of_range"
+          ],
+          "commitment": "cancelled",
+          "evidence_index": 1
+        },
+        "response_metrics": {
+          "wall_seconds": 1.725433,
+          "total_duration_ns": 1724137083,
+          "load_duration_ns": 208966458,
+          "prompt_eval_count": 306,
+          "prompt_eval_duration_ns": 856498000,
+          "eval_count": 20,
+          "eval_duration_ns": 619671000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "commitment_qwen3_5_4b",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "raw_reply": "{\n\"commitment\": \"hypothetical\",\n\"evidence_index\": 0\n}",
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "evidence_index": 0
+        },
+        "response_metrics": {
+          "wall_seconds": 1.795644,
+          "total_duration_ns": 1794261625,
+          "load_duration_ns": 209231334,
+          "prompt_eval_count": 304,
+          "prompt_eval_duration_ns": 859496000,
+          "eval_count": 22,
+          "eval_duration_ns": 687867000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    }
+  ]
+}
