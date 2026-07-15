@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -84,8 +85,21 @@ class RelationSafetyStateV58HoldoutPreregistrationTests(unittest.TestCase):
         self.assertIn("do not assume smarter or larger is better", route)
         self.assertNotIn("model size", self.config["causal_isolation"]["tested_variable"])
 
-    def test_no_result_or_advancement_exists_before_freeze_merge(self):
-        self.assertFalse(RESULT_PATH.exists())
+    def test_no_result_existed_at_frozen_run_commit_and_no_advancement_was_authorized(self):
+        if RESULT_PATH.exists():
+            raw = json.loads(RESULT_PATH.read_text(encoding="utf-8"))
+            result_at_frozen_commit = subprocess.run(
+                [
+                    "git",
+                    "cat-file",
+                    "-e",
+                    f"{raw['runner_commit']}:{RESULT_PATH.relative_to(ROOT)}",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(result_at_frozen_commit.returncode, 0)
         for key in (
             "post_run_tuning_authorized",
             "fresh_holdout_claim_authorized_before_result",
