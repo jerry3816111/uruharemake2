@@ -1,0 +1,5361 @@
+{
+  "schema": "uruha_commitment_target_isolation_development_raw_v44",
+  "evidence_status": "causal_ablation_on_retired_v42_development_targets",
+  "started_at": "2026-07-15T16:34:29+09:00",
+  "completed_at": "2026-07-15T16:40:19+09:00",
+  "runner_commit": "2fb1ddbef5ba0984f305a630e8c6e126d8b9f411",
+  "semantic_lock_sha256": "e1b9ccda2f6c70e4a8f41190c9e30a2c3164b55ab91666dd157cbe512744db02",
+  "preregistration_sha256": "3f832aa54ffd49e661a4c01299486eb521495ea18529ae8f4a32c924e78f6180",
+  "dataset_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+  "audit_sha256": "0de4b5d2afe206acf669a1d0adc385703a2f08683ae055c9a10968d3df60ba0b",
+  "carrier_analysis_sha256": "2cdf9068b0c229ac43ad403759631c16197a53c56856ae5777cd189b901e3797",
+  "condition_prompt_sha256": {
+    "target_only_control": "1cfd9bd53dae1a81bd219327b6603ed9975b157c1da87b6505c44622b0fea754",
+    "all_targets_relational": "18fa85e91047db02d3b58e14b0f4d47052890b73144993b1c85ee7a933b67c94",
+    "isolated_other_targets": "8fe6a3439382bf34d1359b98c23caa6551490d91025620b8444b96655042d6aa",
+    "isolated_scope_signals_candidate": "397786328abe40b73bf38fae92a52672a074ea2616552cc8d2adf0ebd30269d4"
+  },
+  "selected_carrier": "two_field_object_schema",
+  "model_snapshot": {
+    "model_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "size": 3389983735,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "4.7B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560
+    },
+    "thinking": false
+  },
+  "candidate_rows": [
+    {
+      "case_id": "v34c_action_single_wave",
+      "family": "single_explicit_action",
+      "user_input": "挨拶代わりに一度手を振ってくれる？",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_nod_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "うんって感じで首を縦に動かして。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "うんって感じで",
+              "pattern": "(?:うん|はい)(?:って|という)?(?:感じ|ふう|風|みたい)(?:で|に)?"
+            },
+            {
+              "start": 7,
+              "end": 10,
+              "text": "首を縦",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_point",
+      "family": "single_explicit_action",
+      "user_input": "前の方を指で示してくれる？",
+      "candidates": [
+        {
+          "target_id": "motion.point",
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 4,
+              "end": 9,
+              "text": "指で示して",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_smile_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "ちょっと、にこっとして。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 7,
+              "text": "にこ",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "family": "single_explicit_action",
+      "user_input": "目線をこっちにちょうだい。",
+      "candidates": [
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "目線をこっち",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_single_neutral",
+      "family": "single_explicit_action",
+      "user_input": "顔をいつもの普通の表情へ戻して。",
+      "candidates": [
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "顔をいつもの普通",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            },
+            {
+              "start": 2,
+              "end": 11,
+              "text": "いつもの普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 9,
+              "end": 13,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_happy_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "笑った顔でこちらを見て。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "笑った",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 10,
+              "text": "こちらを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_surprised_right",
+      "family": "multiple_compatible_actions",
+      "user_input": "驚いた表情のまま右へ視線を向けて。",
+      "candidates": [
+        {
+          "target_id": "expression.surprised",
+          "domain": "expression",
+          "value": "surprised",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "驚",
+              "pattern": "(?:驚|びっくり)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 14,
+              "text": "右へ視線を向",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_sad_down",
+      "family": "multiple_compatible_actions",
+      "user_input": "悲しい顔で少し下を見て。",
+      "candidates": [
+        {
+          "target_id": "expression.sad",
+          "domain": "expression",
+          "value": "sad",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "悲し",
+              "pattern": "(?:悲し|泣き顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 7,
+              "end": 10,
+              "text": "下を見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_neutral_idle",
+      "family": "multiple_compatible_actions",
+      "user_input": "表情を普通に戻して待機姿勢にして。",
+      "candidates": [
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 7,
+              "text": "表情を普通に戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.idle",
+          "domain": "motion",
+          "value": "idle",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 11,
+              "text": "待機",
+              "pattern": "(?:待機|アイドル|じっとして|動かずにいて|動かないでいて|そのままの姿勢)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_angry_shake",
+      "family": "multiple_compatible_actions",
+      "user_input": "怒った顔をしながら首を横に振って。",
+      "candidates": [
+        {
+          "target_id": "expression.angry",
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.shake_head",
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 12,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_multi_wave_user",
+      "family": "multiple_compatible_actions",
+      "user_input": "こっちを見ながら一度手を振って。",
+      "candidates": [
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 5,
+              "text": "こっちを見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_gesture",
+      "family": "no_action_conversation",
+      "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_expression",
+      "family": "no_action_conversation",
+      "user_input": "今日は表情の変化について話したい。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_none_direction",
+      "family": "no_action_conversation",
+      "user_input": "左右を見る癖って性格に関係あるのかな。",
+      "candidates": [
+        {
+          "target_id": "gaze.left",
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 4,
+              "text": "左右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 1,
+              "end": 4,
+              "text": "右を見",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_music",
+      "family": "no_action_conversation",
+      "user_input": "少し疲れたから、静かな曲の話をしよう。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_none_hypothetical",
+      "family": "no_action_conversation",
+      "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 4,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_none_explicit_none",
+      "family": "no_action_conversation",
+      "user_input": "動作は頼まないから、そのまま雑談しよう。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_negated_wave",
+      "family": "negated_action",
+      "user_input": "今は手を振るのをやめて。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_happy",
+      "family": "negated_action",
+      "user_input": "笑顔には変えないで。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_down_user",
+      "family": "negated_action",
+      "user_input": "下は見ず、こっちだけ見て。",
+      "candidates": [
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "下は見",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.user",
+          "domain": "gaze",
+          "value": "user",
+          "anchors": [
+            {
+              "start": 5,
+              "end": 11,
+              "text": "こっちだけ見",
+              "pattern": "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_nod_shake",
+      "family": "negated_action",
+      "user_input": "うなずかないで、首を横に振って。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.shake_head",
+          "domain": "motion",
+          "value": "shake_head",
+          "anchors": [
+            {
+              "start": 8,
+              "end": 11,
+              "text": "首を横",
+              "pattern": "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_angry_neutral",
+      "family": "negated_action",
+      "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+      "candidates": [
+        {
+          "target_id": "expression.angry",
+          "domain": "expression",
+          "value": "angry",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 1,
+              "text": "怒",
+              "pattern": "(?:怒|険しい顔)"
+            }
+          ]
+        },
+        {
+          "target_id": "expression.neutral",
+          "domain": "expression",
+          "value": "neutral",
+          "anchors": [
+            {
+              "start": 9,
+              "end": 14,
+              "text": "普通の表情",
+              "pattern": "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)"
+            },
+            {
+              "start": 12,
+              "end": 16,
+              "text": "表情へ戻",
+              "pattern": "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_negated_point_wave",
+      "family": "negated_action",
+      "user_input": "指差しはなしで、一回手を振って。",
+      "candidates": [
+        {
+          "target_id": "motion.point",
+          "domain": "motion",
+          "value": "point",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "指差",
+              "pattern": "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+            }
+          ]
+        },
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 10,
+              "end": 13,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_wave",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "手を振るかは、もう少し後で決める。",
+      "candidates": [
+        {
+          "target_id": "motion.wave",
+          "domain": "motion",
+          "value": "wave",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "手を振",
+              "pattern": "手[^、。！？!?]{0,8}振"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_smile",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "笑顔にするか、まだ迷ってる。",
+      "candidates": [
+        {
+          "target_id": "expression.happy",
+          "domain": "expression",
+          "value": "happy",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 2,
+              "text": "笑顔",
+              "pattern": "(?:笑顔|笑って|笑った|にこ|微笑)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_direction",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "左を見るか右を見るかは保留。",
+      "candidates": [
+        {
+          "target_id": "gaze.left",
+          "domain": "gaze",
+          "value": "left",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 8,
+              "text": "左を見るか右を見",
+              "pattern": "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+            }
+          ]
+        },
+        {
+          "target_id": "gaze.right",
+          "domain": "gaze",
+          "value": "right",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 6,
+              "text": "見るか右",
+              "pattern": "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_cancel",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "うなずいて。いや、今の頼みは取り消し。",
+      "candidates": [
+        {
+          "target_id": "motion.nod",
+          "domain": "motion",
+          "value": "nod",
+          "anchors": [
+            {
+              "start": 0,
+              "end": 3,
+              "text": "うなず",
+              "pattern": "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_if",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "もし下を向いてって頼んだら変かな。",
+      "candidates": [
+        {
+          "target_id": "gaze.down",
+          "domain": "gaze",
+          "value": "down",
+          "anchors": [
+            {
+              "start": 2,
+              "end": 5,
+              "text": "下を向",
+              "pattern": "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "v34c_action_ambiguous_expression",
+      "family": "ambiguous_or_conflicting_action",
+      "user_input": "表情は今ここで決めなくていいよ。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_crouch",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "その場でしゃがんで。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_arms",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "両腕を頭の上まで上げて。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_screen",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "画面を閉じて。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_mail",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "今すぐメールを送って。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_camera",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "カメラを一周回して。",
+      "candidates": []
+    },
+    {
+      "case_id": "v34c_action_invalid_kick",
+      "family": "invalid_or_safety_blocked_action",
+      "user_input": "相手を蹴る動作をして。",
+      "candidates": []
+    }
+  ],
+  "judgment_rows": [
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 4.401502,
+          "total_duration_ns": 4400265292,
+          "load_duration_ns": 2620929000,
+          "prompt_eval_count": 370,
+          "prompt_eval_duration_ns": 1004684000,
+          "eval_count": 24,
+          "eval_duration_ns": 736680000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.027605,
+          "total_duration_ns": 2026566333,
+          "load_duration_ns": 204734541,
+          "prompt_eval_count": 386,
+          "prompt_eval_duration_ns": 1025103000,
+          "eval_count": 24,
+          "eval_duration_ns": 759025000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.99077,
+          "total_duration_ns": 1989887583,
+          "load_duration_ns": 207327875,
+          "prompt_eval_count": 373,
+          "prompt_eval_duration_ns": 999692000,
+          "eval_count": 24,
+          "eval_duration_ns": 744795000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.994672,
+          "total_duration_ns": 1993559791,
+          "load_duration_ns": 203020708,
+          "prompt_eval_count": 370,
+          "prompt_eval_duration_ns": 1010202000,
+          "eval_count": 24,
+          "eval_duration_ns": 742555000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.651506,
+          "total_duration_ns": 1650481042,
+          "load_duration_ns": 206627542,
+          "prompt_eval_count": 372,
+          "prompt_eval_duration_ns": 988372000,
+          "eval_count": 14,
+          "eval_duration_ns": 418547000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.769206,
+          "total_duration_ns": 1767850083,
+          "load_duration_ns": 207605708,
+          "prompt_eval_count": 392,
+          "prompt_eval_duration_ns": 1097481000,
+          "eval_count": 14,
+          "eval_duration_ns": 423429000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.000667,
+          "total_duration_ns": 1999637375,
+          "load_duration_ns": 207931375,
+          "prompt_eval_count": 370,
+          "prompt_eval_duration_ns": 1012055000,
+          "eval_count": 24,
+          "eval_duration_ns": 741519000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.662971,
+          "total_duration_ns": 1661956541,
+          "load_duration_ns": 205237791,
+          "prompt_eval_count": 371,
+          "prompt_eval_duration_ns": 999416000,
+          "eval_count": 14,
+          "eval_duration_ns": 420175000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.003621,
+          "total_duration_ns": 2002576166,
+          "load_duration_ns": 205904041,
+          "prompt_eval_count": 375,
+          "prompt_eval_duration_ns": 1011780000,
+          "eval_count": 24,
+          "eval_duration_ns": 747345000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.688773,
+          "total_duration_ns": 1687697125,
+          "load_duration_ns": 204693167,
+          "prompt_eval_count": 378,
+          "prompt_eval_duration_ns": 1015169000,
+          "eval_count": 14,
+          "eval_duration_ns": 428783000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.679895,
+          "total_duration_ns": 1678359542,
+          "load_duration_ns": 204537833,
+          "prompt_eval_count": 371,
+          "prompt_eval_duration_ns": 1007950000,
+          "eval_count": 14,
+          "eval_duration_ns": 427247000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.679385,
+          "total_duration_ns": 1678332292,
+          "load_duration_ns": 203342792,
+          "prompt_eval_count": 372,
+          "prompt_eval_duration_ns": 1008726000,
+          "eval_count": 14,
+          "eval_duration_ns": 423948000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.670645,
+          "total_duration_ns": 1669591500,
+          "load_duration_ns": 202725292,
+          "prompt_eval_count": 375,
+          "prompt_eval_duration_ns": 1010531000,
+          "eval_count": 14,
+          "eval_duration_ns": 417674000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.674071,
+          "total_duration_ns": 1673036375,
+          "load_duration_ns": 205764166,
+          "prompt_eval_count": 373,
+          "prompt_eval_duration_ns": 1008426000,
+          "eval_count": 14,
+          "eval_duration_ns": 421399000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.021017,
+          "total_duration_ns": 2019786250,
+          "load_duration_ns": 205146875,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 1020398000,
+          "eval_count": 24,
+          "eval_duration_ns": 755411000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.009987,
+          "total_duration_ns": 2008827708,
+          "load_duration_ns": 205347291,
+          "prompt_eval_count": 376,
+          "prompt_eval_duration_ns": 1005572000,
+          "eval_count": 24,
+          "eval_duration_ns": 760041000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.010623,
+          "total_duration_ns": 2009601417,
+          "load_duration_ns": 204027209,
+          "prompt_eval_count": 372,
+          "prompt_eval_duration_ns": 1014604000,
+          "eval_count": 24,
+          "eval_duration_ns": 752558000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.996262,
+          "total_duration_ns": 1994773833,
+          "load_duration_ns": 206372125,
+          "prompt_eval_count": 371,
+          "prompt_eval_duration_ns": 1006196000,
+          "eval_count": 24,
+          "eval_duration_ns": 744815000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n\"commitment\": \"mentioned\",\n\"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.950522,
+          "total_duration_ns": 1949567458,
+          "load_duration_ns": 204735458,
+          "prompt_eval_count": 378,
+          "prompt_eval_duration_ns": 1008369000,
+          "eval_count": 22,
+          "eval_duration_ns": 698203000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"mentioned\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.994266,
+          "total_duration_ns": 1993318125,
+          "load_duration_ns": 207550875,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 988693000,
+          "eval_count": 24,
+          "eval_duration_ns": 754070000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"mentioned\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.010954,
+          "total_duration_ns": 2009924667,
+          "load_duration_ns": 202789250,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 1018347000,
+          "eval_count": 24,
+          "eval_duration_ns": 751639000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.065868,
+          "total_duration_ns": 2064980542,
+          "load_duration_ns": 206847042,
+          "prompt_eval_count": 371,
+          "prompt_eval_duration_ns": 1011702000,
+          "eval_count": 26,
+          "eval_duration_ns": 807242000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.061994,
+          "total_duration_ns": 2060594833,
+          "load_duration_ns": 207668458,
+          "prompt_eval_count": 371,
+          "prompt_eval_duration_ns": 1017530000,
+          "eval_count": 25,
+          "eval_duration_ns": 796471000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.049271,
+          "total_duration_ns": 2048288834,
+          "load_duration_ns": 207849417,
+          "prompt_eval_count": 368,
+          "prompt_eval_duration_ns": 1012818000,
+          "eval_count": 25,
+          "eval_duration_ns": 789799000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.04931,
+          "total_duration_ns": 2048341458,
+          "load_duration_ns": 205973292,
+          "prompt_eval_count": 372,
+          "prompt_eval_duration_ns": 1014924000,
+          "eval_count": 25,
+          "eval_duration_ns": 789697000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.670025,
+          "total_duration_ns": 1668385208,
+          "load_duration_ns": 210997417,
+          "prompt_eval_count": 373,
+          "prompt_eval_duration_ns": 993349000,
+          "eval_count": 14,
+          "eval_duration_ns": 425347000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.048621,
+          "total_duration_ns": 2047294583,
+          "load_duration_ns": 203579583,
+          "prompt_eval_count": 377,
+          "prompt_eval_duration_ns": 1014513000,
+          "eval_count": 25,
+          "eval_duration_ns": 790003000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.033622,
+          "total_duration_ns": 2032550250,
+          "load_duration_ns": 204109500,
+          "prompt_eval_count": 378,
+          "prompt_eval_duration_ns": 1002588000,
+          "eval_count": 25,
+          "eval_duration_ns": 787616000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.026348,
+          "total_duration_ns": 2025369167,
+          "load_duration_ns": 208152500,
+          "prompt_eval_count": 375,
+          "prompt_eval_duration_ns": 1014031000,
+          "eval_count": 24,
+          "eval_duration_ns": 765260000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.995029,
+          "total_duration_ns": 1994075875,
+          "load_duration_ns": 205745208,
+          "prompt_eval_count": 385,
+          "prompt_eval_duration_ns": 1003809000,
+          "eval_count": 24,
+          "eval_duration_ns": 747054000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.033534,
+          "total_duration_ns": 2032612000,
+          "load_duration_ns": 205548334,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 1003656000,
+          "eval_count": 25,
+          "eval_duration_ns": 786173000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.000249,
+          "total_duration_ns": 1998962000,
+          "load_duration_ns": 204110917,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 1011186000,
+          "eval_count": 24,
+          "eval_duration_ns": 745436000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.068048,
+          "total_duration_ns": 2067073416,
+          "load_duration_ns": 207096000,
+          "prompt_eval_count": 374,
+          "prompt_eval_duration_ns": 1004692000,
+          "eval_count": 26,
+          "eval_duration_ns": 817115000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"ambiguous\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 1.999311,
+          "total_duration_ns": 1997990750,
+          "load_duration_ns": 205000042,
+          "prompt_eval_count": 370,
+          "prompt_eval_duration_ns": 1011287000,
+          "eval_count": 24,
+          "eval_duration_ns": 744087000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"ambiguous\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.029785,
+          "total_duration_ns": 2028617167,
+          "load_duration_ns": 207094125,
+          "prompt_eval_count": 375,
+          "prompt_eval_duration_ns": 1015902000,
+          "eval_count": 24,
+          "eval_duration_ns": 754352000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"ambiguous\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.00863,
+          "total_duration_ns": 2006797125,
+          "load_duration_ns": 206107750,
+          "prompt_eval_count": 373,
+          "prompt_eval_duration_ns": 1014727000,
+          "eval_count": 24,
+          "eval_duration_ns": 746424000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"cancelled\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "cancelled",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.01661,
+          "total_duration_ns": 2015794625,
+          "load_duration_ns": 207642333,
+          "prompt_eval_count": 379,
+          "prompt_eval_duration_ns": 1009340000,
+          "eval_count": 24,
+          "eval_duration_ns": 760697000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "target_only_control",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.083465,
+          "total_duration_ns": 2082395541,
+          "load_duration_ns": 205798416,
+          "prompt_eval_count": 377,
+          "prompt_eval_duration_ns": 1016332000,
+          "eval_count": 26,
+          "eval_duration_ns": 822007000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.143544,
+          "total_duration_ns": 2142530750,
+          "load_duration_ns": 208342459,
+          "prompt_eval_count": 541,
+          "prompt_eval_duration_ns": 1458554000,
+          "eval_count": 14,
+          "eval_duration_ns": 425770000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.142648,
+          "total_duration_ns": 2141661458,
+          "load_duration_ns": 206314583,
+          "prompt_eval_count": 573,
+          "prompt_eval_duration_ns": 1460218000,
+          "eval_count": 14,
+          "eval_duration_ns": 435188000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.072706,
+          "total_duration_ns": 2071417292,
+          "load_duration_ns": 208949000,
+          "prompt_eval_count": 545,
+          "prompt_eval_duration_ns": 1395279000,
+          "eval_count": 14,
+          "eval_duration_ns": 427582000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.016331,
+          "total_duration_ns": 2014379000,
+          "load_duration_ns": 205025083,
+          "prompt_eval_count": 540,
+          "prompt_eval_duration_ns": 1342205000,
+          "eval_count": 14,
+          "eval_duration_ns": 425383000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.04852,
+          "total_duration_ns": 2047262458,
+          "load_duration_ns": 206736458,
+          "prompt_eval_count": 544,
+          "prompt_eval_duration_ns": 1374548000,
+          "eval_count": 14,
+          "eval_duration_ns": 424629000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.173062,
+          "total_duration_ns": 2171602792,
+          "load_duration_ns": 208468125,
+          "prompt_eval_count": 593,
+          "prompt_eval_duration_ns": 1504738000,
+          "eval_count": 14,
+          "eval_duration_ns": 418791000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.117934,
+          "total_duration_ns": 2115499875,
+          "load_duration_ns": 210188833,
+          "prompt_eval_count": 566,
+          "prompt_eval_duration_ns": 1442735000,
+          "eval_count": 14,
+          "eval_duration_ns": 423346000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.123448,
+          "total_duration_ns": 2122465625,
+          "load_duration_ns": 208007541,
+          "prompt_eval_count": 567,
+          "prompt_eval_duration_ns": 1448678000,
+          "eval_count": 14,
+          "eval_duration_ns": 424734000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.171374,
+          "total_duration_ns": 2170346083,
+          "load_duration_ns": 206448667,
+          "prompt_eval_count": 575,
+          "prompt_eval_duration_ns": 1498310000,
+          "eval_count": 14,
+          "eval_duration_ns": 426147000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.195046,
+          "total_duration_ns": 2193740000,
+          "load_duration_ns": 206822000,
+          "prompt_eval_count": 578,
+          "prompt_eval_duration_ns": 1511859000,
+          "eval_count": 14,
+          "eval_duration_ns": 432206000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.105655,
+          "total_duration_ns": 2104018750,
+          "load_duration_ns": 205027084,
+          "prompt_eval_count": 567,
+          "prompt_eval_duration_ns": 1438322000,
+          "eval_count": 14,
+          "eval_duration_ns": 420195000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.114372,
+          "total_duration_ns": 2112675000,
+          "load_duration_ns": 208890000,
+          "prompt_eval_count": 568,
+          "prompt_eval_duration_ns": 1439971000,
+          "eval_count": 14,
+          "eval_duration_ns": 423541000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.08878,
+          "total_duration_ns": 2087288792,
+          "load_duration_ns": 206078917,
+          "prompt_eval_count": 572,
+          "prompt_eval_duration_ns": 1417865000,
+          "eval_count": 14,
+          "eval_duration_ns": 422974000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.118381,
+          "total_duration_ns": 2117020958,
+          "load_duration_ns": 209237333,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1445796000,
+          "eval_count": 14,
+          "eval_duration_ns": 420558000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.110269,
+          "total_duration_ns": 2109125958,
+          "load_duration_ns": 207032792,
+          "prompt_eval_count": 571,
+          "prompt_eval_duration_ns": 1440738000,
+          "eval_count": 14,
+          "eval_duration_ns": 421210000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.121553,
+          "total_duration_ns": 2120486625,
+          "load_duration_ns": 206207709,
+          "prompt_eval_count": 573,
+          "prompt_eval_duration_ns": 1459688000,
+          "eval_count": 14,
+          "eval_duration_ns": 413975000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.124755,
+          "total_duration_ns": 2123824750,
+          "load_duration_ns": 208548917,
+          "prompt_eval_count": 569,
+          "prompt_eval_duration_ns": 1450954000,
+          "eval_count": 14,
+          "eval_duration_ns": 423980000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.117272,
+          "total_duration_ns": 2116180291,
+          "load_duration_ns": 205620708,
+          "prompt_eval_count": 568,
+          "prompt_eval_duration_ns": 1447787000,
+          "eval_count": 14,
+          "eval_duration_ns": 422077000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"mentioned\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.142797,
+          "total_duration_ns": 2141418959,
+          "load_duration_ns": 209996000,
+          "prompt_eval_count": 548,
+          "prompt_eval_duration_ns": 1455667000,
+          "eval_count": 14,
+          "eval_duration_ns": 435541000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"mentioned\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.112069,
+          "total_duration_ns": 2110795458,
+          "load_duration_ns": 208991000,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1443820000,
+          "eval_count": 14,
+          "eval_duration_ns": 417535000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.196349,
+          "total_duration_ns": 2195020375,
+          "load_duration_ns": 208462459,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1430141000,
+          "eval_count": 17,
+          "eval_duration_ns": 517337000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"hypothetical\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.069268,
+          "total_duration_ns": 2068229250,
+          "load_duration_ns": 207202334,
+          "prompt_eval_count": 540,
+          "prompt_eval_duration_ns": 1331016000,
+          "eval_count": 16,
+          "eval_duration_ns": 490302000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.038075,
+          "total_duration_ns": 2036954916,
+          "load_duration_ns": 209387125,
+          "prompt_eval_count": 541,
+          "prompt_eval_duration_ns": 1332849000,
+          "eval_count": 15,
+          "eval_duration_ns": 454665000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.04434,
+          "total_duration_ns": 2042975084,
+          "load_duration_ns": 206548292,
+          "prompt_eval_count": 537,
+          "prompt_eval_duration_ns": 1343254000,
+          "eval_count": 15,
+          "eval_duration_ns": 453540000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.14919,
+          "total_duration_ns": 2148206083,
+          "load_duration_ns": 208120917,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1438239000,
+          "eval_count": 15,
+          "eval_duration_ns": 457013000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.09925,
+          "total_duration_ns": 2098305541,
+          "load_duration_ns": 205906875,
+          "prompt_eval_count": 571,
+          "prompt_eval_duration_ns": 1438833000,
+          "eval_count": 14,
+          "eval_duration_ns": 414618000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.216101,
+          "total_duration_ns": 2214922875,
+          "load_duration_ns": 207389542,
+          "prompt_eval_count": 575,
+          "prompt_eval_duration_ns": 1508827000,
+          "eval_count": 15,
+          "eval_duration_ns": 457674000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.164951,
+          "total_duration_ns": 2163354500,
+          "load_duration_ns": 205234042,
+          "prompt_eval_count": 576,
+          "prompt_eval_duration_ns": 1496668000,
+          "eval_count": 14,
+          "eval_duration_ns": 420837000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.187288,
+          "total_duration_ns": 2186112250,
+          "load_duration_ns": 209205041,
+          "prompt_eval_count": 586,
+          "prompt_eval_duration_ns": 1513527000,
+          "eval_count": 14,
+          "eval_duration_ns": 423661000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.177725,
+          "total_duration_ns": 2176233166,
+          "load_duration_ns": 204583125,
+          "prompt_eval_count": 596,
+          "prompt_eval_duration_ns": 1517242000,
+          "eval_count": 14,
+          "eval_duration_ns": 413715000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.122504,
+          "total_duration_ns": 2121380958,
+          "load_duration_ns": 208227542,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1443673000,
+          "eval_count": 14,
+          "eval_duration_ns": 427319000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.135619,
+          "total_duration_ns": 2133933667,
+          "load_duration_ns": 206173750,
+          "prompt_eval_count": 570,
+          "prompt_eval_duration_ns": 1451792000,
+          "eval_count": 14,
+          "eval_duration_ns": 435879000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"hypothetical\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.144396,
+          "total_duration_ns": 2143452000,
+          "load_duration_ns": 209366417,
+          "prompt_eval_count": 544,
+          "prompt_eval_duration_ns": 1399934000,
+          "eval_count": 16,
+          "eval_duration_ns": 485165000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"mentioned\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.014842,
+          "total_duration_ns": 2013631000,
+          "load_duration_ns": 204429375,
+          "prompt_eval_count": 539,
+          "prompt_eval_duration_ns": 1341018000,
+          "eval_count": 14,
+          "eval_duration_ns": 427079000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"ambiguous\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.176878,
+          "total_duration_ns": 2175064208,
+          "load_duration_ns": 207803041,
+          "prompt_eval_count": 575,
+          "prompt_eval_duration_ns": 1503987000,
+          "eval_count": 14,
+          "eval_duration_ns": 423022000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"ambiguous\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.093516,
+          "total_duration_ns": 2092342042,
+          "load_duration_ns": 207903375,
+          "prompt_eval_count": 573,
+          "prompt_eval_duration_ns": 1425261000,
+          "eval_count": 14,
+          "eval_duration_ns": 418288000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"cancelled\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "cancelled",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.107778,
+          "total_duration_ns": 2106091292,
+          "load_duration_ns": 208164375,
+          "prompt_eval_count": 550,
+          "prompt_eval_duration_ns": 1428832000,
+          "eval_count": 14,
+          "eval_duration_ns": 428743000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "all_targets_relational",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"hypothetical\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.165878,
+          "total_duration_ns": 2164862625,
+          "load_duration_ns": 207201709,
+          "prompt_eval_count": 549,
+          "prompt_eval_duration_ns": 1427627000,
+          "eval_count": 16,
+          "eval_duration_ns": 489849000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.506249,
+          "total_duration_ns": 2505066041,
+          "load_duration_ns": 210412583,
+          "prompt_eval_count": 577,
+          "prompt_eval_duration_ns": 1508641000,
+          "eval_count": 24,
+          "eval_duration_ns": 745569000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.2883,
+          "total_duration_ns": 2286702917,
+          "load_duration_ns": 208387167,
+          "prompt_eval_count": 593,
+          "prompt_eval_duration_ns": 1508195000,
+          "eval_count": 17,
+          "eval_duration_ns": 524900999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.512692,
+          "total_duration_ns": 2511640291,
+          "load_duration_ns": 208311375,
+          "prompt_eval_count": 580,
+          "prompt_eval_duration_ns": 1512203000,
+          "eval_count": 24,
+          "eval_duration_ns": 751411000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.502444,
+          "total_duration_ns": 2500309083,
+          "load_duration_ns": 203743666,
+          "prompt_eval_count": 577,
+          "prompt_eval_duration_ns": 1504138000,
+          "eval_count": 24,
+          "eval_duration_ns": 751301000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.5183,
+          "total_duration_ns": 2517341875,
+          "load_duration_ns": 207338667,
+          "prompt_eval_count": 579,
+          "prompt_eval_duration_ns": 1509729000,
+          "eval_count": 24,
+          "eval_duration_ns": 758114000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.289717,
+          "total_duration_ns": 2288634750,
+          "load_duration_ns": 208054125,
+          "prompt_eval_count": 599,
+          "prompt_eval_duration_ns": 1512443000,
+          "eval_count": 17,
+          "eval_duration_ns": 528366000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.27603,
+          "total_duration_ns": 2274986417,
+          "load_duration_ns": 209256667,
+          "prompt_eval_count": 603,
+          "prompt_eval_duration_ns": 1501040000,
+          "eval_count": 17,
+          "eval_duration_ns": 522640999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.267011,
+          "total_duration_ns": 2266047084,
+          "load_duration_ns": 206181125,
+          "prompt_eval_count": 602,
+          "prompt_eval_duration_ns": 1502117000,
+          "eval_count": 17,
+          "eval_duration_ns": 517350000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.336325,
+          "total_duration_ns": 2335071667,
+          "load_duration_ns": 206034875,
+          "prompt_eval_count": 611,
+          "prompt_eval_duration_ns": 1564048000,
+          "eval_count": 17,
+          "eval_duration_ns": 525030999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.375437,
+          "total_duration_ns": 2374384583,
+          "load_duration_ns": 206880458,
+          "prompt_eval_count": 610,
+          "prompt_eval_duration_ns": 1590066000,
+          "eval_count": 17,
+          "eval_duration_ns": 533092999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.285991,
+          "total_duration_ns": 2285000000,
+          "load_duration_ns": 205939166,
+          "prompt_eval_count": 604,
+          "prompt_eval_duration_ns": 1519151000,
+          "eval_count": 17,
+          "eval_duration_ns": 519232999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.274605,
+          "total_duration_ns": 2273383042,
+          "load_duration_ns": 205724500,
+          "prompt_eval_count": 603,
+          "prompt_eval_duration_ns": 1512671000,
+          "eval_count": 17,
+          "eval_duration_ns": 513586000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.339211,
+          "total_duration_ns": 2338133334,
+          "load_duration_ns": 203536875,
+          "prompt_eval_count": 607,
+          "prompt_eval_duration_ns": 1570091000,
+          "eval_count": 17,
+          "eval_duration_ns": 522649000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.253053,
+          "total_duration_ns": 2251905625,
+          "load_duration_ns": 209217000,
+          "prompt_eval_count": 606,
+          "prompt_eval_duration_ns": 1580034000,
+          "eval_count": 14,
+          "eval_duration_ns": 421593000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.363209,
+          "total_duration_ns": 2361877041,
+          "load_duration_ns": 209890250,
+          "prompt_eval_count": 608,
+          "prompt_eval_duration_ns": 1579685000,
+          "eval_count": 17,
+          "eval_duration_ns": 531105000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.267621,
+          "total_duration_ns": 2266580708,
+          "load_duration_ns": 206051208,
+          "prompt_eval_count": 607,
+          "prompt_eval_duration_ns": 1585130000,
+          "eval_count": 14,
+          "eval_duration_ns": 429283000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.271278,
+          "total_duration_ns": 2270199209,
+          "load_duration_ns": 206843667,
+          "prompt_eval_count": 605,
+          "prompt_eval_duration_ns": 1499132000,
+          "eval_count": 17,
+          "eval_duration_ns": 523577000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.278729,
+          "total_duration_ns": 2277787000,
+          "load_duration_ns": 207092750,
+          "prompt_eval_count": 603,
+          "prompt_eval_duration_ns": 1508858000,
+          "eval_count": 17,
+          "eval_duration_ns": 521044000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"mentioned\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.515131,
+          "total_duration_ns": 2514053833,
+          "load_duration_ns": 206393541,
+          "prompt_eval_count": 585,
+          "prompt_eval_duration_ns": 1513285000,
+          "eval_count": 24,
+          "eval_duration_ns": 753608000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.34089,
+          "total_duration_ns": 2339331292,
+          "load_duration_ns": 204912250,
+          "prompt_eval_count": 606,
+          "prompt_eval_duration_ns": 1571985000,
+          "eval_count": 17,
+          "eval_duration_ns": 521142000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.341249,
+          "total_duration_ns": 2340195167,
+          "load_duration_ns": 204693750,
+          "prompt_eval_count": 606,
+          "prompt_eval_duration_ns": 1573192000,
+          "eval_count": 17,
+          "eval_duration_ns": 521167000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.595152,
+          "total_duration_ns": 2593742166,
+          "load_duration_ns": 206489125,
+          "prompt_eval_count": 578,
+          "prompt_eval_duration_ns": 1517572000,
+          "eval_count": 26,
+          "eval_duration_ns": 829336000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"negated\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.547559,
+          "total_duration_ns": 2546446875,
+          "load_duration_ns": 211680250,
+          "prompt_eval_count": 578,
+          "prompt_eval_duration_ns": 1500858000,
+          "eval_count": 25,
+          "eval_duration_ns": 792087000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"requested\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.530751,
+          "total_duration_ns": 2528734334,
+          "load_duration_ns": 210609667,
+          "prompt_eval_count": 575,
+          "prompt_eval_duration_ns": 1509485000,
+          "eval_count": 24,
+          "eval_duration_ns": 756402000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.286188,
+          "total_duration_ns": 2284775875,
+          "load_duration_ns": 206349417,
+          "prompt_eval_count": 606,
+          "prompt_eval_duration_ns": 1576352000,
+          "eval_count": 15,
+          "eval_duration_ns": 461257000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.16435,
+          "total_duration_ns": 2162959208,
+          "load_duration_ns": 206991875,
+          "prompt_eval_count": 605,
+          "prompt_eval_duration_ns": 1500892000,
+          "eval_count": 14,
+          "eval_duration_ns": 415018000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"negated\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.258868,
+          "total_duration_ns": 2257854167,
+          "load_duration_ns": 208672208,
+          "prompt_eval_count": 611,
+          "prompt_eval_duration_ns": 1559056000,
+          "eval_count": 15,
+          "eval_duration_ns": 449772000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.242854,
+          "total_duration_ns": 2240433875,
+          "load_duration_ns": 203318000,
+          "prompt_eval_count": 610,
+          "prompt_eval_duration_ns": 1571150000,
+          "eval_count": 14,
+          "eval_duration_ns": 425667000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.245653,
+          "total_duration_ns": 2244658375,
+          "load_duration_ns": 208572709,
+          "prompt_eval_count": 623,
+          "prompt_eval_duration_ns": 1575200000,
+          "eval_count": 14,
+          "eval_duration_ns": 421431000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"requested\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.241209,
+          "total_duration_ns": 2239098875,
+          "load_duration_ns": 206646917,
+          "prompt_eval_count": 616,
+          "prompt_eval_duration_ns": 1566785000,
+          "eval_count": 14,
+          "eval_duration_ns": 425749000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.344312,
+          "total_duration_ns": 2343056417,
+          "load_duration_ns": 205421917,
+          "prompt_eval_count": 607,
+          "prompt_eval_duration_ns": 1573573000,
+          "eval_count": 17,
+          "eval_duration_ns": 524072000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.279798,
+          "total_duration_ns": 2278419333,
+          "load_duration_ns": 207020958,
+          "prompt_eval_count": 605,
+          "prompt_eval_duration_ns": 1509754000,
+          "eval_count": 17,
+          "eval_duration_ns": 520455000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.56289,
+          "total_duration_ns": 2560025292,
+          "load_duration_ns": 210580125,
+          "prompt_eval_count": 581,
+          "prompt_eval_duration_ns": 1494765000,
+          "eval_count": 26,
+          "eval_duration_ns": 811753000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"mentioned\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.489497,
+          "total_duration_ns": 2487709542,
+          "load_duration_ns": 204676292,
+          "prompt_eval_count": 577,
+          "prompt_eval_duration_ns": 1490834000,
+          "eval_count": 24,
+          "eval_duration_ns": 752083000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"ambiguous\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.334516,
+          "total_duration_ns": 2333491208,
+          "load_duration_ns": 207718333,
+          "prompt_eval_count": 608,
+          "prompt_eval_duration_ns": 1560681000,
+          "eval_count": 17,
+          "eval_duration_ns": 523427000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"ambiguous\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.3555,
+          "total_duration_ns": 2353674417,
+          "load_duration_ns": 209043375,
+          "prompt_eval_count": 608,
+          "prompt_eval_duration_ns": 1578252000,
+          "eval_count": 17,
+          "eval_duration_ns": 524607000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"cancelled\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "cancelled",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.487402,
+          "total_duration_ns": 2486258041,
+          "load_duration_ns": 207773250,
+          "prompt_eval_count": 586,
+          "prompt_eval_duration_ns": 1496205000,
+          "eval_count": 24,
+          "eval_duration_ns": 740585000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_other_targets",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\n  \"commitment\": \"hypothetical\",\n  \"contract_ack\": \"v44\"\n}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.575765,
+          "total_duration_ns": 2574664542,
+          "load_duration_ns": 205010792,
+          "prompt_eval_count": 584,
+          "prompt_eval_duration_ns": 1505552000,
+          "eval_count": 26,
+          "eval_duration_ns": 823839000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.570681,
+          "total_duration_ns": 2569684416,
+          "load_duration_ns": 207517375,
+          "prompt_eval_count": 713,
+          "prompt_eval_duration_ns": 1802954000,
+          "eval_count": 17,
+          "eval_duration_ns": 518652000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_nod_colloquial",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.684266,
+          "total_duration_ns": 2683139834,
+          "load_duration_ns": 208997625,
+          "prompt_eval_count": 751,
+          "prompt_eval_duration_ns": 1897514000,
+          "eval_count": 17,
+          "eval_duration_ns": 527537000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_point",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.59777,
+          "total_duration_ns": 2596629583,
+          "load_duration_ns": 204939792,
+          "prompt_eval_count": 717,
+          "prompt_eval_duration_ns": 1822580000,
+          "eval_count": 17,
+          "eval_duration_ns": 528835000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_smile_colloquial",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.595225,
+          "total_duration_ns": 2594322084,
+          "load_duration_ns": 209267417,
+          "prompt_eval_count": 712,
+          "prompt_eval_duration_ns": 1813433000,
+          "eval_count": 17,
+          "eval_duration_ns": 530961000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_eyes_colloquial",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.572449,
+          "total_duration_ns": 2571009625,
+          "load_duration_ns": 204133333,
+          "prompt_eval_count": 715,
+          "prompt_eval_duration_ns": 1807641000,
+          "eval_count": 17,
+          "eval_duration_ns": 517950000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_single_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.742752,
+          "total_duration_ns": 2741761000,
+          "load_duration_ns": 205492958,
+          "prompt_eval_count": 777,
+          "prompt_eval_duration_ns": 1971077000,
+          "eval_count": 17,
+          "eval_duration_ns": 523576000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.687352,
+          "total_duration_ns": 2686544083,
+          "load_duration_ns": 205693375,
+          "prompt_eval_count": 738,
+          "prompt_eval_duration_ns": 1893734000,
+          "eval_count": 17,
+          "eval_duration_ns": 545939000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_happy_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.782239,
+          "total_duration_ns": 2781490459,
+          "load_duration_ns": 212867250,
+          "prompt_eval_count": 738,
+          "prompt_eval_duration_ns": 1959308000,
+          "eval_count": 17,
+          "eval_duration_ns": 568587000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "expression.surprised",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.759368,
+          "total_duration_ns": 2758690916,
+          "load_duration_ns": 205338041,
+          "prompt_eval_count": 745,
+          "prompt_eval_duration_ns": 1980676000,
+          "eval_count": 17,
+          "eval_duration_ns": 531789000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_surprised_right",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.681223,
+          "total_duration_ns": 2680080375,
+          "load_duration_ns": 204768875,
+          "prompt_eval_count": 749,
+          "prompt_eval_duration_ns": 1898760000,
+          "eval_count": 17,
+          "eval_duration_ns": 534597999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "expression.sad",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.689805,
+          "total_duration_ns": 2688267166,
+          "load_duration_ns": 205059208,
+          "prompt_eval_count": 739,
+          "prompt_eval_duration_ns": 1915399000,
+          "eval_count": 17,
+          "eval_duration_ns": 525368000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_sad_down",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.675433,
+          "total_duration_ns": 2674202167,
+          "load_duration_ns": 204817000,
+          "prompt_eval_count": 739,
+          "prompt_eval_duration_ns": 1903854000,
+          "eval_count": 17,
+          "eval_duration_ns": 524167000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.696847,
+          "total_duration_ns": 2695723792,
+          "load_duration_ns": 205176500,
+          "prompt_eval_count": 744,
+          "prompt_eval_duration_ns": 1920521000,
+          "eval_count": 17,
+          "eval_duration_ns": 529784999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_neutral_idle",
+      "target_id": "motion.idle",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.687122,
+          "total_duration_ns": 2685824708,
+          "load_duration_ns": 210190750,
+          "prompt_eval_count": 742,
+          "prompt_eval_duration_ns": 1901247000,
+          "eval_count": 17,
+          "eval_duration_ns": 531126999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.713219,
+          "total_duration_ns": 2712128584,
+          "load_duration_ns": 208731584,
+          "prompt_eval_count": 742,
+          "prompt_eval_duration_ns": 1935078000,
+          "eval_count": 17,
+          "eval_duration_ns": 527099000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_angry_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.704508,
+          "total_duration_ns": 2703607834,
+          "load_duration_ns": 207887334,
+          "prompt_eval_count": 744,
+          "prompt_eval_duration_ns": 1928036000,
+          "eval_count": 17,
+          "eval_duration_ns": 526754000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.693057,
+          "total_duration_ns": 2691928416,
+          "load_duration_ns": 207774500,
+          "prompt_eval_count": 740,
+          "prompt_eval_duration_ns": 1917101000,
+          "eval_count": 17,
+          "eval_duration_ns": 525619000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_multi_wave_user",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.74647,
+          "total_duration_ns": 2745396250,
+          "load_duration_ns": 209631708,
+          "prompt_eval_count": 740,
+          "prompt_eval_duration_ns": 1961544000,
+          "eval_count": 17,
+          "eval_duration_ns": 533571000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_none_gesture",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.653136,
+          "total_duration_ns": 2651921166,
+          "load_duration_ns": 208792000,
+          "prompt_eval_count": 720,
+          "prompt_eval_duration_ns": 1863177000,
+          "eval_count": 17,
+          "eval_duration_ns": 535731000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.713509,
+          "total_duration_ns": 2712399291,
+          "load_duration_ns": 206942583,
+          "prompt_eval_count": 741,
+          "prompt_eval_duration_ns": 1932756000,
+          "eval_count": 17,
+          "eval_duration_ns": 531159999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_none_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"mentioned\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "mentioned",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.712475,
+          "total_duration_ns": 2711227500,
+          "load_duration_ns": 209828500,
+          "prompt_eval_count": 741,
+          "prompt_eval_duration_ns": 1927673000,
+          "eval_count": 17,
+          "eval_duration_ns": 531687000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_none_hypothetical",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"hypothetical\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.731635,
+          "total_duration_ns": 2730618042,
+          "load_duration_ns": 209746333,
+          "prompt_eval_count": 712,
+          "prompt_eval_duration_ns": 1880391000,
+          "eval_count": 19,
+          "eval_duration_ns": 599984000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.688779,
+          "total_duration_ns": 2687762791,
+          "load_duration_ns": 205841791,
+          "prompt_eval_count": 718,
+          "prompt_eval_duration_ns": 1853863000,
+          "eval_count": 18,
+          "eval_duration_ns": 587133000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_happy",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.652319,
+          "total_duration_ns": 2651288417,
+          "load_duration_ns": 206498542,
+          "prompt_eval_count": 714,
+          "prompt_eval_duration_ns": 1842949000,
+          "eval_count": 18,
+          "eval_duration_ns": 560789000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.749178,
+          "total_duration_ns": 2747898375,
+          "load_duration_ns": 209095875,
+          "prompt_eval_count": 746,
+          "prompt_eval_duration_ns": 1927151000,
+          "eval_count": 18,
+          "eval_duration_ns": 569199000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_down_user",
+      "target_id": "gaze.user",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.70446,
+          "total_duration_ns": 2703349875,
+          "load_duration_ns": 207365292,
+          "prompt_eval_count": 742,
+          "prompt_eval_duration_ns": 1926689000,
+          "eval_count": 17,
+          "eval_duration_ns": 528278000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.713979,
+          "total_duration_ns": 2712623292,
+          "load_duration_ns": 207392417,
+          "prompt_eval_count": 752,
+          "prompt_eval_duration_ns": 1905027000,
+          "eval_count": 18,
+          "eval_duration_ns": 558697000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_nod_shake",
+      "target_id": "motion.shake_head",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.687876,
+          "total_duration_ns": 2687038250,
+          "load_duration_ns": 210460958,
+          "prompt_eval_count": 747,
+          "prompt_eval_duration_ns": 1908810000,
+          "eval_count": 17,
+          "eval_duration_ns": 527692000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.angry",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.737279,
+          "total_duration_ns": 2736034959,
+          "load_duration_ns": 208795084,
+          "prompt_eval_count": 762,
+          "prompt_eval_duration_ns": 1922303000,
+          "eval_count": 18,
+          "eval_duration_ns": 562431000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_angry_neutral",
+      "target_id": "expression.neutral",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.752121,
+          "total_duration_ns": 2750772791,
+          "load_duration_ns": 209880541,
+          "prompt_eval_count": 774,
+          "prompt_eval_duration_ns": 1969860000,
+          "eval_count": 17,
+          "eval_duration_ns": 529996000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.point",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"negated\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "negated",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.766415,
+          "total_duration_ns": 2764977333,
+          "load_duration_ns": 211465541,
+          "prompt_eval_count": 747,
+          "prompt_eval_duration_ns": 1924310000,
+          "eval_count": 18,
+          "eval_duration_ns": 569047000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_negated_point_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"requested\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "requested",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.67426,
+          "total_duration_ns": 2672993125,
+          "load_duration_ns": 207115458,
+          "prompt_eval_count": 742,
+          "prompt_eval_duration_ns": 1903053000,
+          "eval_count": 17,
+          "eval_duration_ns": 521217999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"hypothetical\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.655823,
+          "total_duration_ns": 2654774625,
+          "load_duration_ns": 205930417,
+          "prompt_eval_count": 716,
+          "prompt_eval_duration_ns": 1817029000,
+          "eval_count": 19,
+          "eval_duration_ns": 591502000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_smile",
+      "target_id": "expression.happy",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"ambiguous\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.621757,
+          "total_duration_ns": 2620474708,
+          "load_duration_ns": 209945583,
+          "prompt_eval_count": 711,
+          "prompt_eval_duration_ns": 1841110000,
+          "eval_count": 17,
+          "eval_duration_ns": 528427000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.left",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"ambiguous\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.681727,
+          "total_duration_ns": 2680517625,
+          "load_duration_ns": 208445084,
+          "prompt_eval_count": 746,
+          "prompt_eval_duration_ns": 1896414000,
+          "eval_count": 17,
+          "eval_duration_ns": 534616999
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_direction",
+      "target_id": "gaze.right",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"ambiguous\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "ambiguous",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.672548,
+          "total_duration_ns": 2671681334,
+          "load_duration_ns": 208234792,
+          "prompt_eval_count": 744,
+          "prompt_eval_duration_ns": 1907693000,
+          "eval_count": 17,
+          "eval_duration_ns": 514393000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_cancel",
+      "target_id": "motion.nod",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\":\"cancelled\",\"contract_ack\":\"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "cancelled",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.595197,
+          "total_duration_ns": 2594301250,
+          "load_duration_ns": 211628333,
+          "prompt_eval_count": 735,
+          "prompt_eval_duration_ns": 1904588000,
+          "eval_count": 14,
+          "eval_duration_ns": 425036000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    },
+    {
+      "condition": "isolated_scope_signals_candidate",
+      "case_id": "v34c_action_ambiguous_if",
+      "target_id": "gaze.down",
+      "result": {
+        "response_message": {
+          "role": "assistant",
+          "content": "{\"commitment\": \"hypothetical\", \"contract_ack\": \"v44\"}"
+        },
+        "parsed": {
+          "parse_success": true,
+          "errors": [],
+          "commitment": "hypothetical",
+          "result_count": 1,
+          "single_result": true,
+          "unexpected_content": false
+        },
+        "response_metrics": {
+          "wall_seconds": 2.669852,
+          "total_duration_ns": 2668345917,
+          "load_duration_ns": 207553667,
+          "prompt_eval_count": 720,
+          "prompt_eval_duration_ns": 1827839000,
+          "eval_count": 19,
+          "eval_duration_ns": 591877000
+        },
+        "transport_attempts": 1,
+        "prior_transport_errors": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "uruha_commitment_carrier_target_isolation_preregistration_v44",
+  "created_at": "2026-07-15T16:21:46+09:00",
+  "research_question": "Can a carrier selected without benchmark semantics restore exact local-model output, and can target isolation plus deterministic local-scope perception preserve relational request inheritance without spreading it into negated targets?",
+  "project_effect": "Create a small, reliable internal pragmatic-commitment module for supported VRM actions. It is not a benchmark answer table and does not change the right-brain persona model.",
+  "scientific_and_implementation_basis": [
+    {
+      "name": "Ollama structured outputs",
+      "source": "https://docs.ollama.com/capabilities/structured-outputs",
+      "design_use": "Compare schema carriers and include the exact schema in the format-only prompt, as recommended by the official documentation."
+    },
+    {
+      "name": "Ollama tool calling",
+      "source": "https://docs.ollama.com/capabilities/tool-calling",
+      "design_use": "Evaluate a single internal classification tool call as one carrier candidate without executing a physical VRM action."
+    },
+    {
+      "name": "value-agnostic conversational semantic parsing",
+      "source": "https://aclanthology.org/2021.acl-long.284/",
+      "design_use": "Keep deterministic grounded values separate from the model's pragmatic relation judgment."
+    }
+  ],
+  "frozen_environment": {
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "model_blob_bytes": 3389983735,
+    "thinking": false,
+    "ollama_version_observed": "0.31.1",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260744,
+    "context_tokens": 2048,
+    "maximum_output_tokens": 48,
+    "paid_api": false
+  },
+  "frozen_inputs": {
+    "format_probe_dataset": "datasets/commitment_carrier_v44_format_probe.json",
+    "format_probe_dataset_sha256": "26d140f441e76394471ebb794e3835538680242a1277878609bfa2236bc1b864",
+    "format_probe_case_count": 12,
+    "v43_raw": "reports/relational_commitment_context_v43_development_raw.json",
+    "v43_raw_sha256": "590e194a17ed1fcd5c03787d979ea499485c027f107549b975afb52fcc4b99ad",
+    "v43_analysis": "reports/relational_commitment_context_v43_development_analysis.json",
+    "v43_analysis_sha256": "22bf645bb0cafa609ace948feb79ae0e5a7f53861cc379c1ebdcf7006e69d0ee",
+    "v43_posthoc": "reports/relational_commitment_context_v43_posthoc_diagnostic.json",
+    "v43_posthoc_sha256": "030d418bf52e631c8b5a4070e4117f6cd3fc3c431536f7611550178a07cb5160",
+    "development_dataset": "datasets/action_selective_deliberation_v37_development.json",
+    "development_dataset_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+    "development_case_count": 36,
+    "supported_target_count": 38,
+    "ontology_source": "grounded_frame_isolation_v39.py",
+    "ontology_source_sha256": "84ecdda08440e018aaf1aa8861dae5ae888d396e6e0d23f8211794c7d335c09c"
+  },
+  "stage_1_format_probe": {
+    "contains_benchmark_language_or_inference": false,
+    "task": "Copy an explicitly supplied source_label through each carrier; do not infer commitment from an utterance.",
+    "carriers": [
+      "scalar_enum_schema",
+      "two_field_object_schema",
+      "nested_label_schema",
+      "tool_call_schema"
+    ],
+    "carrier_definitions": {
+      "scalar_enum_schema": "Top-level JSON string constrained to the six commitment labels.",
+      "two_field_object_schema": "Object with commitment plus constant contract_ack=v44.",
+      "nested_label_schema": "Object with classification.commitment as the only semantic value.",
+      "tool_call_schema": "Exactly one non-executing record_commitment tool call with a commitment argument."
+    },
+    "fair_latency_protocol": "Before scoring each carrier, unload the model, run one fixed unscored warm-up through that same carrier, and then run all 12 scored cases.",
+    "gates": {
+      "parse_success_rate": 1.0,
+      "source_label_fidelity": 1.0,
+      "single_result_rate": 1.0,
+      "unexpected_content_rate": 0.0,
+      "p95_latency_seconds_at_most": 4.0
+    },
+    "selection_rule": "Eligible carriers must pass every gate. Select the eligible carrier with the lowest median latency; break an exact tie by lexical carrier id. If none is eligible, stop before semantic development.",
+    "schema_string_in_prompt": true
+  },
+  "stage_2_semantic_conditions": {
+    "authorized_only_if_stage_1_selects_eligible_carrier": true,
+    "conditions": {
+      "target_only_control": "Selected carrier with the exact V42 target-only user payload and no relational guidance.",
+      "all_targets_relational": "Add all grounded targets and the V43 general relational rules.",
+      "isolated_other_targets": "Move all non-focus targets into context_only_other_targets and explicitly prohibit classifying or outputting them.",
+      "isolated_scope_signals_candidate": "Keep target isolation and add deterministic per-anchor local scope reasons from the existing V38 grounding layer."
+    },
+    "causal_comparisons": {
+      "target_only_to_all_targets": "Effect of relational context and general relational rules.",
+      "all_targets_to_isolated_other_targets": "Effect of separating the focus target from read-only context.",
+      "isolated_other_targets_to_isolated_scope_signals": "Effect of deterministic local negation/cancellation perception."
+    },
+    "scope_signal_vocabulary": [
+      "anchor_inside_negated_clause",
+      "grounded_action_cancelled_later"
+    ],
+    "scope_signal_source": "Existing general V38 anchor scope detector; no gold commitment, expected call, case family, or benchmark answer is supplied.",
+    "lexical_examples_in_prompts": false,
+    "gold_fields_in_prompts": false,
+    "only_candidate_allowed_to_advance": "isolated_scope_signals_candidate"
+  },
+  "development_gates": {
+    "candidate_target_recall": 1.0,
+    "candidate_precision": 1.0,
+    "classifier_parse_success_rate": 1.0,
+    "commitment_accuracy_at_least": 0.95,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall_at_least": 0.95,
+    "supported_frame_case_exact_rate_at_least": 0.94,
+    "selected_evidence_support_rate_at_least": 0.95,
+    "compiled_call_exact_accuracy_at_least": 0.97,
+    "no_action_specificity": 1.0,
+    "required_action_recall_at_least": 0.95,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "mean_classifier_calls_per_case_at_most": 1.056,
+    "median_case_latency_seconds_at_most": 4.5,
+    "p95_case_latency_seconds_at_most": 10.0
+  },
+  "decision_rule": "Stage 1 selects a carrier mechanically. Stage 2 runs only after that selection. Only a full isolated_scope_signals_candidate development pass can authorize freezing a new 48-case holdout; development results alone never authorize runtime.",
+  "fresh_holdout": {
+    "authorized_only_after_full_development_pass": true,
+    "case_count": 48,
+    "freeze_and_commit_before_inference": true,
+    "no_prompt_ontology_parser_or_scope_rule_tuning_after_freeze": true
+  },
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
