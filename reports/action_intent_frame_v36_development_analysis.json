@@ -1,0 +1,6155 @@
+{
+  "schema": "uruha_action_intent_frame_development_analysis_v36",
+  "evidence_status": "development_only_not_confirmation",
+  "source_report": "reports/action_intent_frame_v36_development_raw.json",
+  "baselines": {
+    "qwen2_5_7b": {
+      "v34_direct_function_call": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.5833,
+        "no_action_specificity": 0.35,
+        "required_action_recall": 0.875,
+        "false_action_rate": 0.4167,
+        "negation_violation_count": 1,
+        "invalid_tool_or_argument_rate": 0.0
+      },
+      "v34_lexical_validator": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.8056,
+        "no_action_specificity": 1.0,
+        "required_action_recall": 0.5938,
+        "false_action_rate": 0.0,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0
+      }
+    },
+    "qwen3_5_9b": {
+      "v34_direct_function_call": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.5556,
+        "no_action_specificity": 0.25,
+        "required_action_recall": 0.9375,
+        "false_action_rate": 0.4444,
+        "negation_violation_count": 1,
+        "invalid_tool_or_argument_rate": 0.0
+      },
+      "v34_lexical_validator": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.7778,
+        "no_action_specificity": 0.95,
+        "required_action_recall": 0.5938,
+        "false_action_rate": 0.0278,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0
+      }
+    }
+  },
+  "candidates": {
+    "qwen3_5_0_8b_lower_bound": {
+      "summary": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.5833,
+        "no_action_specificity": 1.0,
+        "required_action_recall": 0.0938,
+        "false_action_rate": 0.0278,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0,
+        "unsupported_execution_count": 0,
+        "utterance_state_accuracy": 0.0833,
+        "joint_frame_exact_accuracy": 0.0278,
+        "requested_frame_precision": 0.6667,
+        "requested_frame_recall": 0.0909,
+        "commitment_frame_micro_f1": 0.0816,
+        "parse_success_rate": 0.0833,
+        "compiled_evidence_validity_rate": 1.0,
+        "matched_frame_evidence_support_rate": 1.0,
+        "median_latency_seconds": 1.409,
+        "p95_latency_seconds": 2.0901,
+        "transport_error_count": 0,
+        "family_metrics": {
+          "ambiguous_or_conflicting_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "invalid_or_safety_blocked_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "multiple_compatible_actions": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "negated_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.3333,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "no_action_conversation": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "single_explicit_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.1667,
+            "joint_frame_exact_accuracy": 0.1667
+          }
+        }
+      },
+      "gate": {
+        "passed": false,
+        "checks": {
+          "compiled_call_exact_accuracy": false,
+          "no_action_specificity": true,
+          "required_action_recall": false,
+          "false_action_rate": false,
+          "negation_violation_count": true,
+          "unsupported_execution_count": true,
+          "invalid_tool_or_argument_rate": true,
+          "utterance_state_accuracy": false,
+          "joint_frame_exact_accuracy": false,
+          "requested_frame_precision": false,
+          "requested_frame_recall": false,
+          "commitment_frame_micro_f1": false,
+          "parse_success_rate": false,
+          "compiled_evidence_validity_rate": true,
+          "median_latency_seconds": true,
+          "p95_latency_seconds": true
+        },
+        "failed_checks": [
+          "compiled_call_exact_accuracy",
+          "required_action_recall",
+          "false_action_rate",
+          "utterance_state_accuracy",
+          "joint_frame_exact_accuracy",
+          "requested_frame_precision",
+          "requested_frame_recall",
+          "commitment_frame_micro_f1",
+          "parse_success_rate"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "family": "single_explicit_action",
+          "user_input": "挨拶代わりに一度手を振ってくれる？",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振ってくれる？"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "うんって感じで首を縦に動かして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を縦に動かして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "nod"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "requested",
+                "evidence": "\"うんって感じで首を縦に動かして。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "family": "single_explicit_action",
+          "user_input": "前の方を指で示してくれる？",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "ちょっと、にこっとして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "requested",
+              "evidence_options": [
+                "にこっとして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "目線をこっちにちょうだい。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "目線をこっちにちょうだい"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "\"目線をこっちにちょうだい。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "family": "multiple_compatible_actions",
+          "user_input": "笑った顔でこちらを見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "requested",
+              "evidence_options": [
+                "笑った顔で"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こちらを見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"笑った顔でこちらを見て。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "family": "multiple_compatible_actions",
+          "user_input": "驚いた表情のまま右へ視線を向けて。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "surprised",
+              "commitment": "requested",
+              "evidence_options": [
+                "驚いた表情"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "requested",
+              "evidence_options": [
+                "右へ視線を向けて"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "surprised"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "surprised",
+                "commitment": "requested",
+                "evidence": "驚いた表情のまま",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "point",
+                "commitment": "requested",
+                "evidence": "右へ視線を向けて",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "surprised"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "family": "multiple_compatible_actions",
+          "user_input": "悲しい顔で少し下を見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "sad",
+              "commitment": "requested",
+              "evidence_options": [
+                "悲しい顔で"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "requested",
+              "evidence_options": [
+                "下を見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "sad"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "down"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "family": "multiple_compatible_actions",
+          "user_input": "表情を普通に戻して待機姿勢にして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "表情を普通に戻して"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "idle",
+              "commitment": "requested",
+              "evidence_options": [
+                "待機姿勢にして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "\"表情を普通に戻して待機姿勢にして。\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "\"表情を普通に戻して待機姿勢にして。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "family": "multiple_compatible_actions",
+          "user_input": "怒った顔をしながら首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "requested",
+              "evidence_options": [
+                "怒った顔"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "angry"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "angry",
+                "commitment": "requested",
+                "evidence": "\"怒った顔を\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "\"首を横に振って\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "family": "multiple_compatible_actions",
+          "user_input": "こっちを見ながら一度手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちを見ながら"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "\"こっちを見ながら\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "\"手を振って\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "family": "no_action_conversation",
+          "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "手を振る仕草"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "requested_frame_under_nonexplicit_state"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "手を振る仕草",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "遠くからでも目立つかな。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_expression",
+          "family": "no_action_conversation",
+          "user_input": "今日は表情の変化について話したい。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"今日は表情の変化について話したい。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "family": "no_action_conversation",
+          "user_input": "左右を見る癖って性格に関係あるのかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "\"左右を見る癖って性格に関係あるのかな。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "sad",
+                "commitment": "requested",
+                "evidence": "\"少し疲れたから、静かな曲の話をしよう。\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "mentioned",
+                "evidence": "",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "family": "no_action_conversation",
+          "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし笑顔だったら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"もし笑顔だったら、話しやすく見えるかな。\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "mentioned",
+                "evidence": "",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "family": "no_action_conversation",
+          "user_input": "動作は頼まないから、そのまま雑談しよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "family": "negated_action",
+          "user_input": "今は手を振るのをやめて。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "requested",
+                "evidence": "\"今は手を振るのをやめて。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "family": "negated_action",
+          "user_input": "笑顔には変えないで。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "negated",
+              "evidence_options": [
+                "笑顔には変えないで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"笑顔には変えないで。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "family": "negated_action",
+          "user_input": "下は見ず、こっちだけ見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "\"下は見ず、こっちだけ見て。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "requested",
+                "evidence": "\"うなずかないで\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "gaze",
+                "value": "user",
+                "commitment": "mentioned",
+                "evidence": "\"首を横に振って。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"怒った顔じゃなく、普通の表情へ戻して。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "family": "negated_action",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "手を振るかは、もう少し後で決める。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "手を振るかは、もう少し後で決める。",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "mentioned",
+                "evidence": "手を振るかは、もう少し後で決める。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "笑顔にするか、まだ迷ってる。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "笑顔にするか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "左を見るか右を見るかは保留。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "うなずいて。いや、今の頼みは取り消し。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "もし下を向いてって頼んだら変かな。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "表情は今ここで決めなくていいよ。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "requested",
+                "evidence": "\"表情は今ここで決めなくていいよ。\"",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "その場でしゃがんで。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "その場でしゃがんで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "frame_fields_mismatch",
+              "frame_fields_mismatch",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "両腕を頭の上まで上げて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "画面を閉じて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "画面を閉じて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "\"画面を閉じて。\"",
+                "evidence_valid": false
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "\"画面を閉じて。\" (動作なし)",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "今すぐメールを送って。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "メールを送って"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "frame_fields_mismatch",
+              "frame_fields_mismatch",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "カメラを一周回して。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "相手を蹴る動作をして。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "相手を蹴る動作をして"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        }
+      ]
+    },
+    "qwen3_5_2b_candidate": {
+      "summary": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.5556,
+        "no_action_specificity": 1.0,
+        "required_action_recall": 0.0,
+        "false_action_rate": 0.0,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0,
+        "unsupported_execution_count": 0,
+        "utterance_state_accuracy": 0.0,
+        "joint_frame_exact_accuracy": 0.0,
+        "requested_frame_precision": null,
+        "requested_frame_recall": 0.0,
+        "commitment_frame_micro_f1": 0.0,
+        "parse_success_rate": 0.0,
+        "compiled_evidence_validity_rate": null,
+        "matched_frame_evidence_support_rate": null,
+        "median_latency_seconds": 2.3317,
+        "p95_latency_seconds": 3.2826,
+        "transport_error_count": 0,
+        "family_metrics": {
+          "ambiguous_or_conflicting_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "invalid_or_safety_blocked_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "multiple_compatible_actions": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "negated_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.3333,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "no_action_conversation": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "single_explicit_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.0,
+            "joint_frame_exact_accuracy": 0.0
+          }
+        }
+      },
+      "gate": {
+        "passed": false,
+        "checks": {
+          "compiled_call_exact_accuracy": false,
+          "no_action_specificity": true,
+          "required_action_recall": false,
+          "false_action_rate": true,
+          "negation_violation_count": true,
+          "unsupported_execution_count": true,
+          "invalid_tool_or_argument_rate": true,
+          "utterance_state_accuracy": false,
+          "joint_frame_exact_accuracy": false,
+          "requested_frame_precision": false,
+          "requested_frame_recall": false,
+          "commitment_frame_micro_f1": false,
+          "parse_success_rate": false,
+          "compiled_evidence_validity_rate": false,
+          "median_latency_seconds": true,
+          "p95_latency_seconds": true
+        },
+        "failed_checks": [
+          "compiled_call_exact_accuracy",
+          "required_action_recall",
+          "utterance_state_accuracy",
+          "joint_frame_exact_accuracy",
+          "requested_frame_precision",
+          "requested_frame_recall",
+          "commitment_frame_micro_f1",
+          "parse_success_rate",
+          "compiled_evidence_validity_rate"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_single_wave",
+          "family": "single_explicit_action",
+          "user_input": "挨拶代わりに一度手を振ってくれる？",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振ってくれる？"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "うんって感じで首を縦に動かして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を縦に動かして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "nod"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "family": "single_explicit_action",
+          "user_input": "前の方を指で示してくれる？",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_smile_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "ちょっと、にこっとして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "requested",
+              "evidence_options": [
+                "にこっとして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "目線をこっちにちょうだい。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "目線をこっちにちょうだい"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_single_neutral",
+          "family": "single_explicit_action",
+          "user_input": "顔をいつもの普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_happy_user",
+          "family": "multiple_compatible_actions",
+          "user_input": "笑った顔でこちらを見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "requested",
+              "evidence_options": [
+                "笑った顔で"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こちらを見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "happy"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "family": "multiple_compatible_actions",
+          "user_input": "驚いた表情のまま右へ視線を向けて。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "surprised",
+              "commitment": "requested",
+              "evidence_options": [
+                "驚いた表情"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "requested",
+              "evidence_options": [
+                "右へ視線を向けて"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "surprised"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "family": "multiple_compatible_actions",
+          "user_input": "悲しい顔で少し下を見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "sad",
+              "commitment": "requested",
+              "evidence_options": [
+                "悲しい顔で"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "requested",
+              "evidence_options": [
+                "下を見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "sad"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "down"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_neutral_idle",
+          "family": "multiple_compatible_actions",
+          "user_input": "表情を普通に戻して待機姿勢にして。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "表情を普通に戻して"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "idle",
+              "commitment": "requested",
+              "evidence_options": [
+                "待機姿勢にして"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "family": "multiple_compatible_actions",
+          "user_input": "怒った顔をしながら首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "requested",
+              "evidence_options": [
+                "怒った顔"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "angry"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "family": "multiple_compatible_actions",
+          "user_input": "こっちを見ながら一度手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちを見ながら"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "family": "no_action_conversation",
+          "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "手を振る仕草"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_expression",
+          "family": "no_action_conversation",
+          "user_input": "今日は表情の変化について話したい。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name"
+            ],
+            "utterance_state": "no_current_action",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "family": "no_action_conversation",
+          "user_input": "左右を見る癖って性格に関係あるのかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "family": "no_action_conversation",
+          "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし笑顔だったら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "family": "no_action_conversation",
+          "user_input": "動作は頼まないから、そのまま雑談しよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "family": "negated_action",
+          "user_input": "今は手を振るのをやめて。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "family": "negated_action",
+          "user_input": "笑顔には変えないで。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "negated",
+              "evidence_options": [
+                "笑顔には変えないで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "family": "negated_action",
+          "user_input": "下は見ず、こっちだけ見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "family": "negated_action",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "手を振るかは、もう少し後で決める。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "笑顔にするか、まだ迷ってる。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "笑顔にするか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "左を見るか右を見るかは保留。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "うなずいて。いや、今の頼みは取り消し。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "invalid_frame_name"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "もし下を向いてって頼んだら変かな。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "表情は今ここで決めなくていいよ。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "その場でしゃがんで。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "その場でしゃがんで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "両腕を頭の上まで上げて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "画面を閉じて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "画面を閉じて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "今すぐメールを送って。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "メールを送って"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_name",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "カメラを一周回して。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "相手を蹴る動作をして。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "相手を蹴る動作をして"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_json",
+              "root_fields_mismatch",
+              "invalid_utterance_state",
+              "frames_not_array"
+            ],
+            "utterance_state": null,
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        }
+      ]
+    },
+    "qwen3_5_4b_candidate": {
+      "summary": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.9444,
+        "no_action_specificity": 0.95,
+        "required_action_recall": 0.9375,
+        "false_action_rate": 0.0556,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0,
+        "unsupported_execution_count": 0,
+        "utterance_state_accuracy": 0.5278,
+        "joint_frame_exact_accuracy": 0.3333,
+        "requested_frame_precision": 0.913,
+        "requested_frame_recall": 0.9545,
+        "commitment_frame_micro_f1": 0.5641,
+        "parse_success_rate": 0.7222,
+        "compiled_evidence_validity_rate": 1.0,
+        "matched_frame_evidence_support_rate": 1.0,
+        "median_latency_seconds": 4.0155,
+        "p95_latency_seconds": 5.4382,
+        "transport_error_count": 0,
+        "family_metrics": {
+          "ambiguous_or_conflicting_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "invalid_or_safety_blocked_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "multiple_compatible_actions": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 1.0
+          },
+          "negated_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.6667,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "no_action_conversation": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "single_explicit_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 1.0
+          }
+        }
+      },
+      "gate": {
+        "passed": false,
+        "checks": {
+          "compiled_call_exact_accuracy": true,
+          "no_action_specificity": true,
+          "required_action_recall": true,
+          "false_action_rate": false,
+          "negation_violation_count": true,
+          "unsupported_execution_count": true,
+          "invalid_tool_or_argument_rate": true,
+          "utterance_state_accuracy": false,
+          "joint_frame_exact_accuracy": false,
+          "requested_frame_precision": false,
+          "requested_frame_recall": true,
+          "commitment_frame_micro_f1": false,
+          "parse_success_rate": false,
+          "compiled_evidence_validity_rate": true,
+          "median_latency_seconds": false,
+          "p95_latency_seconds": true
+        },
+        "failed_checks": [
+          "false_action_rate",
+          "utterance_state_accuracy",
+          "joint_frame_exact_accuracy",
+          "requested_frame_precision",
+          "commitment_frame_micro_f1",
+          "parse_success_rate",
+          "median_latency_seconds"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_none_gesture",
+          "family": "no_action_conversation",
+          "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "手を振る仕草"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_utterance_state"
+            ],
+            "utterance_state": "ambiguous",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "mentioned",
+                "evidence": "手を振る仕草って",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_expression",
+          "family": "no_action_conversation",
+          "user_input": "今日は表情の変化について話したい。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "family": "no_action_conversation",
+          "user_input": "左右を見る癖って性格に関係あるのかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "少し疲れたから",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "ambiguous",
+                "evidence": "静かな曲の話をしよう。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "family": "no_action_conversation",
+          "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし笑顔だったら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "family": "no_action_conversation",
+          "user_input": "動作は頼まないから、そのまま雑談しよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "cancelled",
+                "evidence": "動作は頼まないから",
+                "evidence_valid": true
+              },
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "family": "negated_action",
+          "user_input": "今は手を振るのをやめて。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "cancelled",
+                "evidence": "手を振るのをやめて",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "family": "negated_action",
+          "user_input": "笑顔には変えないで。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "negated",
+              "evidence_options": [
+                "笑顔には変えないで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "笑顔には変えないで。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "family": "negated_action",
+          "user_input": "下は見ず、こっちだけ見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "こっちだけ見て",
+                "evidence_valid": true
+              },
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "下は見ず、こっちだけ見て。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "negated",
+                "evidence": "うなずかないで",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "怒った顔じゃなく、普通の表情へ戻して。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "family": "negated_action",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "一回手を振って",
+                "evidence_valid": true
+              },
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "指差しはなしで",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "手を振るかは、もう少し後で決める。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "cancelled",
+                "evidence": "手を振るかは",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "笑顔にするか、まだ迷ってる。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "笑顔にするか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "左を見るか右を見るかは保留。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "left",
+                "commitment": "cancelled",
+                "evidence": "左を見るか",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "cancelled",
+                "evidence": "右を見るかは",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "うなずいて。いや、今の頼みは取り消し。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "evidence_not_exact_input_substring"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "ambiguous",
+                "evidence": "",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "もし下を向いてって頼んだら変かな。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_utterance_state"
+            ],
+            "utterance_state": "ambiguous",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "もし下を向いてって頼んだら変かな。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "表情は今ここで決めなくていいよ。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "その場でしゃがんで。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "その場でしゃがんで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "両腕を頭の上まで上げて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "画面を閉じて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "画面を閉じて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "unsupported_state_without_unsupported_frame"
+            ],
+            "utterance_state": "unsupported_or_unsafe",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "今すぐメールを送って。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "メールを送って"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "evidence_not_exact_input_substring",
+              "invalid_frame_value",
+              "unsupported_state_without_unsupported_frame"
+            ],
+            "utterance_state": "unsupported_or_unsafe",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "ambiguous",
+                "evidence": "",
+                "evidence_valid": false
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "カメラを一周回して。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value"
+            ],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "相手を蹴る動作をして。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "相手を蹴る動作をして"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "unsupported_state_without_unsupported_frame"
+            ],
+            "utterance_state": "unsupported_or_unsafe",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        }
+      ]
+    },
+    "qwen2_5_7b_matched_reference": {
+      "summary": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.75,
+        "no_action_specificity": 0.8,
+        "required_action_recall": 0.75,
+        "false_action_rate": 0.1389,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0,
+        "unsupported_execution_count": 4,
+        "utterance_state_accuracy": 0.4444,
+        "joint_frame_exact_accuracy": 0.2778,
+        "requested_frame_precision": 0.75,
+        "requested_frame_recall": 0.6818,
+        "commitment_frame_micro_f1": 0.5429,
+        "parse_success_rate": 0.5556,
+        "compiled_evidence_validity_rate": 1.0,
+        "matched_frame_evidence_support_rate": 1.0,
+        "median_latency_seconds": 3.0858,
+        "p95_latency_seconds": 5.0286,
+        "transport_error_count": 0,
+        "family_metrics": {
+          "ambiguous_or_conflicting_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.1667
+          },
+          "invalid_or_safety_blocked_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.3333,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "multiple_compatible_actions": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.3333,
+            "joint_frame_exact_accuracy": 0.3333
+          },
+          "negated_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.3333
+          },
+          "no_action_conversation": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "single_explicit_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.8333,
+            "joint_frame_exact_accuracy": 0.8333
+          }
+        }
+      },
+      "gate": {
+        "passed": false,
+        "checks": {
+          "compiled_call_exact_accuracy": false,
+          "no_action_specificity": false,
+          "required_action_recall": false,
+          "false_action_rate": false,
+          "negation_violation_count": true,
+          "unsupported_execution_count": false,
+          "invalid_tool_or_argument_rate": true,
+          "utterance_state_accuracy": false,
+          "joint_frame_exact_accuracy": false,
+          "requested_frame_precision": false,
+          "requested_frame_recall": false,
+          "commitment_frame_micro_f1": false,
+          "parse_success_rate": false,
+          "compiled_evidence_validity_rate": true,
+          "median_latency_seconds": false,
+          "p95_latency_seconds": true
+        },
+        "failed_checks": [
+          "compiled_call_exact_accuracy",
+          "no_action_specificity",
+          "required_action_recall",
+          "false_action_rate",
+          "unsupported_execution_count",
+          "utterance_state_accuracy",
+          "joint_frame_exact_accuracy",
+          "requested_frame_precision",
+          "requested_frame_recall",
+          "commitment_frame_micro_f1",
+          "parse_success_rate",
+          "median_latency_seconds"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_single_eyes_colloquial",
+          "family": "single_explicit_action",
+          "user_input": "目線をこっちにちょうだい。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "目線をこっちにちょうだい"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "目線をこっちにちょうだい。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_surprised_right",
+          "family": "multiple_compatible_actions",
+          "user_input": "驚いた表情のまま右へ視線を向けて。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "surprised",
+              "commitment": "requested",
+              "evidence_options": [
+                "驚いた表情"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "requested",
+              "evidence_options": [
+                "右へ視線を向けて"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "surprised"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "surprised",
+                "commitment": "mentioned",
+                "evidence": "驚いた表情のまま",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "requested",
+                "evidence": "右へ視線を向けて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "right"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_sad_down",
+          "family": "multiple_compatible_actions",
+          "user_input": "悲しい顔で少し下を見て。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "sad",
+              "commitment": "requested",
+              "evidence_options": [
+                "悲しい顔で"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "requested",
+              "evidence_options": [
+                "下を見て"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "sad"
+              }
+            },
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "down"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "sad",
+                "commitment": "negated",
+                "evidence": "悲しい顔",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "down",
+                "commitment": "mentioned",
+                "evidence": "少し下を見て。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_angry_shake",
+          "family": "multiple_compatible_actions",
+          "user_input": "怒った顔をしながら首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "requested",
+              "evidence_options": [
+                "怒った顔"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "angry"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "angry",
+                "commitment": "negated",
+                "evidence": "怒った顔をしながら首を横に振って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_multi_wave_user",
+          "family": "multiple_compatible_actions",
+          "user_input": "こっちを見ながら一度手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちを見ながら"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "こっちを見ながら一度手を振って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "family": "no_action_conversation",
+          "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "手を振る仕草"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "mentioned",
+                "evidence": "手を振る仕草",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_expression",
+          "family": "no_action_conversation",
+          "user_input": "今日は表情の変化について話したい。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について話したい。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "family": "no_action_conversation",
+          "user_input": "左右を見る癖って性格に関係あるのかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "左右を見る癖って性格に関係あるのかな。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "少し疲れたから、静かな曲の話をしよう。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "family": "no_action_conversation",
+          "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし笑顔だったら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "hypothetical",
+                "evidence": "もし笑顔だったら",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "family": "no_action_conversation",
+          "user_input": "動作は頼まないから、そのまま雑談しよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "cancelled",
+                "evidence": "動作は頼まないから、そのまま雑談しよう。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "family": "negated_action",
+          "user_input": "今は手を振るのをやめて。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "cancelled",
+                "evidence": "今は手を振るのをやめて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "family": "negated_action",
+          "user_input": "笑顔には変えないで。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "negated",
+              "evidence_options": [
+                "笑顔には変えないで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "negated",
+                "evidence": "笑顔には変えないで。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "怒った顔じゃなく、普通の表情へ戻して。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "family": "negated_action",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "指差しはなしで、一回手を振って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "手を振るかは、もう少し後で決める。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "ambiguous",
+                "evidence": "手を振るかは、もう少し後で決める。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "笑顔にするか、まだ迷ってる。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "笑顔にするか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "ambiguous",
+                "evidence": "笑顔にするか、まだ迷ってる。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "うなずいて。いや、今の頼みは取り消し。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "もし下を向いてって頼んだら変かな。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "down",
+                "commitment": "hypothetical",
+                "evidence": "もし下を向いてって頼んだら変かな。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "表情は今ここで決めなくていいよ。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "negated",
+                "evidence": "表情は今ここで決めなくていいよ。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "その場でしゃがんで。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "その場でしゃがんで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "両腕を頭の上まで上げて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "point",
+                "commitment": "requested",
+                "evidence": "両腕を頭の上まで上げて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "画面を閉じて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "画面を閉じて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "画面を閉じて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "今すぐメールを送って。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "メールを送って"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "今すぐメールを送って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "カメラを一周回して。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "カメラを一周回して。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "相手を蹴る動作をして。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "相手を蹴る動作をして"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "supported_frame_commitment_mismatch",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "point",
+                "commitment": "unsupported",
+                "evidence": "相手を蹴る動作をして。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        }
+      ]
+    },
+    "qwen3_5_9b_matched_upper_reference": {
+      "summary": {
+        "case_count": 36,
+        "compiled_call_exact_accuracy": 0.9167,
+        "no_action_specificity": 0.95,
+        "required_action_recall": 0.9375,
+        "false_action_rate": 0.0556,
+        "negation_violation_count": 0,
+        "invalid_tool_or_argument_rate": 0.0,
+        "unsupported_execution_count": 1,
+        "utterance_state_accuracy": 0.6944,
+        "joint_frame_exact_accuracy": 0.3611,
+        "requested_frame_precision": 0.913,
+        "requested_frame_recall": 0.9545,
+        "commitment_frame_micro_f1": 0.5977,
+        "parse_success_rate": 0.75,
+        "compiled_evidence_validity_rate": 1.0,
+        "matched_frame_evidence_support_rate": 1.0,
+        "median_latency_seconds": 8.2781,
+        "p95_latency_seconds": 8.8779,
+        "transport_error_count": 0,
+        "family_metrics": {
+          "ambiguous_or_conflicting_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "invalid_or_safety_blocked_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.8333,
+            "joint_frame_exact_accuracy": 0.0
+          },
+          "multiple_compatible_actions": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 1.0
+          },
+          "negated_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.8333,
+            "joint_frame_exact_accuracy": 0.1667
+          },
+          "no_action_conversation": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 1.0,
+            "joint_frame_exact_accuracy": 0.1667
+          },
+          "single_explicit_action": {
+            "case_count": 6,
+            "compiled_call_exact_accuracy": 0.8333,
+            "joint_frame_exact_accuracy": 0.8333
+          }
+        }
+      },
+      "gate": {
+        "passed": false,
+        "checks": {
+          "compiled_call_exact_accuracy": true,
+          "no_action_specificity": true,
+          "required_action_recall": true,
+          "false_action_rate": false,
+          "negation_violation_count": true,
+          "unsupported_execution_count": false,
+          "invalid_tool_or_argument_rate": true,
+          "utterance_state_accuracy": false,
+          "joint_frame_exact_accuracy": false,
+          "requested_frame_precision": false,
+          "requested_frame_recall": true,
+          "commitment_frame_micro_f1": false,
+          "parse_success_rate": false,
+          "compiled_evidence_validity_rate": true,
+          "median_latency_seconds": false,
+          "p95_latency_seconds": false
+        },
+        "failed_checks": [
+          "false_action_rate",
+          "unsupported_execution_count",
+          "utterance_state_accuracy",
+          "joint_frame_exact_accuracy",
+          "requested_frame_precision",
+          "commitment_frame_micro_f1",
+          "parse_success_rate",
+          "median_latency_seconds",
+          "p95_latency_seconds"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_single_point",
+          "family": "single_explicit_action",
+          "user_input": "前の方を指で示してくれる？",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "user",
+                "commitment": "requested",
+                "evidence": "前の方を指で示してくれる？",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "point",
+                "commitment": "requested",
+                "evidence": "前の方を指で示してくれる？",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_gaze",
+              "arguments": {
+                "target": "user"
+              }
+            },
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "point"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_gesture",
+          "family": "no_action_conversation",
+          "user_input": "手を振る仕草って、遠くからでも目立つかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "手を振る仕草"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_utterance_state"
+            ],
+            "utterance_state": "mentioned",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "mentioned",
+                "evidence": "手を振る仕草",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_expression",
+          "family": "no_action_conversation",
+          "user_input": "今日は表情の変化について話したい。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について話したい。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "sad",
+                "commitment": "mentioned",
+                "evidence": "少し疲れた",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "mentioned",
+                "evidence": "静かな曲の話をしよう",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_hypothetical",
+          "family": "no_action_conversation",
+          "user_input": "もし笑顔だったら、話しやすく見えるかな。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし笑顔だったら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "hypothetical",
+                "evidence": "もし笑顔だったら",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "user",
+                "commitment": "mentioned",
+                "evidence": "話しやすく見えるかな",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "family": "no_action_conversation",
+          "user_input": "動作は頼まないから、そのまま雑談しよう。",
+          "expected_state": "no_current_action",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "negated",
+                "evidence": "動作は頼まないから",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "user",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "family": "negated_action",
+          "user_input": "今は手を振るのをやめて。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "requested_frame_under_nonexplicit_state"
+            ],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "negated",
+                "evidence": "手を振るのを",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "やめて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_happy",
+          "family": "negated_action",
+          "user_input": "笑顔には変えないで。",
+          "expected_state": "no_current_action",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "negated",
+              "evidence_options": [
+                "笑顔には変えないで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "negated",
+                "evidence": "笑顔には変えないで。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "frame": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "requested",
+                "evidence": "普通の表情へ戻して",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "family": "negated_action",
+          "user_input": "指差しはなしで、一回手を振って。",
+          "expected_state": "explicit_current_request",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "wave"
+              }
+            }
+          ],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "unsupported_frame_commitment_mismatch"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "requested",
+                "evidence": "一回手を振って",
+                "evidence_valid": true
+              },
+              {
+                "frame": "unsupported",
+                "value": "unsupported",
+                "commitment": "negated",
+                "evidence": "指差しはなしで",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "手を振るかは、もう少し後で決める。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "wave",
+                "commitment": "hypothetical",
+                "evidence": "手を振る",
+                "evidence_valid": true
+              },
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "もう少し後で決める。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_smile",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "笑顔にするか、まだ迷ってる。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "expression",
+              "value": "happy",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "笑顔にするか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "happy",
+                "commitment": "mentioned",
+                "evidence": "笑顔にするか",
+                "evidence_valid": true
+              },
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "ambiguous",
+                "evidence": "まだ迷ってる",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "左を見るか右を見るかは保留。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "frame": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "left",
+                "commitment": "mentioned",
+                "evidence": "左を見るか",
+                "evidence_valid": true
+              },
+              {
+                "frame": "gaze",
+                "value": "right",
+                "commitment": "mentioned",
+                "evidence": "右を見るかは",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "うなずいて。いや、今の頼みは取り消し。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value"
+            ],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "nod",
+                "commitment": "negated",
+                "evidence": "うなずいて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "もし下を向いてって頼んだら変かな。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [
+            {
+              "frame": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "ambiguous_or_cancelled",
+            "frames": [
+              {
+                "frame": "gaze",
+                "value": "down",
+                "commitment": "hypothetical",
+                "evidence": "もし下を向いてって頼んだら",
+                "evidence_valid": true
+              },
+              {
+                "frame": "expression",
+                "value": "sad",
+                "commitment": "negated",
+                "evidence": "変かな",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "family": "ambiguous_or_conflicting_action",
+          "user_input": "表情は今ここで決めなくていいよ。",
+          "expected_state": "ambiguous_or_cancelled",
+          "expected_frames": [],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "expression",
+                "value": "neutral",
+                "commitment": "negated",
+                "evidence": "表情は今ここで決めなくていいよ。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_crouch",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "その場でしゃがんで。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "その場でしゃがんで"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "その場で",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "両腕を頭の上まで上げて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "explicit_state_without_requested_frame"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_screen",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "画面を閉じて。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "画面を閉じて"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "unsupported_frame_commitment_mismatch"
+            ],
+            "utterance_state": "no_current_action",
+            "frames": [
+              {
+                "frame": "unsupported",
+                "value": "unsupported",
+                "commitment": "negated",
+                "evidence": "画面を閉じて。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_mail",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "今すぐメールを送って。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "メールを送って"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "unsupported_frame_commitment_mismatch"
+            ],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "unsupported",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "今すぐメールを送って。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "カメラを一周回して。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": true,
+            "errors": [],
+            "utterance_state": "explicit_current_request",
+            "frames": [
+              {
+                "frame": "motion",
+                "value": "idle",
+                "commitment": "requested",
+                "evidence": "カメラを一周回して。",
+                "evidence_valid": true
+              }
+            ]
+          },
+          "accepted_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "action_exact": false,
+          "frame_exact": false
+        },
+        {
+          "case_id": "v34c_action_invalid_kick",
+          "family": "invalid_or_safety_blocked_action",
+          "user_input": "相手を蹴る動作をして。",
+          "expected_state": "unsupported_or_unsafe",
+          "expected_frames": [
+            {
+              "frame": "unsupported",
+              "value": "unsupported",
+              "commitment": "unsupported",
+              "evidence_options": [
+                "相手を蹴る動作をして"
+              ]
+            }
+          ],
+          "expected_calls": [],
+          "parsed_frame": {
+            "parse_success": false,
+            "errors": [
+              "invalid_frame_value",
+              "unsupported_state_without_unsupported_frame"
+            ],
+            "utterance_state": "unsupported_or_unsafe",
+            "frames": []
+          },
+          "accepted_calls": [],
+          "action_exact": true,
+          "frame_exact": false
+        }
+      ]
+    }
+  },
+  "matched_comparisons": {
+    "qwen2_5_7b_matched_reference": {
+      "baseline": "qwen2_5_7b",
+      "delta": {
+        "compiled_call_exact_accuracy": 0.1667,
+        "no_action_specificity": 0.45,
+        "required_action_recall": -0.125,
+        "false_action_rate": -0.2778
+      }
+    },
+    "qwen3_5_9b_matched_upper_reference": {
+      "baseline": "qwen3_5_9b",
+      "delta": {
+        "compiled_call_exact_accuracy": 0.3611,
+        "no_action_specificity": 0.7,
+        "required_action_recall": 0.0,
+        "false_action_rate": -0.3888
+      }
+    }
+  },
+  "passing_candidates": [],
+  "selected_candidate": null,
+  "development_gate_passed": false,
+  "decision": "do_not_advance_v36_action_intent_frame",
+  "runtime_change_authorized": false,
+  "fresh_holdout_authorized": false
+}
