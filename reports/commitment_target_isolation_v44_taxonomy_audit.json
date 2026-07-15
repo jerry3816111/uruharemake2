@@ -1,0 +1,35 @@
+{
+  "schema": "uruha_commitment_target_isolation_taxonomy_audit_v44",
+  "evidence_status": "posthoc_failure_taxonomy_audit",
+  "changes_primary_score": false,
+  "authorizes_holdout_or_runtime": false,
+  "primary_result": {
+    "commitment_correct": 36,
+    "commitment_total": 38,
+    "commitment_accuracy": 0.9474,
+    "compiled_call_exact_accuracy": 1.0,
+    "failed_primary_gate": "commitment_accuracy_at_least_0.95"
+  },
+  "remaining_failures": [
+    {
+      "case_id": "v34c_action_negated_wave",
+      "target_id": "motion.wave",
+      "utterance": "今は手を振るのをやめて。",
+      "gold_commitment": "cancelled",
+      "predicted_commitment": "negated",
+      "audit": "The locked definition described cancelled only as a prior request later withdrawn in the same utterance. This utterance instead uses a stop/cessation construction with no prior request in the utterance, so the current definition does not cover the dataset label.",
+      "general_gap": "Distinguish prohibition from stopping an already active or ongoing target."
+    },
+    {
+      "case_id": "v34c_action_ambiguous_wave",
+      "target_id": "motion.wave",
+      "utterance": "手を振るかは、もう少し後で決める。",
+      "gold_commitment": "ambiguous",
+      "predicted_commitment": "hypothetical",
+      "audit": "The utterance leaves a real pending choice undecided. The locked definitions did not explicitly contrast a pending real decision with a conditional or imagined scenario.",
+      "general_gap": "Distinguish pending-choice discourse from conditional hypothesis."
+    }
+  ],
+  "next_hypothesis": "A new preregistered experiment should add general, deterministic discourse-state signals for active-action cessation, referential withdrawal, pending choice, and conditional hypothesis. It must not contain these development utterances or their gold labels in the model prompt.",
+  "decision": "stop_v44_and_open_separate_v45_taxonomy_experiment"
+}
