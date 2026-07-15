@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_relation_safety_state_development_closure_v58",
+  "closed_at": "2026-07-16T01:06:28+09:00",
+  "status": "completed_development_passed",
+  "frozen_run_commit": "140922daa970cb03fcd5cc628cea03da701ec531",
+  "artifact_bindings": {
+    "preregistration": "configs/relation_safety_state_v58_preregistration.json",
+    "preregistration_sha256": "af5955530bfad44e4230a074ebb7010ff34725a3661aeb1b8af292403cf053fc",
+    "replay_harness_lock": "configs/relation_safety_state_v58_replay_harness_lock.json",
+    "replay_harness_lock_sha256": "e746c5d3774ad04017a5fdcdd299cf709188dc170cebb89db8a48b9cbc6383c8",
+    "implementation": "relation_safety_state_v58.py",
+    "implementation_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "runner": "run_relation_safety_state_v58_development.py",
+    "runner_sha256": "143c036669d86a5efd28f54f454755df877faedc954b2374a75c578e419224d0",
+    "analyzer": "analyze_relation_safety_state_v58_development.py",
+    "analyzer_sha256": "c29dc6e420f4c9a3141721411d5470c7354f15ae8a47857d35f2730d57178ed8",
+    "raw_report": "reports/relation_safety_state_v58_development_raw.json",
+    "raw_report_sha256": "eed05544edc759dce0a1535da002e8734253e9e621aada5f39d22c6271ade46a",
+    "analysis_report": "reports/relation_safety_state_v58_development_analysis.json",
+    "analysis_report_sha256": "0457124a361b0f32d6098ba770585ed74c9dd029a945a91607fe06a73a996890",
+    "human_readable_report": "reports/relation_safety_state_v58_development_analysis.md",
+    "human_readable_report_sha256": "cc90059b3ad8a073fb3da0f5ebab22487dcd20cc52afab295ad72940d76141aa"
+  },
+  "execution_accounting": {
+    "case_count": 64,
+    "grounded_target_count": 85,
+    "model_calls_made": 0,
+    "paid_api_used": false,
+    "physical_vrm_actions_executed": 0
+  },
+  "control_result": {
+    "correct_commitments": 73,
+    "commitment_accuracy": 0.8588235294117647,
+    "requested_precision": 0.8372093023255814,
+    "requested_recall": 0.9230769230769231,
+    "ordered_exact_count": 54,
+    "ordered_exact_accuracy": 0.84375,
+    "false_action_case_count": 4,
+    "no_action_specificity": 0.8857142857142857,
+    "required_call_recall": 0.8461538461538461
+  },
+  "candidate_result": {
+    "correct_commitments": 79,
+    "commitment_accuracy": 0.9294117647058824,
+    "requested_precision": 0.972972972972973,
+    "requested_recall": 0.9230769230769231,
+    "ordered_exact_count": 58,
+    "ordered_exact_accuracy": 0.90625,
+    "false_action_case_count": 0,
+    "no_action_specificity": 1.0,
+    "required_call_recall": 0.8461538461538461
+  },
+  "matched_effect": {
+    "state_fix_count": 6,
+    "state_regression_count": 0,
+    "ordered_exact_fix_count": 4,
+    "ordered_exact_regression_count": 0,
+    "ordered_exact_percentage_point_delta": 6.25,
+    "requested_precision_percentage_point_delta": 13.57636887639156,
+    "required_call_recall_percentage_point_delta": 0.0,
+    "false_action_case_delta": -4,
+    "all_prespecified_target_fixes_passed": true,
+    "all_prespecified_case_fixes_passed": true
+  },
+  "remaining_failures": {
+    "state_failure_count": 6,
+    "ordered_exact_failure_count": 6,
+    "ordered_exact_failure_case_ids": [
+      "v57h_tatoeba_10609272",
+      "v57h_tatoeba_127310",
+      "v57h_tatoeba_1278406",
+      "v57h_tatoeba_197186",
+      "v57h_tatoeba_198630",
+      "v57h_tatoeba_3506593"
+    ],
+    "interpretation": "V58 removed the three preregistered relation-safety failure classes but did not repair the separately deferred valid-request coverage failures or other residual V56 state errors."
+  },
+  "decision": "authorize_independent_v58_safety_holdout",
+  "causal_interpretation": "With the frozen dataset, model fallback, evidence selector, compiler, and scorer held constant, replacing only V56 state resolution with the three V58 non-execution relations fixed all six targeted commitments and all four false-action cases without losing any previously correct state, case, or required action. This supports the relation-state repair on consumed development evidence, not fresh generalization.",
+  "next_experiment_order": [
+    "Build and freeze a new independent V58 safety holdout with unseen sentences and no overlap with the consumed V57 cases.",
+    "Accept or reject V58 safety generalization without modifying the implementation or scorer after the holdout is frozen.",
+    "Only after the safety holdout, preregister a separate explicit-request fallback coverage experiment; do not mix safety suppression with recall recovery.",
+    "Compare smaller or larger local fallback models only if the remaining failures are shown to originate in the shared model fallback rather than deterministic state or compiler structure."
+  ],
+  "evidence_boundary": "This is zero-model development replay on a consumed 64-case holdout. It authorizes only a new independent safety holdout. It does not authorize runtime integration, shadow deployment, physical VRM execution, complete right-brain claims, whole-system readiness, or broad human-likeness claims.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
