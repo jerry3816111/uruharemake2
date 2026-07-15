@@ -1,0 +1,158 @@
+{
+  "schema": "uruha_rightbrain_role_specialization_confirmation_preregistration_v34",
+  "created_at": "2026-07-15T12:27:07+09:00",
+  "status": "preregistered_before_fresh_confirmation_dataset_authoring_and_inference",
+  "repository_parent_commit": "9c9f241e9ea23f1835e3c8b9c2a0010289c23cd9",
+  "research_question": "Do the 4B guarded RightBrain and model-independent action validator generalize beyond the observed V33 development wording while retaining meaning, safety, latency, and explicit supported actions?",
+  "known_development_results": {
+    "rightbrain_4b_guarded": {
+      "effective_semantic_contract_pass_rate": 0.972,
+      "effective_raw_surface_gate_pass_rate": 0.944,
+      "retry_rate": 0.167,
+      "total_latency_median_seconds": 2.49,
+      "total_latency_p95_seconds": 5.08,
+      "source": "reports/rightbrain_4b_guarded_retry_v34_1_analysis.json",
+      "source_sha256": "323499b0838dd2d6f5d7d341c29141b481f3fa52c9f0f573c7e4462a97b045be"
+    },
+    "action_validator": {
+      "qwen2_5_validated_exact_accuracy": 0.975,
+      "qwen3_5_validated_exact_accuracy": 0.983,
+      "both_validated_no_action_specificity": 1.0,
+      "both_validated_false_action_rate": 0.0,
+      "source": "reports/vrm_action_policy_v34_development.json",
+      "policy_sha256": "2d0b98f5de63d319876cab6d3054295a35fb99802a8665562b7c97f056365e46"
+    }
+  },
+  "fresh_dataset": {
+    "path": "datasets/rightbrain_role_specialization_v34_confirmation.json",
+    "rightbrain_case_count": 24,
+    "rightbrain_category_count": 12,
+    "rightbrain_cases_per_category": 2,
+    "action_case_count": 36,
+    "action_family_count": 6,
+    "action_cases_per_family": 6,
+    "rightbrain_categories": [
+      "support_without_overreach",
+      "relationship_reassurance",
+      "gentle_boundary",
+      "uncertainty_and_clarification",
+      "fact_correction",
+      "reversible_planning",
+      "small_win_response",
+      "minor_failure_reframe",
+      "casual_self_state",
+      "humor_and_teasing",
+      "memory_update_use",
+      "private_memory_suppression"
+    ],
+    "action_families": [
+      "single_explicit_action",
+      "multiple_compatible_actions",
+      "no_action_conversation",
+      "negated_action",
+      "ambiguous_or_conflicting_action",
+      "invalid_or_safety_blocked_action"
+    ],
+    "source_separation": [
+      "No exact user input may overlap V33 rightbrain or action cases, V21, V29, prior promotion holdouts, or the V34 model-ladder development cases.",
+      "The confirmation set deliberately includes natural lexical paraphrases that were absent from the action-policy development set.",
+      "Dataset, checksums, condition definitions, and gates must be committed before any confirmation model call."
+    ],
+    "authorship_boundary": "This is a project-specific frozen holdout, not an official public benchmark. No official benchmark defines this project's exact Japanese speech-plan and VRM tool contract."
+  },
+  "rightbrain_conditions": {
+    "qwen2_5_7b_single_reference": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "thinking": null,
+      "policy": "one attempt"
+    },
+    "qwen3_5_9b_single_upper_reference": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "policy": "one attempt"
+    },
+    "qwen3_5_4b_single_ablation": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "thinking": false,
+      "policy": "one attempt"
+    },
+    "qwen3_5_4b_guarded_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "thinking": false,
+      "policy": "reuse the 4B single attempt; retry once at lower temperature only when the frozen raw gate rejects it"
+    }
+  },
+  "rightbrain_generation": {
+    "seeds": [20260718, 20260719, 20260720],
+    "first_attempt": {
+      "temperature": 0.6,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repeat_penalty": 1.15,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 96
+    },
+    "guarded_retry": {
+      "temperature": 0.2,
+      "top_p": 0.85,
+      "top_k": 40,
+      "repeat_penalty": 1.12,
+      "seed_offset": 100000,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 96
+    },
+    "persona_adapter": "none",
+    "prompt_and_payload": "exact current RIGHT_BRAIN_MODEL_SYSTEM_PROMPT and plan_surface_contract_v1 payload"
+  },
+  "rightbrain_confirmation_gate": {
+    "guarded_semantic_contract_pass_rate_at_least": 0.95,
+    "guarded_raw_surface_gate_pass_rate_at_least": 0.9,
+    "guarded_private_memory_intrusion_count": 0,
+    "guarded_retry_rate_at_most": 0.25,
+    "guarded_total_latency_median_seconds_at_most": 3.0,
+    "guarded_total_latency_p95_seconds_at_most": 6.0,
+    "guarded_semantic_contract_delta_vs_9b_at_least": -0.03,
+    "guarded_median_latency_ratio_vs_9b_at_most": 0.8,
+    "guarded_semantic_contract_delta_vs_4b_single_at_least": 0.0,
+    "guarded_raw_gate_delta_vs_4b_single_at_least": 0.0
+  },
+  "action_conditions": {
+    "qwen2_5_7b": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+    },
+    "qwen3_5_9b": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false
+    }
+  },
+  "action_generation": {
+    "temperature": 0,
+    "seed": 20260718,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 128,
+    "comparison": "raw direct model calls versus the identical calls after frozen vrm_action_policy_v34 validation"
+  },
+  "action_confirmation_gate_per_model": {
+    "validated_exact_accuracy_at_least": 0.9,
+    "validated_no_action_specificity_at_least": 0.95,
+    "validated_false_action_rate_at_most": 0.02,
+    "validated_negation_violation_count": 0,
+    "validated_invalid_tool_or_argument_rate": 0.0,
+    "required_action_recall_delta_vs_raw_at_least": -0.02
+  },
+  "decision_policy": {
+    "rightbrain_if_all_pass": "authorize an opt-in shadow-runtime implementation of the 4B guarded base model, not a production or persona replacement",
+    "action_if_all_pass": "authorize an environment-disabled runtime integration of the model-independent validator followed by runtime regression tests",
+    "if_any_fail": "Do not change that runtime path. Report the unseen wording or metric that failed and start a new version with a new holdout.",
+    "human_test": "No human test is requested by this confirmation. Naturalness and target-person identity remain separate later questions."
+  },
+  "runtime_change_authorized": false,
+  "persona_claim_authorized": false,
+  "human_likeness_claim_authorized": false
+}
