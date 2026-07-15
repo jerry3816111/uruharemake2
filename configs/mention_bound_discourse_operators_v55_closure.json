@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_mention_bound_discourse_operators_development_closure_v55",
+  "closed_at": "2026-07-15T23:33:26+09:00",
+  "preregistration": "configs/mention_bound_discourse_operators_v55_preregistration.json",
+  "preregistration_sha256": "8ec9529cc1db7ef9959ae49af644bd81c6b3010e8604934c32a7069108925608",
+  "raw_report": "reports/mention_bound_discourse_operators_v55_development_raw.json",
+  "raw_report_sha256": "b25007c26884619dc84b603f1bb47228eb9d1993d18563c941b164312ace2f88",
+  "analysis_report": "reports/mention_bound_discourse_operators_v55_development_analysis.json",
+  "analysis_report_sha256": "b5bae64340fab5a56da2f952fb257e1ed8d09fe26ae232d7d9e7e4dc55a8cd46",
+  "human_readable_report": "reports/mention_bound_discourse_operators_v55_development_analysis.md",
+  "human_readable_report_sha256": "d2a41c71f544f9e90fb24a8042397eaa13eba03d7c331d3a5c42193fd5a9a5e0",
+  "evidence_status": "development_replay_on_consumed_v54_holdout_completed",
+  "model_accounting": {
+    "model_calls": 0,
+    "paid_api_used": false,
+    "frozen_v51_outputs_reused": true
+  },
+  "headline_metrics": {
+    "frozen_v54_commitment": "70/76 (92.11%)",
+    "v55_commitment": "68/76 (89.47%)",
+    "frozen_v54_exact_calls": "60/64 (93.75%)",
+    "v55_exact_calls": "54/64 (84.38%)",
+    "v55_coverage": "76/76 (100.00%)",
+    "v55_resolved_accuracy": "68/76 (89.47%)",
+    "frozen_v54_false_actions": 3,
+    "v55_false_actions": 2
+  },
+  "matched_effect": {
+    "commitment_correct_delta": -2,
+    "exact_call_delta": -6,
+    "false_action_delta": -1,
+    "semantic_fixes": 5,
+    "semantic_regressions": 7,
+    "call_fixes": 1,
+    "call_regressions": 7
+  },
+  "targeted_result": {
+    "prespecified_count": 6,
+    "fixed_count": 5,
+    "correct_count": 5,
+    "unfixed_case_id": "v54h_tatoeba_13056462",
+    "unfixed_reason": "The focus clause ends in a connective, so the sentence-final finite-assertion heuristic did not recognize the local descriptive event."
+  },
+  "failure_diagnosis": {
+    "primary": "V55 over-localized operator scope instead of representing syntactic relations between clauses.",
+    "request_regression_count": 6,
+    "request_regression_reason": "FINITE_ASSERTION_RE can match an early ta/da sequence and absorb up to eight trailing characters, so valid directives such as kudasai and coordinated te-forms were reclassified as mentions.",
+    "conditional_regression_count": 1,
+    "conditional_regression_reason": "The hypothetical marker was outside the target clause but governed its consequent; same-clause-only binding incorrectly turned the consequent into an immediate request.",
+    "missing_relation_types": [
+      "directive morphology must outrank generic finite-assertion evidence",
+      "a final directive may share force with coordinated preceding actions",
+      "a conditional antecedent may govern a target in its consequent"
+    ]
+  },
+  "development_gate_passed": false,
+  "decision": "reject_v55_due_to_semantic_regression",
+  "next_architecture": {
+    "name": "relation_bound_event_graph_v56",
+    "design_boundary": "Represent directive, coordination, condition, correction, and description as typed relations over target events. Do not add sentence-specific exceptions or change the frozen V55 result.",
+    "required_controls": [
+      "frozen V54 hybrid",
+      "frozen rejected V55",
+      "V56 deterministic relation graph",
+      "V56 selective relation graph with frozen V51 fallback"
+    ],
+    "fresh_holdout_required_after_development": true
+  },
+  "post_run_tuning_under_v55_authorized": false,
+  "fresh_holdout_construction_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "broad_human_likeness_claim_authorized": false
+}
