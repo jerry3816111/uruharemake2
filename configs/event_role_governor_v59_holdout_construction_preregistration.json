@@ -1,0 +1,138 @@
+{
+  "schema": "uruha_event_role_governor_independent_holdout_construction_preregistration_v59",
+  "created_at": "2026-07-16T02:02:00+09:00",
+  "purpose": "Freeze the source IDs, controlled-family matrix, provenance rules, overlap gates, and expected counts before constructing or evaluating an independent V59 event-role holdout.",
+  "research_question": "Can an independently frozen Japanese set distinguish third-party or past action descriptions from current addressee commands across every supported VRM action type, without reusing any prior exact input or Tatoeba sentence ID?",
+  "project_effect": "This holdout tests one bounded prerequisite for human-like action understanding: bind who performs an action, what predicate a request governs, and when the event occurs before authorizing a VRM action. It does not evaluate wording, memory, personality, reflection, VTuber identity, general intelligence, or physical safety.",
+  "external_source": {
+    "name": "Tatoeba Japanese detailed sentences export",
+    "download_url": "https://downloads.tatoeba.org/exports/per_language/jpn/jpn_sentences_detailed.tsv.bz2",
+    "downloads_page": "https://tatoeba.org/en/downloads",
+    "terms_url": "https://tatoeba.org/en/terms_of_use",
+    "license": "CC BY 2.0 FR",
+    "retrieved_at": "2026-07-16T01:55:00+09:00",
+    "full_export_sha256": "30c7a77475b0af1c43f57950303cf200e06045931cb7dae915954c5581c19a50",
+    "base_model_pretraining_exclusion_guaranteed": false,
+    "selected_sentence_ids": [
+      84201,
+      86703,
+      87104,
+      89563,
+      93275,
+      96980,
+      110400,
+      114512,
+      8672756,
+      9099647,
+      9943358,
+      10550376,
+      13066134,
+      13066287,
+      13066388,
+      13146953
+    ],
+    "selected_snapshot_path": "datasets/sources/tatoeba_jpn_v59_selected.tsv"
+  },
+  "controlled_matrix": {
+    "authoring_provenance": "Researcher-authored minimal Japanese contrasts. They are not official Tatoeba items, are not human-blind reviewed, and must be reported separately from external exact cases.",
+    "families": {
+      "controlled_embedded_speech_content": {
+        "expected_commitment": "mentioned",
+        "expected_relation": "embedded_speech_content",
+        "expected_action": false
+      },
+      "controlled_third_party_habitual_description": {
+        "expected_commitment": "mentioned",
+        "expected_relation": "third_party_habitual_description",
+        "expected_action": false
+      },
+      "controlled_past_experiential_description": {
+        "expected_commitment": "mentioned",
+        "expected_relation": "past_experiential_description",
+        "expected_action": false
+      },
+      "controlled_direct_focus_request_contrast": {
+        "expected_commitment": "requested",
+        "expected_relation": "direct_focus_request",
+        "expected_action": true
+      }
+    },
+    "target_ids_per_family": [
+      "expression.angry",
+      "expression.happy",
+      "expression.neutral",
+      "expression.sad",
+      "expression.surprised",
+      "gaze.down",
+      "gaze.left",
+      "gaze.right",
+      "gaze.user",
+      "motion.idle",
+      "motion.nod",
+      "motion.point",
+      "motion.shake_head",
+      "motion.wave"
+    ],
+    "case_count_per_family": 14,
+    "all_cases_single_target": true,
+    "model_assistance_used": false,
+    "human_blind_review_used": false,
+    "official_corpus_claimed": false
+  },
+  "expected_construction_counts": {
+    "case_count": 72,
+    "external_exact_case_count": 16,
+    "controlled_case_count": 56,
+    "controlled_family_count": 4,
+    "external_grounded_target_count": 17,
+    "controlled_grounded_target_count": 56,
+    "grounded_target_count": 73,
+    "requested_target_count": 14,
+    "not_requested_target_count": 59,
+    "action_case_count": 14,
+    "no_action_case_count": 58,
+    "distinct_target_type_count": 14
+  },
+  "construction_gates": {
+    "selected_external_rows_match_export_exactly": true,
+    "prior_external_sentence_id_overlap_count": 0,
+    "duplicate_input_count": 0,
+    "historical_exact_input_overlap_count": 0,
+    "historical_near_duplicate_count_at_94_percent": 0,
+    "candidate_target_set_mismatch_count": 0,
+    "evidence_substring_error_count": 0,
+    "expected_call_derivation_error_count": 0,
+    "grounded_occurrence_mention_coverage": 1.0,
+    "mention_fallback_occurrence_count": 0,
+    "cross_target_mention_overlap_count": 0
+  },
+  "construction_paths": {
+    "builder": "build_event_role_governor_v59_holdout.py",
+    "auditor": "audit_event_role_governor_v59_holdout.py",
+    "dataset": "datasets/event_role_governor_v59_holdout.json",
+    "audit_json": "reports/event_role_governor_v59_holdout_audit.json",
+    "audit_markdown": "reports/event_role_governor_v59_holdout_audit.md"
+  },
+  "causal_firewall": {
+    "model_calls_authorized_during_construction": 0,
+    "v58_state_evaluation_authorized_during_construction": false,
+    "v59_state_evaluation_authorized_during_construction": false,
+    "compiler_evaluation_authorized_during_construction": false,
+    "gold_visible_to_future_model_state_or_compiler": false,
+    "case_ids_visible_to_future_model_state_or_compiler": false,
+    "post_construction_family_or_label_changes_authorized": false
+  },
+  "failure_routing": {
+    "source_or_overlap_failure": "Stop before evaluation. Replace only the invalid source row or rewrite the overlapping controlled sentence, preserve its frozen family and target slot, then rebuild and refreeze all hashes.",
+    "grounding_failure": "Stop before evaluation. Repair wording so the preregistered target is grounded exactly and no extra target is introduced; do not inspect V58 or V59 outputs.",
+    "provenance_failure": "Stop before evaluation. Correct the provenance statement; never relabel controlled text as official or human-reviewed.",
+    "pass": "Freeze the completed dataset, source snapshot, builder, auditor, and audit reports before writing or running the matched V58/V59 evaluator."
+  },
+  "builder_or_dataset_exists_before_preregistration_merge_authorized": false,
+  "evaluation_before_construction_freeze_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
