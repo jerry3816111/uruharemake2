@@ -131,16 +131,19 @@ def _validate_models(config):
     return snapshots
 
 
-def _contract_hash(system_prompt, action_catalog):
+def _contract_hash(system_prompt, action_catalog, action_catalog_mode):
     payload = {
         "system_prompt": system_prompt,
         "action_catalog": action_catalog,
+        "action_catalog_mode": action_catalog_mode,
     }
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _new_report(snapshots, system_prompt, study_variant, action_catalog):
+def _new_report(
+    snapshots, system_prompt, study_variant, action_catalog, action_catalog_mode
+):
     return {
         "schema": f"uruha_action_semantic_authorization_development_raw_{study_variant}",
         "study_variant": study_variant,
@@ -152,15 +155,30 @@ def _new_report(snapshots, system_prompt, study_variant, action_catalog):
         "dataset_sha256": _sha256(DATASET_PATH),
         "source_raw_sha256": _sha256(SOURCE_RAW_PATH),
         "system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
-        "input_contract_sha256": _contract_hash(system_prompt, action_catalog),
+        "input_contract_sha256": _contract_hash(
+            system_prompt, action_catalog, action_catalog_mode
+        ),
         "model_snapshots": snapshots,
         "rows": [],
     }
 
 
-def _load_or_create(output, snapshots, system_prompt, study_variant, action_catalog):
+def _load_or_create(
+    output,
+    snapshots,
+    system_prompt,
+    study_variant,
+    action_catalog,
+    action_catalog_mode,
+):
     if not output.exists():
-        return _new_report(snapshots, system_prompt, study_variant, action_catalog)
+        return _new_report(
+            snapshots,
+            system_prompt,
+            study_variant,
+            action_catalog,
+            action_catalog_mode,
+        )
     report = json.loads(output.read_text(encoding="utf-8"))
     checks = {
         "runner_commit": _git_head(),
@@ -169,7 +187,9 @@ def _load_or_create(output, snapshots, system_prompt, study_variant, action_cata
         "source_raw_sha256": _sha256(SOURCE_RAW_PATH),
         "system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
         "study_variant": study_variant,
-        "input_contract_sha256": _contract_hash(system_prompt, action_catalog),
+        "input_contract_sha256": _contract_hash(
+            system_prompt, action_catalog, action_catalog_mode
+        ),
     }
     for field, expected in checks.items():
         if report.get(field) != expected:
@@ -186,12 +206,36 @@ def _skip_authorization():
     }
 
 
+def select_proposed_action_catalog(action_catalog, proposed_calls):
+    selected = {}
+    for call in proposed_calls or []:
+        name = str(call.get("name") or "") if isinstance(call, dict) else ""
+        arguments = call.get("arguments") if isinstance(call, dict) else None
+        function = action_catalog.get(name) if isinstance(action_catalog, dict) else None
+        if not isinstance(arguments, dict) or len(arguments) != 1 or not function:
+            continue
+        argument_name, argument_value = next(iter(arguments.items()))
+        definitions = function.get(argument_name)
+        if not isinstance(definitions, dict) or argument_value not in definitions:
+            continue
+        selected_function = selected.setdefault(
+            name,
+            {
+                "description_ja": function.get("description_ja", ""),
+                argument_name: {},
+            },
+        )
+        selected_function[argument_name][argument_value] = definitions[argument_value]
+    return selected
+
+
 def run(
     output=DEFAULT_OUTPUT,
     *,
     system_prompt=SYSTEM_PROMPT,
     study_variant="v35",
     action_catalog=None,
+    action_catalog_mode="full",
 ):
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
@@ -199,7 +243,12 @@ def run(
     _validate_bound_inputs(config)
     snapshots = _validate_models(config)
     report = _load_or_create(
-        output, snapshots, system_prompt, study_variant, action_catalog
+        output,
+        snapshots,
+        system_prompt,
+        study_variant,
+        action_catalog,
+        action_catalog_mode,
     )
     cases = {case["id"]: case for case in dataset["action_cases"]}
     proposal_sources = set(config["development_evidence"]["proposal_sources"])
@@ -244,7 +293,14 @@ def run(
             if classifier_invoked:
                 payload = build_authorization_payload(case["user_input"], proposed_calls)
                 if action_catalog is not None:
-                    payload["action_catalog"] = action_catalog
+                    if action_catalog_mode == "proposed_only":
+                        payload["action_catalog"] = select_proposed_action_catalog(
+                            action_catalog, proposed_calls
+                        )
+                    elif action_catalog_mode == "full":
+                        payload["action_catalog"] = action_catalog
+                    else:
+                        raise ValueError(f"Unknown action catalog mode: {action_catalog_mode}")
                 messages = [
                     {"role": "system", "content": system_prompt},
                     {
