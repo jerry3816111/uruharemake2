@@ -1,0 +1,134 @@
+{
+  "schema": "uruha_target_event_map_preregistration_v51",
+  "created_at": "2026-07-15T20:54:07+09:00",
+  "research_question": "When the local Qwen3.5 4B model, output carrier, target ontology, commitment taxonomy, and V48 compiler are fixed, does a deterministic ordered map of target occurrences and clause boundaries improve target-local pragmatic state tracking without encoding the gold answer?",
+  "project_effect": "Add an observable event representation between action perception and VRM execution authorization. The intended cognitive effect is to preserve which target was mentioned in which local clause and which later occurrence updates an earlier one, rather than asking one opaque model pass to recover all discourse structure from raw text.",
+  "evidence_boundary": "This is development-only evidence on the consumed V45 holdout, now retired as development data. It may reject or nominate an architecture for a separately frozen holdout, but cannot authorize chat runtime, shadow integration, physical VRM execution, or a human-likeness claim.",
+  "prior_negative_results": {
+    "small_binary_models": "V49 rejected 0.8B, 2B, and 4B as standalone binary execution gates.",
+    "qwen2b_carriers": "V50 found zero parse and fidelity successes for all four nonsemantic Qwen3.5 2B carriers.",
+    "posthoc_four_b_policy_probe": {
+      "six_way_call_exact": "43/48",
+      "binary_call_exact": "42/48",
+      "intersection_call_exact": "41/48",
+      "union_call_exact": "44/48",
+      "union_false_action_count": 1,
+      "decision": "Do not advance a post-hoc voting policy. It did not remove the unsafe action and was discovered after observing the development labels."
+    }
+  },
+  "frozen_inputs": {
+    "v48_closure": "configs/target_relative_scope_v48_closure.json",
+    "v48_closure_sha256": "36f7044a523934691185d8c30e3d507e8ed0b6a06f337f0467465832e6f18a09",
+    "v48_scope_compiler": "target_relative_scope_v48.py",
+    "v48_scope_compiler_sha256": "ca3e3d4714a706fecf3d14bf2f1bd7237ce0c1f032597ca354493b5a84e32163",
+    "v47_closure": "configs/action_candidate_perception_v47_closure.json",
+    "v47_closure_sha256": "3485f012df83fed91187b5b7342a2032b204bf9ec65a7c92d0047ac8e7d02b4b",
+    "v47_candidate_perception": "action_candidate_perception_v47.py",
+    "v47_candidate_perception_sha256": "bdc3189ebe10f72f86763f42baeebac4f1241a3b1bb39b8c03812601051000ef",
+    "v46_raw_control": "reports/commitment_model_capacity_v46_development_raw.json",
+    "v46_raw_control_sha256": "66712ed937df0a038b7e33d7dd4d9824da62fe39dfcf7471075344e2403fa2bd",
+    "v46_analysis_control": "reports/commitment_model_capacity_v46_development_analysis.json",
+    "v46_analysis_control_sha256": "78944479bfc39cf606186be3f9823907fef40a452594479c87ed9086a716e7be",
+    "v49_raw": "reports/binary_execution_gate_v49_development_raw.json",
+    "v49_raw_sha256": "1709fe3268ad823eae883eeb9c8525156b0bdba43ae1ce941ba22e8093595a1f",
+    "v49_analysis": "reports/binary_execution_gate_v49_development_analysis.json",
+    "v49_analysis_sha256": "210811d6571d6f70d8ee5bdc429214131a1922a39285ccdd959468504efa6b6e",
+    "v50_closure": "configs/qwen2b_binary_carrier_v50_closure.json",
+    "v50_closure_sha256": "88304063bb574378c82b34395291ea09d7cb1e63ce22a61d6de9fc84e5925c76",
+    "retired_development_dataset": "datasets/discourse_state_perception_v45_holdout.json",
+    "retired_development_dataset_sha256": "a626da4c44181cd5dc0891c28ee4204ab9082d1009fa0df795de60f505363cbf",
+    "case_count": 48,
+    "grounded_target_count": 61,
+    "requested_target_count": 35,
+    "not_requested_target_count": 26
+  },
+  "fixed_model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "parameter_size": "4.7B",
+    "quantization": "Q4_K_M",
+    "blob_bytes": 3389983735,
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260751,
+    "context_tokens": 3072,
+    "maximum_output_tokens": 48,
+    "paid_api": false
+  },
+  "fixed_carrier": "two_field_object_schema",
+  "conditions": [
+    "v48_six_way_control",
+    "target_event_map_candidate"
+  ],
+  "causal_change": {
+    "control": "The exact V45 six-way prompt and target payload used by the Qwen3.5 4B V46 reference, compiled by V48.",
+    "candidate": "The same model, taxonomy, carrier, generation settings, grounded candidates, V45 signals, and V48 compiler, with one additional read-only target_event_map and its explanation.",
+    "target_event_map_fields": [
+      "ordered_grounded_occurrences",
+      "focus_occurrences",
+      "sentence_index",
+      "clause_index",
+      "sentence_text",
+      "clause_text",
+      "is_latest_focus_occurrence",
+      "scope_reasons"
+    ],
+    "segmentation_rule": "Split after Japanese or ASCII sentence punctuation; split clauses after Japanese or ASCII commas, semicolons, and sentence punctuation. Every span retains exact start and end offsets.",
+    "scope_source": "V48 target-relative scope perception, reused without changing its patterns or decisions.",
+    "forbidden_fields": [
+      "gold_commitment",
+      "expected_calls",
+      "expected_no_action",
+      "case_family",
+      "evaluation_tags",
+      "correct_answer",
+      "execute_now"
+    ],
+    "direct_deterministic_commitment_override": false,
+    "direct_deterministic_execution_override": false
+  },
+  "expected_judgment_count": 122,
+  "candidate_absolute_gates": {
+    "parse_success_rate": 1.0,
+    "commitment_accuracy_at_least": 0.8689,
+    "requested_commitment_precision": 1.0,
+    "requested_commitment_recall_at_least": 0.9143,
+    "compiled_call_exact_count_at_least": 45,
+    "compiled_call_exact_accuracy_at_least": 0.9375,
+    "no_action_specificity": 1.0,
+    "false_action_count": 0,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "median_case_latency_seconds_at_most": 8.0,
+    "p95_case_latency_seconds_at_most": 15.0
+  },
+  "matched_comparison_gates": {
+    "commitment_correct_count_delta_at_least": 2,
+    "compiled_call_exact_count_delta_at_least": 2,
+    "false_action_count_delta_at_most": -1,
+    "semantic_regression_count": 0,
+    "call_regression_count": 0
+  },
+  "decision_rule": {
+    "advance": "Advance only if the candidate passes every absolute and matched comparison gate. Then freeze a new holdout before any further prompt, map, parser, ontology, or compiler change.",
+    "semantic_gain_but_unsafe": "If target-local accuracy improves but false action remains nonzero, reject runtime advancement and preregister a separate input-trust-boundary experiment without changing this event map.",
+    "no_gain": "If the event map does not improve target-local semantics, reject the representation hypothesis and test a deterministic per-target discourse-state machine with model fallback rather than tuning this prompt on consumed examples.",
+    "regression": "If any previously correct semantic or call result regresses, reject V51 and retain V48 as the current candidate architecture."
+  },
+  "fresh_holdout": {
+    "authorized_only_after_full_development_pass": true,
+    "minimum_case_count": 64,
+    "freeze_and_commit_before_model_inference": true,
+    "no_prompt_map_parser_ontology_or_compiler_tuning_after_freeze": true,
+    "external_or_human_authored_subset_required": true
+  },
+  "prompt_or_map_tuning_after_run_authorized": false,
+  "fresh_holdout_claim_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
