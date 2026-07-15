@@ -75,6 +75,7 @@ def summarize_condition(report, dataset, condition):
     effective_latencies = []
     warning_cases = []
     failures = []
+    frame_failures = []
     accepted = 0
     anchored = 0
     repair_attempts = 0
@@ -125,6 +126,15 @@ def summarize_condition(report, dataset, condition):
                     "case_id": row["case_id"],
                     "expected_calls": case["expected_calls"],
                     "actual_calls": action["actual_calls"],
+                }
+            )
+        if not frame["joint_frame_exact"]:
+            frame_failures.append(
+                {
+                    "case_id": row["case_id"],
+                    "source": row["source"],
+                    "expected_frames": case["expected_frames"],
+                    "actual_frames": parsed["frames"],
                 }
             )
     no_action = [
@@ -186,6 +196,8 @@ def summarize_condition(report, dataset, condition):
         "effective_p95_latency_seconds": _percentile(effective_latencies, 0.95),
         "failure_count": len(failures),
         "failures": failures,
+        "frame_failure_count": len(frame_failures),
+        "frame_failures": frame_failures,
         "trace_warning_case_count": len(warning_cases),
         "trace_warning_cases": warning_cases,
     }
