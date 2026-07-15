@@ -1,0 +1,147 @@
+{
+  "schema": "uruha_action_ontology_grounding_preregistration_v38",
+  "created_at": "2026-07-15T14:55:00+09:00",
+  "research_question": "Can exact action-value grounding and local parse-error isolation correct V37's systematic VRM call errors without changing the model, prompt, or user utterances?",
+  "scientific_basis": [
+    {
+      "name": "value_agnostic_conversational_semantic_parsing",
+      "source": "https://aclanthology.org/2021.acl-long.284/",
+      "design_use": "Keep the representation compact while copying and structurally validating spans from the utterance."
+    },
+    {
+      "name": "symbolic_planning_for_grounded_dialogue",
+      "source": "https://aclanthology.org/2023.emnlp-main.460/",
+      "design_use": "Separate LLM reading from symbolic grounding and action selection."
+    },
+    {
+      "name": "picard_constrained_semantic_parsing",
+      "source": "https://aclanthology.org/2021.emnlp-main.779/",
+      "design_use": "Treat structural validity as necessary but insufficient; add schema-aware semantic grounding before executable output."
+    }
+  ],
+  "causal_scope": {
+    "fixed_model": "qwen3.5:4b",
+    "fixed_model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "fixed_prompt_source": "run_action_selective_deliberation_v37.py:SYSTEM_PROMPT",
+    "fixed_development_inputs": "datasets/action_selective_deliberation_v37_development.json",
+    "fixed_development_input_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+    "frozen_primary_output_source": "reports/action_selective_deliberation_v37_development_raw.json",
+    "frozen_primary_output_sha256": "8cd0d189bad860c03d1084e113adf608017047579ff6852db578a0c108c8ecba",
+    "replay_rule": "Development comparison reuses only the already-generated V37 primary reply for every case. No new model inference is allowed before the replay result is frozen.",
+    "development_status": "post_failure_hypothesis_on_already_observed_data"
+  },
+  "action_anchor_ontology": {
+    "expression.neutral": [
+      "(?:普通|いつもの|元|標準|ニュートラル)[^、。！？!?]{0,8}(?:顔|表情)",
+      "(?:顔|表情)[^、。！？!?]{0,10}(?:普通|いつもの|元|標準|ニュートラル|戻|リセット)",
+      "(?:真顔|無表情)"
+    ],
+    "expression.happy": [
+      "(?:笑顔|笑って|笑った|にこ|微笑)"
+    ],
+    "expression.sad": [
+      "(?:悲し|泣き顔)"
+    ],
+    "expression.angry": [
+      "(?:怒|険しい顔)"
+    ],
+    "expression.surprised": [
+      "(?:驚|びっくり)"
+    ],
+    "motion.idle": [
+      "(?:待機|アイドル|じっとして|動かずにいて|動かないでいて|そのままの姿勢)"
+    ],
+    "motion.wave": [
+      "手[^、。！？!?]{0,8}振"
+    ],
+    "motion.nod": [
+      "(?:うなず|頷|首[^、。！？!?]{0,8}縦)"
+    ],
+    "motion.shake_head": [
+      "(?:首[^、。！？!?]{0,8}横|頭[^、。！？!?]{0,8}左右|かぶり)"
+    ],
+    "motion.point": [
+      "(?:指差|指[^、。！？!?]{0,8}(?:示|さして|して))"
+    ],
+    "gaze.left": [
+      "(?:左[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}左)"
+    ],
+    "gaze.right": [
+      "(?:右[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}右)"
+    ],
+    "gaze.user": [
+      "(?:(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)[^、。！？!?]{0,10}(?:見|向|視線)|(?:見|向|視線|目線)[^、。！？!?]{0,10}(?:こっち|こちら|私|俺|僕|会話相手|正面|カメラ)|目線[^、。！？!?]{0,10}(?:ちょうだい|合わせ))"
+    ],
+    "gaze.down": [
+      "(?:下[^、。！？!?]{0,8}(?:見|向|視線)|(?:見|向|視線)[^、。！？!?]{0,8}下)"
+    ]
+  },
+  "grounding_rules": {
+    "anchor_overlap": "A supported requested frame is executable only when one ontology anchor for exactly that domain and value overlaps the model-copied evidence span.",
+    "anchor_scope": "Negation is evaluated on the clause containing the matched action anchor. Oversized evidence may cross clauses without suppressing a positive anchor in a later clause.",
+    "later_cancellation": "A later referential cancellation blocks anchors occurring before the cancellation.",
+    "unsupported": "value=unsupported never compiles and needs no lexical anchor.",
+    "no_case_specific_rules": "The compiler cannot access case IDs, expected calls, family labels, or benchmark answers."
+  },
+  "local_error_isolation": {
+    "duplicate_target_rule": "Duplicate domain/value frames become observable warnings rather than fatal parse errors. Each requested frame is still grounded and compiled independently.",
+    "fatal_errors": [
+      "invalid JSON or root",
+      "frames is not an array",
+      "unknown domain/value/commitment",
+      "non-string or non-copied evidence",
+      "too many frames"
+    ],
+    "warning_cannot_execute": "A warning does not grant execution; every accepted requested frame must still pass ontology grounding, scope, allowlist, and domain-conflict checks."
+  },
+  "matched_replay_conditions": {
+    "v37_single_control": "Frozen V37 primary parsing and compiler.",
+    "anchor_grounding_only": "V37 strict parse validity remains; only target-anchor grounding and anchor-local scope replace the V37 evidence-span guard.",
+    "local_isolation_only": "Duplicate targets become warnings, but V37 coarse evidence-span scope remains and no target anchor is required.",
+    "full_v38_candidate": "Target-anchor grounding, anchor-local scope, and duplicate-target warning isolation are all enabled."
+  },
+  "development_gates": {
+    "compiled_call_exact_accuracy_at_least": 0.97,
+    "no_action_specificity": 1.0,
+    "required_action_recall_at_least": 0.95,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "invalid_tool_or_argument_rate": 0.0,
+    "parse_success_rate_at_least": 0.95,
+    "commitment_frame_micro_f1_at_least": 0.65,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "model_passes_per_case": 1.0,
+    "median_latency_seconds_at_most": 4.5
+  },
+  "fresh_holdout_policy": {
+    "authorized_only_after_full_candidate_passes_every_development_gate": true,
+    "minimum_case_count": 48,
+    "freeze_and_commit_before_inference": true,
+    "must_include": [
+      "unseen colloquial action paraphrases",
+      "conversation proposals containing no physical action",
+      "same-domain positive and negative contrasts",
+      "oversized and undersized evidence stress",
+      "late referential cancellation",
+      "supported and unsupported mixed requests",
+      "near-miss words that must not trigger an action"
+    ],
+    "gates": {
+      "compiled_call_exact_accuracy_at_least": 0.95,
+      "no_action_specificity": 1.0,
+      "required_action_recall_at_least": 0.95,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "parse_success_rate_at_least": 0.95
+    }
+  },
+  "decision_rule": "Only full_v38_candidate may authorize a fresh holdout. Development replay cannot authorize runtime. Runtime integration requires every frozen fresh-holdout gate in a later committed stage.",
+  "runtime_change_authorized": false,
+  "vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
