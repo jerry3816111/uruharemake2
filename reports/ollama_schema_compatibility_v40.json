@@ -1,0 +1,55 @@
+{
+  "schema": "uruha_ollama_schema_compatibility_probe_v40",
+  "scope": "infrastructure_only_unrelated_to_project_evaluation_data",
+  "model": "qwen3.5:4b",
+  "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+  "schema_feature": "oneOf_with_const_and_branch_specific_required_fields",
+  "request_schema": {
+    "type": "object",
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "cat"
+          },
+          "has_whiskers": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "kind",
+          "has_whiskers"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "dog"
+          },
+          "bark_volume": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "kind",
+          "bark_volume"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "raw_reply": "{\"animal\": \"cat\", \"has_whiskers\": true}",
+  "parsed_reply": {
+    "animal": "cat",
+    "has_whiskers": true
+  },
+  "json_parse_success": true,
+  "conditional_schema_obeyed": false,
+  "elapsed_seconds": 3.6327,
+  "conclusion": "oneOf_not_reliable_for_v40_use_simple_schema"
+}
