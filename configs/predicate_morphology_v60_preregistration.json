@@ -1,0 +1,128 @@
+{
+  "schema": "uruha_focus_predicate_morphology_preregistration_v60",
+  "created_at": "2026-07-16T02:37:00+09:00",
+  "research_question": "Can one answer-free focus-predicate morphology layer over V59 distinguish completed third-party benefactive events from current addressee directives and recover the full action predicate when the grounded target mention is shorter than the predicate phrase?",
+  "project_effect": "This improves a bounded human-relevant perception-to-action step: decide whether an embodied action was done by someone else in the past or is being requested from the addressee now. It does not change final wording, memory, personality, reflection, model intelligence, VTuber identity, or physical actuation.",
+  "causal_hypothesis": "The four independent false actions and nineteen role-slot errors are caused by one missing representation: the morphology and scope of the complete focus predicate. V59 requires an explicit time adverb for past events, treats bare くれ inside くれた or くれて as a request marker, and starts direct-request matching after a target mention that may stop before 顔. A predicate-level force/aspect representation should repair these errors without changing the model or compiler.",
+  "single_variable": {
+    "name": "focus_predicate_morphology",
+    "added_fields": {
+      "predicate_force": [
+        "current_directive",
+        "completed_benefactive",
+        "declarative",
+        "unknown"
+      ],
+      "event_aspect": [
+        "current",
+        "completed",
+        "habitual",
+        "unknown"
+      ],
+      "request_governor": [
+        "focus_event",
+        "speech_act",
+        "none",
+        "unknown"
+      ],
+      "predicate_span": "The complete same-clause predicate from the grounded focus mention through its finite or directive ending."
+    },
+    "allowed_inputs": [
+      "raw Japanese user input",
+      "V59 answer-free event map and grounded mention spans",
+      "general Japanese directive and completed-benefactive morphology"
+    ],
+    "forbidden_inputs": [
+      "case IDs",
+      "gold commitments or calls",
+      "answer tables",
+      "exact holdout sentence lookup",
+      "model output",
+      "memory",
+      "VTuber identity text"
+    ]
+  },
+  "frozen_inputs": {
+    "v59_holdout_closure": "configs/event_role_governor_v59_holdout_closure.json",
+    "v59_holdout_closure_sha256": "26839d8a26a08383dc81fa7c77c67c83153137e999ba1f007062486296c31b63",
+    "v59_holdout_raw": "reports/event_role_governor_v59_holdout_raw.json",
+    "v59_holdout_raw_sha256": "d9baee6cb129dba17148fca965bd7708a502252a790d85dc381f9297284ded8c",
+    "v59_holdout_analysis": "reports/event_role_governor_v59_holdout_analysis.json",
+    "v59_holdout_analysis_sha256": "f56d421824337197d3014d9035edd507c6106f56562e4997d2fa81095182dea8",
+    "v59_implementation": "event_role_governor_v59.py",
+    "v59_implementation_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "case_count": 72,
+    "grounded_target_count": 73,
+    "v59_correct_commitment_count": 67,
+    "v59_ordered_exact_count": 68,
+    "v59_false_action_case_count": 4,
+    "v59_direct_focus_request_detected_count": 11,
+    "v59_role_slot_correct_count": 261,
+    "role_slot_count": 280
+  },
+  "development_replay": {
+    "evidence_status": "consumed_independent_holdout_used_as_development_only",
+    "model_calls_authorized": 0,
+    "reuse_frozen_fallbacks": true,
+    "control": "V59 state with frozen V57 compiler",
+    "candidate": "V60 predicate-morphology state with the same frozen V57 compiler",
+    "only_state_variable_changed": "focus_predicate_morphology",
+    "compiler_change_authorized": false,
+    "model_change_authorized": false,
+    "prompt_change_authorized": false,
+    "case_or_gold_visibility_to_candidate": false
+  },
+  "expected_replay_effect": {
+    "correct_commitment_count": 71,
+    "commitment_accuracy": 0.9726027397260274,
+    "requested_precision": 1.0,
+    "requested_recall": 1.0,
+    "ordered_exact_count": 72,
+    "ordered_exact_accuracy": 1.0,
+    "false_action_case_count": 0,
+    "no_action_specificity": 1.0,
+    "required_call_recall": 1.0,
+    "expected_relation_detected_count": 42,
+    "expected_relation_target_count": 42,
+    "direct_focus_request_detected_count": 14,
+    "direct_focus_request_target_count": 14,
+    "role_slot_correct_count": 280,
+    "role_slot_count": 280,
+    "state_fix_count": 4,
+    "state_regression_count": 0,
+    "case_fix_count": 4,
+    "case_regression_count": 0
+  },
+  "required_general_probes": {
+    "completed_benefactive_without_time_adverb": "Third-party positive てくれた or てくれて predicates become completed descriptions even without 昨日 or 先日.",
+    "current_benefactive_request": "Current てくれ, てくれませんか, or てくれるかな directives remain current addressee requests.",
+    "benefactive_negation": "Negative てくれなかった does not become a positive completed-benefactive relation.",
+    "embedded_speech": "A request to explain or tell about an action still governs the speech act, not the embodied action.",
+    "full_expression_predicate": "Requests containing 怒った顔, 悲しい顔, or 驚いた顔 are recognized from the complete predicate even when the grounded mention span is shorter.",
+    "third_party_declarative": "A third-party declarative without completed-benefactive or directive morphology is not invented into a current directive."
+  },
+  "known_residuals_kept_separate": {
+    "compositional_negation": "笑顔を絶やさない remains a target-local negation problem and is not changed by V60.",
+    "shared_fallback_label": "The habitual nod case labeled negated by the frozen fallback remains a model-semantic residual and is not changed by V60.",
+    "compiler_coverage": "Required-call recall was already 1.0, so V57 compiler coverage is not changed.",
+    "model_size": "The four false actions were deterministic despite a correct shared fallback. No model-size change is authorized in V60."
+  },
+  "decision_rule": {
+    "all_replay_gates_pass": "Authorize construction of a second fresh V60 independent holdout. Do not claim fresh generalization or deployment readiness.",
+    "false_action_remains": "Reject V60 and revise predicate force/aspect representation on new development examples only.",
+    "valid_request_regression": "Reject immediately; a safer system cannot suppress valid current commands.",
+    "only_known_residuals_remain": "Keep the two explicitly separate state-label residuals for later experiments and proceed only to a new independent holdout.",
+    "other_failure": "Reject advancement and attribute the failure before selecting one new variable."
+  },
+  "independent_confirmation_required_after_replay": true,
+  "implementation_before_preregistration_merge_authorized": false,
+  "post_replay_threshold_change_authorized": false,
+  "post_replay_case_exclusion_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
