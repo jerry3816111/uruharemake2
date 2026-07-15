@@ -1,0 +1,123 @@
+{
+  "schema": "uruha_target_relative_scope_preregistration_v48",
+  "created_at": "2026-07-15T18:08:00+09:00",
+  "research_question": "Can target-relative assignment of Japanese negation and cessation markers remove false scope blocking while preserving every truly negated or cancelled action?",
+  "project_effect": "Repair the deterministic perception-to-action boundary before selective fast/slow reasoning. The change prevents one target's negation from contaminating a later positive target and prevents lexical ず inside うなずく from being mistaken for a negative suffix.",
+  "evidence_boundary": "This is a deterministic compiler diagnostic on retired development data and frozen metamorphic probes. Gold commitments are intentionally supplied to isolate scope and compilation; this does not measure LLM reasoning or fresh generalization.",
+  "research_basis": [
+    {
+      "title": "Selective Classification for Deep Neural Networks",
+      "url": "https://papers.neurips.cc/paper_files/paper/2017/hash/4a8423d5e91fda00bb7e46540e2b0cf1-Abstract.html",
+      "applied_principle": "A later selective router must be allowed to abstain instead of forcing uncertain predictions; V48 repairs the deterministic high-confidence substrate first."
+    },
+    {
+      "title": "SelectiveNet: A Deep Neural Network with an Integrated Reject Option",
+      "url": "https://proceedings.mlr.press/v97/geifman19a.html",
+      "applied_principle": "Evaluate risk and coverage separately rather than treating greater automatic coverage as automatically better."
+    },
+    {
+      "title": "Dual-Processing Accounts of Reasoning, Judgment, and Social Cognition",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/18154502/",
+      "applied_principle": "Fast automatic processing and slow controlled processing have different roles; automatic scope rules must be narrow and reliable."
+    },
+    {
+      "title": "Language Model Cascades",
+      "url": "https://arxiv.org/abs/2207.10342",
+      "applied_principle": "Keep selection, inference, verification, and tool execution as observable composable nodes rather than one opaque prompt."
+    }
+  ],
+  "frozen_inputs": {
+    "v47_closure": "configs/action_candidate_perception_v47_closure.json",
+    "v47_closure_sha256": "3485f012df83fed91187b5b7342a2032b204bf9ec65a7c92d0047ac8e7d02b4b",
+    "v47_ontology": "action_candidate_perception_v47.py",
+    "v47_ontology_sha256": "bdc3189ebe10f72f86763f42baeebac4f1241a3b1bb39b8c03812601051000ef",
+    "retired_development_dataset": "datasets/discourse_state_perception_v45_holdout.json",
+    "retired_development_dataset_sha256": "a626da4c44181cd5dc0891c28ee4204ab9082d1009fa0df795de60f505363cbf",
+    "v45_analysis": "reports/discourse_state_perception_v45_holdout_analysis.json",
+    "v45_analysis_sha256": "11d8f5743e95f4cfc1e2af14b51524084b2198261c6bf29e193a6279da996a16",
+    "old_scope_implementation": "action_ontology_grounding_v38.py",
+    "old_scope_implementation_sha256": "38c422debfbea9da12e8ac84cfeee7026af6f91f882b1349b87cac4a892a9f97",
+    "old_compiler_wrapper": "grounded_frame_isolation_v39.py",
+    "old_compiler_wrapper_sha256": "84ecdda08440e018aaf1aa8861dae5ae888d396e6e0d23f8211794c7d335c09c",
+    "frame_assembler": "relational_commitment_context_v43.py",
+    "frame_assembler_sha256": "1c1f99dcbb1e4f1859fdd2c05d05de40ce7112f66b026cc6acdbe323749964c3",
+    "case_count": 48,
+    "supported_target_count": 61
+  },
+  "causal_change": {
+    "old_rule": "Any strong-negation regex match anywhere in an anchor's clause blocks that anchor.",
+    "candidate_rule": "Within each clause, assign each negation or cessation marker only to the nearest preceding or overlapping grounded action anchor. A marker ending before another anchor starts cannot block that later anchor.",
+    "negative_suffix_pattern": "(?:ないで|なくて|なかった|ない|じゃなくて|ではなく|なしで|(?<!な)ず(?:に|[、，,。！？!?；;]|$)|ぬ(?:まま|よう|[、，,。！？!?；;]|$))",
+    "cessation_pattern": "(?:やめ(?:て|ろ|よう)|止め(?:て|ろ|よう)|停止(?:して|しろ)?|中止(?:して|しろ)?)",
+    "referential_cancellation_pattern": "(?:今の|さっきの|先ほどの|その)(?:頼み|お願い|指示)?.*(?:取り消|取消|キャンセル)",
+    "all_other_variables": "V47 ontology, gold commitments, evidence selection, frame-to-call mapping, cases, and scoring remain fixed."
+  },
+  "metamorphic_probes": [
+    {
+      "id": "alternative_same_clause",
+      "text": "左じゃなくて右を見て。",
+      "blocked_all_targets": ["gaze.left"],
+      "safe_target_minimums": {"gaze.right": 1},
+      "reason": "Negation belongs to left, not the later positive right target."
+    },
+    {
+      "id": "comma_separated_replacement",
+      "text": "手は振らないで、こっちを見て。",
+      "blocked_all_targets": ["motion.wave"],
+      "safe_target_minimums": {"gaze.user": 1},
+      "reason": "The replacement request is outside the negated clause."
+    },
+    {
+      "id": "same_target_late_positive_correction",
+      "text": "うなずかないで。いや、やっぱりうなずいて。",
+      "blocked_anchor_minimums": {"motion.nod": 1},
+      "safe_target_minimums": {"motion.nod": 1},
+      "reason": "The first mention is negated and the later correction is safe."
+    },
+    {
+      "id": "negative_suffix_inside_nod_verb",
+      "text": "うなずかずに、首を横に振って。",
+      "blocked_all_targets": ["motion.nod"],
+      "safe_target_minimums": {"motion.shake_head": 1},
+      "reason": "Only the final ずに is a negative suffix; lexical ず inside うなず is not."
+    },
+    {
+      "id": "cessation_then_replacement",
+      "text": "笑顔はやめて、普通の表情に戻して。",
+      "cessation_all_targets": ["expression.happy"],
+      "safe_target_minimums": {"expression.neutral": 1},
+      "reason": "Stopping the active smile does not block the neutral replacement."
+    },
+    {
+      "id": "point_negation_then_wave",
+      "text": "指さなくていいから、手を振って。",
+      "blocked_all_targets": ["motion.point"],
+      "safe_target_minimums": {"motion.wave": 1},
+      "reason": "The negative suffix belongs to pointing, not waving."
+    }
+  ],
+  "development_gates": {
+    "requested_target_safe_anchor_recall": 1.0,
+    "negated_target_blocked_all_recall": 1.0,
+    "cancelled_target_blocked_all_recall": 1.0,
+    "metamorphic_probe_pass_rate": 1.0,
+    "perfect_semantic_compiled_call_exact_accuracy": 1.0,
+    "perfect_semantic_no_action_specificity": 1.0,
+    "perfect_semantic_false_action_rate": 0.0,
+    "perfect_semantic_negation_violation_count": 0,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0
+  },
+  "expected_baseline": {
+    "perfect_semantic_compiled_call_exact_count": 46,
+    "perfect_semantic_case_count": 48,
+    "known_false_blocked_targets": [
+      "v45h_negation_02:gaze.right",
+      "v45h_evidence_04:motion.nod"
+    ]
+  },
+  "decision_rule": "Advance only if every deterministic gate passes and both known false blocks disappear without losing any true negation or cancellation block. A pass authorizes V49 selective-router development only, not chat runtime or physical VRM execution.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
