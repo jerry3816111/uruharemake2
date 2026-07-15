@@ -1,0 +1,203 @@
+{
+  "schema": "uruha_selective_validator_repair_preregistration_v41",
+  "created_at": "2026-07-15T15:33:18+09:00",
+  "research_question": "Can externally guided repair, invoked only when the V39 validator identifies a malformed trace, improve observable action-frame quality using a smaller local specialist without changing already-grounded action behavior?",
+  "project_scope": {
+    "system_component": "post-interpretation self-monitoring between observable action frames and deterministic VRM call proposal",
+    "expected_project_effect": "A human-like correction loop that notices concrete representation errors and selectively repairs them before future VRM function calling.",
+    "not_measured": [
+      "right-brain natural-language quality",
+      "personality imitation",
+      "long-term memory",
+      "physical VRM execution"
+    ]
+  },
+  "scientific_basis": [
+    {
+      "name": "self_refine",
+      "source": "https://openreview.net/forum?id=S37hOerQLB",
+      "design_use": "Separate initial generation, feedback, and refinement rather than assuming the first output is final."
+    },
+    {
+      "name": "critic_tool_interactive_correction",
+      "source": "https://openreview.net/forum?id=WSrRF5Wy6v",
+      "design_use": "Use external validator feedback as a concrete correction signal."
+    },
+    {
+      "name": "limits_of_intrinsic_self_correction",
+      "source": "https://openreview.net/forum?id=IkmD3fKBPQ",
+      "design_use": "Do not merely ask the model to reconsider; trigger repair only from external parser errors."
+    },
+    {
+      "name": "expected_value_of_control",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3767969/",
+      "design_use": "Spend additional computation only when the validator reports a repairable error."
+    },
+    {
+      "name": "frugal_model_cascade",
+      "source": "https://arxiv.org/abs/2305.05176",
+      "design_use": "Choose the smallest passing local repair specialist rather than defaulting to the largest model."
+    }
+  ],
+  "causal_scope": {
+    "fixed_primary_model": "qwen3.5:4b",
+    "fixed_primary_model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "fixed_primary_output_source": "reports/action_selective_deliberation_v37_development_raw.json",
+    "fixed_primary_output_sha256": "8cd0d189bad860c03d1084e113adf608017047579ff6852db578a0c108c8ecba",
+    "fixed_v39_analysis_source": "reports/grounded_frame_isolation_v39_development_analysis.json",
+    "fixed_v39_analysis_sha256": "8baf5ba8abcda543a4f71facc8148f53f48dba6c2a779b78c898507770e13719",
+    "fixed_development_dataset": "datasets/action_selective_deliberation_v37_development.json",
+    "fixed_development_dataset_sha256": "860433cc0f720a641f372e2add0155ba208006536bf84cae3599d2e040458d56",
+    "fixed_development_case_count": 36,
+    "fixed_v39_compiler_source": "grounded_frame_isolation_v39.py",
+    "fixed_v39_compiler_sha256": "84ecdda08440e018aaf1aa8861dae5ae888d396e6e0d23f8211794c7d335c09c",
+    "single_changed_factor": "repair specialist model size after identical external validator feedback",
+    "development_status": "retired_and_already_observed",
+    "development_results_cannot_authorize_runtime": true
+  },
+  "repair_trigger": {
+    "rule": "Invoke repair if and only if the V39 primary trace has trace_wellformed=false.",
+    "expected_development_case_ids": [
+      "v34c_action_none_expression",
+      "v34c_action_none_explicit_none",
+      "v34c_action_negated_nod_shake",
+      "v34c_action_invalid_camera"
+    ],
+    "expected_development_attempt_count": 4,
+    "valid_primary_outputs_must_not_be_rewritten": true,
+    "fresh_policy_includes_fatal_or_warning_traces": true
+  },
+  "external_feedback": {
+    "inputs": [
+      "original user_input",
+      "original raw frame object",
+      "validator fatal errors",
+      "validator frame-local warnings"
+    ],
+    "does_not_include": [
+      "gold frames",
+      "gold action calls",
+      "case family",
+      "benchmark label",
+      "answer correctness"
+    ],
+    "repair_output_contract": "The original V39 one-array frame contract with domain, value, commitment, and exact evidence.",
+    "examples_in_prompt": false,
+    "persona_adapter": "none"
+  },
+  "repair_model_conditions": {
+    "repair_qwen3_5_0_8b": {
+      "ollama_tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "blob_bytes": 1036046583,
+      "thinking": false
+    },
+    "repair_qwen3_5_2b": {
+      "ollama_tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "blob_bytes": 2741192820,
+      "thinking": false
+    },
+    "repair_qwen3_5_4b": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "thinking": false
+    }
+  },
+  "repair_generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260741,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 256,
+    "json_schema_requested_from_ollama": true,
+    "paid_api": false
+  },
+  "repair_acceptance_policy": {
+    "all_required": [
+      "repair trace is fully wellformed under the V39 parser",
+      "repair compilation does not fail closed",
+      "repair accepted calls exactly equal the original V39 accepted calls",
+      "every accepted call remains grounded to an exact evidence span",
+      "no unsupported frame executes"
+    ],
+    "failure_fallback": "Retain the original V39 parsed trace and accepted calls, preserving the warning for observability.",
+    "physical_execution": false
+  },
+  "development_gates": {
+    "compiled_call_exact_accuracy": 1.0,
+    "no_action_specificity": 1.0,
+    "required_action_recall": 1.0,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "execution_parse_success_rate": 1.0,
+    "trace_wellformed_rate_at_least": 0.95,
+    "joint_frame_exact_rate_at_least": 0.9,
+    "matched_frame_evidence_support_rate_at_least": 0.95,
+    "accepted_call_anchor_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "repair_attempt_count": 4,
+    "repair_acceptance_rate_at_least": 0.75,
+    "valid_primary_unchanged_count": 32,
+    "accepted_repair_call_preservation_rate": 1.0,
+    "mean_repair_model_calls_per_case_at_most": 0.112,
+    "effective_median_latency_seconds_at_most": 4.5,
+    "effective_p95_latency_seconds_at_most": 9.0
+  },
+  "model_selection_rule": {
+    "eligibility": "A model must pass every development gate.",
+    "primary_order": "Choose the eligible model with the smallest frozen blob_bytes.",
+    "tie_breaker": "If sizes are equal, choose lower effective p95 latency.",
+    "no_pass_rule": "If no repair model passes, do not create or consume a fresh holdout."
+  },
+  "fresh_holdout": {
+    "authorized_only_after_development_model_selection": true,
+    "case_count": 48,
+    "families": [
+      "unseen_simple_colloquial_requests",
+      "unseen_multi_action_requests",
+      "conversation_and_lexical_near_misses",
+      "negation_and_positive_corrections",
+      "ambiguity_and_late_cancellation",
+      "unsupported_and_mixed_requests",
+      "evidence_boundary_stress",
+      "prompt_injection_like_data"
+    ],
+    "minimum_cases_per_family": 6,
+    "freeze_and_commit_before_inference": true,
+    "primary_generation": {
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "seed": 20260741,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 256,
+      "thinking": false
+    },
+    "gates": {
+      "compiled_call_exact_accuracy_at_least": 0.95,
+      "no_action_specificity": 1.0,
+      "required_action_recall_at_least": 0.95,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate_at_least": 0.95,
+      "joint_frame_exact_rate_at_least": 0.8,
+      "matched_frame_evidence_support_rate_at_least": 0.9,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "valid_primary_outputs_unchanged_rate": 1.0,
+      "accepted_repair_call_preservation_rate": 1.0,
+      "mean_repair_model_calls_per_case_at_most": 0.35,
+      "effective_median_latency_seconds_at_most": 4.5,
+      "effective_p95_latency_seconds_at_most": 9.0
+    }
+  },
+  "decision_rule": "Select the smallest repair specialist that passes every retired-development gate. Only that frozen condition may run on a newly committed holdout. Passing every fresh gate authorizes shadow integration with physical VRM execution still disabled.",
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}

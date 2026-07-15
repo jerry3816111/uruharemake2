@@ -1,0 +1,1733 @@
+{
+  "schema": "uruha_selective_validator_repair_development_analysis_v41",
+  "evidence_status": "model_selection_on_retired_v39_development_failures",
+  "primary_model_inference_performed": false,
+  "repair_model_inference_performed": true,
+  "conditions": {
+    "repair_qwen3_5_0_8b": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.8889,
+      "joint_frame_exact_rate": 0.5278,
+      "matched_frame_evidence_support_rate": 0.9,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "repair_attempt_count": 4,
+      "repair_acceptance_rate": 0.0,
+      "valid_primary_unchanged_count": 32,
+      "accepted_repair_call_preservation_rate": 0.0,
+      "mean_repair_model_calls_per_case": 0.1111,
+      "effective_median_latency_seconds": 3.5748,
+      "effective_p95_latency_seconds": 6.1077,
+      "failure_count": 0,
+      "failures": [],
+      "frame_failure_count": 17,
+      "frame_failures": [
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を縦に動かして"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence": "うんって感じで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "首を縦に動かして。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence": "前の方を指で",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence": "前の方を",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "mentioned",
+              "evidence": "左右を見る",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "mentioned",
+              "evidence": "少し疲れた",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "idle",
+              "commitment": "requested",
+              "evidence": "静かな曲の話をしよう。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "source": "original_v39_fallback",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "動作は",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "今は手を振るのをやめて",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "下は見ず",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence": "こっちだけ見て。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "うなずかないで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence": "首を横に振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence": "怒った顔じゃなく、普通の表情へ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "指差しはなし",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence": "一回手を振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "手を振るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "左を見るか右を見るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence": "うなずいて",
+              "evidence_valid": true
+            },
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "cancelled",
+              "evidence": "今の頼みは取り消し",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "mentioned",
+              "evidence": "もし下を向いてって頼んだら",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "表情は今ここで決めなくていいよ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence": "両腕を頭の上まで上げて",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "source": "original_v39_fallback",
+          "expected_frames": [
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "actual_frames": []
+        }
+      ],
+      "trace_warning_case_count": 4,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "invalid_domain"
+              ],
+              "raw_frame": {
+                "domain": "expression | motion | gaze | other",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "evidence_not_exact_input_substring"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "カメラを一周回って"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "repair_qwen3_5_2b": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.8889,
+      "joint_frame_exact_rate": 0.5278,
+      "matched_frame_evidence_support_rate": 0.9,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "repair_attempt_count": 4,
+      "repair_acceptance_rate": 0.0,
+      "valid_primary_unchanged_count": 32,
+      "accepted_repair_call_preservation_rate": 0.0,
+      "mean_repair_model_calls_per_case": 0.1111,
+      "effective_median_latency_seconds": 3.5748,
+      "effective_p95_latency_seconds": 7.4494,
+      "failure_count": 0,
+      "failures": [],
+      "frame_failure_count": 17,
+      "frame_failures": [
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を縦に動かして"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence": "うんって感じで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "首を縦に動かして。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence": "前の方を指で",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence": "前の方を",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "mentioned",
+              "evidence": "左右を見る",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "mentioned",
+              "evidence": "少し疲れた",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "idle",
+              "commitment": "requested",
+              "evidence": "静かな曲の話をしよう。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "source": "original_v39_fallback",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "動作は",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "今は手を振るのをやめて",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "下は見ず",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence": "こっちだけ見て。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "うなずかないで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence": "首を横に振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence": "怒った顔じゃなく、普通の表情へ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "指差しはなし",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence": "一回手を振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "手を振るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "左を見るか右を見るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence": "うなずいて",
+              "evidence_valid": true
+            },
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "cancelled",
+              "evidence": "今の頼みは取り消し",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "mentioned",
+              "evidence": "もし下を向いてって頼んだら",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "表情は今ここで決めなくていいよ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence": "両腕を頭の上まで上げて",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "source": "original_v39_fallback",
+          "expected_frames": [
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence_options": [
+                "カメラを一周回して"
+              ]
+            }
+          ],
+          "actual_frames": []
+        }
+      ],
+      "trace_warning_case_count": 4,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "invalid_domain"
+              ],
+              "raw_frame": {
+                "domain": "expression | motion | gaze | other",
+                "value": "neutral",
+                "commitment": "mentioned",
+                "evidence": "そのまま雑談しよう。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_camera",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "evidence_not_exact_input_substring"
+              ],
+              "raw_frame": {
+                "domain": "other",
+                "value": "unsupported",
+                "commitment": "requested",
+                "evidence": "カメラを一周回って"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "repair_qwen3_5_4b": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 1.0,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 1.0,
+      "false_action_rate": 0.0,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "execution_parse_success_rate": 1.0,
+      "trace_wellformed_rate": 0.9444,
+      "joint_frame_exact_rate": 0.5556,
+      "matched_frame_evidence_support_rate": 0.9032,
+      "accepted_call_anchor_coverage": 1.0,
+      "ungrounded_execution_count": 0,
+      "repair_attempt_count": 4,
+      "repair_acceptance_rate": 0.5,
+      "valid_primary_unchanged_count": 32,
+      "accepted_repair_call_preservation_rate": 1.0,
+      "mean_repair_model_calls_per_case": 0.1111,
+      "effective_median_latency_seconds": 3.5748,
+      "effective_p95_latency_seconds": 7.2259,
+      "failure_count": 0,
+      "failures": [],
+      "frame_failure_count": 16,
+      "frame_failures": [
+        {
+          "case_id": "v34c_action_single_nod_colloquial",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を縦に動かして"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "requested",
+              "evidence": "うんって感じで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "首を縦に動かして。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_single_point",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence_options": [
+                "指で示してくれる？"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "requested",
+              "evidence": "前の方を指で",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence": "前の方を",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "左"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "mentioned",
+              "evidence_options": [
+                "右"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "mentioned",
+              "evidence": "左右を見る",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_music",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "mentioned",
+              "evidence": "少し疲れた",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "idle",
+              "commitment": "requested",
+              "evidence": "静かな曲の話をしよう。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_none_explicit_none",
+          "source": "accepted_repair",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "動作は",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "手を振るのをやめて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "今は手を振るのをやめて",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_down_user",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "negated",
+              "evidence_options": [
+                "下は見ず"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence_options": [
+                "こっちだけ見て"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "下は見ず",
+              "evidence_valid": true
+            },
+            {
+              "domain": "gaze",
+              "value": "user",
+              "commitment": "requested",
+              "evidence": "こっちだけ見て。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence_options": [
+                "うなずかないで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence_options": [
+                "首を横に振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "negated",
+              "evidence": "うなずかないで",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "shake_head",
+              "commitment": "requested",
+              "evidence": "首を横に振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "expression",
+              "value": "angry",
+              "commitment": "negated",
+              "evidence_options": [
+                "怒った顔じゃなく"
+              ]
+            },
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence_options": [
+                "普通の表情へ戻して"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "neutral",
+              "commitment": "requested",
+              "evidence": "怒った顔じゃなく、普通の表情へ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_point_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "point",
+              "commitment": "negated",
+              "evidence_options": [
+                "指差しはなしで"
+              ]
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence_options": [
+                "手を振って"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "指差しはなし",
+              "evidence_valid": true
+            },
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "requested",
+              "evidence": "一回手を振って。",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_wave",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "wave",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "手を振るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "手を振るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_direction",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "left",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "左を見るか"
+              ]
+            },
+            {
+              "domain": "gaze",
+              "value": "right",
+              "commitment": "ambiguous",
+              "evidence_options": [
+                "右を見るか"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "unsupported",
+              "commitment": "ambiguous",
+              "evidence": "左を見るか右を見るかは",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_cancel",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "cancelled",
+              "evidence_options": [
+                "うなずいて。いや、今の頼みは取り消し"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "motion",
+              "value": "nod",
+              "commitment": "negated",
+              "evidence": "うなずいて",
+              "evidence_valid": true
+            },
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "cancelled",
+              "evidence": "今の頼みは取り消し",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_if",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "hypothetical",
+              "evidence_options": [
+                "もし下を向いてって頼んだら"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "gaze",
+              "value": "down",
+              "commitment": "mentioned",
+              "evidence": "もし下を向いてって頼んだら",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_ambiguous_expression",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [],
+          "actual_frames": [
+            {
+              "domain": "expression",
+              "value": "unsupported",
+              "commitment": "negated",
+              "evidence": "表情は今ここで決めなくていいよ",
+              "evidence_valid": true
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_invalid_arms",
+          "source": "valid_primary_unchanged",
+          "expected_frames": [
+            {
+              "domain": "motion",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence_options": [
+                "両腕を頭の上まで上げて"
+              ]
+            }
+          ],
+          "actual_frames": [
+            {
+              "domain": "other",
+              "value": "unsupported",
+              "commitment": "requested",
+              "evidence": "両腕を頭の上まで上げて",
+              "evidence_valid": true
+            }
+          ]
+        }
+      ],
+      "trace_warning_case_count": 2,
+      "trace_warning_cases": [
+        {
+          "case_id": "v34c_action_none_expression",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 0,
+              "reasons": [
+                "invalid_domain_value"
+              ],
+              "raw_frame": {
+                "domain": "expression",
+                "value": "mentioned",
+                "commitment": "mentioned",
+                "evidence": "今日は表情の変化について"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "source": "original_v39_fallback",
+          "errors": [],
+          "warnings": [
+            {
+              "index": 1,
+              "reasons": [
+                "duplicate_frame_target"
+              ],
+              "raw_frame": {
+                "domain": "motion",
+                "value": "shake_head",
+                "commitment": "requested",
+                "evidence": "首を横に振って。"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "condition_gates": {
+    "repair_qwen3_5_0_8b": {
+      "passed": false,
+      "checks": {
+        "compiled_call_exact_accuracy": true,
+        "no_action_specificity": true,
+        "required_action_recall": true,
+        "false_action_rate": true,
+        "negation_violation_count": true,
+        "unsupported_execution_count": true,
+        "execution_parse_success_rate": true,
+        "trace_wellformed_rate": false,
+        "joint_frame_exact_rate": false,
+        "matched_frame_evidence_support_rate": false,
+        "accepted_call_anchor_coverage": true,
+        "ungrounded_execution_count": true,
+        "repair_attempt_count": true,
+        "repair_acceptance_rate": false,
+        "valid_primary_unchanged_count": true,
+        "accepted_repair_call_preservation_rate": false,
+        "mean_repair_model_calls_per_case": true,
+        "effective_median_latency_seconds": true,
+        "effective_p95_latency_seconds": true
+      },
+      "failed_checks": [
+        "trace_wellformed_rate",
+        "joint_frame_exact_rate",
+        "matched_frame_evidence_support_rate",
+        "repair_acceptance_rate",
+        "accepted_repair_call_preservation_rate"
+      ]
+    },
+    "repair_qwen3_5_2b": {
+      "passed": false,
+      "checks": {
+        "compiled_call_exact_accuracy": true,
+        "no_action_specificity": true,
+        "required_action_recall": true,
+        "false_action_rate": true,
+        "negation_violation_count": true,
+        "unsupported_execution_count": true,
+        "execution_parse_success_rate": true,
+        "trace_wellformed_rate": false,
+        "joint_frame_exact_rate": false,
+        "matched_frame_evidence_support_rate": false,
+        "accepted_call_anchor_coverage": true,
+        "ungrounded_execution_count": true,
+        "repair_attempt_count": true,
+        "repair_acceptance_rate": false,
+        "valid_primary_unchanged_count": true,
+        "accepted_repair_call_preservation_rate": false,
+        "mean_repair_model_calls_per_case": true,
+        "effective_median_latency_seconds": true,
+        "effective_p95_latency_seconds": true
+      },
+      "failed_checks": [
+        "trace_wellformed_rate",
+        "joint_frame_exact_rate",
+        "matched_frame_evidence_support_rate",
+        "repair_acceptance_rate",
+        "accepted_repair_call_preservation_rate"
+      ]
+    },
+    "repair_qwen3_5_4b": {
+      "passed": false,
+      "checks": {
+        "compiled_call_exact_accuracy": true,
+        "no_action_specificity": true,
+        "required_action_recall": true,
+        "false_action_rate": true,
+        "negation_violation_count": true,
+        "unsupported_execution_count": true,
+        "execution_parse_success_rate": true,
+        "trace_wellformed_rate": false,
+        "joint_frame_exact_rate": false,
+        "matched_frame_evidence_support_rate": false,
+        "accepted_call_anchor_coverage": true,
+        "ungrounded_execution_count": true,
+        "repair_attempt_count": true,
+        "repair_acceptance_rate": false,
+        "valid_primary_unchanged_count": true,
+        "accepted_repair_call_preservation_rate": true,
+        "mean_repair_model_calls_per_case": true,
+        "effective_median_latency_seconds": true,
+        "effective_p95_latency_seconds": true
+      },
+      "failed_checks": [
+        "trace_wellformed_rate",
+        "joint_frame_exact_rate",
+        "matched_frame_evidence_support_rate",
+        "repair_acceptance_rate"
+      ]
+    }
+  },
+  "eligible_conditions": [],
+  "selected_smallest_passing_condition": null,
+  "development_model_selected": false,
+  "fresh_holdout_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "decision": "do_not_advance_v41_selective_validator_repair"
+}
