@@ -16,11 +16,17 @@ from event_role_governor_v59 import (
 CURRENT_REQUEST_MARKER_RE = re.compile(
     r"(?:"
     r"ください|下さい|"
-    r"くれ(?:ませんか|るかな)?(?![てたなるれ])|"
+    r"くれ(?:"
+    r"ませんか|ます(?:か|[？?])|る(?:かな|[？?])|"
+    r"よ?(?=[。！!？?\s]|$)"
+    r")|"
     r"もらえ(?:ますか|る)?|"
     r"いただけ(?:ますか|る)?|頂け(?:ますか|る)?|"
     r"ほしい|欲しい|なさい|おくれ|ちょうだい|お願い"
     r")"
+)
+THIRD_PARTY_BENEFACTIVE_DESCRIPTION_RE = re.compile(
+    r"(?:て|で)くれ(?:ます(?:か)?|る(?:の)?)(?=[。！？!?]|$)"
 )
 COMPLETED_BENEFACTIVE_RE = re.compile(
     r"(?:て|で)(?:"
@@ -32,6 +38,7 @@ COMPLETED_BENEFACTIVE_RE = re.compile(
 )
 COLLOQUIAL_SPEECH_DIRECTIVE_RE = re.compile(r"(?:教え|説明|話し|答え|伝え)(?:て|で)[。！!]*$")
 COMPLETED_RELATION = "third_party_completed_benefactive_description"
+POLITE_DESCRIPTION_RELATION = "third_party_polite_benefactive_description"
 
 
 def _strict_embedded_speech_governor(tail):
@@ -80,11 +87,21 @@ def build_predicate_morphology(user_input, v59_graph):
     predicate = context["predicate_span"]
     tail = context["tail_after_grounded_mention"]
     completed = COMPLETED_BENEFACTIVE_RE.search(predicate)
+    polite_description = THIRD_PARTY_BENEFACTIVE_DESCRIPTION_RE.search(predicate)
     embedded = _strict_embedded_speech_governor(tail)
     current_request = CURRENT_REQUEST_MARKER_RE.search(predicate)
-    direct = current_request is not None and embedded is None and completed is None
 
     owner = (v59_graph or {}).get("event_owner", "unknown")
+    third_party_polite_description = (
+        polite_description is not None
+        and owner in {"third_party", "inferred_third_party"}
+    )
+    direct = (
+        current_request is not None
+        and embedded is None
+        and completed is None
+        and not third_party_polite_description
+    )
     if direct:
         owner = "addressee"
     completed_third_party = (
@@ -122,6 +139,9 @@ def build_predicate_morphology(user_input, v59_graph):
         "event_owner": owner,
         "direct_focus_request": direct,
         "completed_benefactive_evidence": completed.group(0) if completed else None,
+        "polite_benefactive_description_evidence": (
+            polite_description.group(0) if third_party_polite_description else None
+        ),
         "current_request_evidence": (
             current_request.group(0) if current_request is not None else None
         ),
@@ -145,6 +165,15 @@ def build_v60_event_role_graph(user_input, v59_graph):
                 "evidence": morphology["completed_benefactive_evidence"],
             }
         )
+    if morphology["polite_benefactive_description_evidence"] is not None:
+        relations.append(
+            {
+                "type": POLITE_DESCRIPTION_RELATION,
+                "source": "focus_predicate_morphology",
+                "target": "focus_event",
+                "evidence": morphology["polite_benefactive_description_evidence"],
+            }
+        )
     relation_types = [row["type"] for row in relations]
 
     event_time = (v59_graph or {}).get("event_time", "unknown")
@@ -165,20 +194,20 @@ def build_v60_event_role_graph(user_input, v59_graph):
     }
 
 
-def _override_completed_description(result, graph):
+def _override_description(result, graph, relation_type):
     evidence = [
-        row["evidence"] for row in graph["relations"] if row["type"] == COMPLETED_RELATION
+        row["evidence"] for row in graph["relations"] if row["type"] == relation_type
     ]
     return {
         **result,
         "resolved": True,
         "commitment": "mentioned",
         "confidence": "high",
-        "resolution_rule": "predicate_morphology_third_party_completed_benefactive_description",
+        "resolution_rule": f"predicate_morphology_{relation_type}",
         "evidence": evidence,
         "v60_event_role_graph": graph,
         "v60_correction": {
-            "relation_type": COMPLETED_RELATION,
+            "relation_type": relation_type,
             "from_rule": result.get("resolution_rule"),
         },
     }
@@ -192,9 +221,9 @@ def resolve_target_state(user_input, candidates, focus_target_id, mention_patter
     if result.get("event_map") and not v59_graph.get("event_map"):
         v59_graph = {**v59_graph, "event_map": result["event_map"]}
     graph = build_v60_event_role_graph(user_input, v59_graph)
-    if (
-        result.get("commitment") == "requested"
-        and COMPLETED_RELATION in set(graph["relation_types"])
-    ):
-        return _override_completed_description(result, graph)
+    if result.get("commitment") == "requested":
+        relation_types = set(graph["relation_types"])
+        for relation_type in (COMPLETED_RELATION, POLITE_DESCRIPTION_RELATION):
+            if relation_type in relation_types:
+                return _override_description(result, graph, relation_type)
     return {**result, "v60_event_role_graph": graph}

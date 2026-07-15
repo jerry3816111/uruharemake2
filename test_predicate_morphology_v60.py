@@ -8,6 +8,7 @@ from action_candidate_perception_v47 import load_v47_anchor_ontology
 from grounded_commitment_classifier_v42 import ground_supported_targets
 from predicate_morphology_v60 import (
     COMPLETED_RELATION,
+    POLITE_DESCRIPTION_RELATION,
     build_predicate_morphology,
     resolve_target_state,
 )
@@ -86,6 +87,27 @@ class PredicateMorphologyV60Tests(unittest.TestCase):
                 ]
                 self.assertNotEqual(morphology["predicate_force"], "current_directive")
                 self.assertFalse(morphology["direct_focus_request"])
+
+    def test_explicit_third_party_polite_benefactive_is_a_description(self):
+        for text in (
+            "彼女は舞台で笑ってくれます。",
+            "彼女は舞台で笑ってくれますか。",
+        ):
+            with self.subTest(text=text):
+                result = self.resolve(text, "expression.happy")
+                graph = result["v60_event_role_graph"]
+                self.assertEqual(result["commitment"], "mentioned")
+                self.assertIn(POLITE_DESCRIPTION_RELATION, graph["relation_types"])
+                self.assertEqual(graph["event_owner"], "third_party")
+                self.assertFalse(graph["direct_focus_request"])
+
+    def test_polite_benefactive_without_third_party_subject_is_a_request(self):
+        result = self.resolve("舞台で笑ってくれますか。", "expression.happy")
+        graph = result["v60_event_role_graph"]
+        self.assertEqual(result["commitment"], "requested")
+        self.assertNotIn(POLITE_DESCRIPTION_RELATION, graph["relation_types"])
+        self.assertEqual(graph["event_owner"], "addressee")
+        self.assertTrue(graph["direct_focus_request"])
 
     def test_embedded_speech_still_governs_the_speech_act(self):
         result = self.resolve(
