@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_action_semantic_authorization_ontology_amendment_v35_2",
+  "created_at": "2026-07-15T13:18:20+09:00",
+  "status": "preregistered_before_v35_2_inference",
+  "repository_parent_commit": "1df2eec2be6c37ba4de38a834f25e808db0b971a",
+  "triggering_observation": {
+    "source": "reports/action_semantic_authorization_v35_1_development_analysis.json",
+    "qwen3_5_4b_qwen2_5_proposals": {
+      "exact_accuracy": 0.833,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.719,
+      "false_action_rate": 0.0
+    },
+    "qwen3_5_4b_qwen3_5_proposals": {
+      "exact_accuracy": 0.889,
+      "no_action_specificity": 1.0,
+      "required_action_recall": 0.812,
+      "false_action_rate": 0.0
+    },
+    "diagnosis": "The authorizer received opaque enum labels without definitions. Failure traces treated gaze target=user as different from looking at the interlocutor and confused the scope of two distinct head motions."
+  },
+  "single_changed_variable": "Add a complete fixed semantic catalog for every allowlisted function and enum value to each classifier input.",
+  "ontology_boundary": {
+    "allowed": "General API semantics for every allowlisted expression, motion, and gaze target.",
+    "prohibited": "No benchmark sentence, failed input phrase, phrase-to-answer lookup, or case-specific alias may appear.",
+    "reason": "A verifier cannot judge entailment when the proposed symbols have no defined meaning. The catalog is interface documentation, not a test answer."
+  },
+  "fixed_variables": [
+    "V35.1 explicit JSON text contract",
+    "retired V34 development cases and raw proposals",
+    "candidate model artifacts and digests",
+    "generation settings and seed",
+    "parser and deterministic validator",
+    "all metric thresholds and selection rule"
+  ],
+  "interpretation_rule": {
+    "recall_improves_but_latency_fails": "Keep the semantic architecture as a research candidate and optimize deployment cost in a new version without lowering the latency gate.",
+    "multi_action_or_negation_scope_still_fails": "The per-call independent verdict task is structurally insufficient; redesign the representation rather than adding aliases.",
+    "smallest_candidate_passes": "Advance only that candidate to a new frozen holdout.",
+    "no_candidate_passes": "Do not integrate and retain V34/V35 runtime locks."
+  },
+  "runtime_change_authorized": false,
+  "fresh_confirmation_required_after_development_pass": true
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "uruha_action_semantic_authorization_preregistration_v35",
+  "created_at": "2026-07-15T12:55:30+09:00",
+  "status": "preregistered_before_v35_development_inference",
+  "repository_parent_commit": "237bf7f5d07c65694d3c9045ca53536deaec3531",
+  "research_question": "Can a smaller local model judge whether already-proposed VRM calls are explicitly authorized without the lexical overfitting and recall loss observed in V34?",
+  "v34_diagnosis": {
+    "evidence": "fresh frozen V34 confirmation",
+    "qwen2_5_7b_validated_exact_accuracy": 0.806,
+    "qwen2_5_7b_required_action_recall": 0.594,
+    "qwen3_5_9b_validated_exact_accuracy": 0.778,
+    "qwen3_5_9b_required_action_recall": 0.594,
+    "root_cause": "The V34 validator required hand-written positive lexical cues. It safely removed many false actions but also rejected valid colloquial requests.",
+    "forbidden_fix": "Do not add the failed holdout phrases to a synonym or regex list."
+  },
+  "role_boundary": {
+    "action_proposer": "Produces zero or more structured VRM calls from the user utterance.",
+    "semantic_authorizer": "Judges each already-proposed call against the utterance. It cannot create, replace, or repair a call.",
+    "deterministic_validator": "Checks allowlisted schema, complete verdict coverage, exact evidence provenance, and duplicate calls.",
+    "executor": "Remains disabled in this experiment."
+  },
+  "development_evidence": {
+    "status": "development_only_retired_after_v34_confirmation",
+    "dataset": "datasets/rightbrain_role_specialization_v34_confirmation.json",
+    "dataset_sha256": "a45919164c9416622b6f582d9f85ad163878127057743fe4935ea343008f7a14",
+    "raw_proposals": "reports/rightbrain_role_specialization_v34_confirmation_raw.json",
+    "raw_proposals_sha256": "27cb82de4f3b39ada42d2952662946e5df54f8c3a1230180e5e71cd754a6b8a4",
+    "proposal_sources": [
+      "qwen2_5_7b",
+      "qwen3_5_9b"
+    ],
+    "reuse_disclosure": "Labels and failures are already known. This run may select an architecture and candidate but cannot confirm or authorize runtime use."
+  },
+  "candidate_authorizers": {
+    "qwen3_5_0_8b_authorizer": {
+      "ollama_tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "blob_bytes": 1036046583,
+      "thinking": false,
+      "role": "smallest_candidate"
+    },
+    "qwen3_5_2b_authorizer": {
+      "ollama_tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "blob_bytes": 2741192820,
+      "thinking": false,
+      "role": "small_candidate"
+    },
+    "qwen3_5_4b_authorizer_reference": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "thinking": false,
+      "role": "capacity_reference"
+    }
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260715,
+    "context_tokens": 2048,
+    "maximum_output_tokens": 256,
+    "json_schema_enforced_by_ollama": true,
+    "call_classifier_when_no_proposals": false
+  },
+  "allowed_states": [
+    "explicit_current_request",
+    "not_a_request",
+    "ambiguous_or_cancelled",
+    "unsupported_or_unsafe"
+  ],
+  "allowed_reason_codes": [
+    "exact_supported_request",
+    "discussed_only",
+    "hypothetical_or_future",
+    "negated",
+    "cancelled",
+    "ambiguous",
+    "unsupported_or_unsafe",
+    "semantic_mismatch"
+  ],
+  "development_gate_per_proposal_source": {
+    "end_to_end_exact_accuracy_at_least": 0.9,
+    "no_action_specificity_at_least": 0.95,
+    "false_action_rate_at_most": 0.02,
+    "negation_violation_count": 0,
+    "invalid_tool_or_argument_rate": 0.0,
+    "required_action_recall_delta_vs_raw_at_least": -0.02,
+    "invoked_parse_success_rate_at_least": 0.99,
+    "accepted_evidence_validity_rate": 1.0,
+    "median_authorizer_latency_seconds_at_most": 2.0
+  },
+  "selection_rule": "Advance the smallest candidate that passes every gate for both frozen proposal sources. A larger candidate advances only if every smaller candidate fails. Passing development permits only a newly authored frozen holdout.",
+  "failure_response": {
+    "small_models_reject_valid_calls": "The narrow semantic task still exceeds that capacity or the contract is unclear; advance one size without adding phrase-specific examples.",
+    "small_models_allow_non_requests": "Separate utterance-state classification from per-call entailment and retest on a new development version.",
+    "all_models_fail_in_the_same_cases": "Inspect the proposer/tool schema boundary rather than scaling the authorizer.",
+    "development_passes_but_fresh_confirmation_fails": "Reject promotion as overfitting and start a new version with untouched wording."
+  },
+  "runtime_change_authorized": false,
+  "fresh_confirmation_authorized_before_development_pass": false,
+  "vrm_execution_enabled": false
+}

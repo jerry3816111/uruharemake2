@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_rightbrain_4b_guarded_retry_analysis_v34_1",
+  "evidence_status": "post_pilot_development_not_confirmation",
+  "metrics": {
+    "row_count": 36,
+    "retry_count": 6,
+    "retry_rate": 0.1667,
+    "retry_recovery_rate": 0.6667,
+    "effective_semantic_contract_pass_rate": 0.9722,
+    "effective_raw_surface_gate_pass_rate": 0.9444,
+    "private_memory_intrusion_count": 0,
+    "total_latency_median_seconds": 2.4863,
+    "total_latency_p95_seconds": 5.0791,
+    "selected_rejection_reason_counts": {
+      "semantic_slots_missing:2/3": 1,
+      "polite_tone_drift": 1
+    }
+  },
+  "gate": {
+    "passed": true,
+    "checks": {
+      "effective_semantic_contract_pass_rate": true,
+      "effective_raw_surface_gate_pass_rate": true,
+      "private_memory_intrusion_count": true,
+      "retry_rate": true,
+      "total_latency_median_seconds": true,
+      "total_latency_p95_seconds": true
+    },
+    "failed_checks": []
+  },
+  "failed_rows": [
+    {
+      "case_id": "v33_correction_thursday",
+      "seed": 20260717,
+      "selected_source": "first",
+      "reply": "えー、実は金曜日って言ってたけど木曜だと訂正されてるんで言い直そうかな。",
+      "reasons": [
+        "semantic_slots_missing:2/3"
+      ]
+    },
+    {
+      "case_id": "v33_humor_microwave_captain",
+      "seed": 20260717,
+      "selected_source": "retry",
+      "reply": "えっと、突然「電子レンジが船長になった」という飛んだ冗談の何の意味か急には突っ込めません。",
+      "reasons": [
+        "polite_tone_drift"
+      ]
+    }
+  ],
+  "decision": "freeze_4b_guarded_retry_and_author_fresh_confirmation_holdout",
+  "runtime_change_authorized": false
+}
