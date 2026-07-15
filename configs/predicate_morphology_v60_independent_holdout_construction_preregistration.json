@@ -16,7 +16,7 @@
     "download_sha256": "30c7a77475b0af1c43f57950303cf200e06045931cb7dae915954c5581c19a50",
     "selected_sentence_ids": [
       77061,
-      88830,
+      89262,
       89236,
       89369,
       105809,
@@ -131,6 +131,10 @@
       "datasets/event_role_governor_v59_holdout.json",
       "test_predicate_morphology_v60.py"
     ],
+    "exclude_exact_text_from_globs": [
+      "datasets/*holdout*.json",
+      "test_*.py"
+    ],
     "normalized_near_duplicate_similarity_at_or_above": 0.94,
     "allowed_historical_exact_overlap_count": 0,
     "allowed_historical_near_duplicate_count": 0
@@ -151,6 +155,44 @@
       "inspection of any system answer"
     ],
     "replacement_policy": "A construction failure may be repaired before dataset closure using corpus text and ontology groundability only. Every replacement and reason must be recorded, and no failed system output may guide the replacement."
+  },
+  "pre_evaluation_correction_log": {
+    "first_audit_status": "failed",
+    "first_failed_check": "ontology_grounding",
+    "corrections": [
+      {
+        "case": "Tatoeba 77061",
+        "change": "remove expression.happy and retain motion.nod",
+        "reason": "the existing ontology grounds 頷いたり but not the hiragana form ほほえんだり"
+      },
+      {
+        "case": "Tatoeba 140700",
+        "change": "add gaze.user alongside expression.happy and motion.nod",
+        "reason": "私に向かって is independently grounded as gaze.user"
+      },
+      {
+        "case": "Tatoeba 226224",
+        "change": "remove expression.happy and retain requested gaze.user",
+        "reason": "the existing ontology grounds カメラのほうを見て but not ほほえんで"
+      },
+      {
+        "case": "replace Tatoeba 88830 with Tatoeba 89262",
+        "change": "replace one mentioned wave target with mentioned gaze.user plus motion.wave",
+        "reason": "preserve the frozen external case and target totals after grounding-only label corrections"
+      },
+      {
+        "case": "historical exclusion inventory",
+        "change": "expand exact and near-duplicate comparison to every repository holdout JSON and test file",
+        "reason": "avoid project-history leakage beyond the minimum V58/V59 exclusion set"
+      }
+    ],
+    "v59_state_evaluated": false,
+    "v60_state_evaluated": false,
+    "compiler_evaluated": false,
+    "model_inference_used": false,
+    "score_gate_relaxed": false,
+    "case_count_changed": false,
+    "target_count_changed": false
   },
   "construction_before_preregistration_merge_authorized": false,
   "evaluation_before_dataset_closure_authorized": false,

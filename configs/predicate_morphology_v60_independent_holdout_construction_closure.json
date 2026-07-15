@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_predicate_morphology_independent_holdout_construction_closure_v60",
+  "closed_at": "2026-07-16T03:12:00+09:00",
+  "status": "completed_construction_passed_after_grounding_only_correction",
+  "original_preregistration": {
+    "commit": "8744019",
+    "sha256": "5b27a2ae430f9a7689db45bb778b9c8f2a17c8f49e9ee79b6e93ea8f47c08cf1"
+  },
+  "artifact_bindings": {
+    "amended_preregistration": "configs/predicate_morphology_v60_independent_holdout_construction_preregistration.json",
+    "amended_preregistration_sha256": "534a47b2a5fa66a22d03d62cdce495a50af0ee27ef8e9fa439e12ca7b1a0ebc8",
+    "source_snapshot": "datasets/sources/tatoeba_jpn_v60_selected.tsv",
+    "source_snapshot_sha256": "7754c8a8ba890c39dde49eefa026c0829084f4a5d16b4fe94ea21414e434a3d9",
+    "builder": "build_predicate_morphology_v60_independent_holdout.py",
+    "builder_sha256": "444a03a3df4e1517989c656fed637f2c183eca9066d6cb6ebe746ff7e0408d80",
+    "auditor": "audit_predicate_morphology_v60_independent_holdout.py",
+    "auditor_sha256": "242bc0d6c14415c5d53c298c4a681f0bd301d2c09fd9fb56007439cc3ffa2a36",
+    "dataset": "datasets/predicate_morphology_v60_independent_holdout.json",
+    "dataset_sha256": "c2c3daa25d64f79f33ec92767b1322aba8464442b09801fb16b60e37b0162ee5",
+    "audit_json": "reports/predicate_morphology_v60_independent_holdout_audit.json",
+    "audit_json_sha256": "e745ab6c17ca61271ac6440217b4b24d15c101c6a7cac7cb71b332a884c1afbe",
+    "audit_markdown": "reports/predicate_morphology_v60_independent_holdout_audit.md",
+    "audit_markdown_sha256": "14bae14627d9027f03ca52726ae622e513d07385194bcdc3d9db72ceb264a814",
+    "frame_to_call_dependency": "action_selective_deliberation_v37.py",
+    "frame_to_call_dependency_sha256": "4ec523897df88f53e5349ee8ad3a05eaa3ddc2be313b5ec07be10fb01d869d82",
+    "anchor_ontology_dependency": "action_candidate_perception_v47.py",
+    "anchor_ontology_dependency_sha256": "bdc3189ebe10f72f86763f42baeebac4f1241a3b1bb39b8c03812601051000ef",
+    "grounding_dependency": "grounded_commitment_classifier_v42.py",
+    "grounding_dependency_sha256": "07dad7a7e9fcd861f9e3bed7ad1176f5224b9edcd044a3f1fab1d6eff13c1d5b"
+  },
+  "construction_result": {
+    "case_count": 117,
+    "grounded_target_count": 120,
+    "external_exact_case_count": 19,
+    "controlled_researcher_authored_case_count": 98,
+    "controlled_family_count": 7,
+    "action_case_count": 29,
+    "no_action_case_count": 88,
+    "historical_exact_input_overlap_count": 0,
+    "historical_near_duplicate_count_at_94_percent": 0,
+    "prior_external_source_id_overlap_count": 0,
+    "grounding_failure_count": 0,
+    "all_audit_checks_passed": true
+  },
+  "provenance": {
+    "external_exact": "Nineteen exact Japanese sentences from the official Tatoeba detailed-sentence export snapshot last modified 2026-07-11. IDs and contributor metadata are retained; Tatoeba did not provide the action labels.",
+    "controlled": "Ninety-eight researcher-authored morphology contrasts crossed with fourteen embodied targets. No model assistance or human blind review was used, and these are not official corpus items.",
+    "base_model_pretraining_exclusion_guaranteed": false
+  },
+  "pre_evaluation_correction_log": {
+    "first_audit_status": "failed",
+    "first_failure_count": 3,
+    "corrections": [
+      "Tatoeba 77061 retained only motion.nod because ほほえんだり was not grounded by the frozen ontology.",
+      "Tatoeba 140700 added gaze.user because 私に向かって was independently grounded.",
+      "Tatoeba 226224 retained only requested gaze.user because ほほえんで was not grounded.",
+      "Tatoeba 88830 was replaced with 89262, preserving the external case and target totals with grounded gaze.user plus motion.wave.",
+      "Historical leakage checks were expanded to every repository holdout JSON and test file before closure."
+    ],
+    "v59_state_evaluated_before_correction": false,
+    "v60_state_evaluated_before_correction": false,
+    "compiler_evaluated_before_correction": false,
+    "model_inference_used_before_correction": false,
+    "score_gate_relaxed": false,
+    "case_or_commitment_label_changed_from_system_output": false
+  },
+  "decision": "authorize_v60_independent_evaluator_preregistration_only",
+  "evidence_boundary": "Construction PASS is not a model result. It authorizes only preregistration and freezing of a matched V59-versus-V60 evaluator. It does not authorize inference before that freeze, runtime integration, physical VRM execution, complete-right-brain claims, or broad human-likeness claims.",
+  "model_or_state_evaluation_performed": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
