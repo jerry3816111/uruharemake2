@@ -1,0 +1,210 @@
+{
+  "schema": "uruha_rightbrain_role_specialization_preregistration_v34",
+  "created_at": "2026-07-15T15:20:00+09:00",
+  "status": "preregistered_before_v34_pilot_inference_and_before_fresh_confirmation_holdout",
+  "repository_parent_commit": "dd552d4a02b964c233e45b771deeddbb854b103b",
+  "project_goal": {
+    "primary": "Build an observable cognitive dialogue system whose reasoning, memory use, reflection, language, and later embodied behavior become more human-like without sacrificing measurable competence.",
+    "priority_order": [
+      "correctly understand and preserve the approved meaning",
+      "use only relevant and speakable memory",
+      "produce natural non-template dialogue",
+      "execute only explicit validated embodied actions",
+      "add an optional target-person identity layer after general competence is stable"
+    ],
+    "engineering_rule": "No existing model, adapter, module, benchmark score, or architecture is protected from replacement. A change is retained only when role-specific evidence supports it."
+  },
+  "role_contract": {
+    "leftbrain": "Select evidence, memory, intention, response obligations, and an approved semantic speech plan.",
+    "rightbrain": "Realize the approved semantic speech plan as one natural Japanese reply. It must not choose hidden facts, retrieve extra memory, or decide avatar actions.",
+    "action_planner": "Map an already explicit and supported user action request to allowlisted structured calls.",
+    "action_validator": "Deny ambiguous, negated, cancelled, unsupported, unsafe, or malformed actions before any VRM execution.",
+    "persona_layer": "Change characteristic surface habits only after semantic and safety gates pass.",
+    "prohibited_collapse": "Do not treat speech realization, memory policy, action authorization, and persona imitation as one undifferentiated model task."
+  },
+  "research_questions": [
+    "Can a smaller local model be a better narrow RightBrain surface formulator than a larger agent-oriented model?",
+    "Does separating model-proposed actions from deterministic authorization remove over-action without reducing supported explicit-action recall?",
+    "Which observed failures come from capacity, role definition, output control, action policy, or persona training rather than from model size alone?"
+  ],
+  "known_before_v34": {
+    "v33_evidence": {
+      "qwen2_5_7b_raw_semantic_contract_coverage": 0.826,
+      "qwen3_5_9b_raw_semantic_contract_coverage": 0.993,
+      "qwen2_5_7b_hard_surface_failure_rate": 0.512,
+      "qwen3_5_9b_hard_surface_failure_rate": 0.227,
+      "qwen2_5_7b_action_exact_accuracy": 0.683,
+      "qwen3_5_9b_action_exact_accuracy": 0.517,
+      "qwen2_5_7b_no_action_specificity": 0.543,
+      "qwen3_5_9b_no_action_specificity": 0.243,
+      "interpretation": "Qwen3.5-9B was stronger at semantic realization but over-triggered actions. This is evidence for role separation, not evidence that intelligence itself causes disobedience."
+    },
+    "persona_adapter_audit": {
+      "repository_priority_order": [
+        "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+        "uruha_v10_all_linear_lora"
+      ],
+      "expanded_v10_artifact_found_on_2026_07_15": false,
+      "legacy_v10_artifact_found_in_original_workspace": true,
+      "v34_boundary": "The model ladder compares base quantized deployment candidates. It is not a matched comparison against the current person-specific adapter."
+    }
+  },
+  "official_sources": [
+    {
+      "title": "Qwen3.5 official model collection",
+      "url": "https://huggingface.co/collections/Qwen/qwen35",
+      "use": "Defines the available small model family used for the local deployment ladder."
+    },
+    {
+      "title": "Qwen function-calling documentation",
+      "url": "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+      "use": "Documents that function-calling behavior depends on the tool interface and chat template, motivating a separate validated action path."
+    }
+  ],
+  "development_pilot": {
+    "evidence_status": "development_only_not_formal_confirmation",
+    "source_dataset": "datasets/rightbrain_qwen35_migration_v33_holdout.json",
+    "reuse_disclosure": "One previously observed V33 case per category is reused only to select finalists and diagnose scale. These cases are retired as confirmation evidence for V34.",
+    "case_ids": [
+      "v33_state_snack",
+      "v33_correction_thursday",
+      "v33_boundary_sleepy_game",
+      "v33_humor_microwave_captain",
+      "v33_memory_caffeine_update",
+      "v33_failure_burned_cookies",
+      "v33_private_interview",
+      "v33_relationship_short_reply",
+      "v33_plan_run_or_read",
+      "v33_win_laundry",
+      "v33_support_sluggish_check",
+      "v33_clarify_clock_tower_movie"
+    ],
+    "conditions": {
+      "qwen3_5_0_8b_lower_bound": {
+        "ollama_tag": "qwen3.5:0.8b",
+        "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+        "blob_bytes": 1036046583,
+        "reported_parameter_size": "873.44M",
+        "quantization": "Q8_0",
+        "thinking": false,
+        "role": "lower_bound_not_presumed_deployable"
+      },
+      "qwen3_5_2b_candidate": {
+        "ollama_tag": "qwen3.5:2b",
+        "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+        "blob_bytes": 2741192820,
+        "reported_parameter_size": "2.3B",
+        "quantization": "Q8_0",
+        "thinking": false,
+        "role": "small_candidate"
+      },
+      "qwen3_5_4b_candidate": {
+        "ollama_tag": "qwen3.5:4b",
+        "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+        "blob_bytes": 3389983735,
+        "reported_parameter_size": "4.7B",
+        "quantization": "Q4_K_M",
+        "thinking": false,
+        "role": "medium_candidate"
+      },
+      "qwen2_5_7b_base_reference": {
+        "ollama_tag": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "blob_bytes": 4683087332,
+        "reported_parameter_size": "7.6B",
+        "quantization": "Q4_K_M",
+        "role": "previous_family_base_reference"
+      },
+      "qwen3_5_9b_upper_reference": {
+        "ollama_tag": "qwen3.5:9b",
+        "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+        "blob_bytes": 6594474711,
+        "reported_parameter_size": "9.7B",
+        "quantization": "Q4_K_M",
+        "thinking": false,
+        "role": "high_capacity_reference"
+      }
+    },
+    "causal_boundary": "Model family, parameter count, quantization, tokenizer, renderer, and artifact size are not independently controlled. This is a practical local deployment ladder, not a causal estimate of parameter count.",
+    "generation": {
+      "system_prompt": "exact current RIGHT_BRAIN_MODEL_SYSTEM_PROMPT",
+      "payload": "exact current plan_surface_contract_v1 payload",
+      "seeds": [20260715, 20260716, 20260717],
+      "temperature": 0.6,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repeat_penalty": 1.15,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 96,
+      "repair_enabled": false,
+      "persona_adapter": "none"
+    },
+    "finalist_gate": {
+      "semantic_contract_pass_rate_at_least": 0.9,
+      "semantic_group_recall_at_least": 0.95,
+      "raw_surface_gate_pass_rate_at_least": 0.55,
+      "hard_surface_failure_rate_at_most": 0.25,
+      "polite_or_service_register_rate_at_most": 0.1,
+      "private_memory_intrusion_count": 0,
+      "warm_generation_median_seconds_at_most": 3.0,
+      "selection_rule": "Advance every condition that passes all gates. If more than one passes, prefer the smallest artifact only as the deployment candidate; retain the stronger conditions as confirmation controls. If none passes, change no runtime."
+    }
+  },
+  "action_isolation_development": {
+    "source": "The 120 already-observed V33 action cases and raw model calls are development evidence only.",
+    "comparison": [
+      "raw direct model tool calls",
+      "the same model calls after an independent request gate and allowlisted call validator"
+    ],
+    "validator_scope": "The validator may deny or remove a call but may not invent a positive call. Positive action mapping remains separately observable.",
+    "development_targets": {
+      "no_action_specificity_at_least": 0.95,
+      "negation_violation_count": 0,
+      "required_action_recall_delta_at_least": -0.02,
+      "invalid_tool_or_argument_rate": 0.0
+    }
+  },
+  "failure_response_matrix": [
+    {
+      "observation": "smaller model is faster but loses semantic slots",
+      "diagnosis": "capacity or contract-following floor",
+      "next_change": "advance one size; do not weaken the semantic contract"
+    },
+    {
+      "observation": "smaller model keeps meaning but remains verbose or formal",
+      "diagnosis": "surface control or data distribution rather than model size",
+      "next_change": "change output budget, prompt, or surface training while keeping the model fixed"
+    },
+    {
+      "observation": "all model sizes over-trigger actions",
+      "diagnosis": "authorization policy, tool template, or parser boundary rather than intelligence",
+      "next_change": "retain a deterministic authorization boundary and inspect the canonical function-call renderer"
+    },
+    {
+      "observation": "action gate removes false actions but loses valid actions",
+      "diagnosis": "request detection is too broad or conflated with positive action mapping",
+      "next_change": "separate utterance authorization from per-call negation filtering"
+    },
+    {
+      "observation": "development gain disappears on fresh confirmation",
+      "diagnosis": "development overfitting",
+      "next_change": "reject promotion and author a new version with a new untouched holdout"
+    },
+    {
+      "observation": "persona adapter improves style but loses approved meaning",
+      "diagnosis": "adapter or persona data overrides the semantic payload",
+      "next_change": "reduce adapter influence or retrain only after semantic-first acceptance is enforced"
+    }
+  ],
+  "fresh_confirmation_policy": {
+    "authoring": "Only after the pilot runner and action validator are committed.",
+    "minimum_rightbrain_cases": 24,
+    "minimum_action_cases": 36,
+    "source_separation": "No exact input may overlap V33, the V34 development pilot, V21, V29, or prior promotion holdouts.",
+    "freeze_rule": "Dataset and hashes must be committed before finalist inference. The implementation cannot be changed after inspecting confirmation results within V34.",
+    "human_review": "Request a small source-blind human comparison only if automatic semantic, safety, and surface gates pass. The user is not asked to label failures that can be judged deterministically."
+  },
+  "runtime_change_authorized": false,
+  "persona_training_authorized": false,
+  "human_likeness_claim_authorized": false
+}
