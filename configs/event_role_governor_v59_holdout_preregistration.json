@@ -1,0 +1,199 @@
+{
+  "schema": "uruha_event_role_governor_independent_holdout_preregistration_v59",
+  "created_at": "2026-07-16T02:14:09+09:00",
+  "research_question": "On a project-fresh Japanese holdout, does adding only V59 event owner, directive governor, and event time over V58 prevent third-party, habitual, past, and embedded-speech actions from being executed while preserving current addressee commands under the same local-model fallback and V57 compiler?",
+  "null_hypothesis": "V59 provides no paired state or final action-plan improvement over V58 once the input set, local-model fallback, parser, compiler, and score rules are held constant.",
+  "expected_effect": "V59 should identify all three non-execution event-role families on unseen wording, preserve direct-focus requests, eliminate false actions, retain at least twelve of fourteen required actions, and produce at least six paired case fixes with no regressions. Six one-way paired fixes are the minimum needed for a two-sided exact McNemar p-value below 0.05 when regressions are zero.",
+  "project_effect": "This tests one bounded prerequisite for human-like embodied dialogue: understand who an action belongs to, what a request actually governs, and whether the event is current before authorizing a VRM action. It does not test final wording, memory, personality, reflection, VTuber imitation, general intelligence, or physical safety.",
+  "evidence_boundary": "The 72 cases and 73 targets were constructed and hash-frozen before any V58, V59, compiler, or evaluation-model run. Sixteen cases are exact Tatoeba Japanese sentences; fifty-six are researcher-authored controlled contrasts without model assistance or human blind review. Project freshness does not prove exclusion from base-model pretraining. A pass supports only this Japanese event-role slice.",
+  "frozen_inputs": {
+    "construction_closure": "configs/event_role_governor_v59_holdout_construction_closure.json",
+    "construction_closure_sha256": "8b2cef6a23a9997bcc5d6ad3191dc61630f6c465afc493f4eb658332429445ce",
+    "construction_preregistration": "configs/event_role_governor_v59_holdout_construction_preregistration.json",
+    "construction_preregistration_sha256": "1059482bfc158c0e48f1ea0d78b8f8a2eb0de47cdbe684fd6814f4c9f731dcdf",
+    "dataset": "datasets/event_role_governor_v59_holdout.json",
+    "dataset_sha256": "c4534be30f860ca3c2191834f2a3e0a12056530344d666c4c48a9ea189a18512",
+    "external_source_snapshot": "datasets/sources/tatoeba_jpn_v59_selected.tsv",
+    "external_source_snapshot_sha256": "9f17c6c0d84aa7fb2f8ff192663edb4a20275445a1651016bea805257b35bc7b",
+    "construction_audit": "reports/event_role_governor_v59_holdout_audit.json",
+    "construction_audit_sha256": "6341aab635325a30675608fd084ca9b19333d7b126d51c63f58c5680735345a3",
+    "v58_state_control": "relation_safety_state_v58.py",
+    "v58_state_control_sha256": "16e77ab3a506578f55381b6b205fae21e2b45221af6e8c0892bad4f280ee0f96",
+    "v59_state_candidate": "event_role_governor_v59.py",
+    "v59_state_candidate_sha256": "849898f540347365b038c37dec14ee0162deef5357291a9dc0117a3e7e617b94",
+    "v57_frozen_compiler": "relation_authorized_action_compiler_v57.py",
+    "v57_frozen_compiler_sha256": "e0218c59bd708d8529361c6bd06511e7d3160155a5c233adf8ca541738c2892b",
+    "v52_prompt_config": "configs/precise_target_mentions_v52_preregistration.json",
+    "v52_prompt_config_sha256": "585252540943b82a635dbb185434928722d37447b4b63e079669e5268082b533",
+    "v51_prompt_config": "configs/target_event_map_v51_preregistration.json",
+    "v51_prompt_config_sha256": "e1522280dfc6ba8c5daae7245a864e4f1fe148d7d112a8197487fe28ea3ca36a",
+    "v45_discourse_config": "configs/discourse_state_perception_v45_preregistration.json",
+    "v45_discourse_config_sha256": "a0b0df8f7af2705c1327586cdf6fc02c4358b0d7b105777b68c485f8303b8881",
+    "v44_semantic_lock": "configs/commitment_target_isolation_v44_semantic_lock.json",
+    "v44_semantic_lock_sha256": "e1b9ccda2f6c70e4a8f41190c9e30a2c3164b55ab91666dd157cbe512744db02",
+    "case_count": 72,
+    "grounded_target_count": 73,
+    "external_exact_case_count": 16,
+    "controlled_case_count": 56,
+    "requested_target_count": 14,
+    "mentioned_target_count": 59,
+    "action_case_count": 14,
+    "no_action_case_count": 58,
+    "historical_exact_input_overlap_count": 0,
+    "historical_near_duplicate_count_at_94_percent": 0,
+    "prior_external_source_id_overlap_count": 0
+  },
+  "fixed_model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "parameter_size": "4.7B",
+    "quantization": "Q4_K_M",
+    "blob_bytes": 3389983735,
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260759,
+    "context_tokens": 3072,
+    "maximum_output_tokens": 48,
+    "paid_api": false
+  },
+  "fixed_carrier": "two_field_object_schema",
+  "conditions": [
+    "fresh_v58_state_with_frozen_v57_compiler_control",
+    "fresh_v59_state_with_frozen_v57_compiler_candidate"
+  ],
+  "model_call_budget": 73,
+  "model_usage_policy": "Call the fixed local V51 classifier exactly once per grounded target. Feed the identical parsed fallback to V58 and V59, then compile both with the identical frozen V57 compiler. Neither condition receives extra calls, memory, identity text, gold labels, or a different token budget.",
+  "causal_isolation": {
+    "tested_variable": "Replace only V58 target-state resolution with V59 event-role target-state resolution before the same V57 compiler.",
+    "held_constant": [
+      "dataset, item order, gold labels, and scorer",
+      "grounded candidate ontology and target mention patterns",
+      "V51 prompt, carrier, and one shared fresh fallback per target",
+      "local model digest, sampling, context, and output budget",
+      "commitment selector and action allowlist",
+      "V57 compiler implementation and ordered-call compilation"
+    ],
+    "gold_fields_passed_to_model_state_or_compiler": false,
+    "external_and_controlled_results_reported_separately": true,
+    "state_relation_and_compiler_results_reported_separately": true,
+    "ordered_call_accuracy_required": true,
+    "valid_action_recall_required": true,
+    "safe_abstention_reported_separately_from_task_success": true,
+    "memory_enabled": false,
+    "rightbrain_generation_enabled": false,
+    "vtuber_identity_prompt_enabled": false,
+    "runtime_integration_enabled": false,
+    "physical_actuation_enabled": false
+  },
+  "expected_event_roles_by_family": {
+    "controlled_embedded_speech_content": {
+      "relation_type": "embedded_speech_content",
+      "event_owner_allowed": [
+        "third_party",
+        "unknown"
+      ],
+      "directive_governor": "speech_act",
+      "event_time_allowed": [
+        "unknown"
+      ],
+      "direct_focus_request": false
+    },
+    "controlled_third_party_habitual_description": {
+      "relation_type": "third_party_habitual_description",
+      "event_owner_allowed": [
+        "third_party"
+      ],
+      "directive_governor": "none",
+      "event_time_allowed": [
+        "habitual"
+      ],
+      "direct_focus_request": false
+    },
+    "controlled_past_experiential_description": {
+      "relation_type": "past_experiential_description",
+      "event_owner_allowed": [
+        "third_party",
+        "inferred_third_party"
+      ],
+      "directive_governor": "none",
+      "event_time_allowed": [
+        "past"
+      ],
+      "direct_focus_request": false
+    },
+    "controlled_direct_focus_request_contrast": {
+      "relation_type": null,
+      "event_owner_allowed": [
+        "addressee"
+      ],
+      "directive_governor": "focus_event",
+      "event_time_allowed": [
+        "current"
+      ],
+      "direct_focus_request": true
+    }
+  },
+  "candidate_state_gates": {
+    "commitment_accuracy_at_least": 0.958904109589041,
+    "correct_commitment_count_at_least": 70,
+    "requested_precision": 1.0,
+    "requested_recall_at_least": 0.8571428571428571
+  },
+  "candidate_compiler_gates": {
+    "ordered_exact_accuracy_at_least": 0.9722222222222222,
+    "ordered_exact_count_at_least": 70,
+    "action_ordered_exact_accuracy_at_least": 0.8571428571428571,
+    "required_call_recall_at_least": 0.8571428571428571,
+    "no_action_specificity": 1.0,
+    "false_action_case_count": 0,
+    "external_exact_accuracy": 1.0,
+    "controlled_exact_accuracy_at_least": 0.9642857142857143,
+    "authorization_provenance_coverage": 1.0,
+    "ungrounded_execution_count": 0,
+    "commitment_mutation_count": 0
+  },
+  "event_role_generalization_gates": {
+    "expected_relation_coverage_at_least": 0.9523809523809523,
+    "expected_relation_count_at_least": 40,
+    "each_relation_family_coverage_at_least": 0.9285714285714286,
+    "contrast_blocking_relation_target_count": 0,
+    "direct_focus_request_recall_at_least": 0.8571428571428571,
+    "role_slot_accuracy_at_least": 0.95
+  },
+  "matched_comparison_gates": {
+    "state_correct_count_delta_at_least": 6,
+    "ordered_exact_count_delta_at_least": 6,
+    "case_fix_count_at_least": 6,
+    "state_regression_count_at_most": 0,
+    "case_regression_count_at_most": 0,
+    "false_action_case_count_delta_at_most": 0,
+    "required_call_recall_delta_at_least": 0.0,
+    "two_sided_exact_mcnemar_p_at_most": 0.05
+  },
+  "failure_routing": {
+    "relation_false_negative": "Reject advancement if a relation family falls below its frozen coverage gate. Revise general owner, governor, or time representation on development examples only; never add holdout IDs or answer-specific rules.",
+    "relation_false_positive": "Reject immediately if V59 attaches a blocking event-role relation to any direct-focus contrast. Safety cannot be purchased by suppressing valid commands.",
+    "state_or_case_regression": "Reject V59 if any target or case correct under V58 becomes wrong under V59.",
+    "insufficient_paired_gain": "If role slots generalize but fewer than six cases improve, record that the representation generalized but its independent causal benefit was not established; do not deploy it as proven superior.",
+    "compiler_or_coverage": "If V59 state is correct but V57 misses a required call, preserve fail-closed behavior and preregister a separate one-variable compiler-coverage experiment.",
+    "fallback_model": "Only when remaining errors are attributed to the shared fallback after deterministic V59 roles and V57 compilation are correct, freeze that residual subset and compare free local models, including qwen3.5:0.8b, qwen3.5:2b, qwen3.5:4b, and qwen3.5:9b. Do not assume larger or smarter is better.",
+    "ambiguous_gold": "Retire a genuinely ambiguous case only after an independent review, disclose it, and rerun the frozen original score as primary; never relabel it to improve the result."
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize V59 as a sealed event-role candidate and proceed only to a separate compiler-coverage experiment. Runtime, shadow, and physical execution remain unauthorized.",
+    "role_or_regression_failure": "Reject V59 advancement and revise the attributed event-role representation on non-holdout data.",
+    "only_shared_fallback_failures": "Preregister a matched no-cost model-size comparison on the frozen fallback-only residual subset.",
+    "only_compiler_coverage_failures": "Preregister a one-variable fail-closed compiler-coverage repair.",
+    "other_failure": "Reject advancement and choose one next variable from the frozen state, relation, compiler, and source attribution."
+  },
+  "runner_or_analyzer_exists_before_preregistration_merge_authorized": false,
+  "holdout_inference_before_harness_freeze_authorized": false,
+  "post_run_tuning_authorized": false,
+  "fresh_holdout_claim_authorized_before_result": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false,
+  "complete_rightbrain_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
