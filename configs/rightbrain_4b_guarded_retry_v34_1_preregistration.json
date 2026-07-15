@@ -1,0 +1,70 @@
+{
+  "schema": "uruha_rightbrain_4b_guarded_retry_preregistration_v34_1",
+  "created_at": "2026-07-15T12:21:22+09:00",
+  "status": "preregistered_before_guarded_retry_inference",
+  "repository_parent_commit": "6dc890ac80b2ae7c331b17857f1ec3809a444643",
+  "source_raw_report": "reports/rightbrain_role_ladder_v34_pilot_raw.json",
+  "source_raw_report_sha256": "fcc5f2dcb64614547163677ffd7386e17dcf42b5de87994fff239a26d811c8e1",
+  "development_status": "post_pilot_development_intervention_not_confirmation",
+  "known_result": {
+    "condition": "qwen3_5_4b_candidate",
+    "row_count": 36,
+    "semantic_contract_pass_rate": 0.889,
+    "semantic_group_recall": 0.962,
+    "raw_surface_gate_pass_rate": 0.833,
+    "hard_surface_failure_rate": 0.028,
+    "polite_or_service_register_rate": 0.056,
+    "warm_generation_median_seconds": 2.42,
+    "observed_pattern": "Four semantic failures and two additional surface failures were sparse and concentrated in individual sampled outputs rather than every seed of a category."
+  },
+  "intervention": {
+    "model": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "thinking": false
+    },
+    "first_attempt": "Reuse the exact frozen V34 4B row. No first-attempt inference is repeated.",
+    "retry_trigger": "Generate one retry only when current_gate_raw_pass is false.",
+    "retry_sampling": {
+      "temperature": 0.2,
+      "top_p": 0.85,
+      "top_k": 40,
+      "repeat_penalty": 1.12,
+      "seed_offset": 100000,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 96
+    },
+    "retry_prompt": "The exact current RIGHT_BRAIN_MODEL_SYSTEM_PROMPT and exact plan_surface_contract_v1 payload; no case-specific hint and no previous failed draft.",
+    "selection": "Keep the first attempt if it passes. Otherwise use the retry if it passes. If neither passes, retain the candidate with more semantic groups, then no private intrusion, then no hard failure, then fewer rejection reasons. A failed candidate remains a recorded failure.",
+    "repair_model": "none"
+  },
+  "expected_effect": "A lower-temperature retry should recover stochastic semantic omissions and surface drift while adding latency only to rejected first attempts. It should not repair a systematic capacity or payload problem.",
+  "development_gate": {
+    "effective_semantic_contract_pass_rate_at_least": 0.95,
+    "effective_raw_surface_gate_pass_rate_at_least": 0.9,
+    "private_memory_intrusion_count": 0,
+    "retry_rate_at_most": 0.25,
+    "total_latency_median_seconds_at_most": 3.0,
+    "total_latency_p95_seconds_at_most": 6.0
+  },
+  "failure_actions": [
+    {
+      "condition": "the same semantic groups fail again",
+      "diagnosis": "4B capacity or payload representation",
+      "next": "Do not add retries. Compare a compact semantic payload against 9B with the model fixed."
+    },
+    {
+      "condition": "meaning recovers but polite or length drift remains",
+      "diagnosis": "surface-style control",
+      "next": "Keep semantic generation fixed and change only the surface constraint or later persona training."
+    },
+    {
+      "condition": "retry passes but latency gate fails",
+      "diagnosis": "sequential generation cost",
+      "next": "Reject deployment promotion or use 4B only for difficult cases selected before generation."
+    }
+  ],
+  "runtime_change_authorized": false,
+  "fresh_confirmation_authorized_only_if_all_gates_pass": true
+}
