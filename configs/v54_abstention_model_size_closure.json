@@ -1,0 +1,56 @@
+{
+  "schema": "uruha_v54_abstention_model_size_closure",
+  "closed_at": "2026-07-15T23:25:00+09:00",
+  "preregistration": "configs/v54_abstention_model_size_preregistration.json",
+  "raw_report": "reports/v54_abstention_model_size_raw.json",
+  "raw_report_sha256": "c554323d4acd42f88b9b7ec79e64e7c53959a2326fe65ed785d895e9825cdd48",
+  "analysis_report": "reports/v54_abstention_model_size_analysis.json",
+  "analysis_report_sha256": "47bd18d6ceb582d9cbcb1d99153c855702ae80d7d8755e7f35b05bca547ba336",
+  "human_readable_report": "reports/v54_abstention_model_size_analysis.md",
+  "human_readable_report_sha256": "041ae8a8f2554124fce7e56c3b402af70bba51e7a33c922849784ac71c781d39",
+  "evidence_status": "diagnostic_completed_on_consumed_frozen_abstentions",
+  "model_accounting": {
+    "new_local_calls": 30,
+    "reused_frozen_4b_rows": 10,
+    "paid_api_used": false
+  },
+  "results": {
+    "qwen35_0_8b": {
+      "correct": "5/10 (50%)",
+      "false_requests": 0,
+      "missed_requests": 5,
+      "median_seconds": 0.7144,
+      "interpretation": "Over-abstains into mentioned; it fixed both 4B errors but regressed all five true requests."
+    },
+    "qwen35_2b": {
+      "correct": "6/10 (60%)",
+      "false_requests": 4,
+      "missed_requests": 0,
+      "median_seconds": 1.0899,
+      "interpretation": "Over-executes descriptions; it fixed one 4B error but regressed three correct non-requests."
+    },
+    "qwen35_4b_frozen_control": {
+      "correct": "8/10 (80%)",
+      "false_requests": 1,
+      "missed_requests": 0,
+      "median_seconds": 2.2733,
+      "interpretation": "Best of the four tested sizes, but still below the replacement gate."
+    },
+    "qwen35_9b": {
+      "correct": "6/10 (60%)",
+      "false_requests": 4,
+      "missed_requests": 0,
+      "median_seconds": 3.5836,
+      "interpretation": "Matched the 2B error pattern while being slower; larger capacity did not help this subset."
+    }
+  },
+  "all_candidate_gates_passed": false,
+  "selected_candidate": null,
+  "decision": "reject_model_size_substitution_for_v54_fallback",
+  "conclusion": "Model size is not monotonic with this narrow role, and neither smaller model satisfies the locked no-regression boundary. Keep frozen 4B only as the current research control; do not claim it is runtime-ready.",
+  "next_direction": "Replace sentence-wide heuristics with mention-bound discourse operators for pending scope, request addressee, explicit execution prohibition, and cross-domain correction. Repair positive motion.idle compilation separately after state semantics are stable.",
+  "fallback_replacement_authorized": false,
+  "runtime_change_authorized": false,
+  "shadow_integration_authorized": false,
+  "physical_vrm_execution_enabled": false
+}
