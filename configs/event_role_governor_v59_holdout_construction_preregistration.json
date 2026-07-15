@@ -24,7 +24,7 @@
       114512,
       8672756,
       9099647,
-      9943358,
+      13070297,
       10550376,
       13066134,
       13066287,
@@ -32,6 +32,45 @@
       13146953
     ],
     "selected_snapshot_path": "datasets/sources/tatoeba_jpn_v59_selected.tsv"
+  },
+  "construction_amendment": {
+    "status": "permitted_pre_evaluation_grounding_correction",
+    "original_preregistration_commit": "3f4114a7c10096d5e3bd29a0c86a535d73f5c9a3",
+    "original_preregistration_sha256": "ac666d3cf7b03a01a119633565e109826af98b45ba11aa930aae836dce9a8d17",
+    "first_audit_failed_checks": [
+      "candidate_target_sets_exact"
+    ],
+    "corrections": [
+      {
+        "slot": "external_exact_expression_happy",
+        "before": "Tatoeba sentence 9943358: トムはよく笑う。",
+        "observed_grounding": [],
+        "expected_grounding": [
+          "expression.happy"
+        ],
+        "after": "Tatoeba sentence 13070297: 少年は笑顔で振り返った。",
+        "reason": "The frozen mention inventory did not ground 笑う as expression.happy. The same external, no-action, happy-target slot was replaced without inspecting either system."
+      },
+      {
+        "slot": "controlled_direct_focus_request_contrast.expression.happy",
+        "before": "彼女に向けて、いつも通り笑ってください。",
+        "observed_grounding": [
+          "expression.happy",
+          "expression.neutral"
+        ],
+        "expected_grounding": [
+          "expression.happy"
+        ],
+        "after": "彼女に向けて、毎回笑ってください。",
+        "reason": "いつも通り also grounded expression.neutral. The wording was repaired while preserving the frozen family, target, requested label, and action expectation."
+      }
+    ],
+    "v58_state_evaluated_before_correction": false,
+    "v59_state_evaluated_before_correction": false,
+    "compiler_evaluated_before_correction": false,
+    "model_inference_used_before_correction": false,
+    "score_gate_or_family_changed": false,
+    "authorized_by_frozen_failure_routing": true
   },
   "controlled_matrix": {
     "authoring_provenance": "Researcher-authored minimal Japanese contrasts. They are not official Tatoeba items, are not human-blind reviewed, and must be reported separately from external exact cases.",
