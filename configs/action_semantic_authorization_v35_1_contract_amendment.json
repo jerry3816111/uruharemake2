@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_action_semantic_authorization_contract_amendment_v35_1",
+  "created_at": "2026-07-15T13:06:59+09:00",
+  "status": "preregistered_before_v35_1_inference",
+  "repository_parent_commit": "65859a289569665f2ff445ab1bb89d668139cbe8",
+  "triggering_observation": {
+    "source": "reports/action_semantic_authorization_v35_development_analysis.json",
+    "all_candidate_parse_success_rate": 0.0,
+    "observed_output_shapes": [
+      "bare JSON boolean",
+      "object with authorized and reasoning",
+      "object with authorized_calls"
+    ],
+    "diagnosis": "Ollama returned valid JSON but did not enforce the requested object schema. The V35 text prompt did not spell out the required field names, so model capacity could not be evaluated."
+  },
+  "single_changed_variable": "Append the exact required output object and enums to the text system prompt.",
+  "fixed_variables": [
+    "retired V34 development cases",
+    "V34 raw call proposals",
+    "0.8B, 2B, and 4B authorizer artifacts and digests",
+    "temperature, seed, context, and output budget",
+    "semantic authorization policy",
+    "deterministic evidence and allowlist checks",
+    "all development gates",
+    "smallest-passing-candidate selection rule"
+  ],
+  "forbidden_changes": [
+    "No action examples may be added.",
+    "No failed input phrase may be added.",
+    "No metric threshold may be changed.",
+    "No parser fallback may accept a different shape.",
+    "No runtime integration may occur."
+  ],
+  "interpretation_rule": {
+    "parse_still_fails": "Treat structured-output adherence as an environment or model-interface incompatibility and stop this design.",
+    "parse_passes_but_semantic_gate_fails": "Treat the result as a genuine capacity or semantic-task failure.",
+    "development_gate_passes": "Advance only the smallest passing model to a newly authored frozen holdout."
+  },
+  "runtime_change_authorized": false,
+  "fresh_confirmation_required_after_development_pass": true
+}

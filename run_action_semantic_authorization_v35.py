@@ -131,9 +131,10 @@ def _validate_models(config):
     return snapshots
 
 
-def _new_report(snapshots):
+def _new_report(snapshots, system_prompt, study_variant):
     return {
-        "schema": "uruha_action_semantic_authorization_development_raw_v35",
+        "schema": f"uruha_action_semantic_authorization_development_raw_{study_variant}",
+        "study_variant": study_variant,
         "evidence_status": "development_only_on_retired_v34_confirmation",
         "started_at": _now(),
         "completed_at": None,
@@ -141,22 +142,23 @@ def _new_report(snapshots):
         "preregistration_sha256": _sha256(CONFIG_PATH),
         "dataset_sha256": _sha256(DATASET_PATH),
         "source_raw_sha256": _sha256(SOURCE_RAW_PATH),
-        "system_prompt_sha256": hashlib.sha256(SYSTEM_PROMPT.encode("utf-8")).hexdigest(),
+        "system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
         "model_snapshots": snapshots,
         "rows": [],
     }
 
 
-def _load_or_create(output, snapshots):
+def _load_or_create(output, snapshots, system_prompt, study_variant):
     if not output.exists():
-        return _new_report(snapshots)
+        return _new_report(snapshots, system_prompt, study_variant)
     report = json.loads(output.read_text(encoding="utf-8"))
     checks = {
         "runner_commit": _git_head(),
         "preregistration_sha256": _sha256(CONFIG_PATH),
         "dataset_sha256": _sha256(DATASET_PATH),
         "source_raw_sha256": _sha256(SOURCE_RAW_PATH),
-        "system_prompt_sha256": hashlib.sha256(SYSTEM_PROMPT.encode("utf-8")).hexdigest(),
+        "system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
+        "study_variant": study_variant,
     }
     for field, expected in checks.items():
         if report.get(field) != expected:
@@ -173,13 +175,13 @@ def _skip_authorization():
     }
 
 
-def run(output=DEFAULT_OUTPUT):
+def run(output=DEFAULT_OUTPUT, *, system_prompt=SYSTEM_PROMPT, study_variant="v35"):
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     source_raw = json.loads(SOURCE_RAW_PATH.read_text(encoding="utf-8"))
     _validate_bound_inputs(config)
     snapshots = _validate_models(config)
-    report = _load_or_create(output, snapshots)
+    report = _load_or_create(output, snapshots, system_prompt, study_variant)
     cases = {case["id"]: case for case in dataset["action_cases"]}
     proposal_sources = set(config["development_evidence"]["proposal_sources"])
     source_rows = [
@@ -223,7 +225,7 @@ def run(output=DEFAULT_OUTPUT):
             if classifier_invoked:
                 payload = build_authorization_payload(case["user_input"], proposed_calls)
                 messages = [
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": system_prompt},
                     {
                         "role": "user",
                         "content": json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
