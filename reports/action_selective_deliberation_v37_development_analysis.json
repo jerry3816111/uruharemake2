@@ -1,0 +1,335 @@
+{
+  "schema": "uruha_action_selective_deliberation_development_analysis_v37",
+  "source_report": "reports/action_selective_deliberation_v37_development_raw.json",
+  "evidence_status": "development_only_on_retired_v36_cases",
+  "policies": {
+    "single_pass_v37_control": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.9167,
+      "no_action_specificity": 0.95,
+      "required_action_recall": 0.9091,
+      "false_action_rate": 0.0278,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "invalid_tool_or_argument_rate": 0.0,
+      "parse_success_rate": 0.8889,
+      "derived_state_accuracy": 0.8333,
+      "joint_frame_exact_accuracy": 0.5,
+      "commitment_frame_micro_f1": 0.6591,
+      "compiled_evidence_validity_rate": 1.0,
+      "escalation_rate": 0.0,
+      "mean_model_passes_per_case": 1.0,
+      "primary_pass_median_latency_seconds": 3.5316,
+      "escalated_total_p95_latency_seconds": 0.0,
+      "mean_estimated_sequential_latency_seconds": 4.0823,
+      "risk_router": {
+        "true_positive": 20,
+        "false_positive": 3,
+        "false_negative": 0,
+        "true_negative": 13,
+        "precision": 0.8696,
+        "recall": 1.0
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "risk": {
+            "escalate": false,
+            "reasons": []
+          },
+          "escalated": false,
+          "actual_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "expected_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "primary_parse_failure"
+            ]
+          },
+          "escalated": false,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "requested_frame_blocked_by_negation_or_cancellation_guard"
+            ]
+          },
+          "escalated": false,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "selective_three_pass_v37_candidate": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.9167,
+      "no_action_specificity": 0.95,
+      "required_action_recall": 0.9091,
+      "false_action_rate": 0.0278,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "invalid_tool_or_argument_rate": 0.0,
+      "parse_success_rate": 0.8889,
+      "derived_state_accuracy": 0.8333,
+      "joint_frame_exact_accuracy": 0.5,
+      "commitment_frame_micro_f1": 0.6591,
+      "compiled_evidence_validity_rate": 1.0,
+      "escalation_rate": 0.6389,
+      "mean_model_passes_per_case": 2.2778,
+      "primary_pass_median_latency_seconds": 3.5316,
+      "escalated_total_p95_latency_seconds": 12.1359,
+      "mean_estimated_sequential_latency_seconds": 7.3329,
+      "risk_router": {
+        "true_positive": 20,
+        "false_positive": 3,
+        "false_negative": 0,
+        "true_negative": 13,
+        "precision": 0.8696,
+        "recall": 1.0
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "risk": {
+            "escalate": false,
+            "reasons": []
+          },
+          "escalated": false,
+          "actual_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "idle"
+              }
+            }
+          ],
+          "expected_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "primary_parse_failure"
+            ]
+          },
+          "escalated": true,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "requested_frame_blocked_by_negation_or_cancellation_guard"
+            ]
+          },
+          "escalated": true,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "always_three_pass_v37_cost_reference": {
+      "case_count": 36,
+      "compiled_call_exact_accuracy": 0.9167,
+      "no_action_specificity": 0.95,
+      "required_action_recall": 0.9091,
+      "false_action_rate": 0.0278,
+      "negation_violation_count": 0,
+      "unsupported_execution_count": 0,
+      "invalid_tool_or_argument_rate": 0.0,
+      "parse_success_rate": 0.8889,
+      "derived_state_accuracy": 0.8333,
+      "joint_frame_exact_accuracy": 0.5,
+      "commitment_frame_micro_f1": 0.6591,
+      "compiled_evidence_validity_rate": 1.0,
+      "escalation_rate": 1.0,
+      "mean_model_passes_per_case": 3.0,
+      "primary_pass_median_latency_seconds": 3.5316,
+      "escalated_total_p95_latency_seconds": 12.3297,
+      "mean_estimated_sequential_latency_seconds": 9.5036,
+      "risk_router": {
+        "true_positive": 20,
+        "false_positive": 3,
+        "false_negative": 0,
+        "true_negative": 13,
+        "precision": 0.8696,
+        "recall": 1.0
+      },
+      "failures": [
+        {
+          "case_id": "v34c_action_none_music",
+          "family": "no_action_conversation",
+          "user_input": "少し疲れたから、静かな曲の話をしよう。",
+          "risk": {
+            "escalate": false,
+            "reasons": []
+          },
+          "escalated": true,
+          "actual_calls": [
+            {
+              "arguments": {
+                "motion": "idle"
+              },
+              "name": "play_motion"
+            }
+          ],
+          "expected_calls": []
+        },
+        {
+          "case_id": "v34c_action_negated_nod_shake",
+          "family": "negated_action",
+          "user_input": "うなずかないで、首を横に振って。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "primary_parse_failure"
+            ]
+          },
+          "escalated": true,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "play_motion",
+              "arguments": {
+                "motion": "shake_head"
+              }
+            }
+          ]
+        },
+        {
+          "case_id": "v34c_action_negated_angry_neutral",
+          "family": "negated_action",
+          "user_input": "怒った顔じゃなく、普通の表情へ戻して。",
+          "risk": {
+            "escalate": true,
+            "reasons": [
+              "input_conflict_marker",
+              "requested_frame_blocked_by_negation_or_cancellation_guard"
+            ]
+          },
+          "escalated": true,
+          "actual_calls": [],
+          "expected_calls": [
+            {
+              "name": "set_expression",
+              "arguments": {
+                "expression": "neutral"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "candidate_gate": {
+    "passed": false,
+    "checks": {
+      "compiled_call_exact_accuracy": false,
+      "no_action_specificity": false,
+      "required_action_recall": false,
+      "false_action_rate": false,
+      "negation_violation_count": true,
+      "unsupported_execution_count": true,
+      "invalid_tool_or_argument_rate": true,
+      "parse_success_rate": false,
+      "commitment_frame_micro_f1": false,
+      "compiled_evidence_validity_rate": true,
+      "escalation_rate": true,
+      "mean_model_passes_per_case": true,
+      "primary_pass_median_latency_seconds": true,
+      "escalated_total_p95_latency_seconds": true
+    },
+    "failed_checks": [
+      "compiled_call_exact_accuracy",
+      "no_action_specificity",
+      "required_action_recall",
+      "false_action_rate",
+      "parse_success_rate",
+      "commitment_frame_micro_f1"
+    ]
+  },
+  "matched_deltas": {
+    "selective_minus_single": {
+      "compiled_call_exact_accuracy": 0.0,
+      "no_action_specificity": 0.0,
+      "required_action_recall": 0.0,
+      "false_action_rate": 0.0,
+      "mean_model_passes_per_case": 1.2778,
+      "mean_estimated_sequential_latency_seconds": 3.2506
+    },
+    "always_minus_selective": {
+      "compiled_call_exact_accuracy": 0.0,
+      "no_action_specificity": 0.0,
+      "required_action_recall": 0.0,
+      "false_action_rate": 0.0,
+      "mean_model_passes_per_case": 0.7222,
+      "mean_estimated_sequential_latency_seconds": 2.1707
+    }
+  },
+  "development_gate_passed": false,
+  "fresh_holdout_authorized": false,
+  "runtime_change_authorized": false,
+  "decision": "do_not_advance_v37_selective_deliberation"
+}
