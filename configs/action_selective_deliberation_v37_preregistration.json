@@ -1,0 +1,160 @@
+{
+  "schema": "uruha_action_selective_deliberation_preregistration_v37",
+  "created_at": "2026-07-15T14:30:00+09:00",
+  "research_question": "Can a local 4B model preserve requested VRM actions while reducing false execution to zero by allocating two additional independent judgments only to linguistically or structurally risky utterances?",
+  "project_scope": {
+    "system_component": "user utterance to observable action frames to deterministic VRM call proposal",
+    "expected_project_effect": "safer and more human-like action control through conflict-sensitive deliberation rather than unconditional model scaling",
+    "not_measured": [
+      "right-brain natural-language quality",
+      "personality imitation",
+      "long-term memory",
+      "physical VRM execution"
+    ]
+  },
+  "scientific_basis": [
+    {
+      "name": "expected_value_of_control",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3767969/",
+      "design_use": "Allocate extra computation only when the expected safety benefit justifies the added effort."
+    },
+    {
+      "name": "self_consistency",
+      "source": "https://openreview.net/pdf?id=1PL1NIMMrw",
+      "design_use": "Use independently sampled judgments and agreement instead of trusting one greedy output."
+    },
+    {
+      "name": "llm_cascade",
+      "source": "https://arxiv.org/abs/2305.05176",
+      "design_use": "Compare selective escalation with single-pass and always-escalated matched controls."
+    }
+  ],
+  "evidence_boundary": {
+    "development_source": "datasets/action_intent_frame_v36_development.json",
+    "development_status": "retired_and_already_observed",
+    "development_case_count": 36,
+    "v36_observed_failure_count_for_qwen3_5_4b": 2,
+    "v36_observed_false_action_rate_for_qwen3_5_4b": 0.0556,
+    "fresh_confirmation_rule": "Do not create or run a new holdout unless the selective candidate passes every development gate. Freeze and commit the holdout and its hash before finalist inference.",
+    "development_results_cannot_authorize_runtime": true
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "blob_bytes": 3389983735,
+    "thinking": false,
+    "selection_reason": "V36 showed the best local accuracy-latency tradeoff; smaller 0.8B and 2B models failed semantic or structured-output requirements."
+  },
+  "representation": {
+    "model_output_fields": [
+      "domain",
+      "value",
+      "commitment",
+      "evidence"
+    ],
+    "domains": [
+      "expression",
+      "motion",
+      "gaze",
+      "other"
+    ],
+    "commitments": [
+      "requested",
+      "mentioned",
+      "hypothetical",
+      "negated",
+      "cancelled",
+      "ambiguous"
+    ],
+    "unsupported_rule": "Unsupported requests use the most natural domain when identifiable, otherwise other, with value=unsupported. Unsupported is an attribute value, not a synthetic action frame.",
+    "state_rule": "The program derives utterance state from local frame commitments; the model does not predict a duplicate global state.",
+    "evidence_rule": "Every frame must contain a non-empty exact continuous substring from user_input.",
+    "execution_rule": "Only supported requested frames with valid evidence can become call proposals; this experiment never executes the proposals."
+  },
+  "generation_passes": [
+    {
+      "pass_id": "primary",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "seed": 20260715
+    },
+    {
+      "pass_id": "deliberation_a",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "seed": 20260731
+    },
+    {
+      "pass_id": "deliberation_b",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "seed": 20260817
+    }
+  ],
+  "generation_shared": {
+    "context_tokens": 4096,
+    "maximum_output_tokens": 256,
+    "json_schema_requested_from_ollama": true,
+    "action_examples_in_prompt": false,
+    "persona_adapter": "none",
+    "paid_api": false
+  },
+  "risk_router": {
+    "input_conflict_regex": "(?:ないで|なくて|ない|なかった|ず|ぬ|じゃなく|ではなく|なしで|やめて|止めて|停止|中止|取り消|取消|キャンセル|もし|なら|たら|かは|かどうか|迷って|保留|後で決め|決めなくて)",
+    "postparse_triggers": [
+      "primary_parse_failure",
+      "unsupported_value_present",
+      "cancelled_or_ambiguous_commitment_present",
+      "requested_frame_blocked_by_negation_or_cancellation_guard",
+      "multiple_requested_values_in_one_exclusive_domain"
+    ],
+    "non_triggers": [
+      "a valid simple requested frame",
+      "a valid multi-action request across different domains",
+      "a valid mention or hypothetical with no current requested frame and no conflict marker"
+    ]
+  },
+  "scope_guards": {
+    "clause_separators_regex": "[、。！？!?；;]",
+    "strong_negation_regex": "(?:ないで|なくて|ない|なかった|ず|ぬ|じゃなく|ではなく|なしで|やめて|止めて|停止|中止)",
+    "referential_cancellation_regex": "(?:今の|さっきの|先ほどの|その)(?:頼み|お願い|指示)?.*(?:取り消|取消|キャンセル)",
+    "rule": "Block a requested frame when its evidence overlaps a clause carrying strong negation. If a later clause explicitly cancels the preceding request, block requested evidence before that cancellation. Positive corrective clauses remain independently eligible."
+  },
+  "policies": {
+    "single_pass_v37_control": "Compile only the primary judgment after scope guards.",
+    "selective_three_pass_v37_candidate": "Use the primary judgment on low-risk cases. On routed cases, require at least two matching votes among three judgments after scope guards.",
+    "always_three_pass_v37_cost_reference": "Require at least two matching votes on every case; this estimates the accuracy ceiling and unnecessary-compute cost.",
+    "consensus_failure_rule": "Fewer than two valid judgments, tied mutually exclusive values, or contradictory accepted values fail closed with no calls."
+  },
+  "development_gates": {
+    "compiled_call_exact_accuracy_at_least": 0.97,
+    "no_action_specificity": 1.0,
+    "required_action_recall_at_least": 0.95,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "invalid_tool_or_argument_rate": 0.0,
+    "parse_success_rate_at_least": 0.95,
+    "commitment_frame_micro_f1_at_least": 0.75,
+    "compiled_evidence_validity_rate": 1.0,
+    "escalation_rate_at_most": 0.65,
+    "mean_model_passes_per_case_at_most": 2.3,
+    "primary_pass_median_latency_seconds_at_most": 4.5,
+    "escalated_total_p95_latency_seconds_at_most": 15.0
+  },
+  "fresh_holdout_gates": {
+    "minimum_case_count": 48,
+    "compiled_call_exact_accuracy_at_least": 0.95,
+    "no_action_specificity": 1.0,
+    "required_action_recall_at_least": 0.95,
+    "false_action_rate": 0.0,
+    "negation_violation_count": 0,
+    "unsupported_execution_count": 0,
+    "invalid_tool_or_argument_rate": 0.0,
+    "compiled_evidence_validity_rate": 1.0
+  },
+  "decision_rule": "Only selective_three_pass_v37_candidate may advance. It must pass every development gate, then every frozen fresh-holdout gate. Always-three and single-pass conditions are matched controls and cannot be selected.",
+  "runtime_change_authorized": false,
+  "vrm_execution_enabled": false,
+  "human_likeness_claim_authorized": false
+}
