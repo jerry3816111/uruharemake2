@@ -1,0 +1,144 @@
+{
+  "schema": "uruha_consolidation_support_equivalence_construction_closure_v2",
+  "experiment_id": "consolidation_support_equivalence_v2_construction",
+  "closed_at": "2026-07-18T04:45:00+09:00",
+  "decision": "construction_fail_stop_support_attribution_hypothesis",
+  "original_preregistration": {
+    "merge_commit": "ea62631f5dd448cae0354dca619caa47b213b15f",
+    "path": "configs/consolidation_support_equivalence_v2_construction_preregistration.json",
+    "sha256": "9660e9e63d8aea99566eea7359b359efa55138fd7e8ac9395d403be2dd38d271"
+  },
+  "formal_construction": {
+    "pool_case_count": 18,
+    "pool_derived_memory_count": 54,
+    "reviewer_count": 2,
+    "review_call_count": 108,
+    "transport_attempt_count": 108,
+    "transport_error_count": 0,
+    "retry_count": 0,
+    "parse_success_count": 50,
+    "parse_error_count": 58,
+    "retained_case_count": 0,
+    "retained_derived_memory_count": 0,
+    "candidate_qwen35_4b_call_count": 0,
+    "production_database_write_count": 0,
+    "reviewers": {
+      "reviewer_a": {
+        "model": "qwen3.5:9b",
+        "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+        "parse_success": "45/54",
+        "wall_seconds": 243.1404,
+        "parse_errors": {
+          "support_set_type": 7,
+          "empty_minimal_support_set": 2
+        }
+      },
+      "reviewer_b": {
+        "model": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "parse_success": "5/54",
+        "wall_seconds": 133.0596,
+        "parse_errors": {
+          "argument_keys": 40,
+          "tool_call_count": 9
+        }
+      }
+    }
+  },
+  "failed_gates": [
+    "final_case_count_min",
+    "final_derived_memory_count_min",
+    "final_case_count_per_language_min",
+    "final_derived_memory_count_per_kind_min",
+    "final_single_minimal_set_count_min",
+    "final_alternative_minimal_sets_count_min",
+    "final_complementary_multi_event_set_count_min",
+    "final_current_state_override_count_min",
+    "final_unsupported_count_min",
+    "retained_item_three_way_canonical_agreement",
+    "retained_item_valid_union_enumeration",
+    "retained_item_minimal_set_antichain"
+  ],
+  "failure_attribution": {
+    "primary_failure_layer": "independent_reviewer_output_carrier",
+    "reviewer_a_behavior": "Nine responses violated the frozen nested minimal-support-set contract: seven returned a flat support set where a list of sets was required, and two returned one empty inner set instead of an empty outer list.",
+    "reviewer_b_behavior": "Forty responses wrapped the required argument in an unregistered object key and nine emitted no valid tool call.",
+    "semantic_three_way_agreement_evaluable": false,
+    "qwen35_4b_candidate_quality_evaluated": false,
+    "memory_runtime_quality_evaluated": false,
+    "retrieval_quality_evaluated": false,
+    "human_like_memory_improvement_evaluated": false,
+    "interpretation": "The machine-review carrier failed before a valid independent semantic gold set could be formed. This result cannot be used for or against the support-attribution candidate's semantic accuracy."
+  },
+  "stop_rule": "Do not change the carrier, reviewer models, labels, or gates and rerun these 18 consumed cases. Do not call the Qwen3.5 4B candidate, restore the runtime hook, or convert parse failures into semantic labels. Close this support-attribution work line and rerank a different project bottleneck from existing evidence.",
+  "advancement": {
+    "construction_passed": false,
+    "candidate_pilot_authorized": false,
+    "runtime_restoration_authorized": false,
+    "production_activation_authorized": false,
+    "human_review_requested": false
+  },
+  "artifacts": {
+    "preregistration": {
+      "path": "configs/consolidation_support_equivalence_v2_construction_preregistration.json",
+      "sha256": "9660e9e63d8aea99566eea7359b359efa55138fd7e8ac9395d403be2dd38d271"
+    },
+    "builder": {
+      "path": "build_consolidation_support_equivalence_v2.py",
+      "sha256": "6717b2d615cd1132f3ae9132ca61851f47b403810e4badc09b77d23fe3a1b740"
+    },
+    "reviewer": {
+      "path": "review_consolidation_support_equivalence_v2.py",
+      "sha256": "2c919e980d261a5d7d6bfa93c16d26441ee8c4e6fa0814555fd14902144b978b"
+    },
+    "auditor": {
+      "path": "audit_consolidation_support_equivalence_v2.py",
+      "sha256": "fcbc65894051b0730f5b03ef65a932619906e02ec3e47d86c15e70c425f3db8a"
+    },
+    "pool": {
+      "path": "datasets/consolidation_support_equivalence_v2_pool.json",
+      "sha256": "4896789015480718d0175e2dcc3da98fb3ce934998a1589e4971c4fa9bf908b4"
+    },
+    "final_dataset": {
+      "path": "datasets/consolidation_support_equivalence_v2_pilot.json",
+      "sha256": "2e090906063ddb416cd389fb5731c920cca308260d8bfa0d238d8e18d90ecbab"
+    },
+    "audit_json": {
+      "path": "reports/consolidation_support_equivalence_v2_construction_audit.json",
+      "sha256": "7a146c68b56367dce0c5835fdf291c2718cb317d23ef8a5a9998d66c694844c0"
+    },
+    "audit_markdown": {
+      "path": "reports/consolidation_support_equivalence_v2_construction_audit.md",
+      "sha256": "f577c474d0441005b956c47d813c11cf0d2afc32000a76d5410eecbc20a11716"
+    },
+    "preregistration_lifecycle_test": {
+      "path": "test_consolidation_support_equivalence_v2_construction_preregistration.py",
+      "sha256": "52e7ddd5e1cf66bbd626a595032a95eff5eb1bbc07801e46e93acac6453cbca4"
+    },
+    "construction_test": {
+      "path": "test_consolidation_support_equivalence_v2_construction.py",
+      "sha256": "f941b542a3aaaf66542b48e2c1bb0b010ff88c478828d2a20eb271d3eece5894"
+    },
+    "result_test": {
+      "path": "test_consolidation_support_equivalence_v2_result.py",
+      "sha256": "21a44ad1eb02ce6b9f3cc3afb78c3868b8b50f10ff4f35aea16d728748c29ec7"
+    },
+    "unchanged_brain_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a"
+    }
+  },
+  "evidence_limits": {
+    "fresh_pool_construction_observed": true,
+    "reviewer_carrier_compatibility_observed": true,
+    "independent_semantic_gold_constructed": false,
+    "candidate_support_accuracy_evaluated": false,
+    "runtime_integration_evaluated": false,
+    "retrieval_improvement_validated": false,
+    "long_term_recall_improvement_validated": false,
+    "dialogue_improvement_validated": false,
+    "human_likeness_validated": false,
+    "biological_equivalence_validated": false
+  },
+  "next_primary_task": "Rerank the remaining project bottlenecks using existing whole-system evidence. Exclude further support-attribution, carrier-repair, relabeling, and reruns of these consumed cases."
+}

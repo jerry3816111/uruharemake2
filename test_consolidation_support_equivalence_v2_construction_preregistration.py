@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,9 @@ CONFIG_PATH = (
     ROOT
     / "configs"
     / "consolidation_support_equivalence_v2_construction_preregistration.json"
+)
+PREREGISTRATION_MERGE_COMMIT = (
+    "ea62631f5dd448cae0354dca619caa47b213b15f"
 )
 
 
@@ -183,7 +187,7 @@ class ConsolidationSupportEquivalenceV2ConstructionPreregistrationTest(
             decision["future_pilot_fail"],
         )
 
-    def test_no_construction_or_candidate_work_precedes_merge(self):
+    def test_no_construction_or_candidate_work_preceded_merge(self):
         pool = self.config["construction_pool"]
         for key in (
             "pool_dataset_path",
@@ -195,7 +199,22 @@ class ConsolidationSupportEquivalenceV2ConstructionPreregistrationTest(
             "audit_markdown_path",
             "closure_path",
         ):
-            self.assertFalse((ROOT / pool[key]).exists(), key)
+            completed = subprocess.run(
+                [
+                    "git",
+                    "cat-file",
+                    "-e",
+                    (
+                        f"{PREREGISTRATION_MERGE_COMMIT}:"
+                        f"{pool[key]}"
+                    ),
+                ],
+                cwd=ROOT,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            self.assertNotEqual(completed.returncode, 0, key)
         self.assertFalse(
             self.config[
                 "construction_outputs_before_preregistration_merge_authorized"
