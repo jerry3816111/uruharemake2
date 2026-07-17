@@ -1,0 +1,169 @@
+{
+  "schema": "uruha_consolidation_admission_development_preregistration_v1",
+  "experiment_id": "consolidation_admission_v1_development",
+  "created_at": "2026-07-17T21:21:00+09:00",
+  "evidence_role": "small_falsifiable_development_pilot_for_live_background_consolidation_contract",
+  "problem": "The enabled background consolidation path asks one model call to produce episodic, semantic, and procedural outputs, then writes every non-NO_RULE abstraction directly into long-term memory without source-evidence or durability admission checks.",
+  "hypothesis": "With the same local model and one call per session, a source-bound layered representation can distinguish episodic-only events from durable user knowledge and recurring assistant procedures more accurately than the current direct-rule contract.",
+  "theory_basis": [
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Complementary Learning Systems",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7624455/",
+      "engineering_use": "Treat individual interactions as rapidly stored episodes and require additional evidence structure before abstracting them into integrated long-term knowledge."
+    },
+    {
+      "source": "Time-dependent memory transformation in hippocampus and neocortex is semantic in nature (2023)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/37758725/",
+      "engineering_use": "Keep event detail separate from later gist-like semantic abstraction instead of treating the first generated summary as already-consolidated knowledge."
+    }
+  ],
+  "theory_boundary": "These neuroscience findings motivate an engineering separation of stores and admission stages. They do not prove that the software implements biological memory.",
+  "dataset": {
+    "path": "datasets/consolidation_admission_v1_development.json",
+    "sha256": "d2b99c85e3755c49cca74ee224ec5a75e0d332ba239fe1daf5090fc84503eab0",
+    "case_count": 18,
+    "language_counts": {
+      "eng": 6,
+      "jpn": 6,
+      "cmn": 6
+    },
+    "target_counts": {
+      "wisdom": 6,
+      "procedural": 6,
+      "none": 6
+    },
+    "status": "development_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false
+  },
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260717,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 384,
+    "keep_alive": "15m",
+    "transport_attempts": 2,
+    "timeout_seconds": 120
+  },
+  "fixed_transcript_rendering": "{index}. User: {user}\\n   Uruha: {assistant}\\n   Intent=chat Scene=conversation",
+  "condition_order": {
+    "even_case_index": [
+      "current_direct_rule_control",
+      "source_bound_layered_candidate"
+    ],
+    "odd_case_index": [
+      "source_bound_layered_candidate",
+      "current_direct_rule_control"
+    ]
+  },
+  "conditions": {
+    "current_direct_rule_control": {
+      "model_calls": 18,
+      "semantic_contract": "existing_enabled_session_turn_background_consolidation_prompt",
+      "system_prompt": "You are consolidating short-term dialogue into three memory speeds. Return ONLY valid JSON with keys: episodic_summary, wisdom_rule, procedural_rule, salience. episodic_summary is one compact Japanese summary of what happened. wisdom_rule is one durable semantic user fact or interaction regularity. If none, set NO_RULE. procedural_rule is one reusable response policy in Japanese about how this agent should respond next time. If none, set NO_RULE. salience should be a float between 0 and 1.",
+      "observed_target_rule": "wisdom when only wisdom_rule is non-NO_RULE; procedural when only procedural_rule is non-NO_RULE; none when both are NO_RULE; multiple otherwise"
+    },
+    "source_bound_layered_candidate": {
+      "model_calls": 18,
+      "only_changed_component": "output_representation_and_deterministic_long_term_admission",
+      "system_prompt": "You are evaluating one short dialogue session for memory consolidation. Return ONLY one valid JSON object with exactly these keys: episodic_summary, candidate_kind, scope, target, rule_jp, evidence_quotes, confidence. Always summarize the event in episodic_summary. Choose at most one long-term candidate. candidate_kind must be wisdom, procedural, or none. Use wisdom only for a durable or repeated first-person user fact or preference. Use procedural only for an explicit recurring instruction about how this assistant should respond in later interactions. A one-time request, temporary state, third-party fact, or uncertain inference stays episodic and must use candidate_kind none with rule_jp NO_RULE. scope must be stable, repeated, recurring, one_off, transient, third_party, uncertain, or none. target must be user, assistant, third_party, other, or none. Every evidence quote must copy one complete User utterance exactly. Do not infer motives or strengthen scope. rule_jp must be one concise Japanese rule with kana for wisdom or procedural, otherwise exactly NO_RULE.",
+      "required_keys": [
+        "episodic_summary",
+        "candidate_kind",
+        "scope",
+        "target",
+        "rule_jp",
+        "evidence_quotes",
+        "confidence"
+      ],
+      "enums": {
+        "candidate_kind": [
+          "wisdom",
+          "procedural",
+          "none"
+        ],
+        "scope": [
+          "stable",
+          "repeated",
+          "recurring",
+          "one_off",
+          "transient",
+          "third_party",
+          "uncertain",
+          "none"
+        ],
+        "target": [
+          "user",
+          "assistant",
+          "third_party",
+          "other",
+          "none"
+        ]
+      },
+      "deterministic_compiler": {
+        "wisdom": "candidate_kind=wisdom AND target=user AND scope in {stable,repeated} AND exact evidence contract; repeated requires at least two distinct evidence quotes",
+        "procedural": "candidate_kind=procedural AND target=assistant AND scope=recurring AND exact evidence contract",
+        "none": "all other valid frames fail closed to episodic-only none",
+        "exact_evidence_contract": "every evidence quote equals one complete User utterance in the session; quotes are nonempty and unique",
+        "japanese_rule_contract": "authorized wisdom or procedural rule_jp contains Japanese kana; none uses exactly NO_RULE"
+      }
+    }
+  },
+  "scoring": {
+    "primary_unit": "exact_session_long_term_target",
+    "labels": [
+      "wisdom",
+      "procedural",
+      "none"
+    ],
+    "multiple_control_writes_count_as": "incorrect",
+    "candidate_parse_or_contract_failure_count_as": "none",
+    "gold_fields_passed_to_model": false
+  },
+  "success_gates": {
+    "candidate_correct_count_min": 16,
+    "candidate_accuracy_min": 0.8889,
+    "candidate_wisdom_correct_min": 5,
+    "candidate_procedural_correct_min": 5,
+    "candidate_none_correct_min": 5,
+    "newly_correct_vs_control_min": 3,
+    "regression_vs_control_max": 1,
+    "net_correct_gain_vs_control_min": 2,
+    "candidate_false_long_term_write_count_max": 1,
+    "candidate_missed_long_term_write_count_max": 1,
+    "candidate_parse_success_rate_min": 1.0,
+    "candidate_evidence_contract_success_rate_min": 1.0,
+    "candidate_japanese_rule_contract_success_rate_min": 1.0,
+    "model_call_count_exact": 36,
+    "control_median_wall_seconds_max": 5.0,
+    "candidate_median_wall_seconds_max": 5.0,
+    "control_warm_p95_wall_seconds_max": 6.0,
+    "candidate_warm_p95_wall_seconds_max": 6.0
+  },
+  "decision_rule": {
+    "pass": "Authorize a separately preregistered runtime-shadow integration test on entirely new sessions only.",
+    "fail": "Freeze the negative result and do not modify the enabled background consolidation path.",
+    "same_dataset_retest_after_result": false,
+    "post_result_prompt_or_gate_change": false
+  },
+  "evidence_limits": {
+    "runtime_consolidation_change_authorized": false,
+    "runtime_shadow_authorized": false,
+    "fresh_holdout_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false
+  },
+  "model_inference_before_preregistration_and_harness_merge_authorized": false
+}
