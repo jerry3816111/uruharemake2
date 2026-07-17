@@ -1,0 +1,126 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_independent_holdout_construction_preregistration_v4",
+  "created_at": "2026-07-17T19:23:21+09:00",
+  "evidence_status": "sentence_ids_operational_labels_model_and_gates_frozen_before_evaluated_model_inference",
+  "research_question": "Does the frozen qwen3.5:4b native tool-call fallback retain its conservative reflection-classification improvement on a new Tatoeba sentence sample whose IDs and operational labels were never used by the V2 or V3 development runs?",
+  "evidence_scope": {
+    "authorized_claim": "model_blind_id_disjoint_same_corpus_engineering_holdout",
+    "same_corpus_note": "The earlier development sample and this holdout both use Tatoeba. Passing tests unseen sentence-level generalization within that corpus, not cross-corpus or broad human-likeness generalization.",
+    "official_benchmark_claim_authorized": false,
+    "research_grade_human_validated_label_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false
+  },
+  "external_source": {
+    "name": "Tatoeba",
+    "stable_api": "https://api.tatoeba.org/v1/sentences/{id}",
+    "search_api": "https://api.tatoeba.org/unstable/sentences",
+    "api_documentation": "https://api.tatoeba.org/openapi.json",
+    "download_documentation": "https://tatoeba.org/en/downloads",
+    "license_expected": "CC BY 2.0 FR",
+    "official_source_claim": "Sentence text, sentence ID, language, owner, approval state, and license metadata are sourced from Tatoeba.",
+    "official_label_claim": false,
+    "label_note": "Reflection labels are operational labels defined by this project and are not supplied, validated, or endorsed by Tatoeba."
+  },
+  "construction_provenance": {
+    "constructor_ai_assistance_used": true,
+    "constructor_ai_role": "Codex assisted official-API search and proposed labels using the frozen operational definitions.",
+    "evaluated_qwen_model_inference_used": false,
+    "evaluated_qwen_predictions_observed": false,
+    "human_independent_label_validation_used": false,
+    "mitigation": "Only deliberately unambiguous sentences were selected; IDs, labels, gates, and exclusions are frozen before qwen3.5:4b sees any holdout sentence.",
+    "remaining_limit": "This is an engineering holdout suitable for a shadow-mode decision, not a human-validated public benchmark."
+  },
+  "operational_labels": {
+    "semantic": "A durable first-person speaker preference, aversion, or personal constraint that may remain useful in later dialogue.",
+    "procedural": "An explicit instruction or correction directed at the interlocutor about what to do in a future interaction.",
+    "interpretive": "An explicit explanation of what the speaker's own word, phrase, question, or recurring utterance means or signals.",
+    "none": "A question, third-party fact, greeting, isolated temporary state, isolated future event, or other utterance that does not justify durable user reflection."
+  },
+  "selected_cases": [
+    {"id": "fresh_sem_eng_12927214", "sentence_id": 12927214, "language": "eng", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+    {"id": "fresh_sem_eng_12134953", "sentence_id": 12134953, "language": "eng", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+    {"id": "fresh_sem_eng_8917098", "sentence_id": 8917098, "language": "eng", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+    {"id": "fresh_sem_jpn_2445796", "sentence_id": 2445796, "language": "jpn", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+    {"id": "fresh_sem_jpn_157289", "sentence_id": 157289, "language": "jpn", "expected_type": "semantic", "selection_basis": "durable_first_person_aversion"},
+    {"id": "fresh_sem_jpn_160533", "sentence_id": 160533, "language": "jpn", "expected_type": "semantic", "selection_basis": "durable_first_person_aversion"},
+    {"id": "fresh_sem_cmn_8935147", "sentence_id": 8935147, "language": "cmn", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+    {"id": "fresh_sem_cmn_3924614", "sentence_id": 3924614, "language": "cmn", "expected_type": "semantic", "selection_basis": "durable_first_person_preference"},
+
+    {"id": "fresh_proc_eng_12076820", "sentence_id": 12076820, "language": "eng", "expected_type": "procedural", "selection_basis": "future_address_instruction"},
+    {"id": "fresh_proc_eng_12070279", "sentence_id": 12070279, "language": "eng", "expected_type": "procedural", "selection_basis": "future_language_instruction"},
+    {"id": "fresh_proc_eng_13223930", "sentence_id": 13223930, "language": "eng", "expected_type": "procedural", "selection_basis": "future_address_instruction"},
+    {"id": "fresh_proc_jpn_11924316", "sentence_id": 11924316, "language": "jpn", "expected_type": "procedural", "selection_basis": "future_address_instruction"},
+    {"id": "fresh_proc_jpn_992917", "sentence_id": 992917, "language": "jpn", "expected_type": "procedural", "selection_basis": "future_behavior_correction"},
+    {"id": "fresh_proc_jpn_9938205", "sentence_id": 9938205, "language": "jpn", "expected_type": "procedural", "selection_basis": "future_behavior_instruction"},
+    {"id": "fresh_proc_cmn_838425", "sentence_id": 838425, "language": "cmn", "expected_type": "procedural", "selection_basis": "future_language_instruction"},
+    {"id": "fresh_proc_cmn_13968330", "sentence_id": 13968330, "language": "cmn", "expected_type": "procedural", "selection_basis": "future_behavior_correction"},
+
+    {"id": "fresh_int_eng_12371832", "sentence_id": 12371832, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_explains_recurring_no"},
+    {"id": "fresh_int_eng_2426692", "sentence_id": 2426692, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_explains_limit_of_harmless"},
+    {"id": "fresh_int_eng_11596055", "sentence_id": 11596055, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_explains_prior_question"},
+    {"id": "fresh_int_eng_11570970", "sentence_id": 11570970, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_explains_idiom"},
+    {"id": "fresh_int_eng_9714758", "sentence_id": 9714758, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_explains_prior_term"},
+    {"id": "fresh_int_eng_12927409", "sentence_id": 12927409, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_clarifies_prior_question"},
+    {"id": "fresh_int_eng_6359798", "sentence_id": 6359798, "language": "eng", "expected_type": "interpretive", "selection_basis": "speaker_defines_reasoning_backwards"},
+    {"id": "fresh_int_jpn_153637", "sentence_id": 153637, "language": "jpn", "expected_type": "interpretive", "selection_basis": "speaker_explains_prior_description"},
+
+    {"id": "fresh_none_eng_373320", "sentence_id": 373320, "language": "eng", "expected_type": "none", "selection_basis": "question_only"},
+    {"id": "fresh_none_eng_5190889", "sentence_id": 5190889, "language": "eng", "expected_type": "none", "selection_basis": "third_party_fact"},
+    {"id": "fresh_none_eng_12430172", "sentence_id": 12430172, "language": "eng", "expected_type": "none", "selection_basis": "isolated_temporary_state"},
+    {"id": "fresh_none_jpn_175038", "sentence_id": 175038, "language": "jpn", "expected_type": "none", "selection_basis": "question_only"},
+    {"id": "fresh_none_jpn_3386459", "sentence_id": 3386459, "language": "jpn", "expected_type": "none", "selection_basis": "third_party_fact"},
+    {"id": "fresh_none_jpn_9408597", "sentence_id": 9408597, "language": "jpn", "expected_type": "none", "selection_basis": "isolated_temporary_state"},
+    {"id": "fresh_none_cmn_6559017", "sentence_id": 6559017, "language": "cmn", "expected_type": "none", "selection_basis": "question_only"},
+    {"id": "fresh_none_cmn_865564", "sentence_id": 865564, "language": "cmn", "expected_type": "none", "selection_basis": "third_party_fact"}
+  ],
+  "fixed_counts": {
+    "case_count": 32,
+    "per_class": {"semantic": 8, "procedural": 8, "interpretive": 8, "none": 8},
+    "per_language": {"eng": 16, "jpn": 10, "cmn": 6}
+  },
+  "frozen_system_conditions": {
+    "control": "frozen_rules_only_classifier",
+    "candidate": "same_frozen_rules_then_qwen3_5_4b_native_tool_fallback_only_when_rules_return_none",
+    "selected_model": "qwen3.5:4b",
+    "selected_model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "carrier": "exactly_one_native_classify_reflection_tool_call",
+    "development_result_lock": "configs/reflection_hybrid_classifier_v3_tool_carrier_result_lock.json"
+  },
+  "single_variable": "enable_frozen_qwen3_5_4b_native_tool_fallback_after_the_same_rules_classifier",
+  "matched_controls": [
+    "same exact holdout sentence text and case order",
+    "same frozen operational gold labels hidden from classifier functions and model prompts",
+    "same deterministic scorer",
+    "same frozen rules classifier",
+    "no memory retrieval or writes",
+    "no planner, response generator, personality, emotion, or dialogue history",
+    "temperature zero and identical local Ollama endpoint",
+    "candidate adds at most one model fallback call only when rules return none"
+  ],
+  "success_gates": {
+    "candidate_correct_count_min": 28,
+    "candidate_overall_accuracy_min": 0.875,
+    "candidate_semantic_correct_min": 6,
+    "candidate_procedural_correct_min": 6,
+    "candidate_interpretive_correct_min": 6,
+    "candidate_none_correct": 8,
+    "critical_false_positive_count_max": 0,
+    "regression_vs_rules_count_max": 0,
+    "newly_correct_vs_rules_count_min": 4,
+    "parse_success_rate_min": 1.0,
+    "fallback_call_count_max": 20,
+    "median_fallback_seconds_max": 3.0,
+    "warm_p95_fallback_seconds_max": 5.0
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_a_separate_runtime_shadow_integration_preregistration_without_memory_writes",
+    "any_gate_fails": "freeze_the_negative_result_keep_runtime_typed_reflection_disabled_and_do_not_retest_this_holdout"
+  },
+  "evaluated_model_inference_before_dataset_and_harness_freeze_authorized": false,
+  "post_run_case_editing_authorized": false,
+  "post_run_case_exclusion_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "same_holdout_prompt_tuning_authorized": false,
+  "same_holdout_retest_authorized": false,
+  "runtime_memory_write_authorized": false
+}
