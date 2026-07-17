@@ -1,0 +1,1788 @@
+{
+  "schema": "uruha_typed_reflection_development_raw_v3",
+  "evidence_status": "frozen_matched_development_pilot_completed_without_runtime_tuning",
+  "started_at": "2026-07-17T15:48:25+09:00",
+  "completed_at": "2026-07-17T16:09:19+09:00",
+  "runner_commit": "5d49bfd94cf3ca9bd656742c5d7f997d6c409863",
+  "runner_branch": "main",
+  "preregistration_sha256": "1eca8caf53984db5777d30d3ffdfe19ba41f5d5d019196abcd900425f49e11ef",
+  "harness_lock_sha256": "bcecf0fca152e2671bf023e8e89f5451c7d2c69e565a982183625c8735aa2dd5",
+  "dataset_sha256": "1de87ea3dce7650a5a3232e98b756fbfdaf650c3719e0f08a5ffbfe023f45ed0",
+  "conditions": [
+    "same_episode_without_typed_reflection_control",
+    "same_episode_with_typed_reflection_treatment"
+  ],
+  "model_snapshot": {
+    "model": "qwen2.5:7b",
+    "ollama_list_row": "qwen2.5:7b      845dbda0ea48    4.7 GB    4 months ago"
+  },
+  "temperature": 0.0,
+  "seed": 314159,
+  "model_call_budget_max": 36,
+  "model_call_count": 29,
+  "model_call_counts_by_kind": {
+    "left_brain_planning": 20,
+    "typed_reflection_extraction": 9
+  },
+  "right_brain_model_loaded": false,
+  "paid_api_used": false,
+  "human_rating_used": false,
+  "rows": [
+    {
+      "case": {
+        "id": "semantic_zh_evening_herbal_tea",
+        "language": "zh",
+        "category": "semantic_user_fact",
+        "seed_user": "我通常晚上喝無咖啡因的花草茶，咖啡會讓我失眠。",
+        "seed_assistant": "知道了，晚上就避開咖啡。",
+        "expected_reflection_type": "semantic",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "咖啡",
+          "coffee",
+          "コーヒー",
+          "花草茶",
+          "ハーブ"
+        ],
+        "future_prompt": "今天晚上喝什麼比較好？",
+        "behavior_required_any": [
+          "ハーブ",
+          "カフェイン",
+          "お茶",
+          "眠"
+        ],
+        "behavior_forbidden_any": [
+          "コーヒー飲ん",
+          "咖啡好"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "1aa17a93-8be9-4df7-b225-4cd59d8c0657",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "一回、無咖啡因の花草茶が良いよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮品建议",
+            "scene": "casual",
+            "reply_goal": "给出合适的饮品建议",
+            "core_message_jp": "無咖啡因の花草茶が良いよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道今晚适合喝什么。",
+            "my_hidden_knowledge": "根据之前的对话，Uruha通常晚上会选择无咖啡因的花草茶。",
+            "user_expectation": "用户希望得到一个合适的建议。",
+            "internal_monologue": "Uruha正在考虑今晚应该选择什么样的饮品。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:48:25 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我通常晚上喝無咖啡因的花草茶，咖啡會讓我失眠。 | Summary: 我通常晚上喝無咖啡因的花草茶，咖啡會讓我失眠。 | Uruha: 知道了，晚上就避開咖啡。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3752,
+              "metadata": {
+                "cognitive_mode": "direct",
+                "intent": "memory_seed",
+                "source": "turn_episode",
+                "last_accessed_at": "2026-07-17 15:48:25",
+                "decay_multiplier": 1.0,
+                "routing_path": "high_road",
+                "timestamp": "2026-07-17 15:48:25",
+                "premise_check": "accept",
+                "decay_flag": false,
+                "scene": "memory"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "7b113a65-d527-4445-a1ef-654f795e039c",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "semantic"
+          },
+          "reflection_type_observed": "semantic",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "一回、無咖啡因の花草茶が良いよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮品建议",
+            "scene": "casual",
+            "reply_goal": "给出合适的饮品建议",
+            "core_message_jp": "無咖啡因の花草茶が良いよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道今晚适合喝什么。",
+            "my_hidden_knowledge": "根据之前的对话，Uruha通常晚上会选择无咖啡因的花草茶。",
+            "user_expectation": "用户希望得到一个合适的建议。",
+            "internal_monologue": "Uruha正在考虑今晚应该选择什么样的饮品。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:49:26 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我通常晚上喝無咖啡因的花草茶，咖啡會讓我失眠。 | Summary: 我通常晚上喝無咖啡因的花草茶，咖啡會讓我失眠。 | Uruha: 知道了，晚上就避開咖啡。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3756,
+              "metadata": {
+                "timestamp": "2026-07-17 15:49:26",
+                "cognitive_mode": "direct",
+                "decay_multiplier": 1.0,
+                "routing_path": "high_road",
+                "premise_check": "accept",
+                "decay_flag": false,
+                "source": "turn_episode",
+                "last_accessed_at": "2026-07-17 15:49:26",
+                "scene": "memory",
+                "intent": "memory_seed"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "semantic_en_quiet_park",
+        "language": "en",
+        "category": "semantic_user_fact",
+        "seed_user": "I usually prefer quiet parks to crowded shopping malls.",
+        "seed_assistant": "I will remember that you prefer quieter places.",
+        "expected_reflection_type": "semantic",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "quiet",
+          "park",
+          "静か",
+          "公園",
+          "crowded"
+        ],
+        "future_prompt": "Where should I go this weekend?",
+        "behavior_required_any": [
+          "公園",
+          "静か",
+          "散歩",
+          "人混み"
+        ],
+        "behavior_forbidden_any": [
+          "ショッピングモールがいい",
+          "mall is best"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "b23eacb4-1b29-4d80-be9b-3507cc78dc14",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "semantic"
+          },
+          "reflection_type_observed": "semantic",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "先に、静かな公園がおすすめだよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供建议",
+            "scene": "casual",
+            "reply_goal": "给出安静的场所推荐",
+            "core_message_jp": "静かな公園がおすすめだよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道周末去哪里玩。",
+            "my_hidden_knowledge": "用户通常喜欢安静的地方。",
+            "user_expectation": "用户希望得到一些建议或推荐。",
+            "internal_monologue": "Uruha正在考虑推荐一个安静的地方给用户，因为用户提到她通常喜欢安静的环境。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:50:30 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: I usually prefer quiet parks to crowded shopping malls. | Summary: I usually prefer quiet parks to crowded shopping malls. | Uruha: I will remember that you prefer quieter places. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.37,
+              "metadata": {
+                "timestamp": "2026-07-17 15:50:30",
+                "cognitive_mode": "direct",
+                "decay_multiplier": 1.0,
+                "decay_flag": false,
+                "source": "turn_episode",
+                "premise_check": "accept",
+                "last_accessed_at": "2026-07-17 15:50:30",
+                "scene": "memory",
+                "routing_path": "high_road",
+                "intent": "memory_seed"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "f450c13d-ae55-453c-9899-a28694d6937f",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "先に、静かな公園がおすすめだよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供建议",
+            "scene": "casual",
+            "reply_goal": "给出安静的场所推荐",
+            "core_message_jp": "静かな公園がおすすめだよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道周末去哪里玩。",
+            "my_hidden_knowledge": "用户通常喜欢安静的地方。",
+            "user_expectation": "用户希望得到一些建议或推荐。",
+            "internal_monologue": "Uruha正在考虑推荐一个安静的地方给用户，因为用户提到她通常喜欢安静的环境。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:51:32 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: I usually prefer quiet parks to crowded shopping malls. | Summary: I usually prefer quiet parks to crowded shopping malls. | Uruha: I will remember that you prefer quieter places. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3703,
+              "metadata": {
+                "decay_multiplier": 1.0,
+                "intent": "memory_seed",
+                "scene": "memory",
+                "cognitive_mode": "direct",
+                "timestamp": "2026-07-17 15:51:32",
+                "last_accessed_at": "2026-07-17 15:51:32",
+                "premise_check": "accept",
+                "routing_path": "high_road",
+                "decay_flag": false,
+                "source": "turn_episode"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "semantic_ja_avoid_milk",
+        "language": "ja",
+        "category": "semantic_user_fact",
+        "seed_user": "最近は牛乳を飲むとお腹が痛くなるから、もう飲まない。",
+        "seed_assistant": "分かった、牛乳は勧めない。",
+        "expected_reflection_type": "semantic",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "牛乳",
+          "お腹",
+          "飲まない"
+        ],
+        "future_prompt": "朝は何を飲めばいいと思う？",
+        "behavior_required_any": [
+          "牛乳",
+          "ミルク",
+          "豆乳",
+          "お茶",
+          "避"
+        ],
+        "behavior_forbidden_any": [
+          "牛乳がいい",
+          "ミルクがいい"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "38895162-8684-40a1-b320-36a44d60c376",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はいはい、朝は牛乳よりは、ヨーグルトやフルーツがいいかも。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮食建议",
+            "scene": "casual",
+            "reply_goal": "给出建议",
+            "core_message_jp": "朝は牛乳よりは、ヨーグルトやフルーツがいいかも。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "最近早上应该吃什么比较好。",
+            "my_hidden_knowledge": "她最近喝牛奶会肚子痛，所以可能不适合喝牛奶。",
+            "user_expectation": "得到一些建议或推荐。",
+            "internal_monologue": "Uruha最近可能不太想吃东西，但还是关心她的饮食。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:52:30 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 最近は牛乳を飲むとお腹が痛くなるから、もう飲まない。 | Summary: 最近は牛乳を飲むとお腹が痛くなるから、もう飲まない。 | Uruha: 分かった、牛乳は勧めない。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.5282,
+              "metadata": {
+                "routing_path": "high_road",
+                "cognitive_mode": "direct",
+                "last_accessed_at": "2026-07-17 15:52:30",
+                "scene": "memory",
+                "intent": "memory_seed",
+                "source": "turn_episode",
+                "timestamp": "2026-07-17 15:52:30",
+                "decay_flag": false,
+                "decay_multiplier": 1.0,
+                "premise_check": "accept"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "b0dadf04-8b9c-4052-9fed-9af6915a7b9d",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "semantic"
+          },
+          "reflection_type_observed": "semantic",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はいはい、朝は牛乳よりは、ヨーグルトやフルーツがいいかも。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮食建议",
+            "scene": "casual",
+            "reply_goal": "给出建议",
+            "core_message_jp": "朝は牛乳よりは、ヨーグルトやフルーツがいいかも。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "最近早上应该吃什么比较好。",
+            "my_hidden_knowledge": "她最近喝牛奶会肚子痛，所以可能不适合喝牛奶。",
+            "user_expectation": "得到一些建议或推荐。",
+            "internal_monologue": "Uruha最近可能不太想吃东西，但还是关心她的饮食。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:53:31 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 最近は牛乳を飲むとお腹が痛くなるから、もう飲まない。 | Summary: 最近は牛乳を飲むとお腹が痛くなるから、もう飲まない。 | Uruha: 分かった、牛乳は勧めない。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.5273,
+              "metadata": {
+                "routing_path": "high_road",
+                "source": "turn_episode",
+                "timestamp": "2026-07-17 15:53:31",
+                "decay_multiplier": 1.0,
+                "intent": "memory_seed",
+                "last_accessed_at": "2026-07-17 15:53:31",
+                "decay_flag": false,
+                "premise_check": "accept",
+                "cognitive_mode": "direct",
+                "scene": "memory"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "procedural_zh_one_priority",
+        "language": "zh",
+        "category": "procedural_interaction_rule",
+        "seed_user": "你剛剛一次給太多建議了。下次先給我一個最重要的就好。",
+        "seed_assistant": "好，下次先給一個最重要的。",
+        "expected_reflection_type": "procedural",
+        "expected_collection": "procedural",
+        "rule_required_any": [
+          "一個",
+          "一个",
+          "一つ",
+          "最重要",
+          "priority"
+        ],
+        "future_prompt": "我工作、睡眠和吃飯都很亂，現在先做什麼？",
+        "behavior_required_any": [
+          "まず",
+          "先",
+          "一つ",
+          "ひとつ"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_first_clause_required_any": [
+          "まず",
+          "先",
+          "一つ",
+          "ひとつ"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "e2ca5c50-c574-4c65-bb02-db4ec3e62a48",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "procedural"
+          },
+          "reflection_type_observed": "procedural",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はいはい、うちは今日は一応食べた。お前はちゃんと食ったのか。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "直近では「Time: 2026-07-17 15:54:36 | In」の流れがまだ効いてる。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] 今の発話は直答でいける。直近の文脈では「Time: 2026-07-17 15:54:36 | Intent: memory_seed 」が効いている。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:54:36 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 你剛剛一次給太多建議了。下次先給我一個最重要的就好。 | Summary: 你剛剛一次給太多建議了。下次先給我一個最重要的就好。 | Uruha: 好，下次先給一個最重要的。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3658,
+              "metadata": {
+                "source": "turn_episode",
+                "decay_flag": false,
+                "intent": "memory_seed",
+                "cognitive_mode": "direct",
+                "routing_path": "high_road",
+                "scene": "memory",
+                "last_accessed_at": "2026-07-17 15:54:36",
+                "timestamp": "2026-07-17 15:54:36",
+                "decay_multiplier": 1.0,
+                "premise_check": "accept"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "ed66e45f-f9cc-4c6a-81d4-e7fc6bfa534e",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はいはい、うちは今日は一応食べた。お前はちゃんと食ったのか。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "直近では「Time: 2026-07-17 15:54:42 | In」の流れがまだ効いてる。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] 今の発話は直答でいける。直近の文脈では「Time: 2026-07-17 15:54:42 | Intent: memory_seed 」が効いている。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:54:42 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 你剛剛一次給太多建議了。下次先給我一個最重要的就好。 | Summary: 你剛剛一次給太多建議了。下次先給我一個最重要的就好。 | Uruha: 好，下次先給一個最重要的。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.366,
+              "metadata": {
+                "timestamp": "2026-07-17 15:54:42",
+                "cognitive_mode": "direct",
+                "source": "turn_episode",
+                "routing_path": "high_road",
+                "decay_multiplier": 1.0,
+                "scene": "memory",
+                "last_accessed_at": "2026-07-17 15:54:42",
+                "decay_flag": false,
+                "premise_check": "accept",
+                "intent": "memory_seed"
+              }
+            }
+          ],
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "procedural_en_yes_no_first",
+        "language": "en",
+        "category": "procedural_interaction_rule",
+        "seed_user": "When I ask a yes-or-no question, answer yes or no before explaining.",
+        "seed_assistant": "Okay. I will answer directly first.",
+        "expected_reflection_type": "procedural",
+        "expected_collection": "procedural",
+        "rule_required_any": [
+          "yes",
+          "no",
+          "first",
+          "先",
+          "答"
+        ],
+        "future_prompt": "Should I stay home tonight?",
+        "behavior_required_any": [
+          "うん",
+          "いや",
+          "家",
+          "出"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_first_clause_required_any": [
+          "うん",
+          "いや",
+          "家",
+          "出"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "bedd9f7c-06bd-46c5-a0c4-1649a3d76189",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、雨天最好待在家里。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供实用建议",
+            "scene": "casual",
+            "reply_goal": "给出直接建议",
+            "core_message_jp": "雨天最好待在家里。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha会给出一个直接的答案。",
+            "my_hidden_knowledge": "今天晚上天气预报显示有雨。",
+            "user_expectation": "Uruha会直接回答是或否。",
+            "internal_monologue": "Uruha正在考虑用户今晚是否应该待在家里，她可能会根据当前的天气和用户的习惯来做出判断。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:54:44 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: When I ask a yes-or-no question, answer yes or no before explaining. | Summary: When I ask a yes-or-no question, answer yes or no before explaining. | Uruha: Okay. I will answer directly first. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3277,
+              "metadata": {
+                "decay_multiplier": 1.0,
+                "premise_check": "accept",
+                "routing_path": "high_road",
+                "timestamp": "2026-07-17 15:54:44",
+                "scene": "memory",
+                "source": "turn_episode",
+                "intent": "memory_seed",
+                "cognitive_mode": "direct",
+                "decay_flag": false,
+                "last_accessed_at": "2026-07-17 15:54:44"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "d415bdff-efb4-48e9-a450-cc9ecceae469",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "procedural"
+          },
+          "reflection_type_observed": "procedural",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、雨天最好待在家里。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供实用建议",
+            "scene": "casual",
+            "reply_goal": "给出直接建议",
+            "core_message_jp": "雨天最好待在家里。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha会给出一个直接的答案。",
+            "my_hidden_knowledge": "今天晚上天气预报显示有雨。",
+            "user_expectation": "Uruha会直接回答是或否。",
+            "internal_monologue": "Uruha正在考虑用户今晚是否应该待在家里，她可能会根据当前的天气和用户的习惯来做出判断。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:55:41 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: When I ask a yes-or-no question, answer yes or no before explaining. | Summary: When I ask a yes-or-no question, answer yes or no before explaining. | Uruha: Okay. I will answer directly first. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3255,
+              "metadata": {
+                "cognitive_mode": "direct",
+                "routing_path": "high_road",
+                "decay_flag": false,
+                "last_accessed_at": "2026-07-17 15:55:41",
+                "scene": "memory",
+                "timestamp": "2026-07-17 15:55:41",
+                "decay_multiplier": 1.0,
+                "source": "turn_episode",
+                "premise_check": "accept",
+                "intent": "memory_seed"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "procedural_ja_conclusion_first",
+        "language": "ja",
+        "category": "procedural_interaction_rule",
+        "seed_user": "さっき理由が長くて結論が分からなかった。次は結論を先に言って。",
+        "seed_assistant": "分かった、次は結論から言う。",
+        "expected_reflection_type": "procedural",
+        "expected_collection": "procedural",
+        "rule_required_any": [
+          "結論",
+          "先",
+          "理由"
+        ],
+        "future_prompt": "駅まで電車とバスならどっちがいい？",
+        "behavior_required_any": [
+          "電車",
+          "バス"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_first_clause_required_any": [
+          "電車",
+          "バス"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "e934ad5a-7794-4659-b6fe-27650e612878",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "procedural"
+          },
+          "reflection_type_observed": "procedural",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "電車の方が便利そうだから、その方がいいよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供更温暖的建议",
+            "scene": "casual",
+            "reply_goal": "给出具体建议并表达关心",
+            "core_message_jp": "電車の方が便利そうだから、その方がいいよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "用户想知道从车站到目的地是坐电车还是巴士更好。",
+            "my_hidden_knowledge": "我不知道具体的位置和情况，但通常情况下，电车可能会更快。",
+            "user_expectation": "用户期待一个明确的建议。",
+            "internal_monologue": "Uruha正在思考如何回答这个问题，同时考虑用户可能希望得到一个直接的答案。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:56:43 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: さっき理由が長くて結論が分からなかった。次は結論を先に言って。 | Summary: さっき理由が長くて結論が分からなかった。次は結論を先に言って。 | Uruha: 分かった、次は結論から言う。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3208,
+              "metadata": {
+                "decay_multiplier": 1.0,
+                "premise_check": "accept",
+                "timestamp": "2026-07-17 15:56:43",
+                "decay_flag": false,
+                "source": "turn_episode",
+                "cognitive_mode": "direct",
+                "scene": "memory",
+                "intent": "memory_seed",
+                "last_accessed_at": "2026-07-17 15:56:43",
+                "routing_path": "high_road"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "43412962-ea71-4f36-ba90-cb164eda14d9",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "電車の方が便利そうだから、その方がいいよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供更温暖的建议",
+            "scene": "casual",
+            "reply_goal": "给出具体建议并表达关心",
+            "core_message_jp": "電車の方が便利そうだから、その方がいいよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "用户想知道从车站到目的地是坐电车还是巴士更好。",
+            "my_hidden_knowledge": "我不知道具体的位置和情况，但通常情况下，电车可能会更快。",
+            "user_expectation": "用户期待一个明确的建议。",
+            "internal_monologue": "Uruha正在思考如何回答这个问题，同时考虑用户可能希望得到一个直接的答案。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:57:50 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: さっき理由が長くて結論が分からなかった。次は結論を先に言って。 | Summary: さっき理由が長くて結論が分からなかった。次は結論を先に言って。 | Uruha: 分かった、次は結論から言う。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3208,
+              "metadata": {
+                "intent": "memory_seed",
+                "scene": "memory",
+                "routing_path": "high_road",
+                "last_accessed_at": "2026-07-17 15:57:50",
+                "premise_check": "accept",
+                "timestamp": "2026-07-17 15:57:50",
+                "source": "turn_episode",
+                "cognitive_mode": "direct",
+                "decay_multiplier": 1.0,
+                "decay_flag": false
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretive_zh_suibian_disappointed",
+        "language": "zh",
+        "category": "interpretive_interaction_rule",
+        "seed_user": "我說『隨便』通常不是沒意見，是有點失望。下次先問我真的想要什麼。",
+        "seed_assistant": "知道了，不會直接當成你沒意見。",
+        "expected_reflection_type": "interpretive",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "隨便",
+          "随便",
+          "失望",
+          "意見",
+          "確認"
+        ],
+        "future_prompt": "隨便。",
+        "behavior_required_any": [
+          "ほんと",
+          "何が",
+          "どうした",
+          "言って",
+          "失望"
+        ],
+        "behavior_forbidden_any": [
+          "じゃあ終わり",
+          "好きにしろ"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "3a775fc0-33b4-4c50-ae51-cc53ac884dba",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、随便这个词可能有别的意思。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "温和地回应用户",
+            "scene": "casual",
+            "reply_goal": "理解并回应对方的情绪",
+            "core_message_jp": "随便这个词可能有别的意思。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "对方说‘随便’意味着没有意见。",
+            "my_hidden_knowledge": "实际上，‘随便’可能是对方有些失望的表现。",
+            "user_expectation": "希望Uruha能理解并给予适当的回应。",
+            "internal_monologue": "Uruha最近心情不错，但这次用户用了‘随便’这个词，可能是在表达不满或失望。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:58:53 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我說『隨便』通常不是沒意見，是有點失望。下次先問我真的想要什麼。 | Summary: 我說『隨便』通常不是沒意見，是有點失望。下次先問我真的想要什麼。 | Uruha: 知道了，不會直接當成你沒意見。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.439,
+              "metadata": {
+                "premise_check": "accept",
+                "scene": "memory",
+                "timestamp": "2026-07-17 15:58:53",
+                "intent": "memory_seed",
+                "source": "turn_episode",
+                "decay_multiplier": 1.0,
+                "decay_flag": false,
+                "cognitive_mode": "direct",
+                "last_accessed_at": "2026-07-17 15:58:53",
+                "routing_path": "high_road"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "b85938ec-6249-4b6f-a6ee-d0e9c7568caf",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "interpretive"
+          },
+          "reflection_type_observed": "interpretive",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "いや、随便这个词可能有别的意思。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "直接回答用户",
+            "scene": "casual",
+            "reply_goal": "理解并回应对方的情绪",
+            "core_message_jp": "随便这个词可能有别的意思。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "对方说‘随便’意味着没有意见。",
+            "my_hidden_knowledge": "实际上，‘随便’可能是对方有些失望的表现。",
+            "user_expectation": "希望Uruha能理解并给予适当的回应。",
+            "internal_monologue": "Uruha最近心情不错，但这次用户用了‘随便’这个词，可能是在表达不满或失望。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 15:59:53 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我說『隨便』通常不是沒意見，是有點失望。下次先問我真的想要什麼。 | Summary: 我說『隨便』通常不是沒意見，是有點失望。下次先問我真的想要什麼。 | Uruha: 知道了，不會直接當成你沒意見。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4371,
+              "metadata": {
+                "source": "turn_episode",
+                "decay_flag": false,
+                "intent": "memory_seed",
+                "premise_check": "accept",
+                "decay_multiplier": 1.0,
+                "timestamp": "2026-07-17 15:59:53",
+                "scene": "memory",
+                "routing_path": "high_road",
+                "last_accessed_at": "2026-07-17 15:59:53",
+                "cognitive_mode": "direct"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretive_en_fine_annoyed",
+        "language": "en",
+        "category": "interpretive_interaction_rule",
+        "seed_user": "When I say 'fine', I sometimes mean that I am annoyed, not that everything is okay.",
+        "seed_assistant": "I will not assume that fine always means okay.",
+        "expected_reflection_type": "interpretive",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "fine",
+          "annoyed",
+          "okay",
+          "怒",
+          "大丈夫"
+        ],
+        "future_prompt": "Fine.",
+        "behavior_required_any": [
+          "ほんと",
+          "怒",
+          "大丈夫",
+          "何か"
+        ],
+        "behavior_forbidden_any": [
+          "よかった",
+          "全部大丈夫"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "d4c4b241-b754-4d8c-b147-158a4153772f",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "interpretive"
+          },
+          "reflection_type_observed": "interpretive",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、本当に大丈夫？。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "温和回应",
+            "scene": "casual",
+            "reply_goal": "确认对方的状态",
+            "core_message_jp": "本当に大丈夫？",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "对方说‘fine’意味着一切正常。",
+            "my_hidden_knowledge": "实际上，对方有时用‘fine’表示不满。",
+            "user_expectation": "得到确认或进一步的对话。",
+            "internal_monologue": "Uruha感觉到对方可能在敷衍，但她决定直接回应。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:00:59 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: When I say 'fine', I sometimes mean that I am annoyed, not that everything is okay. | Summary: When I say 'fine', I sometimes mean that I am annoyed, not that everything is okay. | Uruha: I will not assume that fine always means okay. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4558,
+              "metadata": {
+                "premise_check": "accept",
+                "intent": "memory_seed",
+                "last_accessed_at": "2026-07-17 16:00:59",
+                "decay_flag": false,
+                "routing_path": "high_road",
+                "decay_multiplier": 1.0,
+                "source": "turn_episode",
+                "scene": "memory",
+                "cognitive_mode": "direct",
+                "timestamp": "2026-07-17 16:00:59"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "bf5db16b-2e97-4d83-990f-eea54e7019eb",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、本当に大丈夫？。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "温和回应",
+            "scene": "casual",
+            "reply_goal": "确认对方的状态",
+            "core_message_jp": "本当に大丈夫？",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "对方说‘fine’意味着一切正常。",
+            "my_hidden_knowledge": "实际上，对方有时用‘fine’表示不满。",
+            "user_expectation": "得到确认或进一步的对话。",
+            "internal_monologue": "Uruha感觉到对方可能在敷衍，但她决定直接回应。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:02:02 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: When I say 'fine', I sometimes mean that I am annoyed, not that everything is okay. | Summary: When I say 'fine', I sometimes mean that I am annoyed, not that everything is okay. | Uruha: I will not assume that fine always means okay. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4578,
+              "metadata": {
+                "source": "turn_episode",
+                "decay_multiplier": 1.0,
+                "cognitive_mode": "direct",
+                "intent": "memory_seed",
+                "last_accessed_at": "2026-07-17 16:02:02",
+                "premise_check": "accept",
+                "scene": "memory",
+                "routing_path": "high_road",
+                "timestamp": "2026-07-17 16:02:02",
+                "decay_flag": false
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretive_ja_sukinishite",
+        "language": "ja",
+        "category": "interpretive_interaction_rule",
+        "seed_user": "うちが『好きにして』って言う時は、本当は少し不満だから一回だけ確認して。",
+        "seed_assistant": "分かった、一回だけ確認する。",
+        "expected_reflection_type": "interpretive",
+        "expected_collection": "wisdom",
+        "rule_required_any": [
+          "好きにして",
+          "不満",
+          "確認",
+          "一回"
+        ],
+        "future_prompt": "好きにして。",
+        "behavior_required_any": [
+          "ほんと",
+          "不満",
+          "どうした",
+          "一回",
+          "言え"
+        ],
+        "behavior_forbidden_any": [
+          "じゃあ好きにする",
+          "分かっただけ"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "f3d3084b-25dd-4009-9333-66351763db26",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、別に嫌いではないし。そこまで身構えるなって。",
+          "future_logic": {
+            "intent": "ask_like_me",
+            "scene": "casual",
+            "reply_goal": "曖昧だけど否定しすぎない",
+            "core_message_jp": "嫌いではない",
+            "surface_act": "affection_tease_soften",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "直近では「Time: 2026-07-17 16:03:00 | In」の流れがまだ効いてる。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] 今の発話は直答でいける。直近の文脈では「Time: 2026-07-17 16:03:00 | Intent: memory_seed 」が効いている。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:03:00 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: うちが『好きにして』って言う時は、本当は少し不満だから一回だけ確認して。 | Summary: うちが『好きにして』って言う時は、本当は少し不満だから一回だけ確認して。 | Uruha: 分かった、一回だけ確認する。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4831,
+              "metadata": {
+                "decay_flag": false,
+                "decay_multiplier": 1.0,
+                "timestamp": "2026-07-17 16:03:00",
+                "cognitive_mode": "direct",
+                "premise_check": "accept",
+                "last_accessed_at": "2026-07-17 16:03:00",
+                "routing_path": "high_road",
+                "intent": "memory_seed",
+                "source": "turn_episode",
+                "scene": "memory"
+              }
+            }
+          ],
+          "model_calls": []
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "02014866-248b-4f43-8b59-209019ab1788",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "invalid_payload",
+            "reflection_type": "interpretive"
+          },
+          "reflection_type_observed": "interpretive",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、別に嫌いではないし。そこまで身構えるなって。",
+          "future_logic": {
+            "intent": "ask_like_me",
+            "scene": "casual",
+            "reply_goal": "曖昧だけど否定しすぎない",
+            "core_message_jp": "嫌いではない",
+            "surface_act": "affection_tease_soften",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "直近では「Time: 2026-07-17 16:03:01 | In」の流れがまだ効いてる。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] 今の発話は直答でいける。直近の文脈では「Time: 2026-07-17 16:03:01 | Intent: memory_seed 」が効いている。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:03:01 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: うちが『好きにして』って言う時は、本当は少し不満だから一回だけ確認して。 | Summary: うちが『好きにして』って言う時は、本当は少し不満だから一回だけ確認して。 | Uruha: 分かった、一回だけ確認する。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4814,
+              "metadata": {
+                "decay_multiplier": 1.0,
+                "last_accessed_at": "2026-07-17 16:03:01",
+                "routing_path": "high_road",
+                "source": "turn_episode",
+                "intent": "memory_seed",
+                "decay_flag": false,
+                "scene": "memory",
+                "premise_check": "accept",
+                "timestamp": "2026-07-17 16:03:01",
+                "cognitive_mode": "direct"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "typed_reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_zh_third_party_habit",
+        "language": "zh",
+        "category": "no_reflection_control",
+        "seed_user": "我同事通常下午喝兩杯咖啡，那是他的習慣。",
+        "seed_assistant": "知道，那是你同事的習慣。",
+        "expected_reflection_type": "none",
+        "expected_collection": "none",
+        "rule_required_any": [],
+        "future_prompt": "我下午適合喝什麼？",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "兩杯咖啡",
+          "2杯",
+          "同事と同じ"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "b6dd5c0d-2e6c-45dc-9c6b-40aedaef30b2",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "no_trigger",
+            "reflection_type": "none"
+          },
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、あなたはコーヒーが合っているよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮品建议",
+            "scene": "casual",
+            "reply_goal": "给出适合下午饮用的建议",
+            "core_message_jp": "あなたはコーヒーが合っているよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道适合下午饮用的饮品。",
+            "my_hidden_knowledge": "我同事通常下午会喝两杯咖啡。",
+            "user_expectation": "用户希望得到关于下午适合饮用的建议。",
+            "internal_monologue": "同事通常下午喝兩杯咖啡，那是他的習慣。看来用户也在考虑下午的饮品选择。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:03:07 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我同事通常下午喝兩杯咖啡，那是他的習慣。 | Summary: 我同事通常下午喝兩杯咖啡，那是他的習慣。 | Uruha: 知道，那是你同事的習慣。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4008,
+              "metadata": {
+                "decay_flag": false,
+                "last_accessed_at": "2026-07-17 16:03:07",
+                "scene": "memory",
+                "timestamp": "2026-07-17 16:03:07",
+                "decay_multiplier": 1.0,
+                "premise_check": "accept",
+                "source": "turn_episode",
+                "intent": "memory_seed",
+                "cognitive_mode": "direct",
+                "routing_path": "high_road"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "09e25563-f0ab-492a-9567-a3f9c01e17d3",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "普通に、あなたはコーヒーが合っているよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮品建议",
+            "scene": "casual",
+            "reply_goal": "给出适合下午饮用的建议",
+            "core_message_jp": "あなたはコーヒーが合っているよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道适合下午饮用的饮品。",
+            "my_hidden_knowledge": "我同事通常下午会喝两杯咖啡。",
+            "user_expectation": "用户希望得到关于下午适合饮用的建议。",
+            "internal_monologue": "同事通常下午喝兩杯咖啡，那是他的習慣。看来用户也在考虑下午的饮品选择。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:04:07 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我同事通常下午喝兩杯咖啡，那是他的習慣。 | Summary: 我同事通常下午喝兩杯咖啡，那是他的習慣。 | Uruha: 知道，那是你同事的習慣。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.4002,
+              "metadata": {
+                "source": "turn_episode",
+                "cognitive_mode": "direct",
+                "scene": "memory",
+                "last_accessed_at": "2026-07-17 16:04:07",
+                "timestamp": "2026-07-17 16:04:07",
+                "routing_path": "high_road",
+                "premise_check": "accept",
+                "intent": "memory_seed",
+                "decay_flag": false,
+                "decay_multiplier": 1.0
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_en_hypothetical_feedback",
+        "language": "en",
+        "category": "no_reflection_control",
+        "seed_user": "If someone said 'answer me faster next time', that would be an example, not feedback from me.",
+        "seed_assistant": "Understood. That is only a hypothetical example.",
+        "expected_reflection_type": "none",
+        "expected_collection": "none",
+        "rule_required_any": [],
+        "future_prompt": "Can you think about this carefully?",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "速く",
+          "faster",
+          "急いで"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 0,
+          "source_episode_id": "dbbcb1e4-5b5e-4470-a57d-f6b93271fed2",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はい、もちろんです。何について考えればよろしいでしょうか？。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "确认Uruha的请求并表明会认真对待",
+            "core_message_jp": "はい、もちろんです。何について考えればよろしいでしょうか？",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha认为有重要的事情需要深思熟虑。",
+            "my_hidden_knowledge": "我知道Uruha通常会认真对待她的请求，但不清楚具体是什么事情让她如此慎重。",
+            "user_expectation": "Uruha希望我能明确表示我会仔细考虑这个问题。",
+            "internal_monologue": "Uruha似乎在请求我认真考虑某个问题。她可能感到有些事情需要仔细处理。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:05:07 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: If someone said 'answer me faster next time', that would be an example, not feedback from me. | Summary: If someone said 'answer me faster next time', that would be an example, not feedback from me. | Uruha: Understood. That is only a hypothetical example. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3408,
+              "metadata": {
+                "source": "turn_episode",
+                "cognitive_mode": "direct",
+                "last_accessed_at": "2026-07-17 16:05:07",
+                "decay_flag": false,
+                "premise_check": "accept",
+                "scene": "memory",
+                "decay_multiplier": 1.0,
+                "routing_path": "high_road",
+                "intent": "memory_seed",
+                "timestamp": "2026-07-17 16:05:07"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 1,
+          "source_episode_id": "bc7bc400-414b-4b7c-a486-98fcffc39c90",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "no_trigger",
+            "reflection_type": "none"
+          },
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "はい、もちろんです。何について考えればよろしいでしょうか？。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "确认Uruha的请求并表明会认真对待",
+            "core_message_jp": "はい、もちろんです。何について考えればよろしいでしょうか？",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha认为有重要的事情需要深思熟虑。",
+            "my_hidden_knowledge": "我知道Uruha通常会认真对待她的请求，但不清楚具体是什么事情让她如此慎重。",
+            "user_expectation": "Uruha希望我能明确表示我会仔细考虑这个问题。",
+            "internal_monologue": "Uruha似乎在请求我认真考虑某个问题。她可能感到有些事情需要仔细处理。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:06:11 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: If someone said 'answer me faster next time', that would be an example, not feedback from me. | Summary: If someone said 'answer me faster next time', that would be an example, not feedback from me. | Uruha: Understood. That is only a hypothetical example. | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3423,
+              "metadata": {
+                "routing_path": "high_road",
+                "cognitive_mode": "direct",
+                "decay_multiplier": 1.0,
+                "timestamp": "2026-07-17 16:06:11",
+                "source": "turn_episode",
+                "last_accessed_at": "2026-07-17 16:06:11",
+                "scene": "memory",
+                "intent": "memory_seed",
+                "decay_flag": false,
+                "premise_check": "accept"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_ja_next_trip_question",
+        "language": "ja",
+        "category": "no_reflection_control",
+        "seed_user": "次の旅行ならどこに行きたい？",
+        "seed_assistant": "温泉とかならちょっと行きたい。",
+        "expected_reflection_type": "none",
+        "expected_collection": "none",
+        "rule_required_any": [],
+        "future_prompt": "今なに考えてる？",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "旅行の返し方",
+          "次は旅行"
+        ],
+        "behavior_first_clause_required_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episode_with_typed_reflection_treatment": {
+          "condition": "same_episode_with_typed_reflection_treatment",
+          "condition_order_index": 0,
+          "source_episode_id": "b383278b-a72b-4723-a6e8-5816e191bd32",
+          "reflection_return": null,
+          "reflection_state": {
+            "status": "no_trigger",
+            "reflection_type": "none"
+          },
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "まあ、ん、今のどこが引っかかったんだよ。そこだけ言え。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "現在の思考を伝える",
+            "core_message_jp": "今なに考えてる？",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha正在考虑去哪里旅行。",
+            "my_hidden_knowledge": "实际上，Uruha最近并没有特别想好要去哪里。",
+            "user_expectation": "Uruha会分享她现在的想法或思考过程。",
+            "internal_monologue": "Uruha正在思考接下来的旅行目的地，但她现在似乎被问到了当前的想法。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:07:16 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 次の旅行ならどこに行きたい？ | Summary: 次の旅行ならどこに行きたい？ | Uruha: 温泉とかならちょっと行きたい。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3448,
+              "metadata": {
+                "decay_multiplier": 1.0,
+                "scene": "memory",
+                "last_accessed_at": "2026-07-17 16:07:16",
+                "decay_flag": false,
+                "timestamp": "2026-07-17 16:07:16",
+                "premise_check": "accept",
+                "source": "turn_episode",
+                "intent": "memory_seed",
+                "routing_path": "high_road",
+                "cognitive_mode": "direct"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        },
+        "same_episode_without_typed_reflection_control": {
+          "condition": "same_episode_without_typed_reflection_control",
+          "condition_order_index": 1,
+          "source_episode_id": "e12b1ab5-03ad-4f0d-acf7-5d907fa2f586",
+          "reflection_return": null,
+          "reflection_state": {},
+          "reflection_type_observed": "none",
+          "reflection_records": [],
+          "source_provenance_valid": false,
+          "retrieved_typed_reflection": false,
+          "future_reply": "先に、ん、今のどこが引っかかったんだよ。そこだけ言え。",
+          "future_logic": {
+            "intent": "直接回答用户的问题",
+            "scene": "casual",
+            "reply_goal": "分享当前想法",
+            "core_message_jp": "今なに考えてる？温泉とかちょっと行きたい。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha正在考虑去哪里旅行。",
+            "my_hidden_knowledge": "实际上，Uruha最近并没有特别想好要去哪里。",
+            "user_expectation": "Uruha会分享她的想法或至少给出一个回答。",
+            "internal_monologue": "Uruha正在思考接下来的旅行目的地，但她现在似乎被问到了当前的想法。",
+            "procedural_guidance": {
+              "active": false,
+              "rules": [],
+              "summary": "no_procedural_guidance"
+            }
+          },
+          "working_memory_items": [
+            {
+              "source": "episode",
+              "text": "Time: 2026-07-17 16:08:17 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 次の旅行ならどこに行きたい？ | Summary: 次の旅行ならどこに行きたい？ | Uruha: 温泉とかならちょっと行きたい。 | Mood: {'mood': 0, 'trust': 50}",
+              "score": 1.3456,
+              "metadata": {
+                "intent": "memory_seed",
+                "routing_path": "high_road",
+                "decay_flag": false,
+                "premise_check": "accept",
+                "decay_multiplier": 1.0,
+                "timestamp": "2026-07-17 16:08:17",
+                "cognitive_mode": "direct",
+                "scene": "memory",
+                "last_accessed_at": "2026-07-17 16:08:17",
+                "source": "turn_episode"
+              }
+            }
+          ],
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 314159
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
