@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_result_lock_v2",
+  "closed_at": "2026-07-17T18:53:00+09:00",
+  "status": "completed_failed_preregistered_gates",
+  "runner_commit": "a76d063f9ac156c3b4ae48c0846899e9c8c69cde",
+  "artifact_bindings": {
+    "preregistration": "configs/reflection_hybrid_classifier_v2_development_preregistration.json",
+    "preregistration_sha256": "68651d6de24a667217847f1157719ae5267a7e84b7ff999ddac8d78e9e7cd885",
+    "harness_lock": "configs/reflection_hybrid_classifier_v2_harness_lock.json",
+    "harness_lock_sha256": "40d315badc9f4eff02c5306eb14c75837ac4882eff91305c833c24a9b53b04a6",
+    "dataset": "datasets/reflection_classifier_v1_external_holdout.json",
+    "dataset_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+    "prior_result": "reports/reflection_classifier_v1_external_holdout_analysis.json",
+    "prior_result_sha256": "674761ef94b58c5507103a014d57ee9e623ab03079d95acf244c9eee62a4fce5",
+    "runtime_classifier": "uruha_reflection_runtime.py",
+    "runtime_classifier_sha256": "ea16243b1678d9d2089093fe4cd47934ab792de523d3b948f3019c595e955c48",
+    "matched_scorer": "reflection_hybrid_classifier_v2_core.py",
+    "matched_scorer_sha256": "e34583681b447ef33cf72dc1a333aa83eeb151c93be82c0e56683c6bcc9b8b9f",
+    "runner": "run_reflection_hybrid_classifier_v2_development.py",
+    "runner_sha256": "28f6c7b5b438d96acd447fdc7f73e7fba273d32d0d2c6862c3bbd8607ce99f6c",
+    "analyzer": "analyze_reflection_hybrid_classifier_v2_development.py",
+    "analyzer_sha256": "781a4881c5d88ec63e1e46885e5c90abe141aff822e68c6c942b8d5d2e5e97d2",
+    "raw_result": "reports/reflection_hybrid_classifier_v2_development_raw.json",
+    "raw_result_sha256": "eef5b236038fbecacb00d7cb14366cb9b5e414015a0b608f3be649942d4bee18",
+    "analysis_json": "reports/reflection_hybrid_classifier_v2_development_analysis.json",
+    "analysis_json_sha256": "873a1a9489106efee23bc339dcc9dc3d5894708afe980ab7fac943359eb57381",
+    "analysis_markdown": "reports/reflection_hybrid_classifier_v2_development_analysis.md",
+    "analysis_markdown_sha256": "6aa635f51bd7d7e996c2c86c93de45a525abddfa7e887795d153be42972a1ae8",
+    "result_test": "test_reflection_hybrid_classifier_v2_result.py",
+    "result_test_sha256": "639bdc36c9ff723b6b510b7c79730750a7cf784cc486760f6bc2796191f52917"
+  },
+  "model_results": {
+    "qwen3.5:0.8b": {
+      "correct": "20_of_32",
+      "newly_correct": 0,
+      "regressions": 0,
+      "parse_success": "0_of_20",
+      "median_fallback_seconds": 0.4678,
+      "warm_p95_fallback_seconds": 0.4874,
+      "all_preregistered_gates_pass": false
+    },
+    "qwen3.5:2b": {
+      "correct": "20_of_32",
+      "newly_correct": 0,
+      "regressions": 0,
+      "parse_success": "0_of_20",
+      "median_fallback_seconds": 1.0797,
+      "warm_p95_fallback_seconds": 1.1272,
+      "all_preregistered_gates_pass": false
+    },
+    "qwen3.5:4b": {
+      "correct": "20_of_32",
+      "newly_correct": 0,
+      "regressions": 0,
+      "parse_success": "0_of_20",
+      "median_fallback_seconds": 1.1131,
+      "warm_p95_fallback_seconds": 1.7969,
+      "all_preregistered_gates_pass": false
+    },
+    "qwen3.5:9b": {
+      "correct": "20_of_32",
+      "newly_correct": 0,
+      "regressions": 0,
+      "parse_success": "0_of_20",
+      "median_fallback_seconds": 1.7493,
+      "warm_p95_fallback_seconds": 1.9172,
+      "all_preregistered_gates_pass": false
+    }
+  },
+  "diagnostic_only_not_a_success_rescore": {
+    "model_calls": 80,
+    "invalid_json_count": 29,
+    "wrong_schema_keys_count": 51,
+    "bounded_interpretation": "The frozen JSON contract failed on every fallback call. Many outputs used an unrequested label key or invalid JSON, so this run rejects the current transport contract but does not establish that every tested model lacks the underlying semantic discrimination capacity."
+  },
+  "decision": "reject_local_semantic_fallback_under_v2_contract_keep_runtime_disabled_and_reconsider_output_carrier",
+  "next_evidence_rule": "The retired 32-case set may be reused only as development evidence for a preregistered output-carrier repair. A repaired candidate must pass frozen development gates and then use a fresh source-separated holdout before any generalization or runtime claim.",
+  "post_result_rescore_authorized": false,
+  "post_result_gate_change_authorized": false,
+  "post_result_case_exclusion_authorized": false,
+  "same_data_diagnostic_reuse_authorized": true,
+  "fresh_holdout_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "downstream_behavior_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
