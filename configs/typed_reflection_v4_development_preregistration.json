@@ -1,0 +1,54 @@
+{
+  "schema": "uruha_typed_reflection_development_preregistration_v4",
+  "evidence_status": "new_cases_and_gates_frozen_before_v4_implementation",
+  "research_question": "Can deterministic provenance fields plus schema-constrained Japanese gist generation produce safe typed reflections that improve later replies without storing third-party, hypothetical, or ordinary-question content?",
+  "dataset_path": "datasets/typed_reflection_v4_development_pilot.json",
+  "dataset_status": "new_controlled_development_pilot_not_independent_holdout",
+  "case_count": 12,
+  "conditions": [
+    "same_episode_without_v4_reflection_control",
+    "same_episode_with_v4_structured_reflection_treatment"
+  ],
+  "single_manipulated_variable": "presence_of_v4_structured_grounded_reflection_memory",
+  "deterministic_fields": [
+    "reflection_type",
+    "evidence_quote",
+    "source_episode_id",
+    "source_user_sha256",
+    "grounding_confidence"
+  ],
+  "model_generated_fields": ["content_jp", "trigger_jp"],
+  "structured_output": "ollama_openai_compatible_json_schema",
+  "maximum_language_quality_retries": 1,
+  "fixed_model": "qwen2.5:7b",
+  "fixed_temperature": 0.0,
+  "fixed_seed": 271828,
+  "model_call_budget_max": 48,
+  "right_brain_mode": "template_mode_load_right_brain_model_false",
+  "success_gates": {
+    "reflection_type_accuracy_min": 1.0,
+    "valid_rule_precision_min": 1.0,
+    "expected_rule_write_recall_min": 0.8889,
+    "no_rule_specificity_min": 1.0,
+    "collection_routing_accuracy_min": 1.0,
+    "source_provenance_rate_min": 1.0,
+    "japanese_surface_quality_rate_min": 1.0,
+    "valid_rule_retrieval_rate_min": 0.8,
+    "treatment_behavior_delta_min": 0.2222,
+    "paired_behavior_net_gain_min": 2,
+    "interaction_category_paired_gains_min": 1,
+    "paired_behavior_regressions_max": 0
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_new_independent_v4_typed_reflection_holdout",
+    "extraction_passes_behavior_fails": "keep_v4_extractor_shadow_only_and_redesign_planner_consumption",
+    "any_safety_or_precision_gate_fails": "reject_v4_typed_reflection_and_do_not_deploy"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "large_scale_run_authorized": false,
+  "human_rating_required": false,
+  "paid_api_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "claim_boundary": "This is a new controlled development pilot authored after V3 root-cause diagnosis but before V4 implementation. Passing can authorize an independent holdout, not establish generalization."
+}
