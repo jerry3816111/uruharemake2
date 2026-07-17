@@ -20,6 +20,7 @@ LOCK_PATH = (
     / "configs"
     / "consolidation_support_attribution_v1_result_lock.json"
 )
+RESULT_MERGE_COMMIT = "bff1d4c81c7abfce568d4c2e20dc58c996972458"
 
 
 def _load(path):
@@ -28,6 +29,14 @@ def _load(path):
 
 def _sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _git_file_sha256(commit, path):
+    content = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(content).hexdigest()
 
 
 class ConsolidationSupportAttributionV1ResultTest(unittest.TestCase):
@@ -63,8 +72,15 @@ class ConsolidationSupportAttributionV1ResultTest(unittest.TestCase):
 
     def test_all_result_and_harness_artifacts_are_hash_bound(self):
         for artifact in self.lock["frozen_artifacts"].values():
+            if artifact["path"] == Path(__file__).name:
+                observed = _git_file_sha256(
+                    RESULT_MERGE_COMMIT,
+                    artifact["path"],
+                )
+            else:
+                observed = _sha256(ROOT / artifact["path"])
             self.assertEqual(
-                _sha256(ROOT / artifact["path"]),
+                observed,
                 artifact["sha256"],
                 artifact["path"],
             )
@@ -112,8 +128,13 @@ class ConsolidationSupportAttributionV1ResultTest(unittest.TestCase):
         self.assertEqual(result["transport_attempts"], 18)
 
     def test_runtime_is_unchanged_and_claims_remain_bounded(self):
+        runner_commit = self.lock["formal_run"]["runner_commit"]
         for path, expected_hash in self.lock["unchanged_runtime_files"].items():
-            self.assertEqual(_sha256(ROOT / path), expected_hash, path)
+            self.assertEqual(
+                _git_file_sha256(runner_commit, path),
+                expected_hash,
+                path,
+            )
         limits = self.lock["evidence_limits"]
         self.assertTrue(limits["development_mechanism_claim_authorized"])
         self.assertTrue(

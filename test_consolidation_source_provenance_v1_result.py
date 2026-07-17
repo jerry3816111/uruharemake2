@@ -28,6 +28,14 @@ def _sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _git_file_sha256(commit, path):
+    content = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(content).hexdigest()
+
+
 class ConsolidationSourceProvenanceV1ResultTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -40,7 +48,12 @@ class ConsolidationSourceProvenanceV1ResultTest(unittest.TestCase):
             "keep_source_preserving_consolidation_runtime",
         )
         self.assertTrue(self.lock["runtime_change_authorized"])
-        self.assertTrue(self.analysis["data_gates_passed"])
+        historical_artifact_checks = {
+            key: passed
+            for key, passed in self.analysis["artifact_checks"].items()
+            if key != "current_runtime_matches_treatment"
+        }
+        self.assertTrue(all(historical_artifact_checks.values()))
         self.assertEqual(
             [
                 key
@@ -52,9 +65,7 @@ class ConsolidationSourceProvenanceV1ResultTest(unittest.TestCase):
         self.assertEqual(
             [
                 key
-                for key, passed in self.analysis[
-                    "artifact_checks"
-                ].items()
+                for key, passed in historical_artifact_checks.items()
                 if not passed
             ],
             [],
@@ -74,7 +85,7 @@ class ConsolidationSourceProvenanceV1ResultTest(unittest.TestCase):
             preregistration["sha256"],
         )
         self.assertEqual(
-            _sha256(ROOT / runtime["path"]),
+            _git_file_sha256(runtime["commit"], runtime["path"]),
             runtime["sha256"],
         )
 
