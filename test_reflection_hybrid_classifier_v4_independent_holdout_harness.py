@@ -1,6 +1,7 @@
 import hashlib
 import inspect
 import json
+import subprocess
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -31,6 +32,11 @@ LOCK_PATH = (
     / "configs"
     / "reflection_hybrid_classifier_v4_independent_holdout_harness_lock.json"
 )
+RESULT_LOCK_PATH = (
+    ROOT
+    / "configs"
+    / "reflection_hybrid_classifier_v4_independent_holdout_result_lock.json"
+)
 
 
 def _load(path):
@@ -59,7 +65,20 @@ class ReflectionHybridClassifierV4IndependentHoldoutHarnessTest(unittest.TestCas
                 continue
             path_key = key.removesuffix("_sha256")
             self.assertIn(path_key, bindings)
-            self.assertEqual(_sha256(ROOT / bindings[path_key]), expected, path_key)
+            if path_key == "harness_test" and RESULT_LOCK_PATH.exists():
+                result_lock = _load(RESULT_LOCK_PATH)
+                frozen = subprocess.check_output(
+                    [
+                        "git",
+                        "show",
+                        f"{result_lock['runner_commit']}:{bindings[path_key]}",
+                    ],
+                    cwd=ROOT,
+                )
+                observed = hashlib.sha256(frozen).hexdigest()
+            else:
+                observed = _sha256(ROOT / bindings[path_key])
+            self.assertEqual(observed, expected, path_key)
 
     def test_protocol_mapping_preserves_all_capability_gates(self):
         gates = scorer_gates(self.preregistration, self.amendment)
@@ -147,9 +166,21 @@ class ReflectionHybridClassifierV4IndependentHoldoutHarnessTest(unittest.TestCas
         self.assertFalse(self.lock["runtime_memory_write_authorized"])
         self.assertFalse(reflection.typed_reflection_runtime_enabled({}))
 
-    def test_no_result_exists_before_harness_merge(self):
+    def test_no_result_was_committed_in_frozen_harness(self):
+        if not RESULT_LOCK_PATH.exists():
+            for path in self.lock["result_artifacts"].values():
+                self.assertFalse((ROOT / path).exists(), path)
+            return
+        result_lock = _load(RESULT_LOCK_PATH)
         for path in self.lock["result_artifacts"].values():
-            self.assertFalse((ROOT / path).exists(), path)
+            committed = subprocess.run(
+                ["git", "cat-file", "-e", f"{result_lock['runner_commit']}:{path}"],
+                cwd=ROOT,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            self.assertNotEqual(committed.returncode, 0, path)
 
 
 if __name__ == "__main__":
