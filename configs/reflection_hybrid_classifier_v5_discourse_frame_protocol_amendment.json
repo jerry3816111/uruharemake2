@@ -1,0 +1,40 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_discourse_frame_protocol_amendment_v5",
+  "created_at": "2026-07-17T20:09:36+09:00",
+  "timing": "before_harness_merge_and_before_any_model_inference",
+  "model_calls_before_amendment": 0,
+  "problem": "The preregistration gave the structured candidate 160 output tokens while the historical V3 control used 64, so generation settings were not fully matched even though the candidate section said they were unchanged.",
+  "correction": {
+    "historical_control_role": "frozen_reference_and_reproduction_target",
+    "matched_live_control": "rerun_the_frozen_v3_direct_prompt_and_tool_contract",
+    "shared_maximum_output_tokens": 160,
+    "shared_model_dataset_rules_temperature_top_p_seed_context_and_transport": true,
+    "shared_fallback_case_ids_and_order": true,
+    "candidate_only_difference": "system_prompt_and_tool_schema_require_explicit_discourse_slots",
+    "total_model_call_count_exact": 40
+  },
+  "live_control_reproduction_gates": {
+    "correct_count_exact": 29,
+    "prediction_drift_vs_frozen_v3_count_max": 0,
+    "parse_success_rate_min": 1.0,
+    "critical_false_positive_count_max": 0,
+    "fallback_call_count_exact": 20
+  },
+  "unchanged_candidate_capability_gates": {
+    "candidate_correct_count_min": 31,
+    "candidate_accuracy_min": 0.96875,
+    "candidate_semantic_correct_min": 8,
+    "candidate_procedural_correct_min": 7,
+    "candidate_interpretive_correct_min": 7,
+    "candidate_none_correct": 8,
+    "newly_correct_vs_matched_control_min": 2,
+    "regression_vs_matched_control_max": 0,
+    "critical_false_positive_count_max": 0,
+    "parse_success_rate_min": 1.0,
+    "median_fallback_seconds_max": 4.0,
+    "warm_p95_fallback_seconds_max": 6.0
+  },
+  "post_result_changes_authorized": false,
+  "same_dataset_retest_authorized": false,
+  "runtime_or_generalization_claim_authorized": false
+}
