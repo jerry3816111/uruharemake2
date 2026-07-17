@@ -1,0 +1,113 @@
+{
+  "schema": "uruha_consolidation_support_runtime_harness_lock_v1",
+  "experiment_id": "consolidation_support_runtime_v1_pilot",
+  "created_at": "2026-07-18T02:45:00+09:00",
+  "implementation_merge_commit": "c8703743c223bca78c6a23fe585fab9821a8cc64",
+  "formal_model_inference_authorized_after_lock_merge": true,
+  "production_activation_authorized": false,
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "ollama_version": "0.31.1"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/consolidation_support_runtime_v1_preregistration.json",
+      "sha256": "9654cf109c816b414c347fb4e30e83fe3372919d4b30d18bf58bdf8cd2747849"
+    },
+    "dataset": {
+      "path": "datasets/consolidation_support_runtime_v1_pilot.json",
+      "sha256": "80f079b71626b2bc4294c32481dd179481fa7764106a9f966eceff1ada6c680b"
+    },
+    "runtime_helper": {
+      "path": "consolidation_support_runtime.py",
+      "sha256": "66b8224ad342948df4591846c7e5b5dbfafc13496d019dd263d7aa83c4b46300"
+    },
+    "model_adapter": {
+      "path": "consolidation_support_runtime_v1_model.py",
+      "sha256": "76405450496f513ed628bd631d70316d8e47b7d5c546182a2ecf72b68fbd6154"
+    },
+    "brain_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "f5db224b02aa499193cb77974eb4535cd7d75ece9061a15738bb3a8bce48ee8b"
+    },
+    "runner": {
+      "path": "run_consolidation_support_runtime_v1_pilot.py",
+      "sha256": "ee7aa72efbea8094bc54a626b661aec9bab6d6776cd4d9260dd1efcbab488d5a"
+    },
+    "analyzer": {
+      "path": "analyze_consolidation_support_runtime_v1_pilot.py",
+      "sha256": "01956e1f5dd3bc8789dc61ecdcf05156afba29d83305119da25aeb39b0608121"
+    },
+    "preregistration_test": {
+      "path": "test_consolidation_support_runtime_v1_preregistration.py",
+      "sha256": "6ef07d89f263a0863cc87bfd025e82c3a575cd39a972ac77428c650fe4c10927"
+    },
+    "runtime_test": {
+      "path": "test_consolidation_support_runtime_v1_runtime.py",
+      "sha256": "ae40e63b248818d10b73c7bc24b938f29399a590236fd36ebce3730502f0a688"
+    },
+    "model_test": {
+      "path": "test_consolidation_support_runtime_v1_model.py",
+      "sha256": "d8a4271fc7738dc7f3f0797d1bdf85eb9e0fe7055d2c091dda8521d441e8115c"
+    },
+    "analyzer_test": {
+      "path": "test_consolidation_support_runtime_v1_analyzer.py",
+      "sha256": "91cf5634a3d332f724d6fbd8d70b2ecb62f19137ca3a15c778cd0ba93cb30dc9"
+    },
+    "harness_test": {
+      "path": "test_consolidation_support_runtime_v1_harness.py",
+      "sha256": "a39c416425155067435d97491c25e1c6632688ab0b7c56c3338e1469f296420f"
+    }
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_memory_runtime_activation.py",
+      "test_memory_runtime_helpers.py",
+      "test_memory_persistent_candidate_integration.py",
+      "test_memory_provenance_reread.py",
+      "test_memory_evidence_ledger.py",
+      "test_memory_cue_extractive.py",
+      "test_memory_highlight_span_contract.py",
+      "test_memory_utterance_attention.py",
+      "test_typed_reflection_runtime_v3.py",
+      "test_consolidation_source_provenance_v1_preregistration.py",
+      "test_consolidation_source_provenance_v1_runtime.py",
+      "test_consolidation_source_provenance_v1_result.py",
+      "test_consolidation_source_pointer_v1_preregistration.py",
+      "test_consolidation_source_pointer_v1_result.py",
+      "test_consolidation_support_attribution_v1_preregistration.py",
+      "test_consolidation_support_attribution_v1_harness.py",
+      "test_consolidation_support_attribution_v1_result.py",
+      "test_consolidation_support_runtime_v1_preregistration.py",
+      "test_consolidation_support_runtime_v1_runtime.py",
+      "test_consolidation_support_runtime_v1_model.py",
+      "test_consolidation_support_runtime_v1_analyzer.py",
+      "test_consolidation_support_runtime_v1_harness.py"
+    ],
+    "expected_test_count": 166,
+    "must_pass_before_first_model_call": true
+  },
+  "formal_run": {
+    "runner_branch_exact": "main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "model_call_count_exact": 18,
+    "transport_attempt_count_exact": 18,
+    "post_failure_retry_authorized": false,
+    "resume_authorized": false,
+    "result_overwrite_authorized": false,
+    "gold_or_expected_outcome_passed_to_runtime": false,
+    "production_database_write_authorized": false
+  },
+  "result_artifacts": [
+    "reports/consolidation_support_runtime_v1_pilot_raw.json",
+    "reports/consolidation_support_runtime_v1_pilot_analysis.json",
+    "reports/consolidation_support_runtime_v1_pilot_analysis.md",
+    "configs/consolidation_support_runtime_v1_result_lock.json"
+  ],
+  "decision_boundary": "A passing formal run may keep only the disabled-by-default candidate and authorize a separately preregistered fresh retrieval-impact pilot. It cannot activate production consolidation or support dialogue or human-likeness claims."
+}

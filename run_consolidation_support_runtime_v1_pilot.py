@@ -10,6 +10,7 @@ import io
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.request
@@ -280,7 +281,10 @@ def _runtime_cases(dataset):
 
 
 def _run_preflight(lock):
-    command = lock["preflight"]["command"]
+    command = [
+        sys.executable,
+        *lock["preflight"]["arguments"],
+    ]
     completed = subprocess.run(
         command,
         cwd=ROOT,
