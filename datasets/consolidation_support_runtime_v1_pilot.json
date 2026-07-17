@@ -1,0 +1,393 @@
+{
+  "schema": "uruha_consolidation_support_runtime_pilot_dataset_v1",
+  "experiment_id": "consolidation_support_runtime_v1_pilot",
+  "created_at": "2026-07-18T01:45:00+09:00",
+  "provenance": {
+    "author": "Codex",
+    "status": "codex_labeled_fresh_pilot_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false,
+    "consumed_case_reuse": false
+  },
+  "cases": [
+    {
+      "id": "csr1_eng_balcony_herbs",
+      "language": "eng",
+      "scenario_family": "balcony_herb_care",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "My coworker keeps succulents beside the office window.",
+          "assistant": "That sounds like a bright spot for them."
+        },
+        {
+          "index": 2,
+          "user": "I grow basil and mint in two pots on my apartment balcony.",
+          "assistant": "So the balcony has both basil and mint."
+        },
+        {
+          "index": 3,
+          "user": "Last Friday evening I watered both balcony pots.",
+          "assistant": "You watered both of them on Friday evening."
+        },
+        {
+          "index": 4,
+          "user": "The public garden near the station closes at six.",
+          "assistant": "Then an evening visit would need to be early."
+        },
+        {
+          "index": 5,
+          "user": "After Sunday's heat I watered the same balcony herbs again.",
+          "assistant": "The heat led you to water those herbs again."
+        },
+        {
+          "index": 6,
+          "user": "When I ask about those plants later, please ask how damp the soil is before telling me to add water.",
+          "assistant": "I should check the soil moisture with you first."
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "The user watered the balcony herbs on Friday evening and again after Sunday's heat.",
+        "wisdom_rule": "The user grows basil and mint on the apartment balcony.",
+        "procedural_rule": "When discussing the balcony herbs, ask about soil moisture before recommending more water.",
+        "salience": 0.73
+      },
+      "gold_support_event_indices": {
+        "episodic": [
+          3,
+          5
+        ],
+        "wisdom": [
+          2
+        ],
+        "procedural": [
+          6
+        ]
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "stored",
+        "stored_memory_kinds": [
+          "episodic",
+          "wisdom",
+          "procedural"
+        ],
+        "suppressed_memory_kinds": []
+      }
+    },
+    {
+      "id": "csr1_eng_ceramics_workshop",
+      "language": "eng",
+      "scenario_family": "community_ceramics_workshop",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "I joined the community center's pottery workshop on Tuesday.",
+          "assistant": "Tuesday was your first workshop session."
+        },
+        {
+          "index": 2,
+          "user": "The instructor owns a large electric kiln.",
+          "assistant": "The kiln belongs to the instructor."
+        },
+        {
+          "index": 3,
+          "user": "My neighbor is learning watercolor painting instead.",
+          "assistant": "Your neighbor chose a different art class."
+        },
+        {
+          "index": 4,
+          "user": "On Thursday I went back there to practice glazing a bowl.",
+          "assistant": "You returned on Thursday for glazing practice."
+        },
+        {
+          "index": 5,
+          "user": "I might buy a small shelf for finished pieces someday.",
+          "assistant": "That is still only a possible future purchase."
+        },
+        {
+          "index": 6,
+          "user": "For future ceramic project choices, compare the drying time before you recommend one to me.",
+          "assistant": "I should compare drying time first."
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "The user attended a pottery workshop on Tuesday and returned to practice glazing on Thursday.",
+        "wisdom_rule": "The user owns an electric kiln at home.",
+        "procedural_rule": "For future ceramic project choices, compare drying time before recommending an option.",
+        "salience": 0.68
+      },
+      "gold_support_event_indices": {
+        "episodic": [
+          1,
+          4
+        ],
+        "wisdom": [],
+        "procedural": [
+          6
+        ]
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "stored",
+        "stored_memory_kinds": [
+          "episodic",
+          "procedural"
+        ],
+        "suppressed_memory_kinds": [
+          "wisdom"
+        ]
+      }
+    },
+    {
+      "id": "csr1_jpn_night_bus",
+      "language": "jpn",
+      "scenario_family": "overnight_bus_travel",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "先週の金曜日に大阪まで夜行バスで移動した。",
+          "assistant": "金曜の夜に夜行バスを使ったんだね。"
+        },
+        {
+          "index": 2,
+          "user": "移動中に眠るときは耳栓を使うのが好き。",
+          "assistant": "移動中の睡眠には耳栓が合うんだね。"
+        },
+        {
+          "index": 3,
+          "user": "駅前の本屋は今月改装中らしい。",
+          "assistant": "今月はその本屋に入りにくそうだね。"
+        },
+        {
+          "index": 4,
+          "user": "今週の月曜日も東京へ行くために夜行バスへ乗った。",
+          "assistant": "月曜にも夜行バスを使ったんだね。"
+        },
+        {
+          "index": 5,
+          "user": "これから乗り物を比べるときは、値段より眠れる時間を先に見てほしい。",
+          "assistant": "今後は睡眠時間を先に比べるよ。"
+        },
+        {
+          "index": 6,
+          "user": "兄は新幹線の窓側が好きだと言っていた。",
+          "assistant": "それはお兄さんの好みだね。"
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "ユーザーは先週金曜と今週月曜に夜行バスで移動した。",
+        "wisdom_rule": "ユーザーは移動中に眠るとき耳栓を使うのが好き。",
+        "procedural_rule": "乗り物を比較するときは、値段より眠れる時間を先に確認する。",
+        "salience": 0.71
+      },
+      "gold_support_event_indices": {
+        "episodic": [
+          1,
+          4
+        ],
+        "wisdom": [
+          2
+        ],
+        "procedural": [
+          5
+        ]
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "stored",
+        "stored_memory_kinds": [
+          "episodic",
+          "wisdom",
+          "procedural"
+        ],
+        "suppressed_memory_kinds": []
+      }
+    },
+    {
+      "id": "csr1_jpn_bakery_shift",
+      "language": "jpn",
+      "scenario_family": "new_bakery_job",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "駅前のパン屋で働くかどうか、まだ少し迷っている。",
+          "assistant": "まだ働くと決め切ったわけではないんだね。"
+        },
+        {
+          "index": 2,
+          "user": "もし採用されたら金曜日から初勤務になる予定。",
+          "assistant": "金曜開始は予定で、まだ確定した勤務実績ではないね。"
+        },
+        {
+          "index": 3,
+          "user": "新しい職場なら遅番より早番のほうが好き。",
+          "assistant": "勤務時間は早番のほうが好みなんだね。"
+        },
+        {
+          "index": 4,
+          "user": "仕事の相談では、励ます前に勤務時間を確認してほしい。",
+          "assistant": "先に勤務時間を確認するよ。"
+        },
+        {
+          "index": 5,
+          "user": "昨日は店の制服を見せてもらっただけ。",
+          "assistant": "昨日は制服を見ただけで、研修ではないんだね。"
+        },
+        {
+          "index": 6,
+          "user": "友達は月曜に別のカフェで研修を受けた。",
+          "assistant": "月曜に研修を受けたのは友達のほうだね。"
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "ユーザーは月曜にパン屋の研修を受け、金曜に初勤務を終えた。",
+        "wisdom_rule": "ユーザーは新しい職場では遅番より早番を好む。",
+        "procedural_rule": "仕事の相談では、励ます前に勤務時間を確認する。",
+        "salience": 0.77
+      },
+      "gold_support_event_indices": {
+        "episodic": [],
+        "wisdom": [
+          3
+        ],
+        "procedural": [
+          4
+        ]
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "rejected_unsupported_episodic",
+        "stored_memory_kinds": [],
+        "suppressed_memory_kinds": [
+          "episodic",
+          "wisdom",
+          "procedural"
+        ]
+      }
+    },
+    {
+      "id": "csr1_cmn_language_exchange",
+      "language": "cmn",
+      "scenario_family": "evening_language_exchange",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "我星期二晚上參加了社區的語言交換活動。",
+          "assistant": "你星期二有去參加語言交換。"
+        },
+        {
+          "index": 2,
+          "user": "練習外語時，我喜歡先把整句說完再聽糾正。",
+          "assistant": "你偏好說完整句後再接受糾正。"
+        },
+        {
+          "index": 3,
+          "user": "活動旁邊的咖啡店最近換了招牌。",
+          "assistant": "那是活動地點附近的變化。"
+        },
+        {
+          "index": 4,
+          "user": "星期四晚上我又去參加了同一個語言交換活動。",
+          "assistant": "你星期四也再次參加了。"
+        },
+        {
+          "index": 5,
+          "user": "以後陪我練習時，請等我說完整句再指出錯誤。",
+          "assistant": "之後我會等你說完再糾正。"
+        },
+        {
+          "index": 6,
+          "user": "我妹妹比較喜歡用單字卡自己練習。",
+          "assistant": "那是你妹妹的學習方式。"
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "使用者星期二和星期四晚上都參加了同一個語言交換活動。",
+        "wisdom_rule": "使用者練習外語時偏好先說完整句再聽糾正。",
+        "procedural_rule": "陪使用者練習外語時，等完整句說完再指出錯誤。",
+        "salience": 0.75
+      },
+      "gold_support_event_indices": {
+        "episodic": [
+          1,
+          4
+        ],
+        "wisdom": [
+          2
+        ],
+        "procedural": [
+          5
+        ]
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "stored",
+        "stored_memory_kinds": [
+          "episodic",
+          "wisdom",
+          "procedural"
+        ],
+        "suppressed_memory_kinds": []
+      }
+    },
+    {
+      "id": "csr1_cmn_desk_lamp",
+      "language": "cmn",
+      "scenario_family": "home_office_lighting",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "星期一我在書桌旁裝了一盞暖色檯燈。",
+          "assistant": "星期一你裝好了暖色檯燈。"
+        },
+        {
+          "index": 2,
+          "user": "星期四我把同一盞檯燈移到螢幕左邊。",
+          "assistant": "星期四你調整了那盞燈的位置。"
+        },
+        {
+          "index": 3,
+          "user": "晚上工作時，我比起白光更喜歡暖色燈光。",
+          "assistant": "你晚間工作偏好暖色光。"
+        },
+        {
+          "index": 4,
+          "user": "你剛才建議我每次都先量房間亮度。",
+          "assistant": "那是我剛才提出的建議。"
+        },
+        {
+          "index": 5,
+          "user": "今天先直接告訴我燈要放左邊還是右邊就好。",
+          "assistant": "今天這次你只要直接的位置建議。"
+        },
+        {
+          "index": 6,
+          "user": "客廳的落地燈是房東留下來的。",
+          "assistant": "那盞落地燈不屬於書桌設備。"
+        }
+      ],
+      "generated_payload": {
+        "episodic_summary": "使用者星期一安裝暖色檯燈，星期四又把它移到螢幕左邊。",
+        "wisdom_rule": "使用者晚上工作時比起白光更偏好暖色燈光。",
+        "procedural_rule": "未來回答照明問題時，每次都要先要求使用者測量房間亮度。",
+        "salience": 0.7
+      },
+      "gold_support_event_indices": {
+        "episodic": [
+          1,
+          2
+        ],
+        "wisdom": [
+          3
+        ],
+        "procedural": []
+      },
+      "expected_candidate_outcome": {
+        "batch_status": "stored",
+        "stored_memory_kinds": [
+          "episodic",
+          "wisdom"
+        ],
+        "suppressed_memory_kinds": [
+          "procedural"
+        ]
+      }
+    }
+  ]
+}

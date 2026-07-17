@@ -1,0 +1,224 @@
+{
+  "schema": "uruha_consolidation_support_runtime_preregistration_v1",
+  "experiment_id": "consolidation_support_runtime_v1_pilot",
+  "created_at": "2026-07-18T01:55:00+09:00",
+  "evidence_role": "fresh_temporary_chroma_runtime_integration_pilot",
+  "problem": "The current consolidation runtime attaches every source episode in a batch to every derived episodic, wisdom, and procedural memory. It also writes the three derived records sequentially and can mark source episodes consolidated after a later wisdom or procedural write silently fails.",
+  "priority_reason": "The frozen support-attribution development result showed that a local 4B model can sharply reduce false source links, but no evidence yet shows that this mechanism can safely control actual Chroma writes. Without atomic runtime integration, unsupported or partially written memories can enter later dialogue retrieval.",
+  "hypothesis": "With the consolidation generator output held fixed, a staged Qwen3.5 4B support-attribution pass can store only supported derived memories with exact digest-bound source IDs, reject a batch whose episodic summary is unsupported, and leave no partial writes after attribution or persistence failures.",
+  "prior_evidence": {
+    "support_attribution_result": {
+      "path": "configs/consolidation_support_attribution_v1_result_lock.json",
+      "sha256": "385d22c5ac52d8a26cf7eb98a21005c24df4c543b1844f2c574029327a20ad97",
+      "decision": "keep_support_attribution_candidate_for_fresh_runtime_integration_pilot",
+      "exact_support_set": "16/18",
+      "false_source_count_before": 93,
+      "false_source_count_after": 1,
+      "unsupported_empty_after": "6/6"
+    }
+  },
+  "evidence_boundary": "This experiment tests temporary-database integration with frozen generated memories. It does not test consolidation generation quality, later retrieval, long-term recall, final dialogue quality, human likeness, or biological equivalence.",
+  "dataset": {
+    "path": "datasets/consolidation_support_runtime_v1_pilot.json",
+    "sha256": "80f079b71626b2bc4294c32481dd179481fa7764106a9f966eceff1ada6c680b",
+    "case_count": 6,
+    "source_events_per_case": 6,
+    "derived_memory_count": 18,
+    "language_counts": {
+      "eng": 2,
+      "jpn": 2,
+      "cmn": 2
+    },
+    "supported_derived_memory_count": 15,
+    "unsupported_derived_memory_count": 3,
+    "unsupported_memory_kind_counts": {
+      "episodic": 1,
+      "wisdom": 1,
+      "procedural": 1
+    },
+    "expected_candidate_stored_record_count": 13,
+    "expected_candidate_rejected_batch_count": 1,
+    "status": "codex_labeled_fresh_pilot_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false,
+    "prior_exact_source_text_reuse": false
+  },
+  "frozen_runtime_baseline": {
+    "commit": "bff1d4c81c7abfce568d4c2e20dc58c996972458",
+    "path": "uruha_brain_mac.py",
+    "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a",
+    "condition": "current_coarse_batch_provenance_without_support_attributor",
+    "derived_record_count": 18,
+    "derived_records_with_exact_support_set": 0,
+    "unsupported_derived_records_written": 3,
+    "true_support_source_count": 20,
+    "false_support_source_count": 88,
+    "evidence_precision": 0.1852,
+    "evidence_recall": 1.0,
+    "unsupported_empty_count": 0,
+    "source_episodes_marked_consolidated": 36,
+    "model_calls": 0
+  },
+  "single_manipulated_variable": "optional_per_derived_memory_support_attribution_between_frozen_payload_generation_and_chroma_persistence",
+  "conditions": {
+    "coarse_runtime_control": "Run the current consolidation method in a new temporary Chroma directory with a deterministic generator stub returning each frozen payload. No support attributor is supplied, so every derived record receives all six source IDs.",
+    "support_attributed_runtime_candidate": "Run the same consolidation method in a separate new temporary Chroma directory with the same source events and generator payload, then stage one frozen Qwen3.5 4B support-index call for each of the three derived memories before any Chroma write."
+  },
+  "controlled_variables": [
+    "six frozen cases and order",
+    "six chronological source events per case",
+    "deterministic generator stub and exact generated payload",
+    "salience and all derived memory text",
+    "new temporary Chroma directory per condition and case",
+    "MemoryManager class and collection schema",
+    "source episode IDs, documents, and initial metadata",
+    "Qwen3.5 4B model digest",
+    "support prompt, tool schema, event rendering, and generation settings",
+    "one support-model attempt per derived memory",
+    "working-memory retrieval and scoring remain untouched",
+    "typed reflection remains disabled",
+    "production Chroma path is never opened",
+    "gold source indices remain analyzer-only"
+  ],
+  "authorized_runtime_changes_after_preregistration_merge": [
+    "Add an optional support_attributor argument whose default preserves the current production behavior.",
+    "When the optional attributor is present, stage and validate support indices for all non-NO_RULE derived memories before writing any derived record.",
+    "Store program-validated support episode ID JSON, support count, support-ID digest, attribution status, attribution contract version, and model digest on each supported derived record.",
+    "Preserve the existing complete source_episode_ids metadata as batch lineage distinct from exact support_episode_ids.",
+    "Suppress an unsupported wisdom or procedural record without suppressing a supported episodic summary.",
+    "Reject the entire batch if the episodic summary receives an empty support set.",
+    "On attribution, derived-write, or source-state transition failure, roll back candidate derived writes, leave every source pending, and return a retryable failure mode.",
+    "Expose stored and suppressed memory kinds plus attribution status in the maintenance result."
+  ],
+  "prohibited_changes": [
+    "Change the existing consolidation generator prompt, payload, heuristic fallback, model name, or temperature.",
+    "Pass gold_support_event_indices, expected outcomes, case IDs, labels, or scorer feedback to either model.",
+    "Add case-, language-, topic-, or benchmark-specific rules.",
+    "Change working-memory retrieval, ranking, output generation, right-brain behavior, or reflection.",
+    "Activate the optional attributor in production before this pilot result is frozen and reviewed.",
+    "Read, write, migrate, or inspect the user's production Chroma database.",
+    "Use an external or paid model.",
+    "Retry a completed, failed, timed-out, or ambiguous formal model request.",
+    "Change the dataset, prompt, tool contract, model, generation settings, thresholds, or scorer after the implementation harness is merged."
+  ],
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "blob_bytes": 3389983735,
+    "role": "narrow_local_support_index_attributor_only"
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260718,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 128,
+    "keep_alive": "15m",
+    "transport_attempts": 1,
+    "timeout_seconds": 120
+  },
+  "fixed_support_contract": {
+    "version": "consolidation_support_runtime_v1",
+    "system_prompt": "You receive one already-generated derived memory and six chronological source events. Call attribute_memory_support exactly once and return no narrative text. Select only event indices whose User text explicitly supports every material claim in the derived memory. Assistant text is context and never evidence by itself. A topic mention, missing value, possibility, temporary instance, third-party fact, or contradiction is not support. A later update overrides older evidence when the derived memory claims a current state. For a recurring generalized memory, select every explicit repeated instance needed to establish the pattern. For a procedural memory, select only an explicit User instruction for future assistant behavior; do not infer a standing rule from one assistant response or one-time request. If no source event remains sufficient, return an empty list. Do not rewrite, repair, or classify the memory.",
+    "event_rendering": "Event E{index}\\nUser: {user}\\nAssistant: {assistant}",
+    "tool_name": "attribute_memory_support",
+    "only_argument": "support_event_indices",
+    "valid_indices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "invalid_behavior": "Fail the entire candidate batch before any Chroma write."
+  },
+  "candidate_runtime_semantics": {
+    "supported_episodic": "Store the episodic summary with exact support metadata and permit the batch to continue.",
+    "unsupported_episodic": "Store nothing from the batch and leave all six source episodes pending.",
+    "unsupported_optional_rule": "Suppress only the unsupported wisdom or procedural record.",
+    "invalid_or_transport_failure": "Store nothing from the batch and leave all source episodes pending for retry.",
+    "derived_write_failure": "Delete every candidate derived record already inserted for the batch and leave source episodes pending.",
+    "source_transition_failure": "Restore source metadata, delete every candidate derived record for the batch, and leave the batch retryable.",
+    "success": "Mark all six source episodes consolidated only after every intended derived write succeeds."
+  },
+  "formal_run_invariants": {
+    "candidate_model_call_count_exact": 18,
+    "candidate_transport_attempt_count_exact": 18,
+    "calls_per_derived_memory_exact": 1,
+    "condition_order": [
+      "coarse_runtime_control",
+      "support_attributed_runtime_candidate"
+    ],
+    "case_order": [
+      "csr1_eng_balcony_herbs",
+      "csr1_eng_ceramics_workshop",
+      "csr1_jpn_night_bus",
+      "csr1_jpn_bakery_shift",
+      "csr1_cmn_language_exchange",
+      "csr1_cmn_desk_lamp"
+    ],
+    "post_failure_retry_authorized": false,
+    "interim_gold_inspection_authorized": false,
+    "formal_run_count_exact": 1
+  },
+  "success_gates": {
+    "artifact_integrity_valid": true,
+    "candidate_exact_support_set_count_min": 16,
+    "candidate_evidence_precision_min": 0.9,
+    "candidate_evidence_recall_min": 0.9,
+    "candidate_unsupported_empty_count_exact": 3,
+    "candidate_false_support_source_count_max": 2,
+    "candidate_missed_support_source_count_max": 1,
+    "candidate_parse_success_count_exact": 18,
+    "candidate_index_contract_success_count_exact": 18,
+    "candidate_transport_error_count_exact": 0,
+    "candidate_median_attribution_seconds_max": 4.5,
+    "candidate_warm_p95_attribution_seconds_max": 6.5,
+    "candidate_batch_p95_seconds_max": 15.0,
+    "candidate_stored_record_count_exact": 13,
+    "candidate_stored_records_with_exact_support_metadata_exact": 13,
+    "candidate_unsupported_derived_records_written_exact": 0,
+    "candidate_successful_batch_count_exact": 5,
+    "candidate_rejected_unsupported_episodic_batch_count_exact": 1,
+    "candidate_source_episodes_marked_consolidated_exact": 30,
+    "candidate_source_episodes_left_pending_exact": 6,
+    "candidate_partial_batch_count_exact": 0,
+    "candidate_production_database_writes_exact": 0,
+    "injected_attribution_failure_is_atomic": true,
+    "injected_each_collection_write_failure_is_atomic": true,
+    "injected_source_transition_failure_is_atomic": true,
+    "retry_after_injected_failure_creates_one_batch_only": true,
+    "existing_memory_and_reflection_regression_tests_pass": true
+  },
+  "decision_rule": {
+    "pass": "Keep the optional runtime integration behind its disabled-by-default boundary and authorize a separate fresh retrieval-impact pilot. Do not activate it in production or claim dialogue improvement.",
+    "fail_model_quality": "If support accuracy gates fail, drop the runtime candidate and do not tune on these six cases.",
+    "fail_atomicity": "If any failure leaves partial derived writes or incorrectly consolidated sources, revert the runtime candidate regardless of model accuracy.",
+    "invalid": "If hashes, model digest, formal call counts, gold isolation, temporary-database isolation, or frozen artifacts drift, invalidate the run instead of interpreting it."
+  },
+  "result_artifacts": [
+    "reports/consolidation_support_runtime_v1_pilot_raw.json",
+    "reports/consolidation_support_runtime_v1_pilot_analysis.json",
+    "reports/consolidation_support_runtime_v1_pilot_analysis.md",
+    "configs/consolidation_support_runtime_v1_result_lock.json"
+  ],
+  "evidence_limits": {
+    "temporary_runtime_integration_claim_authorized": true,
+    "production_activation_authorized": false,
+    "production_data_migration_authorized": false,
+    "consolidation_generation_quality_claim_authorized": false,
+    "retrieval_improvement_claim_authorized": false,
+    "long_term_recall_improvement_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false
+  },
+  "runtime_change_before_preregistration_merge_authorized": false,
+  "formal_model_inference_before_harness_merge_authorized": false
+}
