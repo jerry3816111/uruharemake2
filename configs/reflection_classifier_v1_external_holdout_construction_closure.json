@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_reflection_classifier_external_holdout_construction_closure_v1",
+  "closed_at": "2026-07-17T18:18:22+09:00",
+  "status": "completed_construction_passed",
+  "original_preregistration": {
+    "commit": "c4fbad4",
+    "path": "configs/reflection_classifier_v1_external_holdout_construction_preregistration.json",
+    "sha256": "f6dd52b9dc886a3d5a2e6e24295d6e43fe94e7be0ffc4619aa86446d9a447bd3"
+  },
+  "artifact_bindings": {
+    "preregistration": "configs/reflection_classifier_v1_external_holdout_construction_preregistration.json",
+    "preregistration_sha256": "f6dd52b9dc886a3d5a2e6e24295d6e43fe94e7be0ffc4619aa86446d9a447bd3",
+    "source_snapshot": "datasets/sources/tatoeba_reflection_classifier_v1_selected.json",
+    "source_snapshot_sha256": "25532892eb52b44e760186572450f213ee079acf8b00c600d8779909eac45c0d",
+    "source_fetcher": "fetch_tatoeba_reflection_classifier_v1_source.py",
+    "source_fetcher_sha256": "ffb45c58c1d3859d46aecc7fc493bb560e1d07298c97855d105ba0690dd084dc",
+    "builder": "build_reflection_classifier_v1_external_holdout.py",
+    "builder_sha256": "bed00bf595c3dfc9a92359389fffcf03ca2052848816511e27724b6695702680",
+    "auditor": "audit_reflection_classifier_v1_external_holdout.py",
+    "auditor_sha256": "4865f59d562b39c4b335079b9ca4114b2dc6317ce2ae603303c5bd7e91b5e059",
+    "dataset": "datasets/reflection_classifier_v1_external_holdout.json",
+    "dataset_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+    "audit_json": "reports/reflection_classifier_v1_external_holdout_audit.json",
+    "audit_json_sha256": "52dae426a70c618b46f3822e5e557072e38adb6928a0a485af17cf8c265fa876",
+    "audit_markdown": "reports/reflection_classifier_v1_external_holdout_audit.md",
+    "audit_markdown_sha256": "12d40fbd7894777f37e46cb53ee240a9d7f8202a07c1ffb7de91082188242218",
+    "authored_development_dataset": "datasets/reflection_classifier_v1_development.json",
+    "authored_development_dataset_sha256": "2bc0d9ab10a0892e5e3b62766276110b2df61ea253a76ca7f7fdee5c75291ebb",
+    "construction_test": "test_reflection_classifier_v1_external_holdout_construction.py",
+    "construction_test_sha256": "5df14cfec134b3722392b4387682a2672c3ae3abc12c7db1e79aa82c861755bf"
+  },
+  "construction_result": {
+    "case_count": 32,
+    "class_counts": {
+      "semantic": 8,
+      "procedural": 8,
+      "interpretive": 8,
+      "none": 8
+    },
+    "language_counts": {
+      "eng": 15,
+      "jpn": 11,
+      "cmn": 6
+    },
+    "license_counts": {
+      "CC BY 2.0 FR": 32
+    },
+    "exact_development_text_overlap_count": 0,
+    "exact_source_text_mismatch_count": 0,
+    "all_audit_checks_passed": true
+  },
+  "pre_evaluation_correction_log": {
+    "initial_fetch_status": "failed",
+    "trigger_sentence_id": 160756,
+    "failure": "fetcher_rejected_official_null_owner_as_incomplete_provenance",
+    "correction": "accept_and_preserve_official_null_owner",
+    "affected_sentence_ids": [160756, 73647, 172087],
+    "selected_case_or_label_changed": false,
+    "sentence_text_changed": false,
+    "success_gate_changed": false,
+    "legacy_classifier_evaluated_before_correction": false,
+    "candidate_classifier_evaluated_before_correction": false,
+    "model_inference_used_before_correction": false
+  },
+  "provenance": {
+    "sentence_text_and_metadata": "Exact responses from the official Tatoeba read-only API v1, including preserved null owners for three older sentences.",
+    "reflection_labels": "Research operational labels frozen in the preregistration; they are not official Tatoeba labels.",
+    "base_model_pretraining_exclusion_guaranteed": false
+  },
+  "decision": "authorize_external_holdout_evaluation_harness_freeze_only",
+  "evidence_boundary": "Construction PASS proves source traceability, exact text preservation, preregistered balance, and zero exact authored-development overlap. It is not a classifier result and cannot authorize runtime reflection writes or broad human-likeness claims.",
+  "classifier_evaluation_performed": false,
+  "runtime_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
