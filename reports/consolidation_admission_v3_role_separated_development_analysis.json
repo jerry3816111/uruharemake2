@@ -1,0 +1,350 @@
+{
+  "schema": "uruha_consolidation_admission_role_separated_analysis_v3",
+  "experiment_id": "consolidation_admission_v3_role_separated_development",
+  "generated_at": "2026-07-17T22:36:04+09:00",
+  "evidence_status": "development_pilot_no_runtime_or_generalization_claim",
+  "preregistration_sha256": "f32435e7339a47119f9a485f3b4d5ec65500da502319b4dfd1e0f914e80c758a",
+  "harness_lock_sha256": "68383c1962801451b7077572ed1a1e84da1193d6a904ecce41124f5dec52a453",
+  "dataset_sha256": "b4e745ee4b65284f28ae052beba49891d1a1e86384631e793419d71e7680249d",
+  "raw_result_sha256": "f4c162ab714083707a2ad97a002c92b5258e093bc346a01a85a887dd6da63078",
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "matched_result": {
+    "case_count": 18,
+    "model_call_count": 36,
+    "control": {
+      "correct_count": 9,
+      "accuracy": 0.5,
+      "observed_target_counts": {
+        "none": 13,
+        "wisdom": 5
+      },
+      "parse_success_count": 18,
+      "parse_success_rate": 1.0,
+      "median_wall_seconds": 2.845,
+      "warm_p95_wall_seconds": 2.9629
+    },
+    "candidate": {
+      "correct_count": 10,
+      "accuracy": 0.5556,
+      "observed_target_counts": {
+        "none": 11,
+        "procedural": 3,
+        "wisdom": 4
+      },
+      "parse_success_count": 14,
+      "parse_success_rate": 0.7778,
+      "median_wall_seconds": 2.3959,
+      "warm_p95_wall_seconds": 2.5319,
+      "semantic_frame_exact_count": 7,
+      "semantic_frame_exact_rate": 0.3889,
+      "evidence_grounded_count": 9,
+      "evidence_grounded_rate": 0.5,
+      "positive_evidence_grounded_count": 8,
+      "positive_evidence_grounded_rate": 0.6667,
+      "derived_applicability_success_count": 10,
+      "derived_applicability_success_rate": 0.5556,
+      "index_contract_success_count": 12,
+      "index_contract_success_rate": 0.6667
+    },
+    "accuracy_delta_vs_control": 0.0556,
+    "net_correct_gain_vs_control": 1,
+    "class_metrics": {
+      "wisdom": {
+        "total": 6,
+        "candidate_correct": 3,
+        "candidate_accuracy": 0.5
+      },
+      "procedural": {
+        "total": 6,
+        "candidate_correct": 2,
+        "candidate_accuracy": 0.3333
+      },
+      "none": {
+        "total": 6,
+        "candidate_correct": 5,
+        "candidate_accuracy": 0.8333
+      }
+    },
+    "newly_correct_count": 3,
+    "newly_correct_case_ids": [
+      "cav3_eng_wisdom_color_accessibility",
+      "cav3_eng_procedural_recap_signal",
+      "cav3_jpn_procedural_parallel_translation"
+    ],
+    "regression_count": 2,
+    "regression_case_ids": [
+      "cav3_eng_wisdom_keyboard_navigation",
+      "cav3_cmn_wisdom_mind_map"
+    ],
+    "candidate_false_long_term_write_count": 1,
+    "candidate_false_long_term_write_case_ids": [
+      "cav3_cmn_none_uncertain_guitar"
+    ],
+    "candidate_missed_long_term_write_count": 6,
+    "candidate_missed_long_term_write_case_ids": [
+      "cav3_eng_wisdom_keyboard_navigation",
+      "cav3_eng_procedural_comparison_order",
+      "cav3_jpn_procedural_debug_reproduction",
+      "cav3_cmn_wisdom_mind_map",
+      "cav3_cmn_procedural_quick_view",
+      "cav3_cmn_procedural_schedule_conflicts"
+    ],
+    "gate_checks": {
+      "candidate_correct_count_min": false,
+      "candidate_accuracy_min": false,
+      "candidate_wisdom_correct_min": false,
+      "candidate_procedural_correct_min": false,
+      "candidate_none_correct_min": true,
+      "candidate_semantic_frame_exact_count_min": false,
+      "candidate_evidence_grounded_count_min": false,
+      "candidate_positive_evidence_grounded_count_min": false,
+      "newly_correct_vs_control_min": false,
+      "regression_vs_control_max": false,
+      "net_correct_gain_vs_control_min": false,
+      "candidate_false_long_term_write_count_max": true,
+      "candidate_missed_long_term_write_count_max": false,
+      "candidate_tool_parse_success_rate_min": false,
+      "candidate_index_contract_success_rate_min": false,
+      "model_call_count_exact": true,
+      "control_median_wall_seconds_max": true,
+      "candidate_median_wall_seconds_max": true,
+      "control_warm_p95_wall_seconds_max": true,
+      "candidate_warm_p95_wall_seconds_max": true
+    },
+    "all_gates_pass": false,
+    "matched_rows": [
+      {
+        "id": "cav3_eng_wisdom_color_accessibility",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_eng_wisdom_keyboard_navigation",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "wisdom",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_eng_procedural_comparison_order",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_eng_procedural_recap_signal",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "procedural",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_eng_none_neighbor_dog",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_eng_none_single_formal_intro",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_jpn_wisdom_numeric_notation",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "procedural",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_jpn_wisdom_morning_focus",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "wisdom",
+        "candidate_target": "wisdom",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_jpn_procedural_parallel_translation",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "procedural",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_jpn_procedural_debug_reproduction",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_jpn_none_hotel_week",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_jpn_none_friend_exam",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_cmn_wisdom_motion_sensitivity",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "wisdom",
+        "candidate_target": "wisdom",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": true,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_cmn_wisdom_mind_map",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "wisdom",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_cmn_procedural_quick_view",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_cmn_procedural_schedule_conflicts",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": true,
+        "candidate_derived_applicability_success": false
+      },
+      {
+        "id": "cav3_cmn_none_single_emoji",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": true
+      },
+      {
+        "id": "cav3_cmn_none_uncertain_guitar",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "wisdom",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_semantic_frame_exact": false,
+        "candidate_evidence_grounded": false,
+        "candidate_derived_applicability_success": false
+      }
+    ]
+  },
+  "transport_attempts_made": 36,
+  "decision": "freeze_negative_result_and_stop_single_call_qwen25_7b_frame_simplification",
+  "same_dataset_retest_authorized": false,
+  "post_admission_generation_pilot_authorized": false,
+  "single_call_qwen25_7b_frame_simplification_continuation_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "runtime_shadow_authorized": false,
+  "fresh_holdout_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "cross_corpus_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "biological_equivalence_claim_authorized": false,
+  "downstream_dialogue_improvement_claim_authorized": false
+}
