@@ -1,0 +1,76 @@
+{
+  "schema": "uruha_typed_reflection_development_preregistration_v3",
+  "evidence_status": "cases_and_gates_frozen_before_implementation",
+  "research_question": "Can typed, source-grounded reflection convert explicit user facts and feedback into semantic, procedural, or interpretive memory that improves a later final reply without storing third-party, hypothetical, or ordinary question content?",
+  "dataset_path": "datasets/typed_reflection_v3_development_pilot.json",
+  "dataset_status": "new_controlled_development_pilot_not_independent_holdout",
+  "case_count": 12,
+  "conditions": [
+    "same_episode_without_typed_reflection_control",
+    "same_episode_with_typed_reflection_treatment"
+  ],
+  "single_manipulated_variable": "typed_reflection_memory_write",
+  "allowed_reflection_types": ["semantic", "procedural", "interpretive", "none"],
+  "type_to_collection": {
+    "semantic": "wisdom",
+    "procedural": "procedural",
+    "interpretive": "wisdom",
+    "none": "none"
+  },
+  "required_output_fields": [
+    "reflection_type",
+    "content_jp",
+    "trigger_jp",
+    "evidence_quote",
+    "confidence"
+  ],
+  "required_provenance": [
+    "source_episode_id",
+    "source_user_sha256",
+    "evidence_quote"
+  ],
+  "fixed_model": "qwen2.5:7b",
+  "fixed_temperature": 0.0,
+  "fixed_seed": 314159,
+  "model_call_budget_max": 36,
+  "right_brain_mode": "template_mode_load_right_brain_model_false",
+  "primary_metrics": [
+    "reflection_type_accuracy",
+    "valid_rule_precision",
+    "expected_rule_write_recall",
+    "no_rule_specificity",
+    "collection_routing_accuracy",
+    "source_provenance_rate",
+    "valid_rule_retrieval_rate",
+    "control_behavior_success_rate",
+    "treatment_behavior_success_rate",
+    "paired_behavior_net_gain",
+    "interaction_category_paired_gains",
+    "paired_behavior_regressions"
+  ],
+  "success_gates": {
+    "reflection_type_accuracy_min": 0.9167,
+    "valid_rule_precision_min": 1.0,
+    "expected_rule_write_recall_min": 0.8889,
+    "no_rule_specificity_min": 1.0,
+    "collection_routing_accuracy_min": 1.0,
+    "source_provenance_rate_min": 1.0,
+    "valid_rule_retrieval_rate_min": 0.8,
+    "treatment_behavior_delta_min": 0.2222,
+    "paired_behavior_net_gain_min": 2,
+    "interaction_category_paired_gains_min": 1,
+    "paired_behavior_regressions_max": 0
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_new_independent_typed_reflection_holdout",
+    "extraction_passes_behavior_fails": "keep_extractor_shadow_only_and_redesign_planner_consumption",
+    "any_safety_or_precision_gate_fails": "reject_typed_reflection_v3_and_do_not_deploy"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "large_scale_run_authorized": false,
+  "human_rating_required": false,
+  "paid_api_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "claim_boundary": "This is a controlled development pilot authored before implementation. Passing can authorize an independent holdout but cannot establish generalization."
+}
