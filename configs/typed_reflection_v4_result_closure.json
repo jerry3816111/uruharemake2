@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_typed_reflection_development_result_closure_v4",
+  "evidence_status": "failed_behavior_result_frozen_with_explicit_posthoc_metric_audit",
+  "preregistration": "configs/typed_reflection_v4_development_preregistration.json",
+  "harness_lock": "configs/typed_reflection_v4_harness_lock.json",
+  "dataset": "datasets/typed_reflection_v4_development_pilot.json",
+  "result_artifacts": {
+    "reports/typed_reflection_v4_development_raw.json": "8e098b3aced5b7a83500b414c47f7de4a068f08ce78659056dcd4fe316361df5",
+    "reports/typed_reflection_v4_development_analysis.json": "5f1a689677a81369a50c9e68239aecb508b3ac99390db2d8bc61a0321cab894c",
+    "reports/typed_reflection_v4_development_analysis.md": "fb50831bc7422b9e8867b235a20b1b91fb44f62b97094758d4633a0d566d265c"
+  },
+  "runner_commit": "1aec689dcb0afde9a6d2cc24f8c1194bb8256b43",
+  "fixed_model": "qwen2.5:7b",
+  "model_call_count": 30,
+  "typed_reflection_extraction_calls": 10,
+  "left_brain_planning_calls": 20,
+  "automated_decision": "keep_v4_extractor_shadow_only_and_redesign_planner_consumption",
+  "metrics": {
+    "reflection_type_accuracy": 1.0,
+    "valid_rule_precision": 1.0,
+    "expected_rule_write_recall": 1.0,
+    "no_rule_specificity": 1.0,
+    "collection_routing_accuracy": 1.0,
+    "source_provenance_rate": 1.0,
+    "valid_rule_retrieval_rate": 1.0,
+    "reported_japanese_surface_quality_rate": 1.0,
+    "control_behavior_success_rate": 0.5556,
+    "treatment_behavior_success_rate": 0.3333,
+    "treatment_behavior_delta": -0.2223,
+    "paired_behavior_gains": 0,
+    "paired_behavior_regressions": 2,
+    "paired_behavior_net_gain": -2
+  },
+  "bounded_findings": [
+    "Program-owned type, exact evidence, source episode, source hash, collection routing, and retrieval passed on all frozen cases.",
+    "V4 wrote and retrieved all nine expected reflections while all three negative controls avoided a write.",
+    "Correct future behavior fell from five of nine positive cases in control to three of nine in treatment.",
+    "Treatment produced no paired gain and two paired regressions, so runtime deployment and an independent holdout are not authorized."
+  ],
+  "posthoc_metric_audit": {
+    "status": "diagnostic_only_not_a_preregistered_rescore",
+    "reason": "Direct record inspection found semantic and language failures that the preregistered marker-based gates did not detect.",
+    "observations": [
+      {
+        "case_id": "interpretive_zh_zaikankan_hesitation",
+        "layer": "stored_reflection",
+        "issue": "The stored Japanese gist contains source-external simplified Chinese and reverses the source claim from hesitating to not hesitating."
+      },
+      {
+        "case_id": "interpretive_en_whatever_tired",
+        "layer": "future_reply",
+        "issue": "The treatment reply contains a Chinese sentence even though the stored reflection is Japanese."
+      },
+      {
+        "case_id": "interpretive_ja_betsuni_cares",
+        "layer": "stored_reflection_and_future_reply",
+        "issue": "The gist blurs who should confirm, and the future reply says it will confirm without actually asking the required question."
+      }
+    ],
+    "measurement_warning": "reported_japanese_surface_quality_rate and valid_rule_precision are proxy scores, not proof of semantic fidelity or clean final-language realization"
+  },
+  "deployment_authorized": false,
+  "independent_holdout_authorized": false,
+  "large_scale_run_authorized": false,
+  "next_primary_task": "freeze_a_new_semantic_fidelity_and_layer_attribution_evaluation_before_any_v5_runtime_change",
+  "next_task_constraints": [
+    "Do not edit the frozen V4 cases, gates, raw result, or original analysis.",
+    "Measure stored-reflection semantic fidelity separately from planner and final-surface failures.",
+    "Do not add case-specific words or benchmark answers to the runtime.",
+    "Keep V4 extraction shadow-only and do not feed it into production planning.",
+    "Require zero paired regressions before considering deployment."
+  ],
+  "claim_boundary": "This controlled development pilot shows reliable deterministic provenance plumbing but harmful downstream behavior. It does not establish safe reflection, generalization, or broad human likeness."
+}
