@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_discourse_frame_result_lock_v5",
+  "created_at": "2026-07-17T20:22:55+09:00",
+  "harness_merge_commit": "1c23c49c909988ccb0b8932a30a6ae63f0765e42",
+  "frozen_artifacts": {
+    "preregistration": "configs/reflection_hybrid_classifier_v5_discourse_frame_development_preregistration.json",
+    "preregistration_sha256": "dcb94bbdab63b2f185a6dbcca67bef78306f2117cc7b5e4d7a8389ae7fdaceec",
+    "protocol_amendment": "configs/reflection_hybrid_classifier_v5_discourse_frame_protocol_amendment.json",
+    "protocol_amendment_sha256": "17af1bb81754f2ae924d831cd791cdf74d2f3609e94f8480142437ba79f62ac2",
+    "harness_lock": "configs/reflection_hybrid_classifier_v5_discourse_frame_harness_lock.json",
+    "harness_lock_sha256": "444a21164d956790c9021ec469c7bdb710a8bb7443c68f5becac8f5b186f1451",
+    "raw_result": "reports/reflection_hybrid_classifier_v5_discourse_frame_development_raw.json",
+    "raw_result_sha256": "25d8097696d4c77fedbf2992d9869911194ce919c0bf3f711c5f1db4e9567018",
+    "analysis_json": "reports/reflection_hybrid_classifier_v5_discourse_frame_development_analysis.json",
+    "analysis_json_sha256": "d27c935ef4691bd48e790488a0785b0641b705dee6edb0957863fb04c5fe3006",
+    "analysis_md": "reports/reflection_hybrid_classifier_v5_discourse_frame_development_analysis.md",
+    "analysis_md_sha256": "81150e47270ef4a4733a7c6a6c2b4cc16d9803ddbfd65b107d00c808ac2294e0"
+  },
+  "matched_result": {
+    "historical_frozen_control_correct": 29,
+    "live_matched_control_correct": 29,
+    "live_control_prediction_drift_count": 0,
+    "candidate_correct": 30,
+    "candidate_accuracy": 0.9375,
+    "delta_vs_live_control": 0.0313,
+    "delta_display": "+3.13 percentage points",
+    "semantic_correct": 8,
+    "procedural_correct": 8,
+    "interpretive_correct": 8,
+    "none_correct": 6,
+    "newly_correct_count": 3,
+    "regression_count": 2,
+    "critical_false_positive_count": 2,
+    "candidate_parse_success_rate": 1.0,
+    "total_model_calls": 40,
+    "median_candidate_fallback_seconds": 4.9913,
+    "warm_p95_candidate_fallback_seconds": 5.2132,
+    "all_preregistered_gates_pass": false
+  },
+  "causal_readout": {
+    "supported": "Explicit discourse slots improved sensitivity and corrected all three frozen-control errors on the retired development set.",
+    "contradicted": "The exact one-call discourse-frame contract did not preserve conservative memory admission and did not meet latency or overall accuracy gates.",
+    "failure_mechanism": "The frame overgeneralized future-time language into an interlocutor directive even when the utterance lacked an explicit durable instruction.",
+    "newly_correct_case_ids": [
+      "ext_proc_jpn_5962359",
+      "ext_proc_cmn_13519695",
+      "ext_int_eng_4843024"
+    ],
+    "regression_case_ids": [
+      "ext_none_eng_6576824",
+      "ext_none_cmn_13535360"
+    ]
+  },
+  "decision": "freeze_negative_result_and_abandon_exact_discourse_frame_contract",
+  "next_authorized_work": "A separate preregistered development pilot on new ambiguous near-miss data may test an evidence-sufficiency or abstention gate. It must not tune or rerun this dataset.",
+  "same_dataset_retest_authorized": false,
+  "fresh_holdout_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "runtime_shadow_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "cross_corpus_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
