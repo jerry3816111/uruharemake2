@@ -50,6 +50,7 @@ from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
 import uruha_leftbrain_rules
+import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
 from rightbrain_repair_selector import (
     extract_candidate_features as extract_learned_repair_features,
@@ -375,6 +376,8 @@ class MemoryManager:
         self._last_consolidation_at = None
         self._last_decay_at = None
         self._last_maintenance_result = None
+        self._last_saved_episode_id = None
+        self._last_reflection_result = None
 
     def clear_session_state(self):
         self.session_turns = []
@@ -389,16 +392,27 @@ class MemoryManager:
         self._last_consolidation_at = None
         self._last_decay_at = None
         self._last_maintenance_result = None
+        self._last_saved_episode_id = None
+        self._last_reflection_result = None
 
     def query_all_layers(self, text):
         self._decay_short_term_memory()
         working_memory = self._build_working_memory(text)
         self._mark_working_memory_access(working_memory)
+        procedural_items = [
+            item for item in working_memory if item.get("source") == "procedural"
+        ]
+        procedural_summary = (
+            self._working_memory_summary(procedural_items)
+            if procedural_items
+            else "無程序記憶"
+        )
         return {
             "knowledge": self._safe_query(self.kb_col, text, "無特殊知識"),
             "episodes": self._safe_query(self.episode_col, text, "無相關經歷"),
             "wisdom": self._safe_query(self.wisdom_col, text, "無相關經驗"),
             "procedural": self._safe_query(self.procedural_col, text, "無相關程序記憶"),
+            "procedural_summary": procedural_summary,
             "profile": self._profile_summary(),
             "profile_structured": self._profile_snapshot(),
             "recent_dialogue": self._recent_dialogue_summary(),
@@ -423,6 +437,8 @@ class MemoryManager:
             "last_consolidation_at": self._last_consolidation_at,
             "last_decay_at": self._last_decay_at,
             "last_maintenance_result": self._last_maintenance_result,
+            "last_saved_episode_id": self._last_saved_episode_id,
+            "last_reflection_result": deepcopy(self._last_reflection_result),
         }
 
     def _safe_query(self, collection, text, default_val):
@@ -582,6 +598,7 @@ class MemoryManager:
             f"User: {user_input} | Summary: {summary} | Uruha: {ai_response} | Mood: {mood_state}"
         )
         episode_id = str(uuid.uuid4())
+        self._last_saved_episode_id = episode_id
         self.episode_col.add(
             documents=[doc],
             ids=[episode_id],
@@ -729,32 +746,7 @@ class MemoryManager:
                 pass
 
     def _should_reflect_user_fact(self, user_input):
-        lowered = user_input.lower()
-        stable_markers = [
-            "喜歡",
-            "喜欢",
-            "愛吃",
-            "爱吃",
-            "最喜歡",
-            "最喜欢",
-            "通常",
-            "平常",
-            "每次",
-            "always",
-            "usually",
-            "favorite",
-            "prefer",
-            "i like",
-            "i love",
-            "i hate",
-            "i always",
-            "好き",
-            "嫌い",
-            "いつも",
-            "よく",
-            "普段",
-        ]
-        return any(marker.lower() in lowered for marker in stable_markers)
+        return urr.classify_reflection_type(user_input) != "none"
 
     def has_unconsolidated_turns(self, minimum=6):
         return len(self.session_turns) - self._consolidated_turn_index >= minimum
@@ -1110,20 +1102,28 @@ class MemoryManager:
         return result
 
     def reflect_experience(self, user_input, ai_response, logic_data, client_logic):
-        if not self._should_reflect_user_fact(user_input):
+        reflection_type = urr.classify_reflection_type(user_input)
+        if reflection_type == "none":
+            self._last_reflection_result = {
+                "status": "no_trigger",
+                "reflection_type": "none",
+            }
             return None
-
-        sys_prompt = (
-            "Extract at most ONE stable user profile rule from the user's utterance only. "
-            "Only keep durable preferences, habits, or recurring facts. "
-            "If there is no durable user fact, output exactly NO_RULE. "
-            "If there is one, format exactly: Rule: ..."
-        )
+        source_episode_id = self._last_saved_episode_id
+        if not source_episode_id:
+            self._last_reflection_result = {
+                "status": "missing_source_episode",
+                "reflection_type": reflection_type,
+            }
+            return None
         try:
             response = client_logic.chat.completions.create(
                 model="qwen2.5:7b",
                 messages=[
-                    {"role": "system", "content": sys_prompt},
+                    {
+                        "role": "system",
+                        "content": urr.extraction_system_prompt(reflection_type),
+                    },
                     {
                         "role": "user",
                         "content": (
@@ -1133,27 +1133,76 @@ class MemoryManager:
                         ),
                     },
                 ],
-                temperature=0.1,
+                temperature=0.0,
             )
-            wisdom = response.choices[0].message.content.strip()
-            if not wisdom.startswith("Rule:"):
+            payload = urr.parse_json_object(response.choices[0].message.content)
+            result = urr.validate_reflection_payload(
+                payload,
+                user_input=user_input,
+                expected_type=reflection_type,
+                source_episode_id=source_episode_id,
+            )
+            if result is None:
+                self._last_reflection_result = {
+                    "status": "invalid_payload",
+                    "reflection_type": reflection_type,
+                }
                 return None
+
+            collection = self.procedural_col if result["collection"] == "procedural" else self.wisdom_col
+            existing = collection.get(
+                where={"source_user_sha256": result["source_user_sha256"]},
+                limit=1,
+                include=["metadatas"],
+            )
+            if existing.get("ids"):
+                result["status"] = "duplicate_skipped"
+                result["memory_id"] = existing["ids"][0]
+                self._last_reflection_result = result
+                return result
+
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.wisdom_col.add(
-                documents=[wisdom],
-                ids=[str(uuid.uuid4())],
+            memory_id = str(uuid.uuid4())
+            document = urr.reflection_document(result)
+            salience = {
+                "semantic": 0.72,
+                "procedural": 0.85,
+                "interpretive": 0.82,
+            }[reflection_type]
+            collection.add(
+                documents=[document],
+                ids=[memory_id],
                 metadatas=[
                     {
-                        "source": "reflection_rule",
+                        "source": "typed_reflection",
+                        "reflection_type": reflection_type,
+                        "source_episode_id": source_episode_id,
+                        "source_user_sha256": result["source_user_sha256"],
+                        "evidence_quote": result["evidence_quote"],
+                        "confidence": result["confidence"],
                         "timestamp": timestamp,
+                        "salience": salience,
                         "last_accessed_at": timestamp,
                         "decay_flag": False,
                         "decay_multiplier": 1.0,
                     }
                 ],
             )
-            return wisdom
-        except Exception:
+            result.update(
+                {
+                    "status": "stored",
+                    "memory_id": memory_id,
+                    "document": document,
+                }
+            )
+            self._last_reflection_result = result
+            return result
+        except Exception as exc:
+            self._last_reflection_result = {
+                "status": "error",
+                "reflection_type": reflection_type,
+                "error": f"{type(exc).__name__}: {exc}",
+            }
             return None
 
 
@@ -6790,6 +6839,10 @@ Rules:
             score += 0.12 if surface in {"affection_tease_soften", "reassure_with_distance"} or scene == "casual" else -0.04
         if any(token in joined for token in ["前提", "聞き返", "疑う"]):
             score += 0.12 if response_mode in {"premise_challenge", "clarify_light"} else -0.04
+        if any(token in joined.lower() for token in ["結論", "先に", "最初", "yes", "no", "直接", "答え"]):
+            score += 0.16 if response_mode in {"direct_answer", "direct_answer_with_hedge"} else -0.1
+        if any(token in joined for token in ["一つ", "ひとつ", "一個", "最重要", "優先"]):
+            score += 0.14 if plan.get("payload_level") in {"low", "medium"} else -0.1
 
         return max(0.35, min(1.25, score))
 
@@ -7809,6 +7862,7 @@ You must think like a human planner, not like a one-shot classifier.
 
 [Memory]
 - Working memory cue: {working_memory_summary}
+- Procedural cue: {memory_data.get('procedural_guidance_summary', memory_data.get('procedural_summary', '無程序記憶'))}
 - Episode cue: {memory_data['episodes']}
 - Wisdom cue: {memory_data['wisdom']}
 - Profile cue: {memory_data.get('profile', '無穩定使用者資料')}
@@ -11383,6 +11437,7 @@ You are Ichinose Uruha.
 	- recent episode={memory_data['episodes']}
 	- profile={memory_data.get('profile', '無穩定使用者資料')}
 	- recent_dialogue={memory_data.get('recent_dialogue', '無近期對話')}
+	- procedural_guidance={logic_data.get('procedural_guidance', {})}
 	- memory_anchor={logic_data.get('memory_anchor', {})}
 	- memory_use_expected={logic_data.get('memory_use_expected', False)}
 	- memory_speakability={logic_data.get('memory_speakability', 'no_memory')}
@@ -11729,6 +11784,7 @@ You are Ichinose Uruha.
             "context": {
                 "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
                 "audited_memory_brief": memory_brief,
+                "procedural_guidance": logic_data.get("procedural_guidance", {}),
                 "persona_expression_brief": self._persona_expression_brief(current_psyche),
                 "mood": psyche.get("mood", 0),
                 "trust": psyche.get("trust", 50),
@@ -13442,7 +13498,7 @@ class UruhaBrainV4_Mac:
                 }
             )
         summary = str(memory_data.get("procedural_summary") or "").strip()
-        if summary and summary != "無程序記憶":
+        if not rules and summary and summary != "無程序記憶":
             rules.append({"rule": self._trim_text(summary, 120), "score": 0.5, "attention_factors": {}})
         if not rules:
             return {"active": False, "rules": [], "summary": "no_procedural_guidance"}
@@ -13894,6 +13950,9 @@ class UruhaBrainV4_Mac:
             self.psyche.get_state(),
         )
         mems["appraisal"] = appraisal
+        procedural_guidance = self._extract_procedural_guidance(mems)
+        mems["procedural_guidance"] = procedural_guidance
+        mems["procedural_guidance_summary"] = procedural_guidance.get("summary", "no_procedural_guidance")
         route_info = self.left_brain._high_low_road_route(
             user_input,
             self.psyche.get_state(),
@@ -13916,7 +13975,6 @@ class UruhaBrainV4_Mac:
             logic = self.left_brain.think(user_input, mems, psyche_before)
 
         logic["appraisal"] = appraisal
-        procedural_guidance = self._extract_procedural_guidance(mems)
         logic["procedural_guidance"] = procedural_guidance
         if procedural_guidance.get("active"):
             hidden = str(logic.get("my_hidden_knowledge", "")).strip()
@@ -14065,11 +14123,16 @@ class UruhaBrainV4_Mac:
             }
         ]
         if reflection:
+            reflection_layer = (
+                "procedural_memory"
+                if reflection.get("collection") == "procedural"
+                else "wisdom_semantic"
+            )
             memory_writes.append(
                 {
-                    "layer": "wisdom_semantic",
-                    "kind": "stable_rule",
-                    "summary": self._trim_text(reflection, 120),
+                    "layer": reflection_layer,
+                    "kind": f"typed_{reflection.get('reflection_type', 'reflection')}",
+                    "summary": self._trim_text(reflection.get("document", ""), 120),
                 }
             )
         self.runtime.last_memory_writes = memory_writes
