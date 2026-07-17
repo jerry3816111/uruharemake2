@@ -1,5 +1,7 @@
-import re
 import datetime
+import hashlib
+import json
+import re
 
 MEMORY_SCORING_PROFILES = frozenset({"legacy", "v2"})
 MEMORY_CONTENT_STOPWORDS = frozenset(
@@ -513,10 +515,21 @@ def working_memory_summary(items, working_memory_limit=5):
     """產生 Working Memory 的文字摘要."""
     if not items:
         return "無工作記憶內容"
-    return " || ".join(
-        f"{item['source']}[{item['score']:.2f}]: {item['text'][:80]}"
-        for item in items[:working_memory_limit]
-    )
+    summaries = []
+    for item in items[:working_memory_limit]:
+        summary = (
+            f"{item['source']}[{item['score']:.2f}]: "
+            f"{item['text'][:80]}"
+        )
+        source_evidence = item.get("source_evidence") or []
+        if source_evidence:
+            exact_user_text = str(
+                source_evidence[0].get("user_text") or ""
+            ).strip()
+            if exact_user_text:
+                summary += f" <- exact_user_source: {exact_user_text[:120]}"
+        summaries.append(summary)
+    return " || ".join(summaries)
 
 def profile_snapshot(session_profile):
     """從 session profile 建立快照."""
@@ -598,6 +611,217 @@ def query_collection_candidates(collection, text, source, limit=20):
             }
         )
     return candidates
+
+
+def parse_consolidation_source_pointer(metadata):
+    """Validate controller-owned provenance before any source reread."""
+    metadata = metadata if isinstance(metadata, dict) else {}
+    raw_ids = metadata.get("source_episode_ids")
+    if not isinstance(raw_ids, str) or not raw_ids.strip():
+        return {
+            "valid": False,
+            "reason": "missing_source_episode_ids",
+            "source_episode_ids": [],
+            "consolidation_batch_id": None,
+        }
+    try:
+        parsed_ids = json.loads(raw_ids)
+    except (TypeError, json.JSONDecodeError):
+        return {
+            "valid": False,
+            "reason": "malformed_source_episode_ids",
+            "source_episode_ids": [],
+            "consolidation_batch_id": None,
+        }
+    if (
+        not isinstance(parsed_ids, list)
+        or not parsed_ids
+        or not all(
+            isinstance(source_id, str) and source_id.strip()
+            for source_id in parsed_ids
+        )
+        or len(parsed_ids) != len(set(parsed_ids))
+    ):
+        return {
+            "valid": False,
+            "reason": "invalid_source_episode_ids",
+            "source_episode_ids": [],
+            "consolidation_batch_id": None,
+        }
+    source_episode_ids = sorted(parsed_ids)
+    try:
+        source_episode_count = int(metadata.get("source_episode_count"))
+    except (TypeError, ValueError):
+        source_episode_count = -1
+    if source_episode_count != len(source_episode_ids):
+        return {
+            "valid": False,
+            "reason": "source_episode_count_mismatch",
+            "source_episode_ids": source_episode_ids,
+            "consolidation_batch_id": None,
+        }
+    encoded_ids = json.dumps(
+        source_episode_ids,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    expected_digest = hashlib.sha256(
+        encoded_ids.encode("utf-8")
+    ).hexdigest()
+    if metadata.get("source_episode_ids_sha256") != expected_digest:
+        return {
+            "valid": False,
+            "reason": "source_episode_digest_mismatch",
+            "source_episode_ids": source_episode_ids,
+            "consolidation_batch_id": None,
+        }
+    batch_id = str(
+        metadata.get("consolidation_batch_id") or ""
+    ).strip()
+    if not batch_id:
+        return {
+            "valid": False,
+            "reason": "missing_consolidation_batch_id",
+            "source_episode_ids": source_episode_ids,
+            "consolidation_batch_id": None,
+        }
+    return {
+        "valid": True,
+        "reason": "valid_pointer",
+        "source_episode_ids": source_episode_ids,
+        "source_episode_ids_sha256": expected_digest,
+        "consolidation_batch_id": batch_id,
+    }
+
+
+def episode_user_text(document):
+    """Extract the exact user field from a stored turn episode."""
+    match = re.search(
+        r"(?:^|\s\|\s)User:\s*(.*?)"
+        r"(?=\s\|\s(?:Summary|Uruha|Mood):|$)",
+        str(document or ""),
+        re.DOTALL,
+    )
+    return match.group(1).strip() if match else ""
+
+
+def resolve_consolidation_source_evidence(
+    collection,
+    text,
+    metadata,
+    *,
+    scoring_profile="v2",
+):
+    """Resolve one exact source event from a verified consolidation batch."""
+    pointer = parse_consolidation_source_pointer(metadata)
+    if not pointer["valid"]:
+        return {
+            "source_evidence": [],
+            "audit": {
+                "status": "rejected",
+                "reason": pointer["reason"],
+                "candidate_count": 0,
+                "gold_used": False,
+            },
+        }
+    source_ids = set(pointer["source_episode_ids"])
+    batch_id = pointer["consolidation_batch_id"]
+    try:
+        result = collection.query(
+            query_texts=[text],
+            n_results=len(source_ids),
+            where={"consolidation_batch_id": batch_id},
+            include=["documents", "metadatas", "distances"],
+        )
+    except Exception:
+        return {
+            "source_evidence": [],
+            "audit": {
+                "status": "rejected",
+                "reason": "source_query_failed",
+                "candidate_count": 0,
+                "gold_used": False,
+            },
+        }
+
+    ids = (result.get("ids") or [[]])[0]
+    documents = (result.get("documents") or [[]])[0]
+    metadatas = (result.get("metadatas") or [[]])[0]
+    distances = (result.get("distances") or [[]])[0]
+    candidates = []
+    for index, source_id in enumerate(ids):
+        source_metadata = (
+            metadatas[index]
+            if index < len(metadatas)
+            and isinstance(metadatas[index], dict)
+            else {}
+        )
+        document = (
+            documents[index]
+            if index < len(documents)
+            and isinstance(documents[index], str)
+            else ""
+        )
+        user_text = episode_user_text(document)
+        if (
+            source_id not in source_ids
+            or source_metadata.get("source") != "turn_episode"
+            or source_metadata.get("consolidation_batch_id") != batch_id
+            or not user_text
+        ):
+            continue
+        candidates.append(
+            {
+                "source": "episode",
+                "text": document,
+                "user_text": user_text,
+                "metadata": source_metadata,
+                "distance": (
+                    float(distances[index])
+                    if index < len(distances)
+                    and distances[index] is not None
+                    else None
+                ),
+                "memory_id": source_id,
+                "collection_name": "episode",
+            }
+        )
+    if not candidates:
+        return {
+            "source_evidence": [],
+            "audit": {
+                "status": "rejected",
+                "reason": "no_verified_source_candidates",
+                "candidate_count": 0,
+                "gold_used": False,
+            },
+        }
+    selected = build_working_memory(
+        text,
+        candidates,
+        working_memory_limit=1,
+        scoring_profile=scoring_profile,
+    )
+    if not selected:
+        return {
+            "source_evidence": [],
+            "audit": {
+                "status": "rejected",
+                "reason": "no_ranked_source_candidate",
+                "candidate_count": len(candidates),
+                "gold_used": False,
+            },
+        }
+    return {
+        "source_evidence": selected,
+        "audit": {
+            "status": "attached",
+            "reason": "verified_exact_source_attached",
+            "candidate_count": len(candidates),
+            "selected_source_id": selected[0]["memory_id"],
+            "gold_used": False,
+        },
+    }
 
 def recent_turn_candidates(session_turns):
     """將近期對話轉為候選格式."""
