@@ -1,0 +1,447 @@
+{
+  "schema": "uruha_consolidation_admission_development_v1",
+  "created_at": "2026-07-17T21:18:00+09:00",
+  "evidence_status": "codex_constructed_multilingual_development_cases_never_holdout",
+  "official_source_labels": false,
+  "independent_human_label_validation": false,
+  "model_inference_used_during_construction": false,
+  "case_count": 18,
+  "language_counts": {
+    "eng": 6,
+    "jpn": 6,
+    "cmn": 6
+  },
+  "target_counts": {
+    "wisdom": 6,
+    "procedural": 6,
+    "none": 6
+  },
+  "cases": [
+    {
+      "id": "cav1_eng_wisdom_allergy",
+      "language": "eng",
+      "category": "explicit_stable_user_fact",
+      "session": [
+        {
+          "user": "I need a lunch idea.",
+          "assistant": "What ingredients should I avoid?"
+        },
+        {
+          "user": "I have celiac disease, so I always avoid wheat.",
+          "assistant": "Then I will keep the options wheat-free."
+        },
+        {
+          "user": "Rice dishes are usually safe for me.",
+          "assistant": "I will start from rice-based choices."
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "I have celiac disease, so I always avoid wheat."
+      ],
+      "gold_reason": "durable_first_person_constraint"
+    },
+    {
+      "id": "cav1_eng_wisdom_repeated_workspace",
+      "language": "eng",
+      "category": "repeated_user_preference",
+      "session": [
+        {
+          "user": "I get more work done in quiet libraries.",
+          "assistant": "Quiet spaces help you focus."
+        },
+        {
+          "user": "The cafe was noisy again, so I moved to the library.",
+          "assistant": "That sounds consistent with what works for you."
+        },
+        {
+          "user": "For future work sessions, a quiet place is usually better for me.",
+          "assistant": "I will keep that preference in mind."
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "I get more work done in quiet libraries.",
+        "For future work sessions, a quiet place is usually better for me."
+      ],
+      "gold_reason": "repeated_first_person_preference"
+    },
+    {
+      "id": "cav1_eng_procedural_choice_order",
+      "language": "eng",
+      "category": "explicit_recurring_assistant_instruction",
+      "session": [
+        {
+          "user": "You gave me a long comparison before choosing.",
+          "assistant": "That made the answer slower than necessary."
+        },
+        {
+          "user": "From now on, when I ask about two options, choose one first and explain after.",
+          "assistant": "I will put the choice before the explanation."
+        },
+        {
+          "user": "That order is easier for me.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "From now on, when I ask about two options, choose one first and explain after."
+      ],
+      "gold_reason": "recurring_instruction_directed_to_assistant"
+    },
+    {
+      "id": "cav1_eng_procedural_pause_signal",
+      "language": "eng",
+      "category": "explicit_recurring_signal_rule",
+      "session": [
+        {
+          "user": "Sometimes I need to stop in the middle of instructions.",
+          "assistant": "We can use a clear stop signal."
+        },
+        {
+          "user": "Whenever I say pause, stop giving steps and ask whether I want to continue.",
+          "assistant": "I will treat pause as that signal."
+        },
+        {
+          "user": "Use that rule in later conversations too.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "Whenever I say pause, stop giving steps and ask whether I want to continue.",
+        "Use that rule in later conversations too."
+      ],
+      "gold_reason": "recurring_signal_to_assistant_action"
+    },
+    {
+      "id": "cav1_eng_none_one_time_format",
+      "language": "eng",
+      "category": "one_time_request",
+      "session": [
+        {
+          "user": "I have only a minute before the train arrives.",
+          "assistant": "I can make this brief."
+        },
+        {
+          "user": "For this answer only, give me one sentence.",
+          "assistant": "I will keep this answer to one sentence."
+        },
+        {
+          "user": "Tomorrow I will have more time.",
+          "assistant": "Then we can go into detail tomorrow."
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "explicitly_one_time_request_stays_episodic"
+    },
+    {
+      "id": "cav1_eng_none_third_party",
+      "language": "eng",
+      "category": "third_party_fact",
+      "session": [
+        {
+          "user": "My sister is visiting this weekend.",
+          "assistant": "Are you planning food for both of you?"
+        },
+        {
+          "user": "She always drinks oat milk, but I do not.",
+          "assistant": "That is her preference, not yours."
+        },
+        {
+          "user": "I am only telling you for this visit.",
+          "assistant": "I will keep it tied to this event."
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "third_party_event_not_user_long_term_memory"
+    },
+    {
+      "id": "cav1_jpn_wisdom_allergy",
+      "language": "jpn",
+      "category": "explicit_stable_user_fact",
+      "session": [
+        {
+          "user": "昼ご飯の候補を考えて。",
+          "assistant": "避けたい食材はある？"
+        },
+        {
+          "user": "私は乳製品にアレルギーがあるから、いつも避けている。",
+          "assistant": "乳製品なしの候補にする。"
+        },
+        {
+          "user": "豆乳なら普段から大丈夫。",
+          "assistant": "豆乳を使える候補から考える。"
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "私は乳製品にアレルギーがあるから、いつも避けている。"
+      ],
+      "gold_reason": "durable_first_person_constraint"
+    },
+    {
+      "id": "cav1_jpn_wisdom_repeated_breakfast",
+      "language": "jpn",
+      "category": "repeated_user_preference",
+      "session": [
+        {
+          "user": "朝は甘いものが苦手なんだ。",
+          "assistant": "朝食は甘くない方が合うんだね。"
+        },
+        {
+          "user": "今朝も甘いパンを残して、おにぎりを選んだ。",
+          "assistant": "今回も同じ傾向だった。"
+        },
+        {
+          "user": "これから朝食を選ぶ時も、しょっぱい物の方がいい。",
+          "assistant": "朝食の好みとして覚えておく。"
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "朝は甘いものが苦手なんだ。",
+        "これから朝食を選ぶ時も、しょっぱい物の方がいい。"
+      ],
+      "gold_reason": "repeated_first_person_preference"
+    },
+    {
+      "id": "cav1_jpn_procedural_schedule",
+      "language": "jpn",
+      "category": "explicit_recurring_assistant_instruction",
+      "session": [
+        {
+          "user": "予定の相談で、いきなり候補を並べると困る。",
+          "assistant": "最初に条件を確認した方がよさそうだね。"
+        },
+        {
+          "user": "これから予定を相談する時は、最初に時間だけ確認して。",
+          "assistant": "次からは時間の確認を先にする。"
+        },
+        {
+          "user": "その順番なら答えやすい。",
+          "assistant": "分かった。"
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "これから予定を相談する時は、最初に時間だけ確認して。"
+      ],
+      "gold_reason": "recurring_instruction_directed_to_assistant"
+    },
+    {
+      "id": "cav1_jpn_procedural_hold_signal",
+      "language": "jpn",
+      "category": "explicit_recurring_signal_rule",
+      "session": [
+        {
+          "user": "説明の途中で考える時間が欲しいことがある。",
+          "assistant": "止める合図を決めよう。"
+        },
+        {
+          "user": "私が「保留」と言ったら、毎回そこで止めて続けるか確認して。",
+          "assistant": "「保留」をその合図として扱う。"
+        },
+        {
+          "user": "別の会話でも同じようにして。",
+          "assistant": "分かった。"
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "私が「保留」と言ったら、毎回そこで止めて続けるか確認して。",
+        "別の会話でも同じようにして。"
+      ],
+      "gold_reason": "recurring_signal_to_assistant_action"
+    },
+    {
+      "id": "cav1_jpn_none_one_time_format",
+      "language": "jpn",
+      "category": "one_time_request",
+      "session": [
+        {
+          "user": "今日はかなり疲れてる。",
+          "assistant": "短くした方がよさそうだね。"
+        },
+        {
+          "user": "今回だけ説明を一文にして。",
+          "assistant": "今回は一文にする。"
+        },
+        {
+          "user": "次は普通の長さで大丈夫。",
+          "assistant": "次回は通常の長さに戻す。"
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "explicitly_one_time_request_stays_episodic"
+    },
+    {
+      "id": "cav1_jpn_none_third_party",
+      "language": "jpn",
+      "category": "third_party_fact",
+      "session": [
+        {
+          "user": "友達が今夜うちに来る。",
+          "assistant": "夕食を一緒に食べるの？"
+        },
+        {
+          "user": "友達は辛い物が苦手だけど、私は平気。",
+          "assistant": "それは友達の好みなんだね。"
+        },
+        {
+          "user": "今日の献立のために言っただけ。",
+          "assistant": "今夜の条件として扱う。"
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "third_party_event_not_user_long_term_memory"
+    },
+    {
+      "id": "cav1_cmn_wisdom_allergy",
+      "language": "cmn",
+      "category": "explicit_stable_user_fact",
+      "session": [
+        {
+          "user": "幫我想一個午餐。",
+          "assistant": "有什麼食材需要避開嗎？"
+        },
+        {
+          "user": "我對花生過敏，所以一直都會避開花生。",
+          "assistant": "那就只考慮不含花生的選項。"
+        },
+        {
+          "user": "其他堅果通常沒問題。",
+          "assistant": "我會把花生和其他堅果分開處理。"
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "我對花生過敏，所以一直都會避開花生。"
+      ],
+      "gold_reason": "durable_first_person_constraint"
+    },
+    {
+      "id": "cav1_cmn_wisdom_repeated_workspace",
+      "language": "cmn",
+      "category": "repeated_user_preference",
+      "session": [
+        {
+          "user": "我工作時比較喜歡安靜的地方。",
+          "assistant": "安靜的環境比較適合你。"
+        },
+        {
+          "user": "昨天咖啡店太吵，我又回家工作了。",
+          "assistant": "這次也是噪音影響了你。"
+        },
+        {
+          "user": "以後幫我選工作地點時，安靜通常比較重要。",
+          "assistant": "我會把安靜當成你的長期偏好。"
+        }
+      ],
+      "expected_long_term_target": "wisdom",
+      "expected_evidence_quotes": [
+        "我工作時比較喜歡安靜的地方。",
+        "以後幫我選工作地點時，安靜通常比較重要。"
+      ],
+      "gold_reason": "repeated_first_person_preference"
+    },
+    {
+      "id": "cav1_cmn_procedural_choice_order",
+      "language": "cmn",
+      "category": "explicit_recurring_assistant_instruction",
+      "session": [
+        {
+          "user": "你剛才比較很久才告訴我選哪個。",
+          "assistant": "順序確實太慢了。"
+        },
+        {
+          "user": "以後我問兩個選項時，先選一個再用一句話說理由。",
+          "assistant": "之後會先給選擇，再補一句理由。"
+        },
+        {
+          "user": "這樣我比較容易決定。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "以後我問兩個選項時，先選一個再用一句話說理由。"
+      ],
+      "gold_reason": "recurring_instruction_directed_to_assistant"
+    },
+    {
+      "id": "cav1_cmn_procedural_wait_signal",
+      "language": "cmn",
+      "category": "explicit_recurring_signal_rule",
+      "session": [
+        {
+          "user": "有時候我需要先停下來想。",
+          "assistant": "可以設定一個停止訊號。"
+        },
+        {
+          "user": "每次我說「等等」，先停下來問我要不要繼續。",
+          "assistant": "我會把「等等」當成停止訊號。"
+        },
+        {
+          "user": "之後的對話也照這個規則。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_long_term_target": "procedural",
+      "expected_evidence_quotes": [
+        "每次我說「等等」，先停下來問我要不要繼續。",
+        "之後的對話也照這個規則。"
+      ],
+      "gold_reason": "recurring_signal_to_assistant_action"
+    },
+    {
+      "id": "cav1_cmn_none_one_time_format",
+      "language": "cmn",
+      "category": "one_time_request",
+      "session": [
+        {
+          "user": "我現在要進會議了。",
+          "assistant": "那我先講最短版本。"
+        },
+        {
+          "user": "今天這一次不要解釋，直接給結論。",
+          "assistant": "這一次只給結論。"
+        },
+        {
+          "user": "下次可以正常解釋。",
+          "assistant": "下次恢復正常。"
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "explicitly_one_time_request_stays_episodic"
+    },
+    {
+      "id": "cav1_cmn_none_third_party",
+      "language": "cmn",
+      "category": "third_party_fact",
+      "session": [
+        {
+          "user": "我哥哥明天會來我家。",
+          "assistant": "你們要一起吃飯嗎？"
+        },
+        {
+          "user": "我哥哥不喝咖啡，那是他的習慣；我會喝。",
+          "assistant": "不喝咖啡的是你哥哥。"
+        },
+        {
+          "user": "我只是為了明天準備飲料才說。",
+          "assistant": "我會把它限制在明天的安排。"
+        }
+      ],
+      "expected_long_term_target": "none",
+      "expected_evidence_quotes": [],
+      "gold_reason": "third_party_event_not_user_long_term_memory"
+    }
+  ]
+}
