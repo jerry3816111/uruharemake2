@@ -143,6 +143,10 @@ class ConsolidationAdmissionV2PreregistrationTest(unittest.TestCase):
                 "system_prompt"
             ],
         )
+        self.assertEqual(
+            self.config["generation"]["maximum_output_tokens"],
+            v1["generation"]["maximum_output_tokens"],
+        )
 
     def test_candidate_tool_contract_is_small_and_closed(self):
         candidate = self.config["conditions"]["v2_indexed_tool_candidate"]

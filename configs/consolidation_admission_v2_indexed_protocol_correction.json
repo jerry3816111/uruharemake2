@@ -1,0 +1,31 @@
+{
+  "schema": "uruha_consolidation_admission_indexed_protocol_correction_v2",
+  "experiment_id": "consolidation_admission_v2_indexed_development",
+  "recorded_at": "2026-07-17T22:20:00+09:00",
+  "timing": "after_preregistration_merge_before_harness_merge_and_before_any_model_inference",
+  "inference_performed_before_detection": false,
+  "result_artifacts_present_before_correction": false,
+  "issue": "The V2 preregistration described the control as the frozen V1 source-bound contract but set maximum_output_tokens to 256 while the frozen V1 contract used 384.",
+  "risk": "A shorter output allowance could selectively reduce the control condition's ability to complete its larger JSON response, creating an avoidable resource mismatch.",
+  "correction": {
+    "field": "generation.maximum_output_tokens",
+    "before": 256,
+    "after": 384,
+    "reason": "Restore the exact V1 output allowance for the matched control before any inference."
+  },
+  "unchanged": [
+    "dataset and labels",
+    "model name and digest",
+    "condition prompts",
+    "candidate tool schema",
+    "temperature, top_p, seed, and context size",
+    "condition order",
+    "success gates",
+    "decision rule",
+    "evidence limits"
+  ],
+  "original_preregistration_sha256": "77a5bf9d316080672061289fece15ace25fe4f9b24339da14ff68ca16604f22c",
+  "corrected_preregistration_sha256": "a6725d5cca3f647d7be9aff3462738f2b90baa98e603c082a9d6101d7850b7e3",
+  "same_data_result_seen_before_correction": false,
+  "post_result_gate_change": false
+}
