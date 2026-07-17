@@ -1,0 +1,152 @@
+{
+  "schema": "uruha_consolidation_source_pointer_dataset_v1",
+  "description": "Synthetic controlled pilot cases for exact source-pointer rereading after consolidation. No official benchmark items or production conversations are used.",
+  "global_distractor_count": 24,
+  "local_distractor_count": 7,
+  "cases": [
+    {
+      "case_id": "positive_en_location",
+      "split": "positive",
+      "language": "en",
+      "question": "Where does the user now keep the spare batteries?",
+      "derived_text": "Rule: The user's spare-battery storage location was updated; consult the exact source event for the current location.",
+      "target_user_utterance": "I now keep the spare batteries in the blue kitchen drawer.",
+      "local_distractor_template": "I reviewed another spare-battery storage idea, but I did not adopt that option.",
+      "global_distractor_template": "I checked spare battery container {index} near storage drawer {index}, but this was only an inventory check.",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "positive_en_count",
+      "split": "positive",
+      "language": "en",
+      "question": "How many ceramic mugs does the user own now?",
+      "derived_text": "Rule: The user's current ceramic-mug total was updated; consult the exact source event for the number.",
+      "target_user_utterance": "I now own eight ceramic mugs.",
+      "local_distractor_template": "I inspected the ceramic mug shelf again, but I did not state a total.",
+      "global_distractor_template": "I reviewed ceramic mug inventory section {index}, but that section number was not my mug total.",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "positive_en_time",
+      "split": "positive",
+      "language": "en",
+      "question": "What is the user's confirmed dentist appointment time?",
+      "derived_text": "Rule: The user's dentist appointment time was confirmed; consult the exact source event for the clock time.",
+      "target_user_utterance": "My dentist appointment is now confirmed for 5:10 PM.",
+      "local_distractor_template": "I discussed the dentist appointment again, but the time was not confirmed in that message.",
+      "global_distractor_template": "I checked dentist reminder entry {index}, but it was not a confirmed appointment time.",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "positive_ja_location",
+      "split": "positive",
+      "language": "ja",
+      "question": "予備の鍵は今どこに置いてある？",
+      "derived_text": "Rule: 予備の鍵の保管場所が更新された。正確な場所は元の発話を確認すること。",
+      "target_user_utterance": "予備の鍵は今、玄関の白い棚に置いてある。",
+      "local_distractor_template": "予備の鍵の置き場所を考え直したが、この発話では場所を決めていない。",
+      "global_distractor_template": "予備の鍵の保管候補{index}を確認したが、これは現在の保管場所ではない。",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "positive_ja_frequency",
+      "split": "positive",
+      "language": "ja",
+      "question": "予定が変わる前、ユーザーはどのくらいの頻度でギターを練習していた？",
+      "derived_text": "Rule: 予定変更前のギター練習頻度について元の発話がある。正確な頻度はその発話を確認すること。",
+      "target_user_utterance": "予定が変わる前は、毎晩ギターを練習していた。",
+      "local_distractor_template": "ギター練習の予定について話したが、この発話では頻度を示していない。",
+      "global_distractor_template": "ギター練習の予定メモ{index}を確認したが、以前の練習頻度ではない。",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "positive_zh_change",
+      "split": "positive",
+      "language": "zh",
+      "question": "使用者的通勤時間怎麼改變了？",
+      "derived_text": "Rule: 使用者更新了通勤時間，精確的前後數值必須回讀原始發話。",
+      "target_user_utterance": "我的通勤時間從二十五分鐘增加到四十分鐘。",
+      "local_distractor_template": "我又談到通勤安排，但這句話沒有提供通勤時間。",
+      "global_distractor_template": "我檢查了第{index}份通勤紀錄，但那不是通勤時間的前後數值。",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": true
+    },
+    {
+      "case_id": "reject_invalid_digest",
+      "split": "integrity",
+      "language": "en",
+      "question": "Where does the user keep the emergency flashlight?",
+      "derived_text": "Rule: The emergency-flashlight location was updated; consult the exact source event.",
+      "target_user_utterance": "I keep the emergency flashlight under the hallway bench.",
+      "local_distractor_template": "I checked the emergency flashlight, but I did not state its location.",
+      "global_distractor_template": "I reviewed emergency flashlight note {index}, but it was not a storage location.",
+      "pointer_policy": "invalid_digest",
+      "expected_pointer_activation": false
+    },
+    {
+      "case_id": "reject_malformed_ids",
+      "split": "integrity",
+      "language": "en",
+      "question": "How many blue notebooks does the user own?",
+      "derived_text": "Rule: The blue-notebook count was updated; consult the exact source event.",
+      "target_user_utterance": "I own six blue notebooks.",
+      "local_distractor_template": "I checked my blue notebooks, but I did not give a total.",
+      "global_distractor_template": "I reviewed blue notebook list {index}, but that index was not the total.",
+      "pointer_policy": "malformed_ids",
+      "expected_pointer_activation": false
+    },
+    {
+      "case_id": "reject_wrong_batch",
+      "split": "integrity",
+      "language": "ja",
+      "question": "薬の箱は今どこに置いてある？",
+      "derived_text": "Rule: 薬の箱の場所が更新された。元の発話を確認すること。",
+      "target_user_utterance": "薬の箱は今、寝室の上段の棚に置いてある。",
+      "local_distractor_template": "薬の箱を確認したが、この発話では場所を示していない。",
+      "global_distractor_template": "薬の箱の候補メモ{index}を見たが、現在の場所ではない。",
+      "pointer_policy": "wrong_batch",
+      "expected_pointer_activation": false
+    },
+    {
+      "case_id": "reject_missing_pointer",
+      "split": "integrity",
+      "language": "zh",
+      "question": "使用者現在有幾把雨傘？",
+      "derived_text": "Rule: 使用者更新了雨傘數量，應查看原始發話。",
+      "target_user_utterance": "我現在有三把雨傘。",
+      "local_distractor_template": "我整理了雨傘，但這句話沒有說總數。",
+      "global_distractor_template": "我檢查第{index}個雨傘清單，但編號不是雨傘總數。",
+      "pointer_policy": "missing_pointer",
+      "expected_pointer_activation": false
+    },
+    {
+      "case_id": "unrelated_pointer_en",
+      "split": "unrelated",
+      "language": "en",
+      "question": "What did the user say about tomorrow's weather?",
+      "derived_text": "Rule: The spare-battery storage location was updated.",
+      "target_user_utterance": "I keep spare batteries in the garage cabinet.",
+      "local_distractor_template": "I checked another battery storage option.",
+      "global_distractor_template": "I discussed tomorrow's weather forecast item {index} and expected light rain.",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": false
+    },
+    {
+      "case_id": "unrelated_pointer_ja",
+      "split": "unrelated",
+      "language": "ja",
+      "question": "明日の昼ご飯についてユーザーは何と言った？",
+      "derived_text": "Rule: 予備の鍵の保管場所が更新された。",
+      "target_user_utterance": "予備の鍵は机の引き出しに置いてある。",
+      "local_distractor_template": "予備の鍵について確認した。",
+      "global_distractor_template": "明日の昼ご飯の候補{index}について話し、軽い麺料理がいいと言った。",
+      "pointer_policy": "valid",
+      "expected_pointer_activation": false
+    }
+  ]
+}

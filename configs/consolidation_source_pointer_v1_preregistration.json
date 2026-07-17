@@ -1,0 +1,145 @@
+{
+  "schema": "uruha_consolidation_source_pointer_preregistration_v1",
+  "experiment_id": "consolidation_source_pointer_v1",
+  "created_at": "2026-07-18T00:08:16+09:00",
+  "problem": "The runtime now preserves source turn episodes and stores exact source IDs on consolidated descendants, but working-memory retrieval never follows those IDs. In the frozen 12-case temporary-Chroma baseline, all six relevant consolidated memories were selected while the exact supporting source event was absent from working memory in all six cases.",
+  "priority_reason": "Retention without use cannot improve later reasoning. A bounded exact-source pointer can test whether hierarchical retrieval recovers an old event hidden by many recent same-topic distractors without rerunning an LLM over the full session or changing top-level memory ranking.",
+  "hypothesis": "When an already-selected consolidated memory has a valid program-owned source pointer, one batch-restricted semantic reread will recover the relevant exact user event in at least five of six multilingual positive cases. Invalid, mismatched, missing, and unselected pointers will fail closed, and the original top-five working-memory selection will remain unchanged.",
+  "theory_basis": [
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Why There Are Complementary Learning Systems in the Hippocampus and Neocortex",
+      "url": "https://stanford.edu/~jlmcc/papers/McCMcNaughtonOReilly95.pdf",
+      "engineering_use": "Use a compact consolidated memory as a cue while preserving access to rapidly captured episodic events."
+    },
+    {
+      "source": "Teyler and DiScenna (1986), The hippocampal memory indexing theory",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/3008780/",
+      "engineering_use": "Treat source IDs as an index that can reactivate the specific event supporting a selected derived memory."
+    }
+  ],
+  "theory_boundary": "These sources motivate separation and indexing. They do not prove that the pointer is biologically equivalent, that the selected source is semantically correct, or that exposing one exact event improves final dialogue.",
+  "prior_evidence": {
+    "source_preservation_v1": {
+      "path": "configs/consolidation_source_provenance_v1_result_lock.json",
+      "sha256": "e8e202cea581cf80ea968434f137ae9416e2ec51bc901b5029982209e323bb8a",
+      "decision": "keep_source_preserving_consolidation_runtime",
+      "use_here": "Exact source IDs and source records now exist, but retrieval improvement remains explicitly unvalidated."
+    },
+    "memory_provenance_reread_v3": {
+      "preregistration_path": "configs/memory_provenance_reread_v3_preregistration.json",
+      "preregistration_sha256": "e1edb45fc7c50345ad22c1a6d52c7d963c6488d63602f224a7421fc07d13c998",
+      "result_path": "reports/memory_provenance_reread_v3_report_raw_metric_v1.json",
+      "result_sha256": "0e4c560fda5f9d881184f2d0cadbdc48ead0ecaac36a4580ab9c9d3b31a9661b",
+      "decision": "reject_v3_runtime_integration",
+      "observed_adaptive_minus_provenance_overall_pp": 0.0,
+      "use_here": "Do not repeat full-session highlighted LLM rereading, sufficiency gating, generated gist, or span realization. This pilot performs one deterministic ID- and batch-bound source lookup only."
+    }
+  },
+  "frozen_baseline": {
+    "commit": "8e695221dda8e6f372044404088a5b357442ffa9",
+    "runtime_path": "uruha_brain_mac.py",
+    "runtime_sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a",
+    "dataset_path": "datasets/consolidation_source_pointer_v1.json",
+    "dataset_sha256": "ad2416412f8ec614b05f7997c11d9eb83eaee3f8959ee4fb1eb7020e5b140217",
+    "measurement_path": "measure_consolidation_source_pointer_v1.py",
+    "measurement_sha256": "55daba242037b4037e9507c545c6610ae82efeaf26d18a1e7e893fe54e3cdd24",
+    "report_path": "reports/consolidation_source_pointer_v1_baseline.json",
+    "report_sha256": "af759c149cdb49c1a7755181d313c7f4de28d32750a395ffcf80438380735bde",
+    "case_count": 12,
+    "positive_case_count": 6,
+    "positive_derived_selected_count": 6,
+    "positive_target_source_hits": 0,
+    "positive_target_source_recall": 0.0,
+    "external_model_calls": 0
+  },
+  "single_manipulated_variable": "attach_one_digest_verified_exact_source_episode_to_an_already_selected_consolidated_memory_item",
+  "conditions": {
+    "control": "Current top-five working memory with no source-pointer expansion.",
+    "treatment": "The identical top-five items, with at most one exact source-user event attached to the first selected consolidated item whose pointer passes every integrity check."
+  },
+  "controlled_variables": [
+    "temporary Chroma database and inserted documents",
+    "12 frozen cases and case order",
+    "24 global distractors and 7 local batch distractors per case",
+    "working-memory retrieval limit 20",
+    "working-memory limit 5",
+    "working-memory V2 scoring profile",
+    "top-level candidate generation and ranking",
+    "source episode decay multiplier 0.35",
+    "derived-memory text, salience, and metadata",
+    "no LLM, judge, answer generator, or external API",
+    "gold target IDs and expected activation labels remain scorer-only"
+  ],
+  "authorized_runtime_changes": [
+    "Parse source_episode_ids only as a unique nonempty JSON string list.",
+    "Verify source_episode_count and the SHA-256 digest of canonical sorted source IDs.",
+    "Require a nonempty consolidation_batch_id.",
+    "Query only source records in that batch and discard any ID not present in the verified pointer.",
+    "Require source=turn_episode and an exact matching source consolidation_batch_id.",
+    "Rank the restricted source candidates against the live query with the existing V2 memory scoring profile.",
+    "Extract the exact User field from the stored episode document without generative rewriting.",
+    "Attach at most one source_evidence record across the selected working-memory list.",
+    "Expose a controller-owned source_pointer_audit on inspected selected items.",
+    "Append the exact source user text to the working-memory summary only when every integrity check passes."
+  ],
+  "prohibited_changes": [
+    "Change top-level working-memory candidate generation, scores, order, or limit.",
+    "Change any left-brain, right-brain, consolidation, or answer-generation prompt.",
+    "Call an LLM, judge, embedding service, paid API, or external network endpoint.",
+    "Use target source IDs, expected activation labels, target utterances, or answer text inside runtime selection.",
+    "Add case-specific keywords, benchmark labels, or answer rules.",
+    "Run the rejected V3 highlighted full-session reread, sufficiency gate, generated gist, or span contract.",
+    "Read or write the user's production Chroma database.",
+    "Migrate production data."
+  ],
+  "evaluation": {
+    "database": "fresh temporary Chroma directory per case",
+    "case_count": 12,
+    "positive_cases": 6,
+    "integrity_rejection_cases": 4,
+    "unrelated_unselected_cases": 2,
+    "languages": [
+      "English",
+      "Japanese",
+      "Traditional Chinese"
+    ],
+    "external_model_calls": 0,
+    "gold_passed_to_runtime": false,
+    "condition_order": [
+      "control frozen before implementation",
+      "treatment only after preregistration merge"
+    ]
+  },
+  "success_gates": {
+    "dataset_hash_match": true,
+    "measurement_hash_match": true,
+    "baseline_runtime_hash_match": true,
+    "control_positive_target_source_hits_exact": 0,
+    "treatment_positive_target_source_hits_min": 5,
+    "paired_positive_net_gain_min": 5,
+    "treatment_positive_exact_user_text_hits_min": 5,
+    "treatment_positive_summary_exact_user_text_hits_min": 5,
+    "treatment_wrong_source_injections_exact": 0,
+    "treatment_integrity_pointer_activations_exact": 0,
+    "treatment_unrelated_pointer_activations_exact": 0,
+    "treatment_top_level_selection_unchanged_count_exact": 12,
+    "treatment_maximum_source_evidence_count_max": 1,
+    "treatment_external_model_calls_exact": 0,
+    "all_integrity_rejections_have_controller_reason": true,
+    "existing_memory_and_consolidation_regression_tests_pass": true
+  },
+  "decision_rule": {
+    "pass": "Keep the bounded exact-source pointer in runtime. This authorizes only pointer integrity and source-recall claims on the frozen synthetic pilot.",
+    "fail": "Do not integrate the source pointer. Freeze the negative result and localize whether failure came from pointer validation, source selection, multilingual retrieval, or summary propagation. Do not weaken any integrity gate."
+  },
+  "evidence_limits": {
+    "synthetic_controlled_pilot_only": true,
+    "official_benchmark_claim_authorized": false,
+    "semantic_answer_accuracy_claim_authorized": false,
+    "dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "production_runtime_migration_authorized": false,
+    "permanent_retention_policy_validated": false
+  },
+  "runtime_change_before_preregistration_merge_authorized": false
+}
