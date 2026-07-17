@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_consolidation_source_provenance_result_lock_v1",
+  "experiment_id": "consolidation_source_provenance_v1",
+  "created_at": "2026-07-17T23:54:42+09:00",
+  "decision": "keep_source_preserving_consolidation_runtime",
+  "runtime_change_authorized": true,
+  "preregistration": {
+    "commit": "c97ff5b2d1965ca756f07ac082ac1dd660ba2953",
+    "merge_commit": "64c9e14af279859b14369ac21199bf728c02341f",
+    "path": "configs/consolidation_source_provenance_v1_preregistration.json",
+    "sha256": "10fafccbe430cbc46032668ebbbb8a02ada6d6d10a684e2ad25ab62583c22208"
+  },
+  "treatment_runtime": {
+    "commit": "56791cc15a051949fc1ad705445ffdd8190d46e6",
+    "path": "uruha_brain_mac.py",
+    "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a"
+  },
+  "results": {
+    "data_gates_passed": true,
+    "failed_artifact_checks": [],
+    "failed_data_gates": [],
+    "source_episode_retention": {
+      "baseline": "0/20",
+      "treatment": "20/20"
+    },
+    "derived_records_with_exact_source_ids": {
+      "baseline": "0/3",
+      "treatment": "3/3"
+    },
+    "physically_deleted_source_episodes": {
+      "baseline": 20,
+      "treatment": 0
+    },
+    "source_records_marked_consolidated": 20,
+    "second_pass_duplicate_derived_records": 0,
+    "external_model_calls": 0
+  },
+  "failure_atomicity": {
+    "passed": true,
+    "test": "test_summary_write_failure_leaves_sources_pending_and_retryable",
+    "observed": "A failed episodic-summary write left all four source records unchanged and pending; a second call succeeded and marked all four consolidated."
+  },
+  "regression_validation": {
+    "passed": true,
+    "test_count": 106,
+    "command": "TOKENIZERS_PARALLELISM=false Style-Bert-VITS2/venv/bin/python -m unittest -q test_memory_runtime_activation.py test_memory_runtime_helpers.py test_memory_persistent_candidate_integration.py test_memory_provenance_reread.py test_memory_evidence_ledger.py test_memory_cue_extractive.py test_memory_highlight_span_contract.py test_memory_utterance_attention.py test_typed_reflection_runtime_v3.py test_consolidation_source_provenance_v1_preregistration.py test_consolidation_source_provenance_v1_runtime.py test_consolidation_source_provenance_v1_result.py"
+  },
+  "frozen_artifacts": {
+    "baseline_report": {
+      "path": "reports/consolidation_source_provenance_v1_baseline.json",
+      "sha256": "8500853c7407ca3ba9f7c21a054ad4da44fe7707ba86ddd47b0280cd7a2482a3"
+    },
+    "measurement": {
+      "path": "measure_consolidation_source_provenance_v1.py",
+      "sha256": "138edec05c60a93de2f8139e807b39f818e41c3476a82bf793708f9b08f03e01"
+    },
+    "preregistration_test": {
+      "path": "test_consolidation_source_provenance_v1_preregistration.py",
+      "sha256": "0946e97280c78b014d131ba0487171a32e6b7bcd945b070b7fd1196b4e2af2e4"
+    },
+    "runtime_test": {
+      "path": "test_consolidation_source_provenance_v1_runtime.py",
+      "sha256": "4ec3127b9ee6ba3c6bef716c6c64a39a04447aa61a0385417064c24e60c5cca5"
+    },
+    "analyzer": {
+      "path": "analyze_consolidation_source_provenance_v1.py",
+      "sha256": "1986d8425f6370cb1fbcba71a905ac127122ad65732b514c85a87402966aeece"
+    },
+    "treatment_report": {
+      "path": "reports/consolidation_source_provenance_v1_treatment.json",
+      "sha256": "0dc3dd0ce0a37ec95b7175de5cb9e4eadc79a67090f8afb544d99689fde672dd"
+    },
+    "analysis": {
+      "path": "reports/consolidation_source_provenance_v1_analysis.md",
+      "sha256": "1e38655f9d98f4ea5033fcb27f85a59d2e497ba1b199e7726e45507f71b67381"
+    }
+  },
+  "protocol_note": "The preregistration JSON created_at field is later than its Git commit timestamp because it was entered manually. The immutable chronology is preregistration commit c97ff5b and merge commit 64c9e14 before treatment commit 56791cc; created_at was not used by the analyzer or any success gate.",
+  "evidence_limits": {
+    "source_retention_and_traceability_validated": true,
+    "idempotence_validated": true,
+    "summary_write_failure_retry_validated": true,
+    "semantic_consolidation_quality_validated": false,
+    "retrieval_improvement_validated": false,
+    "dialogue_improvement_validated": false,
+    "human_likeness_validated": false,
+    "biological_equivalence_validated": false,
+    "permanent_retention_policy_validated": false,
+    "production_data_migration_validated": false
+  },
+  "next_primary_task": "Preregister a matched exact-source retrieval-pointer pilot under distractor delay, without generated reflection gist, judge feedback, benchmark labels, or production-data migration."
+}
