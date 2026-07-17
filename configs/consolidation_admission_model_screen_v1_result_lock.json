@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_consolidation_admission_model_screen_result_lock_v1",
+  "experiment_id": "consolidation_admission_model_screen_v1_development",
+  "created_at": "2026-07-17T23:08:00+09:00",
+  "harness_merge_commit": "645232479809bce51c8fa327ba0d273c1473251e",
+  "result": "FAIL",
+  "decision": "reject_model_replacement_and_proceed_to_two_stage_architecture",
+  "selected_model_condition": null,
+  "frozen_artifacts": {
+    "raw_result": "reports/consolidation_admission_model_screen_v1_development_raw.json",
+    "raw_result_sha256": "42985d258691d870357fdb0fe457e039c5d5a78dd6febebbbef62fa3c0680b04",
+    "analysis_json": "reports/consolidation_admission_model_screen_v1_development_analysis.json",
+    "analysis_json_sha256": "962e769717c3d1a28ce4d9083e49e8d6733817117b19697c5bc155fc2f7c4010",
+    "analysis_markdown": "reports/consolidation_admission_model_screen_v1_development_analysis.md",
+    "analysis_markdown_sha256": "8620b13bdb9a12dfde563b51dacadd8a8bf666065b1f2ee99793c1c4a9d4f6b8",
+    "diagnostic_zh": "reports/consolidation_admission_model_screen_v1_development_diagnostic_zh.md",
+    "diagnostic_zh_sha256": "c3dc6b1ba9147ee6776d819c7db9ef28dec7a86ac5422629f0806cf696c5c2c2",
+    "preregistration": "configs/consolidation_admission_model_screen_v1_development_preregistration.json",
+    "preregistration_sha256": "2fccebd2af4acf09af8b2e5d26f3bd47db341edb07d13163b3517df4f283d3cd",
+    "harness_lock": "configs/consolidation_admission_model_screen_v1_harness_lock.json",
+    "harness_lock_sha256": "d2c022424bb4abd8c2de663108d55bddb1814d2654140f805c936e950fd55009",
+    "dataset": "datasets/consolidation_admission_model_screen_v1_development.json",
+    "dataset_sha256": "0c235cd05ab14fe18b4b0cf4a7f0d6d19fde7f857572f89af01df22f1f5f7d9d",
+    "result_test": "test_consolidation_admission_model_screen_v1_result.py",
+    "result_test_sha256": "76dbdfdce287ead3ead218d0044efc2cede0ed30c8fc78013653c1a03d67b788"
+  },
+  "preregistered_result_summary": {
+    "qwen25_7b_control_correct": 6,
+    "qwen35_4b_correct": 8,
+    "qwen35_9b_correct": 10,
+    "qwen35_4b_eligible": false,
+    "qwen35_9b_eligible": false,
+    "qwen35_9b_only_failed_gate": "candidate_median_wall_seconds_max",
+    "qwen35_9b_median_wall_seconds": 5.8965,
+    "qwen35_9b_preregistered_median_limit_seconds": 5.0
+  },
+  "exploratory_replay": {
+    "status": "post_hoc_hypothesis_generation_only",
+    "rule": "Use qwen3.5:4b as a write-or-none gate and reuse the existing qwen3.5:9b target only when the 4B output is non-none.",
+    "estimated_total_model_calls": 21,
+    "correct_count": 11,
+    "case_count": 12,
+    "false_long_term_write_count": 0,
+    "missed_long_term_write_count": 1,
+    "validation_claim_authorized": false
+  },
+  "next_step_authorization": {
+    "two_stage_architecture_development_authorized": true,
+    "fresh_dataset_required": true,
+    "actual_cascade_execution_required": true,
+    "matched_single_call_qwen35_9b_control_required": true,
+    "runtime_integration_authorized": false
+  },
+  "evidence_limits": {
+    "same_dataset_retest_authorized": false,
+    "post_hoc_replay_as_validation_authorized": false,
+    "single_call_model_replacement_continuation_authorized": false,
+    "runtime_memory_write_authorized": false,
+    "runtime_shadow_authorized": false,
+    "fresh_holdout_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "general_model_superiority_claim_authorized": false
+  }
+}
