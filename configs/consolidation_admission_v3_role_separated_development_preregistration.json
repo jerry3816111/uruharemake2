@@ -1,0 +1,283 @@
+{
+  "schema": "uruha_consolidation_admission_role_separated_development_preregistration_v3",
+  "experiment_id": "consolidation_admission_v3_role_separated_development",
+  "created_at": "2026-07-17T22:24:11+09:00",
+  "evidence_role": "small_falsifiable_development_pilot_for_role_separated_source_monitoring_and_long_term_admission",
+  "problem": "V2 improved parsing, evidence selection, and latency, but the owner field conflated evidence speaker with memory applicability. All six procedural cases were recognized as procedural yet assigned owner=user and were rejected by the fail-closed compiler.",
+  "hypothesis": "With the same local model and one call per session, preserving evidence source in code and deriving memory applicability from memory kind while asking the model only for kind, persistence basis, and evidence indices will improve positive long-term admission over the frozen V2 indexed tool contract.",
+  "theory_basis": [
+    {
+      "source": "Johnson, Hashtroudi, and Lindsay (1993), Source Monitoring",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8346328/",
+      "engineering_use": "Keep externally observed speaker identity as provenance instead of asking a generative classifier to recreate it."
+    },
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Complementary Learning Systems",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7624455/",
+      "engineering_use": "Separate rapidly stored episodes from slower admission into semantic user knowledge or reusable assistant procedure."
+    },
+    {
+      "source": "Ollama official tool-calling documentation",
+      "url": "https://docs.ollama.com/capabilities/tool-calling",
+      "engineering_use": "Transport the reduced semantic decision as one closed function call."
+    }
+  ],
+  "theory_boundary": "The sources motivate explicit provenance and layered memory. They do not prove biological equivalence, human-like memory, or that field removal alone will pass this pilot.",
+  "v2_dependency": {
+    "result_lock_path": "configs/consolidation_admission_v2_indexed_result_lock.json",
+    "result_lock_sha256": "94f1ca69a2c038acfbb103cc937f8c3fae77f17b2164e3c8ba00308856760766",
+    "result": "FAIL",
+    "same_dataset_retest_authorized": false,
+    "use_in_v3": "failure_modes_and_matched_control_contract_only"
+  },
+  "dataset": {
+    "path": "datasets/consolidation_admission_v3_role_separated_development.json",
+    "sha256": "b4e745ee4b65284f28ae052beba49891d1a1e86384631e793419d71e7680249d",
+    "case_count": 18,
+    "language_counts": {
+      "eng": 6,
+      "jpn": 6,
+      "cmn": 6
+    },
+    "target_counts": {
+      "wisdom": 6,
+      "procedural": 6,
+      "none": 6
+    },
+    "basis_counts": {
+      "stable_trait": 3,
+      "repeated_pattern": 3,
+      "explicit_future_policy": 6,
+      "no_long_term_basis": 6
+    },
+    "unique_scenario_family_count": 18,
+    "semantic_translation_pairs_present": false,
+    "status": "development_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false
+  },
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260717,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 384,
+    "keep_alive": "15m",
+    "transport_attempts": 2,
+    "timeout_seconds": 120
+  },
+  "fixed_transcript_rendering": "Turn {index}\nUser[U{index}]: {user}\nAssistant[A{index}]: {assistant}",
+  "condition_order": {
+    "even_case_index": [
+      "v2_indexed_tool_control",
+      "v3_role_separated_tool_candidate"
+    ],
+    "odd_case_index": [
+      "v3_role_separated_tool_candidate",
+      "v2_indexed_tool_control"
+    ]
+  },
+  "conditions": {
+    "v2_indexed_tool_control": {
+      "model_calls": 18,
+      "source_contract": "v2_indexed_tool_candidate",
+      "source_path": "configs/consolidation_admission_v2_indexed_development_preregistration.json",
+      "system_prompt": "Classify at most one long-term memory candidate from this dialogue. User turns have fixed IDs U1, U2, and U3. Call classify_memory_admission exactly once and return no narrative answer. Use wisdom only for a durable or repeated first-person user fact, constraint, or preference. Use procedural only for an explicit recurring instruction about how this assistant should respond in later interactions. A one-time request, temporary state, third-party fact, or uncertain possibility must use memory_kind none. For wisdom or procedural, select only the User turn IDs that explicitly support the candidate. Stable wisdom needs at least one evidence turn, repeated wisdom needs at least two, and procedural needs at least one. For none, evidence_user_turns must be empty. Do not infer motives, copy assistant statements as user evidence, or strengthen scope.",
+      "tool_contract": {
+        "type": "function",
+        "function": {
+          "name": "classify_memory_admission",
+          "description": "Classify one source-indexed long-term memory admission frame.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "memory_kind",
+              "scope",
+              "owner",
+              "evidence_user_turns",
+              "confidence_band"
+            ],
+            "properties": {
+              "memory_kind": {
+                "type": "string",
+                "enum": [
+                  "wisdom",
+                  "procedural",
+                  "none"
+                ]
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "stable",
+                  "repeated",
+                  "recurring",
+                  "one_off",
+                  "transient",
+                  "third_party",
+                  "uncertain",
+                  "none"
+                ]
+              },
+              "owner": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "assistant",
+                  "third_party",
+                  "other",
+                  "none"
+                ]
+              },
+              "evidence_user_turns": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "uniqueItems": true,
+                "maxItems": 3
+              },
+              "confidence_band": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "observed_frame_rule": "Parse and compile with the frozen V2 indexed contract."
+    },
+    "v3_role_separated_tool_candidate": {
+      "model_calls": 18,
+      "only_changed_component": "separate_structural_source_and_derived_applicability_from_model_semantic_decision",
+      "system_prompt": "Classify at most one long-term memory candidate from this dialogue. User turns have fixed IDs U1, U2, and U3. Call classify_memory_basis exactly once and return no narrative answer. The program already knows every evidence ID is a User turn, so do not classify the speaker. The program derives applicability from memory_kind, so do not classify owner or target. Use wisdom for a durable first-person user trait, constraint, or preference. Choose stable_trait when one explicit User turn states a durable property; choose repeated_pattern only when at least two User turns explicitly support the same recurring user pattern. Use procedural only for an explicit instruction about how this assistant should respond in future or recurring interactions, and choose explicit_future_policy. Use none with no_long_term_basis for one-time requests, temporary states, third-party information, or uncertain possibilities. For wisdom or procedural, select only supporting User turn IDs. For none, evidence_user_turns must be empty. Do not infer motives or strengthen persistence.",
+      "tool_contract": {
+        "type": "function",
+        "function": {
+          "name": "classify_memory_basis",
+          "description": "Classify one role-separated long-term memory admission decision.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "memory_kind",
+              "persistence_basis",
+              "evidence_user_turns"
+            ],
+            "properties": {
+              "memory_kind": {
+                "type": "string",
+                "description": "The destination memory class, or none when no long-term admission is justified.",
+                "enum": [
+                  "wisdom",
+                  "procedural",
+                  "none"
+                ]
+              },
+              "persistence_basis": {
+                "type": "string",
+                "description": "The explicit reason the content should or should not persist.",
+                "enum": [
+                  "stable_trait",
+                  "repeated_pattern",
+                  "explicit_future_policy",
+                  "no_long_term_basis"
+                ]
+              },
+              "evidence_user_turns": {
+                "type": "array",
+                "description": "Only User turn numbers that explicitly support the decision; empty for none.",
+                "items": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "uniqueItems": true,
+                "maxItems": 3
+              }
+            }
+          }
+        }
+      },
+      "deterministic_compiler": {
+        "source_role": "Every selected evidence index is structurally bound to a preserved User turn.",
+        "wisdom": "memory_kind=wisdom AND persistence_basis in {stable_trait,repeated_pattern}; stable_trait requires >=1 evidence index and repeated_pattern requires >=2; applies_to=user_profile",
+        "procedural": "memory_kind=procedural AND persistence_basis=explicit_future_policy AND >=1 evidence index; applies_to=assistant_policy",
+        "none": "memory_kind=none AND persistence_basis=no_long_term_basis AND evidence_user_turns is empty; applies_to=none",
+        "fail_closed": "all malformed or unauthorized combinations compile to none"
+      }
+    }
+  },
+  "scoring": {
+    "primary_unit": "exact_session_long_term_target",
+    "semantic_frame_exact_match_fields": [
+      "memory_kind",
+      "persistence_basis"
+    ],
+    "derived_applicability_success": "wisdom maps to user_profile, procedural maps to assistant_policy, and none maps to none without model inference",
+    "evidence_grounding_success": "all selected indices are inside allowed_evidence_user_turns and every required_evidence_user_turn is selected; none requires an empty set",
+    "candidate_parse_or_contract_failure_count_as": "none",
+    "gold_fields_passed_to_model": false
+  },
+  "success_gates": {
+    "candidate_correct_count_min": 16,
+    "candidate_accuracy_min": 0.8889,
+    "candidate_wisdom_correct_min": 5,
+    "candidate_procedural_correct_min": 5,
+    "candidate_none_correct_min": 5,
+    "candidate_semantic_frame_exact_count_min": 15,
+    "candidate_evidence_grounded_count_min": 15,
+    "candidate_positive_evidence_grounded_count_min": 10,
+    "newly_correct_vs_control_min": 5,
+    "regression_vs_control_max": 1,
+    "net_correct_gain_vs_control_min": 4,
+    "candidate_false_long_term_write_count_max": 1,
+    "candidate_missed_long_term_write_count_max": 1,
+    "candidate_tool_parse_success_rate_min": 1.0,
+    "candidate_index_contract_success_rate_min": 1.0,
+    "model_call_count_exact": 36,
+    "control_median_wall_seconds_max": 5.0,
+    "candidate_median_wall_seconds_max": 4.0,
+    "control_warm_p95_wall_seconds_max": 6.5,
+    "candidate_warm_p95_wall_seconds_max": 5.5
+  },
+  "decision_rule": {
+    "pass": "Authorize a separately preregistered post-admission Japanese-rule generation integration pilot on entirely new sessions only.",
+    "fail": "Freeze the negative result, do not modify the enabled background consolidation path, and stop the single-call Qwen2.5 7B frame-simplification line.",
+    "same_dataset_retest_after_result": false,
+    "post_result_prompt_schema_or_gate_change": false
+  },
+  "evidence_limits": {
+    "runtime_consolidation_change_authorized": false,
+    "runtime_shadow_authorized": false,
+    "fresh_holdout_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false
+  },
+  "model_inference_before_preregistration_and_harness_merge_authorized": false
+}
