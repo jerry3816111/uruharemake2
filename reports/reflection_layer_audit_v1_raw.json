@@ -1,0 +1,533 @@
+{
+  "schema": "uruha_reflection_layer_audit_raw_v1",
+  "evidence_status": "frozen_calibration_completed_without_retry_or_tuning",
+  "started_at": "2026-07-17T17:15:24+09:00",
+  "completed_at": "2026-07-17T17:16:07+09:00",
+  "runner_commit": "000e11c45b00c4339cd1c375b913494df795a4ac",
+  "runner_branch": "main",
+  "preregistration_sha256": "3ca110e8bf92e6e926846c89db43f8133180f147fef94af733f1148c5f930140",
+  "dataset_sha256": "9f5f946662286fcbf46a4e4cbd1685d780ee044a1993dea9791edadf649ae8f5",
+  "harness_lock_sha256": "ebee1a783a0cbfd729e91dfcbc5fa83abc016ba4cd7c691b74781cfba67abc0e",
+  "judge_snapshot": {
+    "model": "qwen3.5:9b",
+    "ollama_list_row": "qwen3.5:9b      6488c96fa5fa    6.6 GB    2 days ago"
+  },
+  "model_call_count": 12,
+  "thinking": false,
+  "paid_api_used": false,
+  "human_rating_used": false,
+  "rows": [
+    {
+      "case": {
+        "id": "semantic_zh_music_faithful",
+        "pair_id": "semantic_zh_music",
+        "family": "semantic",
+        "source_language": "zh",
+        "source_text": "我工作時只聽沒有歌詞的音樂，有人聲會讓我分心。",
+        "candidate_jp": "仕事中は歌詞のない音楽だけを聴き、歌声があると気が散る。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "work_context",
+            "statement_en": "This preference applies while the speaker is working.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "no_lyrics",
+            "statement_en": "The speaker listens only to music without lyrics while working.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "vocals_distract",
+            "statement_en": "Vocals distract the speaker.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "291e276af01fc4138688857ce2c216bde1ef19b6cb9895eeb7603f7a074280a6",
+      "raw_response": "{\n  \"work_context\": \"entailed\",\n  \"no_lyrics\": \"entailed\",\n  \"vocals_distract\": \"entailed\"\n}",
+      "judgments": {
+        "work_context": "entailed",
+        "no_lyrics": "entailed",
+        "vocals_distract": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 38,
+      "total_duration_ns": 6731593791
+    },
+    {
+      "case": {
+        "id": "semantic_zh_music_negated",
+        "pair_id": "semantic_zh_music",
+        "family": "semantic",
+        "source_language": "zh",
+        "source_text": "我工作時只聽沒有歌詞的音樂，有人聲會讓我分心。",
+        "candidate_jp": "仕事中は歌詞のある音楽を選び、歌声があるほうが集中できる。",
+        "expected_surface_clean": true,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "work_context",
+            "statement_en": "This preference applies while the speaker is working.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "no_lyrics",
+            "statement_en": "The speaker listens only to music without lyrics while working.",
+            "gold_relation": "contradicted",
+            "critical": true
+          },
+          {
+            "id": "vocals_distract",
+            "statement_en": "Vocals distract the speaker.",
+            "gold_relation": "contradicted",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "58d73022a93c252e818f1d23cffb76c3c183224482cffdf29b054b06c33775b6",
+      "raw_response": "{\n  \"work_context\": \"entailed\",\n  \"no_lyrics\": \"contradicted\",\n  \"vocals_distract\": \"contradicted\"\n}",
+      "judgments": {
+        "work_context": "entailed",
+        "no_lyrics": "contradicted",
+        "vocals_distract": "contradicted"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 40,
+      "total_duration_ns": 3424704000
+    },
+    {
+      "case": {
+        "id": "semantic_en_spicy_faithful",
+        "pair_id": "semantic_en_spicy",
+        "family": "semantic",
+        "source_language": "en",
+        "source_text": "I avoid spicy food in the evening because it upsets my stomach.",
+        "candidate_jp": "夜は胃がつらくなるので辛い物を避ける。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "avoid_spicy",
+            "statement_en": "The speaker avoids spicy food.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "evening_scope",
+            "statement_en": "The avoidance applies in the evening.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "stomach_reason",
+            "statement_en": "The reason is that spicy food upsets the speaker's stomach.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "ef3db6bd88aea60186d0177e20dacfdc05b1d2bd62971a85317eefed40b1c23c",
+      "raw_response": "{\n  \"avoid_spicy\": \"entailed\",\n  \"evening_scope\": \"contradicted\",\n  \"stomach_reason\": \"missing\"\n}",
+      "judgments": {
+        "avoid_spicy": "entailed",
+        "evening_scope": "contradicted",
+        "stomach_reason": "missing"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 38,
+      "total_duration_ns": 3219093875
+    },
+    {
+      "case": {
+        "id": "semantic_en_spicy_reason_missing",
+        "pair_id": "semantic_en_spicy",
+        "family": "semantic",
+        "source_language": "en",
+        "source_text": "I avoid spicy food in the evening because it upsets my stomach.",
+        "candidate_jp": "夜は辛い物を避ける。",
+        "expected_surface_clean": true,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "avoid_spicy",
+            "statement_en": "The speaker avoids spicy food.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "evening_scope",
+            "statement_en": "The avoidance applies in the evening.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "stomach_reason",
+            "statement_en": "The reason is that spicy food upsets the speaker's stomach.",
+            "gold_relation": "missing",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "b13e6781ba07b4b44e82c025597a4887e4bc399282c08fa3dffe0bd87f00e8a8",
+      "raw_response": "{\n  \"avoid_spicy\": \"missing\",\n  \"evening_scope\": \"entailed\",\n  \"stomach_reason\": \"missing\"\n}",
+      "judgments": {
+        "avoid_spicy": "missing",
+        "evening_scope": "entailed",
+        "stomach_reason": "missing"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 36,
+      "total_duration_ns": 3085948334
+    },
+    {
+      "case": {
+        "id": "procedural_ja_photo_faithful",
+        "pair_id": "procedural_ja_photo",
+        "family": "procedural",
+        "source_language": "ja",
+        "source_text": "写真を送る前に、必ず私に確認して。",
+        "candidate_jp": "写真を送る前に、アシスタントは必ずユーザーへ確認する。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "assistant_actor",
+            "statement_en": "The assistant must perform the confirmation.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "user_target",
+            "statement_en": "The assistant must confirm with the user.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "before_sending",
+            "statement_en": "Confirmation must happen before sending a photo.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "7dcd77b750c84ce00a24982021203e9afe456bef7024df3ab74fa5e6552fb93b",
+      "raw_response": "{\n  \"assistant_actor\": \"entailed\",\n  \"user_target\": \"entailed\",\n  \"before_sending\": \"entailed\"\n}",
+      "judgments": {
+        "assistant_actor": "entailed",
+        "user_target": "entailed",
+        "before_sending": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 35,
+      "total_duration_ns": 3053046917
+    },
+    {
+      "case": {
+        "id": "procedural_ja_photo_actor_swap",
+        "pair_id": "procedural_ja_photo",
+        "family": "procedural",
+        "source_language": "ja",
+        "source_text": "写真を送る前に、必ず私に確認して。",
+        "candidate_jp": "写真を送る前に、ユーザーがアシスタントへ確認する。",
+        "expected_surface_clean": true,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "assistant_actor",
+            "statement_en": "The assistant must perform the confirmation.",
+            "gold_relation": "contradicted",
+            "critical": true
+          },
+          {
+            "id": "user_target",
+            "statement_en": "The assistant must confirm with the user.",
+            "gold_relation": "contradicted",
+            "critical": true
+          },
+          {
+            "id": "before_sending",
+            "statement_en": "Confirmation must happen before sending a photo.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "9a817a33905a43abf1e674759bf46b0893d7ef8750c1f644a18f3e258311f3ce",
+      "raw_response": "{\n  \"assistant_actor\": \"entailed\",\n  \"user_target\": \"contradicted\",\n  \"before_sending\": \"entailed\"\n}",
+      "judgments": {
+        "assistant_actor": "entailed",
+        "user_target": "contradicted",
+        "before_sending": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 36,
+      "total_duration_ns": 3120753875
+    },
+    {
+      "case": {
+        "id": "procedural_zh_answer_order_faithful",
+        "pair_id": "procedural_zh_answer_order",
+        "family": "procedural",
+        "source_language": "zh",
+        "source_text": "以後先直接回答，再補充理由，不要先講背景。",
+        "candidate_jp": "今後は背景から始めず、まず直接答えてから理由を補足する。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "answer_first",
+            "statement_en": "The assistant should give the direct answer first.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "reason_after",
+            "statement_en": "Reasons should be added after the direct answer.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "no_background_first",
+            "statement_en": "The assistant should not begin with background explanation.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "9b77707e19de5fe0829f2b8da76584676692f9e8a6243f2bd42369008c9c62e2",
+      "raw_response": "{\n  \"answer_first\": \"entailed\",\n  \"reason_after\": \"entailed\",\n  \"no_background_first\": \"entailed\"\n}",
+      "judgments": {
+        "answer_first": "entailed",
+        "reason_after": "entailed",
+        "no_background_first": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 35,
+      "total_duration_ns": 3173477709
+    },
+    {
+      "case": {
+        "id": "procedural_zh_answer_order_reversed",
+        "pair_id": "procedural_zh_answer_order",
+        "family": "procedural",
+        "source_language": "zh",
+        "source_text": "以後先直接回答，再補充理由，不要先講背景。",
+        "candidate_jp": "今後はまず背景を説明し、理由を並べてから最後に答える。",
+        "expected_surface_clean": true,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "answer_first",
+            "statement_en": "The assistant should give the direct answer first.",
+            "gold_relation": "contradicted",
+            "critical": true
+          },
+          {
+            "id": "reason_after",
+            "statement_en": "Reasons should be added after the direct answer.",
+            "gold_relation": "contradicted",
+            "critical": true
+          },
+          {
+            "id": "no_background_first",
+            "statement_en": "The assistant should not begin with background explanation.",
+            "gold_relation": "contradicted",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "14231d7e4aea7d13c392712ef958bce4ca759f66a20ef48f80b6c3897e27c196",
+      "raw_response": "{\n  \"answer_first\": \"contradicted\",\n  \"reason_after\": \"missing\",\n  \"no_background_first\": \"entailed\"\n}",
+      "judgments": {
+        "answer_first": "contradicted",
+        "reason_after": "missing",
+        "no_background_first": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 35,
+      "total_duration_ns": 3158612417
+    },
+    {
+      "case": {
+        "id": "interpretive_en_minute_faithful",
+        "pair_id": "interpretive_en_minute",
+        "family": "interpretive",
+        "source_language": "en",
+        "source_text": "When I say 'give me a minute', I usually need time to think; I am not asking you to leave.",
+        "candidate_jp": "『give me a minute』は考える時間が必要という意味で、立ち去ってほしいという意味ではない。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "trigger_phrase",
+            "statement_en": "The rule concerns the phrase 'give me a minute'.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "needs_thinking_time",
+            "statement_en": "The speaker needs time to think.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "not_leave_request",
+            "statement_en": "The speaker is not asking the assistant to leave.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "1982741ffb8bc2ae58df92c6d54f5e4fd6b6e881c30210b946700f5a30996f65",
+      "raw_response": "{\n  \"trigger_phrase\": \"entailed\",\n  \"needs_thinking_time\": \"entailed\",\n  \"not_leave_request\": \"entailed\"\n}",
+      "judgments": {
+        "trigger_phrase": "entailed",
+        "needs_thinking_time": "entailed",
+        "not_leave_request": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 37,
+      "total_duration_ns": 3304839875
+    },
+    {
+      "case": {
+        "id": "interpretive_en_minute_reversed",
+        "pair_id": "interpretive_en_minute",
+        "family": "interpretive",
+        "source_language": "en",
+        "source_text": "When I say 'give me a minute', I usually need time to think; I am not asking you to leave.",
+        "candidate_jp": "『give me a minute』は、相手に立ち去ってほしいという意味だ。",
+        "expected_surface_clean": true,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "trigger_phrase",
+            "statement_en": "The rule concerns the phrase 'give me a minute'.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "needs_thinking_time",
+            "statement_en": "The speaker needs time to think.",
+            "gold_relation": "missing",
+            "critical": true
+          },
+          {
+            "id": "not_leave_request",
+            "statement_en": "The speaker is not asking the assistant to leave.",
+            "gold_relation": "contradicted",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "f3d41608ed94e0b84be3d7793836343f100b7d6fc35807f297d13e62f2b2434d",
+      "raw_response": "{\n  \"trigger_phrase\": \"entailed\",\n  \"needs_thinking_time\": \"missing\",\n  \"not_leave_request\": \"contradicted\"\n}",
+      "judgments": {
+        "trigger_phrase": "entailed",
+        "needs_thinking_time": "missing",
+        "not_leave_request": "contradicted"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 37,
+      "total_duration_ns": 3289628875
+    },
+    {
+      "case": {
+        "id": "interpretive_ja_any_faithful",
+        "pair_id": "interpretive_ja_any",
+        "family": "interpretive",
+        "source_language": "ja",
+        "source_text": "私が『どっちでも』と言う時は、決めるのに疲れていることが多い。好みがないとは限らないから、一案だけ出して。",
+        "candidate_jp": "『どっちでも』は決め疲れを示すことが多く、好みがないとは限らないので、アシスタントは一案だけ出す。",
+        "expected_surface_clean": true,
+        "expected_accept": true,
+        "claims": [
+          {
+            "id": "decision_fatigue",
+            "statement_en": "The phrase often indicates decision fatigue.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "preference_may_exist",
+            "statement_en": "The phrase does not necessarily mean the speaker has no preference.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "assistant_one_option",
+            "statement_en": "The assistant should offer exactly one option.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "e682402c2d682cd469f1ecefafc13c4c6e913e41f78ddea0f27d392352bafcd6",
+      "raw_response": "{\n  \"decision_fatigue\": \"entailed\",\n  \"preference_may_exist\": \"entailed\",\n  \"assistant_one_option\": \"entailed\"\n}",
+      "judgments": {
+        "decision_fatigue": "entailed",
+        "preference_may_exist": "entailed",
+        "assistant_one_option": "entailed"
+      },
+      "schema_valid": true,
+      "parse_error": null,
+      "eval_count": 40,
+      "total_duration_ns": 3557168334
+    },
+    {
+      "case": {
+        "id": "interpretive_ja_any_chinese_surface",
+        "pair_id": "interpretive_ja_any",
+        "family": "interpretive",
+        "source_language": "ja",
+        "source_text": "私が『どっちでも』と言う時は、決めるのに疲れていることが多い。好みがないとは限らないから、一案だけ出して。",
+        "candidate_jp": "『どっちでも』表示决定疲劳，不一定没有偏好，所以アシスタントは一个方案だけ出す。",
+        "expected_surface_clean": false,
+        "expected_accept": false,
+        "claims": [
+          {
+            "id": "decision_fatigue",
+            "statement_en": "The phrase often indicates decision fatigue.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "preference_may_exist",
+            "statement_en": "The phrase does not necessarily mean the speaker has no preference.",
+            "gold_relation": "entailed",
+            "critical": true
+          },
+          {
+            "id": "assistant_one_option",
+            "statement_en": "The assistant should offer exactly one option.",
+            "gold_relation": "entailed",
+            "critical": true
+          }
+        ]
+      },
+      "prompt_sha256": "a8f7e75c23569c9e15868c8eeb48d382d83da0b3ffc1096039fca38129660f3c",
+      "raw_response": "```json\n{\n  \"decision_fatigue\": \"entailed\",\n  \"preference_may_exist\": \"entailed\",\n  \"assistant_one_option\": \"entailed\"\n}\n```",
+      "judgments": {},
+      "schema_valid": false,
+      "parse_error": "invalid_json",
+      "eval_count": 45,
+      "total_duration_ns": 3720696375
+    }
+  ]
+}

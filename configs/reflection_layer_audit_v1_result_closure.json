@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_reflection_layer_audit_result_closure_v1",
+  "evidence_status": "failed_calibration_frozen_without_prompt_retry_case_edit_or_threshold_change",
+  "preregistration": "configs/reflection_layer_audit_v1_preregistration.json",
+  "harness_lock": "configs/reflection_layer_audit_v1_harness_lock.json",
+  "dataset": "datasets/reflection_layer_audit_v1_calibration.json",
+  "result_artifacts": {
+    "reports/reflection_layer_audit_v1_raw.json": "d60d805dd68ee89d5c564fef444d4ae271806bfd08dbaf88b0f2af6fa3f2dae0",
+    "reports/reflection_layer_audit_v1_analysis.json": "1e8249d98c34cdb85c77f07fa30bab80b9e3f87d1744da5eb2e0a969a8b034f3",
+    "reports/reflection_layer_audit_v1_analysis.md": "eb344ed8612493d4dd43757ced96e4f4f165a72f500af059744be37b89f110ae"
+  },
+  "runner_commit": "000e11c45b00c4339cd1c375b913494df795a4ac",
+  "judge_snapshot": {
+    "model": "qwen3.5:9b",
+    "ollama_list_id": "6488c96fa5fa",
+    "parameter_size": "9.7B",
+    "quantization": "Q4_K_M"
+  },
+  "model_call_count": 12,
+  "decision": "reject_atomic_judge_and_do_not_use_for_v5_design",
+  "metrics": {
+    "schema_parse_rate": 0.9167,
+    "atomic_relation_accuracy": 0.75,
+    "critical_false_entailment_count": 2,
+    "candidate_acceptance_accuracy": 0.9167,
+    "accepted_surface_specificity": 1.0,
+    "accepted_case_count": 5
+  },
+  "bounded_findings": [
+    "The fixed local judge completed exactly 12 calls with thinking disabled and no retry.",
+    "The judge missed nine of 36 atomic labels and produced two dangerous false-entailment decisions.",
+    "One response violated the requested JSON schema by wrapping the object in a markdown fence.",
+    "The deterministic source-aware surface checker correctly rejected the single Chinese-polluted calibration candidate."
+  ],
+  "failure_examples": [
+    {
+      "case_id": "semantic_en_spicy_faithful",
+      "issue": "The judge labeled explicit evening scope as contradicted and explicit stomach discomfort as missing."
+    },
+    {
+      "case_id": "procedural_ja_photo_actor_swap",
+      "issue": "The judge falsely entailed that the assistant performs confirmation when the candidate explicitly assigns confirmation to the user."
+    },
+    {
+      "case_id": "procedural_zh_answer_order_reversed",
+      "issue": "The judge falsely entailed not starting with background when the candidate explicitly starts with background."
+    }
+  ],
+  "post_result_prompt_tuning_authorized": false,
+  "v4_layer_diagnosis_authorized": false,
+  "runtime_change_authorized": false,
+  "independent_holdout_authorized": false,
+  "next_primary_task": "test_exact_source_typed_reflection_as_a_retrieval_pointer_under_distractor_delay_without_generated_semantic_gist_or_llm_judge_dependency",
+  "next_task_constraints": [
+    "Do not reuse the rejected judge to label V4 or V5 behavior.",
+    "Do not edit the frozen calibration cases, raw responses, or gates.",
+    "Eliminate generated reflection paraphrase from the next candidate rather than trying to verify it with an unreliable judge.",
+    "Keep exact source episode provenance and evaluate retrieval separately from deterministic future-behavior contracts.",
+    "Require zero paired behavior regressions before any deployment consideration."
+  ],
+  "claim_boundary": "This failed authored calibration rejects one local LLM-as-judge design. It does not prove that every semantic evaluator is unusable or that exact-source reflection will improve behavior."
+}
