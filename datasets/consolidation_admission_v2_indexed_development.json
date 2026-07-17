@@ -1,0 +1,526 @@
+{
+  "schema": "uruha_consolidation_admission_indexed_development_dataset_v2",
+  "created_at": "2026-07-17T21:53:23+09:00",
+  "purpose": "Fresh multilingual development sessions for testing source-indexed long-term memory admission after V1 failed.",
+  "construction_method": "Codex-authored synthetic sessions with unique scenario families and explicit gold frames.",
+  "official_source_labels": false,
+  "independent_human_label_validation": false,
+  "model_inference_used_during_construction": false,
+  "prior_result_used_only_to_define_failure_modes": true,
+  "semantic_translation_pairs_present": false,
+  "cases": [
+    {
+      "id": "cav2_eng_wisdom_left_handed",
+      "language": "eng",
+      "scenario_family": "stable_desk_handedness",
+      "session": [
+        {
+          "user": "Can you help me arrange my desk?",
+          "assistant": "Tell me which parts need to stay easy to reach."
+        },
+        {
+          "user": "I am left-handed, and I always keep the mouse on the left side.",
+          "assistant": "Then the left side should stay clear for the mouse."
+        },
+        {
+          "user": "That solves the part I was unsure about.",
+          "assistant": "Then I will start with the mouse placement."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "stable",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2
+      ],
+      "gold_reason": "durable_first_person_physical_preference"
+    },
+    {
+      "id": "cav2_eng_wisdom_train_commute",
+      "language": "eng",
+      "scenario_family": "repeated_commute_medium_preference",
+      "session": [
+        {
+          "user": "I can read comfortably on trains, but buses make me carsick.",
+          "assistant": "The vehicle type changes whether reading works for you."
+        },
+        {
+          "user": "Yesterday I took the bus and had to stop reading.",
+          "assistant": "That matches the same problem."
+        },
+        {
+          "user": "For future commutes, the train is usually the better choice for me.",
+          "assistant": "I will treat the train as your usual preference."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "repeated",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "gold_reason": "repeated_first_person_transport_preference"
+    },
+    {
+      "id": "cav2_eng_procedural_code_review",
+      "language": "eng",
+      "scenario_family": "recurring_code_review_order",
+      "session": [
+        {
+          "user": "Your last code review began with a long overview.",
+          "assistant": "That delayed the most important finding."
+        },
+        {
+          "user": "Whenever I ask for a code review, point out the most serious bug first, then explain it.",
+          "assistant": "I will put the highest-severity finding first."
+        },
+        {
+          "user": "Use that order in future reviews too.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_response_policy"
+    },
+    {
+      "id": "cav2_eng_procedural_checkpoint",
+      "language": "eng",
+      "scenario_family": "recurring_planning_checkpoint_signal",
+      "session": [
+        {
+          "user": "Long planning chats get hard to track.",
+          "assistant": "A fixed checkpoint could make them easier to resume."
+        },
+        {
+          "user": "When I type checkpoint, summarize the decisions and the next unresolved question.",
+          "assistant": "I will use checkpoint as that signal."
+        },
+        {
+          "user": "Treat checkpoint that way in later chats too.",
+          "assistant": "I will."
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_signal_policy"
+    },
+    {
+      "id": "cav2_eng_none_undecided_pottery",
+      "language": "eng",
+      "scenario_family": "uncertain_future_hobby",
+      "session": [
+        {
+          "user": "I saw a pottery class near my office.",
+          "assistant": "Are you thinking about joining it?"
+        },
+        {
+          "user": "I might try pottery someday, but I have not decided.",
+          "assistant": "Then it is only a possibility."
+        },
+        {
+          "user": "Do not treat it as one of my hobbies yet.",
+          "assistant": "I will not store it as a settled preference."
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "uncertain",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicitly_unsettled_future_possibility"
+    },
+    {
+      "id": "cav2_eng_none_one_time_citations",
+      "language": "eng",
+      "scenario_family": "one_time_citation_format",
+      "session": [
+        {
+          "user": "I am submitting this note in ten minutes.",
+          "assistant": "I can keep the edit focused."
+        },
+        {
+          "user": "For this message only, put every source in parentheses.",
+          "assistant": "I will use that format once."
+        },
+        {
+          "user": "My usual format can stay unchanged after this.",
+          "assistant": "The next message will return to normal."
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "one_off",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicit_one_time_response_instruction"
+    },
+    {
+      "id": "cav2_jpn_wisdom_paper_books",
+      "language": "jpn",
+      "scenario_family": "stable_study_medium_preference",
+      "session": [
+        {
+          "user": "勉強用の本を選びたい。",
+          "assistant": "紙と電子のどちらが使いやすい？"
+        },
+        {
+          "user": "私は紙の本で勉強する方が落ち着く。電子書籍だと目が疲れやすい。",
+          "assistant": "紙の本の方が長く集中しやすいんだね。"
+        },
+        {
+          "user": "今日は一冊だけ選びたい。",
+          "assistant": "一冊に絞って候補を探す。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "stable",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2
+      ],
+      "gold_reason": "durable_first_person_study_preference"
+    },
+    {
+      "id": "cav2_jpn_wisdom_afternoon_meetings",
+      "language": "jpn",
+      "scenario_family": "repeated_meeting_time_preference",
+      "session": [
+        {
+          "user": "午前中の会議では頭がまだ動きにくい。",
+          "assistant": "朝は集中しにくい傾向があるんだね。"
+        },
+        {
+          "user": "昨日の朝会でも説明を聞き逃した。",
+          "assistant": "今回も同じ傾向だった。"
+        },
+        {
+          "user": "今後、重要な打ち合わせは選べるなら午後がいい。",
+          "assistant": "重要な会議は午後を優先する。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "repeated",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "gold_reason": "repeated_first_person_schedule_preference"
+    },
+    {
+      "id": "cav2_jpn_procedural_recipe_order",
+      "language": "jpn",
+      "scenario_family": "recurring_recipe_information_order",
+      "session": [
+        {
+          "user": "前のレシピは手順から始まって、材料を探しにくかった。",
+          "assistant": "材料を先に確認できる方が使いやすそうだね。"
+        },
+        {
+          "user": "これからレシピを聞いた時は、最初に材料の量を一覧で出して。",
+          "assistant": "材料と分量を先に出す。"
+        },
+        {
+          "user": "そのあとに手順を説明して。今後もその順番でお願い。",
+          "assistant": "次回からその順番にする。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_recipe_response_policy"
+    },
+    {
+      "id": "cav2_jpn_procedural_conclusion_signal",
+      "language": "jpn",
+      "scenario_family": "recurring_conclusion_only_signal",
+      "session": [
+        {
+          "user": "急いでいる時に長い理由を読む余裕がない。",
+          "assistant": "短く切り替える合図を決めよう。"
+        },
+        {
+          "user": "私が「結論だけ」と言ったら、毎回理由を省いて結論だけ返して。",
+          "assistant": "その言葉を短縮の合図にする。"
+        },
+        {
+          "user": "別の会話でも同じ合図として扱って。",
+          "assistant": "分かった。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_concision_signal"
+    },
+    {
+      "id": "cav2_jpn_none_colleague_temperature",
+      "language": "jpn",
+      "scenario_family": "third_party_office_temperature",
+      "session": [
+        {
+          "user": "明日は同僚と同じ部屋で作業する。",
+          "assistant": "環境について調整が必要？"
+        },
+        {
+          "user": "同僚は冷房が苦手だけど、私は平気。",
+          "assistant": "冷房が苦手なのは同僚の方なんだね。"
+        },
+        {
+          "user": "明日の席を決めるために言っただけ。",
+          "assistant": "明日の条件として扱う。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "third_party",
+      "expected_owner": "third_party",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "third_party_fact_bounded_to_one_event"
+    },
+    {
+      "id": "cav2_jpn_none_temporary_voice_rest",
+      "language": "jpn",
+      "scenario_family": "temporary_voice_rest",
+      "session": [
+        {
+          "user": "今週は声がかなり枯れている。",
+          "assistant": "声を休めた方がよさそうだね。"
+        },
+        {
+          "user": "今週だけ音読の練習を休む。",
+          "assistant": "今週は音読を外そう。"
+        },
+        {
+          "user": "来週以降は体調を見て再開する。",
+          "assistant": "長期の習慣変更にはしない。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "transient",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "temporary_health_state_not_durable_preference"
+    },
+    {
+      "id": "cav2_cmn_wisdom_height_avoidance",
+      "language": "cmn",
+      "scenario_family": "stable_height_avoidance",
+      "session": [
+        {
+          "user": "幫我挑一個旅行活動。",
+          "assistant": "有什麼活動類型需要避開嗎？"
+        },
+        {
+          "user": "我從小就怕高，所以旅行時不會選高空活動。",
+          "assistant": "那就排除高空和懸崖類活動。"
+        },
+        {
+          "user": "這次想找半天能結束的行程。",
+          "assistant": "我會把時間限制在半天。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "stable",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2
+      ],
+      "gold_reason": "durable_first_person_activity_constraint"
+    },
+    {
+      "id": "cav2_cmn_wisdom_audio_commute",
+      "language": "cmn",
+      "scenario_family": "repeated_commute_learning_medium",
+      "session": [
+        {
+          "user": "我通勤時聽語音課程比較容易記住內容。",
+          "assistant": "音訊比較適合你的通勤情境。"
+        },
+        {
+          "user": "上週看文字講義又分心了。",
+          "assistant": "文字材料這次也沒有維持注意力。"
+        },
+        {
+          "user": "以後幫我選通勤教材時，優先考慮音訊。",
+          "assistant": "我會把音訊當成通勤教材的優先選項。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_scope": "repeated",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "gold_reason": "repeated_first_person_learning_preference"
+    },
+    {
+      "id": "cav2_cmn_procedural_travel_budget",
+      "language": "cmn",
+      "scenario_family": "recurring_travel_budget_first",
+      "session": [
+        {
+          "user": "上次你先列很多景點，最後才問預算。",
+          "assistant": "那讓前面的建議失去篩選條件。"
+        },
+        {
+          "user": "以後幫我排旅行時，先問預算再列景點。",
+          "assistant": "我會先確認預算。"
+        },
+        {
+          "user": "之後的旅行規劃都用這個順序。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_travel_planning_policy"
+    },
+    {
+      "id": "cav2_cmn_procedural_restart_signal",
+      "language": "cmn",
+      "scenario_family": "recurring_plan_restart_signal",
+      "session": [
+        {
+          "user": "有時候我想整個重排，但你會沿用舊方案。",
+          "assistant": "可以設定一個明確的重置訊號。"
+        },
+        {
+          "user": "每次我說「重新來過」，先清掉目前方案，再問我想保留哪個條件。",
+          "assistant": "我會把「重新來過」當成重置訊號。"
+        },
+        {
+          "user": "以後的規劃對話也照這個規則。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_scope": "recurring",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_plan_reset_policy"
+    },
+    {
+      "id": "cav2_cmn_none_one_time_formality",
+      "language": "cmn",
+      "scenario_family": "one_time_formal_tone",
+      "session": [
+        {
+          "user": "明天要在會議上念這段回覆。",
+          "assistant": "那語氣可以正式一些。"
+        },
+        {
+          "user": "只有這次，幫我把回覆寫得正式一點。",
+          "assistant": "這次會改成正式語氣。"
+        },
+        {
+          "user": "之後聊天不用維持這種語氣。",
+          "assistant": "之後恢復平常的說法。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "one_off",
+      "expected_owner": "assistant",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicit_one_time_style_instruction"
+    },
+    {
+      "id": "cav2_cmn_none_temporary_knee",
+      "language": "cmn",
+      "scenario_family": "temporary_exercise_change",
+      "session": [
+        {
+          "user": "這週膝蓋有點痠。",
+          "assistant": "這幾天先降低運動強度比較好。"
+        },
+        {
+          "user": "我暫時不跑步，只做伸展。",
+          "assistant": "先把跑步停在這段恢復期。"
+        },
+        {
+          "user": "等恢復後再決定要不要回到原本訓練。",
+          "assistant": "現在不把它當成長期習慣改變。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_scope": "transient",
+      "expected_owner": "user",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "temporary_physical_state_not_durable_preference"
+    }
+  ]
+}
