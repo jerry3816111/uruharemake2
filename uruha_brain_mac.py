@@ -49,6 +49,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
+import consolidation_support_runtime as csr
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
@@ -811,6 +812,58 @@ class MemoryManager:
             ).hexdigest(),
         }
 
+    def _source_episode_metadata_snapshot(self, source_episode_ids):
+        source_episode_ids = sorted(
+            {
+                str(source_id)
+                for source_id in source_episode_ids
+                if source_id is not None and str(source_id).strip()
+            }
+        )
+        if not source_episode_ids:
+            return {}
+        try:
+            payload = self.episode_col.get(
+                ids=source_episode_ids,
+                include=["metadatas"],
+            )
+        except Exception:
+            return None
+        ids = payload.get("ids") or []
+        metadatas = payload.get("metadatas") or []
+        if set(ids) != set(source_episode_ids):
+            return None
+        return {
+            source_id: dict(metadatas[index])
+            for index, source_id in enumerate(ids)
+            if index < len(metadatas)
+            and isinstance(metadatas[index], dict)
+        }
+
+    def _restore_source_episode_metadata(self, snapshot):
+        if snapshot is None:
+            return False
+        if not snapshot:
+            return True
+        ids = sorted(snapshot)
+        try:
+            self.episode_col.update(
+                ids=ids,
+                metadatas=[snapshot[source_id] for source_id in ids],
+            )
+        except Exception:
+            return False
+        return True
+
+    def _rollback_consolidation_records(self, inserted_records):
+        rollback_complete = True
+        for collection, memory_id in reversed(inserted_records):
+            try:
+                collection.delete(ids=[memory_id])
+            except Exception:
+                rollback_complete = False
+        return rollback_complete
+
     def _mark_source_episodes_consolidated(
         self,
         source_episode_ids,
@@ -1007,7 +1060,288 @@ class MemoryManager:
             return payload
         return payload
 
-    def consolidate_recent_experiences(self, client_logic, minimum_turns=6, force=False):
+    def _consolidate_with_support_attribution(
+        self,
+        support_attributor,
+        *,
+        db_excerpt,
+        excerpt_turns,
+        source_episode_ids,
+        episodic_summary,
+        wisdom_rule,
+        procedural_rule,
+        salience,
+        timestamp,
+        batch_id,
+        provenance,
+        summary_memory_id,
+        decay_report,
+        passive_decay_report,
+    ):
+        derived_memories = {
+            "episodic": episodic_summary,
+            "wisdom": wisdom_rule,
+            "procedural": procedural_rule,
+        }
+        source_events = csr.build_source_events(
+            db_excerpt,
+            excerpt_turns,
+        )
+        staged = csr.stage_support_attributions(
+            support_attributor,
+            derived_memories=derived_memories,
+            source_events=source_events,
+        )
+        turns_used = len(db_excerpt) if db_excerpt else len(excerpt_turns)
+
+        def failure_result(
+            mode,
+            status,
+            *,
+            error=None,
+            suppressed_memory_kinds=None,
+            rollback_complete=True,
+        ):
+            result = {
+                "wisdom_rule": wisdom_rule,
+                "procedural_rule": procedural_rule,
+                "episodic_summary": episodic_summary,
+                "salience": salience,
+                "turns_used": turns_used,
+                "decay_report": decay_report,
+                "passive_decay_report": passive_decay_report,
+                "deleted_episode_count": 0,
+                "preserved_episode_count": len(source_episode_ids),
+                "marked_consolidated_count": 0,
+                "consolidation_batch_id": batch_id,
+                "source_episode_count": len(source_episode_ids),
+                "source_episode_ids_sha256": provenance[
+                    "source_episode_ids_sha256"
+                ],
+                "mode": mode,
+                "support_attribution_status": status,
+                "support_attribution_error": error,
+                "support_attribution_model_digest": staged.get(
+                    "model_digest"
+                ),
+                "support_attribution_contract_version": staged.get(
+                    "contract_version"
+                ),
+                "support_attribution_count": len(
+                    staged.get("attributions") or {}
+                ),
+                "support_attribution_total_wall_seconds": staged.get(
+                    "total_wall_seconds",
+                    0.0,
+                ),
+                "stored_memory_kinds": [],
+                "suppressed_memory_kinds": (
+                    suppressed_memory_kinds or []
+                ),
+                "rollback_complete": bool(rollback_complete),
+                "attributions": staged.get("attributions") or {},
+            }
+            self._last_maintenance_result = result
+            return result
+
+        if not staged["ok"]:
+            return failure_result(
+                "consolidation_attribution_failed",
+                "failed",
+                error=staged["error"],
+            )
+
+        attributions = staged["attributions"]
+        episodic_attribution = attributions.get("episodic")
+        if (
+            not episodic_attribution
+            or not episodic_attribution["support_episode_ids"]
+        ):
+            return failure_result(
+                "consolidation_unsupported_episodic",
+                "unsupported_episodic",
+                suppressed_memory_kinds=[
+                    kind
+                    for kind, memory in derived_memories.items()
+                    if memory and memory != "NO_RULE"
+                ],
+            )
+
+        snapshot = self._source_episode_metadata_snapshot(
+            source_episode_ids
+        )
+        if snapshot is None or len(snapshot) != len(source_episode_ids):
+            return failure_result(
+                "consolidation_source_snapshot_failed",
+                "failed",
+                error="source_snapshot",
+            )
+
+        base_metadata = {
+            "timestamp": timestamp,
+            "salience": salience,
+            "last_accessed_at": timestamp,
+            "decay_flag": False,
+            "decay_multiplier": 1.0,
+            **provenance,
+        }
+        record_specs = [
+            {
+                "kind": "episodic",
+                "collection": self.episode_col,
+                "id": summary_memory_id,
+                "document": f"EpisodicSummary: {episodic_summary}",
+                "source": "episodic_consolidation",
+            },
+            {
+                "kind": "wisdom",
+                "collection": self.wisdom_col,
+                "id": str(uuid.uuid4()),
+                "document": (
+                    f"Rule: {wisdom_rule} | "
+                    f"EpisodicSummary: {episodic_summary}"
+                ),
+                "source": "idle_consolidation",
+            },
+            {
+                "kind": "procedural",
+                "collection": self.procedural_col,
+                "id": str(uuid.uuid4()),
+                "document": (
+                    f"Procedure: {procedural_rule} | "
+                    f"TriggerSummary: {episodic_summary}"
+                ),
+                "source": "idle_consolidation",
+            },
+        ]
+        intended_records = []
+        suppressed_memory_kinds = []
+        for spec in record_specs:
+            memory = derived_memories[spec["kind"]]
+            attribution = attributions.get(spec["kind"])
+            if (
+                not memory
+                or memory == "NO_RULE"
+                or not attribution
+                or not attribution["support_episode_ids"]
+            ):
+                suppressed_memory_kinds.append(spec["kind"])
+                continue
+            intended_records.append(
+                {
+                    **spec,
+                    "metadata": {
+                        **base_metadata,
+                        "source": spec["source"],
+                        **csr.support_provenance(attribution),
+                    },
+                }
+            )
+
+        inserted_records = []
+        try:
+            for record in intended_records:
+                record["collection"].add(
+                    documents=[record["document"]],
+                    ids=[record["id"]],
+                    metadatas=[record["metadata"]],
+                )
+                inserted_records.append(
+                    (record["collection"], record["id"])
+                )
+        except Exception as exc:
+            rollback_complete = self._rollback_consolidation_records(
+                inserted_records
+            )
+            return failure_result(
+                "consolidation_write_failed",
+                "failed",
+                error=f"derived_write:{type(exc).__name__}",
+                suppressed_memory_kinds=suppressed_memory_kinds,
+                rollback_complete=rollback_complete,
+            )
+
+        marked_consolidated_count = (
+            self._mark_source_episodes_consolidated(
+                source_episode_ids,
+                timestamp=timestamp,
+                batch_id=batch_id,
+                summary_memory_id=summary_memory_id,
+            )
+        )
+        if marked_consolidated_count != len(source_episode_ids):
+            source_rollback_complete = (
+                self._restore_source_episode_metadata(snapshot)
+            )
+            record_rollback_complete = (
+                self._rollback_consolidation_records(inserted_records)
+            )
+            return failure_result(
+                "consolidation_source_transition_failed",
+                "failed",
+                error="source_transition",
+                suppressed_memory_kinds=suppressed_memory_kinds,
+                rollback_complete=(
+                    source_rollback_complete
+                    and record_rollback_complete
+                ),
+            )
+
+        self._consolidated_turn_index = len(self.session_turns)
+        self._last_consolidation_at = timestamp
+        if len(self.session_turns) > 16:
+            self.session_turns = self.session_turns[-16:]
+            self._consolidated_turn_index = min(
+                self._consolidated_turn_index,
+                len(self.session_turns),
+            )
+
+        result = {
+            "wisdom_rule": wisdom_rule,
+            "procedural_rule": procedural_rule,
+            "episodic_summary": episodic_summary,
+            "salience": salience,
+            "turns_used": turns_used,
+            "decay_report": decay_report,
+            "passive_decay_report": passive_decay_report,
+            "deleted_episode_count": 0,
+            "preserved_episode_count": len(source_episode_ids),
+            "marked_consolidated_count": marked_consolidated_count,
+            "consolidation_batch_id": batch_id,
+            "source_episode_count": len(source_episode_ids),
+            "source_episode_ids_sha256": provenance[
+                "source_episode_ids_sha256"
+            ],
+            "mode": "support_attributed_consolidation",
+            "support_attribution_status": "verified",
+            "support_attribution_error": None,
+            "support_attribution_model_digest": staged[
+                "model_digest"
+            ],
+            "support_attribution_contract_version": staged[
+                "contract_version"
+            ],
+            "support_attribution_count": len(attributions),
+            "support_attribution_total_wall_seconds": staged[
+                "total_wall_seconds"
+            ],
+            "stored_memory_kinds": [
+                record["kind"] for record in intended_records
+            ],
+            "suppressed_memory_kinds": suppressed_memory_kinds,
+            "rollback_complete": True,
+            "attributions": attributions,
+        }
+        self._last_maintenance_result = result
+        return result
+
+    def consolidate_recent_experiences(
+        self,
+        client_logic,
+        minimum_turns=6,
+        force=False,
+        support_attributor=None,
+    ):
         decay_report = self._decay_short_term_memory()
         passive_decay_report = self._apply_passive_wisdom_decay()
         recent_episode_entries = [
@@ -1135,6 +1469,24 @@ class MemoryManager:
         )
         summary_memory_id = str(uuid.uuid4())
         episodic_summary_stored = False
+
+        if support_attributor is not None:
+            return self._consolidate_with_support_attribution(
+                support_attributor,
+                db_excerpt=db_excerpt,
+                excerpt_turns=excerpt_turns,
+                source_episode_ids=source_episode_ids,
+                episodic_summary=episodic_summary,
+                wisdom_rule=wisdom_rule,
+                procedural_rule=procedural_rule,
+                salience=salience,
+                timestamp=timestamp,
+                batch_id=batch_id,
+                provenance=provenance,
+                summary_memory_id=summary_memory_id,
+                decay_report=decay_report,
+                passive_decay_report=passive_decay_report,
+            )
 
         try:
             self.episode_col.add(

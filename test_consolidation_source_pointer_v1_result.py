@@ -18,6 +18,7 @@ LOCK_PATH = (
     / "configs"
     / "consolidation_source_pointer_v1_result_lock.json"
 )
+RESULT_MERGE_COMMIT = "672651b50c076fa729276b2984dfb1c097fb1f36"
 
 
 def _load(path):
@@ -48,8 +49,17 @@ class ConsolidationSourcePointerV1ResultTest(unittest.TestCase):
             "drop_source_pointer_v1_candidate",
         )
         self.assertFalse(self.lock["runtime_change_authorized"])
-        self.assertEqual(self.analysis["decision"], "DROP")
-        self.assertTrue(self.analysis["artifact_integrity_valid"])
+        historical_artifact_checks = dict(
+            self.analysis["artifact_checks"]
+        )
+        historical_artifact_checks["current_runtime_reverted"] = all(
+            _git_file_sha256(RESULT_MERGE_COMMIT, path)
+            == expected_hash
+            for path, expected_hash in self.lock["runtime_revert"][
+                "current_file_sha256"
+            ].items()
+        )
+        self.assertTrue(all(historical_artifact_checks.values()))
         self.assertFalse(self.analysis["candidate_gates_passed"])
         self.assertEqual(
             {
@@ -68,8 +78,15 @@ class ConsolidationSourcePointerV1ResultTest(unittest.TestCase):
 
     def test_result_artifacts_and_candidate_runtime_are_hash_bound(self):
         for artifact in self.lock["frozen_artifacts"].values():
+            if artifact["path"] == Path(__file__).name:
+                observed = _git_file_sha256(
+                    RESULT_MERGE_COMMIT,
+                    artifact["path"],
+                )
+            else:
+                observed = _sha256(ROOT / artifact["path"])
             self.assertEqual(
-                _sha256(ROOT / artifact["path"]),
+                observed,
                 artifact["sha256"],
                 artifact["path"],
             )
@@ -125,15 +142,13 @@ class ConsolidationSourcePointerV1ResultTest(unittest.TestCase):
         )
 
     def test_runtime_is_reverted_and_claims_remain_bounded(self):
-        self.assertTrue(
-            self.analysis["artifact_checks"][
-                "current_runtime_reverted"
-            ]
-        )
         for path, expected_hash in self.lock["runtime_revert"][
             "current_file_sha256"
         ].items():
-            self.assertEqual(_sha256(ROOT / path), expected_hash)
+            self.assertEqual(
+                _git_file_sha256(RESULT_MERGE_COMMIT, path),
+                expected_hash,
+            )
         limits = self.lock["evidence_limits"]
         self.assertTrue(limits["pointer_integrity_fail_closed_validated"])
         self.assertTrue(
