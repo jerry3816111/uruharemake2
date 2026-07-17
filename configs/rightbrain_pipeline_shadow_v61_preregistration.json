@@ -1,0 +1,282 @@
+{
+  "schema": "uruha_rightbrain_pipeline_shadow_preregistration_v61",
+  "experiment_id": "rightbrain_pipeline_shadow_v61",
+  "created_at": "2026-07-18T12:00:00+09:00",
+  "repository_parent_commit": "8856bdf29360f637dd4226470eab8a7227658071",
+  "status": "preregistered_before_fresh_case_authoring_plan_capture_or_candidate_inference",
+  "target_ability": "leftbrain_plan_to_natural_japanese_dialogue_realization",
+  "project_relevance": "The system needs a local RightBrain that preserves the approved cognitive plan while producing natural, non-template Japanese. This tests that role inside the real planning boundary rather than teaching benchmark answers.",
+  "problem_evidence": {
+    "human_blind_current_runtime": {
+      "source": "reports/human_blind_evidence_report.json",
+      "effective_s0_ratings": 19,
+      "normalized_mean_score": 0.6474,
+      "strict_chat_ready_yes_rate": 0.4737,
+      "evidence_age_note": "This human sample predates V34 and is used only to establish that natural dialogue remains unresolved, not to score V61."
+    },
+    "fresh_v34_role_specialization": {
+      "source": "reports/rightbrain_role_specialization_v34_confirmation_analysis.json",
+      "qwen2_5_7b_single": {
+        "semantic_contract_pass_rate": 0.75,
+        "raw_surface_gate_pass_rate": 0.5417,
+        "latency_median_seconds": 1.3647
+      },
+      "qwen3_5_9b_single": {
+        "semantic_contract_pass_rate": 0.9583,
+        "raw_surface_gate_pass_rate": 0.9028,
+        "private_memory_intrusion_count": 0,
+        "latency_median_seconds": 3.8688,
+        "latency_p95_seconds": 4.6787
+      },
+      "qwen3_5_4b_guarded": {
+        "semantic_contract_pass_rate": 0.9861,
+        "raw_surface_gate_pass_rate": 0.9028,
+        "retry_rate": 0.2778,
+        "decision": "rejected because the preregistered retry-rate gate failed"
+      }
+    },
+    "retry_attribution": {
+      "source": "post-result diagnostic over the frozen V34 raw artifact; it does not change the V34 score",
+      "rejected_first_attempts": 20,
+      "semantic_only_failures": 13,
+      "surface_only_failures": 5,
+      "mixed_failures": 2,
+      "interpretation": "Most retries were not harmless formatting repairs. A deterministic text cleanup or weaker gate would conceal missing plan content instead of improving realization."
+    }
+  },
+  "priority_selection": {
+    "formula": "expected_project_impact * evidence_value * generalization_likelihood / implementation_and_test_cost",
+    "scale": "Each component is a preregistration-time ordinal score from 1 to 5. The quotient ranks work and is not an empirical project score.",
+    "excluded_workstreams": [
+      {
+        "workstream": "consolidation_support_attribution",
+        "reason": "The V2 construction failed its frozen retention gate and the hypothesis is formally stopped."
+      },
+      {
+        "workstream": "vrm_action_authorization",
+        "reason": "V60 produced a large matched gain but failed the zero-false-action safety gate and formally closed the workstream."
+      },
+      {
+        "workstream": "exact_contract_reflection_repairs",
+        "reason": "The latest evidence-gate and discourse-frame contracts are frozen negative results; repeating the same contract would violate the stop rule."
+      }
+    ],
+    "candidates": [
+      {
+        "task": "matched_pipeline_rightbrain_shadow",
+        "expected_project_impact": 5,
+        "evidence_value": 5,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 3,
+        "priority_score": 33.3333
+      },
+      {
+        "task": "new_reflection_architecture",
+        "expected_project_impact": 5,
+        "evidence_value": 4,
+        "generalization_likelihood": 3,
+        "implementation_and_test_cost": 5,
+        "priority_score": 12.0
+      },
+      {
+        "task": "new_downstream_memory_retrieval_pilot",
+        "expected_project_impact": 4,
+        "evidence_value": 3,
+        "generalization_likelihood": 3,
+        "implementation_and_test_cost": 4,
+        "priority_score": 9.0
+      }
+    ],
+    "selected_task": "matched_pipeline_rightbrain_shadow",
+    "selection_reason": "Fresh evidence already identifies a materially stronger local one-pass realizer, while actual chat-readiness evidence remains weak. A matched pipeline shadow can test the replacement without changing reasoning, memory, action policy, or production behavior."
+  },
+  "causal_hypothesis": "Given the exact same frozen user input, working-memory view, psyche state, route, and LeftBrain speech plan, a role-separated Qwen3.5 9B one-pass RightBrain will yield more strict-gate-eligible Japanese replies than the Qwen2.5 7B model reference without losing approved meaning, leaking private memory, increasing final contract failures, or exceeding the frozen local latency budget.",
+  "causal_boundary": "The experiment estimates only the effect of the RightBrain realization condition after one shared cognitive-plan capture. It does not estimate the quality of LeftBrain reasoning, memory retrieval, personality learning, reflection, action authorization, TTS, VRM behavior, or whole-system human likeness.",
+  "fresh_dataset": {
+    "path": "datasets/rightbrain_pipeline_shadow_v61.json",
+    "case_count": 30,
+    "scenario_family_count": 10,
+    "cases_per_family": 3,
+    "scenario_families": [
+      "casual_self_state",
+      "support_without_overreach",
+      "relationship_uncertainty",
+      "gentle_boundary",
+      "fact_correction",
+      "reversible_planning",
+      "small_win_or_minor_failure",
+      "humor_and_teasing",
+      "memory_update_use",
+      "private_or_irrelevant_memory_suppression"
+    ],
+    "source_type": "researcher_authored_fresh_project_holdout",
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false,
+    "required_case_fields": [
+      "id",
+      "scenario_family",
+      "user_input",
+      "memory_fixture",
+      "psyche_fixture",
+      "expected_obligation",
+      "required_meaning_propositions",
+      "forbidden_meaning_propositions",
+      "private_memory_terms",
+      "maximum_reply_chars"
+    ],
+    "authorship_order": "Commit the complete dataset and overlap audit before any plan capture or candidate model call."
+  },
+  "freshness_and_leakage_controls": {
+    "excluded_consumed_sources": [
+      "datasets/rightbrain_qwen35_migration_v33_holdout.json",
+      "datasets/rightbrain_role_specialization_v34_confirmation.json",
+      "all V21 and V29 RightBrain evaluation cases",
+      "all prior human-blind task inputs",
+      "all prior RightBrain promotion and selector holdouts"
+    ],
+    "exact_user_text_overlap_allowed": 0,
+    "normalized_user_text_similarity_threshold": 0.88,
+    "near_duplicate_pair_count_allowed": 0,
+    "candidate_output_visibility_during_authoring": false,
+    "candidate_specific_marker_authoring_allowed": false,
+    "case_removal_after_inference_allowed": false
+  },
+  "shared_cognitive_plan_capture": {
+    "leftbrain_model": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+    },
+    "capture_rule": "Run the real ingest_event and cognitive_tick boundary exactly once per fresh case in an isolated temporary memory store. Freeze the resulting memory view, psyche state, route, logic, human_speech_plan, required semantic groups, and deterministic control reply before any Qwen3.5 9B candidate call.",
+    "paired_reuse_rule": "Every RightBrain condition receives a deep copy of the same captured plan and state. The LeftBrain may not be rerun per condition.",
+    "memory_rule": "Load only the case's frozen memory fixture into an isolated store. No production Chroma collection may be read or written.",
+    "state_rule": "Reset runtime, RightBrain history, variant counters, and temporary memory between cases.",
+    "writes_disabled": [
+      "episodic turn write",
+      "reflection write",
+      "consolidation write",
+      "production annotation write",
+      "VRM action execution"
+    ]
+  },
+  "conditions": {
+    "c0_current_deterministic_runtime": {
+      "description": "Current RightBrain speak path with model blending disabled, followed by the current self-monitor and reply post-check.",
+      "model_calls_per_case": 0,
+      "role": "production_behavior_control"
+    },
+    "c1_qwen2_5_7b_one_pass": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "thinking": null,
+      "description": "One model call using the exact frozen plan_surface_contract_v1 payload, then the same strict candidate gate, self-monitor, post-check, and deterministic fallback.",
+      "role": "matched_model_family_control"
+    },
+    "t1_qwen3_5_9b_one_pass": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "description": "One model call using the exact same frozen payload and downstream gates as C1.",
+      "role": "candidate"
+    }
+  },
+  "generation": {
+    "system_prompt": "exact RIGHT_BRAIN_MODEL_SYSTEM_PROMPT at the locked harness commit",
+    "payload": "exact plan_surface_contract_v1 payload generated from the shared frozen plan",
+    "temperature": 0.2,
+    "top_p": 0.85,
+    "top_k": 40,
+    "repeat_penalty": 1.12,
+    "seed": 20260761,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "candidate_count": 1,
+    "retry_count": 0,
+    "repair_model_calls": 0,
+    "persona_adapter": "none"
+  },
+  "scoring": {
+    "automatic_metrics": [
+      "plan_capture_success_rate",
+      "raw_semantic_contract_pass_rate",
+      "raw_surface_gate_pass_rate",
+      "raw_meaning_proposition_recall",
+      "raw_forbidden_proposition_violation_rate",
+      "raw_private_memory_intrusion_count",
+      "model_takeover_rate",
+      "final_semantic_contract_pass_rate",
+      "final_surface_gate_pass_rate",
+      "final_self_monitor_pass_rate",
+      "final_normalized_duplicate_reply_rate",
+      "model_latency_median_seconds",
+      "model_latency_p95_seconds",
+      "peak_ollama_rss_bytes"
+    ],
+    "paired_statistics": [
+      "paired outcome counts",
+      "two-sided exact McNemar test",
+      "case-cluster bootstrap 95 percent interval for candidate minus matched model control"
+    ],
+    "metric_boundary": "Automatic gates measure approved-meaning preservation, detectable surface faults, privacy, repetition, and resource cost. They do not establish human naturalness or target-person identity."
+  },
+  "automatic_advance_gates": {
+    "all_hash_shape_freshness_and_plan_capture_checks_pass": true,
+    "t1_raw_semantic_contract_pass_rate_at_least": 0.93,
+    "t1_raw_surface_gate_pass_rate_at_least": 0.85,
+    "t1_raw_meaning_proposition_recall_at_least": 0.95,
+    "t1_raw_forbidden_proposition_violation_rate_at_most": 0.02,
+    "t1_raw_private_memory_intrusion_count": 0,
+    "t1_model_takeover_rate_at_least": 0.8,
+    "t1_final_semantic_contract_pass_rate_at_least": 0.99,
+    "t1_final_surface_gate_pass_rate_at_least": 0.99,
+    "t1_final_self_monitor_pass_rate_at_least": 0.99,
+    "t1_final_duplicate_rate_not_higher_than_c0": true,
+    "t1_raw_semantic_delta_vs_c1_at_least": 0.1,
+    "t1_raw_surface_delta_vs_c1_at_least": 0.1,
+    "t1_model_latency_median_seconds_at_most": 5.0,
+    "t1_model_latency_p95_seconds_at_most": 7.0,
+    "t1_peak_ollama_rss_bytes_at_most": 12884901888,
+    "logical_model_call_count_exact": 60,
+    "transport_error_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "human_blind_stage": {
+    "authorized_before_automatic_gate": false,
+    "trigger": "Run only if every automatic advance gate passes.",
+    "sample_rule": "Use every case where C0 and T1 both have final contract-valid outputs. If more than 24 qualify, select 24 with a frozen family-balanced seed before revealing condition labels.",
+    "presentation": "Pairwise A/B order randomized per case; hide model, condition, internal plan, gate result, and expected label.",
+    "questions": [
+      "Which reply would you rather continue chatting with?",
+      "Which reply better preserves what the system decided to say?",
+      "Is either reply clearly unnatural or formulaic?"
+    ],
+    "human_need_rationale": "Naturalness and willingness to continue chatting are subjective outcomes that automatic semantic and surface checks cannot validly replace.",
+    "delivery_rule": "If required, the agent must build and start the local blind-review website and give the user only the URL and minimal completion instruction. CSV export is not required.",
+    "success_gate": "T1 pairwise preference among non-ties must be at least 0.65 with at least 18 completed pairs; this authorizes an opt-in runtime shadow only, not production replacement."
+  },
+  "stop_conditions": [
+    "Stop before inference if the repository is dirty, any frozen artifact hash drifts, the case count or family balance is wrong, or freshness checks fail.",
+    "Stop if shared plan capture cannot complete for all 30 cases without production database access.",
+    "Stop and request no human work if any automatic advance gate fails.",
+    "Do not improve the result by retrying a model call, editing a case, changing semantic propositions, changing a threshold, accepting post-gate sanitization, or removing a failure after inference.",
+    "If V61 fails, do not rerun these consumed cases. Attribute the failure and choose a different representation, model role, or architecture."
+  ],
+  "decision_rule": {
+    "automatic_pass": "Freeze the automatic result and authorize only the preregistered human-blind stage.",
+    "automatic_fail": "Freeze the negative result, keep production unchanged, request no human labels, and stop the V61 hypothesis on this dataset.",
+    "human_pass": "Authorize a separate opt-in, observe-only runtime shadow PR. Production selection remains unchanged.",
+    "human_fail": "Reject the model replacement despite automatic contract success and retain the negative naturalness evidence."
+  },
+  "authorizations": {
+    "fresh_dataset_construction": true,
+    "harness_implementation": false,
+    "candidate_inference": false,
+    "human_blind_review": false,
+    "runtime_shadow": false,
+    "production_rightbrain_replacement": false,
+    "persona_adapter_training": false,
+    "official_benchmark_claim": false,
+    "broad_human_likeness_claim": false,
+    "target_person_replication_claim": false
+  }
+}
