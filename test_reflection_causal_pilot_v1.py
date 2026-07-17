@@ -1,6 +1,8 @@
 import json
 import hashlib
+import os
 import unittest
+import subprocess
 from pathlib import Path
 
 from reflection_causal_pilot_v1_core import behavior_success, score_rows, summarize
@@ -10,6 +12,7 @@ ROOT = Path(__file__).resolve().parent
 CONFIG = ROOT / "configs" / "reflection_causal_pilot_v1_preregistration.json"
 DATASET = ROOT / "datasets" / "reflection_causal_pilot_v1.json"
 LOCK = ROOT / "configs" / "reflection_causal_pilot_v1_harness_lock.json"
+CLOSURE = ROOT / "configs" / "reflection_causal_pilot_v1_result_closure.json"
 
 
 class ReflectionCausalPilotV1Test(unittest.TestCase):
@@ -43,8 +46,19 @@ class ReflectionCausalPilotV1Test(unittest.TestCase):
     def test_harness_lock_matches_every_frozen_artifact(self):
         payload = json.loads(LOCK.read_text(encoding="utf-8"))
         self.assertEqual(payload["required_run_branch"], "main")
+        runner_commit = None
+        if CLOSURE.exists():
+            runner_commit = json.loads(CLOSURE.read_text(encoding="utf-8"))["runner_commit"]
         for relative, expected in payload["frozen_artifacts"].items():
-            actual = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            if runner_commit:
+                content = subprocess.check_output(
+                    ["git", "show", f"{runner_commit}:{relative}"],
+                    cwd=ROOT,
+                    env={**os.environ, "TOKENIZERS_PARALLELISM": "false"},
+                )
+            else:
+                content = (ROOT / relative).read_bytes()
+            actual = hashlib.sha256(content).hexdigest()
             self.assertEqual(actual, expected, relative)
 
     def test_behavior_contract_checks_content_intrusion_and_shape(self):

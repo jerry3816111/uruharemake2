@@ -572,7 +572,8 @@ def query_collection_candidates(collection, text, source, limit=20):
         res = collection.query(
             query_texts=[text],
             n_results=limit,
-            include=["documents", "metadatas", "distances", "ids"],
+            # Chroma always returns ids and rejects ids as an include item.
+            include=["documents", "metadatas", "distances"],
         )
     except Exception:
         return []
