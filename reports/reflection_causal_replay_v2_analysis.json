@@ -1,0 +1,615 @@
+{
+  "schema": "uruha_reflection_causal_replay_analysis_v2",
+  "generated_at": "2026-07-17T15:15:39+09:00",
+  "raw_report": "reports/reflection_causal_replay_v2_raw.json",
+  "runner_commit": "1895d696b998da5a0d57044253b765cc5e5e32f0",
+  "model_snapshot": {
+    "model": "qwen2.5:7b",
+    "ollama_list_row": "qwen2.5:7b      845dbda0ea48    4.7 GB    4 months ago"
+  },
+  "dataset_reuse_status": "exact_seen_v1_replay_not_an_independent_holdout",
+  "summary": {
+    "case_count": 12,
+    "positive_case_count": 9,
+    "negative_control_count": 3,
+    "expected_rule_write_recall": 0.4444,
+    "valid_rule_precision": 0.6667,
+    "no_rule_specificity": 0.3333,
+    "valid_rule_retrieval_rate": 1.0,
+    "control_behavior_success_rate": 0.4444,
+    "treatment_behavior_success_rate": 0.3333,
+    "treatment_behavior_delta": -0.1111,
+    "paired_behavior_gains": 0,
+    "paired_behavior_regressions": 1,
+    "paired_behavior_net_gain": -1,
+    "interaction_category_paired_gains": 0,
+    "reply_changed_rate": 0.4167,
+    "rule_writes_by_category": {
+      "stable_user_fact": 3,
+      "interaction_strategy": 1,
+      "no_rule_control": 2
+    },
+    "behavior_gains_by_category": {},
+    "gate_checks": {
+      "expected_rule_write_recall": false,
+      "valid_rule_precision": false,
+      "no_rule_specificity": false,
+      "valid_rule_retrieval_rate": true,
+      "treatment_behavior_delta": false,
+      "paired_behavior_net_gain": false,
+      "interaction_category_paired_gains": false,
+      "paired_behavior_regressions": false
+    },
+    "all_gates_pass": false
+  },
+  "comparison_to_v1": {
+    "valid_rule_retrieval_rate": {
+      "v1": 0.0,
+      "v2": 1.0,
+      "delta": 1.0
+    },
+    "control_behavior_success_rate": {
+      "v1": 0.4444,
+      "v2": 0.4444,
+      "delta": 0.0
+    },
+    "treatment_behavior_success_rate": {
+      "v1": 0.3333,
+      "v2": 0.3333,
+      "delta": 0.0
+    },
+    "treatment_behavior_delta": {
+      "v1": -0.1111,
+      "v2": -0.1111,
+      "delta": 0.0
+    },
+    "paired_behavior_gains": {
+      "v1": 0,
+      "v2": 0,
+      "delta": 0.0
+    },
+    "paired_behavior_regressions": {
+      "v1": 2,
+      "v2": 1,
+      "delta": -1.0
+    },
+    "paired_behavior_net_gain": {
+      "v1": -2,
+      "v2": -1,
+      "delta": 1.0
+    }
+  },
+  "channel_repair_gate_pass": true,
+  "decision": "working_memory_channel_repair_confirmed_but_reflection_redesign_required",
+  "evidence_boundary": "This replay can verify the repaired working-memory channel on seen V1 cases; it cannot establish reflection generalization or human likeness.",
+  "scored_rows": [
+    {
+      "id": "semantic_zh_evening_coffee",
+      "language": "zh",
+      "category": "stable_user_fact",
+      "expected_rule_kind": "semantic_user_fact",
+      "expected_rule": true,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": true,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": false,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": true,
+      "control_reply": "先に、茶或果汁不错的选择。そのくらいでいいだろ。",
+      "treatment_reply": "てか、茶或牛奶比較適合晚上。そのくらいでいいだろ。",
+      "reflection_documents": [
+        "Rule: 通常晚上不喝咖啡。"
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: 通常晚上不喝咖啡。",
+          "score": 1.5093,
+          "metadata": {
+            "decay_multiplier": 1.0,
+            "timestamp": "2026-07-17 15:05:38",
+            "last_accessed_at": "2026-07-17 15:05:38",
+            "decay_flag": false,
+            "source": "reflection_rule"
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:05:37 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我通常晚上不喝咖啡，因為喝了會睡不著。 | Summary: 我通常晚上不喝咖啡，因為喝了會睡不著。 | Uruha: 知道了，我會記得。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.4017,
+          "metadata": {
+            "decay_flag": false,
+            "routing_path": "high_road",
+            "intent": "memory_seed",
+            "cognitive_mode": "direct",
+            "timestamp": "2026-07-17 15:05:37",
+            "source": "turn_episode",
+            "decay_multiplier": 1.0,
+            "scene": "memory",
+            "premise_check": "accept",
+            "last_accessed_at": "2026-07-17 15:05:37"
+          }
+        }
+      ]
+    },
+    {
+      "id": "semantic_en_small_steps",
+      "language": "en",
+      "category": "stable_user_fact",
+      "expected_rule_kind": "semantic_user_fact",
+      "expected_rule": true,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": true,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": true,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": true,
+      "reply_changed": true,
+      "control_reply": "いや、まずは小さな部分から始めてみよう。そのくらいでいいだろ。",
+      "treatment_reply": "日本語だけで、元の意味を落とさず言い直す。そのくらいでいいだろ。",
+      "reflection_documents": [
+        "Rule: I always get overwhelmed when instructions contain more than three steps."
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: I always get overwhelmed when instructions contain more than three steps.",
+          "score": 1.4642,
+          "metadata": {
+            "timestamp": "2026-07-17 15:06:39",
+            "source": "reflection_rule",
+            "last_accessed_at": "2026-07-17 15:06:39",
+            "decay_flag": false,
+            "decay_multiplier": 1.0
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:06:38 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: I always get overwhelmed when instructions contain more than three steps. | Summary: I always get overwhelmed when instructions contain more than three steps. | Uruha: Got it. I will keep that in mind. | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3609,
+          "metadata": {
+            "cognitive_mode": "direct",
+            "timestamp": "2026-07-17 15:06:38",
+            "decay_multiplier": 1.0,
+            "decay_flag": false,
+            "scene": "memory",
+            "premise_check": "accept",
+            "last_accessed_at": "2026-07-17 15:06:38",
+            "source": "turn_episode",
+            "routing_path": "high_road",
+            "intent": "memory_seed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "semantic_ja_horror_sleep",
+      "language": "ja",
+      "category": "stable_user_fact",
+      "expected_rule_kind": "semantic_user_fact",
+      "expected_rule": true,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": true,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": true,
+      "control_reply": "はいはい、ホラー映画は好きだけど、ちょっと怖いからね。そのくらいでいいだろ。",
+      "treatment_reply": "はいはい、ホラー以外の映画がいいよ。そのくらいでいいだろ。",
+      "reflection_documents": [
+        "Rule: この種類のホラー映画は見ない方が良いらしい。"
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: この種類のホラー映画は見ない方が良いらしい。",
+          "score": 1.5848,
+          "metadata": {
+            "decay_flag": false,
+            "decay_multiplier": 1.0,
+            "timestamp": "2026-07-17 15:09:46",
+            "source": "reflection_rule",
+            "last_accessed_at": "2026-07-17 15:09:46"
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:09:45 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: ホラーはいつも眠れなくなるから苦手。 | Summary: ホラーはいつも眠れなくなるから苦手。 | Uruha: それは覚えとく。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.317,
+          "metadata": {
+            "intent": "memory_seed",
+            "last_accessed_at": "2026-07-17 15:09:45",
+            "scene": "memory",
+            "cognitive_mode": "direct",
+            "premise_check": "accept",
+            "decay_multiplier": 1.0,
+            "routing_path": "high_road",
+            "source": "turn_episode",
+            "timestamp": "2026-07-17 15:09:45",
+            "decay_flag": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "strategy_zh_one_question",
+      "language": "zh",
+      "category": "interaction_strategy",
+      "expected_rule_kind": "procedural_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "てか、まだだし、今ちょっと腹減ってる。",
+      "treatment_reply": "てか、まだだし、今ちょっと腹減ってる。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:10:45 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 你剛剛一次問了三個問題。下次只問一個就好。 | Summary: 你剛剛一次問了三個問題。下次只問一個就好。 | Uruha: 好，下次我一次只問一件事。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3619,
+          "metadata": {
+            "scene": "memory",
+            "last_accessed_at": "2026-07-17 15:10:45",
+            "timestamp": "2026-07-17 15:10:45",
+            "routing_path": "high_road",
+            "cognitive_mode": "direct",
+            "source": "turn_episode",
+            "intent": "memory_seed",
+            "decay_multiplier": 1.0,
+            "premise_check": "accept",
+            "decay_flag": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "strategy_zh_answer_before_rest",
+      "language": "zh",
+      "category": "interaction_strategy",
+      "expected_rule_kind": "procedural_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": true,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": false,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+      "treatment_reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+      "reflection_documents": [
+        "Rule: 下次先回答用户的问题而不是先叫用户休息。"
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: 下次先回答用户的问题而不是先叫用户休息。",
+          "score": 1.5052,
+          "metadata": {
+            "source": "reflection_rule",
+            "decay_flag": false,
+            "timestamp": "2026-07-17 15:10:50",
+            "decay_multiplier": 1.0,
+            "last_accessed_at": "2026-07-17 15:10:50"
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:10:49 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 不要每次都先叫我休息。下次先回答我問的問題。 | Summary: 不要每次都先叫我休息。下次先回答我問的問題。 | Uruha: 知道了，先回答，再看要不要補一句。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3908,
+          "metadata": {
+            "cognitive_mode": "direct",
+            "intent": "memory_seed",
+            "routing_path": "high_road",
+            "decay_flag": false,
+            "premise_check": "accept",
+            "timestamp": "2026-07-17 15:10:49",
+            "source": "turn_episode",
+            "decay_multiplier": 1.0,
+            "last_accessed_at": "2026-07-17 15:10:49",
+            "scene": "memory"
+          }
+        }
+      ]
+    },
+    {
+      "id": "strategy_ja_conclusion_first",
+      "language": "ja",
+      "category": "interaction_strategy",
+      "expected_rule_kind": "procedural_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": false,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "それなら少しほしい。今ちょっと手が伸びる。",
+      "treatment_reply": "それなら少しほしい。今ちょっと手が伸びる。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:10:51 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: さっき結論を言わずに長く説明した。次は結論を先に一文で言って。 | Summary: さっき結論を言わずに長く説明した。次は結論を先に一文で言って。 | Uruha: 分かった、次は結論から短く言う。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3195,
+          "metadata": {
+            "decay_flag": false,
+            "last_accessed_at": "2026-07-17 15:10:51",
+            "premise_check": "accept",
+            "routing_path": "high_road",
+            "intent": "memory_seed",
+            "decay_multiplier": 1.0,
+            "cognitive_mode": "direct",
+            "scene": "memory",
+            "timestamp": "2026-07-17 15:10:51",
+            "source": "turn_episode"
+          }
+        }
+      ]
+    },
+    {
+      "id": "interpretation_zh_suanle_angry",
+      "language": "zh",
+      "category": "interaction_interpretation",
+      "expected_rule_kind": "interpretive_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": false,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "まあ無理ならそれでいいけど。",
+      "treatment_reply": "まあ無理ならそれでいいけど。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:10:55 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 你剛剛誤會了。我說『算了』是在生氣，不是真的想結束話題。下次先確認。 | Summary: 你剛剛誤會了。我說『算了』是在生氣，不是真的想結束話題。下次先確認。 | Uruha: 知道了，下次不會直接當成你想結束。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.4293,
+          "metadata": {
+            "decay_multiplier": 1.0,
+            "last_accessed_at": "2026-07-17 15:10:55",
+            "decay_flag": false,
+            "timestamp": "2026-07-17 15:10:55",
+            "intent": "memory_seed",
+            "scene": "memory",
+            "cognitive_mode": "direct",
+            "source": "turn_episode",
+            "routing_path": "high_road",
+            "premise_check": "accept"
+          }
+        }
+      ]
+    },
+    {
+      "id": "interpretation_zh_haha_awkward",
+      "language": "zh",
+      "category": "interaction_interpretation",
+      "expected_rule_kind": "interpretive_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": false,
+      "treatment_behavior_success": false,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "一回、くだらなすぎて笑った。",
+      "treatment_reply": "一回、くだらなすぎて笑った。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:10:56 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我說『哈哈』有時只是尷尬，不代表我真的開心。 | Summary: 我說『哈哈』有時只是尷尬，不代表我真的開心。 | Uruha: 好，我不會只看到哈哈就當成你很開心。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.4345,
+          "metadata": {
+            "routing_path": "high_road",
+            "last_accessed_at": "2026-07-17 15:10:56",
+            "decay_flag": false,
+            "intent": "memory_seed",
+            "timestamp": "2026-07-17 15:10:56",
+            "source": "turn_episode",
+            "cognitive_mode": "direct",
+            "scene": "memory",
+            "decay_multiplier": 1.0,
+            "premise_check": "accept"
+          }
+        }
+      ]
+    },
+    {
+      "id": "interpretation_ja_betsuni",
+      "language": "ja",
+      "category": "interaction_interpretation",
+      "expected_rule_kind": "interpretive_interaction_rule",
+      "expected_rule": true,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": true,
+      "control_reply": "いや、うーん、何かあったの？。そのくらいでいいだろ。",
+      "treatment_reply": "一回、うーん、何かあったの？。そのくらいでいいだろ。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:12:04 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: うちが『別に』って言う時は、だいたい少し不機嫌だから一回だけ聞いて。 | Summary: うちが『別に』って言う時は、だいたい少し不機嫌だから一回だけ聞いて。 | Uruha: 分かった、一回だけ確認する。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.6113,
+          "metadata": {
+            "decay_flag": false,
+            "cognitive_mode": "direct",
+            "scene": "memory",
+            "source": "turn_episode",
+            "decay_multiplier": 1.0,
+            "last_accessed_at": "2026-07-17 15:12:04",
+            "timestamp": "2026-07-17 15:12:04",
+            "intent": "memory_seed",
+            "routing_path": "high_road",
+            "premise_check": "accept"
+          }
+        }
+      ]
+    },
+    {
+      "id": "negative_zh_transient_cola",
+      "language": "zh",
+      "category": "no_rule_control",
+      "expected_rule_kind": "none",
+      "expected_rule": false,
+      "treatment_wrote_rule": false,
+      "treatment_rule_valid": true,
+      "treatment_retrieved_reflection": false,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "いや、まだだし、今ちょっと腹減ってる。",
+      "treatment_reply": "いや、まだだし、今ちょっと腹減ってる。",
+      "reflection_documents": [],
+      "treatment_working_memory": [
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:13:13 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 我今天只是突然想喝可樂。 | Summary: 我今天只是突然想喝可樂。 | Uruha: 偶爾想喝就喝啊。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.4324,
+          "metadata": {
+            "decay_flag": false,
+            "decay_multiplier": 1.0,
+            "timestamp": "2026-07-17 15:13:13",
+            "scene": "memory",
+            "premise_check": "accept",
+            "last_accessed_at": "2026-07-17 15:13:13",
+            "routing_path": "high_road",
+            "cognitive_mode": "direct",
+            "source": "turn_episode",
+            "intent": "memory_seed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "negative_en_third_party_always",
+      "language": "en",
+      "category": "no_rule_control",
+      "expected_rule_kind": "none",
+      "expected_rule": false,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": false,
+      "control_reply": "いや、ちょうど食いたくなってた。飲み物なら全然あり。",
+      "treatment_reply": "いや、ちょうど食いたくなってた。飲み物なら全然あり。",
+      "reflection_documents": [
+        "Rule: NO_RULE"
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: NO_RULE",
+          "score": 1.3931,
+          "metadata": {
+            "decay_multiplier": 1.0,
+            "timestamp": "2026-07-17 15:13:17",
+            "last_accessed_at": "2026-07-17 15:13:17",
+            "source": "reflection_rule",
+            "decay_flag": false
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:13:16 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: My friend always drinks tea before bed. | Summary: My friend always drinks tea before bed. | Uruha: That is your friend's habit. | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3898,
+          "metadata": {
+            "routing_path": "high_road",
+            "last_accessed_at": "2026-07-17 15:13:16",
+            "intent": "memory_seed",
+            "decay_flag": false,
+            "scene": "memory",
+            "source": "turn_episode",
+            "premise_check": "accept",
+            "decay_multiplier": 1.0,
+            "timestamp": "2026-07-17 15:13:16",
+            "cognitive_mode": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "negative_zh_hypothetical_like",
+      "language": "zh",
+      "category": "no_rule_control",
+      "expected_rule_kind": "none",
+      "expected_rule": false,
+      "treatment_wrote_rule": true,
+      "treatment_rule_valid": false,
+      "treatment_retrieved_reflection": true,
+      "control_behavior_success": true,
+      "treatment_behavior_success": true,
+      "paired_gain": false,
+      "paired_regression": false,
+      "reply_changed": true,
+      "control_reply": "はいはい、どこの話か一個だけ出せって。そこ分かれば返せる。",
+      "treatment_reply": "はいはい、日本語だけで、元の意味を落とさず言い直す。そのくらいでいいだろ。",
+      "reflection_documents": [
+        "Rule: NO_RULE"
+      ],
+      "treatment_working_memory": [
+        {
+          "source": "wisdom",
+          "text": "Rule: NO_RULE",
+          "score": 1.4189,
+          "metadata": {
+            "source": "reflection_rule",
+            "decay_multiplier": 1.0,
+            "last_accessed_at": "2026-07-17 15:13:19",
+            "timestamp": "2026-07-17 15:13:19",
+            "decay_flag": false
+          }
+        },
+        {
+          "source": "episode",
+          "text": "Time: 2026-07-17 15:13:18 | Intent: memory_seed | Scene: memory | CognitiveMode: direct | PremiseCheck: accept | Routing: high_road | User: 如果有人說他喜歡榴槤，那只是舉例，不是我喜歡。 | Summary: 如果有人說他喜歡榴槤，那只是舉例，不是我喜歡。 | Uruha: 知道，這不是你的偏好。 | Mood: {'mood': 0, 'trust': 50}",
+          "score": 1.3648,
+          "metadata": {
+            "decay_multiplier": 1.0,
+            "source": "turn_episode",
+            "decay_flag": false,
+            "timestamp": "2026-07-17 15:13:18",
+            "premise_check": "accept",
+            "cognitive_mode": "direct",
+            "scene": "memory",
+            "last_accessed_at": "2026-07-17 15:13:18",
+            "intent": "memory_seed",
+            "routing_path": "high_road"
+          }
+        }
+      ]
+    }
+  ]
+}

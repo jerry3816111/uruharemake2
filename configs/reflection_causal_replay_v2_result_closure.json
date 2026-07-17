@@ -1,0 +1,47 @@
+{
+  "schema": "uruha_reflection_causal_replay_result_closure_v2",
+  "evidence_status": "seen_case_replay_closed_without_post_run_tuning",
+  "runner_commit": "1895d696b998da5a0d57044253b765cc5e5e32f0",
+  "dataset_reuse_status": "exact_seen_v1_replay_not_an_independent_holdout",
+  "model": "qwen2.5:7b",
+  "model_digest_prefix": "845dbda0ea48",
+  "case_count": 12,
+  "model_call_count": 16,
+  "paid_api_used": false,
+  "human_rating_used": false,
+  "frozen_results": {
+    "reports/reflection_causal_replay_v2_raw.json": "d5505c9f19d8760875bbb6325066ebcb8acc93adc63409aeda3013117a702bb7",
+    "reports/reflection_causal_replay_v2_analysis.json": "d9bd9d66b107af5afed9d184b5ad640a2b3907a3519c7592aa99eb33607cf0dd",
+    "reports/reflection_causal_replay_v2_analysis.md": "0737c48e313819b845b136801daeb94eb6e18a4ee29c4059ea94ac35bdc5420c"
+  },
+  "v1_to_v2": {
+    "valid_rule_retrieval_rate": [0.0, 1.0],
+    "control_behavior_success_rate": [0.4444, 0.4444],
+    "treatment_behavior_success_rate": [0.3333, 0.3333],
+    "treatment_behavior_delta": [-0.1111, -0.1111],
+    "paired_behavior_gains": [0, 0],
+    "paired_behavior_regressions": [2, 1],
+    "paired_behavior_net_gain": [-2, -1]
+  },
+  "decision": "working_memory_channel_repair_confirmed_but_reflection_redesign_required",
+  "causal_interpretation": [
+    "The persistent-memory repair caused valid written reflection rules to enter working memory in 100% of eligible replay cases.",
+    "Final-reply success did not improve, so failed reflection learning can no longer be attributed to the persistent-memory candidate bug.",
+    "The current keyword trigger missed five of six interaction-strategy and interpretation cases.",
+    "The extractor stored Rule: NO_RULE for two negative controls, and the repaired channel now makes those invalid documents retrievable.",
+    "The current semantic profile rules are mostly redundant with the same episodic memory and produced no paired gain."
+  ],
+  "next_primary_task": "replace_keyword_profile_reflection_with_typed_feedback_and_outcome_reflection_under_a_new_minimal_pilot",
+  "required_redesign_properties": [
+    "typed semantic, procedural, and interpretive reflection outputs",
+    "explicit no-rule rejection before persistence",
+    "feedback and interaction-outcome triggers instead of preference keywords only",
+    "provenance linking each reflection to the source episode",
+    "retrieval that cannot elevate invalid or third-party rules",
+    "paired later-behavior validation before any broad deployment"
+  ],
+  "reflection_redesign_authorized": true,
+  "large_scale_reflection_run_authorized": false,
+  "independent_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
