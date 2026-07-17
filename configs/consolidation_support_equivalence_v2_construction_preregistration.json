@@ -1,0 +1,230 @@
+{
+  "schema": "uruha_consolidation_support_equivalence_construction_preregistration_v2",
+  "experiment_id": "consolidation_support_equivalence_v2_construction",
+  "created_at": "2026-07-18T03:30:00+09:00",
+  "target_ability": "long_term_memory_consolidation_source_grounding",
+  "problem": "The frozen V1 runtime pilot reduced false source links from 88 to 1, but failed its 13-of-13 persistent exact-metadata gate because one derived preference was reasonably supported by either an explicit preference statement or a later future-facing instruction. The single-set gold treated the additional semantically sufficient event as an error.",
+  "priority_selection": {
+    "formula": "expected_project_impact * evidence_value * generalization_likelihood / implementation_and_test_cost",
+    "scale": "Each component is a preregistration-time ordinal score from 1 to 5. The quotient ranks work; it is not an empirical project metric.",
+    "candidates": [
+      {
+        "task": "fresh_multi_evidence_support_equivalence_pilot",
+        "expected_project_impact": 4,
+        "evidence_value": 5,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 2,
+        "priority_score": 40.0
+      },
+      {
+        "task": "immediate_downstream_retrieval_pilot",
+        "expected_project_impact": 5,
+        "evidence_value": 2,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 4,
+        "priority_score": 10.0
+      },
+      {
+        "task": "unbounded_rightbrain_overhaul",
+        "expected_project_impact": 5,
+        "evidence_value": 2,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 5,
+        "priority_score": 8.0
+      }
+    ],
+    "selected_task": "fresh_multi_evidence_support_equivalence_pilot",
+    "selection_reason": "The current blocker is uncertainty in the measurement contract, not evidence that retrieval or right-brain wording is the cause. Resolving the contract is cheaper, falsifiable, and required before the near-passing mechanism can be judged fairly."
+  },
+  "causal_hypothesis": "When a derived memory has more than one independently sufficient source-evidence set, scoring a prediction against the frozen set of all valid support unions will distinguish valid multi-evidence attribution from unsupported overlinking without changing the candidate model, prompt, runtime, or generated memory.",
+  "prior_result": {
+    "result_lock": "configs/consolidation_support_runtime_v1_result_lock.json",
+    "decision": "drop_support_attributed_runtime_candidate",
+    "candidate_exact_support_set": "17/18",
+    "candidate_evidence_precision": 0.9524,
+    "candidate_evidence_recall": 1.0,
+    "candidate_persistent_exact_metadata": "12/13",
+    "possible_gold_ambiguity_count": 1,
+    "consumed_cases_may_be_reused": false
+  },
+  "method_basis": [
+    {
+      "name": "FEVER",
+      "primary_source": "https://aclanthology.org/W18-5501/",
+      "adopted_principle": "A claim may have multiple complete evidence sets; retrieving at least one complete annotated set can satisfy evidence correctness."
+    },
+    {
+      "name": "ERASER",
+      "primary_source": "https://aclanthology.org/2020.acl-main.408/",
+      "adopted_principle": "Evidence overlap and whether a rationale is sufficient for the output are separate properties and should not be collapsed into one exact-match number."
+    },
+    {
+      "name": "LongMemEval",
+      "primary_source": "https://openreview.net/forum?id=wIonk5yTDq",
+      "adopted_principle": "Long-term assistant memory must eventually be evaluated across extraction, multi-session reasoning, temporal reasoning, updates, and abstention; this pilot isolates source grounding before downstream memory claims."
+    }
+  ],
+  "evidence_boundary": "This phase freezes dataset construction and machine-review rules only. It does not run the Qwen3.5 4B candidate, restore the reverted runtime hook, write a Chroma database, test retrieval, test long-term recall, test final dialogue, validate human likeness, or establish human-quality gold labels.",
+  "construction_pool": {
+    "pool_dataset_path": "datasets/consolidation_support_equivalence_v2_pool.json",
+    "final_dataset_path": "datasets/consolidation_support_equivalence_v2_pilot.json",
+    "builder_path": "build_consolidation_support_equivalence_v2.py",
+    "reviewer_path": "review_consolidation_support_equivalence_v2.py",
+    "auditor_path": "audit_consolidation_support_equivalence_v2.py",
+    "audit_json_path": "reports/consolidation_support_equivalence_v2_construction_audit.json",
+    "audit_markdown_path": "reports/consolidation_support_equivalence_v2_construction_audit.md",
+    "closure_path": "configs/consolidation_support_equivalence_v2_construction_closure.json",
+    "pool_case_count": 18,
+    "events_per_case": 6,
+    "derived_memories_per_case": 3,
+    "pool_derived_memory_count": 54,
+    "language_case_counts": {
+      "eng": 6,
+      "jpn": 6,
+      "cmn": 6
+    },
+    "memory_kind_counts": {
+      "episodic": 18,
+      "wisdom": 18,
+      "procedural": 18
+    },
+    "support_phenomenon_counts": {
+      "single_minimal_set": 12,
+      "alternative_minimal_sets": 12,
+      "complementary_multi_event_set": 12,
+      "current_state_override": 9,
+      "unsupported": 9
+    },
+    "scenario_family_count": 18,
+    "source_type": "researcher_authored_controlled_multilingual",
+    "official_dataset_items": false,
+    "official_labels": false,
+    "human_label_validation": false,
+    "paid_api_used": false
+  },
+  "freshness_and_leakage_controls": {
+    "excluded_consumed_datasets": [
+      "datasets/consolidation_source_pointer_v1.json",
+      "datasets/consolidation_admission_v1_development.json",
+      "datasets/consolidation_admission_v2_indexed_development.json",
+      "datasets/consolidation_admission_v3_role_separated_development.json",
+      "datasets/consolidation_admission_model_screen_v1_development.json",
+      "datasets/consolidation_admission_cascade_v1_development.json",
+      "datasets/consolidation_support_attribution_v1_development.json",
+      "datasets/consolidation_support_runtime_v1_pilot.json"
+    ],
+    "exact_user_text_overlap_allowed": 0,
+    "normalized_user_text_similarity_threshold": 0.9,
+    "near_duplicate_pair_count_allowed": 0,
+    "prior_scenario_family_reuse_allowed": 0,
+    "candidate_output_visibility_during_construction": false,
+    "consumed_v1_case_relabeling_allowed": false
+  },
+  "support_equivalence_contract": {
+    "gold_fields": [
+      "minimal_support_sets",
+      "acceptable_support_unions",
+      "support_universe",
+      "support_mode",
+      "support_phenomenon"
+    ],
+    "minimal_support_set": "A smallest set of User events that jointly entails every material claim in the derived memory. No proper subset may be sufficient.",
+    "minimal_set_antichain_required": true,
+    "acceptable_support_unions": "Enumerate every unique union of one or more minimal support sets. A model may return one complete route or multiple independently valid routes without being penalized as unsupported.",
+    "support_universe": "The union of every event appearing in at least one minimal support set.",
+    "set_equivalent": "The predicted set exactly equals one frozen acceptable support union.",
+    "sufficient": "The predicted set contains at least one complete minimal support set.",
+    "sound": "Every predicted event belongs to the frozen support universe.",
+    "fully_valid": "The prediction is both sufficient and sound. For unsupported memories, only the empty prediction is valid.",
+    "unsupported": "minimal_support_sets, acceptable_support_unions, and support_universe are all empty.",
+    "assistant_text_evidence_role": "Assistant text is context only and cannot independently support a memory about the user.",
+    "memory_kind_rules": {
+      "episodic": "Every material event, actor, time relation, and state change in the summary must be supported. Independent restatements may form alternative minimal sets; a multi-event summary requires complementary evidence.",
+      "wisdom": "An explicit user fact or preference can support a durable memory. A future-facing instruction may also support the same preference only when its User text itself entails that preference; topical similarity alone is insufficient.",
+      "procedural": "A durable assistant-behavior rule requires an explicit future-facing User instruction. A descriptive preference, assistant promise, one-time request, or inferred convenience is insufficient.",
+      "current_state_override": "When a derived memory claims the current state, stale or contradicted earlier events are not support unless the memory explicitly represents the change history."
+    }
+  },
+  "independent_machine_review": {
+    "development_role_only": true,
+    "reviewer_a": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "parameter_size": "9.7B",
+      "quantization": "Q4_K_M",
+      "seed": 2026071801
+    },
+    "reviewer_b": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "parameter_size": "7.6B",
+      "quantization": "Q4_K_M",
+      "seed": 2026071802
+    },
+    "future_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
+    },
+    "shared_generation_settings": {
+      "thinking": false,
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "context_tokens": 4096,
+      "maximum_output_tokens": 256,
+      "transport_attempts_per_derived_memory": 1
+    },
+    "blindness": [
+      "Each reviewer receives source events, memory kind, derived memory, and the frozen semantic rubric only.",
+      "Neither reviewer receives researcher gold, the other review, prior V1 candidate output, expected admission, or score feedback.",
+      "The future Qwen3.5 4B candidate is not called during construction."
+    ],
+    "canonical_agreement_rule": "Retain a complete case only when researcher-authored minimal sets, reviewer A minimal sets, and reviewer B minimal sets are exactly equal for all three derived memories after sorting indices, sorting sets, removing duplicates, and recomputing the antichain.",
+    "case_retention_policy": "Case retention is all-or-nothing. If any episodic, wisdom, or procedural judgment disagrees, retire the entire six-event case so every retained case still has exactly three derived memories.",
+    "disagreement_policy": "Retire the complete case with all three original judgments and the disagreement reason preserved in the audit. Do not adjudicate toward the candidate, rewrite the item after candidate inference, or relax the agreement rule.",
+    "review_call_budget_exact": 108,
+    "human_review_required_for_this_development_phase": false,
+    "human_quality_gold_claim_authorized": false,
+    "review_independence_limit": "The reviewers use different model generations, parameter sizes, digests, and blind calls, but both are Qwen-family models. Their agreement is operationally independent review, not statistically independent or human-quality adjudication, and correlated semantic errors remain possible.",
+    "later_human_audit_trigger": "Only if construction and the later machine-consensus pilot both pass, require a small blind human sample to calibrate semantic support labels before any production-activation or human-like-memory claim."
+  },
+  "construction_success_gates": {
+    "pool_case_count_exact": 18,
+    "pool_derived_memory_count_exact": 54,
+    "review_call_count_exact": 108,
+    "review_transport_error_count_exact": 0,
+    "final_case_count_min": 12,
+    "final_derived_memory_count_min": 36,
+    "final_case_count_per_language_min": 4,
+    "final_derived_memory_count_per_kind_min": 12,
+    "final_single_minimal_set_count_min": 6,
+    "final_alternative_minimal_sets_count_min": 6,
+    "final_complementary_multi_event_set_count_min": 6,
+    "final_current_state_override_count_min": 3,
+    "final_unsupported_count_min": 6,
+    "retained_item_three_way_canonical_agreement": 1.0,
+    "retained_item_valid_union_enumeration": 1.0,
+    "retained_item_minimal_set_antichain": 1.0,
+    "exact_consumed_text_overlap_count_exact": 0,
+    "near_duplicate_count_exact": 0,
+    "candidate_model_call_count_exact": 0,
+    "production_database_write_count_exact": 0
+  },
+  "construction_stop_conditions": [
+    "Stop before candidate inference if fewer than 12 complete cases survive independent review.",
+    "Stop if any language, memory kind, support phenomenon, freshness, or union-enumeration gate fails.",
+    "Stop if either reviewer digest or generation setting drifts, a review is retried, or candidate output becomes visible.",
+    "Do not repair a failed construction by reusing consumed V1 cases, changing labels toward any model output, or lowering a gate."
+  ],
+  "decision_rule": {
+    "construction_pass": "Merge a construction closure and authorize a separate preregistration for one fresh matched support-equivalence pilot. Do not yet call the Qwen3.5 4B candidate or restore runtime integration.",
+    "construction_fail": "Freeze the failure and stop this hypothesis. Do not build a candidate harness, enlarge the pool post hoc, or restore the runtime candidate.",
+    "future_pilot_pass": "A future pass may authorize a new temporary-runtime pilot only. It cannot directly authorize production memory, retrieval, dialogue, or human-likeness claims.",
+    "future_pilot_fail": "This is the second failed support-attribution hypothesis test; stop the mechanism and reconsider the representation or model rather than patching cases."
+  },
+  "construction_outputs_before_preregistration_merge_authorized": false,
+  "candidate_model_inference_before_construction_closure_authorized": false,
+  "runtime_change_authorized": false,
+  "production_database_access_authorized": false,
+  "human_task_required_now": false,
+  "broad_human_likeness_claim_authorized": false
+}
