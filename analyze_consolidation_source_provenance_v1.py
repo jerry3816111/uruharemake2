@@ -116,11 +116,6 @@ def analyze():
     baseline = _load(BASELINE_PATH)
     treatment = _load(TREATMENT_PATH)
     frozen = config["frozen_baseline"]
-    current_commit = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT,
-        text=True,
-    ).strip()
 
     artifact_checks = {
         "baseline_runtime_hash": (
@@ -135,10 +130,14 @@ def analyze():
             _sha256(ROOT / frozen["report_path"])
             == frozen["report_sha256"]
         ),
-        "treatment_runtime_commit": (
-            treatment["runtime_commit"] == current_commit
+        "treatment_commit_runtime_hash": (
+            _git_file_sha256(
+                treatment["runtime_commit"],
+                frozen["runtime_path"],
+            )
+            == treatment["runtime_sha256"]
         ),
-        "treatment_runtime_hash": (
+        "current_runtime_matches_treatment": (
             treatment["runtime_sha256"]
             == _sha256(ROOT / frozen["runtime_path"])
         ),
