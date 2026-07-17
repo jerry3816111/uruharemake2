@@ -1,0 +1,40 @@
+{
+  "schema": "uruha_reflection_classifier_preregistration_v1",
+  "evidence_status": "development_cases_and_gates_frozen_before_candidate_classifier_implementation",
+  "research_question": "Can a deterministic multilingual structural classifier identify explicit user-grounded semantic, procedural, and interpretive learning opportunities without capturing transient, third-party, hypothetical, or ordinary requests?",
+  "dataset_path": "datasets/reflection_classifier_v1_development.json",
+  "dataset_status": "authored_multilingual_development_set_not_independent_holdout",
+  "case_count": 30,
+  "positive_case_count": 18,
+  "negative_case_count": 12,
+  "classes": ["semantic", "procedural", "interpretive", "none"],
+  "conditions": ["frozen_legacy_classifier", "structural_classifier_candidate"],
+  "single_manipulated_variable": "reflection_type_classifier_implementation",
+  "candidate_constraints": [
+    "no model call",
+    "no case ID or exact full-sentence lookup",
+    "no benchmark answer or future-response marker",
+    "use first-person grounding, durability, directive scope, quoted-phrase interpretation, and exclusion structure",
+    "classifier only; no memory write, retrieval, planner, or right-brain change"
+  ],
+  "success_gates": {
+    "overall_accuracy_min": 1.0,
+    "semantic_recall_min": 1.0,
+    "procedural_recall_min": 1.0,
+    "interpretive_recall_min": 1.0,
+    "none_specificity_min": 1.0,
+    "critical_false_positive_count_max": 0,
+    "regression_vs_legacy_count_max": 0
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_new_source_separated_classifier_holdout",
+    "any_gate_fails": "reject_classifier_candidate_and_keep_production_reflection_disabled"
+  },
+  "baseline_must_be_frozen_before_candidate_implementation": true,
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "exact_source_pointer_authorized": false,
+  "model_inference_authorized": false,
+  "claim_boundary": "Passing can authorize only a new independent classifier holdout. It cannot authorize reflection memory writes or establish downstream behavioral benefit."
+}
