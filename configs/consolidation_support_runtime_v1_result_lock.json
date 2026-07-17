@@ -1,0 +1,183 @@
+{
+  "schema": "uruha_consolidation_support_runtime_result_lock_v1",
+  "experiment_id": "consolidation_support_runtime_v1_pilot",
+  "created_at": "2026-07-18T03:05:00+09:00",
+  "decision": "drop_support_attributed_runtime_candidate",
+  "runtime_change_authorized": false,
+  "candidate_runtime": {
+    "commit": "c8703743c223bca78c6a23fe585fab9821a8cc64",
+    "path": "uruha_brain_mac.py",
+    "sha256": "f5db224b02aa499193cb77974eb4535cd7d75ece9061a15738bb3a8bce48ee8b",
+    "production_activation_during_experiment": false
+  },
+  "runtime_revert": {
+    "commit": "d32aa6686203643fcbb0f7c346c593a66802d167",
+    "path": "uruha_brain_mac.py",
+    "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a",
+    "matches_pre_candidate_runtime": true,
+    "candidate_hook_present": false
+  },
+  "formal_run": {
+    "runner_commit": "7ff8d47cae24fc664765a17f5172d10c07789321",
+    "runner_branch": "main",
+    "started_at": "2026-07-18T02:34:04+09:00",
+    "completed_at": "2026-07-18T02:35:06+09:00",
+    "formal_run_count": 1,
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "model_calls": 18,
+    "transport_attempts": 18,
+    "transport_errors": 0,
+    "parse_success": "18/18",
+    "index_contract_success": "18/18",
+    "preflight_passed": true,
+    "gold_or_expected_outcome_passed_to_runtime": false,
+    "production_database_writes": 0,
+    "inflight_request_at_completion": null,
+    "rerun_performed": false
+  },
+  "results": {
+    "artifact_integrity_valid": true,
+    "all_success_gates_passed": false,
+    "failed_success_gates": [
+      "candidate_stored_records_with_exact_support_metadata_exact"
+    ],
+    "control": {
+      "exact_support_set": "0/18",
+      "evidence_precision": 0.1852,
+      "evidence_recall": 1.0,
+      "unsupported_empty": "0/3",
+      "false_source_count": 88,
+      "stored_record_count": 18,
+      "unsupported_derived_records_written": 3
+    },
+    "candidate": {
+      "exact_support_set": "17/18",
+      "evidence_precision": 0.9524,
+      "evidence_recall": 1.0,
+      "unsupported_empty": "3/3",
+      "false_source_count": 1,
+      "missed_source_count": 0,
+      "stored_record_count": 13,
+      "stored_records_with_exact_support_metadata": "12/13",
+      "unsupported_derived_records_written": 0,
+      "successful_batches": "5/6",
+      "rejected_unsupported_episodic_batches": "1/1",
+      "source_episodes_marked_consolidated": 30,
+      "source_episodes_left_pending": 6,
+      "partial_batches": 0,
+      "median_attribution_seconds": 2.6185,
+      "warm_p95_attribution_seconds": 2.8021,
+      "batch_p95_seconds": 11.6158
+    }
+  },
+  "failure_localization": {
+    "case_id": "csr1_cmn_language_exchange",
+    "memory_kind": "wisdom",
+    "derived_memory": "使用者練習外語時偏好先說完整句再聽糾正。",
+    "frozen_expected_indices": [
+      2
+    ],
+    "candidate_indices": [
+      2,
+      5
+    ],
+    "extra_event_text": "以後陪我練習時，請等我說完整句再指出錯誤。",
+    "possible_gold_ambiguity": true,
+    "interpretation": "Event 5 is a future assistant instruction that can reasonably imply the same user preference, but the preregistered Codex-only gold marked only Event 2. The formal gate therefore fails under the frozen label; this observation cannot be used to relabel or rerun the consumed cases.",
+    "posthoc_relabeling_authorized": false,
+    "formal_rerun_authorized": false,
+    "prompt_tuning_on_consumed_cases_authorized": false
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/consolidation_support_runtime_v1_preregistration.json",
+      "sha256": "9654cf109c816b414c347fb4e30e83fe3372919d4b30d18bf58bdf8cd2747849"
+    },
+    "harness_lock": {
+      "path": "configs/consolidation_support_runtime_v1_harness_lock.json",
+      "sha256": "6bb52fa4835059df71442b04767f6f16daa6f798fa79d06296f1387570461691"
+    },
+    "dataset": {
+      "path": "datasets/consolidation_support_runtime_v1_pilot.json",
+      "sha256": "80f079b71626b2bc4294c32481dd179481fa7764106a9f966eceff1ada6c680b"
+    },
+    "runtime_helper": {
+      "path": "consolidation_support_runtime.py",
+      "sha256": "66b8224ad342948df4591846c7e5b5dbfafc13496d019dd263d7aa83c4b46300"
+    },
+    "model_adapter": {
+      "path": "consolidation_support_runtime_v1_model.py",
+      "sha256": "76405450496f513ed628bd631d70316d8e47b7d5c546182a2ecf72b68fbd6154"
+    },
+    "runner": {
+      "path": "run_consolidation_support_runtime_v1_pilot.py",
+      "sha256": "ee7aa72efbea8094bc54a626b661aec9bab6d6776cd4d9260dd1efcbab488d5a"
+    },
+    "analyzer": {
+      "path": "analyze_consolidation_support_runtime_v1_pilot.py",
+      "sha256": "01956e1f5dd3bc8789dc61ecdcf05156afba29d83305119da25aeb39b0608121"
+    },
+    "raw_result": {
+      "path": "reports/consolidation_support_runtime_v1_pilot_raw.json",
+      "sha256": "50171511ef63afdd33c9ebd2bd3c243721daae86202a1b1f6edff1d80dc995b7"
+    },
+    "analysis_json": {
+      "path": "reports/consolidation_support_runtime_v1_pilot_analysis.json",
+      "sha256": "fc1841d1d2b90c52443deaefb5c791bf107bf1676e3bb04d9e208766202681c6"
+    },
+    "analysis_markdown": {
+      "path": "reports/consolidation_support_runtime_v1_pilot_analysis.md",
+      "sha256": "b8d01d3ee49ae2c38b0eeb7fba153f41f49b7ce8999b8ac7a113a12a8728646d"
+    },
+    "runtime_lifecycle_test": {
+      "path": "test_consolidation_support_runtime_v1_runtime.py",
+      "sha256": "0c4894ac8d81405ca8e9f09f73e7fa90db19021867dc054104290560628e5913"
+    },
+    "harness_lifecycle_test": {
+      "path": "test_consolidation_support_runtime_v1_harness.py",
+      "sha256": "136a7c0fe176268e6c3e32e1751970e0a8fe72681bd8f46ade572c2981a002fa"
+    },
+    "result_test": {
+      "path": "test_consolidation_support_runtime_v1_result.py",
+      "sha256": "1405ea1015b484fd50537829e3e0e50ef76c3f66fc4d5b943ed7acc678eee5ec"
+    },
+    "reverted_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a"
+    }
+  },
+  "historical_harness_artifacts": {
+    "candidate_brain_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "f5db224b02aa499193cb77974eb4535cd7d75ece9061a15738bb3a8bce48ee8b"
+    },
+    "candidate_runtime_test": {
+      "path": "test_consolidation_support_runtime_v1_runtime.py",
+      "sha256": "ae40e63b248818d10b73c7bc24b938f29399a590236fd36ebce3730502f0a688"
+    },
+    "formal_harness_test": {
+      "path": "test_consolidation_support_runtime_v1_harness.py",
+      "sha256": "a39c416425155067435d97491c25e1c6632688ab0b7c56c3338e1469f296420f"
+    }
+  },
+  "regression_validation": {
+    "passed": true,
+    "test_count": 170,
+    "command_role": "post_revert_memory_consolidation_reflection_and_result_suite"
+  },
+  "evidence_limits": {
+    "formal_runtime_pilot_observed": true,
+    "atomicity_preflight_validated": true,
+    "unsupported_write_suppression_observed": true,
+    "runtime_integration_authorized": false,
+    "production_activation_authorized": false,
+    "production_data_migration_authorized": false,
+    "retrieval_improvement_validated": false,
+    "long_term_recall_improvement_validated": false,
+    "dialogue_improvement_validated": false,
+    "human_likeness_validated": false,
+    "biological_equivalence_validated": false
+  },
+  "next_primary_task": "Preregister a fresh independently adjudicated support-equivalence pilot with explicit multi-evidence labeling rules. Do not reuse, relabel, rerun, or tune on these six consumed runtime cases, and do not restore the runtime candidate before new evidence."
+}

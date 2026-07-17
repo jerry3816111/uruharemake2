@@ -1,0 +1,1374 @@
+{
+  "schema": "uruha_consolidation_support_runtime_analysis_v1",
+  "experiment_id": "consolidation_support_runtime_v1_pilot",
+  "decision": "drop_support_attributed_runtime_candidate",
+  "artifact_integrity_valid": true,
+  "artifact_checks": {
+    "experiment_id": true,
+    "runner_branch_main": true,
+    "ollama_version": true,
+    "model_tag": true,
+    "model_digest": true,
+    "preflight_passed": true,
+    "gold_isolation": true,
+    "production_database_writes_zero": true,
+    "no_inflight_request": true,
+    "harness_lock_hash": true,
+    "artifact_preregistration": true,
+    "artifact_dataset": true,
+    "artifact_runtime_helper": true,
+    "artifact_model_adapter": true,
+    "artifact_brain_runtime": true,
+    "artifact_runner": true,
+    "artifact_analyzer": true,
+    "artifact_preregistration_test": true,
+    "artifact_runtime_test": true,
+    "artifact_model_test": true,
+    "artifact_analyzer_test": true,
+    "artifact_harness_test": true,
+    "temporary_database_per_case": true,
+    "model_request_has_no_gold_fields": true
+  },
+  "all_success_gates_pass": false,
+  "failed_success_gates": [
+    "candidate_stored_records_with_exact_support_metadata_exact"
+  ],
+  "gates": {
+    "artifact_integrity_valid": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_exact_support_set_count_min": {
+      "required": 16,
+      "observed": 17,
+      "comparison": "minimum",
+      "passed": true
+    },
+    "candidate_evidence_precision_min": {
+      "required": 0.9,
+      "observed": 0.9524,
+      "comparison": "minimum",
+      "passed": true
+    },
+    "candidate_evidence_recall_min": {
+      "required": 0.9,
+      "observed": 1.0,
+      "comparison": "minimum",
+      "passed": true
+    },
+    "candidate_unsupported_empty_count_exact": {
+      "required": 3,
+      "observed": 3,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_false_support_source_count_max": {
+      "required": 2,
+      "observed": 1,
+      "comparison": "maximum",
+      "passed": true
+    },
+    "candidate_missed_support_source_count_max": {
+      "required": 1,
+      "observed": 0,
+      "comparison": "maximum",
+      "passed": true
+    },
+    "candidate_parse_success_count_exact": {
+      "required": 18,
+      "observed": 18,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_index_contract_success_count_exact": {
+      "required": 18,
+      "observed": 18,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_transport_error_count_exact": {
+      "required": 0,
+      "observed": 0,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_median_attribution_seconds_max": {
+      "required": 4.5,
+      "observed": 2.6185,
+      "comparison": "maximum",
+      "passed": true
+    },
+    "candidate_warm_p95_attribution_seconds_max": {
+      "required": 6.5,
+      "observed": 2.8021,
+      "comparison": "maximum",
+      "passed": true
+    },
+    "candidate_batch_p95_seconds_max": {
+      "required": 15.0,
+      "observed": 11.6158,
+      "comparison": "maximum",
+      "passed": true
+    },
+    "candidate_stored_record_count_exact": {
+      "required": 13,
+      "observed": 13,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_stored_records_with_exact_support_metadata_exact": {
+      "required": 13,
+      "observed": 12,
+      "comparison": "exact",
+      "passed": false
+    },
+    "candidate_unsupported_derived_records_written_exact": {
+      "required": 0,
+      "observed": 0,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_successful_batch_count_exact": {
+      "required": 5,
+      "observed": 5,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_rejected_unsupported_episodic_batch_count_exact": {
+      "required": 1,
+      "observed": 1,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_source_episodes_marked_consolidated_exact": {
+      "required": 30,
+      "observed": 30,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_source_episodes_left_pending_exact": {
+      "required": 6,
+      "observed": 6,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_partial_batch_count_exact": {
+      "required": 0,
+      "observed": 0,
+      "comparison": "exact",
+      "passed": true
+    },
+    "candidate_production_database_writes_exact": {
+      "required": 0,
+      "observed": 0,
+      "comparison": "exact",
+      "passed": true
+    },
+    "injected_attribution_failure_is_atomic": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    },
+    "injected_each_collection_write_failure_is_atomic": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    },
+    "injected_source_transition_failure_is_atomic": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    },
+    "retry_after_injected_failure_creates_one_batch_only": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    },
+    "existing_memory_and_reflection_regression_tests_pass": {
+      "required": true,
+      "observed": true,
+      "comparison": "exact",
+      "passed": true
+    }
+  },
+  "support_scoring": {
+    "control": {
+      "case_count": 18,
+      "exact_set_match_count": 0,
+      "exact_set_accuracy": 0.0,
+      "positive_complete_support_count": 15,
+      "unsupported_empty_count": 0,
+      "evidence_precision": 0.1852,
+      "evidence_recall": 1.0,
+      "mean_case_f1": 0.2976,
+      "false_source_count": 88,
+      "missed_source_count": 0,
+      "parse_success_count": 18,
+      "index_contract_success_count": 18,
+      "transport_error_count": 0,
+      "median_wall_seconds": 0.0,
+      "warm_p95_wall_seconds": 0.0,
+      "scored_cases": [
+        {
+          "id": "csr1_eng_balcony_herbs::episodic",
+          "language": "eng",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            3,
+            5
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 4,
+          "false_negative_count": 0,
+          "case_f1": 0.5,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_balcony_herbs::wisdom",
+          "language": "eng",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_balcony_herbs::procedural",
+          "language": "eng",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            6
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::episodic",
+          "language": "eng",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 4,
+          "false_negative_count": 0,
+          "case_f1": 0.5,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::wisdom",
+          "language": "eng",
+          "memory_kind": "wisdom",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": false,
+          "unsupported_empty": false,
+          "true_positive_count": 0,
+          "false_positive_count": 6,
+          "false_negative_count": 0,
+          "case_f1": 0.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::procedural",
+          "language": "eng",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            6
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::episodic",
+          "language": "jpn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 4,
+          "false_negative_count": 0,
+          "case_f1": 0.5,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::wisdom",
+          "language": "jpn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::procedural",
+          "language": "jpn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            5
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::episodic",
+          "language": "jpn",
+          "memory_kind": "episodic",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": false,
+          "unsupported_empty": false,
+          "true_positive_count": 0,
+          "false_positive_count": 6,
+          "false_negative_count": 0,
+          "case_f1": 0.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::wisdom",
+          "language": "jpn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            3
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::procedural",
+          "language": "jpn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            4
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::episodic",
+          "language": "cmn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 4,
+          "false_negative_count": 0,
+          "case_f1": 0.5,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::wisdom",
+          "language": "cmn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::procedural",
+          "language": "cmn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            5
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::episodic",
+          "language": "cmn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            2
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 4,
+          "false_negative_count": 0,
+          "case_f1": 0.5,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::wisdom",
+          "language": "cmn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            3
+          ],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 5,
+          "false_negative_count": 0,
+          "case_f1": 0.2857,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::procedural",
+          "language": "cmn",
+          "memory_kind": "procedural",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": false,
+          "unsupported_empty": false,
+          "true_positive_count": 0,
+          "false_positive_count": 6,
+          "false_negative_count": 0,
+          "case_f1": 0.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        }
+      ]
+    },
+    "candidate": {
+      "case_count": 18,
+      "exact_set_match_count": 17,
+      "exact_set_accuracy": 0.9444,
+      "positive_complete_support_count": 15,
+      "unsupported_empty_count": 3,
+      "evidence_precision": 0.9524,
+      "evidence_recall": 1.0,
+      "mean_case_f1": 0.9815,
+      "false_source_count": 1,
+      "missed_source_count": 0,
+      "parse_success_count": 18,
+      "index_contract_success_count": 18,
+      "transport_error_count": 0,
+      "median_wall_seconds": 2.6185,
+      "warm_p95_wall_seconds": 2.8021,
+      "scored_cases": [
+        {
+          "id": "csr1_eng_balcony_herbs::episodic",
+          "language": "eng",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            3,
+            5
+          ],
+          "predicted_indices": [
+            3,
+            5
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_balcony_herbs::wisdom",
+          "language": "eng",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            2
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_balcony_herbs::procedural",
+          "language": "eng",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            6
+          ],
+          "predicted_indices": [
+            6
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::episodic",
+          "language": "eng",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            4
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::wisdom",
+          "language": "eng",
+          "memory_kind": "wisdom",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [],
+          "exact_set_match": true,
+          "complete_positive_support": false,
+          "unsupported_empty": true,
+          "true_positive_count": 0,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_eng_ceramics_workshop::procedural",
+          "language": "eng",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            6
+          ],
+          "predicted_indices": [
+            6
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::episodic",
+          "language": "jpn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            4
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::wisdom",
+          "language": "jpn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            2
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_night_bus::procedural",
+          "language": "jpn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            5
+          ],
+          "predicted_indices": [
+            5
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::episodic",
+          "language": "jpn",
+          "memory_kind": "episodic",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [],
+          "exact_set_match": true,
+          "complete_positive_support": false,
+          "unsupported_empty": true,
+          "true_positive_count": 0,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::wisdom",
+          "language": "jpn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            3
+          ],
+          "predicted_indices": [
+            3
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_jpn_bakery_shift::procedural",
+          "language": "jpn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            4
+          ],
+          "predicted_indices": [
+            4
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::episodic",
+          "language": "cmn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            4
+          ],
+          "predicted_indices": [
+            1,
+            4
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::wisdom",
+          "language": "cmn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            2
+          ],
+          "predicted_indices": [
+            2,
+            5
+          ],
+          "exact_set_match": false,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 1,
+          "false_negative_count": 0,
+          "case_f1": 0.6667,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_language_exchange::procedural",
+          "language": "cmn",
+          "memory_kind": "procedural",
+          "support_mode": "supported",
+          "expected_indices": [
+            5
+          ],
+          "predicted_indices": [
+            5
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::episodic",
+          "language": "cmn",
+          "memory_kind": "episodic",
+          "support_mode": "supported",
+          "expected_indices": [
+            1,
+            2
+          ],
+          "predicted_indices": [
+            1,
+            2
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 2,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::wisdom",
+          "language": "cmn",
+          "memory_kind": "wisdom",
+          "support_mode": "supported",
+          "expected_indices": [
+            3
+          ],
+          "predicted_indices": [
+            3
+          ],
+          "exact_set_match": true,
+          "complete_positive_support": true,
+          "unsupported_empty": false,
+          "true_positive_count": 1,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        },
+        {
+          "id": "csr1_cmn_desk_lamp::procedural",
+          "language": "cmn",
+          "memory_kind": "procedural",
+          "support_mode": "unsupported",
+          "expected_indices": [],
+          "predicted_indices": [],
+          "exact_set_match": true,
+          "complete_positive_support": false,
+          "unsupported_empty": true,
+          "true_positive_count": 0,
+          "false_positive_count": 0,
+          "false_negative_count": 0,
+          "case_f1": 1.0,
+          "parse_success": true,
+          "index_contract_success": true,
+          "transport_error": null
+        }
+      ]
+    }
+  },
+  "runtime_scoring": {
+    "control": {
+      "case_count": 6,
+      "stored_record_count": 18,
+      "stored_records_with_exact_support_metadata": 0,
+      "unsupported_derived_records_written": 3,
+      "successful_batch_count": 6,
+      "rejected_unsupported_episodic_batch_count": 0,
+      "source_episodes_marked_consolidated": 36,
+      "source_episodes_left_pending": 0,
+      "partial_batch_count": 0,
+      "median_batch_seconds": 0.3038,
+      "batch_p95_seconds": 0.3135,
+      "scored_cases": [
+        {
+          "case_id": "csr1_eng_balcony_herbs",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.313528
+        },
+        {
+          "case_id": "csr1_eng_ceramics_workshop",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.301904
+        },
+        {
+          "case_id": "csr1_jpn_night_bus",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.305426
+        },
+        {
+          "case_id": "csr1_jpn_bakery_shift",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.300829
+        },
+        {
+          "case_id": "csr1_cmn_language_exchange",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.305387
+        },
+        {
+          "case_id": "csr1_cmn_desk_lamp",
+          "mode": "three_speed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 0.302179
+        }
+      ]
+    },
+    "candidate": {
+      "case_count": 6,
+      "stored_record_count": 13,
+      "stored_records_with_exact_support_metadata": 12,
+      "unsupported_derived_records_written": 0,
+      "successful_batch_count": 5,
+      "rejected_unsupported_episodic_batch_count": 1,
+      "source_episodes_marked_consolidated": 30,
+      "source_episodes_left_pending": 6,
+      "partial_batch_count": 0,
+      "median_batch_seconds": 8.1114,
+      "batch_p95_seconds": 11.6158,
+      "scored_cases": [
+        {
+          "case_id": "csr1_eng_balcony_herbs",
+          "mode": "support_attributed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 11.61575
+        },
+        {
+          "case_id": "csr1_eng_ceramics_workshop",
+          "mode": "support_attributed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 7.946697
+        },
+        {
+          "case_id": "csr1_jpn_night_bus",
+          "mode": "support_attributed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 8.474842
+        },
+        {
+          "case_id": "csr1_jpn_bakery_shift",
+          "mode": "consolidation_unsupported_episodic",
+          "stored_memory_kinds": [],
+          "expected_stored_memory_kinds": [],
+          "source_states": [
+            "pending"
+          ],
+          "case_wall_seconds": 7.8453
+        },
+        {
+          "case_id": "csr1_cmn_language_exchange",
+          "mode": "support_attributed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "procedural",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 8.204946
+        },
+        {
+          "case_id": "csr1_cmn_desk_lamp",
+          "mode": "support_attributed_consolidation",
+          "stored_memory_kinds": [
+            "episodic",
+            "wisdom"
+          ],
+          "expected_stored_memory_kinds": [
+            "episodic",
+            "wisdom"
+          ],
+          "source_states": [
+            "consolidated"
+          ],
+          "case_wall_seconds": 8.017788
+        }
+      ]
+    }
+  },
+  "formal_run": {
+    "runner_commit": "7ff8d47cae24fc664765a17f5172d10c07789321",
+    "started_at": "2026-07-18T02:34:04+09:00",
+    "completed_at": "2026-07-18T02:35:06+09:00",
+    "model_calls": 18,
+    "transport_attempts": 18
+  },
+  "evidence_limits": {
+    "temporary_runtime_integration_claim_authorized": true,
+    "production_activation_authorized": false,
+    "production_data_migration_authorized": false,
+    "consolidation_generation_quality_claim_authorized": false,
+    "retrieval_improvement_claim_authorized": false,
+    "long_term_recall_improvement_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false
+  }
+}

@@ -24,14 +24,24 @@ LOCK_PATH = (
 IMPLEMENTATION_MERGE_COMMIT = (
     "c8703743c223bca78c6a23fe585fab9821a8cc64"
 )
+FORMAL_RUNNER_COMMIT = "7ff8d47cae24fc664765a17f5172d10c07789321"
 
 
 def _load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _sha256(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _git_file_content(commit, path):
+    return subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+
+
+def _git_file_sha256(commit, path):
+    return hashlib.sha256(
+        _git_file_content(commit, path)
+    ).hexdigest()
 
 
 def _git_file_exists(commit, path):
@@ -81,16 +91,19 @@ class ConsolidationSupportRuntimeV1HarnessTest(unittest.TestCase):
     def test_every_frozen_artifact_matches_its_hash(self):
         for name, artifact in self.lock["frozen_artifacts"].items():
             self.assertEqual(
-                _sha256(ROOT / artifact["path"]),
+                _git_file_sha256(
+                    FORMAL_RUNNER_COMMIT,
+                    artifact["path"],
+                ),
                 artifact["sha256"],
                 name,
             )
 
     def test_runner_rejects_drift_dirty_tree_and_result_overwrite(self):
-        source = (
-            ROOT
-            / self.lock["frozen_artifacts"]["runner"]["path"]
-        ).read_text(encoding="utf-8")
+        source = _git_file_content(
+            FORMAL_RUNNER_COMMIT,
+            self.lock["frozen_artifacts"]["runner"]["path"],
+        ).decode("utf-8")
         self.assertIn("_verify_frozen_artifacts(lock)", source)
         self.assertIn("formal run requires the main branch", source)
         self.assertIn("formal run requires a clean worktree", source)
@@ -105,10 +118,10 @@ class ConsolidationSupportRuntimeV1HarnessTest(unittest.TestCase):
         self.assertNotIn("expected_candidate_outcome", source)
 
     def test_model_transport_is_single_attempt_and_gold_blind(self):
-        source = (
-            ROOT
-            / self.lock["frozen_artifacts"]["model_adapter"]["path"]
-        ).read_text(encoding="utf-8")
+        source = _git_file_content(
+            FORMAL_RUNNER_COMMIT,
+            self.lock["frozen_artifacts"]["model_adapter"]["path"],
+        ).decode("utf-8")
         self.assertIn(
             'transport_attempts"] != 1',
             source,
