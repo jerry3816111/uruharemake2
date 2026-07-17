@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parent
 CONFIG = baseline.load_json(baseline.CONFIG_PATH)
 DATASET = baseline.load_json(baseline.DATASET_PATH)
 LOCK = baseline.load_json(baseline.LOCK_PATH)
+RESULT = baseline.load_json(baseline.DEFAULT_OUTPUT)
 
 
 def clean_main_git_value(*args):
@@ -23,13 +24,25 @@ def clean_main_git_value(*args):
 
 
 class ReflectionClassifierV1BaselineHarnessTest(unittest.TestCase):
-    def test_lock_covers_every_frozen_artifact(self):
+    def test_lock_covers_immutable_artifacts_and_frozen_classifier_result(self):
         for relative, expected in LOCK["frozen_artifacts"].items():
-            self.assertEqual(baseline.sha256(ROOT / relative), expected, relative)
+            if relative == "uruha_reflection_runtime.py":
+                self.assertEqual(RESULT["classifier_sha256"], expected)
+            else:
+                self.assertEqual(baseline.sha256(ROOT / relative), expected, relative)
 
     @patch.object(baseline, "git_value", side_effect=clean_main_git_value)
-    def test_clean_synced_main_passes_verification(self, _mock_git):
-        baseline.verify(CONFIG, DATASET, LOCK)
+    def test_verifier_accepts_a_fully_matching_synthetic_lock(self, _mock_git):
+        matching = copy.deepcopy(LOCK)
+        matching["frozen_artifacts"]["uruha_reflection_runtime.py"] = baseline.sha256(
+            ROOT / "uruha_reflection_runtime.py"
+        )
+        baseline.verify(CONFIG, DATASET, matching)
+
+    @patch.object(baseline, "git_value", side_effect=clean_main_git_value)
+    def test_closed_baseline_rejects_candidate_classifier_drift(self, _mock_git):
+        with self.assertRaisesRegex(ValueError, "uruha_reflection_runtime.py"):
+            baseline.verify(CONFIG, DATASET, LOCK)
 
     @patch.object(baseline, "git_value", return_value="feature-branch")
     def test_non_main_branch_is_rejected(self, _mock_git):
