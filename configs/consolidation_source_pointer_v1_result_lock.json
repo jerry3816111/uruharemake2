@@ -1,0 +1,116 @@
+{
+  "schema": "uruha_consolidation_source_pointer_result_lock_v1",
+  "experiment_id": "consolidation_source_pointer_v1",
+  "created_at": "2026-07-18T00:24:45+09:00",
+  "decision": "drop_source_pointer_v1_candidate",
+  "runtime_change_authorized": false,
+  "preregistration": {
+    "commit": "9f0cfcc8ddd99d1170b4f472566f13abad4eb876",
+    "merge_commit": "c5b56665ef6deb218ddb595c9c2bdcb09a9e0753",
+    "path": "configs/consolidation_source_pointer_v1_preregistration.json",
+    "sha256": "5eb990db52a8043e2d7fff162d085e391bdd32d8b105aa52c15ceff50aa2a2ac"
+  },
+  "candidate_runtime": {
+    "commit": "f36b039ba18d78bda9f984f9df1c32500fe1c2a8",
+    "file_sha256": {
+      "uruha_brain_mac.py": "3af7d9386f8fb3e11dd47228b0b5ada817c4f9a7c681d2e9a32930568acd54ca",
+      "uruha_memory_runtime.py": "3a60ae1970051cc3d926a8d35b8de66cae7e5349471dec48ce85bd0aebe08420",
+      "test_consolidation_source_pointer_v1_candidate.py": "fd236dc700c258955e0492a77acbb2abfa4789b1f3a6871c2b3e472ef59c670c"
+    }
+  },
+  "runtime_revert": {
+    "commit": "7be000efd683e0a7947655e00690db1d8018035e",
+    "baseline_commit": "c5b56665ef6deb218ddb595c9c2bdcb09a9e0753",
+    "current_file_sha256": {
+      "uruha_brain_mac.py": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a",
+      "uruha_memory_runtime.py": "54829d7d0cb9f90c768630ded358923f25bb6ca6eaeda0b84362e634cdc055d0"
+    },
+    "candidate_code_present_in_current_runtime": false
+  },
+  "results": {
+    "artifact_integrity_valid": true,
+    "candidate_gates_passed": false,
+    "correct_source_recall": {
+      "baseline": "0/6",
+      "candidate": "4/6",
+      "required": "at_least_5/6"
+    },
+    "exact_user_text_in_summary": {
+      "baseline": "0/6",
+      "candidate": "4/6",
+      "required": "at_least_5/6"
+    },
+    "wrong_source_injections": {
+      "candidate": 2,
+      "required": 0
+    },
+    "integrity_pointer_activations": 0,
+    "unrelated_pointer_activations": 0,
+    "top_level_selection_unchanged": "12/12",
+    "maximum_source_evidence_count": 1,
+    "external_model_calls": 0,
+    "failed_candidate_gates": [
+      "treatment_positive_target_source_hits_min",
+      "paired_positive_net_gain_min",
+      "treatment_positive_exact_user_text_hits_min",
+      "treatment_positive_summary_exact_user_text_hits_min",
+      "treatment_wrong_source_injections_exact"
+    ],
+    "failed_positive_case_ids": [
+      "positive_en_time",
+      "positive_zh_change"
+    ],
+    "failure_localization": "The existing V2 memory score preferred newer same-topic source events that explicitly lacked the requested value. Semantic relevance plus recency did not reliably measure evidential informativeness."
+  },
+  "regression_validation": {
+    "passed": true,
+    "test_count": 119,
+    "command": "TOKENIZERS_PARALLELISM=false Style-Bert-VITS2/venv/bin/python -m unittest -q test_memory_runtime_activation.py test_memory_runtime_helpers.py test_memory_persistent_candidate_integration.py test_memory_provenance_reread.py test_memory_evidence_ledger.py test_memory_cue_extractive.py test_memory_highlight_span_contract.py test_memory_utterance_attention.py test_typed_reflection_runtime_v3.py test_consolidation_source_provenance_v1_preregistration.py test_consolidation_source_provenance_v1_runtime.py test_consolidation_source_provenance_v1_result.py test_consolidation_source_pointer_v1_preregistration.py test_consolidation_source_pointer_v1_result.py"
+  },
+  "frozen_artifacts": {
+    "dataset": {
+      "path": "datasets/consolidation_source_pointer_v1.json",
+      "sha256": "ad2416412f8ec614b05f7997c11d9eb83eaee3f8959ee4fb1eb7020e5b140217"
+    },
+    "measurement": {
+      "path": "measure_consolidation_source_pointer_v1.py",
+      "sha256": "55daba242037b4037e9507c545c6610ae82efeaf26d18a1e7e893fe54e3cdd24"
+    },
+    "baseline_report": {
+      "path": "reports/consolidation_source_pointer_v1_baseline.json",
+      "sha256": "af759c149cdb49c1a7755181d313c7f4de28d32750a395ffcf80438380735bde"
+    },
+    "treatment_report": {
+      "path": "reports/consolidation_source_pointer_v1_treatment.json",
+      "sha256": "d7bda0ffab3a56fb59ff0f4841c3a387edb0f8f254da090b80684c8b12b542d6"
+    },
+    "analyzer": {
+      "path": "analyze_consolidation_source_pointer_v1.py",
+      "sha256": "a6359a27efd3b63db40159c5569bb68e638aae0512d9c33e1c4c3582a956652c"
+    },
+    "analysis": {
+      "path": "reports/consolidation_source_pointer_v1_analysis.md",
+      "sha256": "c42fdb21c4f6c92a7c2fafcf5acc0f342007239905cad384761691d34e114695"
+    },
+    "preregistration_test": {
+      "path": "test_consolidation_source_pointer_v1_preregistration.py",
+      "sha256": "a2a0482a22aa3eaded6d23cd9d13ea5e6e07d9f5de7678948133fcc2c1d3acd0"
+    },
+    "result_test": {
+      "path": "test_consolidation_source_pointer_v1_result.py",
+      "sha256": "f32af72efa9d41567380dbbf0c33d08b5c4303b91cc06ef9930b6e878f765f7f"
+    }
+  },
+  "evidence_limits": {
+    "pointer_integrity_fail_closed_validated": true,
+    "partial_exact_source_recall_observed": true,
+    "source_pointer_runtime_authorized": false,
+    "reliable_source_selection_validated": false,
+    "semantic_answer_accuracy_validated": false,
+    "dialogue_improvement_validated": false,
+    "human_likeness_validated": false,
+    "biological_equivalence_validated": false,
+    "production_data_migration_validated": false
+  },
+  "next_primary_task": "Preregister a fresh matched development experiment that separates semantic relevance from evidential informativeness and certainty before retrying any source pointer. Do not tune on the frozen V1 cases or add case-specific uncertainty phrases."
+}
