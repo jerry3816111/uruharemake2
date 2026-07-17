@@ -1,0 +1,528 @@
+{
+  "schema": "uruha_consolidation_admission_model_screen_analysis_v1",
+  "experiment_id": "consolidation_admission_model_screen_v1_development",
+  "generated_at": "2026-07-17T23:02:41+09:00",
+  "evidence_status": "development_model_screen_no_runtime_or_generalization_claim",
+  "preregistration_sha256": "2fccebd2af4acf09af8b2e5d26f3bd47db341edb07d13163b3517df4f283d3cd",
+  "harness_lock_sha256": "d2c022424bb4abd8c2de663108d55bddb1814d2654140f805c936e950fd55009",
+  "dataset_sha256": "0c235cd05ab14fe18b4b0cf4a7f0d6d19fde7f857572f89af01df22f1f5f7d9d",
+  "raw_result_sha256": "42985d258691d870357fdb0fe457e039c5d5a78dd6febebbbef62fa3c0680b04",
+  "models": {
+    "qwen25_7b_control": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "blob_bytes": 4683087332,
+      "role": "frozen_failed_model_control"
+    },
+    "qwen35_4b_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "role": "lower_resource_local_candidate"
+    },
+    "qwen35_9b_candidate": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "blob_bytes": 6594474711,
+      "role": "higher_capacity_local_candidate"
+    }
+  },
+  "model_screen_result": {
+    "case_count": 12,
+    "model_call_count": 36,
+    "transport_attempt_count": 36,
+    "run_checks": {
+      "model_call_count_exact": true,
+      "transport_attempt_count_exact": true,
+      "calls_per_model_exact": true
+    },
+    "control": {
+      "correct_count": 6,
+      "accuracy": 0.5,
+      "class_metrics": {
+        "wisdom": {
+          "total": 4,
+          "correct_count": 2,
+          "accuracy": 0.5
+        },
+        "procedural": {
+          "total": 4,
+          "correct_count": 1,
+          "accuracy": 0.25
+        },
+        "none": {
+          "total": 4,
+          "correct_count": 3,
+          "accuracy": 0.75
+        }
+      },
+      "observed_target_counts": {
+        "none": 8,
+        "procedural": 2,
+        "wisdom": 2
+      },
+      "parse_success_count": 9,
+      "parse_success_rate": 0.75,
+      "index_contract_success_count": 8,
+      "index_contract_success_rate": 0.6667,
+      "semantic_frame_exact_count": 3,
+      "semantic_frame_exact_rate": 0.25,
+      "evidence_grounded_count": 7,
+      "evidence_grounded_rate": 0.5833,
+      "positive_evidence_grounded_count": 7,
+      "positive_evidence_grounded_rate": 0.875,
+      "derived_applicability_success_count": 6,
+      "derived_applicability_success_rate": 0.5,
+      "false_long_term_write_count": 1,
+      "false_long_term_write_case_ids": [
+        "camsv1_eng_none_single_rhyme"
+      ],
+      "missed_long_term_write_count": 5,
+      "missed_long_term_write_case_ids": [
+        "camsv1_eng_wisdom_receipt_archive",
+        "camsv1_eng_procedural_risk_scan",
+        "camsv1_jpn_wisdom_matte_screen",
+        "camsv1_jpn_procedural_diff",
+        "camsv1_cmn_procedural_source_format"
+      ],
+      "median_wall_seconds": 2.482,
+      "warm_p95_wall_seconds": 2.5772
+    },
+    "candidates": {
+      "qwen35_4b_candidate": {
+        "summary": {
+          "correct_count": 8,
+          "accuracy": 0.6667,
+          "class_metrics": {
+            "wisdom": {
+              "total": 4,
+              "correct_count": 1,
+              "accuracy": 0.25
+            },
+            "procedural": {
+              "total": 4,
+              "correct_count": 4,
+              "accuracy": 1.0
+            },
+            "none": {
+              "total": 4,
+              "correct_count": 3,
+              "accuracy": 0.75
+            }
+          },
+          "observed_target_counts": {
+            "none": 3,
+            "procedural": 8,
+            "wisdom": 1
+          },
+          "parse_success_count": 12,
+          "parse_success_rate": 1.0,
+          "index_contract_success_count": 12,
+          "index_contract_success_rate": 1.0,
+          "semantic_frame_exact_count": 8,
+          "semantic_frame_exact_rate": 0.6667,
+          "evidence_grounded_count": 9,
+          "evidence_grounded_rate": 0.75,
+          "positive_evidence_grounded_count": 6,
+          "positive_evidence_grounded_rate": 0.75,
+          "derived_applicability_success_count": 8,
+          "derived_applicability_success_rate": 0.6667,
+          "false_long_term_write_count": 1,
+          "false_long_term_write_case_ids": [
+            "camsv1_eng_none_single_rhyme"
+          ],
+          "missed_long_term_write_count": 0,
+          "missed_long_term_write_case_ids": [],
+          "median_wall_seconds": 3.6436,
+          "warm_p95_wall_seconds": 3.8035
+        },
+        "paired_vs_control": {
+          "accuracy_delta_vs_control": 0.1667,
+          "net_correct_gain_vs_control": 2,
+          "newly_correct_count": 4,
+          "newly_correct_case_ids": [
+            "camsv1_eng_procedural_risk_scan",
+            "camsv1_jpn_wisdom_matte_screen",
+            "camsv1_jpn_procedural_diff",
+            "camsv1_cmn_procedural_source_format"
+          ],
+          "regression_count": 2,
+          "regression_case_ids": [
+            "camsv1_eng_wisdom_captions",
+            "camsv1_cmn_wisdom_walking_distance"
+          ],
+          "matched_rows": [
+            {
+              "id": "camsv1_eng_wisdom_captions",
+              "expected_target": "wisdom",
+              "control_target": "wisdom",
+              "candidate_target": "procedural",
+              "control_correct": true,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": false
+            },
+            {
+              "id": "camsv1_eng_wisdom_receipt_archive",
+              "expected_target": "wisdom",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_eng_procedural_risk_scan",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_eng_none_single_rhyme",
+              "expected_target": "none",
+              "control_target": "procedural",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": false
+            },
+            {
+              "id": "camsv1_jpn_wisdom_matte_screen",
+              "expected_target": "wisdom",
+              "control_target": "none",
+              "candidate_target": "wisdom",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_procedural_diff",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_procedural_quiz_hint",
+              "expected_target": "procedural",
+              "control_target": "procedural",
+              "candidate_target": "procedural",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_none_borrowed_keyboard",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_wisdom_walking_distance",
+              "expected_target": "wisdom",
+              "control_target": "wisdom",
+              "candidate_target": "procedural",
+              "control_correct": true,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_procedural_source_format",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": false
+            },
+            {
+              "id": "camsv1_cmn_none_neighbor_renovation",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_none_today_no_code",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            }
+          ]
+        },
+        "gate_checks": {
+          "candidate_correct_count_min": false,
+          "candidate_accuracy_min": false,
+          "candidate_wisdom_correct_min": false,
+          "candidate_procedural_correct_min": true,
+          "candidate_none_correct_min": true,
+          "candidate_semantic_frame_exact_count_min": false,
+          "candidate_evidence_grounded_count_min": false,
+          "candidate_positive_evidence_grounded_count_min": true,
+          "newly_correct_vs_control_min": true,
+          "regression_vs_control_max": false,
+          "net_correct_gain_vs_control_min": true,
+          "candidate_false_long_term_write_count_max": true,
+          "candidate_missed_long_term_write_count_max": true,
+          "candidate_tool_parse_success_count": true,
+          "candidate_index_contract_success_count": true,
+          "candidate_median_wall_seconds_max": false,
+          "candidate_warm_p95_wall_seconds_max": true
+        },
+        "eligible": false
+      },
+      "qwen35_9b_candidate": {
+        "summary": {
+          "correct_count": 10,
+          "accuracy": 0.8333,
+          "class_metrics": {
+            "wisdom": {
+              "total": 4,
+              "correct_count": 3,
+              "accuracy": 0.75
+            },
+            "procedural": {
+              "total": 4,
+              "correct_count": 4,
+              "accuracy": 1.0
+            },
+            "none": {
+              "total": 4,
+              "correct_count": 3,
+              "accuracy": 0.75
+            }
+          },
+          "observed_target_counts": {
+            "none": 4,
+            "procedural": 5,
+            "wisdom": 3
+          },
+          "parse_success_count": 12,
+          "parse_success_rate": 1.0,
+          "index_contract_success_count": 12,
+          "index_contract_success_rate": 1.0,
+          "semantic_frame_exact_count": 10,
+          "semantic_frame_exact_rate": 0.8333,
+          "evidence_grounded_count": 11,
+          "evidence_grounded_rate": 0.9167,
+          "positive_evidence_grounded_count": 8,
+          "positive_evidence_grounded_rate": 1.0,
+          "derived_applicability_success_count": 10,
+          "derived_applicability_success_rate": 0.8333,
+          "false_long_term_write_count": 1,
+          "false_long_term_write_case_ids": [
+            "camsv1_cmn_none_today_no_code"
+          ],
+          "missed_long_term_write_count": 1,
+          "missed_long_term_write_case_ids": [
+            "camsv1_eng_wisdom_receipt_archive"
+          ],
+          "median_wall_seconds": 5.8965,
+          "warm_p95_wall_seconds": 5.9933
+        },
+        "paired_vs_control": {
+          "accuracy_delta_vs_control": 0.3333,
+          "net_correct_gain_vs_control": 4,
+          "newly_correct_count": 5,
+          "newly_correct_case_ids": [
+            "camsv1_eng_procedural_risk_scan",
+            "camsv1_eng_none_single_rhyme",
+            "camsv1_jpn_wisdom_matte_screen",
+            "camsv1_jpn_procedural_diff",
+            "camsv1_cmn_procedural_source_format"
+          ],
+          "regression_count": 1,
+          "regression_case_ids": [
+            "camsv1_cmn_none_today_no_code"
+          ],
+          "matched_rows": [
+            {
+              "id": "camsv1_eng_wisdom_captions",
+              "expected_target": "wisdom",
+              "control_target": "wisdom",
+              "candidate_target": "wisdom",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_eng_wisdom_receipt_archive",
+              "expected_target": "wisdom",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": false,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_eng_procedural_risk_scan",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_eng_none_single_rhyme",
+              "expected_target": "none",
+              "control_target": "procedural",
+              "candidate_target": "none",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_wisdom_matte_screen",
+              "expected_target": "wisdom",
+              "control_target": "none",
+              "candidate_target": "wisdom",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_procedural_diff",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_procedural_quiz_hint",
+              "expected_target": "procedural",
+              "control_target": "procedural",
+              "candidate_target": "procedural",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_jpn_none_borrowed_keyboard",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_wisdom_walking_distance",
+              "expected_target": "wisdom",
+              "control_target": "wisdom",
+              "candidate_target": "wisdom",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_procedural_source_format",
+              "expected_target": "procedural",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": false,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_none_neighbor_renovation",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "none",
+              "control_correct": true,
+              "candidate_correct": true,
+              "candidate_semantic_frame_exact": true,
+              "candidate_evidence_grounded": true
+            },
+            {
+              "id": "camsv1_cmn_none_today_no_code",
+              "expected_target": "none",
+              "control_target": "none",
+              "candidate_target": "procedural",
+              "control_correct": true,
+              "candidate_correct": false,
+              "candidate_semantic_frame_exact": false,
+              "candidate_evidence_grounded": false
+            }
+          ]
+        },
+        "gate_checks": {
+          "candidate_correct_count_min": true,
+          "candidate_accuracy_min": true,
+          "candidate_wisdom_correct_min": true,
+          "candidate_procedural_correct_min": true,
+          "candidate_none_correct_min": true,
+          "candidate_semantic_frame_exact_count_min": true,
+          "candidate_evidence_grounded_count_min": true,
+          "candidate_positive_evidence_grounded_count_min": true,
+          "newly_correct_vs_control_min": true,
+          "regression_vs_control_max": true,
+          "net_correct_gain_vs_control_min": true,
+          "candidate_false_long_term_write_count_max": true,
+          "candidate_missed_long_term_write_count_max": true,
+          "candidate_tool_parse_success_count": true,
+          "candidate_index_contract_success_count": true,
+          "candidate_median_wall_seconds_max": false,
+          "candidate_warm_p95_wall_seconds_max": true
+        },
+        "eligible": false
+      }
+    },
+    "eligible_candidates": [],
+    "selection_shortlist": [],
+    "selected_model_condition": null,
+    "decision": "reject_model_replacement_and_proceed_to_two_stage_architecture"
+  },
+  "decision": "reject_model_replacement_and_proceed_to_two_stage_architecture",
+  "selected_model_condition": null,
+  "selected_model": null,
+  "same_dataset_retest_authorized": false,
+  "fresh_integration_pilot_authorized": false,
+  "two_stage_architecture_development_authorized": true,
+  "single_call_model_replacement_continuation_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "runtime_shadow_authorized": false,
+  "fresh_holdout_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "cross_corpus_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "biological_equivalence_claim_authorized": false,
+  "downstream_dialogue_improvement_claim_authorized": false,
+  "general_model_superiority_claim_authorized": false
+}
