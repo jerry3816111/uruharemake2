@@ -1,0 +1,46 @@
+{
+  "schema": "uruha_reflection_causal_replay_preregistration_v2",
+  "evidence_status": "diagnostic_replay_preregistered_before_post_fix_run",
+  "research_question": "After repairing persistent Chroma candidates, do current reflection rules enter salience-ranked working memory, and does that produce a net improvement in later final replies?",
+  "dataset_path": "datasets/reflection_causal_pilot_v1.json",
+  "dataset_reuse_status": "exact_seen_v1_replay_not_an_independent_holdout",
+  "case_count": 12,
+  "conditions": [
+    "episodic_memory_only_control",
+    "same_episodic_memory_plus_current_reflection_treatment"
+  ],
+  "single_version_difference_from_v1": "persistent_memory_candidate_query_accepts_chroma_1_5_1_include_contract",
+  "fixed_model": "qwen2.5:7b",
+  "fixed_temperature": 0.0,
+  "fixed_seed": 271828,
+  "model_call_budget_max": 36,
+  "right_brain_mode": "template_mode_load_right_brain_model_false",
+  "future_turn_reflection_enabled": false,
+  "transient_session_state_cleared_before_future_turn": true,
+  "condition_order": "balanced_by_case_index",
+  "success_gates": {
+    "expected_rule_write_recall_min": 0.75,
+    "valid_rule_precision_min": 1.0,
+    "no_rule_specificity_min": 1.0,
+    "valid_rule_retrieval_rate_min": 0.8,
+    "treatment_behavior_delta_min": 0.15,
+    "paired_behavior_net_gain_min": 2,
+    "interaction_category_paired_gains_min": 1,
+    "paired_behavior_regressions_max": 0
+  },
+  "channel_repair_gate": {
+    "valid_rule_retrieval_rate_min": 0.8
+  },
+  "decision_rule": {
+    "all_reflection_gates_pass": "current_reflection_candidate_for_independent_holdout",
+    "channel_passes_but_reflection_fails": "working_memory_channel_repair_confirmed_but_reflection_redesign_required",
+    "channel_fails": "working_memory_channel_repair_not_confirmed"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_reflection_change_authorized_before_result": false,
+  "human_rating_required": false,
+  "paid_api_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "claim_boundary": "This replay can verify the repaired working-memory channel on seen V1 cases; it cannot establish reflection generalization or human likeness."
+}
