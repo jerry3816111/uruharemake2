@@ -1,0 +1,140 @@
+{
+  "schema": "uruha_consolidation_support_attribution_result_lock_v1",
+  "experiment_id": "consolidation_support_attribution_v1_development",
+  "created_at": "2026-07-18T01:15:00+09:00",
+  "decision": "keep_support_attribution_candidate_for_fresh_runtime_integration_pilot",
+  "runtime_integration_authorized": false,
+  "fresh_runtime_integration_pilot_authorized": true,
+  "preregistration": {
+    "commit": "cd4b97b2a9752a48aa8e52cbeea8a28930245e0f",
+    "merge_commit": "45b35fd43de9c3fe51f970fc92d67926b7b5aa3c",
+    "path": "configs/consolidation_support_attribution_v1_development_preregistration.json",
+    "sha256": "cf28989b038e00b2438062f7067fa78bfff1c5f3e4090c054b13089e8e8c99c3"
+  },
+  "formal_run": {
+    "runner_commit": "45b35fd43de9c3fe51f970fc92d67926b7b5aa3c",
+    "runner_branch": "main",
+    "started_at": "2026-07-18T01:13:13+09:00",
+    "completed_at": "2026-07-18T01:14:03+09:00",
+    "ollama_version": "0.31.1",
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "model_calls": 18,
+    "transport_attempts": 18,
+    "gold_fields_passed_to_model": false,
+    "runtime_memory_write_performed": false,
+    "inflight_request_at_completion": null
+  },
+  "results": {
+    "all_success_gates_passed": true,
+    "failed_success_gates": [],
+    "control": {
+      "exact_support_set": "0/18",
+      "evidence_precision": 0.1389,
+      "evidence_recall": 1.0,
+      "unsupported_empty": "0/6",
+      "false_source_count": 93,
+      "mean_case_f1": 0.2262
+    },
+    "candidate": {
+      "exact_support_set": "16/18",
+      "exact_support_set_accuracy": 0.8889,
+      "positive_complete_support": "11/12",
+      "unsupported_empty": "6/6",
+      "evidence_precision": 0.9333,
+      "evidence_recall": 0.9333,
+      "false_source_count": 1,
+      "missed_source_count": 1,
+      "mean_case_f1": 0.963,
+      "parse_success": "18/18",
+      "index_contract_success": "18/18",
+      "transport_errors": 0,
+      "median_wall_seconds": 2.611,
+      "warm_p95_wall_seconds": 2.6884
+    },
+    "newly_exact_count": 16,
+    "regression_count": 0,
+    "non_exact_case_ids": [
+      "csa1_jpn_sunday_meal_prep",
+      "csa1_cmn_no_analysis_policy"
+    ],
+    "error_localization": {
+      "csa1_jpn_sunday_meal_prep": "Expected repeated evidence events 1 and 5; candidate selected only event 5.",
+      "csa1_cmn_no_analysis_policy": "Expected the explicit future-policy event 1; candidate additionally selected the one-time application event 2."
+    },
+    "model_calls": 18,
+    "transport_attempts": 18
+  },
+  "unchanged_runtime_files": {
+    "uruha_brain_mac.py": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a",
+    "uruha_memory_runtime.py": "54829d7d0cb9f90c768630ded358923f25bb6ca6eaeda0b84362e634cdc055d0"
+  },
+  "regression_validation": {
+    "passed": true,
+    "test_count": 138,
+    "command": "TOKENIZERS_PARALLELISM=false Style-Bert-VITS2/venv/bin/python -m unittest -q test_memory_runtime_activation.py test_memory_runtime_helpers.py test_memory_persistent_candidate_integration.py test_memory_provenance_reread.py test_memory_evidence_ledger.py test_memory_cue_extractive.py test_memory_highlight_span_contract.py test_memory_utterance_attention.py test_typed_reflection_runtime_v3.py test_consolidation_source_provenance_v1_preregistration.py test_consolidation_source_provenance_v1_runtime.py test_consolidation_source_provenance_v1_result.py test_consolidation_source_pointer_v1_preregistration.py test_consolidation_source_pointer_v1_result.py test_consolidation_support_attribution_v1_preregistration.py test_consolidation_support_attribution_v1_harness.py test_consolidation_support_attribution_v1_result.py"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/consolidation_support_attribution_v1_development_preregistration.json",
+      "sha256": "cf28989b038e00b2438062f7067fa78bfff1c5f3e4090c054b13089e8e8c99c3"
+    },
+    "harness_lock": {
+      "path": "configs/consolidation_support_attribution_v1_harness_lock.json",
+      "sha256": "332382c515fe64ffbecec75ecfb253f79d8ea99c3f546a395394e8e63aee85b1"
+    },
+    "dataset": {
+      "path": "datasets/consolidation_support_attribution_v1_development.json",
+      "sha256": "45dfb42793aeb122c0dc2f0659db5486d8f35d55c35555c78304261a2c343ab9"
+    },
+    "core": {
+      "path": "consolidation_support_attribution_v1_core.py",
+      "sha256": "ddc24957f36a35cfbd81ea7eb072a67a4cd09ba3e50cd962e4387bbaec0b4254"
+    },
+    "runner": {
+      "path": "run_consolidation_support_attribution_v1_development.py",
+      "sha256": "382ca004cddf2d903fd748be3375e2504ee656e3c23bdbb377104df227b8d44c"
+    },
+    "analyzer": {
+      "path": "analyze_consolidation_support_attribution_v1_development.py",
+      "sha256": "bdbb703425d618f72ffc15395133b10e5c6f5a4dbc609486635b6ccaa2cec9db"
+    },
+    "preregistration_test_after_result": {
+      "path": "test_consolidation_support_attribution_v1_preregistration.py",
+      "sha256": "e121c7eb910107288a15cbe900fb45d5e80cb30dbe5eb33a31347c8306f64335"
+    },
+    "harness_test": {
+      "path": "test_consolidation_support_attribution_v1_harness.py",
+      "sha256": "19852b084e393a7ee9f023af249bdcff86b5d183798c11be8a8afb05e85eee25"
+    },
+    "result_test": {
+      "path": "test_consolidation_support_attribution_v1_result.py",
+      "sha256": "a808fcd209f8c3bb0a35e3e9f71457ad6be3d6aec0fab5d7f398b3e7b9f3955d"
+    },
+    "raw_result": {
+      "path": "reports/consolidation_support_attribution_v1_development_raw.json",
+      "sha256": "77e6f3c1fbc44ac5a8f31c8086b6f05ab35b5b371dc41115fd31eee983e2738a"
+    },
+    "analysis_json": {
+      "path": "reports/consolidation_support_attribution_v1_development_analysis.json",
+      "sha256": "aef29d89af66168dacb83fe70e0177243128aabbe253777a00544debdbe7efd8"
+    },
+    "analysis_markdown": {
+      "path": "reports/consolidation_support_attribution_v1_development_analysis.md",
+      "sha256": "f589000ce556e698e9166cb33fead50f9cbd68f7142e9ba173f87b64d601d0f0"
+    }
+  },
+  "evidence_limits": {
+    "development_mechanism_claim_authorized": true,
+    "fresh_runtime_integration_pilot_authorized_only": true,
+    "runtime_integration_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "long_term_recall_improvement_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "production_data_migration_authorized": false
+  },
+  "next_primary_task": "Preregister a fresh temporary-Chroma runtime integration pilot that runs actual consolidation, stores digest-verified per-derived-memory support IDs, rejects unsupported derived writes, and verifies atomic fallback without changing production data. Do not reuse or tune on these 18 development cases."
+}
