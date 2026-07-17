@@ -1,0 +1,1445 @@
+{
+  "schema": "uruha_consolidation_admission_cascade_analysis_v1",
+  "experiment_id": "consolidation_admission_cascade_v1_development",
+  "generated_at": "2026-07-17T23:28:27+09:00",
+  "evidence_status": "development_cascade_no_runtime_or_generalization_claim",
+  "preregistration_sha256": "2e59fd5325c14cd0910e6d5cd19fd33976e5d983bf217cff86f853e9cb002736",
+  "harness_lock_sha256": "b8a7cfc3b777b793d63835a011da77a21fe77df8f8f3ae1006155ba295e83b73",
+  "dataset_sha256": "5870b6e1268da942545352ec987293021262a35eeeb06e8dd86db5c1ba91739c",
+  "raw_result_sha256": "498a4d6a0f66c62a34be9c34e65960655625a26fb75a23553239515b07dbdda3",
+  "models": {
+    "stage1_write_gate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735
+    },
+    "direct_control_and_stage2_classifier": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "blob_bytes": 6594474711
+    }
+  },
+  "cascade_result": {
+    "case_count": 12,
+    "model_call_count": 30,
+    "transport_attempt_count": 30,
+    "control": {
+      "correct_count": 10,
+      "accuracy": 0.8333,
+      "class_metrics": {
+        "wisdom": {
+          "total": 4,
+          "correct_count": 2,
+          "accuracy": 0.5
+        },
+        "procedural": {
+          "total": 4,
+          "correct_count": 4,
+          "accuracy": 1.0
+        },
+        "none": {
+          "total": 4,
+          "correct_count": 4,
+          "accuracy": 1.0
+        }
+      },
+      "observed_target_counts": {
+        "none": 6,
+        "procedural": 4,
+        "wisdom": 2
+      },
+      "parse_success_count": 12,
+      "index_contract_success_count": 12,
+      "semantic_frame_exact_count": 10,
+      "evidence_grounded_count": 10,
+      "positive_evidence_grounded_count": 6,
+      "derived_applicability_success_count": 10,
+      "false_long_term_write_count": 0,
+      "false_long_term_write_case_ids": [],
+      "missed_long_term_write_count": 2,
+      "missed_long_term_write_case_ids": [
+        "cacv1_eng_wisdom_night_shift",
+        "cacv1_eng_wisdom_aisle_list"
+      ],
+      "rows": [
+        {
+          "id": "cacv1_eng_wisdom_night_shift",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "none",
+            "persistence_basis": "no_long_term_basis",
+            "evidence_user_turns": []
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_tn7v3u8w",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "none",
+                  "persistence_basis": "no_long_term_basis",
+                  "evidence_user_turns": []
+                }
+              }
+            }
+          ],
+          "wall_seconds": 10.199935,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 10198368542,
+          "load_duration_ns": 3868308750,
+          "prompt_eval_count": 735,
+          "eval_count": 60,
+          "expected_target": "wisdom",
+          "correct": false,
+          "semantic_frame_exact": false,
+          "evidence_grounded": false,
+          "derived_applicability_success": false
+        },
+        {
+          "id": "cacv1_eng_wisdom_aisle_list",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "repeated_pattern",
+          "evidence_user_turns": [
+            1,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "repeated_pattern",
+            "evidence_user_turns": [
+              1,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_u3zimblt",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "repeated_pattern",
+                  "evidence_user_turns": [
+                    1,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.798951,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5797578750,
+          "load_duration_ns": 199024042,
+          "prompt_eval_count": 730,
+          "eval_count": 66,
+          "expected_target": "wisdom",
+          "correct": false,
+          "semantic_frame_exact": false,
+          "evidence_grounded": true,
+          "derived_applicability_success": false
+        },
+        {
+          "id": "cacv1_eng_procedural_assumption_check",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_6op0p27c",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.821709,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5820419917,
+          "load_duration_ns": 200751250,
+          "prompt_eval_count": 731,
+          "eval_count": 66,
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_eng_none_single_alliteration",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "none",
+            "persistence_basis": "no_long_term_basis",
+            "evidence_user_turns": []
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_28la73ss",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "none",
+                  "persistence_basis": "no_long_term_basis",
+                  "evidence_user_turns": []
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.519185,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5517996333,
+          "load_duration_ns": 201190667,
+          "prompt_eval_count": 726,
+          "eval_count": 60,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_wisdom_public_transit",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "wisdom",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "wisdom",
+          "persistence_basis": "stable_trait",
+          "evidence_user_turns": [
+            3
+          ],
+          "raw_applies_to": "user_profile",
+          "compiled_applies_to": "user_profile",
+          "payload": {
+            "memory_kind": "wisdom",
+            "persistence_basis": "stable_trait",
+            "evidence_user_turns": [
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_pwsvi7nj",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "wisdom",
+                  "persistence_basis": "stable_trait",
+                  "evidence_user_turns": [
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.545991,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5544792958,
+          "load_duration_ns": 200583125,
+          "prompt_eval_count": 731,
+          "eval_count": 61,
+          "expected_target": "wisdom",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": false,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_procedural_estimate",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_lc81h8ke",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.959158,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5958108750,
+          "load_duration_ns": 199744750,
+          "prompt_eval_count": 739,
+          "eval_count": 66,
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_procedural_decision_log",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_nfd6s5v2",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.839868,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5838203625,
+          "load_duration_ns": 197877000,
+          "prompt_eval_count": 737,
+          "eval_count": 66,
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_none_afternoon_print",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "none",
+            "persistence_basis": "no_long_term_basis",
+            "evidence_user_turns": []
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_n4ejb5es",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "none",
+                  "persistence_basis": "no_long_term_basis",
+                  "evidence_user_turns": []
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.512041,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5510787583,
+          "load_duration_ns": 201302042,
+          "prompt_eval_count": 730,
+          "eval_count": 60,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_wisdom_laundry_hotel",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "wisdom",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "wisdom",
+          "persistence_basis": "repeated_pattern",
+          "evidence_user_turns": [
+            1,
+            3
+          ],
+          "raw_applies_to": "user_profile",
+          "compiled_applies_to": "user_profile",
+          "payload": {
+            "memory_kind": "wisdom",
+            "persistence_basis": "repeated_pattern",
+            "evidence_user_turns": [
+              1,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_s5ky87fn",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "wisdom",
+                  "persistence_basis": "repeated_pattern",
+                  "evidence_user_turns": [
+                    1,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.768551,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5766805291,
+          "load_duration_ns": 202088625,
+          "prompt_eval_count": 733,
+          "eval_count": 65,
+          "expected_target": "wisdom",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_procedural_version_summary",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_ffkvt733",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.658277,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5656544041,
+          "load_duration_ns": 201381125,
+          "prompt_eval_count": 732,
+          "eval_count": 63,
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_none_colleague_transfer",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "none",
+            "persistence_basis": "no_long_term_basis",
+            "evidence_user_turns": []
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_qvcloove",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "none",
+                  "persistence_basis": "no_long_term_basis",
+                  "evidence_user_turns": []
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.531811,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5530724667,
+          "load_duration_ns": 201507125,
+          "prompt_eval_count": 731,
+          "eval_count": 60,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_none_possible_relocation",
+          "condition": "direct_qwen35_9b_control",
+          "stage": "control",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "none",
+            "persistence_basis": "no_long_term_basis",
+            "evidence_user_turns": []
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_b1gw864n",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "none",
+                  "persistence_basis": "no_long_term_basis",
+                  "evidence_user_turns": []
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.517663,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "total_duration_ns": 5516695916,
+          "load_duration_ns": 199131666,
+          "prompt_eval_count": 720,
+          "eval_count": 60,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        }
+      ],
+      "mean_wall_seconds": 6.0561,
+      "median_wall_seconds": 5.7134,
+      "warm_p95_wall_seconds": 5.9592,
+      "parse_success_rate": 1.0,
+      "index_contract_success_rate": 1.0,
+      "semantic_frame_exact_rate": 0.8333,
+      "evidence_grounded_rate": 0.8333
+    },
+    "candidate": {
+      "correct_count": 9,
+      "accuracy": 0.75,
+      "class_metrics": {
+        "wisdom": {
+          "total": 4,
+          "correct_count": 1,
+          "accuracy": 0.25
+        },
+        "procedural": {
+          "total": 4,
+          "correct_count": 4,
+          "accuracy": 1.0
+        },
+        "none": {
+          "total": 4,
+          "correct_count": 4,
+          "accuracy": 1.0
+        }
+      },
+      "observed_target_counts": {
+        "none": 7,
+        "procedural": 4,
+        "wisdom": 1
+      },
+      "parse_success_count": 12,
+      "index_contract_success_count": 12,
+      "semantic_frame_exact_count": 9,
+      "evidence_grounded_count": 10,
+      "positive_evidence_grounded_count": 6,
+      "derived_applicability_success_count": 9,
+      "false_long_term_write_count": 0,
+      "false_long_term_write_case_ids": [],
+      "missed_long_term_write_count": 3,
+      "missed_long_term_write_case_ids": [
+        "cacv1_eng_wisdom_night_shift",
+        "cacv1_eng_wisdom_aisle_list",
+        "cacv1_jpn_wisdom_public_transit"
+      ],
+      "rows": [
+        {
+          "id": "cacv1_eng_wisdom_night_shift",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 5.820021,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "wisdom",
+          "correct": false,
+          "semantic_frame_exact": false,
+          "evidence_grounded": false,
+          "derived_applicability_success": false
+        },
+        {
+          "id": "cacv1_eng_wisdom_aisle_list",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "repeated_pattern",
+          "evidence_user_turns": [
+            1,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "none",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "repeated_pattern",
+            "evidence_user_turns": [
+              1,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_bq47dv12",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "repeated_pattern",
+                  "evidence_user_turns": [
+                    1,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.317664,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5833373625,
+          "load_duration_ns": 201546584,
+          "prompt_eval_count": 730,
+          "eval_count": 66,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "wisdom",
+          "correct": false,
+          "semantic_frame_exact": false,
+          "evidence_grounded": true,
+          "derived_applicability_success": false
+        },
+        {
+          "id": "cacv1_eng_procedural_assumption_check",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_nnb9sqeh",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.343263,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5817596834,
+          "load_duration_ns": 199520750,
+          "prompt_eval_count": 731,
+          "eval_count": 66,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_eng_none_single_alliteration",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 2.504291,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_wisdom_public_transit",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 2.521284,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "wisdom",
+          "correct": false,
+          "semantic_frame_exact": false,
+          "evidence_grounded": false,
+          "derived_applicability_success": false
+        },
+        {
+          "id": "cacv1_jpn_procedural_estimate",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_qu3ctj1j",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.498094,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5939889083,
+          "load_duration_ns": 201760417,
+          "prompt_eval_count": 739,
+          "eval_count": 66,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_procedural_decision_log",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2,
+            3
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_a810lbv5",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.426413,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5874952625,
+          "load_duration_ns": 199817166,
+          "prompt_eval_count": 737,
+          "eval_count": 66,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_jpn_none_afternoon_print",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 2.506241,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_wisdom_laundry_hotel",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "wisdom",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "wisdom",
+          "persistence_basis": "repeated_pattern",
+          "evidence_user_turns": [
+            1,
+            3
+          ],
+          "raw_applies_to": "user_profile",
+          "compiled_applies_to": "user_profile",
+          "payload": {
+            "memory_kind": "wisdom",
+            "persistence_basis": "repeated_pattern",
+            "evidence_user_turns": [
+              1,
+              3
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_h4pm3rxl",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "wisdom",
+                  "persistence_basis": "repeated_pattern",
+                  "evidence_user_turns": [
+                    1,
+                    3
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.262926,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5756605417,
+          "load_duration_ns": 200830792,
+          "prompt_eval_count": 733,
+          "eval_count": 65,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "wisdom",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_procedural_version_summary",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "stage": "stage2",
+          "observed_target": "procedural",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "procedural",
+          "persistence_basis": "explicit_future_policy",
+          "evidence_user_turns": [
+            2
+          ],
+          "raw_applies_to": "assistant_policy",
+          "compiled_applies_to": "assistant_policy",
+          "payload": {
+            "memory_kind": "procedural",
+            "persistence_basis": "explicit_future_policy",
+            "evidence_user_turns": [
+              2
+            ]
+          },
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_nwbz6l34",
+              "function": {
+                "index": 0,
+                "name": "classify_memory_basis",
+                "arguments": {
+                  "memory_kind": "procedural",
+                  "persistence_basis": "explicit_future_policy",
+                  "evidence_user_turns": [
+                    2
+                  ]
+                }
+              }
+            }
+          ],
+          "wall_seconds": 8.145238,
+          "transport_attempts": 2,
+          "transport_error": null,
+          "total_duration_ns": 5650825125,
+          "load_duration_ns": 198468708,
+          "prompt_eval_count": 732,
+          "eval_count": 63,
+          "final_source": "stage2_qwen35_9b",
+          "expected_target": "procedural",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_none_colleague_transfer",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 2.489881,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        },
+        {
+          "id": "cacv1_cmn_none_possible_relocation",
+          "condition": "qwen35_4b_to_9b_cascade",
+          "final_source": "stage1_compiled_none",
+          "observed_target": "none",
+          "parse_success": true,
+          "index_contract_success": true,
+          "parse_error": null,
+          "memory_kind": "none",
+          "persistence_basis": "no_long_term_basis",
+          "evidence_user_turns": [],
+          "raw_applies_to": "none",
+          "compiled_applies_to": "none",
+          "payload": null,
+          "raw_content": "",
+          "raw_tool_calls": [],
+          "wall_seconds": 2.491546,
+          "transport_attempts": 1,
+          "transport_error": null,
+          "expected_target": "none",
+          "correct": true,
+          "semantic_frame_exact": true,
+          "evidence_grounded": true,
+          "derived_applicability_success": true
+        }
+      ],
+      "mean_wall_seconds": 5.6939,
+      "median_wall_seconds": 6.9826,
+      "warm_p95_wall_seconds": 8.4981,
+      "parse_success_rate": 1.0,
+      "index_contract_success_rate": 1.0,
+      "semantic_frame_exact_rate": 0.75,
+      "evidence_grounded_rate": 0.8333
+    },
+    "stage1": {
+      "parse_success_count": 12,
+      "write_count": 6,
+      "write_case_ids": [
+        "cacv1_cmn_procedural_version_summary",
+        "cacv1_cmn_wisdom_laundry_hotel",
+        "cacv1_eng_procedural_assumption_check",
+        "cacv1_eng_wisdom_aisle_list",
+        "cacv1_jpn_procedural_decision_log",
+        "cacv1_jpn_procedural_estimate"
+      ],
+      "positive_write_count": 6,
+      "false_write_count": 0,
+      "false_write_case_ids": [],
+      "missed_positive_count": 2,
+      "missed_positive_case_ids": [
+        "cacv1_eng_wisdom_night_shift",
+        "cacv1_jpn_wisdom_public_transit"
+      ],
+      "mean_wall_seconds": 2.7872,
+      "median_wall_seconds": 2.5056,
+      "warm_p95_wall_seconds": 2.557
+    },
+    "stage2": {
+      "call_count": 6,
+      "parse_success_count": 6,
+      "parse_success_rate": 1.0,
+      "index_contract_success_count": 6,
+      "index_contract_success_rate": 1.0,
+      "mean_wall_seconds": 5.8134,
+      "median_wall_seconds": 5.8266,
+      "warm_p95_wall_seconds": 5.9411
+    },
+    "paired_vs_control": {
+      "accuracy_delta_vs_control": -0.0833,
+      "net_correct_gain_vs_control": -1,
+      "newly_correct_count": 0,
+      "newly_correct_case_ids": [],
+      "regression_count": 1,
+      "regression_case_ids": [
+        "cacv1_jpn_wisdom_public_transit"
+      ],
+      "matched_rows": [
+        {
+          "id": "cacv1_eng_wisdom_night_shift",
+          "expected_target": "wisdom",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": false,
+          "candidate_correct": false,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": false,
+          "candidate_evidence_grounded": false
+        },
+        {
+          "id": "cacv1_eng_wisdom_aisle_list",
+          "expected_target": "wisdom",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": false,
+          "candidate_correct": false,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": false,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_eng_procedural_assumption_check",
+          "expected_target": "procedural",
+          "control_target": "procedural",
+          "candidate_target": "procedural",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_eng_none_single_alliteration",
+          "expected_target": "none",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_jpn_wisdom_public_transit",
+          "expected_target": "wisdom",
+          "control_target": "wisdom",
+          "candidate_target": "none",
+          "control_correct": true,
+          "candidate_correct": false,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": false,
+          "candidate_evidence_grounded": false
+        },
+        {
+          "id": "cacv1_jpn_procedural_estimate",
+          "expected_target": "procedural",
+          "control_target": "procedural",
+          "candidate_target": "procedural",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_jpn_procedural_decision_log",
+          "expected_target": "procedural",
+          "control_target": "procedural",
+          "candidate_target": "procedural",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_jpn_none_afternoon_print",
+          "expected_target": "none",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_cmn_wisdom_laundry_hotel",
+          "expected_target": "wisdom",
+          "control_target": "wisdom",
+          "candidate_target": "wisdom",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_cmn_procedural_version_summary",
+          "expected_target": "procedural",
+          "control_target": "procedural",
+          "candidate_target": "procedural",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage2_qwen35_9b",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_cmn_none_colleague_transfer",
+          "expected_target": "none",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        },
+        {
+          "id": "cacv1_cmn_none_possible_relocation",
+          "expected_target": "none",
+          "control_target": "none",
+          "candidate_target": "none",
+          "control_correct": true,
+          "candidate_correct": true,
+          "candidate_final_source": "stage1_compiled_none",
+          "candidate_semantic_frame_exact": true,
+          "candidate_evidence_grounded": true
+        }
+      ]
+    },
+    "gate_checks": {
+      "candidate_correct_count_min": false,
+      "candidate_accuracy_min": false,
+      "candidate_wisdom_correct_min": false,
+      "candidate_procedural_correct_min": true,
+      "candidate_none_correct_exact": true,
+      "stage1_parse_success_count_exact": true,
+      "stage1_positive_write_count_exact": false,
+      "stage1_false_write_count_max": true,
+      "stage2_parse_success_rate_min": true,
+      "stage2_index_contract_success_rate_min": true,
+      "candidate_semantic_frame_exact_count_min": false,
+      "candidate_evidence_grounded_count_min": false,
+      "candidate_positive_evidence_grounded_count_min": false,
+      "newly_correct_vs_control_min": false,
+      "regression_vs_control_max": false,
+      "net_correct_gain_vs_control_min": false,
+      "candidate_false_long_term_write_count_exact": true,
+      "candidate_missed_long_term_write_count_max": false,
+      "stage2_call_count_max": true,
+      "stage1_median_wall_seconds_max": true,
+      "stage1_warm_p95_wall_seconds_max": true,
+      "stage2_median_wall_seconds_max": true,
+      "stage2_warm_p95_wall_seconds_max": true,
+      "candidate_mean_session_wall_seconds_max": true,
+      "candidate_median_session_wall_seconds_max": true,
+      "candidate_warm_p95_session_wall_seconds_max": true,
+      "control_median_wall_seconds_max": true,
+      "control_warm_p95_wall_seconds_max": true
+    },
+    "run_checks": {
+      "control_calls_exact": true,
+      "stage1_calls_exact": true,
+      "stage2_calls_equal_compiled_stage1_writes": true,
+      "total_model_calls_equal": true,
+      "total_model_calls_max": true,
+      "transport_attempts_equal_model_calls": true
+    },
+    "all_gates_pass": false,
+    "decision": "fail_stop_qwen35_4b_to_9b_cascade"
+  },
+  "decision": "fail_stop_qwen35_4b_to_9b_cascade",
+  "same_dataset_retest_authorized": false,
+  "runtime_adapter_development_authorized": false,
+  "fresh_shadow_pilot_preregistration_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "runtime_shadow_authorized": false,
+  "fresh_holdout_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "cross_corpus_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "biological_equivalence_claim_authorized": false,
+  "downstream_dialogue_improvement_claim_authorized": false
+}
