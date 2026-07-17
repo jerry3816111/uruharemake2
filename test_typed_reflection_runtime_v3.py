@@ -1,8 +1,10 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import uruha_reflection_runtime as reflection
 import uruha_brain_mac as brain_module
@@ -42,6 +44,19 @@ class ExplodingLogicClient:
 
 
 class TypedReflectionHelpersV3Test(unittest.TestCase):
+    def test_failed_v4_runtime_is_opt_in_not_default(self):
+        self.assertFalse(reflection.typed_reflection_runtime_enabled({}))
+        self.assertFalse(
+            reflection.typed_reflection_runtime_enabled(
+                {"URUHA_ENABLE_TYPED_REFLECTION": "0"}
+            )
+        )
+        self.assertTrue(
+            reflection.typed_reflection_runtime_enabled(
+                {"URUHA_ENABLE_TYPED_REFLECTION": "true"}
+            )
+        )
+
     def test_frozen_development_types_are_classified_before_model_use(self):
         payload = json.loads(DATASET.read_text(encoding="utf-8"))
         observed = {
@@ -281,6 +296,37 @@ class TypedReflectionPlannerV3Test(unittest.TestCase):
             planner._procedural_fit_score(direct, memory),
             planner._procedural_fit_score(indirect, memory),
         )
+
+
+class TypedReflectionProductionGateTest(unittest.TestCase):
+    def test_default_turn_path_does_not_call_failed_reflection_writer(self):
+        memory = SimpleNamespace(
+            reflect_experience=lambda *_args, **_kwargs: self.fail(
+                "disabled runtime must not call reflection writer"
+            )
+        )
+        brain = brain_module.UruhaBrainV4_Mac.__new__(brain_module.UruhaBrainV4_Mac)
+        brain.memory = memory
+        brain.client_logic = object()
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertIsNone(
+                brain._write_typed_reflection_if_enabled("input", "reply", {})
+            )
+
+    def test_explicit_research_opt_in_keeps_shadow_writer_available(self):
+        calls = []
+        memory = SimpleNamespace(
+            reflect_experience=lambda *args: calls.append(args) or {"status": "stored"}
+        )
+        brain = brain_module.UruhaBrainV4_Mac.__new__(brain_module.UruhaBrainV4_Mac)
+        brain.memory = memory
+        brain.client_logic = object()
+        with patch.dict(
+            os.environ, {"URUHA_ENABLE_TYPED_REFLECTION": "1"}, clear=True
+        ):
+            result = brain._write_typed_reflection_if_enabled("input", "reply", {})
+        self.assertEqual(result, {"status": "stored"})
+        self.assertEqual(len(calls), 1)
 
 
 if __name__ == "__main__":
