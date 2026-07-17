@@ -1,0 +1,1931 @@
+{
+  "schema": "uruha_consolidation_support_equivalence_pool_v2",
+  "experiment_id": "consolidation_support_equivalence_v2_construction",
+  "created_at": "2026-07-18T04:00:00+09:00",
+  "provenance": {
+    "author": "Codex",
+    "source_type": "controlled_multilingual",
+    "model_assistance_used": true,
+    "official_dataset_items": false,
+    "official_labels": false,
+    "human_label_validation": false,
+    "candidate_model_output_used": false,
+    "consumed_case_reuse": false
+  },
+  "cases": [
+    {
+      "id": "cse2_eng_library_print",
+      "language": "eng",
+      "scenario_family": "weekend_library_reading",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "I returned the library books on Saturday morning.",
+          "assistant": "The books went back on Saturday morning."
+        },
+        {
+          "index": 2,
+          "user": "For long articles, I prefer reading a printed copy.",
+          "assistant": "Printed copies work better for your long reads."
+        },
+        {
+          "index": 3,
+          "user": "When an article is lengthy, paper is more comfortable for me than a screen.",
+          "assistant": "For lengthy articles, you are more comfortable on paper."
+        },
+        {
+          "index": 4,
+          "user": "When helping me choose library material, first ask how much time I have.",
+          "assistant": "I should begin by checking your available time."
+        },
+        {
+          "index": 5,
+          "user": "After that, compare the book length before recommending one.",
+          "assistant": "Then I should compare length before recommending."
+        },
+        {
+          "index": 6,
+          "user": "My coworker listens to audiobooks during lunch.",
+          "assistant": "That is your coworker's listening habit."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user returned the library books on Saturday morning.",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "The user prefers paper over a screen for long articles.",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "When helping choose library material, first ask how much time the user has and then compare book length before recommending.",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user returned the library books on Saturday morning.",
+        "wisdom_rule": "The user prefers paper over a screen for long articles.",
+        "procedural_rule": "When helping choose library material, first ask how much time the user has and then compare book length before recommending.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_eng_evening_tea",
+      "language": "eng",
+      "scenario_family": "evening_tea_storage",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "Until last month, I kept black tea on the kitchen shelf.",
+          "assistant": "Black tea used to be on that shelf."
+        },
+        {
+          "index": 2,
+          "user": "This week I replaced it with caffeine-free barley tea, and that is what I keep there now.",
+          "assistant": "Barley tea is the current drink on the shelf."
+        },
+        {
+          "index": 3,
+          "user": "My neighbor owns a silver espresso machine.",
+          "assistant": "The espresso machine belongs to your neighbor."
+        },
+        {
+          "index": 4,
+          "user": "I might buy a coffee grinder someday.",
+          "assistant": "A grinder is only a possible future purchase."
+        },
+        {
+          "index": 5,
+          "user": "When I ask for an evening drink, check whether I want caffeine before suggesting one.",
+          "assistant": "I should check your caffeine preference first."
+        },
+        {
+          "index": 6,
+          "user": "The grocery store closes earlier on Sundays.",
+          "assistant": "Sunday shopping would need to be earlier."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user currently keeps caffeine-free barley tea on the kitchen shelf.",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              2
+            ]
+          ],
+          "support_universe": [
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "The user owns a silver espresso machine.",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "procedural": {
+          "text": "For evening drink suggestions, check whether the user wants caffeine first.",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              5
+            ]
+          ],
+          "support_universe": [
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user currently keeps caffeine-free barley tea on the kitchen shelf.",
+        "wisdom_rule": "The user owns a silver espresso machine.",
+        "procedural_rule": "For evening drink suggestions, check whether the user wants caffeine first.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_eng_swimming_class",
+      "language": "eng",
+      "scenario_family": "community_swimming_class",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "On Wednesday evening I attended the community pool's lap-swimming class.",
+          "assistant": "You attended the Wednesday lap-swimming class."
+        },
+        {
+          "index": 2,
+          "user": "That Wednesday class was the lap-swimming session I went to this week.",
+          "assistant": "You are referring to the same Wednesday session."
+        },
+        {
+          "index": 3,
+          "user": "At pools, I prefer a lane near the wall.",
+          "assistant": "A wall-side lane is your preference."
+        },
+        {
+          "index": 4,
+          "user": "I also like sessions with fewer than eight swimmers.",
+          "assistant": "You prefer sessions with a smaller group."
+        },
+        {
+          "index": 5,
+          "user": "For future pool suggestions, prioritize travel time over crowd size.",
+          "assistant": "Travel time should have been the first priority."
+        },
+        {
+          "index": 6,
+          "user": "Actually, from now on prioritize crowd size over travel time when suggesting a pool.",
+          "assistant": "Crowd size is now the first priority."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user attended a community lap-swimming class on Wednesday evening.",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "The user prefers a lane near the wall and swimming sessions with fewer than eight people.",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              3,
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3,
+              4
+            ]
+          ],
+          "support_universe": [
+            3,
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "For future pool suggestions, prioritize crowd size over travel time.",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              6
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              6
+            ]
+          ],
+          "support_universe": [
+            6
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user attended a community lap-swimming class on Wednesday evening.",
+        "wisdom_rule": "The user prefers a lane near the wall and swimming sessions with fewer than eight people.",
+        "procedural_rule": "For future pool suggestions, prioritize crowd size over travel time.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_eng_morning_market",
+      "language": "eng",
+      "scenario_family": "morning_produce_market",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "I am considering volunteering at the produce market next month.",
+          "assistant": "Volunteering is still only under consideration."
+        },
+        {
+          "index": 2,
+          "user": "My sister volunteered at that market last Sunday.",
+          "assistant": "Your sister was the person who volunteered."
+        },
+        {
+          "index": 3,
+          "user": "I prefer markets that open before nine in the morning.",
+          "assistant": "Early-opening markets suit you better."
+        },
+        {
+          "index": 4,
+          "user": "When comparing produce boxes, show the total price before individual item prices.",
+          "assistant": "The total price should come first."
+        },
+        {
+          "index": 5,
+          "user": "For future produce-box comparisons, please put the total cost first.",
+          "assistant": "I should lead with the total cost."
+        },
+        {
+          "index": 6,
+          "user": "The forecast says it may rain at noon.",
+          "assistant": "The rain is expected around noon."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user volunteered at the produce market last Sunday.",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "wisdom": {
+          "text": "The user prefers markets that open before nine.",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3
+            ]
+          ],
+          "support_universe": [
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "For produce-box comparisons, present the total cost before individual item prices.",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4
+            ],
+            [
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user volunteered at the produce market last Sunday.",
+        "wisdom_rule": "The user prefers markets that open before nine.",
+        "procedural_rule": "For produce-box comparisons, present the total cost before individual item prices.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_eng_scale_practice",
+      "language": "eng",
+      "scenario_family": "piano_scale_practice",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "On Monday I practiced piano scales for twenty minutes.",
+          "assistant": "Monday's scale practice lasted twenty minutes."
+        },
+        {
+          "index": 2,
+          "user": "On Thursday I practiced the same scales for thirty minutes.",
+          "assistant": "Thursday's practice lasted thirty minutes."
+        },
+        {
+          "index": 3,
+          "user": "I used to prefer a loud metronome while practicing.",
+          "assistant": "A loud metronome was your earlier preference."
+        },
+        {
+          "index": 4,
+          "user": "Now I prefer the metronome quiet enough that I can hear the piano clearly.",
+          "assistant": "Your current preference is a quieter metronome."
+        },
+        {
+          "index": 5,
+          "user": "Today, just tell me whether this tempo is too fast.",
+          "assistant": "For today you want a direct tempo judgment."
+        },
+        {
+          "index": 6,
+          "user": "You suggested that I record every practice session.",
+          "assistant": "That was my suggestion, not your standing instruction."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user practiced piano scales on Monday for twenty minutes and on Thursday for thirty minutes.",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              1,
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "The user currently prefers a quiet metronome while practicing piano.",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              4
+            ]
+          ],
+          "support_universe": [
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "Always require the user to record every piano practice session.",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user practiced piano scales on Monday for twenty minutes and on Thursday for thirty minutes.",
+        "wisdom_rule": "The user currently prefers a quiet metronome while practicing piano.",
+        "procedural_rule": "Always require the user to record every piano practice session.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_eng_rail_pass",
+      "language": "eng",
+      "scenario_family": "monthly_rail_commute",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "Yesterday I renewed my monthly rail pass.",
+          "assistant": "Your rail pass was renewed yesterday."
+        },
+        {
+          "index": 2,
+          "user": "On trains, I prefer an aisle seat.",
+          "assistant": "An aisle seat is your train preference."
+        },
+        {
+          "index": 3,
+          "user": "Aisle seats are more comfortable for me than window seats.",
+          "assistant": "You find aisle seats more comfortable."
+        },
+        {
+          "index": 4,
+          "user": "When planning my commute, first ask whether I am carrying large luggage.",
+          "assistant": "I should check for large luggage first."
+        },
+        {
+          "index": 5,
+          "user": "Then compare the number of transfers before choosing a route.",
+          "assistant": "Transfer count should be compared after that."
+        },
+        {
+          "index": 6,
+          "user": "My friend cycles to work when the weather is clear.",
+          "assistant": "Cycling is your friend's commute."
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "The user renewed the monthly rail pass yesterday.",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "The user prefers aisle seats to window seats on trains.",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "When planning the user's commute, first ask about large luggage and then compare the number of transfers.",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "The user renewed the monthly rail pass yesterday.",
+        "wisdom_rule": "The user prefers aisle seats to window seats on trains.",
+        "procedural_rule": "When planning the user's commute, first ask about large luggage and then compare the number of transfers.",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_blanket_laundry",
+      "language": "jpn",
+      "scenario_family": "coin_laundry_blanket",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "土曜日の朝にコインランドリーで毛布を洗った。",
+          "assistant": "土曜の朝に毛布を洗ったんだね。"
+        },
+        {
+          "index": 2,
+          "user": "洗濯洗剤は香りのないものが好き。",
+          "assistant": "無香料の洗剤が好みなんだね。"
+        },
+        {
+          "index": 3,
+          "user": "香り付きより無香料の洗剤のほうが落ち着く。",
+          "assistant": "香りのない洗剤のほうが合うんだね。"
+        },
+        {
+          "index": 4,
+          "user": "毛布の洗い方を相談するときは、最初に素材を聞いてほしい。",
+          "assistant": "まず毛布の素材を確認するよ。"
+        },
+        {
+          "index": 5,
+          "user": "そのあと乾燥機の温度を確認してから方法を勧めて。",
+          "assistant": "次に乾燥温度を確かめてから提案するよ。"
+        },
+        {
+          "index": 6,
+          "user": "同僚は家でカーテンを手洗いしている。",
+          "assistant": "それは同僚の洗い方だね。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは土曜日の朝にコインランドリーで毛布を洗った。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "ユーザーは香り付きより無香料の洗剤を好む。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "毛布の洗い方を提案するときは、最初に素材を聞き、そのあと乾燥機の温度を確認する。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは土曜日の朝にコインランドリーで毛布を洗った。",
+        "wisdom_rule": "ユーザーは香り付きより無香料の洗剤を好む。",
+        "procedural_rule": "毛布の洗い方を提案するときは、最初に素材を聞き、そのあと乾燥機の温度を確認する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_rice_container",
+      "language": "jpn",
+      "scenario_family": "rice_storage_update",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "先月までは米を買った袋のまま置いていた。",
+          "assistant": "以前は袋のまま保管していたんだね。"
+        },
+        {
+          "index": 2,
+          "user": "今週から密閉容器に移して、今はそこに米を入れている。",
+          "assistant": "現在は密閉容器で保管しているんだね。"
+        },
+        {
+          "index": 3,
+          "user": "隣の人は高価な炊飯器を持っている。",
+          "assistant": "その炊飯器は隣の人のものだね。"
+        },
+        {
+          "index": 4,
+          "user": "いつか土鍋を買うかもしれない。",
+          "assistant": "土鍋はまだ将来の可能性だね。"
+        },
+        {
+          "index": 5,
+          "user": "献立を提案するときは、先に何人分か確認してほしい。",
+          "assistant": "提案前に人数を確認するよ。"
+        },
+        {
+          "index": 6,
+          "user": "近所の米屋は水曜日が定休日だ。",
+          "assistant": "水曜にはその店を使えないね。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは現在、米を密閉容器に入れて保管している。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              2
+            ]
+          ],
+          "support_universe": [
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "ユーザーは高価な炊飯器を所有している。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "procedural": {
+          "text": "献立を提案する前に、ユーザーが必要とする人数分を確認する。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              5
+            ]
+          ],
+          "support_universe": [
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは現在、米を密閉容器に入れて保管している。",
+        "wisdom_rule": "ユーザーは高価な炊飯器を所有している。",
+        "procedural_rule": "献立を提案する前に、ユーザーが必要とする人数分を確認する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_museum_visit",
+      "language": "jpn",
+      "scenario_family": "weekday_museum_visit",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "火曜日の午後に市立美術館の写真展を見に行った。",
+          "assistant": "火曜の午後に写真展へ行ったんだね。"
+        },
+        {
+          "index": 2,
+          "user": "今週見に行った写真展は、火曜日の市立美術館の展示だよ。",
+          "assistant": "同じ火曜日の写真展について話しているんだね。"
+        },
+        {
+          "index": 3,
+          "user": "美術館は静かな平日に行くのが好き。",
+          "assistant": "静かな平日の鑑賞が好みなんだね。"
+        },
+        {
+          "index": 4,
+          "user": "作品を見るときは音声ガイドがある展示を好む。",
+          "assistant": "音声ガイド付きの展示も好みなんだね。"
+        },
+        {
+          "index": 5,
+          "user": "美術館を勧めるときは入場料を最優先にして。",
+          "assistant": "以前は入場料を最優先にする指示だったね。"
+        },
+        {
+          "index": 6,
+          "user": "やっぱり今後は、入場料より駅からの行きやすさを先に見て。",
+          "assistant": "今後は交通の便利さを優先するよ。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは火曜日の午後に市立美術館の写真展を見に行った。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "ユーザーは静かな平日に、音声ガイドのある展示を見ることを好む。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              3,
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3,
+              4
+            ]
+          ],
+          "support_universe": [
+            3,
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "今後美術館を勧めるときは、入場料より駅からの行きやすさを優先する。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              6
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              6
+            ]
+          ],
+          "support_universe": [
+            6
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは火曜日の午後に市立美術館の写真展を見に行った。",
+        "wisdom_rule": "ユーザーは静かな平日に、音声ガイドのある展示を見ることを好む。",
+        "procedural_rule": "今後美術館を勧めるときは、入場料より駅からの行きやすさを優先する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_riverside_run",
+      "language": "jpn",
+      "scenario_family": "riverside_running_plan",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "来月の日曜日に川沿いを走ろうか考えている。",
+          "assistant": "まだ来月の計画を考えている段階だね。"
+        },
+        {
+          "index": 2,
+          "user": "友達は先週の日曜日に川沿いを十キロ走った。",
+          "assistant": "実際に走ったのは友達だね。"
+        },
+        {
+          "index": 3,
+          "user": "走るなら車の少ない川沿いの道が好き。",
+          "assistant": "川沿いの静かな道が好みなんだね。"
+        },
+        {
+          "index": 4,
+          "user": "ランニングコースを選ぶときは、先に天気を確認して。",
+          "assistant": "まず天気を確認するよ。"
+        },
+        {
+          "index": 5,
+          "user": "今後コースを比べる前には、天気予報を最初に見てほしい。",
+          "assistant": "比較前に天気予報を先に見るよ。"
+        },
+        {
+          "index": 6,
+          "user": "駅前のスポーツ店は夜八時まで開いている。",
+          "assistant": "夜八時までは買い物できるね。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは先週の日曜日に川沿いを十キロ走った。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "wisdom": {
+          "text": "ユーザーは車の少ない川沿いのランニングコースを好む。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3
+            ]
+          ],
+          "support_universe": [
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "ランニングコースを選ぶ前に、最初に天気予報を確認する。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4
+            ],
+            [
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは先週の日曜日に川沿いを十キロ走った。",
+        "wisdom_rule": "ユーザーは車の少ない川沿いのランニングコースを好む。",
+        "procedural_rule": "ランニングコースを選ぶ前に、最初に天気予報を確認する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_curry_recipe",
+      "language": "jpn",
+      "scenario_family": "home_curry_practice",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "月曜日に野菜カレーを作った。",
+          "assistant": "月曜に野菜カレーを作ったんだね。"
+        },
+        {
+          "index": 2,
+          "user": "木曜日には同じレシピで豆カレーを作った。",
+          "assistant": "木曜は同じレシピの豆カレーだったんだね。"
+        },
+        {
+          "index": 3,
+          "user": "以前はかなり辛いカレーが好きだった。",
+          "assistant": "前は辛い味が好みだったんだね。"
+        },
+        {
+          "index": 4,
+          "user": "最近は胃のために、辛くないカレーのほうが好き。",
+          "assistant": "今は辛さを抑えたカレーが好みなんだね。"
+        },
+        {
+          "index": 5,
+          "user": "今日は理由を説明せず、塩を足すかだけ答えて。",
+          "assistant": "今日は短い回答だけでいいんだね。"
+        },
+        {
+          "index": 6,
+          "user": "さっき君は毎回材料を写真に撮るといいと言っていた。",
+          "assistant": "それは私からの提案だったね。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは月曜日に野菜カレーを作り、木曜日に同じレシピで豆カレーを作った。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              1,
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "ユーザーは現在、辛くないカレーを好む。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              4
+            ]
+          ],
+          "support_universe": [
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "料理をするたびに、必ず材料の写真を撮るようユーザーへ要求する。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは月曜日に野菜カレーを作り、木曜日に同じレシピで豆カレーを作った。",
+        "wisdom_rule": "ユーザーは現在、辛くないカレーを好む。",
+        "procedural_rule": "料理をするたびに、必ず材料の写真を撮るようユーザーへ要求する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_jpn_camera_lens",
+      "language": "jpn",
+      "scenario_family": "camera_lens_care",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "昨日、カメラの標準レンズを掃除した。",
+          "assistant": "昨日レンズを掃除したんだね。"
+        },
+        {
+          "index": 2,
+          "user": "写真は自然光で撮るのが好き。",
+          "assistant": "自然光での撮影が好みなんだね。"
+        },
+        {
+          "index": 3,
+          "user": "照明を作るより、窓からの光で撮るほうが落ち着く。",
+          "assistant": "窓からの自然な光が合うんだね。"
+        },
+        {
+          "index": 4,
+          "user": "レンズを選ぶ相談では、最初に屋内か屋外か聞いてほしい。",
+          "assistant": "まず撮影場所を確認するよ。"
+        },
+        {
+          "index": 5,
+          "user": "そのあと重さを比べてからレンズを勧めて。",
+          "assistant": "次に重さを比べて提案するよ。"
+        },
+        {
+          "index": 6,
+          "user": "兄は望遠レンズで野鳥を撮っている。",
+          "assistant": "それはお兄さんの撮影だね。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "ユーザーは昨日、カメラの標準レンズを掃除した。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "ユーザーは人工照明より自然光で写真を撮ることを好む。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "レンズを勧めるときは、最初に屋内か屋外かを聞き、そのあとレンズの重さを比較する。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "ユーザーは昨日、カメラの標準レンズを掃除した。",
+        "wisdom_rule": "ユーザーは人工照明より自然光で写真を撮ることを好む。",
+        "procedural_rule": "レンズを勧めるときは、最初に屋内か屋外かを聞き、そのあとレンズの重さを比較する。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_morning_yoga",
+      "language": "cmn",
+      "scenario_family": "community_morning_yoga",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "星期六早上我報名了社區的瑜伽課。",
+          "assistant": "你星期六早上完成了瑜伽課報名。"
+        },
+        {
+          "index": 2,
+          "user": "運動的話，我比較喜歡早上進行。",
+          "assistant": "早上運動比較符合你的偏好。"
+        },
+        {
+          "index": 3,
+          "user": "比起晚上，我在早上運動會更舒服。",
+          "assistant": "你更喜歡早上的運動時間。"
+        },
+        {
+          "index": 4,
+          "user": "幫我挑運動課程時，先問我前一晚睡了多久。",
+          "assistant": "我應該先確認你的睡眠時間。"
+        },
+        {
+          "index": 5,
+          "user": "接著再比較去教室所需的通勤時間。",
+          "assistant": "然後再比較通勤時間。"
+        },
+        {
+          "index": 6,
+          "user": "我表妹週末都去游泳。",
+          "assistant": "那是你表妹的運動習慣。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者星期六早上報名了社區瑜伽課。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "使用者比起晚上，更喜歡在早上運動。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "挑選運動課程時，先詢問使用者前一晚的睡眠時間，再比較前往教室的通勤時間。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者星期六早上報名了社區瑜伽課。",
+        "wisdom_rule": "使用者比起晚上，更喜歡在早上運動。",
+        "procedural_rule": "挑選運動課程時，先詢問使用者前一晚的睡眠時間，再比較前往教室的通勤時間。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_backup_drive",
+      "language": "cmn",
+      "scenario_family": "computer_backup_storage",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "上個月我還把備份放在舊隨身碟裡。",
+          "assistant": "之前的備份位置是舊隨身碟。"
+        },
+        {
+          "index": 2,
+          "user": "這星期我已經改用外接硬碟，現在備份都放在那裡。",
+          "assistant": "目前的備份位置是外接硬碟。"
+        },
+        {
+          "index": 3,
+          "user": "同事買了一台新的網路儲存設備。",
+          "assistant": "那台設備是你同事買的。"
+        },
+        {
+          "index": 4,
+          "user": "我可能明年才會考慮買雲端空間。",
+          "assistant": "雲端空間還只是未來的可能。"
+        },
+        {
+          "index": 5,
+          "user": "以後幫我安排備份時，先確認檔案總容量。",
+          "assistant": "我會先確認需要備份的容量。"
+        },
+        {
+          "index": 6,
+          "user": "公司伺服器星期日會維護。",
+          "assistant": "星期日公司伺服器會暫停服務。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者目前把備份存放在外接硬碟。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              2
+            ]
+          ],
+          "support_universe": [
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "使用者擁有一台新的網路儲存設備。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "procedural": {
+          "text": "替使用者安排備份前，先確認檔案總容量。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              5
+            ]
+          ],
+          "support_universe": [
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者目前把備份存放在外接硬碟。",
+        "wisdom_rule": "使用者擁有一台新的網路儲存設備。",
+        "procedural_rule": "替使用者安排備份前，先確認檔案總容量。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_book_club",
+      "language": "cmn",
+      "scenario_family": "weekday_book_club",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "星期三晚上我參加了圖書館的讀書會。",
+          "assistant": "你星期三晚上去了讀書會。"
+        },
+        {
+          "index": 2,
+          "user": "我這星期參加的就是星期三那場圖書館讀書會。",
+          "assistant": "你說的是同一場星期三讀書會。"
+        },
+        {
+          "index": 3,
+          "user": "選讀物時，我喜歡篇幅少於三百頁的書。",
+          "assistant": "你偏好三百頁以下的讀物。"
+        },
+        {
+          "index": 4,
+          "user": "我也比較喜歡有繁體中文版的作品。",
+          "assistant": "繁體中文版也是你的選書偏好。"
+        },
+        {
+          "index": 5,
+          "user": "之後推薦讀書會時，先看活動費用。",
+          "assistant": "原本的優先項目是活動費用。"
+        },
+        {
+          "index": 6,
+          "user": "我改變主意了，以後先看討論時間，再看費用。",
+          "assistant": "今後要先考慮討論時間。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者星期三晚上參加了圖書館讀書會。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "使用者偏好少於三百頁且有繁體中文版的讀物。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              3,
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3,
+              4
+            ]
+          ],
+          "support_universe": [
+            3,
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "今後推薦讀書會時，先考慮討論時間，再考慮活動費用。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              6
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              6
+            ]
+          ],
+          "support_universe": [
+            6
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者星期三晚上參加了圖書館讀書會。",
+        "wisdom_rule": "使用者偏好少於三百頁且有繁體中文版的讀物。",
+        "procedural_rule": "今後推薦讀書會時，先考慮討論時間，再考慮活動費用。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_weekend_hike",
+      "language": "cmn",
+      "scenario_family": "weekend_hiking_plan",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "我還在考慮下個月要不要去爬北山。",
+          "assistant": "北山健行目前還只是計畫。"
+        },
+        {
+          "index": 2,
+          "user": "哥哥上星期六已經爬完北山了。",
+          "assistant": "真正完成北山健行的是你哥哥。"
+        },
+        {
+          "index": 3,
+          "user": "健行時我喜歡樹蔭多的步道。",
+          "assistant": "樹蔭多的路線比較符合你的偏好。"
+        },
+        {
+          "index": 4,
+          "user": "幫我比較健行路線時，先確認降雨機率。",
+          "assistant": "我應該先確認下雨的可能性。"
+        },
+        {
+          "index": 5,
+          "user": "以後挑步道之前，請先看天氣預報的降雨機率。",
+          "assistant": "我會先查看降雨機率。"
+        },
+        {
+          "index": 6,
+          "user": "山腳的便利商店晚上九點關門。",
+          "assistant": "晚上九點後那間店就關門了。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者上星期六完成了北山健行。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        },
+        "wisdom": {
+          "text": "使用者健行時偏好樹蔭多的步道。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              3
+            ]
+          ],
+          "support_universe": [
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "比較健行路線前，先確認天氣預報中的降雨機率。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4
+            ],
+            [
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者上星期六完成了北山健行。",
+        "wisdom_rule": "使用者健行時偏好樹蔭多的步道。",
+        "procedural_rule": "比較健行路線前，先確認天氣預報中的降雨機率。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_soup_cooking",
+      "language": "cmn",
+      "scenario_family": "home_soup_cooking",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "星期一我煮了南瓜湯。",
+          "assistant": "你星期一煮的是南瓜湯。"
+        },
+        {
+          "index": 2,
+          "user": "星期四我又煮了一鍋番茄湯。",
+          "assistant": "你星期四煮了番茄湯。"
+        },
+        {
+          "index": 3,
+          "user": "以前我喜歡把湯煮得很濃。",
+          "assistant": "濃湯是你以前的偏好。"
+        },
+        {
+          "index": 4,
+          "user": "現在我比較喜歡清淡、可以直接喝的湯。",
+          "assistant": "你現在偏好清淡的湯。"
+        },
+        {
+          "index": 5,
+          "user": "今天只要告訴我鹽夠不夠，不用解釋。",
+          "assistant": "今天你只需要直接的鹹度判斷。"
+        },
+        {
+          "index": 6,
+          "user": "剛才是你建議我每次煮湯都要拍照。",
+          "assistant": "每次拍照是我提出的建議。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者星期一煮了南瓜湯，星期四又煮了番茄湯。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              1,
+              2
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "support_universe": [
+            1,
+            2
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "使用者目前偏好清淡的湯。",
+          "support_phenomenon": "current_state_override",
+          "minimal_support_sets": [
+            [
+              4
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              4
+            ]
+          ],
+          "support_universe": [
+            4
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "每次使用者煮湯時，都要求使用者拍照。",
+          "support_phenomenon": "unsupported",
+          "minimal_support_sets": [],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [],
+          "support_universe": [],
+          "support_mode": "unsupported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者星期一煮了南瓜湯，星期四又煮了番茄湯。",
+        "wisdom_rule": "使用者目前偏好清淡的湯。",
+        "procedural_rule": "每次使用者煮湯時，都要求使用者拍照。",
+        "salience": 0.7
+      }
+    },
+    {
+      "id": "cse2_cmn_bicycle_tire",
+      "language": "cmn",
+      "scenario_family": "bicycle_tire_maintenance",
+      "source_events": [
+        {
+          "index": 1,
+          "user": "昨天我替腳踏車後輪補了胎。",
+          "assistant": "你昨天修補了腳踏車後輪。"
+        },
+        {
+          "index": 2,
+          "user": "騎車時我比較喜歡走自行車專用道。",
+          "assistant": "自行車專用道是你的路線偏好。"
+        },
+        {
+          "index": 3,
+          "user": "比起一般道路，我在自行車專用道上比較安心。",
+          "assistant": "你更喜歡自行車專用道。"
+        },
+        {
+          "index": 4,
+          "user": "討論輪胎問題時，先問我胎壓是多少。",
+          "assistant": "我應該先確認目前胎壓。"
+        },
+        {
+          "index": 5,
+          "user": "接著確認有沒有漏氣，再建議要不要更換。",
+          "assistant": "然後要檢查漏氣情況再提出建議。"
+        },
+        {
+          "index": 6,
+          "user": "朋友的電動車上星期換了新電池。",
+          "assistant": "換電池的是你朋友的車。"
+        }
+      ],
+      "derived_memories": {
+        "episodic": {
+          "text": "使用者昨天修補了腳踏車後輪。",
+          "support_phenomenon": "single_minimal_set",
+          "minimal_support_sets": [
+            [
+              1
+            ]
+          ],
+          "memory_kind": "episodic",
+          "acceptable_support_unions": [
+            [
+              1
+            ]
+          ],
+          "support_universe": [
+            1
+          ],
+          "support_mode": "supported"
+        },
+        "wisdom": {
+          "text": "使用者比起一般道路，更喜歡自行車專用道。",
+          "support_phenomenon": "alternative_minimal_sets",
+          "minimal_support_sets": [
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          "memory_kind": "wisdom",
+          "acceptable_support_unions": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "support_universe": [
+            2,
+            3
+          ],
+          "support_mode": "supported"
+        },
+        "procedural": {
+          "text": "討論輪胎問題時，先詢問胎壓，再確認是否漏氣，最後才建議是否更換輪胎。",
+          "support_phenomenon": "complementary_multi_event_set",
+          "minimal_support_sets": [
+            [
+              4,
+              5
+            ]
+          ],
+          "memory_kind": "procedural",
+          "acceptable_support_unions": [
+            [
+              4,
+              5
+            ]
+          ],
+          "support_universe": [
+            4,
+            5
+          ],
+          "support_mode": "supported"
+        }
+      },
+      "generated_payload": {
+        "episodic_summary": "使用者昨天修補了腳踏車後輪。",
+        "wisdom_rule": "使用者比起一般道路，更喜歡自行車專用道。",
+        "procedural_rule": "討論輪胎問題時，先詢問胎壓，再確認是否漏氣，最後才建議是否更換輪胎。",
+        "salience": 0.7
+      }
+    }
+  ]
+}
