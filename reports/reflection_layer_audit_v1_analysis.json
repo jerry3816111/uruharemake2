@@ -1,0 +1,592 @@
+{
+  "schema": "uruha_reflection_layer_audit_analysis_v1",
+  "generated_at": "2026-07-17T17:16:32+09:00",
+  "raw_report": "reports/reflection_layer_audit_v1_raw.json",
+  "runner_commit": "000e11c45b00c4339cd1c375b913494df795a4ac",
+  "judge_snapshot": {
+    "model": "qwen3.5:9b",
+    "ollama_list_row": "qwen3.5:9b      6488c96fa5fa    6.6 GB    2 days ago"
+  },
+  "summary": {
+    "case_count": 12,
+    "atomic_claim_count": 36,
+    "schema_parse_rate": 0.9167,
+    "atomic_relation_accuracy": 0.75,
+    "critical_false_entailment_count": 2,
+    "candidate_acceptance_accuracy": 0.9167,
+    "accepted_surface_specificity": 1.0,
+    "model_call_count": 12,
+    "accepted_case_count": 5,
+    "gate_checks": {
+      "schema_parse_rate": false,
+      "atomic_relation_accuracy": false,
+      "critical_false_entailment_count": false,
+      "candidate_acceptance_accuracy": false,
+      "accepted_surface_specificity": true,
+      "model_call_count": true
+    },
+    "all_gates_pass": false
+  },
+  "decision": "reject_atomic_judge_and_do_not_use_for_v5_design",
+  "evidence_boundary": "Passing validates only this judge on 12 authored calibration candidates. It may support a clearly labeled posthoc V4 layer diagnosis, but cannot validate reflection runtime, general semantic entailment, or broad human likeness.",
+  "scored_rows": [
+    {
+      "id": "semantic_zh_music_faithful",
+      "pair_id": "semantic_zh_music",
+      "family": "semantic",
+      "source_language": "zh",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "work_context",
+          "statement_en": "This preference applies while the speaker is working.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "no_lyrics",
+          "statement_en": "The speaker listens only to music without lyrics while working.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "vocals_distract",
+          "statement_en": "Vocals distract the speaker.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": true,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"work_context\": \"entailed\",\n  \"no_lyrics\": \"entailed\",\n  \"vocals_distract\": \"entailed\"\n}"
+    },
+    {
+      "id": "semantic_zh_music_negated",
+      "pair_id": "semantic_zh_music",
+      "family": "semantic",
+      "source_language": "zh",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "work_context",
+          "statement_en": "This preference applies while the speaker is working.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "no_lyrics",
+          "statement_en": "The speaker listens only to music without lyrics while working.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "vocals_distract",
+          "statement_en": "Vocals distract the speaker.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"work_context\": \"entailed\",\n  \"no_lyrics\": \"contradicted\",\n  \"vocals_distract\": \"contradicted\"\n}"
+    },
+    {
+      "id": "semantic_en_spicy_faithful",
+      "pair_id": "semantic_en_spicy",
+      "family": "semantic",
+      "source_language": "en",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "avoid_spicy",
+          "statement_en": "The speaker avoids spicy food.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "evening_scope",
+          "statement_en": "The avoidance applies in the evening.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": false,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "stomach_reason",
+          "statement_en": "The reason is that spicy food upsets the speaker's stomach.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "missing",
+          "correct": false,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": false,
+      "acceptance_correct": false,
+      "raw_response": "{\n  \"avoid_spicy\": \"entailed\",\n  \"evening_scope\": \"contradicted\",\n  \"stomach_reason\": \"missing\"\n}"
+    },
+    {
+      "id": "semantic_en_spicy_reason_missing",
+      "pair_id": "semantic_en_spicy",
+      "family": "semantic",
+      "source_language": "en",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "avoid_spicy",
+          "statement_en": "The speaker avoids spicy food.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "missing",
+          "correct": false,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "evening_scope",
+          "statement_en": "The avoidance applies in the evening.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "stomach_reason",
+          "statement_en": "The reason is that spicy food upsets the speaker's stomach.",
+          "gold_relation": "missing",
+          "critical": true,
+          "observed_relation": "missing",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"avoid_spicy\": \"missing\",\n  \"evening_scope\": \"entailed\",\n  \"stomach_reason\": \"missing\"\n}"
+    },
+    {
+      "id": "procedural_ja_photo_faithful",
+      "pair_id": "procedural_ja_photo",
+      "family": "procedural",
+      "source_language": "ja",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "assistant_actor",
+          "statement_en": "The assistant must perform the confirmation.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "user_target",
+          "statement_en": "The assistant must confirm with the user.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "before_sending",
+          "statement_en": "Confirmation must happen before sending a photo.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": true,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"assistant_actor\": \"entailed\",\n  \"user_target\": \"entailed\",\n  \"before_sending\": \"entailed\"\n}"
+    },
+    {
+      "id": "procedural_ja_photo_actor_swap",
+      "pair_id": "procedural_ja_photo",
+      "family": "procedural",
+      "source_language": "ja",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "assistant_actor",
+          "statement_en": "The assistant must perform the confirmation.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": false,
+          "critical_false_entailment": true
+        },
+        {
+          "id": "user_target",
+          "statement_en": "The assistant must confirm with the user.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "before_sending",
+          "statement_en": "Confirmation must happen before sending a photo.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"assistant_actor\": \"entailed\",\n  \"user_target\": \"contradicted\",\n  \"before_sending\": \"entailed\"\n}"
+    },
+    {
+      "id": "procedural_zh_answer_order_faithful",
+      "pair_id": "procedural_zh_answer_order",
+      "family": "procedural",
+      "source_language": "zh",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "answer_first",
+          "statement_en": "The assistant should give the direct answer first.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "reason_after",
+          "statement_en": "Reasons should be added after the direct answer.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "no_background_first",
+          "statement_en": "The assistant should not begin with background explanation.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": true,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"answer_first\": \"entailed\",\n  \"reason_after\": \"entailed\",\n  \"no_background_first\": \"entailed\"\n}"
+    },
+    {
+      "id": "procedural_zh_answer_order_reversed",
+      "pair_id": "procedural_zh_answer_order",
+      "family": "procedural",
+      "source_language": "zh",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "answer_first",
+          "statement_en": "The assistant should give the direct answer first.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "reason_after",
+          "statement_en": "Reasons should be added after the direct answer.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "missing",
+          "correct": false,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "no_background_first",
+          "statement_en": "The assistant should not begin with background explanation.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": false,
+          "critical_false_entailment": true
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"answer_first\": \"contradicted\",\n  \"reason_after\": \"missing\",\n  \"no_background_first\": \"entailed\"\n}"
+    },
+    {
+      "id": "interpretive_en_minute_faithful",
+      "pair_id": "interpretive_en_minute",
+      "family": "interpretive",
+      "source_language": "en",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "trigger_phrase",
+          "statement_en": "The rule concerns the phrase 'give me a minute'.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "needs_thinking_time",
+          "statement_en": "The speaker needs time to think.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "not_leave_request",
+          "statement_en": "The speaker is not asking the assistant to leave.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": true,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"trigger_phrase\": \"entailed\",\n  \"needs_thinking_time\": \"entailed\",\n  \"not_leave_request\": \"entailed\"\n}"
+    },
+    {
+      "id": "interpretive_en_minute_reversed",
+      "pair_id": "interpretive_en_minute",
+      "family": "interpretive",
+      "source_language": "en",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "trigger_phrase",
+          "statement_en": "The rule concerns the phrase 'give me a minute'.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "needs_thinking_time",
+          "statement_en": "The speaker needs time to think.",
+          "gold_relation": "missing",
+          "critical": true,
+          "observed_relation": "missing",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "not_leave_request",
+          "statement_en": "The speaker is not asking the assistant to leave.",
+          "gold_relation": "contradicted",
+          "critical": true,
+          "observed_relation": "contradicted",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"trigger_phrase\": \"entailed\",\n  \"needs_thinking_time\": \"missing\",\n  \"not_leave_request\": \"contradicted\"\n}"
+    },
+    {
+      "id": "interpretive_ja_any_faithful",
+      "pair_id": "interpretive_ja_any",
+      "family": "interpretive",
+      "source_language": "ja",
+      "schema_valid": true,
+      "claims": [
+        {
+          "id": "decision_fatigue",
+          "statement_en": "The phrase often indicates decision fatigue.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "preference_may_exist",
+          "statement_en": "The phrase does not necessarily mean the speaker has no preference.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "assistant_one_option",
+          "statement_en": "The assistant should offer exactly one option.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": "entailed",
+          "correct": true,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": true,
+        "reasons": [],
+        "unknown_cjk_fragments": []
+      },
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "observed_accept": true,
+      "acceptance_correct": true,
+      "raw_response": "{\n  \"decision_fatigue\": \"entailed\",\n  \"preference_may_exist\": \"entailed\",\n  \"assistant_one_option\": \"entailed\"\n}"
+    },
+    {
+      "id": "interpretive_ja_any_chinese_surface",
+      "pair_id": "interpretive_ja_any",
+      "family": "interpretive",
+      "source_language": "ja",
+      "schema_valid": false,
+      "claims": [
+        {
+          "id": "decision_fatigue",
+          "statement_en": "The phrase often indicates decision fatigue.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": null,
+          "correct": false,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "preference_may_exist",
+          "statement_en": "The phrase does not necessarily mean the speaker has no preference.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": null,
+          "correct": false,
+          "critical_false_entailment": false
+        },
+        {
+          "id": "assistant_one_option",
+          "statement_en": "The assistant should offer exactly one option.",
+          "gold_relation": "entailed",
+          "critical": true,
+          "observed_relation": null,
+          "correct": false,
+          "critical_false_entailment": false
+        }
+      ],
+      "surface_report": {
+        "clean": false,
+        "reasons": [
+          "source_external_language:没|个|决定|劳|个方"
+        ],
+        "unknown_cjk_fragments": [
+          "决定",
+          "劳",
+          "个方"
+        ]
+      },
+      "expected_surface_clean": false,
+      "expected_accept": false,
+      "observed_accept": false,
+      "acceptance_correct": true,
+      "raw_response": "```json\n{\n  \"decision_fatigue\": \"entailed\",\n  \"preference_may_exist\": \"entailed\",\n  \"assistant_one_option\": \"entailed\"\n}\n```"
+    }
+  ]
+}
