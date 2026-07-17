@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -34,6 +35,25 @@ def _load(path):
 
 def _sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _sha256_git_file(commit, path):
+    content = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(content).hexdigest()
+
+
+def _git_file_exists(commit, path):
+    completed = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}:{path}"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return completed.returncode == 0
 
 
 class ConsolidationSourceProvenanceV1PreregistrationTest(
@@ -69,7 +89,11 @@ class ConsolidationSourceProvenanceV1PreregistrationTest(
 
     def test_baseline_is_hash_bound_and_reproduces_the_data_loss(self):
         frozen = self.config["frozen_baseline"]
-        for key in ("runtime", "measurement", "report"):
+        self.assertEqual(
+            _sha256_git_file(frozen["commit"], frozen["runtime_path"]),
+            frozen["runtime_sha256"],
+        )
+        for key in ("measurement", "report"):
             self.assertEqual(
                 _sha256(ROOT / frozen[f"{key}_path"]),
                 frozen[f"{key}_sha256"],
@@ -178,9 +202,16 @@ class ConsolidationSourceProvenanceV1PreregistrationTest(
             )
         )
 
-    def test_result_artifacts_do_not_exist_before_implementation(self):
+    def test_result_artifacts_were_absent_at_frozen_baseline(self):
+        frozen_commit = self.config["frozen_baseline"]["commit"]
         for path in RESULT_PATHS:
-            self.assertFalse(path.exists(), path)
+            self.assertFalse(
+                _git_file_exists(
+                    frozen_commit,
+                    path.relative_to(ROOT).as_posix(),
+                ),
+                path,
+            )
 
 
 if __name__ == "__main__":
