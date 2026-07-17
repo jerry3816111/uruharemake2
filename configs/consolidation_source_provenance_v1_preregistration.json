@@ -1,0 +1,145 @@
+{
+  "schema": "uruha_consolidation_source_provenance_preregistration_v1",
+  "experiment_id": "consolidation_source_provenance_v1",
+  "created_at": "2026-07-18T00:18:00+09:00",
+  "problem": "The current three-speed consolidation physically deletes source turn_episode records after database-backed consolidation and writes episodic, wisdom, and procedural descendants without source episode IDs. A temporary-Chroma baseline at the frozen main commit retained 0 of 20 source episodes and attached exact source IDs to 0 of 3 derived records.",
+  "priority_reason": "Once a source episode is deleted, later reflection, contradiction correction, and memory auditing cannot recover the exact event. This is a data-lifecycle bottleneck shared by episodic-to-semantic learning, not a benchmark-specific answer rule.",
+  "hypothesis": "Replacing physical source deletion with a provenance-preserving consolidation transition will retain exact events while preventing duplicate reconsolidation. Derived memories will remain auditable through program-owned source IDs, and consolidated source episodes will be functionally downweighted rather than destroyed.",
+  "theory_basis": [
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Why There Are Complementary Learning Systems in the Hippocampus and Neocortex",
+      "url": "https://stanford.edu/~jlmcc/papers/McCMcNaughtonOReilly95.pdf",
+      "engineering_use": "Keep rapidly captured event records separate from gradually accumulated semantic or procedural structures."
+    },
+    {
+      "source": "Teyler and DiScenna (1986), The hippocampal memory indexing theory",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/3008780/",
+      "engineering_use": "Preserve an index from a derived memory back to the specific experiential event that supports it."
+    },
+    {
+      "source": "Squire, Genzel, Wixted, and Morris (2015), Memory Consolidation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4526749/",
+      "engineering_use": "Treat consolidation as gradual reorganization and distinguish event context from gist-like semantic memory."
+    }
+  ],
+  "theory_boundary": "These neuroscience theories motivate separation, indexing, and delayed reorganization. They do not prove that Chroma collections are biological memory, that every source event should persist forever, or that this implementation improves dialogue.",
+  "frozen_baseline": {
+    "commit": "0a6d2554deeb11444d4aad628e868ee0d004b68c",
+    "runtime_path": "uruha_brain_mac.py",
+    "runtime_sha256": "971ea67581eeaae3297d6f988c9b0910d42cd7038755d414b7d9894474cdf050",
+    "measurement_path": "measure_consolidation_source_provenance_v1.py",
+    "measurement_sha256": "138edec05c60a93de2f8139e807b39f818e41c3476a82bf793708f9b08f03e01",
+    "report_path": "reports/consolidation_source_provenance_v1_baseline.json",
+    "report_sha256": "8500853c7407ca3ba9f7c21a054ad4da44fe7707ba86ddd47b0280cd7a2482a3",
+    "source_episode_count_before": 20,
+    "source_episode_count_after": 0,
+    "source_episode_retention_rate": 0.0,
+    "derived_record_count": 3,
+    "derived_records_with_exact_source_ids": 0,
+    "deleted_episode_count": 20,
+    "external_model_calls": 0,
+    "stub_model_calls": 1
+  },
+  "existing_negative_evidence": {
+    "typed_reflection_v4_result_closure": {
+      "path": "configs/typed_reflection_v4_result_closure.json",
+      "sha256": "844afbaeca36433d2778e7a206a1045d3282ffbf022772028bf5bbd898eca27b",
+      "decision_field": "automated_decision",
+      "decision": "keep_v4_extractor_shadow_only_and_redesign_planner_consumption",
+      "use_here": "Do not generate or feed reflection paraphrases into production planning."
+    },
+    "reflection_layer_audit_v1_result_closure": {
+      "path": "configs/reflection_layer_audit_v1_result_closure.json",
+      "sha256": "089ef6c2a31fb6b466071cc78d874034a01e7605377c463f9e6ad447a2832a30",
+      "decision_field": "decision",
+      "decision": "reject_atomic_judge_and_do_not_use_for_v5_design",
+      "use_here": "Use exact source pointers instead of generated gist validation by the rejected judge."
+    },
+    "cascade_v1_result_lock": {
+      "path": "configs/consolidation_admission_cascade_v1_result_lock.json",
+      "sha256": "437989fcd5e6258978e95fafad6d122868effb0b83367fdea1b251daad3439a4",
+      "decision_field": "decision",
+      "decision": "fail_stop_qwen35_4b_to_9b_cascade",
+      "use_here": "Do not place a lossy 4B admission gate before source-event storage."
+    }
+  },
+  "single_manipulated_variable": "post_consolidation_handling_and_provenance_of_source_turn_episode_records",
+  "controlled_variables": [
+    "qwen2.5:7b consolidation model name",
+    "consolidation system prompt",
+    "temperature",
+    "heuristic fallback",
+    "working-memory retrieval scoring",
+    "working-memory limit",
+    "wisdom and procedural document text",
+    "background scheduling threshold",
+    "typed reflection runtime remains disabled",
+    "test conversations and stub model payload"
+  ],
+  "authorized_runtime_changes": [
+    "Store each saved episode ID in the corresponding in-process session turn.",
+    "Treat turn_episode records without a consolidation_state as pending for backward compatibility.",
+    "Select only pending turn_episode records for database-backed consolidation.",
+    "Attach one program-owned consolidation batch ID, exact source episode ID JSON, source count, and source-ID digest to every derived record.",
+    "After the episodic summary is stored successfully, update source episodes to consolidation_state=consolidated and apply a bounded decay multiplier instead of deleting them.",
+    "Expose preserved and marked source counts in the maintenance result."
+  ],
+  "prohibited_changes": [
+    "Change any consolidation model prompt or output value.",
+    "Enable typed reflection.",
+    "Change working-memory ranking code or limits.",
+    "Add benchmark phrases, case-specific rules, or answer labels.",
+    "Read or write the user's production Chroma database during evaluation.",
+    "Call an external or paid model.",
+    "Physically delete source episodes in the tested consolidation path."
+  ],
+  "evaluation": {
+    "database": "new temporary Chroma directory per test",
+    "source_episode_count": 20,
+    "derived_expected": [
+      "episodic_consolidation",
+      "wisdom idle_consolidation",
+      "procedural idle_consolidation"
+    ],
+    "model": "deterministic in-process stub returning the same frozen valid JSON",
+    "first_run_force": true,
+    "second_run_force": false,
+    "gold_or_case_labels_passed_to_model": false
+  },
+  "success_gates": {
+    "source_episode_count_before_exact": 20,
+    "source_episode_count_after_exact": 20,
+    "source_episode_retention_rate_exact": 1.0,
+    "source_episode_ids_unchanged": true,
+    "source_episode_documents_unchanged": true,
+    "source_consolidation_state_exact": "consolidated",
+    "source_consolidation_batch_count_exact": 1,
+    "derived_record_count_after_first_exact": 3,
+    "derived_records_with_exact_source_ids_exact": 3,
+    "derived_records_with_source_digest_exact": 3,
+    "derived_records_with_batch_id_exact": 3,
+    "deleted_episode_count_exact": 0,
+    "preserved_episode_count_exact": 20,
+    "marked_consolidated_count_exact": 20,
+    "stub_model_calls_after_first_exact": 1,
+    "stub_model_calls_after_second_exact": 1,
+    "second_mode_exact": "decay_only",
+    "second_pass_created_no_duplicate_derived_records": true,
+    "existing_memory_and_reflection_regression_tests_pass": true
+  },
+  "failure_atomicity_gate": "If episodic summary persistence fails, source episodes must remain pending, unchanged, and eligible for a later retry.",
+  "decision_rule": {
+    "pass": "Keep the provenance-preserving source transition in runtime. This authorizes only source retention and traceability, not semantic quality, retrieval, or dialogue claims.",
+    "fail": "Revert the runtime change and preserve the negative result. Do not weaken retention, provenance, idempotence, or atomicity gates."
+  },
+  "evidence_limits": {
+    "semantic_consolidation_quality_claim_authorized": false,
+    "retrieval_improvement_claim_authorized": false,
+    "dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "physical_forgetting_policy_validated": false,
+    "production_data_migration_authorized": false
+  },
+  "runtime_change_before_preregistration_merge_authorized": false
+}
