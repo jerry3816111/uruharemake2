@@ -128,6 +128,11 @@ class ConsolidationAdmissionPreregistrationTest(unittest.TestCase):
         self.assertEqual(self.config["generation"]["temperature"], 0.1)
         self.assertEqual(self.config["generation"]["seed"], 20260717)
 
+    def test_fixed_transcript_rendering_uses_real_line_breaks(self):
+        rendering = self.config["fixed_transcript_rendering"]
+        self.assertEqual(rendering.count("\n"), 2)
+        self.assertNotIn("\\n", rendering)
+
     def test_candidate_prompt_contains_no_case_text_or_gold(self):
         prompt = self.config["conditions"]["source_bound_layered_candidate"][
             "system_prompt"
