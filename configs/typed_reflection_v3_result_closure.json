@@ -1,0 +1,46 @@
+{
+  "schema": "uruha_typed_reflection_development_result_closure_v3",
+  "evidence_status": "negative_result_frozen_without_post_run_case_or_threshold_changes",
+  "preregistration": "configs/typed_reflection_v3_development_preregistration.json",
+  "harness_lock": "configs/typed_reflection_v3_harness_lock.json",
+  "dataset": "datasets/typed_reflection_v3_development_pilot.json",
+  "result_artifacts": {
+    "reports/typed_reflection_v3_development_raw.json": "868f5cf68771b645d565d2e58bdfb108aca92c28449fb75b22cb74f7220af7be",
+    "reports/typed_reflection_v3_development_analysis.json": "1304a3a52fb70b49667477e37591cf8bc62a1c28c5a60d01e4d673ee32bd752a",
+    "reports/typed_reflection_v3_development_analysis.md": "39e6760121eb6dcd24a445fbb2c40ea01e7817a74921988ef2950de37ba4d568"
+  },
+  "runner_commit": "5d49bfd94cf3ca9bd656742c5d7f997d6c409863",
+  "fixed_model": "qwen2.5:7b",
+  "model_call_count": 29,
+  "typed_reflection_extraction_calls": 9,
+  "decision": "reject_typed_reflection_v3_and_do_not_deploy",
+  "metrics": {
+    "reflection_type_accuracy": 1.0,
+    "valid_rule_precision": 0.0,
+    "expected_rule_write_recall": 0.0,
+    "no_rule_specificity": 1.0,
+    "valid_rule_retrieval_rate": 0.0,
+    "control_behavior_success_rate": 0.4444,
+    "treatment_behavior_success_rate": 0.4444,
+    "treatment_behavior_delta": 0.0,
+    "paired_behavior_gains": 0,
+    "paired_behavior_regressions": 0
+  },
+  "bounded_findings": [
+    "The deterministic pre-model classifier assigned all 12 frozen cases to their expected reflection type.",
+    "All three no-reflection controls avoided a memory write.",
+    "All nine positive extraction calls were rejected by payload validation before persistence, so no typed reflection entered working memory.",
+    "Treatment matched control behavior and caused neither gains nor regressions on the frozen development cases."
+  ],
+  "deployment_authorized": false,
+  "independent_holdout_authorized": false,
+  "large_scale_run_authorized": false,
+  "next_primary_task": "diagnose_payload_validation_failures_on_new_non_frozen_sentences_then_compare_deterministic_field_extraction_with_one_bounded_structured_model_retry",
+  "next_task_constraints": [
+    "Do not edit the frozen V3 cases, gates, raw result, or analysis.",
+    "Record field-level rejection reasons without storing unvalidated memory.",
+    "Use new non-frozen diagnostic utterances before preregistering any V4 experiment.",
+    "Do not enable runtime deployment unless a new matched pilot passes all safety and behavior gates."
+  ],
+  "claim_boundary": "This negative controlled development result identifies an extraction-to-validation failure. It does not measure independent generalization or broad human-like reflection."
+}
