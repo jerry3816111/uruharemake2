@@ -489,42 +489,12 @@ class MemoryManager:
         candidates.extend(self._query_collection_candidates(self.procedural_col, text, "procedural", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
         candidates.extend(self._query_collection_candidates(self.kb_col, text, "knowledge", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
 
-        working_memory = umr.build_working_memory(
+        return umr.build_working_memory(
             text,
             candidates,
             working_memory_limit=WORKING_MEMORY_LIMIT,
             scoring_profile=WORKING_MEMORY_SCORING_PROFILE,
         )
-        return self._attach_consolidation_source_evidence(
-            text,
-            working_memory,
-        )
-
-    def _attach_consolidation_source_evidence(self, text, items):
-        enriched = []
-        source_attached = False
-        for item in items or []:
-            enriched_item = dict(item)
-            metadata = dict(enriched_item.get("metadata") or {})
-            derived_source = metadata.get("source") in {
-                "episodic_consolidation",
-                "idle_consolidation",
-            }
-            if not source_attached and derived_source:
-                resolved = umr.resolve_consolidation_source_evidence(
-                    self.episode_col,
-                    text,
-                    metadata,
-                    scoring_profile=WORKING_MEMORY_SCORING_PROFILE,
-                )
-                enriched_item["source_pointer_audit"] = resolved["audit"]
-                if resolved["source_evidence"]:
-                    enriched_item["source_evidence"] = resolved[
-                        "source_evidence"
-                    ][:1]
-                    source_attached = True
-            enriched.append(enriched_item)
-        return enriched
 
     def _collection_for_name(self, name):
         return {
