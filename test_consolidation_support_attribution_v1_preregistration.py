@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -25,6 +26,9 @@ LOCK_PATH = (
     ROOT
     / "configs"
     / "consolidation_support_attribution_v1_harness_lock.json"
+)
+PREREGISTRATION_MERGE_COMMIT = (
+    "45b35fd43de9c3fe51f970fc92d67926b7b5aa3c"
 )
 
 
@@ -191,6 +195,24 @@ class ConsolidationSupportAttributionV1PreregistrationTest(
             if not name.endswith("_sha256"):
                 continue
             path_key = name.removesuffix("_sha256")
+            if path_key == "preregistration_test":
+                content = subprocess.check_output(
+                    [
+                        "git",
+                        "show",
+                        (
+                            f"{PREREGISTRATION_MERGE_COMMIT}:"
+                            f"{self.lock['paths'][path_key]}"
+                        ),
+                    ],
+                    cwd=ROOT,
+                )
+                self.assertEqual(
+                    hashlib.sha256(content).hexdigest(),
+                    expected,
+                    path_key,
+                )
+                continue
             self.assertEqual(
                 _sha256(ROOT / self.lock["paths"][path_key]),
                 expected,
@@ -199,7 +221,26 @@ class ConsolidationSupportAttributionV1PreregistrationTest(
 
     def test_result_artifacts_do_not_exist_before_model_run(self):
         for relative_path in self.config["result_artifacts"]:
-            self.assertFalse((ROOT / relative_path).exists(), relative_path)
+            completed = subprocess.run(
+                [
+                    "git",
+                    "cat-file",
+                    "-e",
+                    (
+                        f"{PREREGISTRATION_MERGE_COMMIT}:"
+                        f"{relative_path}"
+                    ),
+                ],
+                cwd=ROOT,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            self.assertNotEqual(
+                completed.returncode,
+                0,
+                relative_path,
+            )
 
 
 if __name__ == "__main__":
