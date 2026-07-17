@@ -1,0 +1,83 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_independent_holdout_construction_closure_v4",
+  "closed_at": "2026-07-17T19:31:13+09:00",
+  "status": "completed_construction_passed",
+  "original_preregistration": {
+    "commit": "6fa4641",
+    "path": "configs/reflection_hybrid_classifier_v4_independent_holdout_construction_preregistration.json",
+    "sha256": "5a6eabc672588dcfbd4e4d846939de44b88837c2e7119ef62783b5102c7f0bb5"
+  },
+  "artifact_bindings": {
+    "preregistration": "configs/reflection_hybrid_classifier_v4_independent_holdout_construction_preregistration.json",
+    "preregistration_sha256": "5a6eabc672588dcfbd4e4d846939de44b88837c2e7119ef62783b5102c7f0bb5",
+    "source_snapshot": "datasets/sources/tatoeba_reflection_hybrid_classifier_v4_selected.json",
+    "source_snapshot_sha256": "9fe56d4377f43cc0ed7a731cd1f546a819b90d74596f87cb41b78f62e12d9758",
+    "source_fetcher": "fetch_tatoeba_reflection_hybrid_classifier_v4_source.py",
+    "source_fetcher_sha256": "7f5a431e8eb86a2c9da8404c277c8633591818f20f1cddd698ace7254c4279c9",
+    "builder": "build_reflection_hybrid_classifier_v4_independent_holdout.py",
+    "builder_sha256": "fcfd654fa4604e14f8efa18804fd84a868efd749ee445d9f22bede3cda706c8b",
+    "auditor": "audit_reflection_hybrid_classifier_v4_independent_holdout.py",
+    "auditor_sha256": "477268245ac20ef0e1b58bd6928637c074bb0f774fafa78657af54812b8d80da",
+    "dataset": "datasets/reflection_hybrid_classifier_v4_independent_holdout.json",
+    "dataset_sha256": "6968fcba0bcdeffa7a01955296fa7814baf84198cca988e0dd39c032709b0a38",
+    "audit_json": "reports/reflection_hybrid_classifier_v4_independent_holdout_audit.json",
+    "audit_json_sha256": "45923b6a8f6e0a61e911ea04b01fdd1fdb1975843b80fe9c346df1ddbed9c55c",
+    "audit_markdown": "reports/reflection_hybrid_classifier_v4_independent_holdout_audit.md",
+    "audit_markdown_sha256": "198af6ddbf5f852e488e23a71223424f7d1ddaea2dfa9133021b7c8ead378486",
+    "prior_tatoeba_source": "datasets/sources/tatoeba_reflection_classifier_v1_selected.json",
+    "prior_tatoeba_source_sha256": "25532892eb52b44e760186572450f213ee079acf8b00c600d8779909eac45c0d",
+    "existing_reflection_causal_pilot": "datasets/reflection_causal_pilot_v1.json",
+    "existing_reflection_causal_pilot_sha256": "4e05ea5c174e077b7031fe083d01d1ceeb730b4fd1c71b6d8594f8167b55006f",
+    "existing_reflection_classifier_development": "datasets/reflection_classifier_v1_development.json",
+    "existing_reflection_classifier_development_sha256": "2bc0d9ab10a0892e5e3b62766276110b2df61ea253a76ca7f7fdee5c75291ebb",
+    "existing_reflection_classifier_holdout": "datasets/reflection_classifier_v1_external_holdout.json",
+    "existing_reflection_classifier_holdout_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+    "existing_reflection_layer_calibration": "datasets/reflection_layer_audit_v1_calibration.json",
+    "existing_reflection_layer_calibration_sha256": "9f5f946662286fcbf46a4e4cbd1685d780ee044a1993dea9791edadf649ae8f5",
+    "existing_typed_reflection_v3": "datasets/typed_reflection_v3_development_pilot.json",
+    "existing_typed_reflection_v3_sha256": "1de87ea3dce7650a5a3232e98b756fbfdaf650c3719e0f08a5ffbfe023f45ed0",
+    "existing_typed_reflection_v4": "datasets/typed_reflection_v4_development_pilot.json",
+    "existing_typed_reflection_v4_sha256": "53b1998740b0bb4de438aedd304bcc089608ea77e968fac675744c5f96181ad0",
+    "construction_test": "test_reflection_hybrid_classifier_v4_independent_holdout_construction.py",
+    "construction_test_sha256": "db92fcb02510a6a1802787ba4cf950361b2a0941d0b0400cd186cee99f4443e7"
+  },
+  "construction_result": {
+    "case_count": 32,
+    "class_counts": {
+      "semantic": 8,
+      "procedural": 8,
+      "interpretive": 8,
+      "none": 8
+    },
+    "language_counts": {
+      "eng": 16,
+      "jpn": 10,
+      "cmn": 6
+    },
+    "license_counts": {
+      "CC BY 2.0 FR": 32
+    },
+    "prior_tatoeba_sentence_id_overlap_count": 0,
+    "existing_reflection_text_overlap_count": 0,
+    "exact_source_text_mismatch_count": 0,
+    "all_audit_checks_passed": true
+  },
+  "source_fetch": {
+    "method": "sequential_official_read_only_api_requests_with_rate_limit_backoff",
+    "selected_case_or_label_changed_after_preregistration": false,
+    "sentence_text_changed": false,
+    "success_gate_changed": false,
+    "evaluated_qwen_model_inference_used": false
+  },
+  "provenance": {
+    "sentence_text_and_metadata": "Exact responses from the official Tatoeba read-only API v1, including preserved null owners for two older sentences.",
+    "reflection_labels": "Codex-assisted project operational labels frozen before evaluated-model inference; they are not official Tatoeba labels and have not received independent human validation.",
+    "base_model_pretraining_exclusion_guaranteed": false
+  },
+  "decision": "authorize_independent_holdout_evaluation_harness_freeze_only",
+  "evidence_boundary": "Construction PASS proves source traceability, exact text preservation, preregistered balance, zero prior Tatoeba ID overlap, and zero normalized text overlap with existing reflection datasets. It is not a model result and cannot authorize runtime reflection writes or broad human-likeness claims.",
+  "classifier_evaluation_performed": false,
+  "runtime_change_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
