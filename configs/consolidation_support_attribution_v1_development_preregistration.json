@@ -1,0 +1,222 @@
+{
+  "schema": "uruha_consolidation_support_attribution_development_preregistration_v1",
+  "experiment_id": "consolidation_support_attribution_v1_development",
+  "created_at": "2026-07-18T00:45:00+09:00",
+  "evidence_role": "small_falsifiable_development_pilot_for_per_derived_memory_source_attribution",
+  "problem": "The source-preserving consolidation runtime currently gives every derived episodic, wisdom, and procedural record the complete consolidation-batch source ID set. The frozen source-pointer V1 pilot recovered only 4 of 6 correct events and injected two newer same-topic events that explicitly lacked the requested evidence.",
+  "priority_reason": "A retained source is not useful provenance unless the system can identify which event actually supports each derived memory. Wrong attribution can inject false details into later reasoning, while per-memory support attribution also gives the consolidation self-check a way to reject unsupported derived memories.",
+  "hypothesis": "Without changing the generated memory, memory kind, source events, or runtime retrieval, a local Qwen3.5 4B tool call limited to support-event indices will reduce the current all-source pointer to the exact supporting event set in at least 14 of 18 fresh multilingual cases while preserving at least 90 percent evidence precision and recall.",
+  "prior_evidence": [
+    {
+      "source": "Frozen consolidation source-pointer V1 result",
+      "path": "configs/consolidation_source_pointer_v1_result_lock.json",
+      "sha256": "a579394a44a54fbe3bb8e2fe2d5c43dd2233a51a97d4a31a1bd04812017bf780",
+      "use": "Defines the failure as source selection inside a valid batch, not pointer integrity or top-level memory retrieval.",
+      "boundary": "The consumed V1 cases are excluded from this dataset and cannot be used to tune or validate the new candidate."
+    },
+    {
+      "source": "Frozen consolidation-admission model screen V1 result",
+      "path": "configs/consolidation_admission_model_screen_v1_result_lock.json",
+      "sha256": "c68629188b034251702cfcb06effc64ec6d7fd44f1ab2d90776ef8b0e602ee75",
+      "use": "Qwen3.5 4B produced a valid evidence-index contract in 12 of 12 cases, but was not reliable enough to decide memory kind and admission in the broader task.",
+      "boundary": "This pilot does not repeat kind or admission classification. It tests only explicit support attribution for an already-generated memory."
+    },
+    {
+      "source": "Ollama official tool-calling documentation",
+      "url": "https://docs.ollama.com/capabilities/tool-calling",
+      "use": "Supports a closed local function-call transport whose only model-owned output is a bounded list of source indices."
+    }
+  ],
+  "theory_basis": [
+    {
+      "source": "Teyler and DiScenna (1986), The hippocampal memory indexing theory",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/3008780/",
+      "engineering_use": "Motivates retaining an index from a derived memory to the specific episodic events that support it."
+    },
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Why There Are Complementary Learning Systems in the Hippocampus and Neocortex",
+      "url": "https://stanford.edu/~jlmcc/papers/McCMcNaughtonOReilly95.pdf",
+      "engineering_use": "Motivates preserving rapidly captured events while gradually forming semantic or procedural derivatives."
+    }
+  ],
+  "theory_boundary": "The cited work motivates complementary event and derived-memory representations. It does not prove that model-selected indices are biologically equivalent, semantically correct, or sufficient for human-like dialogue.",
+  "dataset": {
+    "path": "datasets/consolidation_support_attribution_v1_development.json",
+    "sha256": "45dfb42793aeb122c0dc2f0659db5486d8f35d55c35555c78304261a2c343ab9",
+    "case_count": 18,
+    "event_count_per_case": 6,
+    "language_counts": {
+      "eng": 6,
+      "jpn": 6,
+      "cmn": 6
+    },
+    "memory_kind_counts": {
+      "episodic": 6,
+      "wisdom": 6,
+      "procedural": 6
+    },
+    "support_mode_counts": {
+      "supported": 12,
+      "unsupported": 6
+    },
+    "unique_scenario_family_count": 18,
+    "gold_support_event_count": 15,
+    "semantic_translation_pairs_present": false,
+    "source_pointer_v1_case_reuse": false,
+    "consolidation_admission_case_reuse": false,
+    "status": "codex_labeled_development_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false
+  },
+  "single_manipulated_variable": "replace_the_complete_six_event_batch_pointer_with_qwen35_4b_selected_explicit_support_event_indices",
+  "conditions": {
+    "coarse_all_source_ids_control": "Current source-preserving behavior: every derived memory receives all six source event IDs without semantic attribution and makes no model call.",
+    "qwen35_4b_support_attribution": "The same derived memory and six events are passed once to frozen Qwen3.5 4B, which can return only a unique list of source event indices or an empty list."
+  },
+  "frozen_baseline": {
+    "case_count": 18,
+    "exact_set_match_count": 0,
+    "exact_set_accuracy": 0.0,
+    "positive_complete_support_count": 12,
+    "unsupported_empty_count": 0,
+    "evidence_precision": 0.1389,
+    "evidence_recall": 1.0,
+    "mean_case_f1": 0.2262,
+    "false_source_count": 93,
+    "missed_source_count": 0,
+    "model_calls": 0
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "blob_bytes": 3389983735,
+    "role": "narrow_local_support_index_attributor_not_memory_generator_or_admission_decider"
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260718,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 128,
+    "keep_alive": "15m",
+    "transport_attempts": 1,
+    "timeout_seconds": 120
+  },
+  "fixed_contract": {
+    "system_prompt": "You receive one already-generated derived memory and six chronological source events. Call attribute_memory_support exactly once and return no narrative text. Select only event indices whose User text explicitly supports every material claim in the derived memory. Assistant text is context and never evidence by itself. A topic mention, missing value, possibility, temporary instance, third-party fact, or contradiction is not support. A later update overrides older evidence when the derived memory claims a current state. For a recurring generalized memory, select every explicit repeated instance needed to establish the pattern. For a procedural memory, select only an explicit User instruction for future assistant behavior; do not infer a standing rule from one assistant response or one-time request. If no source event remains sufficient, return an empty list. Do not rewrite, repair, or classify the memory.",
+    "event_rendering": "Event E{index}\\nUser: {user}\\nAssistant: {assistant}",
+    "tool_contract": {
+      "type": "function",
+      "function": {
+        "name": "attribute_memory_support",
+        "description": "Return only source event indices that explicitly support the already-generated derived memory.",
+        "parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "support_event_indices"
+          ],
+          "properties": {
+            "support_event_indices": {
+              "type": "array",
+              "description": "Unique chronological event numbers whose User text explicitly supports the complete derived memory; empty when unsupported.",
+              "items": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              },
+              "uniqueItems": true,
+              "maxItems": 6
+            }
+          }
+        }
+      }
+    },
+    "deterministic_compiler": {
+      "valid": "Exactly one attribute_memory_support call, no narrative content, exact argument key, and a unique integer subset of 1 through 6.",
+      "invalid": "Any malformed output, additional field, duplicate, boolean, string, or out-of-range index fails closed to an empty support set.",
+      "runtime_effect_in_this_experiment": "None. Indices are scored offline and no Chroma memory is written or changed."
+    }
+  },
+  "controlled_variables": [
+    "18 frozen cases and order",
+    "six chronological events per case",
+    "already-generated derived memory text and memory kind",
+    "event rendering and model-visible fields",
+    "Qwen3.5 4B model digest",
+    "system prompt and tool schema",
+    "generation settings and one transport attempt",
+    "scorer and success thresholds",
+    "no runtime memory writes, retrieval, answer generation, or external API",
+    "gold source indices remain analyzer-only"
+  ],
+  "prohibited_changes": [
+    "Pass gold_support_event_indices, expected labels, or scorer output to the model.",
+    "Change the derived memory, memory kind, source events, event order, prompt, tool schema, model, generation settings, or thresholds after the harness merge.",
+    "Add scenario-specific keywords or rules for screen readers, libraries, keys, diets, pets, wool, meal prep, warranties, devices, allergies, commuting, passports, moving, tea, or any test topic.",
+    "Reuse source-pointer V1 or consolidation-admission cases as validation data.",
+    "Retry model inference after a completed or ambiguous in-flight request.",
+    "Write to production Chroma, change runtime consolidation, or claim dialogue improvement."
+  ],
+  "success_gates": {
+    "candidate_exact_set_match_count_min": 14,
+    "candidate_positive_complete_support_count_min": 11,
+    "candidate_unsupported_empty_count_min": 5,
+    "candidate_evidence_precision_min": 0.9,
+    "candidate_evidence_recall_min": 0.9,
+    "candidate_mean_case_f1_gain_min": 0.55,
+    "candidate_false_source_count_max": 2,
+    "candidate_missed_source_count_max": 1,
+    "candidate_parse_success_count_exact": 18,
+    "candidate_index_contract_success_count_exact": 18,
+    "candidate_transport_error_count_exact": 0,
+    "candidate_median_wall_seconds_max": 4.5,
+    "candidate_warm_p95_wall_seconds_max": 6.5
+  },
+  "run_invariants": {
+    "model_call_count_exact": 18,
+    "transport_attempt_count_exact": 18,
+    "calls_per_case_exact": 1,
+    "post_failure_retry_authorized": false,
+    "interim_gold_inspection_authorized": false,
+    "condition_order": [
+      "deterministic coarse control",
+      "Qwen3.5 4B candidate in frozen case order"
+    ]
+  },
+  "decision_rule": {
+    "pass": "Freeze the narrow support-attribution candidate and authorize only a separately preregistered fresh runtime-integration pilot that stores validated support IDs. Do not authorize runtime in this experiment.",
+    "fail": "Drop the support-attribution candidate, keep the current source-preserving runtime unchanged, and stop prompt or threshold tuning on these cases.",
+    "invalid": "If provenance, hashes, model digest, call count, gold isolation, or resume safety fail, invalidate the run rather than interpreting accuracy."
+  },
+  "result_artifacts": [
+    "reports/consolidation_support_attribution_v1_development_raw.json",
+    "reports/consolidation_support_attribution_v1_development_analysis.json",
+    "reports/consolidation_support_attribution_v1_development_analysis.md",
+    "configs/consolidation_support_attribution_v1_result_lock.json"
+  ],
+  "evidence_limits": {
+    "development_mechanism_claim_authorized": true,
+    "runtime_integration_authorized": false,
+    "fresh_runtime_integration_pilot_authorized_only_if_all_gates_pass": true,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "long_term_recall_improvement_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "production_data_migration_authorized": false
+  },
+  "model_inference_before_harness_merge_authorized": false
+}
