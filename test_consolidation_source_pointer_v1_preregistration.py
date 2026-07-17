@@ -21,6 +21,9 @@ RESULT_PATHS = (
     ROOT / "reports" / "consolidation_source_pointer_v1_analysis.md",
     ROOT / "configs" / "consolidation_source_pointer_v1_result_lock.json",
 )
+PREREGISTRATION_MERGE_COMMIT = (
+    "c5b56665ef6deb218ddb595c9c2bdcb09a9e0753"
+)
 
 
 def _load(path):
@@ -212,7 +215,20 @@ class ConsolidationSourcePointerV1PreregistrationTest(
 
     def test_result_artifacts_do_not_exist_before_implementation(self):
         for path in RESULT_PATHS:
-            self.assertFalse(path.exists(), path)
+            relative_path = path.relative_to(ROOT).as_posix()
+            completed = subprocess.run(
+                [
+                    "git",
+                    "cat-file",
+                    "-e",
+                    f"{PREREGISTRATION_MERGE_COMMIT}:{relative_path}",
+                ],
+                cwd=ROOT,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            self.assertNotEqual(completed.returncode, 0, relative_path)
 
 
 if __name__ == "__main__":
