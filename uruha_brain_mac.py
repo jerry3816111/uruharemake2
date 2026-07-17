@@ -14118,6 +14118,13 @@ class UruhaBrainV4_Mac:
             "logic": logic,
         }
 
+    def _write_typed_reflection_if_enabled(self, user_input, reply, logic):
+        if not urr.typed_reflection_runtime_enabled():
+            return None
+        return self.memory.reflect_experience(
+            user_input, reply, logic, self.client_logic
+        )
+
     def emit_response_if_ready(self, event, tick_result):
         user_input = event["user_input"]
         mems = event["memory_data"]
@@ -14150,7 +14157,7 @@ class UruhaBrainV4_Mac:
         self._push_blackboard("surface", "post_check", post_check, salience=0.86)
 
         episode_doc = self.memory.save_episode(user_input, reply, psyche_after, logic)
-        reflection = self.memory.reflect_experience(user_input, reply, logic, self.client_logic)
+        reflection = self._write_typed_reflection_if_enabled(user_input, reply, logic)
 
         memory_after = self.memory.get_runtime_snapshot()
         memory_writes = [

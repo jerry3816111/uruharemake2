@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 
 from rightbrain_language_quality import (
@@ -23,6 +24,17 @@ TYPE_TO_COLLECTION = {
     "procedural": "procedural",
     "interpretive": "wisdom",
 }
+
+
+def typed_reflection_runtime_enabled(environ=None):
+    """Keep failed V4 reflection shadow-only unless research explicitly opts in."""
+    source = os.environ if environ is None else environ
+    return str(source.get("URUHA_ENABLE_TYPED_REFLECTION", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
 
 def _contains_any(text, markers):

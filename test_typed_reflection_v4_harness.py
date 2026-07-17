@@ -1,5 +1,6 @@
 import hashlib
 import json
+import subprocess
 import unittest
 from copy import deepcopy
 from pathlib import Path
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parent
 CONFIG = ROOT / "configs" / "typed_reflection_v4_development_preregistration.json"
 DATASET = ROOT / "datasets" / "typed_reflection_v4_development_pilot.json"
 LOCK = ROOT / "configs" / "typed_reflection_v4_harness_lock.json"
+CLOSURE = ROOT / "configs" / "typed_reflection_v4_result_closure.json"
 
 
 def successful_reply(case):
@@ -67,14 +69,15 @@ def perfect_rows():
 class TypedReflectionV4HarnessTest(unittest.TestCase):
     def test_harness_lock_hashes_all_v4_causal_inputs(self):
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
+        closure = json.loads(CLOSURE.read_text(encoding="utf-8"))
         self.assertEqual(lock["required_run_branch"], "main")
         self.assertEqual(tuple(lock["conditions"]), (CONTROL, TREATMENT))
         for relative, expected in lock["frozen_artifacts"].items():
-            self.assertEqual(
-                hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(),
-                expected,
-                relative,
+            frozen_bytes = subprocess.check_output(
+                ["git", "show", f"{closure['runner_commit']}:{relative}"],
+                cwd=ROOT,
             )
+            self.assertEqual(hashlib.sha256(frozen_bytes).hexdigest(), expected, relative)
 
     def test_perfect_synthetic_result_passes_every_gate(self):
         config = json.loads(CONFIG.read_text(encoding="utf-8"))
