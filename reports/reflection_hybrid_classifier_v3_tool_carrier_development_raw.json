@@ -1,0 +1,3001 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_tool_carrier_development_raw_v3",
+  "evidence_status": "development_output_carrier_pilot_no_generalization_claim",
+  "started_at": "2026-07-17T19:05:26+09:00",
+  "completed_at": "2026-07-17T19:07:01+09:00",
+  "runner_commit": "28f2800a64c557d87ab1f033ed307280525d052d",
+  "runner_branch": "main",
+  "ollama_version": "0.31.1",
+  "preregistration_sha256": "6e0e940579d725269baad41e65003b4fcf278bad03a6c5fc5a7383325c8ff812",
+  "harness_lock_sha256": "7a02b0f0cfb3c1de8ada38e860c187e6241a2ab74a95d6c31ef2b2d60d1e2934",
+  "v2_result_lock_sha256": "187a5894d81726b4a4faa1664c187f72d41fbe979ab3c730bd315ce89d834fd7",
+  "dataset_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+  "prior_result_sha256": "674761ef94b58c5507103a014d57ee9e623ab03079d95acf244c9eee62a4fce5",
+  "model_inventory": {
+    "qwen3.5:0.8b": {
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "size_bytes": 1036046583,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "873.44M",
+        "quantization_level": "Q8_0",
+        "context_length": 262144,
+        "embedding_length": 1024
+      }
+    },
+    "qwen3.5:2b": {
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "size_bytes": 2741192820,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "2.3B",
+        "quantization_level": "Q8_0",
+        "context_length": 262144,
+        "embedding_length": 2048
+      }
+    },
+    "qwen3.5:4b": {
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "size_bytes": 3389983735,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "4.7B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2560
+      }
+    },
+    "qwen3.5:9b": {
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "size_bytes": 6594474711,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "9.7B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 4096
+      }
+    }
+  },
+  "model_calls": 60,
+  "gold_label_passed_to_model": false,
+  "rules_predictions": {
+    "ext_sem_eng_12829549": "semantic",
+    "ext_sem_eng_3818759": "semantic",
+    "ext_sem_eng_12994016": "semantic",
+    "ext_sem_jpn_13523717": "none",
+    "ext_sem_jpn_8874675": "none",
+    "ext_sem_jpn_2353994": "none",
+    "ext_sem_cmn_13166871": "semantic",
+    "ext_sem_cmn_13869310": "semantic",
+    "ext_proc_eng_12075640": "procedural",
+    "ext_proc_eng_9826924": "none",
+    "ext_proc_eng_13662450": "procedural",
+    "ext_proc_jpn_5962359": "none",
+    "ext_proc_jpn_150204": "none",
+    "ext_proc_jpn_150203": "none",
+    "ext_proc_cmn_791584": "none",
+    "ext_proc_cmn_13519695": "none",
+    "ext_int_eng_13964087": "interpretive",
+    "ext_int_eng_10525358": "interpretive",
+    "ext_int_eng_9821414": "interpretive",
+    "ext_int_eng_6312433": "interpretive",
+    "ext_int_eng_869407": "interpretive",
+    "ext_int_eng_4843024": "none",
+    "ext_int_jpn_160756": "none",
+    "ext_int_jpn_1822914": "none",
+    "ext_none_eng_6576824": "none",
+    "ext_none_eng_3129325": "none",
+    "ext_none_eng_73647": "none",
+    "ext_none_jpn_13220298": "none",
+    "ext_none_jpn_12962643": "none",
+    "ext_none_jpn_172087": "none",
+    "ext_none_cmn_13276173": "none",
+    "ext_none_cmn_13535360": "none"
+  },
+  "conditions": [
+    {
+      "model": "qwen3.5:0.8b",
+      "model_snapshot": {
+        "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+        "size_bytes": 1036046583,
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen35",
+          "families": [
+            "qwen35"
+          ],
+          "parameter_size": "873.44M",
+          "quantization_level": "Q8_0",
+          "context_length": 262144,
+          "embedding_length": 1024
+        }
+      },
+      "fallback_rows": [
+        {
+          "id": "ext_sem_jpn_13523717",
+          "observed_type": "none",
+          "parse_success": false,
+          "parse_error": "missing_tool_calls",
+          "raw_content": "none",
+          "raw_tool_calls": null,
+          "wall_seconds": 2.074677,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2073494875,
+          "load_duration_ns": 1845111167,
+          "prompt_eval_count": 467,
+          "eval_count": 2
+        },
+        {
+          "id": "ext_sem_jpn_8874675",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_08yam6oc",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.765413,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 764420625,
+          "load_duration_ns": 199989750,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_sem_jpn_2353994",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_c473wtyv",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.751587,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 750606125,
+          "load_duration_ns": 201177458,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_eng_9826924",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_1peaf0eg",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.78725,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 786237916,
+          "load_duration_ns": 200392208,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_5962359",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_gckpjcxs",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.79044,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 789502417,
+          "load_duration_ns": 198878042,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_150204",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_lq7em09v",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.767246,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 766475750,
+          "load_duration_ns": 201357667,
+          "prompt_eval_count": 473,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_150203",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_v93ue1s2",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.765188,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 764307209,
+          "load_duration_ns": 202674542,
+          "prompt_eval_count": 472,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_cmn_791584",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_gwhtlof7",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.75882,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 757634625,
+          "load_duration_ns": 199991000,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_cmn_13519695",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_hpyv13ab",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.745122,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 743784667,
+          "load_duration_ns": 200751500,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_eng_4843024",
+          "observed_type": "none",
+          "parse_success": false,
+          "parse_error": "missing_tool_calls",
+          "raw_content": "none",
+          "raw_tool_calls": null,
+          "wall_seconds": 0.424656,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 423675375,
+          "load_duration_ns": 200929583,
+          "prompt_eval_count": 476,
+          "eval_count": 2
+        },
+        {
+          "id": "ext_int_jpn_160756",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_q9317vjk",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.787186,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 785929250,
+          "load_duration_ns": 203852250,
+          "prompt_eval_count": 487,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_jpn_1822914",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_xxwg41m1",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.755509,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 754575625,
+          "load_duration_ns": 199709709,
+          "prompt_eval_count": 480,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_6576824",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_w0nquug7",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.760689,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 759602292,
+          "load_duration_ns": 199314750,
+          "prompt_eval_count": 466,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_3129325",
+          "observed_type": "none",
+          "parse_success": false,
+          "parse_error": "missing_tool_calls",
+          "raw_content": "none",
+          "raw_tool_calls": null,
+          "wall_seconds": 0.423954,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 422998833,
+          "load_duration_ns": 199322958,
+          "prompt_eval_count": 468,
+          "eval_count": 2
+        },
+        {
+          "id": "ext_none_eng_73647",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_ejcjvhmf",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.768216,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 767267333,
+          "load_duration_ns": 199758333,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_13220298",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_w64n7p7n",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.754614,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 753739958,
+          "load_duration_ns": 198598208,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_12962643",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_0ittzedu",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.767538,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 766473917,
+          "load_duration_ns": 200895958,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_172087",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_n6vokhey",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.752096,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 750990916,
+          "load_duration_ns": 202233875,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13276173",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_0t0b2ptw",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.765345,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 764323833,
+          "load_duration_ns": 203488625,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13535360",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_8nizswr5",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 0.756436,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 755580917,
+          "load_duration_ns": 200947250,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        }
+      ],
+      "gate_snapshot": {
+        "case_count": 32,
+        "rules_correct_count": 20,
+        "rules_accuracy": 0.625,
+        "hybrid_correct_count": 18,
+        "hybrid_accuracy": 0.5625,
+        "accuracy_delta": -0.0625,
+        "class_metrics": {
+          "semantic": {
+            "total": 8,
+            "correct": 7,
+            "accuracy": 0.875
+          },
+          "procedural": {
+            "total": 8,
+            "correct": 2,
+            "accuracy": 0.25
+          },
+          "interpretive": {
+            "total": 8,
+            "correct": 5,
+            "accuracy": 0.625
+          },
+          "none": {
+            "total": 8,
+            "correct": 4,
+            "accuracy": 0.5
+          }
+        },
+        "observed_type_counts": {
+          "interpretive": 5,
+          "none": 6,
+          "procedural": 2,
+          "semantic": 19
+        },
+        "newly_correct_count": 2,
+        "newly_correct_case_ids": [
+          "ext_sem_jpn_8874675",
+          "ext_sem_jpn_2353994"
+        ],
+        "regression_count": 4,
+        "regression_case_ids": [
+          "ext_none_jpn_13220298",
+          "ext_none_jpn_12962643",
+          "ext_none_jpn_172087",
+          "ext_none_cmn_13535360"
+        ],
+        "critical_false_positive_count": 4,
+        "critical_false_positive_case_ids": [
+          "ext_none_jpn_13220298",
+          "ext_none_jpn_12962643",
+          "ext_none_jpn_172087",
+          "ext_none_cmn_13535360"
+        ],
+        "model_call_count": 20,
+        "parse_success_count": 17,
+        "parse_success_rate": 0.85,
+        "median_fallback_wall_seconds": 0.7629,
+        "warm_p95_fallback_wall_seconds": 0.7904,
+        "gate_checks": {
+          "hybrid_correct_count_min": false,
+          "hybrid_accuracy_min": false,
+          "semantic_correct_min": true,
+          "procedural_correct_min": false,
+          "interpretive_correct_min": false,
+          "none_correct": false,
+          "newly_correct_vs_rules_min": false,
+          "regression_vs_rules_max": false,
+          "critical_false_positive_count_max": false,
+          "parse_success_rate_min": false,
+          "model_call_count_max": true,
+          "median_fallback_wall_seconds_max": true,
+          "warm_p95_fallback_wall_seconds_max": true
+        },
+        "all_gates_pass": false,
+        "rows": [
+          {
+            "id": "ext_sem_eng_12829549",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_3818759",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_12994016",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_jpn_13523717",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": false
+          },
+          {
+            "id": "ext_sem_jpn_8874675",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_jpn_2353994",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_cmn_13166871",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_cmn_13869310",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_12075640",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_9826924",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_eng_13662450",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_jpn_5962359",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150204",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150203",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_791584",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_13519695",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_eng_13964087",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_10525358",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_9821414",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_6312433",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_869407",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_4843024",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": false
+          },
+          {
+            "id": "ext_int_jpn_160756",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_jpn_1822914",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_6576824",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_3129325",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": false
+          },
+          {
+            "id": "ext_none_eng_73647",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_13220298",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_12962643",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_172087",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13276173",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13535360",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          }
+        ]
+      }
+    },
+    {
+      "model": "qwen3.5:2b",
+      "model_snapshot": {
+        "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+        "size_bytes": 2741192820,
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen35",
+          "families": [
+            "qwen35"
+          ],
+          "parameter_size": "2.3B",
+          "quantization_level": "Q8_0",
+          "context_length": 262144,
+          "embedding_length": 2048
+        }
+      },
+      "fallback_rows": [
+        {
+          "id": "ext_sem_jpn_13523717",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_fsjy8b2e",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 3.63539,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 3634159792,
+          "load_duration_ns": 2577998083,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_sem_jpn_8874675",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_0lvy4hod",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.259067,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1258105958,
+          "load_duration_ns": 202108458,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_sem_jpn_2353994",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_2592fful",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.240673,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1239016916,
+          "load_duration_ns": 201431875,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_eng_9826924",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_q7ah1bkk",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.274852,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1273968458,
+          "load_duration_ns": 199762375,
+          "prompt_eval_count": 469,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_jpn_5962359",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_cxjvh7n8",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.239092,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1238045000,
+          "load_duration_ns": 201172791,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_150204",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_ovzssh76",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.278281,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1277363375,
+          "load_duration_ns": 200279458,
+          "prompt_eval_count": 473,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_150203",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_jhaqpwxi",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.292033,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1291146625,
+          "load_duration_ns": 206569250,
+          "prompt_eval_count": 472,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_cmn_791584",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_amsvs7t4",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.296729,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1295612333,
+          "load_duration_ns": 200701041,
+          "prompt_eval_count": 468,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_cmn_13519695",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_td8bw6bo",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.25658,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1254900291,
+          "load_duration_ns": 200591208,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_eng_4843024",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_55747p90",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.221875,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1220081542,
+          "load_duration_ns": 198111125,
+          "prompt_eval_count": 476,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_jpn_160756",
+          "observed_type": "interpretive",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_k4j6p357",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "interpretive"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.300185,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1299186750,
+          "load_duration_ns": 198771875,
+          "prompt_eval_count": 487,
+          "eval_count": 30
+        },
+        {
+          "id": "ext_int_jpn_1822914",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_hyhbmrcb",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.260697,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1259707917,
+          "load_duration_ns": 199457250,
+          "prompt_eval_count": 480,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_6576824",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_vaf506ik",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.245265,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1243579083,
+          "load_duration_ns": 200503125,
+          "prompt_eval_count": 466,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_3129325",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_r5602lpd",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.259933,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1259139708,
+          "load_duration_ns": 200117333,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_73647",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_utozly9o",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.267883,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1266650250,
+          "load_duration_ns": 203281500,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_13220298",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_5st4i5jq",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.267521,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1266576292,
+          "load_duration_ns": 205443209,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_12962643",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_4vly537x",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.257549,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1256275584,
+          "load_duration_ns": 200678834,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_172087",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_j8ox842z",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.247938,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1246068541,
+          "load_duration_ns": 201793250,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13276173",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_11fnakox",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.317404,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1316250667,
+          "load_duration_ns": 200149417,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13535360",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_tx8rxaup",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 1.356697,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 1355303250,
+          "load_duration_ns": 303389459,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        }
+      ],
+      "gate_snapshot": {
+        "case_count": 32,
+        "rules_correct_count": 20,
+        "rules_accuracy": 0.625,
+        "hybrid_correct_count": 24,
+        "hybrid_accuracy": 0.75,
+        "accuracy_delta": 0.125,
+        "class_metrics": {
+          "semantic": {
+            "total": 8,
+            "correct": 8,
+            "accuracy": 1.0
+          },
+          "procedural": {
+            "total": 8,
+            "correct": 5,
+            "accuracy": 0.625
+          },
+          "interpretive": {
+            "total": 8,
+            "correct": 6,
+            "accuracy": 0.75
+          },
+          "none": {
+            "total": 8,
+            "correct": 5,
+            "accuracy": 0.625
+          }
+        },
+        "observed_type_counts": {
+          "interpretive": 6,
+          "none": 5,
+          "procedural": 5,
+          "semantic": 16
+        },
+        "newly_correct_count": 7,
+        "newly_correct_case_ids": [
+          "ext_sem_jpn_13523717",
+          "ext_sem_jpn_8874675",
+          "ext_sem_jpn_2353994",
+          "ext_proc_eng_9826924",
+          "ext_proc_jpn_150203",
+          "ext_proc_cmn_791584",
+          "ext_int_jpn_160756"
+        ],
+        "regression_count": 3,
+        "regression_case_ids": [
+          "ext_none_jpn_13220298",
+          "ext_none_jpn_12962643",
+          "ext_none_jpn_172087"
+        ],
+        "critical_false_positive_count": 3,
+        "critical_false_positive_case_ids": [
+          "ext_none_jpn_13220298",
+          "ext_none_jpn_12962643",
+          "ext_none_jpn_172087"
+        ],
+        "model_call_count": 20,
+        "parse_success_count": 20,
+        "parse_success_rate": 1.0,
+        "median_fallback_wall_seconds": 1.2641,
+        "warm_p95_fallback_wall_seconds": 1.3567,
+        "gate_checks": {
+          "hybrid_correct_count_min": false,
+          "hybrid_accuracy_min": false,
+          "semantic_correct_min": true,
+          "procedural_correct_min": false,
+          "interpretive_correct_min": true,
+          "none_correct": false,
+          "newly_correct_vs_rules_min": true,
+          "regression_vs_rules_max": false,
+          "critical_false_positive_count_max": false,
+          "parse_success_rate_min": true,
+          "model_call_count_max": true,
+          "median_fallback_wall_seconds_max": true,
+          "warm_p95_fallback_wall_seconds_max": true
+        },
+        "all_gates_pass": false,
+        "rows": [
+          {
+            "id": "ext_sem_eng_12829549",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_3818759",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_12994016",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_jpn_13523717",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_jpn_8874675",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_jpn_2353994",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_cmn_13166871",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_cmn_13869310",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_12075640",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_9826924",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_eng_13662450",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_jpn_5962359",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150204",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150203",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_791584",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_13519695",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_eng_13964087",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_10525358",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_9821414",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_6312433",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_869407",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_4843024",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_jpn_160756",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_jpn_1822914",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_6576824",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_3129325",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_73647",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_13220298",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_12962643",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_172087",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13276173",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13535360",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          }
+        ]
+      }
+    },
+    {
+      "model": "qwen3.5:4b",
+      "model_snapshot": {
+        "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+        "size_bytes": 3389983735,
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen35",
+          "families": [
+            "qwen35"
+          ],
+          "parameter_size": "4.7B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 262144,
+          "embedding_length": 2560
+        }
+      },
+      "fallback_rows": [
+        {
+          "id": "ext_sem_jpn_13523717",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_xyutt2i4",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 5.314883,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 5313680583,
+          "load_duration_ns": 3131959667,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_sem_jpn_8874675",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_mz56isd9",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.352221,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2350870417,
+          "load_duration_ns": 203036167,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_sem_jpn_2353994",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_akn0bbtn",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.426465,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2425565375,
+          "load_duration_ns": 200417000,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_eng_9826924",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_8tma60vp",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.439129,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2437732708,
+          "load_duration_ns": 200272500,
+          "prompt_eval_count": 469,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_jpn_5962359",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_9lc3qlg1",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.391649,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2390615417,
+          "load_duration_ns": 200046833,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_proc_jpn_150204",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_bkla4pzz",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.428989,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2428088000,
+          "load_duration_ns": 198500791,
+          "prompt_eval_count": 473,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_jpn_150203",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_k8gsnlqf",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.44731,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2446305042,
+          "load_duration_ns": 198869375,
+          "prompt_eval_count": 472,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_cmn_791584",
+          "observed_type": "procedural",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_3zcu5zro",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "procedural"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.454236,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2453282208,
+          "load_duration_ns": 201289042,
+          "prompt_eval_count": 468,
+          "eval_count": 31
+        },
+        {
+          "id": "ext_proc_cmn_13519695",
+          "observed_type": "semantic",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_1cyg5roh",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "semantic"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.365732,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2364464417,
+          "load_duration_ns": 200139875,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_eng_4843024",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_pxje0115",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.380813,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2379641750,
+          "load_duration_ns": 202880250,
+          "prompt_eval_count": 476,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_int_jpn_160756",
+          "observed_type": "interpretive",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_xwwrnqk5",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "interpretive"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.460238,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2457918750,
+          "load_duration_ns": 200906792,
+          "prompt_eval_count": 487,
+          "eval_count": 30
+        },
+        {
+          "id": "ext_int_jpn_1822914",
+          "observed_type": "interpretive",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_hkvoqad8",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "interpretive"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.502882,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2501952458,
+          "load_duration_ns": 202477750,
+          "prompt_eval_count": 480,
+          "eval_count": 30
+        },
+        {
+          "id": "ext_none_eng_6576824",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_xtmzkydt",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.376922,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2375920875,
+          "load_duration_ns": 203762084,
+          "prompt_eval_count": 466,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_3129325",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_wfmchgfd",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.395604,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2394287750,
+          "load_duration_ns": 201891042,
+          "prompt_eval_count": 468,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_eng_73647",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_5shnml6f",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.369535,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2368675167,
+          "load_duration_ns": 216375417,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_13220298",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_e8q8dun7",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.367803,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2366612834,
+          "load_duration_ns": 201090000,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_12962643",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_hpd9vnw7",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.368966,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2367807500,
+          "load_duration_ns": 201524250,
+          "prompt_eval_count": 470,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_jpn_172087",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_tqv8x0qq",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.36643,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2365439708,
+          "load_duration_ns": 201104167,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13276173",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_1kcu01qm",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.375747,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2374156375,
+          "load_duration_ns": 200242709,
+          "prompt_eval_count": 467,
+          "eval_count": 29
+        },
+        {
+          "id": "ext_none_cmn_13535360",
+          "observed_type": "none",
+          "parse_success": true,
+          "parse_error": null,
+          "raw_content": "",
+          "raw_tool_calls": [
+            {
+              "id": "call_69rapwod",
+              "function": {
+                "index": 0,
+                "name": "classify_reflection",
+                "arguments": {
+                  "reflection_type": "none"
+                }
+              }
+            }
+          ],
+          "wall_seconds": 2.37464,
+          "transport_attempts": 1,
+          "prior_transport_errors": [],
+          "total_duration_ns": 2373278959,
+          "load_duration_ns": 198744250,
+          "prompt_eval_count": 469,
+          "eval_count": 29
+        }
+      ],
+      "gate_snapshot": {
+        "case_count": 32,
+        "rules_correct_count": 20,
+        "rules_accuracy": 0.625,
+        "hybrid_correct_count": 29,
+        "hybrid_accuracy": 0.9062,
+        "accuracy_delta": 0.2812,
+        "class_metrics": {
+          "semantic": {
+            "total": 8,
+            "correct": 8,
+            "accuracy": 1.0
+          },
+          "procedural": {
+            "total": 8,
+            "correct": 6,
+            "accuracy": 0.75
+          },
+          "interpretive": {
+            "total": 8,
+            "correct": 7,
+            "accuracy": 0.875
+          },
+          "none": {
+            "total": 8,
+            "correct": 8,
+            "accuracy": 1.0
+          }
+        },
+        "observed_type_counts": {
+          "interpretive": 7,
+          "none": 10,
+          "procedural": 6,
+          "semantic": 9
+        },
+        "newly_correct_count": 9,
+        "newly_correct_case_ids": [
+          "ext_sem_jpn_13523717",
+          "ext_sem_jpn_8874675",
+          "ext_sem_jpn_2353994",
+          "ext_proc_eng_9826924",
+          "ext_proc_jpn_150204",
+          "ext_proc_jpn_150203",
+          "ext_proc_cmn_791584",
+          "ext_int_jpn_160756",
+          "ext_int_jpn_1822914"
+        ],
+        "regression_count": 0,
+        "regression_case_ids": [],
+        "critical_false_positive_count": 0,
+        "critical_false_positive_case_ids": [],
+        "model_call_count": 20,
+        "parse_success_count": 20,
+        "parse_success_rate": 1.0,
+        "median_fallback_wall_seconds": 2.3862,
+        "warm_p95_fallback_wall_seconds": 2.5029,
+        "gate_checks": {
+          "hybrid_correct_count_min": true,
+          "hybrid_accuracy_min": true,
+          "semantic_correct_min": true,
+          "procedural_correct_min": true,
+          "interpretive_correct_min": true,
+          "none_correct": true,
+          "newly_correct_vs_rules_min": true,
+          "regression_vs_rules_max": true,
+          "critical_false_positive_count_max": true,
+          "parse_success_rate_min": true,
+          "model_call_count_max": true,
+          "median_fallback_wall_seconds_max": true,
+          "warm_p95_fallback_wall_seconds_max": true
+        },
+        "all_gates_pass": true,
+        "rows": [
+          {
+            "id": "ext_sem_eng_12829549",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_3818759",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_eng_12994016",
+            "language": "eng",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_jpn_13523717",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_jpn_8874675",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_jpn_2353994",
+            "language": "jpn",
+            "expected_type": "semantic",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_sem_cmn_13166871",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_sem_cmn_13869310",
+            "language": "cmn",
+            "expected_type": "semantic",
+            "rules_observed_type": "semantic",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_12075640",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_eng_9826924",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_eng_13662450",
+            "language": "eng",
+            "expected_type": "procedural",
+            "rules_observed_type": "procedural",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_proc_jpn_5962359",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150204",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_jpn_150203",
+            "language": "jpn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_791584",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "procedural",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_proc_cmn_13519695",
+            "language": "cmn",
+            "expected_type": "procedural",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "semantic",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_eng_13964087",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_10525358",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_9821414",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_6312433",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_869407",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "interpretive",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": false,
+            "fallback_parse_success": null
+          },
+          {
+            "id": "ext_int_eng_4843024",
+            "language": "eng",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": false,
+            "hybrid_correct": false,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_jpn_160756",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_int_jpn_1822914",
+            "language": "jpn",
+            "expected_type": "interpretive",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "interpretive",
+            "rules_correct": false,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_6576824",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_3129325",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_eng_73647",
+            "language": "eng",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_13220298",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_12962643",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_jpn_172087",
+            "language": "jpn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13276173",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          },
+          {
+            "id": "ext_none_cmn_13535360",
+            "language": "cmn",
+            "expected_type": "none",
+            "rules_observed_type": "none",
+            "hybrid_observed_type": "none",
+            "rules_correct": true,
+            "hybrid_correct": true,
+            "fallback_used": true,
+            "fallback_parse_success": true
+          }
+        ]
+      }
+    }
+  ],
+  "active_condition": null,
+  "selected_model": "qwen3.5:4b",
+  "early_stop_triggered": true
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "uruha_reflection_hybrid_classifier_tool_carrier_result_lock_v3",
+  "closed_at": "2026-07-17T19:10:00+09:00",
+  "status": "completed_passed_all_preregistered_development_gates",
+  "runner_commit": "28f2800a64c557d87ab1f033ed307280525d052d",
+  "artifact_bindings": {
+    "preregistration": "configs/reflection_hybrid_classifier_v3_tool_carrier_development_preregistration.json",
+    "preregistration_sha256": "6e0e940579d725269baad41e65003b4fcf278bad03a6c5fc5a7383325c8ff812",
+    "harness_lock": "configs/reflection_hybrid_classifier_v3_tool_carrier_harness_lock.json",
+    "harness_lock_sha256": "7a02b0f0cfb3c1de8ada38e860c187e6241a2ab74a95d6c31ef2b2d60d1e2934",
+    "v2_result_lock": "configs/reflection_hybrid_classifier_v2_result_lock.json",
+    "v2_result_lock_sha256": "187a5894d81726b4a4faa1664c187f72d41fbe979ab3c730bd315ce89d834fd7",
+    "dataset": "datasets/reflection_classifier_v1_external_holdout.json",
+    "dataset_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+    "prior_result": "reports/reflection_classifier_v1_external_holdout_analysis.json",
+    "prior_result_sha256": "674761ef94b58c5507103a014d57ee9e623ab03079d95acf244c9eee62a4fce5",
+    "runtime_classifier": "uruha_reflection_runtime.py",
+    "runtime_classifier_sha256": "ea16243b1678d9d2089093fe4cd47934ab792de523d3b948f3019c595e955c48",
+    "matched_scorer": "reflection_hybrid_classifier_v2_core.py",
+    "matched_scorer_sha256": "e34583681b447ef33cf72dc1a333aa83eeb151c93be82c0e56683c6bcc9b8b9f",
+    "runner": "run_reflection_hybrid_classifier_v3_tool_carrier_development.py",
+    "runner_sha256": "c51d6e12beef557a540f6099a5f16b9315ec2f957e87b196be9dc6b41a8ff554",
+    "analyzer": "analyze_reflection_hybrid_classifier_v3_tool_carrier_development.py",
+    "analyzer_sha256": "93cf21b37790fd439ed3c2e5c777941a4e981b0956353fda1cf6702716e6f158",
+    "raw_result": "reports/reflection_hybrid_classifier_v3_tool_carrier_development_raw.json",
+    "raw_result_sha256": "56caac42d1177ee2aeca99f7e53ea56d1c48235ac2f0c1de584b4270b1c073a1",
+    "analysis_json": "reports/reflection_hybrid_classifier_v3_tool_carrier_development_analysis.json",
+    "analysis_json_sha256": "dbe51b6d6e77f10f2db48cf1b4003820233c36f03fe173b6b531dd6dd98f7613",
+    "analysis_markdown": "reports/reflection_hybrid_classifier_v3_tool_carrier_development_analysis.md",
+    "analysis_markdown_sha256": "274aa3a30819eb05867d9d355574388d3426bb0142ed491f0a7d7ad2b024af2f",
+    "result_test": "test_reflection_hybrid_classifier_v3_tool_carrier_result.py",
+    "result_test_sha256": "796d896ec6a6ef52fcbd2a171aacfab1a234f8aef8a52a6ef887938e4618786c"
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "selected_model": "qwen3.5:4b",
+    "selected_model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "selected_parameter_size": "4.7B",
+    "selected_quantization": "Q4_K_M"
+  },
+  "model_results": {
+    "qwen3.5:0.8b": {
+      "correct": "18_of_32",
+      "newly_correct": 2,
+      "regressions": 4,
+      "critical_false_positives": 4,
+      "parse_success": "17_of_20",
+      "all_preregistered_gates_pass": false
+    },
+    "qwen3.5:2b": {
+      "correct": "24_of_32",
+      "newly_correct": 7,
+      "regressions": 3,
+      "critical_false_positives": 3,
+      "parse_success": "20_of_20",
+      "all_preregistered_gates_pass": false
+    },
+    "qwen3.5:4b": {
+      "correct": "29_of_32",
+      "accuracy": 0.9062,
+      "accuracy_delta_vs_rules": 0.2812,
+      "newly_correct": 9,
+      "regressions": 0,
+      "critical_false_positives": 0,
+      "parse_success": "20_of_20",
+      "median_fallback_seconds": 2.3862,
+      "warm_p95_fallback_seconds": 2.5029,
+      "class_correct": {
+        "semantic": "8_of_8",
+        "procedural": "6_of_8",
+        "interpretive": "7_of_8",
+        "none": "8_of_8"
+      },
+      "all_preregistered_gates_pass": true
+    },
+    "qwen3.5:9b": {
+      "status": "not_tested_due_to_preregistered_early_stop",
+      "capability_claim_authorized": false
+    }
+  },
+  "diagnostic_only_not_prompt_tuning_input": {
+    "remaining_missed_case_ids": [
+      "ext_proc_jpn_5962359",
+      "ext_proc_cmn_13519695",
+      "ext_int_eng_4843024"
+    ],
+    "all_models_parse_error_counts": {
+      "missing_tool_calls": 3
+    }
+  },
+  "decision": "select_qwen3_5_4b_tool_carrier_for_fresh_holdout_only",
+  "bounded_interpretation": "On retired development evidence, the native tool-call carrier made the 4B local fallback both parse-reliable and conservative enough to pass every frozen gate. This does not yet demonstrate source-separated generalization or safe runtime memory writing.",
+  "next_evidence_rule": "Freeze the selected 4B model, tool contract, prompt, parser, rules control, and gates before constructing a fresh source-separated holdout. Do not tune on the three remaining development misses.",
+  "same_data_prompt_tuning_authorized": false,
+  "same_data_generalization_claim_authorized": false,
+  "fresh_holdout_preregistration_authorized": true,
+  "runtime_memory_write_authorized": false,
+  "downstream_behavior_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
