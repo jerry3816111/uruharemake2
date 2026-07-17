@@ -1,0 +1,264 @@
+{
+  "schema": "uruha_consolidation_admission_model_screen_development_preregistration_v1",
+  "experiment_id": "consolidation_admission_model_screen_v1_development",
+  "created_at": "2026-07-17T23:11:00+09:00",
+  "evidence_role": "small_falsifiable_development_pilot_isolating_model_execution_under_the_frozen_v3_role_separated_contract",
+  "problem": "The frozen V3 role-separated contract corrected part of the procedural-memory role ambiguity, but qwen2.5:7b still mixed memory kind with persistence basis, omitted tool calls, missed six positive writes, and passed only 10 of 18 sessions.",
+  "hypothesis": "With transcript, prompt, tool schema, compiler, generation settings, data, and scoring held constant, a locally runnable Qwen3.5 model will execute the frozen V3 semantic contract more reliably than qwen2.5:7b.",
+  "existing_evidence": [
+    {
+      "source": "Frozen consolidation admission V3 result",
+      "engineering_use": "Defines the exact failed contract and prevents tuning on the consumed V3 sessions.",
+      "boundary": "The V3 data and result are used only for failure-mode definition and contract freezing."
+    },
+    {
+      "source": "Frozen V46 local model-capacity development result",
+      "path": "reports/commitment_model_capacity_v46_development_analysis.md",
+      "sha256": "c95d67aeb5e14505060bc9db213b0df3ffcf19da413a444f64fa3a3e3aa996e6",
+      "engineering_use": "Shows that model size alone failed to solve a different commitment-classification task, justifying one bounded task-specific screen rather than repeated model swapping.",
+      "boundary": "V46 concerns a different task and cannot predict this experiment's winner."
+    },
+    {
+      "source": "Ollama official tool-calling documentation",
+      "url": "https://docs.ollama.com/capabilities/tool-calling",
+      "engineering_use": "Supports using the same closed function-call transport across all model conditions."
+    }
+  ],
+  "theory_boundary": "This experiment can compare execution of one narrow long-term-memory admission contract. It cannot establish a generally smarter model, human-like memory, runtime safety, or improved conversation quality.",
+  "v3_dependency": {
+    "result_lock_path": "configs/consolidation_admission_v3_role_separated_result_lock.json",
+    "result_lock_sha256": "3e696d950c2c521a4b0d77024842df608bb0a31c8b9dcc617d0da0c31a4b2cda",
+    "preregistration_path": "configs/consolidation_admission_v3_role_separated_development_preregistration.json",
+    "preregistration_sha256": "f32435e7339a47119f9a485f3b4d5ec65500da502319b4dfd1e0f914e80c758a",
+    "result": "FAIL",
+    "decision": "freeze_negative_result_and_stop_single_call_qwen25_7b_frame_simplification",
+    "same_dataset_retest_authorized": false,
+    "use_in_model_screen": "failure_modes_and_exact_v3_candidate_contract_only"
+  },
+  "dataset": {
+    "path": "datasets/consolidation_admission_model_screen_v1_development.json",
+    "sha256": "0c235cd05ab14fe18b4b0cf4a7f0d6d19fde7f857572f89af01df22f1f5f7d9d",
+    "case_count": 12,
+    "language_counts": {
+      "eng": 4,
+      "jpn": 4,
+      "cmn": 4
+    },
+    "target_counts": {
+      "wisdom": 4,
+      "procedural": 4,
+      "none": 4
+    },
+    "basis_counts": {
+      "stable_trait": 2,
+      "repeated_pattern": 2,
+      "explicit_future_policy": 4,
+      "no_long_term_basis": 4
+    },
+    "unique_scenario_family_count": 12,
+    "semantic_translation_pairs_present": false,
+    "prior_overlap_audit": {
+      "exact_user_utterance_overlap_v1_v2_v3": 0,
+      "scenario_family_overlap_v2_v3": 0,
+      "v1_scenario_family_machine_check": "unavailable_because_v1_schema_has_no_scenario_family_field"
+    },
+    "status": "development_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false
+  },
+  "models": {
+    "qwen25_7b_control": {
+      "ollama_tag": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "blob_bytes": 4683087332,
+      "role": "frozen_failed_model_control"
+    },
+    "qwen35_4b_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735,
+      "role": "lower_resource_local_candidate"
+    },
+    "qwen35_9b_candidate": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "blob_bytes": 6594474711,
+      "role": "higher_capacity_local_candidate"
+    }
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260717,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 384,
+    "keep_alive": "15m",
+    "transport_attempts": 1,
+    "timeout_seconds": 120
+  },
+  "fixed_transcript_rendering": "Turn {index}\nUser[U{index}]: {user}\nAssistant[A{index}]: {assistant}",
+  "condition_order": {
+    "case_index_mod_3_equals_0": [
+      "qwen25_7b_control",
+      "qwen35_4b_candidate",
+      "qwen35_9b_candidate"
+    ],
+    "case_index_mod_3_equals_1": [
+      "qwen35_4b_candidate",
+      "qwen35_9b_candidate",
+      "qwen25_7b_control"
+    ],
+    "case_index_mod_3_equals_2": [
+      "qwen35_9b_candidate",
+      "qwen25_7b_control",
+      "qwen35_4b_candidate"
+    ]
+  },
+  "fixed_v3_contract": {
+    "source_condition": "v3_role_separated_tool_candidate",
+    "source_path": "configs/consolidation_admission_v3_role_separated_development_preregistration.json",
+    "system_prompt": "Classify at most one long-term memory candidate from this dialogue. User turns have fixed IDs U1, U2, and U3. Call classify_memory_basis exactly once and return no narrative answer. The program already knows every evidence ID is a User turn, so do not classify the speaker. The program derives applicability from memory_kind, so do not classify owner or target. Use wisdom for a durable first-person user trait, constraint, or preference. Choose stable_trait when one explicit User turn states a durable property; choose repeated_pattern only when at least two User turns explicitly support the same recurring user pattern. Use procedural only for an explicit instruction about how this assistant should respond in future or recurring interactions, and choose explicit_future_policy. Use none with no_long_term_basis for one-time requests, temporary states, third-party information, or uncertain possibilities. For wisdom or procedural, select only supporting User turn IDs. For none, evidence_user_turns must be empty. Do not infer motives or strengthen persistence.",
+    "tool_contract": {
+      "type": "function",
+      "function": {
+        "name": "classify_memory_basis",
+        "description": "Classify one role-separated long-term memory admission decision.",
+        "parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "memory_kind",
+            "persistence_basis",
+            "evidence_user_turns"
+          ],
+          "properties": {
+            "memory_kind": {
+              "type": "string",
+              "description": "The destination memory class, or none when no long-term admission is justified.",
+              "enum": [
+                "wisdom",
+                "procedural",
+                "none"
+              ]
+            },
+            "persistence_basis": {
+              "type": "string",
+              "description": "The explicit reason the content should or should not persist.",
+              "enum": [
+                "stable_trait",
+                "repeated_pattern",
+                "explicit_future_policy",
+                "no_long_term_basis"
+              ]
+            },
+            "evidence_user_turns": {
+              "type": "array",
+              "description": "Only User turn numbers that explicitly support the decision; empty for none.",
+              "items": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              "uniqueItems": true,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "deterministic_compiler": {
+      "source_role": "Every selected evidence index is structurally bound to a preserved User turn.",
+      "wisdom": "memory_kind=wisdom AND persistence_basis in {stable_trait,repeated_pattern}; stable_trait requires >=1 evidence index and repeated_pattern requires >=2; applies_to=user_profile",
+      "procedural": "memory_kind=procedural AND persistence_basis=explicit_future_policy AND >=1 evidence index; applies_to=assistant_policy",
+      "none": "memory_kind=none AND persistence_basis=no_long_term_basis AND evidence_user_turns is empty; applies_to=none",
+      "fail_closed": "all malformed or unauthorized combinations compile to none"
+    }
+  },
+  "fixed_components": [
+    "dataset",
+    "case_order",
+    "transcript_rendering",
+    "system_prompt",
+    "tool_contract",
+    "deterministic_compiler",
+    "generation_settings",
+    "scoring",
+    "gold_visibility",
+    "transport_endpoint"
+  ],
+  "only_changed_component": "ollama_model_tag_and_corresponding_frozen_model_artifact",
+  "scoring": {
+    "primary_unit": "exact_session_long_term_target",
+    "semantic_frame_exact_match_fields": [
+      "memory_kind",
+      "persistence_basis"
+    ],
+    "derived_applicability_success": "wisdom maps to user_profile, procedural maps to assistant_policy, and none maps to none without model inference",
+    "evidence_grounding_success": "all selected indices are inside allowed_evidence_user_turns and every required_evidence_user_turn is selected; none requires an empty set",
+    "parse_or_contract_failure_count_as": "none",
+    "gold_fields_passed_to_model": false
+  },
+  "eligibility_gates": {
+    "candidate_correct_count_min": 10,
+    "candidate_accuracy_min": 0.8333,
+    "candidate_wisdom_correct_min": 3,
+    "candidate_procedural_correct_min": 3,
+    "candidate_none_correct_min": 3,
+    "candidate_semantic_frame_exact_count_min": 10,
+    "candidate_evidence_grounded_count_min": 10,
+    "candidate_positive_evidence_grounded_count_min": 6,
+    "newly_correct_vs_control_min": 3,
+    "regression_vs_control_max": 1,
+    "net_correct_gain_vs_control_min": 2,
+    "candidate_false_long_term_write_count_max": 1,
+    "candidate_missed_long_term_write_count_max": 1,
+    "candidate_tool_parse_success_count": 12,
+    "candidate_index_contract_success_count": 12
+  },
+  "latency_gates": {
+    "qwen35_4b_candidate_median_wall_seconds_max": 3.0,
+    "qwen35_4b_candidate_warm_p95_wall_seconds_max": 4.5,
+    "qwen35_9b_candidate_median_wall_seconds_max": 5.0,
+    "qwen35_9b_candidate_warm_p95_wall_seconds_max": 7.0
+  },
+  "run_invariants": {
+    "model_call_count_exact": 36,
+    "transport_attempt_count_exact": 36,
+    "calls_per_model_exact": 12,
+    "post_failure_retry_authorized": false,
+    "interim_label_inspection_authorized": false
+  },
+  "selection_rule": {
+    "step_1": "Discard each Qwen3.5 candidate that fails any semantic, safety, contract, pairwise-gain, or model-specific latency gate.",
+    "step_2": "Find the highest correct-session count among eligible candidates.",
+    "step_3": "Keep eligible candidates within one correct session of that highest count.",
+    "step_4": "Select the candidate with the lowest false-write-plus-missed-write count, then higher semantic-frame exact count, then higher evidence-grounded count, then lower median latency, then lower blob_bytes.",
+    "no_eligible_model": "Reject model replacement as a sufficient correction and authorize development of a two-stage write-or-none then kind-and-evidence architecture on entirely new data."
+  },
+  "decision_rule": {
+    "candidate_selected": "Freeze the selected model as a narrow consolidation-admission candidate and authorize a separately preregistered fresh integration pilot; do not change runtime in this experiment.",
+    "no_candidate_selected": "Freeze the negative result and stop single-call model replacement for this contract; proceed to two-stage architecture development.",
+    "same_dataset_retest_after_result": false,
+    "post_result_prompt_schema_parser_or_gate_change": false
+  },
+  "evidence_limits": {
+    "runtime_consolidation_change_authorized": false,
+    "runtime_shadow_authorized": false,
+    "fresh_holdout_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false,
+    "general_model_superiority_claim_authorized": false
+  },
+  "model_inference_before_preregistration_and_harness_merge_authorized": false
+}
