@@ -1,0 +1,355 @@
+{
+  "schema": "uruha_consolidation_admission_cascade_development_dataset_v1",
+  "created_at": "2026-07-17T23:22:00+09:00",
+  "purpose": "Fresh multilingual sessions for an actually executed 4B write-gate to conditional 9B memory-classification cascade against a matched direct 9B control.",
+  "construction_method": "Codex-authored synthetic sessions with unique scenario families and explicit gold semantic frames.",
+  "official_source_labels": false,
+  "independent_human_label_validation": false,
+  "model_inference_used_during_construction": false,
+  "prior_results_used_only_to_define_failure_modes_and_the_cascade_hypothesis": true,
+  "semantic_translation_pairs_present": false,
+  "cases": [
+    {
+      "id": "cacv1_eng_wisdom_night_shift",
+      "language": "eng",
+      "scenario_family": "stable_permanent_night_shift_constraint",
+      "session": [
+        {
+          "user": "Can you help me choose a realistic study schedule?",
+          "assistant": "Which parts of your normal week constrain the schedule?"
+        },
+        {
+          "user": "I work permanent night shifts, so early-morning study sessions never fit my routine.",
+          "assistant": "Then the schedule should avoid morning sessions."
+        },
+        {
+          "user": "Late afternoon is usually the first time I am fully awake.",
+          "assistant": "That gives us a more realistic study window."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "stable_trait",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "durable_first_person_work_schedule_constraint"
+    },
+    {
+      "id": "cacv1_eng_wisdom_aisle_list",
+      "language": "eng",
+      "scenario_family": "repeated_grocery_aisle_list_pattern",
+      "session": [
+        {
+          "user": "Every week I sort my grocery list by store aisle before shopping.",
+          "assistant": "That reduces backtracking through the store."
+        },
+        {
+          "user": "This week's list has produce mixed with pantry items.",
+          "assistant": "We can regroup those sections."
+        },
+        {
+          "user": "I use the same aisle-sorting routine for each weekly trip.",
+          "assistant": "It is a recurring part of your shopping workflow."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "repeated_pattern",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        3
+      ],
+      "gold_reason": "repeated_first_person_shopping_organization_pattern"
+    },
+    {
+      "id": "cacv1_eng_procedural_assumption_check",
+      "language": "eng",
+      "scenario_family": "future_assumption_check_response_policy",
+      "session": [
+        {
+          "user": "I need a reliable way to inspect uncertain project claims.",
+          "assistant": "A stable audit format would make the uncertainty visible."
+        },
+        {
+          "user": "Whenever I ask for an assumption check, separate confirmed facts, assumptions, and missing evidence.",
+          "assistant": "I will return those three sections in that order."
+        },
+        {
+          "user": "Use the same check in later projects as well.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_evidence_audit_policy"
+    },
+    {
+      "id": "cacv1_eng_none_single_alliteration",
+      "language": "eng",
+      "scenario_family": "one_time_alliterative_demo_title",
+      "session": [
+        {
+          "user": "I need a title for one product demo.",
+          "assistant": "What style should this demo title use?"
+        },
+        {
+          "user": "For this title only, make every major word start with the same letter.",
+          "assistant": "I will use alliteration for this one title."
+        },
+        {
+          "user": "Future titles should use their normal style.",
+          "assistant": "The constraint will not carry forward."
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicit_one_time_style_request"
+    },
+    {
+      "id": "cacv1_jpn_wisdom_public_transit",
+      "language": "jpn",
+      "scenario_family": "stable_no_car_transit_constraint",
+      "session": [
+        {
+          "user": "引っ越し先の候補を比較したい。",
+          "assistant": "生活上、外せない条件はありますか。"
+        },
+        {
+          "user": "私は車を持っていないので、普段の移動は公共交通に頼っている。",
+          "assistant": "駅やバス停へのアクセスが重要ですね。"
+        },
+        {
+          "user": "徒歩だけで駅に行ける場所がいい。",
+          "assistant": "交通アクセスを必須条件にします。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "stable_trait",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "durable_first_person_transport_constraint"
+    },
+    {
+      "id": "cacv1_jpn_procedural_estimate",
+      "language": "jpn",
+      "scenario_family": "future_estimate_response_policy",
+      "session": [
+        {
+          "user": "見積もりの数字だけ出されると判断しにくい。",
+          "assistant": "前提と幅を一緒に示す方法があります。"
+        },
+        {
+          "user": "今後、見積もりを頼んだら、前提、範囲、最大の不確実性の順に出して。",
+          "assistant": "その三項目を固定の順番で示します。"
+        },
+        {
+          "user": "別の見積もりでも同じ形式を使って。",
+          "assistant": "わかりました。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_estimate_policy"
+    },
+    {
+      "id": "cacv1_jpn_procedural_decision_log",
+      "language": "jpn",
+      "scenario_family": "future_decision_log_response_policy",
+      "session": [
+        {
+          "user": "議論の後で、誰が何を決めたか分からなくなる。",
+          "assistant": "決定事項を固定形式で残すと追いやすくなります。"
+        },
+        {
+          "user": "これから「決定ログ」と言ったら、決定、担当者、期限だけを表にして。",
+          "assistant": "その三列で決定ログを作ります。"
+        },
+        {
+          "user": "今後の会議でも同じ合図にして。",
+          "assistant": "同じ形式を維持します。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_future_assistant_decision_log_policy"
+    },
+    {
+      "id": "cacv1_jpn_none_afternoon_print",
+      "language": "jpn",
+      "scenario_family": "temporary_afternoon_monochrome_print",
+      "session": [
+        {
+          "user": "今日の午後だけ白黒プリンターを借りている。",
+          "assistant": "今日は色を使えないんですね。"
+        },
+        {
+          "user": "この資料だけ、色なしで区別できる図に直して。",
+          "assistant": "この資料は白黒でも区別できるようにします。"
+        },
+        {
+          "user": "明日は自分のカラープリンターに戻る。",
+          "assistant": "一時的な条件として扱います。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "temporary_equipment_and_single_document_request"
+    },
+    {
+      "id": "cacv1_cmn_wisdom_laundry_hotel",
+      "language": "cmn",
+      "scenario_family": "repeated_self_service_laundry_hotel_pattern",
+      "session": [
+        {
+          "user": "我每次訂長途旅行的旅館，都會先找有自助洗衣的。",
+          "assistant": "洗衣設備是你篩選住宿的重要條件。"
+        },
+        {
+          "user": "這次有一家只有送洗服務。",
+          "assistant": "那可能不符合你平常的選擇方式。"
+        },
+        {
+          "user": "我一直都是把能自己洗衣的旅館排在前面。",
+          "assistant": "這是你反覆使用的住宿偏好。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "repeated_pattern",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        3
+      ],
+      "gold_reason": "repeated_first_person_accommodation_preference"
+    },
+    {
+      "id": "cacv1_cmn_procedural_version_summary",
+      "language": "cmn",
+      "scenario_family": "future_version_summary_response_policy",
+      "session": [
+        {
+          "user": "我看版本更新時常常找不到真正影響使用的地方。",
+          "assistant": "可以固定只整理會影響決策的變化。"
+        },
+        {
+          "user": "以後我說「版本摘要」時，分成新增、移除、破壞性變更三類。",
+          "assistant": "我會固定使用這三個分類。"
+        },
+        {
+          "user": "不同軟體的更新也使用同樣格式。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_release_summary_policy"
+    },
+    {
+      "id": "cacv1_cmn_none_colleague_transfer",
+      "language": "cmn",
+      "scenario_family": "uncertain_third_party_department_transfer",
+      "session": [
+        {
+          "user": "同事可能會在下個季度轉去別的部門。",
+          "assistant": "目前還沒有確定嗎？"
+        },
+        {
+          "user": "他連申請都還沒交，也可能留在原部門。",
+          "assistant": "那還只是未確定的第三方計畫。"
+        },
+        {
+          "user": "我只是想先了解交接流程。",
+          "assistant": "可以只說明流程，不假設他一定會轉調。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "uncertain_third_party_information"
+    },
+    {
+      "id": "cacv1_cmn_none_possible_relocation",
+      "language": "cmn",
+      "scenario_family": "uncertain_future_personal_relocation",
+      "session": [
+        {
+          "user": "我明年也許會搬到別的城市。",
+          "assistant": "目前還只是可能性嗎？"
+        },
+        {
+          "user": "工作和地點都沒有決定，我也可能完全不搬。",
+          "assistant": "那還不能當成確定的未來安排。"
+        },
+        {
+          "user": "今天只是想比較不同城市的租金。",
+          "assistant": "我會只做租金比較。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "uncertain_future_user_possibility"
+    }
+  ]
+}

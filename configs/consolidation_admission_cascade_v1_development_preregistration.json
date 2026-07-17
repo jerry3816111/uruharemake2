@@ -1,0 +1,289 @@
+{
+  "schema": "uruha_consolidation_admission_cascade_development_preregistration_v1",
+  "experiment_id": "consolidation_admission_cascade_v1_development",
+  "created_at": "2026-07-17T23:26:00+09:00",
+  "evidence_role": "small_falsifiable_development_pilot_for_actual_conditional_4b_to_9b_long_term_memory_admission",
+  "problem": "A frozen one-variable screen found that qwen3.5:4b had perfect tool transport and no missed writes but confused wisdom with procedural, while qwen3.5:9b passed every semantic and safety gate but exceeded the preregistered local median-latency limit. A post-hoc no-new-call replay suggested complementary errors, but did not execute a cascade.",
+  "hypothesis": "A qwen3.5:4b high-recall write-or-none gate followed by qwen3.5:9b kind, persistence, and evidence classification only for write decisions will improve final admission safety and exact target accuracy over a matched direct qwen3.5:9b call, while bounding second-stage use on a personal computer.",
+  "existing_evidence": {
+    "model_screen_result_lock": "configs/consolidation_admission_model_screen_v1_result_lock.json",
+    "model_screen_result_lock_sha256": "c68629188b034251702cfcb06effc64ec6d7fd44f1ab2d90776ef8b0e602ee75",
+    "result": "FAIL",
+    "decision": "reject_model_replacement_and_proceed_to_two_stage_architecture",
+    "same_dataset_retest_authorized": false,
+    "exploratory_replay_validation_claim_authorized": false,
+    "use_in_cascade_v1": "failure_modes_and_cascade_hypothesis_only"
+  },
+  "theory_basis": [
+    {
+      "source": "McClelland, McNaughton, and O'Reilly (1995), Complementary Learning Systems",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7624455/",
+      "engineering_use": "Keep fast episodic capture separate from slower admission into reusable semantic or procedural memory."
+    },
+    {
+      "source": "Johnson, Hashtroudi, and Lindsay (1993), Source Monitoring",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8346328/",
+      "engineering_use": "Preserve User-turn provenance structurally and require evidence indices rather than regenerating source identity."
+    }
+  ],
+  "theory_boundary": "The cascade is an engineering selective-computation hypothesis. These sources do not prove that a 4B-to-9B cascade is biologically human, optimal, or safe for runtime writes.",
+  "runtime_mapping": {
+    "path": "uruha_brain_mac.py",
+    "sha256": "971ea67581eeaae3297d6f988c9b0910d42cd7038755d414b7d9894474cdf050",
+    "entry_point": "MemoryManager.consolidate_recent_experiences",
+    "current_behavior": "A background cycle sends an excerpt to one qwen2.5:7b JSON generator, applies heuristic fallback for missing rules, then may write episodic, wisdom, and procedural collections.",
+    "candidate_mapping": "The tested cascade could become a pre-generation admission adapter before wisdom or procedural rule generation.",
+    "not_tested_here": [
+      "Japanese rule generation",
+      "salience generation",
+      "heuristic fallback replacement",
+      "Chroma shadow writes",
+      "retrieval quality",
+      "final dialogue behavior"
+    ]
+  },
+  "dataset": {
+    "path": "datasets/consolidation_admission_cascade_v1_development.json",
+    "sha256": "5870b6e1268da942545352ec987293021262a35eeeb06e8dd86db5c1ba91739c",
+    "case_count": 12,
+    "language_counts": {
+      "eng": 4,
+      "jpn": 4,
+      "cmn": 4
+    },
+    "target_counts": {
+      "wisdom": 4,
+      "procedural": 4,
+      "none": 4
+    },
+    "basis_counts": {
+      "stable_trait": 2,
+      "repeated_pattern": 2,
+      "explicit_future_policy": 4,
+      "no_long_term_basis": 4
+    },
+    "unique_scenario_family_count": 12,
+    "semantic_translation_pairs_present": false,
+    "status": "development_only_never_holdout",
+    "official_labels": false,
+    "independent_human_label_validation": false
+  },
+  "models": {
+    "stage1_write_gate": {
+      "ollama_tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "blob_bytes": 3389983735
+    },
+    "direct_control_and_stage2_classifier": {
+      "ollama_tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "blob_bytes": 6594474711
+    }
+  },
+  "local_runtime": {
+    "ollama_version": "0.31.1",
+    "endpoint": "http://127.0.0.1:11434/api/chat"
+  },
+  "generation": {
+    "thinking": false,
+    "temperature": 0.1,
+    "top_p": 1.0,
+    "seed": 20260718,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 384,
+    "keep_alive": "15m",
+    "transport_attempts": 1,
+    "timeout_seconds": 120
+  },
+  "fixed_transcript_rendering": "Turn {index}\nUser[U{index}]: {user}\nAssistant[A{index}]: {assistant}",
+  "condition_order": {
+    "even_case_index": [
+      "direct_qwen35_9b_control",
+      "qwen35_4b_to_9b_cascade"
+    ],
+    "odd_case_index": [
+      "qwen35_4b_to_9b_cascade",
+      "direct_qwen35_9b_control"
+    ]
+  },
+  "stage1_write_gate": {
+    "model_role": "stage1_write_gate",
+    "system_prompt": "Decide whether this dialogue contains one justified long-term memory candidate. User turns have fixed IDs U1, U2, and U3. Call decide_memory_write exactly once and return no narrative answer. Use write only when the dialogue explicitly contains at least one durable first-person user trait, constraint, or preference; the same recurring user pattern supported by at least two User turns; or an explicit instruction about how this assistant should respond in future or recurring interactions. Use none for one-time requests, temporary states, third-party information, uncertain possibilities, or content that would require inferred persistence. Do not classify the final memory kind, persistence basis, owner, target, or evidence. Prefer none when long-term justification is ambiguous.",
+    "tool_contract": {
+      "type": "function",
+      "function": {
+        "name": "decide_memory_write",
+        "description": "Decide whether any explicit long-term memory candidate warrants second-stage classification.",
+        "parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "admission_decision"
+          ],
+          "properties": {
+            "admission_decision": {
+              "type": "string",
+              "enum": [
+                "write",
+                "none"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "fail_closed": "Malformed, missing, multiple, or narrative responses compile to none and do not call stage 2."
+  },
+  "final_classifier": {
+    "model_role": "direct_control_and_stage2_classifier",
+    "source_condition": "v3_role_separated_tool_candidate",
+    "source_path": "configs/consolidation_admission_v3_role_separated_development_preregistration.json",
+    "system_prompt": "Classify at most one long-term memory candidate from this dialogue. User turns have fixed IDs U1, U2, and U3. Call classify_memory_basis exactly once and return no narrative answer. The program already knows every evidence ID is a User turn, so do not classify the speaker. The program derives applicability from memory_kind, so do not classify owner or target. Use wisdom for a durable first-person user trait, constraint, or preference. Choose stable_trait when one explicit User turn states a durable property; choose repeated_pattern only when at least two User turns explicitly support the same recurring user pattern. Use procedural only for an explicit instruction about how this assistant should respond in future or recurring interactions, and choose explicit_future_policy. Use none with no_long_term_basis for one-time requests, temporary states, third-party information, or uncertain possibilities. For wisdom or procedural, select only supporting User turn IDs. For none, evidence_user_turns must be empty. Do not infer motives or strengthen persistence.",
+    "tool_contract": {
+      "type": "function",
+      "function": {
+        "name": "classify_memory_basis",
+        "description": "Classify one role-separated long-term memory admission decision.",
+        "parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "memory_kind",
+            "persistence_basis",
+            "evidence_user_turns"
+          ],
+          "properties": {
+            "memory_kind": {
+              "type": "string",
+              "description": "The destination memory class, or none when no long-term admission is justified.",
+              "enum": [
+                "wisdom",
+                "procedural",
+                "none"
+              ]
+            },
+            "persistence_basis": {
+              "type": "string",
+              "description": "The explicit reason the content should or should not persist.",
+              "enum": [
+                "stable_trait",
+                "repeated_pattern",
+                "explicit_future_policy",
+                "no_long_term_basis"
+              ]
+            },
+            "evidence_user_turns": {
+              "type": "array",
+              "description": "Only User turn numbers that explicitly support the decision; empty for none.",
+              "items": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              "uniqueItems": true,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "deterministic_compiler": {
+      "source_role": "Every selected evidence index is structurally bound to a preserved User turn.",
+      "wisdom": "memory_kind=wisdom AND persistence_basis in {stable_trait,repeated_pattern}; stable_trait requires >=1 evidence index and repeated_pattern requires >=2; applies_to=user_profile",
+      "procedural": "memory_kind=procedural AND persistence_basis=explicit_future_policy AND >=1 evidence index; applies_to=assistant_policy",
+      "none": "memory_kind=none AND persistence_basis=no_long_term_basis AND evidence_user_turns is empty; applies_to=none",
+      "fail_closed": "all malformed or unauthorized combinations compile to none"
+    }
+  },
+  "conditions": {
+    "direct_qwen35_9b_control": {
+      "calls_exact": 12,
+      "flow": "Render transcript, then call the frozen final classifier once with qwen3.5:9b."
+    },
+    "qwen35_4b_to_9b_cascade": {
+      "stage1_calls_exact": 12,
+      "flow": "Call the binary qwen3.5:4b write gate. If and only if it compiles to write, call the exact same frozen final classifier with qwen3.5:9b; otherwise compile the final frame deterministically to none.",
+      "stage2_calls_equal": "compiled_stage1_write_count",
+      "only_changed_component_vs_control": "add_a_conditional_qwen35_4b_write_gate_before_the_same_qwen35_9b_final_classifier"
+    }
+  },
+  "scoring": {
+    "primary_unit": "exact_session_long_term_target",
+    "stage1_positive": "gold wisdom or procedural",
+    "stage1_negative": "gold none",
+    "candidate_final_none_after_stage1_none": {
+      "memory_kind": "none",
+      "persistence_basis": "no_long_term_basis",
+      "evidence_user_turns": [],
+      "applies_to": "none"
+    },
+    "semantic_frame_exact_match_fields": [
+      "memory_kind",
+      "persistence_basis"
+    ],
+    "evidence_grounding_success": "all selected indices are allowed and include every required index; final none requires an empty set",
+    "parse_or_contract_failure_count_as": "none",
+    "gold_fields_passed_to_model": false
+  },
+  "success_gates": {
+    "candidate_correct_count_min": 11,
+    "candidate_accuracy_min": 0.9167,
+    "candidate_wisdom_correct_min": 3,
+    "candidate_procedural_correct_min": 3,
+    "candidate_none_correct_exact": 4,
+    "stage1_parse_success_count_exact": 12,
+    "stage1_positive_write_count_exact": 8,
+    "stage1_false_write_count_max": 1,
+    "stage2_parse_success_rate_min": 1.0,
+    "stage2_index_contract_success_rate_min": 1.0,
+    "candidate_semantic_frame_exact_count_min": 11,
+    "candidate_evidence_grounded_count_min": 11,
+    "candidate_positive_evidence_grounded_count_min": 7,
+    "newly_correct_vs_control_min": 1,
+    "regression_vs_control_max": 0,
+    "net_correct_gain_vs_control_min": 1,
+    "candidate_false_long_term_write_count_exact": 0,
+    "candidate_missed_long_term_write_count_max": 1,
+    "stage2_call_count_max": 10,
+    "stage1_median_wall_seconds_max": 4.5,
+    "stage1_warm_p95_wall_seconds_max": 5.5,
+    "stage2_median_wall_seconds_max": 7.0,
+    "stage2_warm_p95_wall_seconds_max": 8.0,
+    "candidate_mean_session_wall_seconds_max": 8.5,
+    "candidate_median_session_wall_seconds_max": 10.5,
+    "candidate_warm_p95_session_wall_seconds_max": 12.5,
+    "control_median_wall_seconds_max": 7.0,
+    "control_warm_p95_wall_seconds_max": 8.0
+  },
+  "run_invariants": {
+    "control_calls_exact": 12,
+    "stage1_calls_exact": 12,
+    "stage2_calls_equal_compiled_stage1_writes": true,
+    "total_model_calls_equal": "24_plus_stage2_calls",
+    "total_model_calls_max": 34,
+    "transport_attempts_equal_model_calls": true,
+    "transport_retries_authorized": false,
+    "interim_label_inspection_authorized": false
+  },
+  "decision_rule": {
+    "pass": "Authorize a separately preregistered runtime-compatible admission adapter development and shadow-only integration test on entirely new conversations. Do not write runtime memory in this experiment.",
+    "fail": "Freeze the negative result, stop this qwen3.5:4b-to-9b cascade, and do not modify runtime memory admission.",
+    "same_dataset_retest_after_result": false,
+    "post_result_prompt_schema_parser_gate_or_latency_change": false
+  },
+  "evidence_limits": {
+    "runtime_consolidation_change_authorized": false,
+    "runtime_memory_write_authorized": false,
+    "runtime_shadow_authorized": false,
+    "fresh_holdout_authorized": false,
+    "official_benchmark_claim_authorized": false,
+    "cross_corpus_generalization_claim_authorized": false,
+    "broad_human_likeness_claim_authorized": false,
+    "biological_equivalence_claim_authorized": false,
+    "downstream_dialogue_improvement_claim_authorized": false
+  },
+  "model_inference_before_preregistration_and_harness_merge_authorized": false
+}
