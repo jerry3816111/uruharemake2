@@ -1,0 +1,43 @@
+{
+  "schema": "uruha_reflection_causal_pilot_result_closure_v1",
+  "evidence_status": "negative_result_closed_without_post_run_tuning",
+  "runner_commit": "9f27642df9374a40bd9ea65a75528198c965dfc8",
+  "model": "qwen2.5:7b",
+  "model_digest_prefix": "845dbda0ea48",
+  "case_count": 12,
+  "model_call_count": 16,
+  "paid_api_used": false,
+  "human_rating_used": false,
+  "frozen_results": {
+    "reports/reflection_causal_pilot_v1_raw.json": "81607f418720d763c7b42350bbbadf116a09cce2560a0f6b68b3612325b88ba6",
+    "reports/reflection_causal_pilot_v1_analysis.json": "7dced619c9faebc56c601ec52f0fed52d5a2a8ef3fa014c08bee58bd0cf6fb61",
+    "reports/reflection_causal_pilot_v1_analysis.md": "15b54d97bebc0d7a0502a24326bdaf6d7ff8878d834c9ef9e8b308386b733b02"
+  },
+  "primary_summary": {
+    "expected_rule_write_recall": 0.4444,
+    "valid_rule_precision": 0.6667,
+    "no_rule_specificity": 0.3333,
+    "valid_rule_retrieval_rate_under_frozen_working_memory_definition": 0.0,
+    "control_behavior_success_rate": 0.4444,
+    "treatment_behavior_success_rate": 0.3333,
+    "treatment_behavior_delta": -0.1111,
+    "paired_behavior_gains": 0,
+    "paired_behavior_regressions": 2,
+    "paired_behavior_net_gain": -2,
+    "interaction_category_paired_gains": 0,
+    "all_gates_pass": false
+  },
+  "decision": "reject_current_reflection_as_validated_learning_and_redesign_before_any_large_run",
+  "diagnostic_interpretation": [
+    "The current trigger and extractor wrote rules for only 4 of 9 expected positive cases.",
+    "Two of three negative controls were stored as the literal document Rule: NO_RULE.",
+    "All six written documents were available through the direct wisdom cue, so the treatment could alter planning even though none entered scored working memory.",
+    "The treatment produced zero paired behavior gains and two regressions under the frozen final-reply contract.",
+    "A separate integration reproduction confirmed that persistent-memory candidates are silently empty because ids is an invalid Chroma include item."
+  ],
+  "next_primary_task": "repair_persistent_memory_candidate_query_then_run_a_locked_v1_replay_before_redesigning_reflection",
+  "why_next": "The shared persistent-memory path is a prerequisite for reflection, episodic, procedural, and knowledge memories to participate in salience-ranked working memory. Fixing it is broader and more causally prior than prompt-tuning reflection.",
+  "runtime_reflection_change_authorized_by_this_closure": false,
+  "large_reflection_run_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "uruha_reflection_causal_pilot_runtime_diagnostic_v1",
+  "observed_at": "2026-07-17T14:55:00+09:00",
+  "environment": {
+    "python": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "chromadb_version": "1.5.1"
+  },
+  "pilot_observation": {
+    "treatment_rule_writes": 6,
+    "direct_wisdom_query_matches": 6,
+    "reflection_rules_in_working_memory": 0
+  },
+  "independent_reproduction": {
+    "direct_chroma_query_returned_document": true,
+    "uruha_query_collection_candidates_returned_count": 0,
+    "exception_when_reproduced_without_the_helper": "ValueError: Expected include item to be one of documents, embeddings, metadatas, distances, uris, data, got ids in query."
+  },
+  "root_cause": "uruha_memory_runtime.query_collection_candidates includes ids in Chroma query include; Chroma returns ids automatically and rejects ids as an include item. The helper catches the exception and silently returns an empty list.",
+  "affected_candidate_sources": [
+    "episodic_memory",
+    "wisdom_semantic",
+    "procedural_memory",
+    "knowledge_base"
+  ],
+  "scope_boundary": "The direct episode and wisdom text queries still work. The defect specifically disables persistent memories as scored working-memory candidates."
+}
