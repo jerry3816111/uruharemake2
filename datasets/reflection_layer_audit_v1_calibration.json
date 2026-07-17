@@ -1,0 +1,187 @@
+{
+  "schema": "uruha_reflection_layer_audit_calibration_v1",
+  "evidence_status": "authored_and_frozen_before_judge_runner_implementation_or_scoring",
+  "case_count": 12,
+  "cases": [
+    {
+      "id": "semantic_zh_music_faithful",
+      "pair_id": "semantic_zh_music",
+      "family": "semantic",
+      "source_language": "zh",
+      "source_text": "我工作時只聽沒有歌詞的音樂，有人聲會讓我分心。",
+      "candidate_jp": "仕事中は歌詞のない音楽だけを聴き、歌声があると気が散る。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "work_context", "statement_en": "This preference applies while the speaker is working.", "gold_relation": "entailed", "critical": true},
+        {"id": "no_lyrics", "statement_en": "The speaker listens only to music without lyrics while working.", "gold_relation": "entailed", "critical": true},
+        {"id": "vocals_distract", "statement_en": "Vocals distract the speaker.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "semantic_zh_music_negated",
+      "pair_id": "semantic_zh_music",
+      "family": "semantic",
+      "source_language": "zh",
+      "source_text": "我工作時只聽沒有歌詞的音樂，有人聲會讓我分心。",
+      "candidate_jp": "仕事中は歌詞のある音楽を選び、歌声があるほうが集中できる。",
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "claims": [
+        {"id": "work_context", "statement_en": "This preference applies while the speaker is working.", "gold_relation": "entailed", "critical": true},
+        {"id": "no_lyrics", "statement_en": "The speaker listens only to music without lyrics while working.", "gold_relation": "contradicted", "critical": true},
+        {"id": "vocals_distract", "statement_en": "Vocals distract the speaker.", "gold_relation": "contradicted", "critical": true}
+      ]
+    },
+    {
+      "id": "semantic_en_spicy_faithful",
+      "pair_id": "semantic_en_spicy",
+      "family": "semantic",
+      "source_language": "en",
+      "source_text": "I avoid spicy food in the evening because it upsets my stomach.",
+      "candidate_jp": "夜は胃がつらくなるので辛い物を避ける。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "avoid_spicy", "statement_en": "The speaker avoids spicy food.", "gold_relation": "entailed", "critical": true},
+        {"id": "evening_scope", "statement_en": "The avoidance applies in the evening.", "gold_relation": "entailed", "critical": true},
+        {"id": "stomach_reason", "statement_en": "The reason is that spicy food upsets the speaker's stomach.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "semantic_en_spicy_reason_missing",
+      "pair_id": "semantic_en_spicy",
+      "family": "semantic",
+      "source_language": "en",
+      "source_text": "I avoid spicy food in the evening because it upsets my stomach.",
+      "candidate_jp": "夜は辛い物を避ける。",
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "claims": [
+        {"id": "avoid_spicy", "statement_en": "The speaker avoids spicy food.", "gold_relation": "entailed", "critical": true},
+        {"id": "evening_scope", "statement_en": "The avoidance applies in the evening.", "gold_relation": "entailed", "critical": true},
+        {"id": "stomach_reason", "statement_en": "The reason is that spicy food upsets the speaker's stomach.", "gold_relation": "missing", "critical": true}
+      ]
+    },
+    {
+      "id": "procedural_ja_photo_faithful",
+      "pair_id": "procedural_ja_photo",
+      "family": "procedural",
+      "source_language": "ja",
+      "source_text": "写真を送る前に、必ず私に確認して。",
+      "candidate_jp": "写真を送る前に、アシスタントは必ずユーザーへ確認する。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "assistant_actor", "statement_en": "The assistant must perform the confirmation.", "gold_relation": "entailed", "critical": true},
+        {"id": "user_target", "statement_en": "The assistant must confirm with the user.", "gold_relation": "entailed", "critical": true},
+        {"id": "before_sending", "statement_en": "Confirmation must happen before sending a photo.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "procedural_ja_photo_actor_swap",
+      "pair_id": "procedural_ja_photo",
+      "family": "procedural",
+      "source_language": "ja",
+      "source_text": "写真を送る前に、必ず私に確認して。",
+      "candidate_jp": "写真を送る前に、ユーザーがアシスタントへ確認する。",
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "claims": [
+        {"id": "assistant_actor", "statement_en": "The assistant must perform the confirmation.", "gold_relation": "contradicted", "critical": true},
+        {"id": "user_target", "statement_en": "The assistant must confirm with the user.", "gold_relation": "contradicted", "critical": true},
+        {"id": "before_sending", "statement_en": "Confirmation must happen before sending a photo.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "procedural_zh_answer_order_faithful",
+      "pair_id": "procedural_zh_answer_order",
+      "family": "procedural",
+      "source_language": "zh",
+      "source_text": "以後先直接回答，再補充理由，不要先講背景。",
+      "candidate_jp": "今後は背景から始めず、まず直接答えてから理由を補足する。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "answer_first", "statement_en": "The assistant should give the direct answer first.", "gold_relation": "entailed", "critical": true},
+        {"id": "reason_after", "statement_en": "Reasons should be added after the direct answer.", "gold_relation": "entailed", "critical": true},
+        {"id": "no_background_first", "statement_en": "The assistant should not begin with background explanation.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "procedural_zh_answer_order_reversed",
+      "pair_id": "procedural_zh_answer_order",
+      "family": "procedural",
+      "source_language": "zh",
+      "source_text": "以後先直接回答，再補充理由，不要先講背景。",
+      "candidate_jp": "今後はまず背景を説明し、理由を並べてから最後に答える。",
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "claims": [
+        {"id": "answer_first", "statement_en": "The assistant should give the direct answer first.", "gold_relation": "contradicted", "critical": true},
+        {"id": "reason_after", "statement_en": "Reasons should be added after the direct answer.", "gold_relation": "contradicted", "critical": true},
+        {"id": "no_background_first", "statement_en": "The assistant should not begin with background explanation.", "gold_relation": "contradicted", "critical": true}
+      ]
+    },
+    {
+      "id": "interpretive_en_minute_faithful",
+      "pair_id": "interpretive_en_minute",
+      "family": "interpretive",
+      "source_language": "en",
+      "source_text": "When I say 'give me a minute', I usually need time to think; I am not asking you to leave.",
+      "candidate_jp": "『give me a minute』は考える時間が必要という意味で、立ち去ってほしいという意味ではない。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "trigger_phrase", "statement_en": "The rule concerns the phrase 'give me a minute'.", "gold_relation": "entailed", "critical": true},
+        {"id": "needs_thinking_time", "statement_en": "The speaker needs time to think.", "gold_relation": "entailed", "critical": true},
+        {"id": "not_leave_request", "statement_en": "The speaker is not asking the assistant to leave.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "interpretive_en_minute_reversed",
+      "pair_id": "interpretive_en_minute",
+      "family": "interpretive",
+      "source_language": "en",
+      "source_text": "When I say 'give me a minute', I usually need time to think; I am not asking you to leave.",
+      "candidate_jp": "『give me a minute』は、相手に立ち去ってほしいという意味だ。",
+      "expected_surface_clean": true,
+      "expected_accept": false,
+      "claims": [
+        {"id": "trigger_phrase", "statement_en": "The rule concerns the phrase 'give me a minute'.", "gold_relation": "entailed", "critical": true},
+        {"id": "needs_thinking_time", "statement_en": "The speaker needs time to think.", "gold_relation": "missing", "critical": true},
+        {"id": "not_leave_request", "statement_en": "The speaker is not asking the assistant to leave.", "gold_relation": "contradicted", "critical": true}
+      ]
+    },
+    {
+      "id": "interpretive_ja_any_faithful",
+      "pair_id": "interpretive_ja_any",
+      "family": "interpretive",
+      "source_language": "ja",
+      "source_text": "私が『どっちでも』と言う時は、決めるのに疲れていることが多い。好みがないとは限らないから、一案だけ出して。",
+      "candidate_jp": "『どっちでも』は決め疲れを示すことが多く、好みがないとは限らないので、アシスタントは一案だけ出す。",
+      "expected_surface_clean": true,
+      "expected_accept": true,
+      "claims": [
+        {"id": "decision_fatigue", "statement_en": "The phrase often indicates decision fatigue.", "gold_relation": "entailed", "critical": true},
+        {"id": "preference_may_exist", "statement_en": "The phrase does not necessarily mean the speaker has no preference.", "gold_relation": "entailed", "critical": true},
+        {"id": "assistant_one_option", "statement_en": "The assistant should offer exactly one option.", "gold_relation": "entailed", "critical": true}
+      ]
+    },
+    {
+      "id": "interpretive_ja_any_chinese_surface",
+      "pair_id": "interpretive_ja_any",
+      "family": "interpretive",
+      "source_language": "ja",
+      "source_text": "私が『どっちでも』と言う時は、決めるのに疲れていることが多い。好みがないとは限らないから、一案だけ出して。",
+      "candidate_jp": "『どっちでも』表示决定疲劳，不一定没有偏好，所以アシスタントは一个方案だけ出す。",
+      "expected_surface_clean": false,
+      "expected_accept": false,
+      "claims": [
+        {"id": "decision_fatigue", "statement_en": "The phrase often indicates decision fatigue.", "gold_relation": "entailed", "critical": true},
+        {"id": "preference_may_exist", "statement_en": "The phrase does not necessarily mean the speaker has no preference.", "gold_relation": "entailed", "critical": true},
+        {"id": "assistant_one_option", "statement_en": "The assistant should offer exactly one option.", "gold_relation": "entailed", "critical": true}
+      ]
+    }
+  ]
+}

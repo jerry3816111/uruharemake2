@@ -1,0 +1,80 @@
+{
+  "schema": "uruha_reflection_layer_audit_preregistration_v1",
+  "evidence_status": "calibration_cases_and_gates_frozen_before_judge_runner_implementation_or_scoring",
+  "research_question": "Can an independent local atomic-claim judge distinguish faithful reflection text from negation, omission, actor, order, and language-surface failures before it is used to attribute V4 errors?",
+  "motivation": {
+    "observed_problem": "The V4 preregistered proxy reported perfect rule precision and Japanese surface quality even though direct inspection found a negation reversal, source-external Chinese, an actor ambiguity, and two downstream behavior regressions.",
+    "project_relevance": "Without layer-specific semantic fidelity evidence, changing memory extraction, planner consumption, or final realization would be blind patching.",
+    "external_method_basis": [
+      {
+        "title": "FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation",
+        "url": "https://aclanthology.org/2023.emnlp-main.741/",
+        "use": "Decompose meaning into atomic claims and score each claim against a trusted source."
+      },
+      {
+        "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+        "url": "https://github.com/xiaowu0162/LongMemEval",
+        "use": "Keep evidence retrieval and answer correctness as separate measurements."
+      },
+      {
+        "title": "Ollama thinking and OpenAI compatibility documentation",
+        "url": "https://docs.ollama.com/api/openai-compatibility",
+        "use": "Run a local fixed-seed judge with thinking disabled and structured output."
+      }
+    ]
+  },
+  "dataset_path": "datasets/reflection_layer_audit_v1_calibration.json",
+  "dataset_status": "new_source_separated_internal_calibration_not_an_independent_holdout",
+  "case_count": 12,
+  "scenario_pair_count": 6,
+  "expected_accept_count": 6,
+  "expected_reject_count": 6,
+  "atomic_claim_count": 36,
+  "reflection_families": ["semantic", "procedural", "interpretive"],
+  "source_languages": ["zh", "en", "ja"],
+  "judge": {
+    "model": "qwen3.5:9b",
+    "ollama_list_id": "6488c96fa5fa",
+    "parameter_size": "9.7B",
+    "quantization": "Q4_K_M",
+    "endpoint": "ollama_native_chat",
+    "temperature": 0.0,
+    "seed": 161803,
+    "thinking": false,
+    "maximum_model_calls": 12,
+    "maximum_attempts_per_case": 1,
+    "labels": ["entailed", "contradicted", "missing"]
+  },
+  "surface_check": {
+    "method": "pyopenjtalk_unknown_cjk_plus_existing_shared_language_checks",
+    "model_calls": 0,
+    "candidate_language": "ja"
+  },
+  "controlled_variables": [
+    "same judge model and local snapshot",
+    "same system prompt and two calibration examples",
+    "same temperature, seed, thinking setting, and JSON schema",
+    "one model call per candidate",
+    "no runtime memory, planner, right-brain, benchmark answer, or human rating"
+  ],
+  "success_gates": {
+    "schema_parse_rate_min": 1.0,
+    "atomic_relation_accuracy_min": 0.9444,
+    "critical_false_entailment_count_max": 0,
+    "candidate_acceptance_accuracy_min": 1.0,
+    "accepted_surface_specificity_min": 1.0,
+    "model_call_count_exact": 12
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_posthoc_v4_layer_diagnostic_only",
+    "any_gate_fails": "reject_atomic_judge_and_do_not_use_for_v5_design"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_change_authorized": false,
+  "v4_rescore_authorized": false,
+  "independent_holdout_authorized": false,
+  "paid_api_authorized": false,
+  "human_rating_required": false,
+  "claim_boundary": "Passing validates only this judge on 12 authored calibration candidates. It may support a clearly labeled posthoc V4 layer diagnosis, but cannot validate reflection runtime, general semantic entailment, or broad human likeness."
+}
