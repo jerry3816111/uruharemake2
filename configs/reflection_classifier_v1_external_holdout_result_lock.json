@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_reflection_classifier_external_holdout_result_lock_v1",
+  "closed_at": "2026-07-17T18:30:00+09:00",
+  "status": "completed_failed_preregistered_gates",
+  "runner_commit": "7cce363a462ef231574dc8d02c6c469a9710e335",
+  "artifact_bindings": {
+    "preregistration": "configs/reflection_classifier_v1_external_holdout_construction_preregistration.json",
+    "preregistration_sha256": "f6dd52b9dc886a3d5a2e6e24295d6e43fe94e7be0ffc4619aa86446d9a447bd3",
+    "harness_lock": "configs/reflection_classifier_v1_external_holdout_harness_lock.json",
+    "harness_lock_sha256": "90eaf769f8c068a4789d9c73b54ddd9b9f69cbe5936f61ba0c9d5e43d2c842b6",
+    "dataset": "datasets/reflection_classifier_v1_external_holdout.json",
+    "dataset_sha256": "18f06e2781eb1cef5ef0b884edaf14b8b3ffe14ef14a9bef3e38efbcd8220eff",
+    "matched_scorer": "reflection_classifier_v1_external_holdout_core.py",
+    "matched_scorer_sha256": "fe28fc14e242017be659be073ef719e5f4ca1a999dad48ba8b39cbdf4ac7e242",
+    "runner": "run_reflection_classifier_v1_external_holdout.py",
+    "runner_sha256": "3f6fd966da031badd18d2d2009ef3716519c3f2dc1e83b05e998b3869a871cae",
+    "analyzer": "analyze_reflection_classifier_v1_external_holdout.py",
+    "analyzer_sha256": "cae528064c16b6b6a34d2594886372d13802c71e2167a576e8590b9b736084fd",
+    "legacy_classifier": "reflection_classifier_v1_legacy.py",
+    "legacy_classifier_sha256": "f270fe435dbc4d1444fdfc7f7276e85fd35778378cba1e941ce2f6d4c67e9728",
+    "candidate_classifier": "uruha_reflection_runtime.py",
+    "candidate_classifier_sha256": "ea16243b1678d9d2089093fe4cd47934ab792de523d3b948f3019c595e955c48",
+    "raw_result": "reports/reflection_classifier_v1_external_holdout_raw.json",
+    "raw_result_sha256": "702354bb90fa18a9a6dd6b7b80cd3a21a7aa92ba30429fcd7e26b4fa03d84bbe",
+    "analysis_json": "reports/reflection_classifier_v1_external_holdout_analysis.json",
+    "analysis_json_sha256": "674761ef94b58c5507103a014d57ee9e623ab03079d95acf244c9eee62a4fce5",
+    "analysis_markdown": "reports/reflection_classifier_v1_external_holdout_analysis.md",
+    "analysis_markdown_sha256": "0e100e0cf66f440f6761637d98bea67daa340843dd75c36d37ce6c5a10b24686",
+    "result_test": "test_reflection_classifier_v1_external_holdout_result.py",
+    "result_test_sha256": "9ab73096921832a155bb5ba2bbbb57cc8629710741b92835b0abce955c9da81d"
+  },
+  "matched_result": {
+    "case_count": 32,
+    "legacy_correct_count": 20,
+    "legacy_accuracy": 0.625,
+    "candidate_correct_count": 20,
+    "candidate_accuracy": 0.625,
+    "accuracy_delta": 0.0,
+    "prediction_disagreement_count": 0,
+    "newly_correct_count": 0,
+    "regression_count": 0,
+    "critical_false_positive_count": 0,
+    "passed_gate_count": 3,
+    "total_gate_count": 9,
+    "all_preregistered_gates_pass": false
+  },
+  "candidate_class_results": {
+    "semantic": "5_of_8",
+    "procedural": "2_of_8",
+    "interpretive": "5_of_8",
+    "none": "8_of_8"
+  },
+  "diagnostic_only_not_a_new_success_metric": {
+    "missed_case_count": 12,
+    "missed_by_language": {
+      "eng": 2,
+      "jpn": 8,
+      "cmn": 2
+    },
+    "missed_by_class": {
+      "semantic": 3,
+      "procedural": 6,
+      "interpretive": 3,
+      "none": 0
+    },
+    "bounded_interpretation": "The authored-development improvement did not change any prediction on this source-separated sample. The structural candidate therefore has no demonstrated external generalization benefit under this frozen test."
+  },
+  "decision": "reject_runtime_advancement_keep_reflection_disabled_and_freeze_failures_as_future_development_evidence",
+  "next_evidence_rule": "The 12 failures may be used as development evidence, but this same 32-case holdout may not be reused to claim generalization after a fix. Any future candidate requires a newly preregistered source-separated holdout.",
+  "same_holdout_retest_authorized": false,
+  "post_result_threshold_change_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "downstream_behavior_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
