@@ -1,0 +1,524 @@
+{
+  "schema": "uruha_consolidation_admission_role_separated_development_dataset_v3",
+  "created_at": "2026-07-17T22:24:00+09:00",
+  "purpose": "Fresh multilingual sessions for testing role-separated long-term memory admission after V2 exposed owner ambiguity.",
+  "construction_method": "Codex-authored synthetic sessions with unique scenario families and explicit gold semantic frames.",
+  "official_source_labels": false,
+  "independent_human_label_validation": false,
+  "model_inference_used_during_construction": false,
+  "prior_results_used_only_to_define_failure_modes": true,
+  "semantic_translation_pairs_present": false,
+  "cases": [
+    {
+      "id": "cav3_eng_wisdom_color_accessibility",
+      "language": "eng",
+      "scenario_family": "stable_color_vision_accessibility",
+      "session": [
+        {
+          "user": "Can you help me redesign this dashboard?",
+          "assistant": "Which parts are difficult to use?"
+        },
+        {
+          "user": "I have red-green color blindness, so color-only status markers never work for me.",
+          "assistant": "Then each status also needs a shape or text label."
+        },
+        {
+          "user": "That would make the dashboard much easier to read.",
+          "assistant": "I will include redundant visual cues."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "stable_trait",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2
+      ],
+      "gold_reason": "durable_first_person_accessibility_constraint"
+    },
+    {
+      "id": "cav3_eng_wisdom_keyboard_navigation",
+      "language": "eng",
+      "scenario_family": "repeated_keyboard_navigation_pattern",
+      "session": [
+        {
+          "user": "I usually navigate software with the keyboard instead of reaching for the mouse.",
+          "assistant": "Keyboard paths are faster for you."
+        },
+        {
+          "user": "The new editor hid several shortcuts.",
+          "assistant": "That would interrupt your normal workflow."
+        },
+        {
+          "user": "I keep choosing tools with complete shortcut support for that reason.",
+          "assistant": "Shortcut coverage is an important selection criterion for you."
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "repeated_pattern",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        3
+      ],
+      "gold_reason": "repeated_first_person_interaction_preference"
+    },
+    {
+      "id": "cav3_eng_procedural_comparison_order",
+      "language": "eng",
+      "scenario_family": "future_comparison_response_order",
+      "session": [
+        {
+          "user": "Recommendations are hard to judge when I cannot see the criteria.",
+          "assistant": "The reasoning should be visible before the conclusion."
+        },
+        {
+          "user": "Whenever I ask for a comparison, list the decision criteria before recommending an option.",
+          "assistant": "I will show the criteria first."
+        },
+        {
+          "user": "Keep that order for later comparisons too.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_comparison_policy"
+    },
+    {
+      "id": "cav3_eng_procedural_recap_signal",
+      "language": "eng",
+      "scenario_family": "future_recap_keyword_policy",
+      "session": [
+        {
+          "user": "I lose track after long design discussions.",
+          "assistant": "A consistent recap signal could help."
+        },
+        {
+          "user": "From now on, when I type recap, return the decisions, open risks, and next action.",
+          "assistant": "I will use that three-part recap."
+        },
+        {
+          "user": "Use the same meaning for recap in future chats.",
+          "assistant": "I will."
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_future_assistant_keyword_policy"
+    },
+    {
+      "id": "cav3_eng_none_neighbor_dog",
+      "language": "eng",
+      "scenario_family": "uncertain_third_party_pet_plan",
+      "session": [
+        {
+          "user": "My neighbor might adopt a dog next month.",
+          "assistant": "It sounds undecided."
+        },
+        {
+          "user": "They have not chosen a breed or even confirmed the adoption.",
+          "assistant": "Then there is no settled fact yet."
+        },
+        {
+          "user": "I was only wondering whether the building allows pets.",
+          "assistant": "We can check the building rules without assuming an adoption."
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "uncertain_third_party_information"
+    },
+    {
+      "id": "cav3_eng_none_single_formal_intro",
+      "language": "eng",
+      "scenario_family": "one_time_formal_introduction",
+      "session": [
+        {
+          "user": "I am introducing a guest in the next message.",
+          "assistant": "What tone should I use?"
+        },
+        {
+          "user": "For that introduction only, make the wording very formal.",
+          "assistant": "I will keep that one introduction formal."
+        },
+        {
+          "user": "Afterward, return to the usual tone.",
+          "assistant": "Understood."
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicit_one_time_response_request"
+    },
+    {
+      "id": "cav3_jpn_wisdom_numeric_notation",
+      "language": "jpn",
+      "scenario_family": "stable_numeric_notation_preference",
+      "session": [
+        {
+          "user": "手順書の数字表記をそろえたいんだ。",
+          "assistant": "読みやすい表記に統一しましょう。"
+        },
+        {
+          "user": "私は漢数字より算用数字のほうがいつも読みやすい。",
+          "assistant": "では数字は算用数字を基本にします。"
+        },
+        {
+          "user": "そのほうが見落としにくい。",
+          "assistant": "可読性を優先して整えます。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "stable_trait",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2
+      ],
+      "gold_reason": "durable_first_person_notation_preference"
+    },
+    {
+      "id": "cav3_jpn_wisdom_morning_focus",
+      "language": "jpn",
+      "scenario_family": "repeated_morning_focus_pattern",
+      "session": [
+        {
+          "user": "考える仕事は朝にやると一番集中できる。",
+          "assistant": "朝が集中しやすい時間帯なんですね。"
+        },
+        {
+          "user": "昨日は夕方に設計して何度もやり直した。",
+          "assistant": "時間帯が効率に影響したようです。"
+        },
+        {
+          "user": "重要な設計は普段から午前中に置いている。",
+          "assistant": "その予定の組み方が合っていそうです。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "repeated_pattern",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        3
+      ],
+      "gold_reason": "repeated_first_person_work_timing_pattern"
+    },
+    {
+      "id": "cav3_jpn_procedural_parallel_translation",
+      "language": "jpn",
+      "scenario_family": "future_parallel_translation_signal",
+      "session": [
+        {
+          "user": "翻訳だけだと原文との対応を見失うことがある。",
+          "assistant": "原文と訳文を並べる方法があります。"
+        },
+        {
+          "user": "今後、私が「対訳」と書いたら、原文の直後に訳文を置いて。",
+          "assistant": "「対訳」をその形式の合図にします。"
+        },
+        {
+          "user": "次の会話でも同じ合図として扱って。",
+          "assistant": "わかりました。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_future_assistant_translation_policy"
+    },
+    {
+      "id": "cav3_jpn_procedural_debug_reproduction",
+      "language": "jpn",
+      "scenario_family": "future_debug_reproduction_first",
+      "session": [
+        {
+          "user": "デバッグでいきなり修正案を出されると原因を見失う。",
+          "assistant": "まず再現条件を確定したほうがよさそうです。"
+        },
+        {
+          "user": "次回からデバッグを頼んだら、最初に再現手順を確認して。",
+          "assistant": "修正案の前に再現手順を確認します。"
+        },
+        {
+          "user": "その順番を今後も守って。",
+          "assistant": "守ります。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_debug_policy"
+    },
+    {
+      "id": "cav3_jpn_none_hotel_week",
+      "language": "jpn",
+      "scenario_family": "temporary_hotel_connectivity",
+      "session": [
+        {
+          "user": "今週だけホテルの回線が不安定なんだ。",
+          "assistant": "今週は通信量を抑えたほうがよさそうですね。"
+        },
+        {
+          "user": "今日は画像を使わず文字だけで説明して。",
+          "assistant": "今日は文字だけにします。"
+        },
+        {
+          "user": "家に戻ったら通常どおりでいい。",
+          "assistant": "一時的な対応として扱います。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "temporary_context_and_one_session_request"
+    },
+    {
+      "id": "cav3_jpn_none_friend_exam",
+      "language": "jpn",
+      "scenario_family": "third_party_unconfirmed_exam",
+      "session": [
+        {
+          "user": "友人が資格試験を受けるか迷っているらしい。",
+          "assistant": "まだ決めていないんですね。"
+        },
+        {
+          "user": "申し込み期限も確認していないみたい。",
+          "assistant": "まず期限の確認が必要そうです。"
+        },
+        {
+          "user": "私は制度だけ知りたかった。",
+          "assistant": "では制度の説明に絞ります。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "unconfirmed_third_party_plan"
+    },
+    {
+      "id": "cav3_cmn_wisdom_motion_sensitivity",
+      "language": "cmn",
+      "scenario_family": "stable_interface_motion_sensitivity",
+      "session": [
+        {
+          "user": "可以幫我挑一個比較舒服的介面嗎？",
+          "assistant": "你對哪些視覺效果比較敏感？"
+        },
+        {
+          "user": "我看快速閃動的動畫很容易頭暈，所以一直都會關掉動態效果。",
+          "assistant": "那就應該優先選擇能減少動畫的介面。"
+        },
+        {
+          "user": "靜態一點我比較能長時間使用。",
+          "assistant": "我會把低動態列為重要條件。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "stable_trait",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "durable_first_person_accessibility_constraint"
+    },
+    {
+      "id": "cav3_cmn_wisdom_mind_map",
+      "language": "cmn",
+      "scenario_family": "repeated_mind_map_workflow",
+      "session": [
+        {
+          "user": "我整理複雜資料時通常會先畫心智圖。",
+          "assistant": "你會先建立整體關係再處理細節。"
+        },
+        {
+          "user": "上次直接寫文章，結果一直調換段落。",
+          "assistant": "少了前面的結構整理。"
+        },
+        {
+          "user": "所以我現在遇到大型主題還是會先畫圖再動筆。",
+          "assistant": "這是你穩定使用的整理方式。"
+        }
+      ],
+      "expected_memory_kind": "wisdom",
+      "expected_persistence_basis": "repeated_pattern",
+      "expected_applies_to": "user_profile",
+      "required_evidence_user_turns": [
+        1,
+        3
+      ],
+      "allowed_evidence_user_turns": [
+        1,
+        3
+      ],
+      "gold_reason": "repeated_first_person_workflow_pattern"
+    },
+    {
+      "id": "cav3_cmn_procedural_quick_view",
+      "language": "cmn",
+      "scenario_family": "future_quick_view_keyword",
+      "session": [
+        {
+          "user": "有時候我只需要先掌握文件的大方向。",
+          "assistant": "可以用固定指令切換成摘要模式。"
+        },
+        {
+          "user": "以後我說「速覽」時，先給三個重點，再補一個主要風險。",
+          "assistant": "我會把「速覽」當成這個格式的指令。"
+        },
+        {
+          "user": "其他新的對話也使用這個速覽格式。",
+          "assistant": "知道了。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_future_assistant_summary_policy"
+    },
+    {
+      "id": "cav3_cmn_procedural_schedule_conflicts",
+      "language": "cmn",
+      "scenario_family": "future_schedule_conflict_check",
+      "session": [
+        {
+          "user": "我常常只看到新行程，忘記原本已經排了什麼。",
+          "assistant": "新增前先做衝突檢查會比較安全。"
+        },
+        {
+          "user": "每次我請你檢查行程時，先列出時間衝突，再談怎麼調整。",
+          "assistant": "我會先檢查並列出衝突。"
+        },
+        {
+          "user": "以後都維持這個順序。",
+          "assistant": "會維持。"
+        }
+      ],
+      "expected_memory_kind": "procedural",
+      "expected_persistence_basis": "explicit_future_policy",
+      "expected_applies_to": "assistant_policy",
+      "required_evidence_user_turns": [
+        2
+      ],
+      "allowed_evidence_user_turns": [
+        2,
+        3
+      ],
+      "gold_reason": "explicit_recurring_assistant_schedule_policy"
+    },
+    {
+      "id": "cav3_cmn_none_single_emoji",
+      "language": "cmn",
+      "scenario_family": "one_time_emoji_message",
+      "session": [
+        {
+          "user": "我等等要傳一則生日祝福。",
+          "assistant": "你想用什麼語氣？"
+        },
+        {
+          "user": "只有這一則幫我多放一些表情符號。",
+          "assistant": "這則祝福會多放一些表情符號。"
+        },
+        {
+          "user": "其他回答不用改。",
+          "assistant": "我只調整這一次。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "explicit_one_time_style_request"
+    },
+    {
+      "id": "cav3_cmn_none_uncertain_guitar",
+      "language": "cmn",
+      "scenario_family": "uncertain_future_hobby",
+      "session": [
+        {
+          "user": "我也許明年會想學吉他。",
+          "assistant": "目前還只是可能的計畫。"
+        },
+        {
+          "user": "我連要不要買琴都還沒決定。",
+          "assistant": "那還不能當成確定的興趣。"
+        },
+        {
+          "user": "今天只是想知道入門大概要多少預算。",
+          "assistant": "我會只回答入門預算。"
+        }
+      ],
+      "expected_memory_kind": "none",
+      "expected_persistence_basis": "no_long_term_basis",
+      "expected_applies_to": "none",
+      "required_evidence_user_turns": [],
+      "allowed_evidence_user_turns": [],
+      "gold_reason": "uncertain_future_user_possibility"
+    }
+  ]
+}
