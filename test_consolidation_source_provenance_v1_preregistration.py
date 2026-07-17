@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -34,6 +35,14 @@ def _load(path):
 
 def _sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _sha256_git_file(commit, path):
+    content = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(content).hexdigest()
 
 
 class ConsolidationSourceProvenanceV1PreregistrationTest(
@@ -69,7 +78,11 @@ class ConsolidationSourceProvenanceV1PreregistrationTest(
 
     def test_baseline_is_hash_bound_and_reproduces_the_data_loss(self):
         frozen = self.config["frozen_baseline"]
-        for key in ("runtime", "measurement", "report"):
+        self.assertEqual(
+            _sha256_git_file(frozen["commit"], frozen["runtime_path"]),
+            frozen["runtime_sha256"],
+        )
+        for key in ("measurement", "report"):
             self.assertEqual(
                 _sha256(ROOT / frozen[f"{key}_path"]),
                 frozen[f"{key}_sha256"],

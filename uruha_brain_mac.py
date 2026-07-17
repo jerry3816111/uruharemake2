@@ -204,6 +204,7 @@ SHORT_TERM_BUFFER_LIMIT = 32
 SHORT_TERM_DECAY_SECONDS = 1800
 SHORT_TERM_FORGET_THRESHOLD = 0.18
 PASSIVE_DECAY_DAYS = _env_int("URUHA_PASSIVE_DECAY_DAYS", 30)
+CONSOLIDATED_EPISODE_DECAY_MULTIPLIER = 0.35
 PSYCHE_MOOD_STEP_LIMIT = 6
 PSYCHE_TRUST_STEP_LIMIT = 6
 PSYCHE_SOFT_ZONE = 58
@@ -611,6 +612,7 @@ class MemoryManager:
                     "premise_check": premise_check,
                     "routing_path": routing_path,
                     "source": "turn_episode",
+                    "consolidation_state": "pending",
                     "last_accessed_at": timestamp,
                     "decay_flag": False,
                     "decay_multiplier": 1.0,
@@ -626,6 +628,7 @@ class MemoryManager:
                 "summary": summary,
                 "timestamp": timestamp,
                 "routing_path": routing_path,
+                "episode_id": episode_id,
             }
         )
         if len(self.session_turns) > 24:
@@ -786,6 +789,92 @@ class MemoryManager:
         entries.sort(key=lambda item: item.get("metadata", {}).get("timestamp", ""), reverse=True)
         return entries
 
+    def _consolidation_provenance(self, source_episode_ids, batch_id):
+        source_episode_ids = sorted(
+            {
+                str(source_id)
+                for source_id in source_episode_ids
+                if source_id is not None and str(source_id).strip()
+            }
+        )
+        encoded_ids = json.dumps(
+            source_episode_ids,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        return {
+            "consolidation_batch_id": batch_id,
+            "source_episode_ids": encoded_ids,
+            "source_episode_count": len(source_episode_ids),
+            "source_episode_ids_sha256": hashlib.sha256(
+                encoded_ids.encode("utf-8")
+            ).hexdigest(),
+        }
+
+    def _mark_source_episodes_consolidated(
+        self,
+        source_episode_ids,
+        *,
+        timestamp,
+        batch_id,
+        summary_memory_id,
+    ):
+        source_episode_ids = sorted(
+            {
+                str(source_id)
+                for source_id in source_episode_ids
+                if source_id is not None and str(source_id).strip()
+            }
+        )
+        if not source_episode_ids:
+            return 0
+        try:
+            payload = self.episode_col.get(
+                ids=source_episode_ids,
+                include=["metadatas"],
+            )
+        except Exception:
+            return 0
+
+        ids = payload.get("ids") or []
+        metadatas = payload.get("metadatas") or []
+        update_ids = []
+        update_metadatas = []
+        for index, source_id in enumerate(ids):
+            metadata = (
+                metadatas[index]
+                if index < len(metadatas)
+                and isinstance(metadatas[index], dict)
+                else {}
+            )
+            if metadata.get("source") != "turn_episode":
+                continue
+            updated = dict(metadata)
+            updated.update(
+                {
+                    "consolidation_state": "consolidated",
+                    "consolidated_at": timestamp,
+                    "consolidation_batch_id": batch_id,
+                    "consolidation_summary_id": summary_memory_id,
+                    "decay_flag": True,
+                    "decay_multiplier": (
+                        CONSOLIDATED_EPISODE_DECAY_MULTIPLIER
+                    ),
+                }
+            )
+            update_ids.append(source_id)
+            update_metadatas.append(updated)
+        if not update_ids:
+            return 0
+        try:
+            self.episode_col.update(
+                ids=update_ids,
+                metadatas=update_metadatas,
+            )
+        except Exception:
+            return 0
+        return len(update_ids)
+
     def _apply_passive_wisdom_decay(self, days=PASSIVE_DECAY_DAYS):
         try:
             payload = self.wisdom_col.get(include=["documents", "metadatas"])
@@ -921,7 +1010,19 @@ class MemoryManager:
     def consolidate_recent_experiences(self, client_logic, minimum_turns=6, force=False):
         decay_report = self._decay_short_term_memory()
         passive_decay_report = self._apply_passive_wisdom_decay()
-        recent_episode_entries = self._fetch_recent_collection_entries(self.episode_col, hours=24, source="turn_episode")
+        recent_episode_entries = [
+            entry
+            for entry in self._fetch_recent_collection_entries(
+                self.episode_col,
+                hours=24,
+                source="turn_episode",
+            )
+            if entry.get("metadata", {}).get(
+                "consolidation_state",
+                "pending",
+            )
+            != "consolidated"
+        ]
         should_consolidate_recent_db = len(recent_episode_entries) >= max(20, minimum_turns)
 
         if not force and not self.has_unconsolidated_turns(minimum_turns) and not should_consolidate_recent_db:
@@ -1014,11 +1115,31 @@ class MemoryManager:
             salience = max(salience, float(heuristic.get("salience", salience)))
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        source_episode_ids = (
+            [
+                entry.get("id")
+                for entry in db_excerpt
+                if entry.get("id")
+            ]
+            if db_excerpt
+            else [
+                turn.get("episode_id")
+                for turn in excerpt_turns
+                if turn.get("episode_id")
+            ]
+        )
+        batch_id = str(uuid.uuid4())
+        provenance = self._consolidation_provenance(
+            source_episode_ids,
+            batch_id,
+        )
+        summary_memory_id = str(uuid.uuid4())
+        episodic_summary_stored = False
 
         try:
             self.episode_col.add(
                 documents=[f"EpisodicSummary: {episodic_summary}"],
-                ids=[str(uuid.uuid4())],
+                ids=[summary_memory_id],
                 metadatas=[
                     {
                         "source": "episodic_consolidation",
@@ -1027,13 +1148,19 @@ class MemoryManager:
                         "last_accessed_at": timestamp,
                         "decay_flag": False,
                         "decay_multiplier": 1.0,
+                        **provenance,
                     }
                 ],
             )
+            episodic_summary_stored = True
         except Exception:
             pass
 
-        if wisdom_rule and wisdom_rule != "NO_RULE":
+        if (
+            episodic_summary_stored
+            and wisdom_rule
+            and wisdom_rule != "NO_RULE"
+        ):
             try:
                 self.wisdom_col.add(
                     documents=[f"Rule: {wisdom_rule} | EpisodicSummary: {episodic_summary}"],
@@ -1046,13 +1173,18 @@ class MemoryManager:
                             "last_accessed_at": timestamp,
                             "decay_flag": False,
                             "decay_multiplier": 1.0,
+                            **provenance,
                         }
                     ],
                 )
             except Exception:
                 pass
 
-        if procedural_rule and procedural_rule != "NO_RULE":
+        if (
+            episodic_summary_stored
+            and procedural_rule
+            and procedural_rule != "NO_RULE"
+        ):
             try:
                 self.procedural_col.add(
                     documents=[f"Procedure: {procedural_rule} | TriggerSummary: {episodic_summary}"],
@@ -1065,27 +1197,31 @@ class MemoryManager:
                             "last_accessed_at": timestamp,
                             "decay_flag": False,
                             "decay_multiplier": 1.0,
+                            **provenance,
                         }
                     ],
                 )
             except Exception:
                 pass
 
-        deleted_episode_count = 0
-        if db_excerpt:
-            delete_ids = [entry.get("id") for entry in db_excerpt if entry.get("id")]
-            if delete_ids:
-                try:
-                    self.episode_col.delete(ids=delete_ids)
-                    deleted_episode_count = len(delete_ids)
-                except Exception:
-                    deleted_episode_count = 0
-
-        self._consolidated_turn_index = len(self.session_turns)
-        self._last_consolidation_at = timestamp
-        if len(self.session_turns) > 16:
-            self.session_turns = self.session_turns[-16:]
-            self._consolidated_turn_index = min(self._consolidated_turn_index, len(self.session_turns))
+        marked_consolidated_count = 0
+        if episodic_summary_stored:
+            marked_consolidated_count = (
+                self._mark_source_episodes_consolidated(
+                    source_episode_ids,
+                    timestamp=timestamp,
+                    batch_id=batch_id,
+                    summary_memory_id=summary_memory_id,
+                )
+            )
+            self._consolidated_turn_index = len(self.session_turns)
+            self._last_consolidation_at = timestamp
+            if len(self.session_turns) > 16:
+                self.session_turns = self.session_turns[-16:]
+                self._consolidated_turn_index = min(
+                    self._consolidated_turn_index,
+                    len(self.session_turns),
+                )
 
         result = {
             "wisdom_rule": wisdom_rule,
@@ -1095,8 +1231,19 @@ class MemoryManager:
             "turns_used": len(db_excerpt) if db_excerpt else len(excerpt_turns),
             "decay_report": decay_report,
             "passive_decay_report": passive_decay_report,
-            "deleted_episode_count": deleted_episode_count,
-            "mode": "three_speed_consolidation",
+            "deleted_episode_count": 0,
+            "preserved_episode_count": len(source_episode_ids),
+            "marked_consolidated_count": marked_consolidated_count,
+            "consolidation_batch_id": batch_id,
+            "source_episode_count": len(source_episode_ids),
+            "source_episode_ids_sha256": provenance[
+                "source_episode_ids_sha256"
+            ],
+            "mode": (
+                "three_speed_consolidation"
+                if episodic_summary_stored
+                else "consolidation_write_failed"
+            ),
         }
         self._last_maintenance_result = result
         return result
