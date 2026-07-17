@@ -1116,36 +1116,69 @@ class MemoryManager:
                 "reflection_type": reflection_type,
             }
             return None
+        deterministic_fields = urr.deterministic_reflection_fields(
+            user_input,
+            reflection_type=reflection_type,
+            source_episode_id=source_episode_id,
+        )
+        if deterministic_fields is None:
+            self._last_reflection_result = {
+                "status": "invalid_source_evidence",
+                "reflection_type": reflection_type,
+                "extraction_version": "v4_structured_grounded",
+            }
+            return None
         try:
-            response = client_logic.chat.completions.create(
-                model="qwen2.5:7b",
-                messages=[
+            result = None
+            validation_report = {"valid": False, "retryable": False, "reasons": []}
+            attempt_reports = []
+            for attempt_index in range(2):
+                response = client_logic.chat.completions.create(
+                    model="qwen2.5:7b",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": urr.structured_extraction_system_prompt(
+                                reflection_type,
+                                retry_reasons=(
+                                    validation_report.get("reasons")
+                                    if attempt_index
+                                    else None
+                                ),
+                            ),
+                        },
+                        {
+                            "role": "user",
+                            "content": f"Source user utterance: {user_input}",
+                        },
+                    ],
+                    temperature=0.0,
+                    response_format=urr.reflection_surface_response_format(),
+                )
+                payload = urr.parse_json_object(response.choices[0].message.content)
+                result, validation_report = urr.assemble_grounded_reflection(
+                    payload,
+                    user_input=user_input,
+                    reflection_type=reflection_type,
+                    source_episode_id=source_episode_id,
+                )
+                attempt_reports.append(
                     {
-                        "role": "system",
-                        "content": urr.extraction_system_prompt(reflection_type),
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            f"User utterance: {user_input}\n"
-                            f"Reply intent: {logic_data.get('intent', 'chat')}\n"
-                            f"AI reply: {ai_response}"
-                        ),
-                    },
-                ],
-                temperature=0.0,
-            )
-            payload = urr.parse_json_object(response.choices[0].message.content)
-            result = urr.validate_reflection_payload(
-                payload,
-                user_input=user_input,
-                expected_type=reflection_type,
-                source_episode_id=source_episode_id,
-            )
+                        "attempt": attempt_index + 1,
+                        "valid": validation_report.get("valid", False),
+                        "reasons": list(validation_report.get("reasons") or []),
+                    }
+                )
+                if result is not None or not validation_report.get("retryable"):
+                    break
             if result is None:
                 self._last_reflection_result = {
                     "status": "invalid_payload",
                     "reflection_type": reflection_type,
+                    "extraction_version": "v4_structured_grounded",
+                    "attempt_count": len(attempt_reports),
+                    "validation_reasons": list(validation_report.get("reasons") or []),
+                    "attempt_reports": attempt_reports,
                 }
                 return None
 
@@ -1175,11 +1208,13 @@ class MemoryManager:
                 metadatas=[
                     {
                         "source": "typed_reflection",
+                        "extraction_version": "v4_structured_grounded",
                         "reflection_type": reflection_type,
                         "source_episode_id": source_episode_id,
                         "source_user_sha256": result["source_user_sha256"],
                         "evidence_quote": result["evidence_quote"],
                         "confidence": result["confidence"],
+                        "model_attempt_count": len(attempt_reports),
                         "timestamp": timestamp,
                         "salience": salience,
                         "last_accessed_at": timestamp,
@@ -1191,6 +1226,9 @@ class MemoryManager:
             result.update(
                 {
                     "status": "stored",
+                    "extraction_version": "v4_structured_grounded",
+                    "attempt_count": len(attempt_reports),
+                    "validation_reasons": [],
                     "memory_id": memory_id,
                     "document": document,
                 }

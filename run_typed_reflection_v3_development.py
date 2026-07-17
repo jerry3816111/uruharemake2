@@ -105,7 +105,10 @@ class _CompletionProxy:
             for message in messages
             if message.get("role") == "system"
         )
-        if "You extract ONE grounded reflection" in system_text:
+        if (
+            "You extract ONE grounded reflection" in system_text
+            or "Generate only the Japanese gist fields" in system_text
+        ):
             call_kind = "typed_reflection_extraction"
         elif "Left Brain Planner" in system_text:
             call_kind = "left_brain_planning"

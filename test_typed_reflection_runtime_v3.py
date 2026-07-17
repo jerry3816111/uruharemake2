@@ -14,12 +14,15 @@ DATASET = ROOT / "datasets" / "typed_reflection_v3_development_pilot.json"
 
 class FakeCompletions:
     def __init__(self, payload):
-        self.payload = payload
+        self.payloads = payload if isinstance(payload, list) else [payload]
         self.calls = []
 
     def create(self, **kwargs):
         self.calls.append(kwargs)
-        message = SimpleNamespace(content=json.dumps(self.payload, ensure_ascii=False))
+        index = min(len(self.calls) - 1, len(self.payloads) - 1)
+        message = SimpleNamespace(
+            content=json.dumps(self.payloads[index], ensure_ascii=False)
+        )
         return SimpleNamespace(choices=[SimpleNamespace(message=message)])
 
 
@@ -102,6 +105,41 @@ class TypedReflectionHelpersV3Test(unittest.TestCase):
                 )
             )
 
+    def test_v4_surface_rejects_source_external_language_but_allows_source_quote(self):
+        rejected = reflection.validate_reflection_surface(
+            {
+                "content_jp": "『也许以后』は時間が必要という意味です。",
+                "trigger_jp": "この表現を使う時",
+            },
+            user_input="When I say maybe later, I need more time.",
+        )
+        self.assertFalse(rejected["valid"])
+        self.assertTrue(rejected["retryable"])
+        self.assertTrue(
+            any(reason.startswith("source_external_language") for reason in rejected["reasons"])
+        )
+
+        accepted = reflection.validate_reflection_surface(
+            {
+                "content_jp": "『maybe later』は時間が必要という意味です。",
+                "trigger_jp": "『maybe later』と言う時",
+            },
+            user_input="When I say maybe later, I need more time.",
+        )
+        self.assertTrue(accepted["valid"])
+
+    def test_v4_deterministic_fields_keep_exact_source_and_provenance(self):
+        source = "I usually rest after lunch."
+        fields = reflection.deterministic_reflection_fields(
+            source,
+            reflection_type="semantic",
+            source_episode_id="episode-9",
+        )
+        self.assertEqual(fields["evidence_quote"], source)
+        self.assertEqual(fields["source_episode_id"], "episode-9")
+        self.assertEqual(fields["confidence"], 0.95)
+        self.assertEqual(fields["collection"], "wisdom")
+
 
 class TypedReflectionMemoryV3Test(unittest.TestCase):
     def setUp(self):
@@ -120,11 +158,8 @@ class TypedReflectionMemoryV3Test(unittest.TestCase):
         source_episode_id = self.memory.get_runtime_snapshot()["last_saved_episode_id"]
         client = FakeLogicClient(
             {
-                "reflection_type": "procedural",
                 "content_jp": "次回は最も重要な提案を一つだけ先に伝える。",
                 "trigger_jp": "複数の問題について助言する時",
-                "evidence_quote": "下次先給我一個最重要的就好",
-                "confidence": 0.94,
             }
         )
 
@@ -145,6 +180,10 @@ class TypedReflectionMemoryV3Test(unittest.TestCase):
         self.assertEqual(metadata["source_episode_id"], source_episode_id)
         self.assertEqual(len(client.completions.calls), 1)
         self.assertEqual(client.completions.calls[0]["temperature"], 0.0)
+        self.assertEqual(
+            client.completions.calls[0]["response_format"]["type"],
+            "json_schema",
+        )
 
         later = self.memory.query_all_layers("仕事と睡眠と食事が乱れている。まず何をする？")
         procedural_items = [
@@ -178,11 +217,8 @@ class TypedReflectionMemoryV3Test(unittest.TestCase):
         self.memory.save_episode(user_input, "分かった。", {"mood": 0, "trust": 50})
         client = FakeLogicClient(
             {
-                "reflection_type": "semantic",
                 "content_jp": "ユーザーは夜にコーヒーを避けてハーブ茶を選ぶ。",
                 "trigger_jp": "夜の飲み物を提案する時",
-                "evidence_quote": "咖啡會讓我失眠",
-                "confidence": 0.91,
             }
         )
         first = self.memory.reflect_experience(user_input, "分かった。", {}, client)
@@ -190,6 +226,31 @@ class TypedReflectionMemoryV3Test(unittest.TestCase):
 
         self.assertEqual(first["status"], "stored")
         self.assertEqual(second["status"], "duplicate_skipped")
+        self.assertEqual(self.memory.wisdom_col.count(), 1)
+
+    def test_language_pollution_gets_one_bounded_retry(self):
+        user_input = (
+            "When I say 'not now', I mean I need a pause, not that I reject the idea."
+        )
+        self.memory.save_episode(user_input, "分かった。", {"mood": 0, "trust": 50})
+        client = FakeLogicClient(
+            [
+                {
+                    "content_jp": "『也许以后』は拒否ではありません。",
+                    "trigger_jp": "この表現を使う時",
+                },
+                {
+                    "content_jp": "『not now』は休止が必要で、拒否ではないという意味です。",
+                    "trigger_jp": "『not now』と言う時",
+                },
+            ]
+        )
+
+        result = self.memory.reflect_experience(user_input, "分かった。", {}, client)
+
+        self.assertEqual(result["status"], "stored")
+        self.assertEqual(result["attempt_count"], 2)
+        self.assertEqual(len(client.completions.calls), 2)
         self.assertEqual(self.memory.wisdom_col.count(), 1)
 
 
