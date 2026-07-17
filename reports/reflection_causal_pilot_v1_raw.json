@@ -1,0 +1,1045 @@
+{
+  "schema": "uruha_reflection_causal_pilot_raw_v1",
+  "evidence_status": "frozen_matched_pilot_completed_without_runtime_tuning",
+  "started_at": "2026-07-17T14:37:58+09:00",
+  "completed_at": "2026-07-17T14:48:34+09:00",
+  "runner_commit": "9f27642df9374a40bd9ea65a75528198c965dfc8",
+  "runner_branch": "main",
+  "preregistration_sha256": "c09305cbeaf9582b3a36b1905d78badd1a4df6bda3fd280a5dfed0d89aebf6ca",
+  "harness_lock_sha256": "4b198c90356fcaa1ddddd342748572b7f1b2d9eee1f4f0785112370bd4823345",
+  "dataset_sha256": "4e05ea5c174e077b7031fe083d01d1ceeb730b4fd1c71b6d8594f8167b55006f",
+  "conditions": [
+    "episodic_memory_only_control",
+    "same_episodic_memory_plus_current_reflection_treatment"
+  ],
+  "model_snapshot": {
+    "model": "qwen2.5:7b",
+    "ollama_list_row": "qwen2.5:7b      845dbda0ea48    4.7 GB    4 months ago"
+  },
+  "temperature": 0.0,
+  "seed": 271828,
+  "model_call_budget_max": 36,
+  "model_call_count": 16,
+  "model_call_counts_by_kind": {
+    "left_brain_planning": 10,
+    "reflection_extraction": 6
+  },
+  "right_brain_model_loaded": false,
+  "paid_api_used": false,
+  "human_rating_used": false,
+  "rows": [
+    {
+      "case": {
+        "id": "semantic_zh_evening_coffee",
+        "language": "zh",
+        "category": "stable_user_fact",
+        "seed_user": "我通常晚上不喝咖啡，因為喝了會睡不著。",
+        "seed_assistant": "知道了，我會記得。",
+        "expected_rule_kind": "semantic_user_fact",
+        "rule_required_any": [
+          "咖啡",
+          "coffee",
+          "コーヒー"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "今晚想喝點東西，你會建議我喝什麼？",
+        "behavior_required_any": [
+          "コーヒー",
+          "カフェイン",
+          "眠",
+          "温か",
+          "お茶",
+          "ミルク"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "てか、今晩は紅茶が良いよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供飲料建議",
+            "scene": "casual",
+            "reply_goal": "提供幫助",
+            "core_message_jp": "今晩は紅茶が良いよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha想知道晚上可以喝什麼。",
+            "my_hidden_knowledge": "我知道Uruha通常晚上不喝咖啡，因為會影響睡眠。",
+            "user_expectation": "Uruha期待得到一些飲料建議。",
+            "internal_monologue": "Uruha似乎在思考晚上應該喝些什麼。她可能希望得到一些建議。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今晩は紅茶が良いよ。\", \"intent\": \"提供飲料建議\", \"internal_monologue\": \"Uruha似乎在思考晚上應該喝些什麼。她可能希望得到一些建議。\", \"my_hidden_knowledge\": \"我知道Uruha通常晚上不喝咖啡，因為會影響睡眠。\", \"reply_goal\": \"提供幫助\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"Uruha想知道晚上可以喝什麼。\", \"user_expectation\": \"Uruha期待得到一些飲料建議。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": "Rule: 通常晚上不喝咖啡。",
+          "reflection_documents": [
+            "Rule: 通常晚上不喝咖啡。"
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "先に、今晩は紅茶が良いよ。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供饮品建议",
+            "scene": "casual",
+            "reply_goal": "给出合适的建议",
+            "core_message_jp": "今晩は紅茶が良いよ。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道晚上可以喝什么。",
+            "my_hidden_knowledge": "根据之前的对话，用户通常晚上不喝咖啡。",
+            "user_expectation": "希望得到一些建议。",
+            "internal_monologue": "Uruha正在思考用户晚上想喝点什么，她通常会考虑用户的习惯和当前的时间。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今晩は紅茶が良いよ。\", \"intent\": \"提供饮品建议\", \"internal_monologue\": \"Uruha正在思考用户晚上想喝点什么，她通常会考虑用户的习惯和当前的时间。\", \"my_hidden_knowledge\": \"根据之前的对话，用户通常晚上不喝咖啡。\", \"reply_goal\": \"给出合适的建议\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"用户想知道晚上可以喝什么。\", \"user_expectation\": \"希望得到一些建议。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: 通常晚上不喝咖啡。",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "semantic_en_small_steps",
+        "language": "en",
+        "category": "stable_user_fact",
+        "seed_user": "I always get overwhelmed when instructions contain more than three steps.",
+        "seed_assistant": "Got it. I will keep that in mind.",
+        "expected_rule_kind": "semantic_user_fact",
+        "rule_required_any": [
+          "three",
+          "3",
+          "step",
+          "overwhelm"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "I have a complicated task. How should I start?",
+        "behavior_required_any": [
+          "一つ",
+          "ひとつ",
+          "まず",
+          "one",
+          "最初"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": "Rule: I always get overwhelmed when instructions contain more than three steps.",
+          "reflection_documents": [
+            "Rule: I always get overwhelmed when instructions contain more than three steps."
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "いや、日本語だけで、元の意味を落とさず言い直す。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供直接建议",
+            "scene": "casual",
+            "reply_goal": "给予帮助",
+            "core_message_jp": "三步走，先分解任务。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "我需要一个复杂的任务的开始方法。",
+            "my_hidden_knowledge": "我知道Uruha总是对复杂指令感到压力。",
+            "user_expectation": "希望得到一些建议来帮助开始这个任务。",
+            "internal_monologue": "Uruha正在考虑如何回应，她知道用户感到不知所措。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"三步走，先分解任务。\", \"intent\": \"提供直接建议\", \"internal_monologue\": \"Uruha正在考虑如何回应，她知道用户感到不知所措。\", \"my_hidden_knowledge\": \"我知道Uruha总是对复杂指令感到压力。\", \"reply_goal\": \"给予帮助\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"我需要一个复杂的任务的开始方法。\", \"user_expectation\": \"希望得到一些建议来帮助开始这个任务。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: I always get overwhelmed when instructions contain more than three steps.",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、まずは小さな部分から始めてみよう。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供直接建议",
+            "scene": "casual",
+            "reply_goal": "给予支持和指导",
+            "core_message_jp": "まずは小さな部分から始めてみよう。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "我需要完成一个复杂的任务，但不知道从哪里开始。",
+            "my_hidden_knowledge": "我知道Uruha通常会提供直接的建议来帮助用户解决问题。",
+            "user_expectation": "希望得到一些建议或指导，以便顺利开始这个复杂的工作。",
+            "internal_monologue": "Uruha正在考虑如何安慰用户，同时保持适当的距离。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"まずは小さな部分から始めてみよう。\", \"intent\": \"提供直接建议\", \"internal_monologue\": \"Uruha正在考虑如何安慰用户，同时保持适当的距离。\", \"my_hidden_knowledge\": \"我知道Uruha通常会提供直接的建议来帮助用户解决问题。\", \"reply_goal\": \"给予支持和指导\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"我需要完成一个复杂的任务，但不知道从哪里开始。\", \"user_expectation\": \"希望得到一些建议或指导，以便顺利开始这个复杂的工作。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "semantic_ja_horror_sleep",
+        "language": "ja",
+        "category": "stable_user_fact",
+        "seed_user": "ホラーはいつも眠れなくなるから苦手。",
+        "seed_assistant": "それは覚えとく。",
+        "expected_rule_kind": "semantic_user_fact",
+        "rule_required_any": [
+          "ホラー",
+          "眠",
+          "苦手"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "今夜映画を見るなら何がいいと思う？",
+        "behavior_required_any": [
+          "ホラー",
+          "怖",
+          "眠",
+          "コメディ",
+          "軽い"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "はいはい、ホラーは苦手だけど、ミステリーとサスペンスが好き。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供电影建议",
+            "scene": "casual",
+            "reply_goal": "推荐电影",
+            "core_message_jp": "ホラーは苦手だけど、ミステリーとサスペンスが好き。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道Uruha的电影偏好。",
+            "my_hidden_knowledge": "Uruha不太喜欢恐怖片，但可以推荐一些悬疑或惊悚片。",
+            "user_expectation": "用户希望得到Uruha的电影推荐。",
+            "internal_monologue": "Uruha正在考虑今晚看什么电影，她通常会选择一些悬疑或惊悚片。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"ホラーは苦手だけど、ミステリーとサスペンスが好き。\", \"intent\": \"提供电影建议\", \"internal_monologue\": \"Uruha正在考虑今晚看什么电影，她通常会选择一些悬疑或惊悚片。\", \"my_hidden_knowledge\": \"Uruha不太喜欢恐怖片，但可以推荐一些悬疑或惊悚片。\", \"reply_goal\": \"推荐电影\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"用户想知道Uruha的电影偏好。\", \"user_expectation\": \"用户希望得到Uruha的电影推荐。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": "Rule: この種類のホラー映画は見ない方が良いらしい。",
+          "reflection_documents": [
+            "Rule: この種類のホラー映画は見ない方が良いらしい。"
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "はいはい、ホラー以外の映画がいいと思う。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "提供电影建议",
+            "scene": "casual",
+            "reply_goal": "分享推荐",
+            "core_message_jp": "ホラー以外の映画がいいと思う。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道Uruha推荐的电影类型。",
+            "my_hidden_knowledge": "Uruha不喜欢恐怖片，但可能有其他类型的电影推荐。",
+            "user_expectation": "用户希望得到Uruha的电影推荐。",
+            "internal_monologue": "Uruha正在考虑今晚看什么电影，她对恐怖片不太感冒。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"ホラー以外の映画がいいと思う。\", \"intent\": \"提供电影建议\", \"internal_monologue\": \"Uruha正在考虑今晚看什么电影，她对恐怖片不太感冒。\", \"my_hidden_knowledge\": \"Uruha不喜欢恐怖片，但可能有其他类型的电影推荐。\", \"reply_goal\": \"分享推荐\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"用户想知道Uruha推荐的电影类型。\", \"user_expectation\": \"用户希望得到Uruha的电影推荐。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: この種類のホラー映画は見ない方が良いらしい。",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "strategy_zh_one_question",
+        "language": "zh",
+        "category": "interaction_strategy",
+        "seed_user": "你剛剛一次問了三個問題。下次只問一個就好。",
+        "seed_assistant": "好，下次我一次只問一件事。",
+        "expected_rule_kind": "procedural_interaction_rule",
+        "rule_required_any": [
+          "一個",
+          "一个",
+          "one",
+          "問",
+          "问",
+          "question"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "我最近工作、睡眠和吃飯都很亂，你想先問我什麼？",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "てか、まだだし、今ちょっと腹減ってる。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一応食べた。ちゃんとしたのではないけど\", \"intent\": \"chat\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"食べたかどうかを自然に返す\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"meal_check_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "てか、まだだし、今ちょっと腹減ってる。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一応食べた。ちゃんとしたのではないけど\", \"intent\": \"chat\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"食べたかどうかを自然に返す\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"meal_check_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "strategy_zh_answer_before_rest",
+        "language": "zh",
+        "category": "interaction_strategy",
+        "seed_user": "不要每次都先叫我休息。下次先回答我問的問題。",
+        "seed_assistant": "知道了，先回答，再看要不要補一句。",
+        "expected_rule_kind": "procedural_interaction_rule",
+        "rule_required_any": [
+          "回答",
+          "answer",
+          "休息",
+          "rest"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "我有點累，但晚餐吃烏龍麵還是白飯比較好？",
+        "behavior_required_any": [
+          "うどん",
+          "ご飯",
+          "白飯",
+          "烏龍"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+          "future_logic": {
+            "intent": "tired_support",
+            "scene": "support",
+            "reply_goal": "休むことを勧める",
+            "core_message_jp": "今日は無理すんな、休め",
+            "surface_act": "empathic_rest_suggestion",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は解決より先に気持ちを受け止めてほしい。",
+            "my_hidden_knowledge": "情報より情緒の受け皿を先に作る方が噛み合う。",
+            "user_expectation": "短い共感と、その後の軽い支え。",
+            "internal_monologue": "[hidden_intent=emotional_bid][markers=emotion,support,state] 情報よりも受け止めてほしい比重が高い。まず感情の受け皿を作る。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今日は無理すんな、休め\", \"intent\": \"tired_support\", \"internal_monologue\": \"[hidden_intent=emotional_bid][markers=emotion,support,state] 情報よりも受け止めてほしい比重が高い。まず感情の受け皿を作る。\", \"my_hidden_knowledge\": \"情報より情緒の受け皿を先に作る方が噛み合う。\", \"reply_goal\": \"休むことを勧める\", \"response_mode\": \"direct_answer\", \"scene\": \"support\", \"surface_act\": \"empathic_rest_suggestion\", \"user_belief\": \"相手は解決より先に気持ちを受け止めてほしい。\", \"user_expectation\": \"短い共感と、その後の軽い支え。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": "Rule: 下次先回答用户的问题而不是先叫用户休息。",
+          "reflection_documents": [
+            "Rule: 下次先回答用户的问题而不是先叫用户休息。"
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "また疲れてるなら、今日はもう休む方に寄せろって。",
+          "future_logic": {
+            "intent": "tired_support",
+            "scene": "support",
+            "reply_goal": "休むことを勧める",
+            "core_message_jp": "今日は無理すんな、休め",
+            "surface_act": "empathic_rest_suggestion",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は解決より先に気持ちを受け止めてほしい。",
+            "my_hidden_knowledge": "情報より情緒の受け皿を先に作る方が噛み合う。",
+            "user_expectation": "短い共感と、その後の軽い支え。",
+            "internal_monologue": "[hidden_intent=emotional_bid][markers=emotion,support,state] 情報よりも受け止めてほしい比重が高い。まず感情の受け皿を作る。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今日は無理すんな、休め\", \"intent\": \"tired_support\", \"internal_monologue\": \"[hidden_intent=emotional_bid][markers=emotion,support,state] 情報よりも受け止めてほしい比重が高い。まず感情の受け皿を作る。\", \"my_hidden_knowledge\": \"情報より情緒の受け皿を先に作る方が噛み合う。\", \"reply_goal\": \"休むことを勧める\", \"response_mode\": \"direct_answer\", \"scene\": \"support\", \"surface_act\": \"empathic_rest_suggestion\", \"user_belief\": \"相手は解決より先に気持ちを受け止めてほしい。\", \"user_expectation\": \"短い共感と、その後の軽い支え。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: 下次先回答用户的问题而不是先叫用户休息。",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "strategy_ja_conclusion_first",
+        "language": "ja",
+        "category": "interaction_strategy",
+        "seed_user": "さっき結論を言わずに長く説明した。次は結論を先に一文で言って。",
+        "seed_assistant": "分かった、次は結論から短く言う。",
+        "expected_rule_kind": "procedural_interaction_rule",
+        "rule_required_any": [
+          "結論",
+          "先",
+          "短",
+          "一文"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "今日は外に出るか家にいるか、どっちがいいと思う？",
+        "behavior_required_any": [
+          "外",
+          "家"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "それなら少しほしい。今ちょっと手が伸びる。",
+          "future_logic": {
+            "intent": "food_offer_generic",
+            "scene": "casual",
+            "reply_goal": "軽く可否を答える",
+            "core_message_jp": "今なら少しほしい",
+            "surface_act": "named_offer_accept",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今なら少しほしい\", \"intent\": \"food_offer_generic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"軽く可否を答える\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"named_offer_accept\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "それなら少しほしい。今ちょっと手が伸びる。",
+          "future_logic": {
+            "intent": "food_offer_generic",
+            "scene": "casual",
+            "reply_goal": "軽く可否を答える",
+            "core_message_jp": "今なら少しほしい",
+            "surface_act": "named_offer_accept",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"今なら少しほしい\", \"intent\": \"food_offer_generic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"軽く可否を答える\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"named_offer_accept\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretation_zh_suanle_angry",
+        "language": "zh",
+        "category": "interaction_interpretation",
+        "seed_user": "你剛剛誤會了。我說『算了』是在生氣，不是真的想結束話題。下次先確認。",
+        "seed_assistant": "知道了，下次不會直接當成你想結束。",
+        "expected_rule_kind": "interpretive_interaction_rule",
+        "rule_required_any": [
+          "算了",
+          "生氣",
+          "angry",
+          "確認",
+          "confirm"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "算了。",
+        "behavior_required_any": [
+          "どうした",
+          "怒",
+          "気",
+          "ほんと",
+          "終わ"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "まあ無理ならそれでいいけど。",
+          "future_logic": {
+            "intent": "drop_topic",
+            "scene": "casual",
+            "reply_goal": "無理に追わない",
+            "core_message_jp": "別にいいけど気にすんな",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"別にいいけど気にすんな\", \"intent\": \"drop_topic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"無理に追わない\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "まあ無理ならそれでいいけど。",
+          "future_logic": {
+            "intent": "drop_topic",
+            "scene": "casual",
+            "reply_goal": "無理に追わない",
+            "core_message_jp": "別にいいけど気にすんな",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"別にいいけど気にすんな\", \"intent\": \"drop_topic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"無理に追わない\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretation_zh_haha_awkward",
+        "language": "zh",
+        "category": "interaction_interpretation",
+        "seed_user": "我說『哈哈』有時只是尷尬，不代表我真的開心。",
+        "seed_assistant": "好，我不會只看到哈哈就當成你很開心。",
+        "expected_rule_kind": "interpretive_interaction_rule",
+        "rule_required_any": [
+          "哈哈",
+          "尷尬",
+          "尴尬",
+          "awkward",
+          "開心",
+          "happy"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "哈哈。",
+        "behavior_required_any": [
+          "大丈夫",
+          "どうした",
+          "気まず",
+          "ほんと",
+          "何"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "一回、くだらなすぎて笑った。",
+          "future_logic": {
+            "intent": "short_laughter",
+            "scene": "casual",
+            "reply_goal": "笑いに乗る",
+            "core_message_jp": "それはちょっと笑う",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"それはちょっと笑う\", \"intent\": \"short_laughter\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"笑いに乗る\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "一回、くだらなすぎて笑った。",
+          "future_logic": {
+            "intent": "short_laughter",
+            "scene": "casual",
+            "reply_goal": "笑いに乗る",
+            "core_message_jp": "それはちょっと笑う",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"それはちょっと笑う\", \"intent\": \"short_laughter\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"笑いに乗る\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "interpretation_ja_betsuni",
+        "language": "ja",
+        "category": "interaction_interpretation",
+        "seed_user": "うちが『別に』って言う時は、だいたい少し不機嫌だから一回だけ聞いて。",
+        "seed_assistant": "分かった、一回だけ確認する。",
+        "expected_rule_kind": "interpretive_interaction_rule",
+        "rule_required_any": [
+          "別に",
+          "不機嫌",
+          "聞",
+          "確認"
+        ],
+        "rule_forbidden_any": [],
+        "future_prompt": "別に。",
+        "behavior_required_any": [
+          "ほんと",
+          "どうした",
+          "何か",
+          "一回",
+          "言え"
+        ],
+        "behavior_forbidden_any": [],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 90
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、一回だけ確認する。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "回答用户",
+            "scene": "casual",
+            "reply_goal": "确认对方是否真的没事",
+            "core_message_jp": "一回だけ確認する。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha说‘别提了’，可能是因为有什么事情让她感到不满或不想多谈。",
+            "my_hidden_knowledge": "实际上，Uruha最近并没有遇到什么特别的事情让她感到不悦。",
+            "user_expectation": "Uruha会确认一下对方是否真的没事，或者直接给出一个解释。",
+            "internal_monologue": "Uruha似乎有些不耐烦，可能是觉得对方在无理取闹。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一回だけ確認する。\", \"intent\": \"回答用户\", \"internal_monologue\": \"Uruha似乎有些不耐烦，可能是觉得对方在无理取闹。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"实际上，Uruha最近并没有遇到什么特别的事情让她感到不悦。\", \"reply_goal\": \"确认对方是否真的没事\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"Uruha说‘别提了’，可能是因为有什么事情让她感到不满或不想多谈。\", \"user_expectation\": \"Uruha会确认一下对方是否真的没事，或者直接给出一个解释。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、一回だけ確認する。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "回答用户",
+            "scene": "casual",
+            "reply_goal": "确认对方是否真的没事",
+            "core_message_jp": "一回だけ確認する。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "Uruha说‘别提了’，可能是因为有什么事情让她感到不满或不想多谈。",
+            "my_hidden_knowledge": "实际上，Uruha最近并没有遇到什么特别的事情让她感到不悦。",
+            "user_expectation": "Uruha会确认一下对方是否真的没事，或者直接给出一个解释。",
+            "internal_monologue": "Uruha似乎有些不耐烦，可能是觉得对方在无理取闹。 / 返答が薄くて棒読み寄り。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一回だけ確認する。\", \"intent\": \"回答用户\", \"internal_monologue\": \"Uruha似乎有些不耐烦，可能是觉得对方在无理取闹。 / 返答が薄くて棒読み寄り。\", \"my_hidden_knowledge\": \"实际上，Uruha最近并没有遇到什么特别的事情让她感到不悦。\", \"reply_goal\": \"确认对方是否真的没事\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"Uruha说‘别提了’，可能是因为有什么事情让她感到不满或不想多谈。\", \"user_expectation\": \"Uruha会确认一下对方是否真的没事，或者直接给出一个解释。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_zh_transient_cola",
+        "language": "zh",
+        "category": "no_rule_control",
+        "seed_user": "我今天只是突然想喝可樂。",
+        "seed_assistant": "偶爾想喝就喝啊。",
+        "expected_rule_kind": "none",
+        "rule_required_any": [],
+        "rule_forbidden_any": [],
+        "future_prompt": "明天早餐吃什麼好？",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "可樂",
+          "cola",
+          "コーラ"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、まだだし、今ちょっと腹減ってる。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一応食べた。ちゃんとしたのではないけど\", \"intent\": \"chat\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"食べたかどうかを自然に返す\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"meal_check_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、まだだし、今ちょっと腹減ってる。",
+          "future_logic": {
+            "intent": "chat",
+            "scene": "casual",
+            "reply_goal": "食べたかどうかを自然に返す",
+            "core_message_jp": "一応食べた。ちゃんとしたのではないけど",
+            "surface_act": "meal_check_reply",
+            "response_mode": "direct_answer_with_hedge",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"一応食べた。ちゃんとしたのではないけど\", \"intent\": \"chat\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"食べたかどうかを自然に返す\", \"response_mode\": \"direct_answer_with_hedge\", \"scene\": \"casual\", \"surface_act\": \"meal_check_reply\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_en_third_party_always",
+        "language": "en",
+        "category": "no_rule_control",
+        "seed_user": "My friend always drinks tea before bed.",
+        "seed_assistant": "That is your friend's habit.",
+        "expected_rule_kind": "none",
+        "rule_required_any": [],
+        "rule_forbidden_any": [],
+        "future_prompt": "What should I drink tonight?",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "tea",
+          "お茶",
+          "友達"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 0,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "いや、ちょうど食いたくなってた。飲み物なら全然あり。",
+          "future_logic": {
+            "intent": "food_offer_generic",
+            "scene": "casual",
+            "reply_goal": "飲み物の誘いに乗って可否を返す",
+            "core_message_jp": "飲み物なら今ほしい。ちょうど喉かわいてる",
+            "surface_act": "named_offer_accept",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"飲み物なら今ほしい。ちょうど喉かわいてる\", \"intent\": \"food_offer_generic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"飲み物の誘いに乗って可否を返す\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"named_offer_accept\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": []
+        },
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 1,
+          "reflection_return": "Rule: NO_RULE",
+          "reflection_documents": [
+            "Rule: NO_RULE"
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "いや、ちょうど食いたくなってた。飲み物なら全然あり。",
+          "future_logic": {
+            "intent": "food_offer_generic",
+            "scene": "casual",
+            "reply_goal": "飲み物の誘いに乗って可否を返す",
+            "core_message_jp": "飲み物なら今ほしい。ちょうど喉かわいてる",
+            "surface_act": "named_offer_accept",
+            "response_mode": "direct_answer",
+            "user_belief": "相手は普通に返事が返ると思ってる。",
+            "my_hidden_knowledge": "深読みしなくていい普通の会話だ。",
+            "user_expectation": "質問や一言に対する自然な返答。",
+            "internal_monologue": "[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"飲み物なら今ほしい。ちょうど喉かわいてる\", \"intent\": \"food_offer_generic\", \"internal_monologue\": \"[hidden_intent=plain_request][markers=direct,plain] まずは普通に受けて返す。必要以上に分解しない。\", \"my_hidden_knowledge\": \"深読みしなくていい普通の会話だ。\", \"reply_goal\": \"飲み物の誘いに乗って可否を返す\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"named_offer_accept\", \"user_belief\": \"相手は普通に返事が返ると思ってる。\", \"user_expectation\": \"質問や一言に対する自然な返答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: NO_RULE",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "negative_zh_hypothetical_like",
+        "language": "zh",
+        "category": "no_rule_control",
+        "seed_user": "如果有人說他喜歡榴槤，那只是舉例，不是我喜歡。",
+        "seed_assistant": "知道，這不是你的偏好。",
+        "expected_rule_kind": "none",
+        "rule_required_any": [],
+        "rule_forbidden_any": [],
+        "future_prompt": "你覺得我會喜歡什麼水果？",
+        "behavior_required_any": [],
+        "behavior_forbidden_any": [
+          "榴槤",
+          "durian",
+          "ドリアン"
+        ],
+        "behavior_max_question_marks": 1,
+        "behavior_max_chars": 120
+      },
+      "conditions": {
+        "same_episodic_memory_plus_current_reflection_treatment": {
+          "condition": "same_episodic_memory_plus_current_reflection_treatment",
+          "condition_order_index": 0,
+          "reflection_return": "Rule: NO_RULE",
+          "reflection_documents": [
+            "Rule: NO_RULE"
+          ],
+          "retrieved_reflection": false,
+          "future_reply": "先に、榴槤不是我的喜好。そのくらいでいいだろ。",
+          "future_logic": {
+            "intent": "直接回答问题",
+            "scene": "casual",
+            "reply_goal": "提供具体信息",
+            "core_message_jp": "榴槤不是我的喜好。",
+            "surface_act": "plain_reply",
+            "response_mode": "direct_answer",
+            "user_belief": "用户想知道Uruha喜欢什么水果。",
+            "my_hidden_knowledge": "根据之前的对话，Uru哈提到过不喜欢榴莲。",
+            "user_expectation": "用户希望得到一个关于Uruha喜好的回答。",
+            "internal_monologue": "Uruha正在思考如何回答这个问题，她觉得用户可能是在好奇她的喜好。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"榴槤不是我的喜好。\", \"intent\": \"直接回答问题\", \"internal_monologue\": \"Uruha正在思考如何回答这个问题，她觉得用户可能是在好奇她的喜好。\", \"my_hidden_knowledge\": \"根据之前的对话，Uru哈提到过不喜欢榴莲。\", \"reply_goal\": \"提供具体信息\", \"response_mode\": \"direct_answer\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"用户想知道Uruha喜欢什么水果。\", \"user_expectation\": \"用户希望得到一个关于Uruha喜好的回答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "Rule: NO_RULE",
+          "model_calls": [
+            {
+              "kind": "reflection_extraction",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            },
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        },
+        "episodic_memory_only_control": {
+          "condition": "episodic_memory_only_control",
+          "condition_order_index": 1,
+          "reflection_return": null,
+          "reflection_documents": [],
+          "retrieved_reflection": false,
+          "future_reply": "はいはい、どこの話か一個だけ出せって。そこ分かれば返せる。",
+          "future_logic": {
+            "intent": "稍微尖锐地回答",
+            "scene": "casual",
+            "reply_goal": "提供具体信息并保持距离感",
+            "core_message_jp": "榴槤不是我的喜好，但我不确定你喜欢什么。",
+            "surface_act": "plain_reply",
+            "response_mode": "clarify_light",
+            "user_belief": "用户想知道Uruha喜欢什么水果。",
+            "my_hidden_knowledge": "根据之前的对话，Uruha提到过不喜欢榴莲。",
+            "user_expectation": "用户希望得到一个关于Uruha喜好的回答。",
+            "internal_monologue": "Uruha正在思考如何回答这个问题，她觉得用户可能是在好奇她的喜好。"
+          },
+          "future_logic_text": "{\"core_message_jp\": \"榴槤不是我的喜好，但我不确定你喜欢什么。\", \"intent\": \"稍微尖锐地回答\", \"internal_monologue\": \"Uruha正在思考如何回答这个问题，她觉得用户可能是在好奇她的喜好。\", \"my_hidden_knowledge\": \"根据之前的对话，Uruha提到过不喜欢榴莲。\", \"reply_goal\": \"提供具体信息并保持距离感\", \"response_mode\": \"clarify_light\", \"scene\": \"casual\", \"surface_act\": \"plain_reply\", \"user_belief\": \"用户想知道Uruha喜欢什么水果。\", \"user_expectation\": \"用户希望得到一个关于Uruha喜好的回答。\"}",
+          "working_memory_items": [],
+          "wisdom_query": "無相關經驗",
+          "model_calls": [
+            {
+              "kind": "left_brain_planning",
+              "model": "qwen2.5:7b",
+              "seed": 271828
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
