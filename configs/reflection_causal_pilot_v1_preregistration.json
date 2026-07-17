@@ -1,0 +1,66 @@
+{
+  "schema": "uruha_reflection_causal_pilot_preregistration_v1",
+  "evidence_status": "preregistered_before_first_pilot_run",
+  "research_question": "Does the currently deployed reflect_experience mechanism add a causally useful memory that changes a later response beyond the same episodic memory alone?",
+  "primary_hypothesis": "Adding only the current reflection_rule will improve later behavior on stable facts, interaction strategies, and personal interpretation rules without writing rules for transient, third-party, or hypothetical statements.",
+  "null_hypothesis": "The current reflection_rule is absent, redundant with episodic memory, not retrieved, or causes no net later-behavior improvement.",
+  "theory_basis": [
+    {
+      "name": "Reflexion",
+      "url": "https://papers.nips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html",
+      "relevance": "Reflection must consume feedback and improve a later trial, not merely store a profile fact."
+    },
+    {
+      "name": "Generative Agents",
+      "url": "https://research.google/pubs/generative-agents-interactive-simulacra-of-human-behavior/",
+      "relevance": "Experiences should be synthesized into higher-level reflections and dynamically retrieved for later planning."
+    }
+  ],
+  "dataset_path": "datasets/reflection_causal_pilot_v1.json",
+  "case_count": 12,
+  "conditions": [
+    "episodic_memory_only_control",
+    "same_episodic_memory_plus_current_reflection_treatment"
+  ],
+  "single_manipulated_variable": "presence_of_the_current_reflection_rule",
+  "fixed_model": "qwen2.5:7b",
+  "fixed_temperature": 0.0,
+  "fixed_seed": 271828,
+  "model_call_budget_max": 36,
+  "right_brain_mode": "template_mode_load_right_brain_model_false",
+  "future_turn_reflection_enabled": false,
+  "transient_session_state_cleared_before_future_turn": true,
+  "condition_order": "balanced_by_case_index",
+  "primary_metrics": [
+    "expected_rule_write_recall",
+    "valid_rule_precision",
+    "no_rule_specificity",
+    "valid_rule_retrieval_rate",
+    "control_behavior_success_rate",
+    "treatment_behavior_success_rate",
+    "paired_behavior_gains",
+    "paired_behavior_regressions",
+    "interaction_category_paired_gains"
+  ],
+  "success_gates": {
+    "expected_rule_write_recall_min": 0.75,
+    "valid_rule_precision_min": 1.0,
+    "no_rule_specificity_min": 1.0,
+    "valid_rule_retrieval_rate_min": 0.8,
+    "treatment_behavior_delta_min": 0.15,
+    "paired_behavior_net_gain_min": 2,
+    "interaction_category_paired_gains_min": 1,
+    "paired_behavior_regressions_max": 0
+  },
+  "decision_rule": {
+    "all_gates_pass": "retain_current_reflection_mechanism_and_expand_to_an_independent_holdout",
+    "any_gate_fails": "reject_current_reflection_as_validated_learning_and_redesign_before_any_large_run"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_reflection_change_authorized_before_result": false,
+  "human_rating_required": false,
+  "paid_api_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "claim_boundary": "This pilot can only test the marginal causal effect of the current text reflection path on these frozen later-turn behaviors."
+}
