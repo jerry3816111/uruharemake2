@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_reflection_classifier_external_holdout_construction_preregistration_v1",
+  "created_at": "2026-07-17T18:18:00+09:00",
+  "evidence_status": "sentence_ids_labels_and_gates_frozen_before_dataset_construction_or_classifier_evaluation",
+  "research_question": "Does the structural reflection classifier generalize from authored development utterances to exact, unmodified public sentences selected from an external corpus?",
+  "external_source": {
+    "name": "Tatoeba",
+    "stable_api": "https://api.tatoeba.org/v1/sentences/{id}",
+    "api_documentation": "https://api.tatoeba.org/openapi.json",
+    "download_documentation": "https://tatoeba.org/en/downloads",
+    "license_expected": "CC BY 2.0 FR",
+    "official_source_claim": "Only sentence text, sentence ID, language, owner, and license metadata are sourced from Tatoeba.",
+    "official_label_claim": false,
+    "label_note": "Reflection labels are operational labels defined by this research, not labels supplied or endorsed by Tatoeba."
+  },
+  "operational_labels": {
+    "semantic": "A durable first-person speaker preference, aversion, or personal constraint that may remain useful in later dialogue.",
+    "procedural": "An explicit instruction or correction directed at the interlocutor about what to do in a future interaction.",
+    "interpretive": "An explicit explanation of what the speaker's own word, phrase, or recurring utterance means or signals.",
+    "none": "A question, third-party fact, greeting, isolated future event, or other utterance that does not justify durable user reflection."
+  },
+  "selected_cases": [
+    {"id": "ext_sem_eng_12829549", "sentence_id": 12829549, "language": "eng", "expected_type": "semantic"},
+    {"id": "ext_sem_eng_3818759", "sentence_id": 3818759, "language": "eng", "expected_type": "semantic"},
+    {"id": "ext_sem_eng_12994016", "sentence_id": 12994016, "language": "eng", "expected_type": "semantic"},
+    {"id": "ext_sem_jpn_13523717", "sentence_id": 13523717, "language": "jpn", "expected_type": "semantic"},
+    {"id": "ext_sem_jpn_8874675", "sentence_id": 8874675, "language": "jpn", "expected_type": "semantic"},
+    {"id": "ext_sem_jpn_2353994", "sentence_id": 2353994, "language": "jpn", "expected_type": "semantic"},
+    {"id": "ext_sem_cmn_13166871", "sentence_id": 13166871, "language": "cmn", "expected_type": "semantic"},
+    {"id": "ext_sem_cmn_13869310", "sentence_id": 13869310, "language": "cmn", "expected_type": "semantic"},
+
+    {"id": "ext_proc_eng_12075640", "sentence_id": 12075640, "language": "eng", "expected_type": "procedural"},
+    {"id": "ext_proc_eng_9826924", "sentence_id": 9826924, "language": "eng", "expected_type": "procedural"},
+    {"id": "ext_proc_eng_13662450", "sentence_id": 13662450, "language": "eng", "expected_type": "procedural"},
+    {"id": "ext_proc_jpn_5962359", "sentence_id": 5962359, "language": "jpn", "expected_type": "procedural"},
+    {"id": "ext_proc_jpn_150204", "sentence_id": 150204, "language": "jpn", "expected_type": "procedural"},
+    {"id": "ext_proc_jpn_150203", "sentence_id": 150203, "language": "jpn", "expected_type": "procedural"},
+    {"id": "ext_proc_cmn_791584", "sentence_id": 791584, "language": "cmn", "expected_type": "procedural"},
+    {"id": "ext_proc_cmn_13519695", "sentence_id": 13519695, "language": "cmn", "expected_type": "procedural"},
+
+    {"id": "ext_int_eng_13964087", "sentence_id": 13964087, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_eng_10525358", "sentence_id": 10525358, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_eng_9821414", "sentence_id": 9821414, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_eng_6312433", "sentence_id": 6312433, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_eng_869407", "sentence_id": 869407, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_eng_4843024", "sentence_id": 4843024, "language": "eng", "expected_type": "interpretive"},
+    {"id": "ext_int_jpn_160756", "sentence_id": 160756, "language": "jpn", "expected_type": "interpretive"},
+    {"id": "ext_int_jpn_1822914", "sentence_id": 1822914, "language": "jpn", "expected_type": "interpretive"},
+
+    {"id": "ext_none_eng_6576824", "sentence_id": 6576824, "language": "eng", "expected_type": "none"},
+    {"id": "ext_none_eng_3129325", "sentence_id": 3129325, "language": "eng", "expected_type": "none"},
+    {"id": "ext_none_eng_73647", "sentence_id": 73647, "language": "eng", "expected_type": "none"},
+    {"id": "ext_none_jpn_13220298", "sentence_id": 13220298, "language": "jpn", "expected_type": "none"},
+    {"id": "ext_none_jpn_12962643", "sentence_id": 12962643, "language": "jpn", "expected_type": "none"},
+    {"id": "ext_none_jpn_172087", "sentence_id": 172087, "language": "jpn", "expected_type": "none"},
+    {"id": "ext_none_cmn_13276173", "sentence_id": 13276173, "language": "cmn", "expected_type": "none"},
+    {"id": "ext_none_cmn_13535360", "sentence_id": 13535360, "language": "cmn", "expected_type": "none"}
+  ],
+  "fixed_counts": {
+    "case_count": 32,
+    "per_class": {"semantic": 8, "procedural": 8, "interpretive": 8, "none": 8},
+    "per_language": {"eng": 15, "jpn": 11, "cmn": 6}
+  },
+  "conditions": ["frozen_legacy_classifier", "frozen_structural_classifier_candidate"],
+  "single_variable": "reflection_type_classifier_implementation",
+  "matched_controls": [
+    "same exact external sentence text and case order",
+    "same operational gold labels hidden from classifier functions",
+    "same deterministic scorer",
+    "zero model calls in both conditions",
+    "no memory write, retrieval, planner, or right-brain execution"
+  ],
+  "success_gates": {
+    "candidate_correct_count_min": 28,
+    "candidate_overall_accuracy_min": 0.875,
+    "candidate_semantic_correct_min": 6,
+    "candidate_procedural_correct_min": 6,
+    "candidate_interpretive_correct_min": 6,
+    "candidate_none_correct": 8,
+    "critical_false_positive_count_max": 0,
+    "regression_vs_legacy_count_max": 0,
+    "newly_correct_vs_legacy_count_min": 4
+  },
+  "decision_rule": {
+    "all_gates_pass": "authorize_a_separate_runtime_shadow_integration_preregistration",
+    "any_gate_fails": "reject_runtime_advancement_keep_reflection_disabled_and_freeze_failures_as_future_development_evidence"
+  },
+  "candidate_or_legacy_inference_before_dataset_and_harness_freeze_authorized": false,
+  "model_assistance_for_source_text_or_gold_labels_used": false,
+  "post_run_case_editing_authorized": false,
+  "post_run_case_exclusion_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "broad_human_likeness_claim_authorized": false
+}
