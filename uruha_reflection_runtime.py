@@ -6,6 +6,16 @@ import hashlib
 import json
 import re
 
+from rightbrain_language_quality import (
+    ASCII_WORD_RE,
+    AUDITED_CHINESE_SPECIFIC_RE,
+    AUDITED_NONSTANDARD_CJK_RE,
+    CHINESE_SPECIFIC_RE,
+    FOREIGN_SCRIPT_RE,
+    NONSTANDARD_CJK_RE,
+    UNICODE_REPLACEMENT_CHAR,
+)
+
 
 REFLECTION_TYPES = frozenset({"semantic", "procedural", "interpretive", "none"})
 TYPE_TO_COLLECTION = {
@@ -209,6 +219,174 @@ Rules:
 - Never output Rule:, Procedure:, NO_RULE, markdown, or extra keys.
 - If the evidence cannot support the allowed type, set reflection_type to none and use empty strings.
 """.strip()
+
+
+def reflection_surface_schema():
+    return {
+        "type": "object",
+        "properties": {
+            "content_jp": {"type": "string", "minLength": 1, "maxLength": 120},
+            "trigger_jp": {"type": "string", "minLength": 1, "maxLength": 80},
+        },
+        "required": ["content_jp", "trigger_jp"],
+        "additionalProperties": False,
+    }
+
+
+def reflection_surface_response_format():
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "typed_reflection_surface_v4",
+            "strict": True,
+            "schema": reflection_surface_schema(),
+        },
+    }
+
+
+def structured_extraction_system_prompt(reflection_type, retry_reasons=None):
+    if reflection_type not in TYPE_TO_COLLECTION:
+        raise ValueError(f"unsupported reflection type: {reflection_type}")
+    retry_note = ""
+    if retry_reasons:
+        retry_note = (
+            "\nThe previous surface was rejected for: "
+            + ", ".join(str(item) for item in retry_reasons)
+            + ". Rewrite once without weakening the source meaning."
+        )
+    return f"""
+Generate only the Japanese gist fields for one explicit {reflection_type} reflection.
+The program, not you, owns reflection type, evidence, provenance, and confidence.
+
+- content_jp: concise Japanese meaning supported by the source utterance.
+- trigger_jp: concise Japanese description of when this memory applies.
+- Preserve negation, scope, preference, and response order exactly.
+- Do not invent motives, diagnoses, facts, or stronger claims.
+- Do not translate source phrases into Chinese. A non-Japanese phrase may appear only if copied exactly from the source utterance.
+- Return only the JSON Schema fields.{retry_note}
+""".strip()
+
+
+def deterministic_reflection_fields(
+    user_input,
+    *,
+    reflection_type,
+    source_episode_id,
+    grounding_confidence=0.95,
+):
+    evidence = str(user_input or "").strip()
+    if reflection_type not in TYPE_TO_COLLECTION or not source_episode_id:
+        return None
+    if not evidence or len(evidence) > 160:
+        return None
+    return {
+        "reflection_type": reflection_type,
+        "collection": TYPE_TO_COLLECTION[reflection_type],
+        "evidence_quote": evidence,
+        "confidence": round(float(grounding_confidence), 4),
+        "source_episode_id": str(source_episode_id),
+        "source_user_sha256": hashlib.sha256(evidence.encode("utf-8")).hexdigest(),
+    }
+
+
+def _source_external_matches(pattern, text, source):
+    external = []
+    for match in pattern.finditer(text):
+        token = match.group(0)
+        if token and token not in source:
+            external.append(token)
+    return external
+
+
+def validate_reflection_surface(payload, *, user_input):
+    reasons = []
+    if not isinstance(payload, dict):
+        return {"valid": False, "retryable": False, "reasons": ["not_an_object"]}
+    if set(payload) != {"content_jp", "trigger_jp"}:
+        return {"valid": False, "retryable": False, "reasons": ["schema_keys"]}
+
+    content = re.sub(r"\s+", " ", str(payload.get("content_jp") or "")).strip()
+    trigger = re.sub(r"\s+", " ", str(payload.get("trigger_jp") or "")).strip()
+    if not content:
+        reasons.append("empty_content_jp")
+    if not trigger:
+        reasons.append("empty_trigger_jp")
+    if content and not re.search(r"[\u3040-\u30ff]", content):
+        reasons.append("missing_japanese_content")
+    if trigger and not re.search(r"[\u3040-\u30ff]", trigger):
+        reasons.append("missing_japanese_trigger")
+    if len(content) > 120:
+        reasons.append("content_too_long")
+    if len(trigger) > 80:
+        reasons.append("trigger_too_long")
+    lowered = f"{content} {trigger}".lower()
+    if any(marker in lowered for marker in ("no_rule", "rule:", "procedure:")):
+        reasons.append("control_marker_leak")
+
+    source = str(user_input or "")
+    combined = f"{content}\n{trigger}"
+    patterns = (
+        CHINESE_SPECIFIC_RE,
+        NONSTANDARD_CJK_RE,
+        AUDITED_CHINESE_SPECIFIC_RE,
+        AUDITED_NONSTANDARD_CJK_RE,
+        FOREIGN_SCRIPT_RE,
+        ASCII_WORD_RE,
+    )
+    external_tokens = []
+    for pattern in patterns:
+        external_tokens.extend(_source_external_matches(pattern, combined, source))
+    if UNICODE_REPLACEMENT_CHAR in combined:
+        external_tokens.append(UNICODE_REPLACEMENT_CHAR)
+    if external_tokens:
+        reasons.append("source_external_language:" + "|".join(dict.fromkeys(external_tokens)))
+
+    retryable = bool(reasons) and all(
+        reason.startswith(("source_external_language", "missing_japanese"))
+        for reason in reasons
+    )
+    return {
+        "valid": not reasons,
+        "retryable": retryable,
+        "reasons": reasons,
+        "content_jp": content,
+        "trigger_jp": trigger,
+    }
+
+
+def assemble_grounded_reflection(
+    surface_payload,
+    *,
+    user_input,
+    reflection_type,
+    source_episode_id,
+):
+    base = deterministic_reflection_fields(
+        user_input,
+        reflection_type=reflection_type,
+        source_episode_id=source_episode_id,
+    )
+    report = validate_reflection_surface(surface_payload, user_input=user_input)
+    if base is None or not report["valid"]:
+        return None, report
+    result = {
+        "reflection_type": base["reflection_type"],
+        "content_jp": report["content_jp"],
+        "trigger_jp": report["trigger_jp"],
+        "evidence_quote": base["evidence_quote"],
+        "confidence": base["confidence"],
+    }
+    validated = validate_reflection_payload(
+        result,
+        user_input=user_input,
+        expected_type=reflection_type,
+        source_episode_id=source_episode_id,
+    )
+    if validated is None:
+        report = dict(report)
+        report.update({"valid": False, "retryable": False})
+        report["reasons"] = list(report["reasons"]) + ["assembled_payload_invalid"]
+    return validated, report
 
 
 def parse_json_object(raw_text):
