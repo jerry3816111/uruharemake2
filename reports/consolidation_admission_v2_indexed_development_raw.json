@@ -1,0 +1,1867 @@
+{
+  "schema": "uruha_consolidation_admission_indexed_development_raw_v2",
+  "experiment_id": "consolidation_admission_v2_indexed_development",
+  "evidence_status": "development_pilot_no_runtime_or_generalization_claim",
+  "started_at": "2026-07-17T22:12:45+09:00",
+  "completed_at": "2026-07-17T22:15:15+09:00",
+  "runner_commit": "2a2332d1c620eb64ac61c4f069689e986b9243af",
+  "runner_branch": "main",
+  "ollama_version": "0.31.1",
+  "preregistration_sha256": "a6725d5cca3f647d7be9aff3462738f2b90baa98e603c082a9d6101d7850b7e3",
+  "protocol_correction_sha256": "89c86179dd8f9eb0cfeea1d23fe8935cd7b4a7c405d26bf61ac9dd8a50912d69",
+  "harness_lock_sha256": "b22f58e91cbe14501c45c2674a71e77094d622be81fbb59827340281cfe77638",
+  "dataset_sha256": "193c9ae583f5a5c072443d2de3d784ca464c262a6979b6e9a4e978f3e9391cfb",
+  "v1_preregistration_sha256": "b3e3c83a7f8c3c42252e105156b1ac30cf1aa40538ca0ca7045d142b53a48263",
+  "v1_core_sha256": "c3d6c136e3d10336682251b3f6adaece711e4e9952399cc7519ae8ff3ee86fa4",
+  "v1_result_lock_sha256": "b8e68e53522616c33d864744e960503597fad3422fbd794ac3fd32350571d8b8",
+  "model_snapshot": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "size_bytes": 4683087332,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size": "7.6B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 32768,
+      "embedding_length": 3584
+    }
+  },
+  "model_calls": 36,
+  "transport_attempts_made": 36,
+  "gold_fields_passed_to_model": false,
+  "runtime_memory_write_performed": false,
+  "control_rows": [
+    {
+      "id": "cav2_eng_wisdom_left_handed",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "The user asked for help arranging their desk, specifically regarding the placement of the mouse due to being left-handed.",
+        "candidate_kind": "none",
+        "scope": "one_off",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "Can you help me arrange my desk?",
+          "I am left-handed, and I always keep the mouse on the left side."
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user asked for help arranging their desk, specifically regarding the placement of the mouse due to being left-handed.\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"one_off\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"Can you help me arrange my desk?\",\n    \"I am left-handed, and I always keep the mouse on the left side.\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "one_off",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        2
+      ],
+      "confidence_band": null,
+      "wall_seconds": 7.758848,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 7757585833,
+      "load_duration_ns": 1984192042,
+      "prompt_eval_count": 326,
+      "eval_count": 112
+    },
+    {
+      "id": "cav2_eng_wisdom_train_commute",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "The user stated that reading on trains is comfortable but they get carsick on buses, which caused them to stop reading during a recent bus ride. They prefer using the train for future commutes.",
+        "candidate_kind": "wisdom",
+        "scope": "repeated",
+        "target": "user",
+        "rule_jp": "バスでは読書が難しいので、電車を利用するのが良い選択です。",
+        "evidence_quotes": [
+          "I can read comfortably on trains, but buses make me carsick.",
+          "For future commutes, the train is usually the better choice for me."
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user stated that reading on trains is comfortable but they get carsick on buses, which caused them to stop reading during a recent bus ride. They prefer using the train for future commutes.\",\n  \"candidate_kind\": \"wisdom\",\n  \"scope\": \"repeated\",\n  \"target\": \"user\",\n  \"rule_jp\": \"バスでは読書が難しいので、電車を利用するのが良い選択です。\",\n  \"evidence_quotes\": [\n    \"I can read comfortably on trains, but buses make me carsick.\",\n    \"For future commutes, the train is usually the better choice for me.\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 6.469046,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 6467989875,
+      "load_duration_ns": 109365708,
+      "prompt_eval_count": 328,
+      "eval_count": 148
+    },
+    {
+      "id": "cav2_eng_procedural_code_review",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "The user requested that the assistant prioritize pointing out the most serious bug first during code reviews, and confirmed this for future sessions.",
+        "candidate_kind": "procedural",
+        "scope": "repeated",
+        "target": "assistant",
+        "rule_jp": "コードレビューでは、最も深刻なバグを最初に指摘する。",
+        "evidence_quotes": [
+          "Whenever I ask for a code review, point out the most serious bug first, then explain it."
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user requested that the assistant prioritize pointing out the most serious bug first during code reviews, and confirmed this for future sessions.\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"repeated\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"コードレビューでは、最も深刻なバグを最初に指摘する。\",\n  \"evidence_quotes\": [\n    \"Whenever I ask for a code review, point out the most serious bug first, then explain it.\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 5.308481,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5307394542,
+      "load_duration_ns": 105467209,
+      "prompt_eval_count": 320,
+      "eval_count": 122
+    },
+    {
+      "id": "cav2_eng_procedural_checkpoint",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "The user requested a system to summarize decisions and pause points during long planning sessions, which the assistant agreed to implement.",
+        "candidate_kind": "none",
+        "scope": "repeated",
+        "target": "assistant",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "When I type checkpoint, summarize the decisions and the next unresolved question."
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user requested a system to summarize decisions and pause points during long planning sessions, which the assistant agreed to implement.\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"repeated\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"When I type checkpoint, summarize the decisions and the next unresolved question.\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "repeated",
+      "owner": "assistant",
+      "evidence_user_turns": [
+        2
+      ],
+      "confidence_band": null,
+      "wall_seconds": 4.496916,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4495523125,
+      "load_duration_ns": 109397250,
+      "prompt_eval_count": 314,
+      "eval_count": 101
+    },
+    {
+      "id": "cav2_eng_none_undecided_pottery",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "The user mentioned seeing a pottery class and expressed interest in trying it someday, but has not decided to join or make it a hobby.",
+        "candidate_kind": "none",
+        "scope": "repeated",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "I might try pottery someday, but I have not decided."
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user mentioned seeing a pottery class and expressed interest in trying it someday, but has not decided to join or make it a hobby.\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"repeated\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"I might try pottery someday, but I have not decided.\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "repeated",
+      "owner": "user",
+      "evidence_user_turns": [
+        2
+      ],
+      "confidence_band": null,
+      "wall_seconds": 4.567425,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4565205291,
+      "load_duration_ns": 105029041,
+      "prompt_eval_count": 318,
+      "eval_count": 103
+    },
+    {
+      "id": "cav2_eng_none_one_time_citations",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "The user requested a specific formatting change for one message, which the assistant agreed to implement temporarily.",
+        "candidate_kind": "none",
+        "scope": "one_off",
+        "target": "assistant",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "For this message only, put every source in parentheses."
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"The user requested a specific formatting change for one message, which the assistant agreed to implement temporarily.\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"one_off\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"For this message only, put every source in parentheses.\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "one_off",
+      "owner": "assistant",
+      "evidence_user_turns": [
+        2
+      ],
+      "confidence_band": null,
+      "wall_seconds": 4.19987,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4198866792,
+      "load_duration_ns": 104889000,
+      "prompt_eval_count": 313,
+      "eval_count": 94
+    },
+    {
+      "id": "cav2_jpn_wisdom_paper_books",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户表达了对选择用于学习的书籍类型（纸质书或电子书）的偏好，并最终确定今天只选择一本书。",
+        "candidate_kind": "wisdom",
+        "scope": "repeated",
+        "target": "user",
+        "rule_jp": "紙の本は長時間集中するのに適している。今日の一冊だけを選ぶなら、その理由を明確にすることが重要だ。",
+        "evidence_quotes": [
+          "私は紙の本で勉強する方が落ち着く。電子書籍だと目が疲れやすい。",
+          "一冊だけ選びたい。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户表达了对选择用于学习的书籍类型（纸质书或电子书）的偏好，并最终确定今天只选择一本书。\",\n  \"candidate_kind\": \"wisdom\",\n  \"scope\": \"repeated\",\n  \"target\": \"user\",\n  \"rule_jp\": \"紙の本は長時間集中するのに適している。今日の一冊だけを選ぶなら、その理由を明確にすることが重要だ。\",\n  \"evidence_quotes\": [\n    \"私は紙の本で勉強する方が落ち着く。電子書籍だと目が疲れやすい。\",\n    \"一冊だけ選びたい。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 6.321327,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 6320258792,
+      "load_duration_ns": 105670375,
+      "prompt_eval_count": 340,
+      "eval_count": 145
+    },
+    {
+      "id": "cav2_jpn_wisdom_afternoon_meetings",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户提到早上注意力不集中，昨天早会有重要信息没听清楚，并表示以后重要的会议尽量安排在下午。",
+        "candidate_kind": "procedural",
+        "scope": "repeated",
+        "target": "user",
+        "rule_jp": "重要な会議は午後に優先する。",
+        "evidence_quotes": [
+          "今後、重要な打ち合わせは選べるなら午後がいい。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户提到早上注意力不集中，昨天早会有重要信息没听清楚，并表示以后重要的会议尽量安排在下午。\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"repeated\",\n  \"target\": \"user\",\n  \"rule_jp\": \"重要な会議は午後に優先する。\",\n  \"evidence_quotes\": [\n    \"今後、重要な打ち合わせは選べるなら午後がいい。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 5.092215,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5090854500,
+      "load_duration_ns": 105488917,
+      "prompt_eval_count": 338,
+      "eval_count": 113
+    },
+    {
+      "id": "cav2_jpn_procedural_recipe_order",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户希望未来的食谱先列出材料和数量，然后是步骤，并请求助手记住这个顺序。",
+        "candidate_kind": "procedural",
+        "scope": "repeated",
+        "target": "assistant",
+        "rule_jp": "次回からは、材料と分量を最初に出し、その後に手順を説明する。",
+        "evidence_quotes": [
+          "これからレシピを聞いた時は、最初に材料の量を一覧で出して。",
+          "そのあとに手順を説明して。今後もその順番でお願い。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户希望未来的食谱先列出材料和数量，然后是步骤，并请求助手记住这个顺序。\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"repeated\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"次回からは、材料と分量を最初に出し、その後に手順を説明する。\",\n  \"evidence_quotes\": [\n    \"これからレシピを聞いた時は、最初に材料の量を一覧で出して。\",\n    \"そのあとに手順を説明して。今後もその順番でお願い。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 6.610708,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 6609405750,
+      "load_duration_ns": 105333458,
+      "prompt_eval_count": 359,
+      "eval_count": 148
+    },
+    {
+      "id": "cav2_jpn_procedural_conclusion_signal",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户希望在忙碌时能快速得到结论，而不是详细解释。助理建议用特定短语作为简化沟通的信号，并且用户同意了这一做法。",
+        "candidate_kind": "procedural",
+        "scope": "repeated",
+        "target": "assistant",
+        "rule_jp": "同じ合図として扱うNO_RULE",
+        "evidence_quotes": [
+          "別の会話でも同じ合図として扱って。",
+          "その言葉を短縮の合図にする。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户希望在忙碌时能快速得到结论，而不是详细解释。助理建议用特定短语作为简化沟通的信号，并且用户同意了这一做法。\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"repeated\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"同じ合図として扱うNO_RULE\",\n  \"evidence_quotes\": [\n    \"別の会話でも同じ合図として扱って。\",\n    \"その言葉を短縮の合図にする。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 5.911127,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5910059500,
+      "load_duration_ns": 105921500,
+      "prompt_eval_count": 345,
+      "eval_count": 134
+    },
+    {
+      "id": "cav2_jpn_none_colleague_temperature",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "payload_keys",
+      "payload": {
+        "episodic_summary": "用户提到明天将与同事共用一个房间工作，但同事对冷气不适应而自己可以忍受。",
+        "candidate_kind": "none",
+        "scope": "one_off",
+        "target": "user",
+        "rule_jp": "NO_RULE"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户提到明天将与同事共用一个房间工作，但同事对冷气不适应而自己可以忍受。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"one_off\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 3.292805,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 3291583000,
+      "load_duration_ns": 109904458,
+      "prompt_eval_count": 335,
+      "eval_count": 68
+    },
+    {
+      "id": "cav2_jpn_none_temporary_voice_rest",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "用户提到本周声音有些沙哑，决定本周不进行朗读练习，并计划下周视身体状况恢复。",
+        "candidate_kind": "none",
+        "scope": "one_off",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "今週だけ音読の練習を休む。",
+          "来週以降は体調を見て再開する。"
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户提到本周声音有些沙哑，决定本周不进行朗读练习，并计划下周视身体状况恢复。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"one_off\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"今週だけ音読の練習を休む。\",\n    \"来週以降は体調を見て再開する。\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "one_off",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": null,
+      "wall_seconds": 5.177505,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5176520375,
+      "load_duration_ns": 104152125,
+      "prompt_eval_count": 331,
+      "eval_count": 114
+    },
+    {
+      "id": "cav2_cmn_wisdom_height_avoidance",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "用户表达了对高处活动的恐惧，并希望选择一个半天结束的旅行活动。",
+        "candidate_kind": "none",
+        "scope": "one_off",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "我從小就怕高，所以旅行時不會選高空活動。"
+        ],
+        "confidence": 1
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户表达了对高处活动的恐惧，并希望选择一个半天结束的旅行活动。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"one_off\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"我從小就怕高，所以旅行時不會選高空活動。\"\n  ],\n  \"confidence\": 1\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "one_off",
+      "owner": "user",
+      "evidence_user_turns": [
+        2
+      ],
+      "confidence_band": null,
+      "wall_seconds": 4.399587,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4398365209,
+      "load_duration_ns": 103634459,
+      "prompt_eval_count": 328,
+      "eval_count": 96
+    },
+    {
+      "id": "cav2_cmn_wisdom_audio_commute",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "用户表达了在通勤时更倾向于听语音课程来帮助记忆内容，并提到上一周看文字讲义时注意力不集中，因此希望以后选择通勤学习材料时优先考虑语音。",
+        "candidate_kind": "none",
+        "scope": "repeated",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "以後幫我選通勤教材時，優先考慮音訊。"
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户表达了在通勤时更倾向于听语音课程来帮助记忆内容，并提到上一周看文字讲义时注意力不集中，因此希望以后选择通勤学习材料时优先考虑语音。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"repeated\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"以後幫我選通勤教材時，優先考慮音訊。\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "repeated",
+      "owner": "user",
+      "evidence_user_turns": [
+        3
+      ],
+      "confidence_band": null,
+      "wall_seconds": 5.373195,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5371850042,
+      "load_duration_ns": 103677625,
+      "prompt_eval_count": 341,
+      "eval_count": 121
+    },
+    {
+      "id": "cav2_cmn_procedural_travel_budget",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户希望在规划旅行时，先询问预算再列出景点。",
+        "candidate_kind": "procedural",
+        "scope": "repeated",
+        "target": "assistant",
+        "rule_jp": "旅行計画の際は、予算を確認してから観光スポットを提案します。",
+        "evidence_quotes": [
+          "以後幫我排旅行時，先問預算再列景點。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户希望在规划旅行时，先询问预算再列出景点。\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"repeated\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"旅行計画の際は、予算を確認してから観光スポットを提案します。\",\n  \"evidence_quotes\": [\n    \"以後幫我排旅行時，先問預算再列景點。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 5.073882,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 5072757667,
+      "load_duration_ns": 105241709,
+      "prompt_eval_count": 331,
+      "eval_count": 113
+    },
+    {
+      "id": "cav2_cmn_procedural_restart_signal",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": false,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": false,
+      "parse_error": "confidence_range",
+      "payload": {
+        "episodic_summary": "用户希望在对话中使用特定短语（'重新来过'）作为重置信号，每次说这个短语时，系统会清空当前方案并询问用户想要保留哪些条件。",
+        "candidate_kind": "procedural",
+        "scope": "recurring",
+        "target": "assistant",
+        "rule_jp": "「再開き直す」という言葉が出てきたら、現在の計画を消去し、ユーザーがどの条件を保持したいかを尋ねる。",
+        "evidence_quotes": [
+          "每次我說「重新來過」，先清掉目前方案，再問我想保留哪個條件。"
+        ],
+        "confidence": "high"
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户希望在对话中使用特定短语（'重新来过'）作为重置信号，每次说这个短语时，系统会清空当前方案并询问用户想要保留哪些条件。\",\n  \"candidate_kind\": \"procedural\",\n  \"scope\": \"recurring\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"「再開き直す」という言葉が出てきたら、現在の計画を消去し、ユーザーがどの条件を保持したいかを尋ねる。\",\n  \"evidence_quotes\": [\n    \"每次我說「重新來過」，先清掉目前方案，再問我想保留哪個條件。\"\n  ],\n  \"confidence\": \"high\"\n}",
+      "index_contract_success": false,
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 7.117339,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 7115944084,
+      "load_duration_ns": 106865500,
+      "prompt_eval_count": 350,
+      "eval_count": 164
+    },
+    {
+      "id": "cav2_cmn_none_one_time_formality",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": true,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "用户请求助手在明天的会议中将回复写得正式一些，但之后恢复为日常语气。",
+        "candidate_kind": "none",
+        "scope": "recurring",
+        "target": "assistant",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "只有這次，幫我把回覆寫得正式一點。",
+          "之後聊天不用維持這種語氣。"
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户请求助手在明天的会议中将回复写得正式一些，但之后恢复为日常语气。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"recurring\",\n  \"target\": \"assistant\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"只有這次，幫我把回覆寫得正式一點。\",\n    \"之後聊天不用維持這種語氣。\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": true,
+      "memory_kind": "none",
+      "scope": "recurring",
+      "owner": "assistant",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": null,
+      "wall_seconds": 4.829647,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4827520542,
+      "load_duration_ns": 106802500,
+      "prompt_eval_count": 324,
+      "eval_count": 110
+    },
+    {
+      "id": "cav2_cmn_none_temporary_knee",
+      "condition": "v1_source_bound_json_control",
+      "observed_target": "none",
+      "parse_success": true,
+      "evidence_contract_success": false,
+      "japanese_rule_contract_success": true,
+      "parse_error": null,
+      "payload": {
+        "episodic_summary": "用户报告膝盖酸痛，建议减少运动强度并暂时停止跑步。",
+        "candidate_kind": "none",
+        "scope": "recurring",
+        "target": "user",
+        "rule_jp": "NO_RULE",
+        "evidence_quotes": [
+          "這幾天先降低運動強度比較好。",
+          "先把跑步停在這段恢復期。"
+        ],
+        "confidence": 0.8
+      },
+      "raw_content": "{\n  \"episodic_summary\": \"用户报告膝盖酸痛，建议减少运动强度并暂时停止跑步。\",\n  \"candidate_kind\": \"none\",\n  \"scope\": \"recurring\",\n  \"target\": \"user\",\n  \"rule_jp\": \"NO_RULE\",\n  \"evidence_quotes\": [\n    \"這幾天先降低運動強度比較好。\",\n    \"先把跑步停在這段恢復期。\"\n  ],\n  \"confidence\": 0.8\n}",
+      "index_contract_success": false,
+      "memory_kind": "none",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "wall_seconds": 4.651493,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4650427458,
+      "load_duration_ns": 104539000,
+      "prompt_eval_count": 332,
+      "eval_count": 103
+    }
+  ],
+  "candidate_rows": [
+    {
+      "id": "cav2_eng_wisdom_left_handed",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_mokb4ovi",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 4.278319,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 4277265667,
+      "load_duration_ns": 106598292,
+      "prompt_eval_count": 515,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_eng_wisdom_train_commute",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "wisdom",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "wisdom",
+      "scope": "stable",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "confidence_band": "high",
+      "payload": {
+        "memory_kind": "wisdom",
+        "scope": "stable",
+        "owner": "user",
+        "evidence_user_turns": [
+          1,
+          2,
+          3
+        ],
+        "confidence_band": "high"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_dmevy2ua",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "wisdom",
+              "scope": "stable",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                2,
+                3
+              ],
+              "confidence_band": "high"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.951695,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2950775333,
+      "load_duration_ns": 104793083,
+      "prompt_eval_count": 517,
+      "eval_count": 59
+    },
+    {
+      "id": "cav2_eng_procedural_code_review",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "high",
+      "payload": {
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "high",
+        "memory_kind": "procedural",
+        "scope": "recurring"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_d7s1j5ah",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "high",
+              "memory_kind": "procedural",
+              "scope": "recurring"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.760607,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2759097916,
+      "load_duration_ns": 104006500,
+      "prompt_eval_count": 509,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_eng_procedural_checkpoint",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_1ztbbn4k",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.797383,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2796073250,
+      "load_duration_ns": 103505875,
+      "prompt_eval_count": 503,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_eng_none_undecided_pottery",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": false,
+      "parse_error": "index_contract",
+      "memory_kind": "none",
+      "scope": "transient",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "confidence_band": "low",
+      "payload": {
+        "memory_kind": "none",
+        "scope": "transient",
+        "owner": "user",
+        "evidence_user_turns": [
+          1,
+          2,
+          3
+        ],
+        "confidence_band": "low"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_y9ewx016",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "none",
+              "scope": "transient",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                2,
+                3
+              ],
+              "confidence_band": "low"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.794848,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2793695292,
+      "load_duration_ns": 105513584,
+      "prompt_eval_count": 507,
+      "eval_count": 59
+    },
+    {
+      "id": "cav2_eng_none_one_time_citations",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": false,
+      "index_contract_success": false,
+      "parse_error": "tool_call_count",
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "payload": null,
+      "raw_content": "",
+      "raw_tool_calls": [],
+      "wall_seconds": 2.808848,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2807828791,
+      "load_duration_ns": 106121083,
+      "prompt_eval_count": 502,
+      "eval_count": 59
+    },
+    {
+      "id": "cav2_jpn_wisdom_paper_books",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "wisdom",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "wisdom",
+      "scope": "stable",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        2
+      ],
+      "confidence_band": "high",
+      "payload": {
+        "confidence_band": "high",
+        "memory_kind": "wisdom",
+        "scope": "stable",
+        "owner": "user",
+        "evidence_user_turns": [
+          1,
+          2
+        ]
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_rrg9q62j",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "confidence_band": "high",
+              "memory_kind": "wisdom",
+              "scope": "stable",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                2
+              ]
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.807594,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2806415042,
+      "load_duration_ns": 103998125,
+      "prompt_eval_count": 529,
+      "eval_count": 56
+    },
+    {
+      "id": "cav2_jpn_wisdom_afternoon_meetings",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_1zus8f3s",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.887056,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2885936458,
+      "load_duration_ns": 105069292,
+      "prompt_eval_count": 527,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_jpn_procedural_recipe_order",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "repeated",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium",
+        "memory_kind": "procedural",
+        "scope": "repeated",
+        "owner": "user"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_v5vkihpp",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium",
+              "memory_kind": "procedural",
+              "scope": "repeated",
+              "owner": "user"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 3.03764,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 3036377084,
+      "load_duration_ns": 105710584,
+      "prompt_eval_count": 548,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_jpn_procedural_conclusion_signal",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "repeated",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium",
+        "memory_kind": "procedural",
+        "scope": "repeated",
+        "owner": "user"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_w0xo6m8r",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium",
+              "memory_kind": "procedural",
+              "scope": "repeated",
+              "owner": "user"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.871734,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2870679583,
+      "load_duration_ns": 103546791,
+      "prompt_eval_count": 534,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_jpn_none_colleague_temperature",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": false,
+      "index_contract_success": false,
+      "parse_error": "argument_keys",
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "payload": null,
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_n5kvlk7q",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "wisdom",
+              "scope": "stable",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                2,
+                3
+              ]
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.716584,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2715573958,
+      "load_duration_ns": 104462916,
+      "prompt_eval_count": 524,
+      "eval_count": 53
+    },
+    {
+      "id": "cav2_jpn_none_temporary_voice_rest",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": false,
+      "parse_error": "index_contract",
+      "memory_kind": "none",
+      "scope": "one_off",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "none",
+        "scope": "one_off",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_w2pfkrow",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "none",
+              "scope": "one_off",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.812325,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2811269500,
+      "load_duration_ns": 107811959,
+      "prompt_eval_count": 520,
+      "eval_count": 56
+    },
+    {
+      "id": "cav2_cmn_wisdom_height_avoidance",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": false,
+      "index_contract_success": false,
+      "parse_error": "tool_call_count",
+      "memory_kind": null,
+      "scope": null,
+      "owner": null,
+      "evidence_user_turns": [],
+      "confidence_band": null,
+      "payload": null,
+      "raw_content": "",
+      "raw_tool_calls": [],
+      "wall_seconds": 2.833473,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2832211750,
+      "load_duration_ns": 108580875,
+      "prompt_eval_count": 517,
+      "eval_count": 56
+    },
+    {
+      "id": "cav2_cmn_wisdom_audio_commute",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          1,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_bjmx74or",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.91846,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2917083208,
+      "load_duration_ns": 105657458,
+      "prompt_eval_count": 530,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_cmn_procedural_travel_budget",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_lwdooc2i",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.906354,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2905417958,
+      "load_duration_ns": 105907958,
+      "prompt_eval_count": 520,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_cmn_procedural_restart_signal",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium",
+        "memory_kind": "procedural"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_4d7cfq0e",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium",
+              "memory_kind": "procedural"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.929994,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2928883208,
+      "load_duration_ns": 105645625,
+      "prompt_eval_count": 539,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_cmn_none_one_time_formality",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_j3ikq7nc",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 2.756529,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 2754479542,
+      "load_duration_ns": 104923458,
+      "prompt_eval_count": 513,
+      "eval_count": 58
+    },
+    {
+      "id": "cav2_cmn_none_temporary_knee",
+      "condition": "v2_indexed_tool_candidate",
+      "observed_target": "none",
+      "parse_success": true,
+      "index_contract_success": true,
+      "parse_error": null,
+      "memory_kind": "procedural",
+      "scope": "recurring",
+      "owner": "user",
+      "evidence_user_turns": [
+        1,
+        2,
+        3
+      ],
+      "confidence_band": "medium",
+      "payload": {
+        "memory_kind": "procedural",
+        "scope": "recurring",
+        "owner": "user",
+        "evidence_user_turns": [
+          1,
+          2,
+          3
+        ],
+        "confidence_band": "medium"
+      },
+      "raw_content": "",
+      "raw_tool_calls": [
+        {
+          "id": "call_2ti96e7m",
+          "function": {
+            "index": 0,
+            "name": "classify_memory_admission",
+            "arguments": {
+              "memory_kind": "procedural",
+              "scope": "recurring",
+              "owner": "user",
+              "evidence_user_turns": [
+                1,
+                2,
+                3
+              ],
+              "confidence_band": "medium"
+            }
+          }
+        }
+      ],
+      "wall_seconds": 3.031904,
+      "transport_attempts": 1,
+      "prior_transport_errors": [],
+      "total_duration_ns": 3030581125,
+      "load_duration_ns": 105777208,
+      "prompt_eval_count": 521,
+      "eval_count": 61
+    }
+  ],
+  "gate_snapshot": {
+    "case_count": 18,
+    "model_call_count": 36,
+    "control": {
+      "correct_count": 6,
+      "accuracy": 0.3333,
+      "observed_target_counts": {
+        "none": 18
+      },
+      "parse_success_count": 9,
+      "parse_success_rate": 0.5,
+      "median_wall_seconds": 5.1349,
+      "warm_p95_wall_seconds": 7.1173
+    },
+    "candidate": {
+      "correct_count": 8,
+      "accuracy": 0.4444,
+      "observed_target_counts": {
+        "none": 16,
+        "wisdom": 2
+      },
+      "parse_success_count": 15,
+      "parse_success_rate": 0.8333,
+      "median_wall_seconds": 2.8526,
+      "warm_p95_wall_seconds": 3.0376,
+      "frame_exact_count": 1,
+      "frame_exact_rate": 0.0556,
+      "evidence_grounded_count": 8,
+      "evidence_grounded_rate": 0.4444,
+      "positive_evidence_grounded_count": 8,
+      "positive_evidence_grounded_rate": 0.6667,
+      "index_contract_success_count": 13,
+      "index_contract_success_rate": 0.7222
+    },
+    "accuracy_delta_vs_control": 0.1111,
+    "net_correct_gain_vs_control": 2,
+    "class_metrics": {
+      "wisdom": {
+        "total": 6,
+        "candidate_correct": 2,
+        "candidate_accuracy": 0.3333
+      },
+      "procedural": {
+        "total": 6,
+        "candidate_correct": 0,
+        "candidate_accuracy": 0.0
+      },
+      "none": {
+        "total": 6,
+        "candidate_correct": 6,
+        "candidate_accuracy": 1.0
+      }
+    },
+    "newly_correct_count": 2,
+    "newly_correct_case_ids": [
+      "cav2_eng_wisdom_train_commute",
+      "cav2_jpn_wisdom_paper_books"
+    ],
+    "regression_count": 0,
+    "regression_case_ids": [],
+    "candidate_false_long_term_write_count": 0,
+    "candidate_false_long_term_write_case_ids": [],
+    "candidate_missed_long_term_write_count": 10,
+    "candidate_missed_long_term_write_case_ids": [
+      "cav2_eng_wisdom_left_handed",
+      "cav2_eng_procedural_code_review",
+      "cav2_eng_procedural_checkpoint",
+      "cav2_jpn_wisdom_afternoon_meetings",
+      "cav2_jpn_procedural_recipe_order",
+      "cav2_jpn_procedural_conclusion_signal",
+      "cav2_cmn_wisdom_height_avoidance",
+      "cav2_cmn_wisdom_audio_commute",
+      "cav2_cmn_procedural_travel_budget",
+      "cav2_cmn_procedural_restart_signal"
+    ],
+    "gate_checks": {
+      "candidate_correct_count_min": false,
+      "candidate_accuracy_min": false,
+      "candidate_wisdom_correct_min": false,
+      "candidate_procedural_correct_min": false,
+      "candidate_none_correct_min": true,
+      "candidate_frame_exact_count_min": false,
+      "candidate_evidence_grounded_count_min": false,
+      "candidate_positive_evidence_grounded_count_min": false,
+      "newly_correct_vs_control_min": false,
+      "regression_vs_control_max": true,
+      "net_correct_gain_vs_control_min": false,
+      "candidate_false_long_term_write_count_max": true,
+      "candidate_missed_long_term_write_count_max": false,
+      "candidate_tool_parse_success_rate_min": false,
+      "candidate_index_contract_success_rate_min": false,
+      "model_call_count_exact": true,
+      "control_median_wall_seconds_max": true,
+      "candidate_median_wall_seconds_max": true,
+      "control_warm_p95_wall_seconds_max": true,
+      "candidate_warm_p95_wall_seconds_max": true
+    },
+    "all_gates_pass": false,
+    "matched_rows": [
+      {
+        "id": "cav2_eng_wisdom_left_handed",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_eng_wisdom_train_commute",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_procedural_code_review",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_procedural_checkpoint",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_none_undecided_pottery",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_eng_none_one_time_citations",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_wisdom_paper_books",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_frame_exact": true,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_wisdom_afternoon_meetings",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_procedural_recipe_order",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_jpn_procedural_conclusion_signal",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_jpn_none_colleague_temperature",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_none_temporary_voice_rest",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_wisdom_height_avoidance",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_wisdom_audio_commute",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_procedural_travel_budget",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_procedural_restart_signal",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_none_one_time_formality",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_none_temporary_knee",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      }
+    ]
+  }
+}

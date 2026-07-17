@@ -1,0 +1,326 @@
+{
+  "schema": "uruha_consolidation_admission_indexed_analysis_v2",
+  "experiment_id": "consolidation_admission_v2_indexed_development",
+  "generated_at": "2026-07-17T22:15:44+09:00",
+  "evidence_status": "development_pilot_no_runtime_or_generalization_claim",
+  "preregistration_sha256": "a6725d5cca3f647d7be9aff3462738f2b90baa98e603c082a9d6101d7850b7e3",
+  "protocol_correction_sha256": "89c86179dd8f9eb0cfeea1d23fe8935cd7b4a7c405d26bf61ac9dd8a50912d69",
+  "harness_lock_sha256": "b22f58e91cbe14501c45c2674a71e77094d622be81fbb59827340281cfe77638",
+  "dataset_sha256": "193c9ae583f5a5c072443d2de3d784ca464c262a6979b6e9a4e978f3e9391cfb",
+  "raw_result_sha256": "c07578cec2769c7fa671e838cf4f689a27c972fd48a8960307619337f35d1f78",
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "matched_result": {
+    "case_count": 18,
+    "model_call_count": 36,
+    "control": {
+      "correct_count": 6,
+      "accuracy": 0.3333,
+      "observed_target_counts": {
+        "none": 18
+      },
+      "parse_success_count": 9,
+      "parse_success_rate": 0.5,
+      "median_wall_seconds": 5.1349,
+      "warm_p95_wall_seconds": 7.1173
+    },
+    "candidate": {
+      "correct_count": 8,
+      "accuracy": 0.4444,
+      "observed_target_counts": {
+        "none": 16,
+        "wisdom": 2
+      },
+      "parse_success_count": 15,
+      "parse_success_rate": 0.8333,
+      "median_wall_seconds": 2.8526,
+      "warm_p95_wall_seconds": 3.0376,
+      "frame_exact_count": 1,
+      "frame_exact_rate": 0.0556,
+      "evidence_grounded_count": 8,
+      "evidence_grounded_rate": 0.4444,
+      "positive_evidence_grounded_count": 8,
+      "positive_evidence_grounded_rate": 0.6667,
+      "index_contract_success_count": 13,
+      "index_contract_success_rate": 0.7222
+    },
+    "accuracy_delta_vs_control": 0.1111,
+    "net_correct_gain_vs_control": 2,
+    "class_metrics": {
+      "wisdom": {
+        "total": 6,
+        "candidate_correct": 2,
+        "candidate_accuracy": 0.3333
+      },
+      "procedural": {
+        "total": 6,
+        "candidate_correct": 0,
+        "candidate_accuracy": 0.0
+      },
+      "none": {
+        "total": 6,
+        "candidate_correct": 6,
+        "candidate_accuracy": 1.0
+      }
+    },
+    "newly_correct_count": 2,
+    "newly_correct_case_ids": [
+      "cav2_eng_wisdom_train_commute",
+      "cav2_jpn_wisdom_paper_books"
+    ],
+    "regression_count": 0,
+    "regression_case_ids": [],
+    "candidate_false_long_term_write_count": 0,
+    "candidate_false_long_term_write_case_ids": [],
+    "candidate_missed_long_term_write_count": 10,
+    "candidate_missed_long_term_write_case_ids": [
+      "cav2_eng_wisdom_left_handed",
+      "cav2_eng_procedural_code_review",
+      "cav2_eng_procedural_checkpoint",
+      "cav2_jpn_wisdom_afternoon_meetings",
+      "cav2_jpn_procedural_recipe_order",
+      "cav2_jpn_procedural_conclusion_signal",
+      "cav2_cmn_wisdom_height_avoidance",
+      "cav2_cmn_wisdom_audio_commute",
+      "cav2_cmn_procedural_travel_budget",
+      "cav2_cmn_procedural_restart_signal"
+    ],
+    "gate_checks": {
+      "candidate_correct_count_min": false,
+      "candidate_accuracy_min": false,
+      "candidate_wisdom_correct_min": false,
+      "candidate_procedural_correct_min": false,
+      "candidate_none_correct_min": true,
+      "candidate_frame_exact_count_min": false,
+      "candidate_evidence_grounded_count_min": false,
+      "candidate_positive_evidence_grounded_count_min": false,
+      "newly_correct_vs_control_min": false,
+      "regression_vs_control_max": true,
+      "net_correct_gain_vs_control_min": false,
+      "candidate_false_long_term_write_count_max": true,
+      "candidate_missed_long_term_write_count_max": false,
+      "candidate_tool_parse_success_rate_min": false,
+      "candidate_index_contract_success_rate_min": false,
+      "model_call_count_exact": true,
+      "control_median_wall_seconds_max": true,
+      "candidate_median_wall_seconds_max": true,
+      "control_warm_p95_wall_seconds_max": true,
+      "candidate_warm_p95_wall_seconds_max": true
+    },
+    "all_gates_pass": false,
+    "matched_rows": [
+      {
+        "id": "cav2_eng_wisdom_left_handed",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_eng_wisdom_train_commute",
+        "language": "eng",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_procedural_code_review",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_procedural_checkpoint",
+        "language": "eng",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_eng_none_undecided_pottery",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_eng_none_one_time_citations",
+        "language": "eng",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_wisdom_paper_books",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "wisdom",
+        "control_correct": false,
+        "candidate_correct": true,
+        "candidate_frame_exact": true,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_wisdom_afternoon_meetings",
+        "language": "jpn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_procedural_recipe_order",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_jpn_procedural_conclusion_signal",
+        "language": "jpn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_jpn_none_colleague_temperature",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_jpn_none_temporary_voice_rest",
+        "language": "jpn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_wisdom_height_avoidance",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_wisdom_audio_commute",
+        "language": "cmn",
+        "expected_target": "wisdom",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_procedural_travel_budget",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_procedural_restart_signal",
+        "language": "cmn",
+        "expected_target": "procedural",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": false,
+        "candidate_correct": false,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": true
+      },
+      {
+        "id": "cav2_cmn_none_one_time_formality",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      },
+      {
+        "id": "cav2_cmn_none_temporary_knee",
+        "language": "cmn",
+        "expected_target": "none",
+        "control_target": "none",
+        "candidate_target": "none",
+        "control_correct": true,
+        "candidate_correct": true,
+        "candidate_frame_exact": false,
+        "candidate_evidence_grounded": false
+      }
+    ]
+  },
+  "transport_attempts_made": 36,
+  "decision": "freeze_negative_result_and_leave_enabled_consolidation_unchanged",
+  "same_dataset_retest_authorized": false,
+  "post_admission_generation_pilot_authorized": false,
+  "runtime_memory_write_authorized": false,
+  "runtime_shadow_authorized": false,
+  "fresh_holdout_authorized": false,
+  "official_benchmark_claim_authorized": false,
+  "cross_corpus_generalization_claim_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "biological_equivalence_claim_authorized": false,
+  "downstream_dialogue_improvement_claim_authorized": false
+}

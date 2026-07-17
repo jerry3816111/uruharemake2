@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -37,6 +38,9 @@ RESULT_PATHS = (
     / "reports"
     / "consolidation_admission_v2_indexed_development_analysis.md",
     ROOT / "configs" / "consolidation_admission_v2_indexed_result_lock.json",
+)
+RESULT_LOCK_PATH = (
+    ROOT / "configs" / "consolidation_admission_v2_indexed_result_lock.json"
 )
 
 
@@ -251,8 +255,25 @@ class ConsolidationAdmissionV2PreregistrationTest(unittest.TestCase):
         )
         for value in self.config["evidence_limits"].values():
             self.assertFalse(value)
-        for path in RESULT_PATHS:
-            self.assertFalse(path.exists())
+        if RESULT_LOCK_PATH.exists():
+            result_lock = _load(RESULT_LOCK_PATH)
+            harness_commit = result_lock["harness_merge_commit"]
+            for path in RESULT_PATHS:
+                completed = subprocess.run(
+                    [
+                        "git",
+                        "cat-file",
+                        "-e",
+                        f"{harness_commit}:{path.relative_to(ROOT)}",
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertNotEqual(completed.returncode, 0)
+        else:
+            for path in RESULT_PATHS:
+                self.assertFalse(path.exists())
 
 
 if __name__ == "__main__":
