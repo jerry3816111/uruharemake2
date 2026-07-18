@@ -1,0 +1,161 @@
+{
+  "schema": "uruha_profile_relevance_speakability_preregistration_v71",
+  "experiment_id": "profile_relevance_speakability_v71",
+  "created_at": "2026-07-18T16:20:00+09:00",
+  "repository_parent_commit": "b8e9148c43ca816e817c5ae79fddf9e229cc1750",
+  "status": "preregistered_before_dataset_audit_selector_harness_or_formal_inference",
+  "target_ability": "retrieve only current profile memories that are relevant and speakable for the present turn, and abstain when no supported profile fact exists",
+  "problem_evidence": {
+    "v70_result": "reports/profile_answer_generalization_v70_analysis.json",
+    "typed_active_result": "10/24 overall, 8/16 relevant, 5 irrelevant intrusions, 0/4 abstention",
+    "matched_append_only_result": "11/24 overall, 9/16 relevant, 5 irrelevant intrusions",
+    "causal_diagnosis": "V67 validity resolution identifies current facts, but V70 exposes the entire current profile to downstream planning. Current validity therefore does not establish query relevance or permission to mention a fact."
+  },
+  "research_basis": [
+    {
+      "source": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "url": "https://arxiv.org/abs/2304.03442",
+      "design_use": "Retrieve a small context-dependent subset instead of exposing the complete memory stream."
+    },
+    {
+      "source": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "url": "https://openreview.net/pdf?id=pZiyCaVuti",
+      "design_use": "Treat knowledge updates and abstention as separate memory abilities; use fact-augmented retrieval keys."
+    },
+    {
+      "source": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "design_use": "Local multilingual semantic similarity without an extra generative-model call."
+    }
+  ],
+  "development_evidence_not_eligible_for_formal_scoring": {
+    "chroma_default_probe": "Rejected: Japanese drink and nonexistent-instrument queries produced nearly identical distances, and name retrieval did not rank the name first.",
+    "multilingual_encoder_probe": "Supported continuation: a drink recall query scored 0.6165 against a matching drink fact, versus 0.3473 for a nonexistent-instrument query and 0.3089 for ordinary chat.",
+    "cost_probe": "458 MB model cache, about 0.65 seconds local load, 13-28 milliseconds warm batch encoding, and about 1 GB observed peak process footprint.",
+    "formal_exclusion": "All development queries and values are forbidden from the V71 holdout and formal score."
+  },
+  "causal_hypothesis": "With V67 validity resolution, the same full-chat pipeline, and the same current profile facts, query-conditioned multilingual selection over provenance-enriched fact keys will improve supported recall and abstention over both full-profile projection and bare-key selection, while eliminating irrelevant profile intrusions. If the selector is exact but final answers remain weak, the remaining bottleneck is downstream planning or realization rather than retrieval.",
+  "causal_boundary": "This experiment tests current typed profile facts with preserved source utterances in isolated full-chat turns. It does not test open-domain fact extraction, legacy profile migration, episodic or semantic memory retrieval, long-term decay, model-blended RightBrain naturalness, personality learning, VRM actions, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/profile_relevance_speakability_v71.json",
+    "case_count": 24,
+    "scenario_family_count": 6,
+    "cases_per_family": 4,
+    "scenario_families": [
+      "supported_preference_recall",
+      "supported_state_update",
+      "supported_name_recall",
+      "supported_entity_confirmation",
+      "unknown_profile_abstention",
+      "irrelevant_profile_suppression"
+    ],
+    "memory_relevant_case_count": 16,
+    "memory_irrelevant_case_count": 8,
+    "abstention_case_count": 4,
+    "source_type": "researcher_authored_fresh_project_holdout",
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "typed_active_full_projection_control": "Resolve current state with V67 and project every active profile fact, matching the failed V70 treatment.",
+    "typed_active_bare_key_selection_control": "Use the frozen multilingual selector with only canonical fact type and value text.",
+    "typed_active_provenance_selection_treatment": "Use the same selector and thresholds, adding only the original source utterance to each retrieval key."
+  },
+  "primary_causal_comparison": "typed_active_provenance_selection_treatment versus typed_active_bare_key_selection_control",
+  "secondary_causal_comparison": "typed_active_provenance_selection_treatment versus typed_active_full_projection_control",
+  "only_changed_component_for_primary_comparison": "whether the selector key includes the stored source utterance; candidate state, encoder, thresholds, projector, unknown contract, full chat pipeline, and scorer remain identical",
+  "fixed_variables": [
+    "fresh query, typed profile history, and source utterances",
+    "V67 current-state resolver",
+    "profile projector",
+    "multilingual encoder revision and pooling",
+    "memory-request and candidate thresholds",
+    "qwen2.5:7b digest 845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "LeftBrain temperature 0 and seed 20260771",
+    "deterministic current RightBrain with model loading disabled",
+    "initial psyche, temporary Chroma backend, case order, condition order, and semantic scorer"
+  ],
+  "frozen_selector_contract": {
+    "encoder_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "encoder_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+    "pooling": "attention-mask mean pooling followed by L2 normalization",
+    "memory_request_positive_score_min": 0.2,
+    "memory_request_margin_min": 0.02,
+    "candidate_similarity_min": 0.3,
+    "candidate_similarity_name_min": 0.28,
+    "ambiguity_margin_min": 0.04,
+    "selected_candidate_count_max": 1,
+    "no_supported_candidate_status": "requested_but_unavailable",
+    "ordinary_turn_status": "not_requested"
+  },
+  "metrics": [
+    "selector_exact_case_count",
+    "selector_false_positive_count",
+    "selector_false_negative_count",
+    "relevant_case_pass_count",
+    "overall_case_pass_count",
+    "required_marker_group_recall",
+    "irrelevant_profile_intrusion_count",
+    "abstention_pass_count",
+    "newly_passed_vs_bare_key",
+    "regressions_vs_bare_key",
+    "newly_passed_vs_full_projection",
+    "surface_gate_pass_count",
+    "encoder_load_seconds",
+    "encoder_peak_rss_delta_bytes",
+    "median_selector_seconds",
+    "p95_selector_seconds",
+    "median_full_turn_seconds",
+    "p95_full_turn_seconds"
+  ],
+  "ability_success_gates": {
+    "selector_exact_case_count_min": 23,
+    "selector_false_positive_count_max": 0,
+    "selector_false_negative_count_max": 1,
+    "relevant_case_pass_count_min": 13,
+    "overall_case_pass_count_min": 20,
+    "required_marker_group_recall_min": 0.85,
+    "irrelevant_profile_intrusion_count_max": 0,
+    "abstention_pass_count_min": 4,
+    "newly_passed_vs_bare_key_min": 3,
+    "regressions_vs_bare_key_max": 1,
+    "newly_passed_vs_full_projection_min": 5,
+    "surface_gate_regression_vs_full_projection_max": 1
+  },
+  "local_cost_gates": {
+    "encoder_load_seconds_max": 1.5,
+    "encoder_peak_rss_delta_bytes_max": 1200000000,
+    "median_selector_seconds_max": 0.05,
+    "p95_selector_seconds_max": 0.1,
+    "median_full_turn_seconds_max": 8.0,
+    "p95_full_turn_seconds_max": 15.0,
+    "transport_error_count_max": 0,
+    "production_database_access_count_max": 0,
+    "physical_action_count_max": 0
+  },
+  "decision_rule": {
+    "ability_and_cost_gates_pass": "Authorize only a separate answer-path shadow with answer_use_authorized=false.",
+    "ability_passes_cost_fails": "Authorize latency and memory optimization research only; keep profile out of answers.",
+    "selector_passes_final_answer_fails": "Freeze final-answer use and move the next investigation downstream to planning or realization.",
+    "selector_fails": "Stop this hypothesis; do not tune thresholds on the holdout and reassess representation or model.",
+    "direct_activation": "Forbidden."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact or model digest drift, prior-text overlap, production database access, missing temporary isolation, expected-field leakage, or model revision drift.",
+    "Do not edit cases, source utterances, expected selections, marker groups, thresholds, prototypes, condition order, or scorer after the harness lock is merged.",
+    "Do not add V71 case IDs, values, expected selections, or answer markers to the selector or runtime.",
+    "Do not lower thresholds or expand the dataset after seeing formal outputs.",
+    "If this relevance hypothesis fails formally, do not patch individual cases."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "selector_implementation": false,
+    "harness_implementation": false,
+    "formal_inference": false,
+    "temporary_chroma_access": false,
+    "production_database_access": false,
+    "runtime_change": false,
+    "answer_use": false
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "schema": "uruha_profile_relevance_speakability_v71",
+  "status": "frozen_before_audit_selector_harness_or_formal_inference",
+  "source_type": "researcher_authored_fresh_project_holdout",
+  "official_benchmark_items": false,
+  "benchmark_answers_present": false,
+  "cases": [
+    {
+      "id": "v71_preference_01",
+      "scenario_family": "supported_preference_recall",
+      "user_input": "この前好きだと話した飲み物、名前まで思い出せる？",
+      "profile_history": [{"memory_id":"v71_pref_01","fact_type":"like","value":"甘酒ラテ","timestamp":"2026-06-11T09:00:00+09:00","source_utterance":"最近は甘酒ラテがいちばん好きな飲み物なんだ。"}],
+      "expected": {"selected_memory_ids":["v71_pref_01"],"required_marker_groups":[["甘酒ラテ"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_preference_02",
+      "scenario_family": "supported_preference_recall",
+      "user_input": "前に休日に楽しいって話した趣味、何だったかな。",
+      "profile_history": [{"memory_id":"v71_pref_02","fact_type":"like","value":"銅版画","timestamp":"2026-06-12T09:00:00+09:00","source_utterance":"休日の趣味なら銅版画が好き。"}],
+      "expected": {"selected_memory_ids":["v71_pref_02"],"required_marker_groups":[["銅版画"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_preference_03",
+      "scenario_family": "supported_preference_recall",
+      "user_input": "私が好みだと教えた甘い食べ物、まだ覚えてる？",
+      "profile_history": [{"memory_id":"v71_pref_03","fact_type":"favorite","value":"豆花","timestamp":"2026-06-13T09:00:00+09:00","source_utterance":"甘いものなら豆花が一番好き。"}],
+      "expected": {"selected_memory_ids":["v71_pref_03"],"required_marker_groups":[["豆花"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_preference_04",
+      "scenario_family": "supported_preference_recall",
+      "user_input": "前の会話で私がよく聴くって言った音楽、何だっけ。",
+      "profile_history": [{"memory_id":"v71_pref_04","fact_type":"like","value":"アンビエント","timestamp":"2026-06-14T09:00:00+09:00","source_utterance":"音楽はアンビエントをよく聴くし好き。"}],
+      "expected": {"selected_memory_ids":["v71_pref_04"],"required_marker_groups":[["アンビエント"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+
+    {
+      "id": "v71_update_01",
+      "scenario_family": "supported_state_update",
+      "user_input": "好みが変わった黒蜜きなこ、今は好きな方だった？",
+      "profile_history": [
+        {"memory_id":"v71_update_01_old","fact_type":"like","value":"黒蜜きなこ","timestamp":"2026-06-11T10:00:00+09:00","source_utterance":"黒蜜きなこが好き。"},
+        {"memory_id":"v71_update_01_new","fact_type":"dislike","value":"黒蜜きなこ","timestamp":"2026-07-11T10:00:00+09:00","source_utterance":"今は黒蜜きなこが苦手になった。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_update_01_new"],"required_marker_groups":[["黒蜜きなこ"],["苦手","嫌い","好きじゃない","今は違う"]],"forbidden_terms":["黒蜜きなこが好きだよ","黒蜜きなこは好きだよ"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_update_02",
+      "scenario_family": "supported_state_update",
+      "user_input": "朝市巡りについて、今の私の気持ちは前と変わったよね？",
+      "profile_history": [
+        {"memory_id":"v71_update_02_old","fact_type":"dislike","value":"朝市巡り","timestamp":"2026-06-12T10:00:00+09:00","source_utterance":"人が多い朝市巡りは苦手。"},
+        {"memory_id":"v71_update_02_new","fact_type":"like","value":"朝市巡り","timestamp":"2026-07-12T10:00:00+09:00","source_utterance":"最近は朝市巡りが好きになった。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_update_02_new"],"required_marker_groups":[["朝市巡り"],["好き","気に入","行きたい"]],"forbidden_terms":["朝市巡りは嫌い","朝市巡りが嫌い","朝市巡りは苦手"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_update_03",
+      "scenario_family": "supported_state_update",
+      "user_input": "炭酸水のこと、今でも一番好きって覚えてないよね？",
+      "profile_history": [
+        {"memory_id":"v71_update_03_old","fact_type":"favorite","value":"炭酸水","timestamp":"2026-06-13T10:00:00+09:00","source_utterance":"飲み物なら炭酸水が一番好き。"},
+        {"memory_id":"v71_update_03_new","fact_type":"dislike","value":"炭酸水","timestamp":"2026-07-13T10:00:00+09:00","source_utterance":"今は炭酸水が苦手で飲まない。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_update_03_new"],"required_marker_groups":[["炭酸水"],["苦手","飲まない","好きじゃない","今は違う"]],"forbidden_terms":["炭酸水が一番好き","炭酸水は一番好き"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_update_04",
+      "scenario_family": "supported_state_update",
+      "user_input": "古典落語はもう苦手じゃなくなったって話、残ってる？",
+      "profile_history": [
+        {"memory_id":"v71_update_04_old","fact_type":"dislike","value":"古典落語","timestamp":"2026-06-14T10:00:00+09:00","source_utterance":"古典落語は難しくて苦手。"},
+        {"memory_id":"v71_update_04_new","fact_type":"favorite","value":"古典落語","timestamp":"2026-07-14T10:00:00+09:00","source_utterance":"今は古典落語が一番好き。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_update_04_new"],"required_marker_groups":[["古典落語"],["好き","気に入"]],"forbidden_terms":["古典落語は嫌い","古典落語が嫌い","古典落語は苦手"],"memory_relevant":true,"abstention_required":false}
+    },
+
+    {
+      "id": "v71_name_01",
+      "scenario_family": "supported_name_recall",
+      "user_input": "最後に決めた呼び名で、私を一回呼んでみて。",
+      "profile_history": [
+        {"memory_id":"v71_name_01_old","fact_type":"name","value":"リク","timestamp":"2026-06-11T11:00:00+09:00","source_utterance":"これからリクって呼んで。"},
+        {"memory_id":"v71_name_01_new","fact_type":"name","value":"イオリ","timestamp":"2026-07-11T11:00:00+09:00","source_utterance":"呼び名はイオリに変えて。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_name_01_new"],"required_marker_groups":[["イオリ"]],"forbidden_terms":["リク"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_name_02",
+      "scenario_family": "supported_name_recall",
+      "user_input": "私の新しい呼ばれ方、ちゃんと更新できてる？",
+      "profile_history": [
+        {"memory_id":"v71_name_02_old","fact_type":"name","value":"ユナ","timestamp":"2026-06-12T11:00:00+09:00","source_utterance":"ユナと呼んでほしい。"},
+        {"memory_id":"v71_name_02_new","fact_type":"name","value":"カイ","timestamp":"2026-07-12T11:00:00+09:00","source_utterance":"今後はカイって呼んで。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_name_02_new"],"required_marker_groups":[["カイ"]],"forbidden_terms":["ユナ"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_name_03",
+      "scenario_family": "supported_name_recall",
+      "user_input": "古い方じゃなく、今のニックネームを言える？",
+      "profile_history": [
+        {"memory_id":"v71_name_03_old","fact_type":"name","value":"レイ","timestamp":"2026-06-13T11:00:00+09:00","source_utterance":"ニックネームはレイで。"},
+        {"memory_id":"v71_name_03_new","fact_type":"name","value":"トワ","timestamp":"2026-07-13T11:00:00+09:00","source_utterance":"やっぱりトワって呼んで。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_name_03_new"],"required_marker_groups":[["トワ"]],"forbidden_terms":["レイ"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_name_04",
+      "scenario_family": "supported_name_recall",
+      "user_input": "前に変えたあとの名前、忘れずに答えて。",
+      "profile_history": [
+        {"memory_id":"v71_name_04_old","fact_type":"name","value":"サキ","timestamp":"2026-06-14T11:00:00+09:00","source_utterance":"サキって呼んでね。"},
+        {"memory_id":"v71_name_04_new","fact_type":"name","value":"ノア","timestamp":"2026-07-14T11:00:00+09:00","source_utterance":"呼び方をノアに変えたい。"}
+      ],
+      "expected": {"selected_memory_ids":["v71_name_04_new"],"required_marker_groups":[["ノア"]],"forbidden_terms":["サキ"],"memory_relevant":true,"abstention_required":false}
+    },
+
+    {
+      "id": "v71_entity_01",
+      "scenario_family": "supported_entity_confirmation",
+      "user_input": "甘い卵焼きって、私が好きだと言ってた方？",
+      "profile_history": [{"memory_id":"v71_entity_01","fact_type":"dislike","value":"甘い卵焼き","timestamp":"2026-06-11T12:00:00+09:00","source_utterance":"甘い卵焼きは苦手。"}],
+      "expected": {"selected_memory_ids":["v71_entity_01"],"required_marker_groups":[["甘い卵焼き"],["苦手","嫌い","好きじゃない"]],"forbidden_terms":["甘い卵焼きが好き","甘い卵焼きは好き"],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_entity_02",
+      "scenario_family": "supported_entity_confirmation",
+      "user_input": "私、真鍮の小物が気に入ってるって前に話した？",
+      "profile_history": [{"memory_id":"v71_entity_02","fact_type":"like","value":"真鍮の小物","timestamp":"2026-06-12T12:00:00+09:00","source_utterance":"真鍮の小物が好きで集めてる。"}],
+      "expected": {"selected_memory_ids":["v71_entity_02"],"required_marker_groups":[["真鍮"],["好き","気に入","集め"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_entity_03",
+      "scenario_family": "supported_entity_confirmation",
+      "user_input": "海辺のキャンプは私の好みだったか、記憶から確認して。",
+      "profile_history": [{"memory_id":"v71_entity_03","fact_type":"favorite","value":"海辺のキャンプ","timestamp":"2026-06-13T12:00:00+09:00","source_utterance":"旅行なら海辺のキャンプが一番好き。"}],
+      "expected": {"selected_memory_ids":["v71_entity_03"],"required_marker_groups":[["海辺","キャンプ"],["好き","好み"]],"forbidden_terms":[],"memory_relevant":true,"abstention_required":false}
+    },
+    {
+      "id": "v71_entity_04",
+      "scenario_family": "supported_entity_confirmation",
+      "user_input": "強い香水について、私が前にどう言ったか覚えてる？",
+      "profile_history": [{"memory_id":"v71_entity_04","fact_type":"dislike","value":"強い香水","timestamp":"2026-06-14T12:00:00+09:00","source_utterance":"強い香水の匂いは苦手。"}],
+      "expected": {"selected_memory_ids":["v71_entity_04"],"required_marker_groups":[["香水"],["苦手","嫌い"]],"forbidden_terms":["強い香水が好き","強い香水は好き"],"memory_relevant":true,"abstention_required":false}
+    },
+
+    {
+      "id": "v71_unknown_01",
+      "scenario_family": "unknown_profile_abstention",
+      "user_input": "子どもの頃に住んでた町、私から教えたことあった？",
+      "profile_history": [{"memory_id":"v71_unknown_01_memory","fact_type":"like","value":"ガラスペン","timestamp":"2026-06-11T13:00:00+09:00","source_utterance":"文房具ならガラスペンが好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[["聞いてない","覚えてない","分からない","知らない","教えてない","記録にない"]],"forbidden_terms":["ガラスペン"],"memory_relevant":false,"abstention_required":true}
+    },
+    {
+      "id": "v71_unknown_02",
+      "scenario_family": "unknown_profile_abstention",
+      "user_input": "私の靴のサイズって、もう記憶に入ってる？",
+      "profile_history": [{"memory_id":"v71_unknown_02_memory","fact_type":"like","value":"蕎麦茶","timestamp":"2026-06-12T13:00:00+09:00","source_utterance":"温かい蕎麦茶が好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[["聞いてない","覚えてない","分からない","知らない","入ってない","記録にない"]],"forbidden_terms":["蕎麦茶"],"memory_relevant":false,"abstention_required":true}
+    },
+    {
+      "id": "v71_unknown_03",
+      "scenario_family": "unknown_profile_abstention",
+      "user_input": "一番使いたいプログラミング言語、前に言ってたっけ？",
+      "profile_history": [{"memory_id":"v71_unknown_03_memory","fact_type":"like","value":"夜の写真散歩","timestamp":"2026-06-13T13:00:00+09:00","source_utterance":"夜に写真を撮りながら歩くのが好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[["聞いてない","覚えてない","分からない","知らない","言ってない","記録にない"]],"forbidden_terms":["写真散歩"],"memory_relevant":false,"abstention_required":true}
+    },
+    {
+      "id": "v71_unknown_04",
+      "scenario_family": "unknown_profile_abstention",
+      "user_input": "食べ物のアレルギー、私から何か伝えてた？",
+      "profile_history": [{"memory_id":"v71_unknown_04_memory","fact_type":"favorite","value":"白いスニーカー","timestamp":"2026-06-14T13:00:00+09:00","source_utterance":"靴なら白いスニーカーが一番好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[["聞いてない","覚えてない","分からない","知らない","伝えてない","記録にない"]],"forbidden_terms":["白いスニーカー"],"memory_relevant":false,"abstention_required":true}
+    },
+
+    {
+      "id": "v71_suppress_01",
+      "scenario_family": "irrelevant_profile_suppression",
+      "user_input": "今日ちょっと失敗して、まだ落ち込んでる。",
+      "profile_history": [{"memory_id":"v71_suppress_01_memory","fact_type":"like","value":"苔テラリウム","timestamp":"2026-06-11T14:00:00+09:00","source_utterance":"苔テラリウムを眺めるのが好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[],"forbidden_terms":["苔テラリウム"],"memory_relevant":false,"abstention_required":false}
+    },
+    {
+      "id": "v71_suppress_02",
+      "scenario_family": "irrelevant_profile_suppression",
+      "user_input": "眠いけど、あと少しだけ作業するか迷ってる。",
+      "profile_history": [{"memory_id":"v71_suppress_02_memory","fact_type":"favorite","value":"ほうじ茶プリン","timestamp":"2026-06-12T14:00:00+09:00","source_utterance":"おやつはほうじ茶プリンが一番好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[],"forbidden_terms":["ほうじ茶プリン"],"memory_relevant":false,"abstention_required":false}
+    },
+    {
+      "id": "v71_suppress_03",
+      "scenario_family": "irrelevant_profile_suppression",
+      "user_input": "このあと雨が降りそう。傘を持っていくべきかな。",
+      "profile_history": [{"memory_id":"v71_suppress_03_memory","fact_type":"like","value":"古い地図","timestamp":"2026-06-13T14:00:00+09:00","source_utterance":"古い地図を見るのが好き。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[],"forbidden_terms":["古い地図"],"memory_relevant":false,"abstention_required":false}
+    },
+    {
+      "id": "v71_suppress_04",
+      "scenario_family": "irrelevant_profile_suppression",
+      "user_input": "今ちょっと暇。短く雑談しよ。",
+      "profile_history": [{"memory_id":"v71_suppress_04_memory","fact_type":"dislike","value":"ラジオ体操","timestamp":"2026-06-14T14:00:00+09:00","source_utterance":"朝のラジオ体操は苦手。"}],
+      "expected": {"selected_memory_ids":[],"required_marker_groups":[],"forbidden_terms":["ラジオ体操"],"memory_relevant":false,"abstention_required":false}
+    }
+  ]
+}
