@@ -1,0 +1,40 @@
+{
+  "schema": "uruha_rightbrain_shared_final_plan_preregistration_amendment_v63_1",
+  "experiment_id": "rightbrain_shared_final_plan_v63",
+  "created_at": "2026-07-18T12:12:00+09:00",
+  "status": "amended_before_plan_capture_or_model_inference",
+  "supersedes_fields": [
+    "plan_source_policy.allowed_sources",
+    "plan_source_policy.analysis_role",
+    "plan_source_policy.leftbrain_call_integrity"
+  ],
+  "reason": "Static harness review found that high-road cognitive_tick calls LeftBrain.think, but LeftBrain.think can return _rule_based_plan before its model call. Route alone therefore cannot distinguish model and rule plan sources.",
+  "code_evidence": {
+    "route_selection": "uruha_brain_mac.py:14156-14160",
+    "high_road_rule_return": "uruha_brain_mac.py:8025-8035",
+    "high_road_model_call": "uruha_brain_mac.py:8144-8152"
+  },
+  "amended_plan_source_policy": {
+    "allowed_sources": [
+      "model_high_road",
+      "rule_high_road",
+      "rule_low_road"
+    ],
+    "determination": "For each case, compare the isolated LeftBrain model-call log immediately before and after cognitive_tick. Low-road with zero calls is rule_low_road; high-road with zero calls is rule_high_road; high-road with exactly one call is model_high_road. Any other combination aborts before RightBrain inference.",
+    "analysis_role": "plan_source remains a descriptive stratification variable, not a treatment and not a fixed-count gate.",
+    "leftbrain_call_integrity": "The sum of per-case model-call deltas must equal the recorded LeftBrain model-call count and the number of model_high_road cases."
+  },
+  "unchanged": {
+    "causal_hypothesis": true,
+    "dataset_cases": true,
+    "required_and_forbidden_propositions": true,
+    "model_and_generation_settings": true,
+    "automatic_advance_gates": true,
+    "no_retry_policy": true,
+    "same_dataset_retest_policy": true
+  },
+  "plan_capture_count": 0,
+  "rightbrain_model_call_count": 0,
+  "human_rating_count": 0,
+  "runtime_change_authorized": false
+}
