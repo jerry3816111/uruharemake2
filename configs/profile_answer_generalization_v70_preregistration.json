@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_profile_answer_generalization_preregistration_v70",
+  "experiment_id": "profile_answer_generalization_v70",
+  "created_at": "2026-07-18T15:12:00+09:00",
+  "repository_parent_commit": "575a1f9",
+  "status": "preregistered_before_dataset_audit_harness_projection_or_formal_inference",
+  "target_ability": "use_current_cross_session_profile_state_in_full_chat_answers_without_stale_or_irrelevant_memory_intrusion",
+  "problem_evidence": {
+    "v69_state_result": "reports/profile_state_transition_v69_analysis.json",
+    "v69_state_partition": "typed state resolved 18/18 while matched append-only resolved 6/18",
+    "unscored_development_probe": "With an isolated temporary database and fixed full-chat pipeline, session-only answered off-topic, append-only answered stale coffee, and typed-active answered current hojicha. Probe text and values are excluded from V70."
+  },
+  "causal_hypothesis": "With the same local qwen2.5:7b LeftBrain, deterministic current RightBrain, seed, temperature, psyche, temporary Chroma records, query, condition order, output checks, and token budget, projecting only V69-resolved active profile facts into the existing profile_structured interface will improve profile-dependent final-answer correctness over both session-only and matched append-only projection, while producing zero irrelevant profile intrusions, preserving abstention, causing at most one regression versus append-only, and adding no more than 5 milliseconds median projection cost.",
+  "causal_boundary": "This tests the downstream answer effect of already-extracted typed profile facts in the current deterministic full-chat pipeline. It does not test open-domain extraction, legacy migration, model-blended RightBrain naturalness, long-term decay, personality learning, VRM actions, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/profile_answer_generalization_v70.json",
+    "case_count": 24,
+    "scenario_family_count": 6,
+    "cases_per_family": 4,
+    "scenario_families": [
+      "current_preference_recall",
+      "positive_to_negative_update",
+      "negative_to_positive_update",
+      "name_replacement",
+      "irrelevant_profile_suppression",
+      "unknown_profile_abstention"
+    ],
+    "memory_relevant_case_count": 16,
+    "memory_irrelevant_case_count": 8,
+    "abstention_case_count": 4,
+    "source_type": "researcher_authored_fresh_project_holdout",
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "current_session_only_control": "After reset, persistent records exist in temporary Chroma but no persistent profile is projected.",
+    "matched_append_only_projection_control": "Project every persistent profile row through the same projector without validity resolution.",
+    "typed_active_projection_treatment": "Apply the frozen V67 resolver, then project only eligible typed rows through the same projector."
+  },
+  "primary_causal_comparison": "typed_active_projection_treatment versus matched_append_only_projection_control",
+  "secondary_comparison": "typed_active_projection_treatment versus current_session_only_control",
+  "fixed_variables": [
+    "fresh query and profile history",
+    "temporary Chroma backend and record writes",
+    "profile projector implementation",
+    "qwen2.5:7b digest 845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "LeftBrain temperature 0 and seed 20260770",
+    "current deterministic RightBrain with model loading disabled",
+    "initial psyche mood and trust",
+    "full ingest, cognitive tick, self-monitor, post-check, and temporary episode write",
+    "case and condition order",
+    "automatic semantic scorer"
+  ],
+  "only_changed_component_for_primary_comparison": "all persistent profile candidates versus V67-resolved active candidates before the shared projector",
+  "metrics": [
+    "relevant_case_pass_rate",
+    "overall_case_pass_rate",
+    "required_marker_group_recall",
+    "stale_or_forbidden_term_case_count",
+    "irrelevant_profile_intrusion_count",
+    "abstention_pass_rate",
+    "newly_passed_vs_append_only",
+    "regressions_vs_append_only",
+    "newly_passed_vs_session_only",
+    "final_surface_gate_pass_rate",
+    "median_projection_seconds",
+    "median_full_turn_seconds",
+    "p95_full_turn_seconds"
+  ],
+  "treatment_success_gates": {
+    "relevant_case_pass_count_min": 14,
+    "overall_case_pass_count_min": 21,
+    "required_marker_group_recall_min": 0.9,
+    "stale_or_forbidden_term_case_count_max": 0,
+    "irrelevant_profile_intrusion_count_max": 0,
+    "abstention_pass_count_min": 3,
+    "newly_passed_vs_append_only_min": 4,
+    "regressions_vs_append_only_max": 1,
+    "newly_passed_vs_session_only_min": 8,
+    "surface_gate_regression_vs_session_only_max": 1,
+    "median_projection_seconds_max": 0.005,
+    "median_full_turn_seconds_max": 8.0,
+    "p95_full_turn_seconds_max": 15.0,
+    "transport_error_count_max": 0,
+    "production_database_access_count_max": 0,
+    "physical_action_count_max": 0
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize a separate runtime shadow that exposes projected active profile to the planning pipeline while retaining answer_use_authorized=false.",
+    "any_gate_fails": "Freeze the result and keep persistent profile out of answers.",
+    "direct_activation": "Forbidden; a fresh shadow and real-chat regression are still required after a pass."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact or model digest drift, prior-text overlap, production database access, missing temporary isolation, or expected-field leakage.",
+    "Do not edit cases, marker groups, forbidden terms, thresholds, projector, seed, or condition order after harness implementation begins.",
+    "Do not add holdout values or case IDs to the projector or runtime.",
+    "Do not expand the dataset or activate answer use if any treatment gate fails."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "harness_implementation": false,
+    "formal_inference": false,
+    "temporary_chroma_access": false,
+    "production_database_access": false,
+    "runtime_change": false,
+    "answer_use": false
+  }
+}
