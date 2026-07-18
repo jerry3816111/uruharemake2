@@ -50,6 +50,7 @@ from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
 import uruha_profile_assertion as upa
+import uruha_profile_grounding as upg
 import uruha_profile_memory as upm
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
@@ -9124,7 +9125,35 @@ class RightBrain:
         lowered = str(user_input or "").lower()
 
         variants = []
-        if kind == "spicy_dislike":
+        if kind == "profile_grounded":
+            contract = logic_data.get("profile_evidence_contract") or {}
+            relation = str(contract.get("relation") or "")
+            if relation == "preferred_name":
+                variants = [
+                    f"{value}って呼べばいいんだろ。",
+                    f"呼び方は{value}だろ。覚えてるし。",
+                ]
+            elif relation == "likes":
+                variants = [
+                    f"{value}が好きって話だろ。",
+                    f"好きなのは{value}って覚えてるし。",
+                ]
+            elif relation == "dislikes":
+                variants = [
+                    f"{value}は苦手って話だろ。",
+                    f"苦手なのは{value}って覚えてるし。",
+                ]
+            elif relation == "favorite":
+                variants = [
+                    f"一番好きなのは{value}だろ。",
+                    f"{value}が本命って覚えてるし。",
+                ]
+            else:
+                variants = [
+                    f"{value}って話は覚えてる。",
+                    f"前に{value}って言ってたのは覚えてるし。",
+                ]
+        elif kind == "spicy_dislike":
             variants = [
                 "辛いの嫌いって言ってただろ。麻辣鍋はやめとけ。",
                 "麻辣は無理だろ。辛いの苦手って言ってたし。",
@@ -13782,6 +13811,8 @@ class UruhaBrainV4_Mac:
 
     def _attach_memory_gravity(self, logic, user_input, memory_data):
         logic = logic or {}
+        if upg.is_grounding_shadow(logic):
+            return logic
         anchor = self._extract_actionable_memory_anchor(user_input, memory_data)
         if not anchor:
             logic.update(
@@ -14232,9 +14263,12 @@ class UruhaBrainV4_Mac:
             self._push_blackboard("route", "prediction_error_shock", shock_update, salience=0.98)
         self._push_blackboard("route", "high_low_router", route_info, salience=0.98)
 
+        grounded_profile_logic = upg.build_grounded_profile_logic(mems.get("profile_grounding_request"))
         if route_info.get("route") == "low_road":
             logic = self.left_brain._build_low_road_plan(user_input, self.psyche.get_state(), mems, route_info)
             print(Fore.MAGENTA + f"  [Router] low_road -> {route_info}")
+        elif grounded_profile_logic:
+            logic = grounded_profile_logic
         else:
             logic = self.left_brain.think(user_input, mems, psyche_before)
 
