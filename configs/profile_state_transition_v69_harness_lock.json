@@ -1,0 +1,110 @@
+{
+  "schema": "uruha_profile_state_transition_harness_lock_v69",
+  "experiment_id": "profile_state_transition_v69",
+  "created_at": "2026-07-18T14:27:48+09:00",
+  "harness_parent_commit": "52955e9f1e6ba0bc6902331c1c245f3de9d9526f",
+  "shadow_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "current_session_only_reference",
+    "matched_append_only_readback_control",
+    "typed_state_resolution_treatment"
+  ],
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/profile_state_transition_v69_preregistration.json",
+      "sha256": "4ff0aebdca136704e3fe1f2c52d79f4fe3837c8ba9b95e685c5d3ba85ea5d3fd"
+    },
+    "dataset_closure": {
+      "path": "configs/profile_state_transition_v69_dataset_closure.json",
+      "sha256": "c744e36552650ba1d18a8804efc24422c4e340124497ae0c16e378f878fba4b7"
+    },
+    "dataset": {
+      "path": "datasets/profile_state_transition_v69.json",
+      "sha256": "fd7836b5e5ef295dbdac7a72cb7c3075197dde596d28c0398c32a9600e19a9c5"
+    },
+    "dataset_auditor": {
+      "path": "audit_profile_state_transition_v69_dataset.py",
+      "sha256": "5553416458444a1fcaf543dccb6a60bd3b3ec1a29afa2ef67dbc5cdf74097fc7"
+    },
+    "dataset_audit": {
+      "path": "reports/profile_state_transition_v69_dataset_audit.json",
+      "sha256": "5377d58805c513a05460eb5bacc2020d62bc1d39b95eb124491f9762aae2c32f"
+    },
+    "dataset_test": {
+      "path": "test_profile_state_transition_v69_dataset.py",
+      "sha256": "b70c71597d0f0e69ab117e2efd97d4ed03124c7a5f4414ba37b269ce8804fa9f"
+    },
+    "unchanged_extractor_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "79cdd638436ccc4b86ced321b977425571a03b7408c55a8d5df1b5b5c5b4abdf"
+    },
+    "assertion_guard": {
+      "path": "uruha_profile_assertion.py",
+      "sha256": "1fd63e235d5600c4d7a67e1d4ed338e4760f066b4a4f4fcc26e27529225dec85"
+    },
+    "validity_resolver": {
+      "path": "uruha_memory_validity.py",
+      "sha256": "72ddba7d2d2814f20e8e2390d669f337d0a88c4e160b074d0f054b083259ac5a"
+    },
+    "assertion_prerequisite_test": {
+      "path": "test_profile_assertion_multilingual_boundary_regression.py",
+      "sha256": "9b03dc8e1f848f7552492bff87de8c6fa6b3f5bcf5633472fa4ea5fe12487452"
+    },
+    "candidate": {
+      "path": "uruha_profile_memory.py",
+      "sha256": "1ac053f41db576c5d17125c1e419f0ecbd4134ea864704ecb9b97ab69674215a"
+    },
+    "runner": {
+      "path": "run_profile_state_transition_v69.py",
+      "sha256": "9a4295f30b5acb9383fa7e81b8e5afc56c365c4a64f93cf47c5f01fa7f7845fc"
+    },
+    "analyzer": {
+      "path": "analyze_profile_state_transition_v69.py",
+      "sha256": "69201ecba6623a22e32152ab3a85dfadc4479921c6eeb41729913f3ae4f308cd"
+    },
+    "harness_test": {
+      "path": "test_profile_state_transition_v69_harness.py",
+      "sha256": "503dcd12d439ee2c1e96bfad76f0bd017ea118360112cdc22d9b94513d744722"
+    }
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_profile_state_transition_v69_dataset.py",
+      "test_profile_assertion_multilingual_boundary_regression.py",
+      "test_profile_state_transition_v69_harness.py"
+    ],
+    "expected_test_count": 17,
+    "must_pass_before_formal_run": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "shadow_execution_authorized": true,
+    "result_overwrite_authorized": false,
+    "language_model_inference_authorized": false,
+    "temporary_chroma_access_authorized": true,
+    "production_database_access_authorized": false,
+    "timing": {
+      "warmup_iterations_per_case": 100,
+      "scored_iterations_per_case": 1000
+    }
+  },
+  "result_artifacts": {
+    "raw": "reports/profile_state_transition_v69_raw.json",
+    "analysis_json": "reports/profile_state_transition_v69_analysis.json",
+    "analysis_markdown": "reports/profile_state_transition_v69_analysis.md",
+    "result_lock": "configs/profile_state_transition_v69_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "production_shadow_integration_authorized": false,
+  "production_database_migration_authorized": false,
+  "runtime_activation_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "Passing all gates authorizes only a fresh production shadow integration. It does not authorize production database migration, final-answer use, or direct runtime activation."
+}
