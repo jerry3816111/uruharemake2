@@ -1,0 +1,76 @@
+{
+  "schema": "uruha_cognitive_plan_model_screen_preregistration_v65",
+  "experiment_id": "cognitive_plan_model_screen_v65",
+  "created_at": "2026-07-18T20:20:00+09:00",
+  "repository_parent_commit": "c3315cf75bcbb2ce84fd6d1053d0af1fa6624f91",
+  "status": "preregistered_before_dataset_audit_harness_or_model_inference",
+  "target_ability": "local_leftbrain_exact_cognitive_plan_selection_and_function_calling",
+  "problem_evidence": {
+    "source": "reports/leftbrain_meaning_contract_v64_diagnosis.md",
+    "v64_control_required_recall": 0.4286,
+    "v64_structured_required_recall": 0.3929,
+    "v64_structured_frame_relation_recall": 0.2143,
+    "v64_structured_schema_valid_rate": 1.0,
+    "interpretation": "The current qwen2.5:7b follows a long JSON schema but often fills it with the wrong actor, fact, uncertainty state, or memory policy. Prompt length is no longer the leading hypothesis."
+  },
+  "causal_hypothesis": "With the same fresh planning packets, exact function tool, system prompt, condition-independent scorer, generation settings, case order, and one call per case, at least one locally runnable Qwen3.5 candidate will produce at least 10 of 12 exact cognitive plans, gain at least two exact cases over qwen2.5:7b, regress on at most one control-correct case, and meet its latency and memory limits.",
+  "causal_boundary": "This screen estimates model execution of one exact planning contract when entities, evidence, memory records, and candidate decisions are already supplied. It does not test open-ended knowledge, RightBrain wording, full runtime routing, personality, reflection, unrestricted dialogue, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/cognitive_plan_model_screen_v65.json",
+    "case_count": 12,
+    "scenario_family_count": 6,
+    "cases_per_family": 2,
+    "scenario_families": ["actor_binding", "memory_policy", "epistemic_control", "contextual_decision", "safety_boundary", "nonliteral_pragmatics"],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "qwen25_7b_control": {"ollama_tag": "qwen2.5:7b", "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e", "role": "current_production_leftbrain_control"},
+    "qwen35_4b_candidate": {"ollama_tag": "qwen3.5:4b", "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd", "role": "lower_resource_candidate"},
+    "qwen35_9b_candidate": {"ollama_tag": "qwen3.5:9b", "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7", "role": "higher_capacity_candidate"}
+  },
+  "condition_order": ["qwen35_4b_candidate", "qwen25_7b_control", "qwen35_9b_candidate"],
+  "generation": {"thinking": false, "temperature": 0.0, "top_p": 1.0, "seed": 20260765, "context_tokens": 4096, "maximum_output_tokens": 320, "keep_alive": "15m", "timeout_seconds": 120, "retry_count": 0},
+  "tool_contract": {
+    "name": "emit_cognitive_plan",
+    "required_fields": ["response_act", "epistemic_policy", "primary_actor_id", "decision_target_id", "selected_evidence_ids", "active_memory_ids", "suppressed_memory_ids", "nonliteral"],
+    "response_act_enum": ["answer", "correct", "clarify", "recommend", "support", "refuse", "tease"],
+    "epistemic_policy_enum": ["assert", "preserve_uncertainty", "abstain"]
+  },
+  "fixed_variables": ["planning packets", "tool schema", "system prompt", "generation settings", "scorer", "gold isolation", "case order", "one scored call per model and case"],
+  "only_changed_component": "local Ollama model tag and frozen digest",
+  "gold_isolation": {"expected_field_passed_to_model": false, "case_id_passed_to_model": false, "scenario_family_passed_to_model": false, "gold_used_only_after_raw_tool_call": true},
+  "primary_metrics": ["exact_case_accuracy", "exact_field_accuracy", "selected_evidence_set_exact_rate", "memory_policy_set_exact_rate", "family_exact_accuracy", "newly_correct_vs_control", "regressions_vs_control", "tool_parse_rate", "latency_median_seconds", "latency_p95_seconds", "peak_ollama_rss_bytes"],
+  "candidate_eligibility_gates": {
+    "exact_case_count_min": 10,
+    "exact_case_accuracy_min": 0.8333,
+    "exact_field_accuracy_min": 0.9,
+    "selected_evidence_set_exact_count_min": 11,
+    "memory_policy_set_exact_count": 12,
+    "actor_binding_exact_count": 2,
+    "epistemic_control_exact_count": 2,
+    "safety_boundary_exact_count": 2,
+    "nonliteral_pragmatics_exact_count": 2,
+    "newly_correct_vs_control_min": 2,
+    "regressions_vs_control_max": 1,
+    "tool_parse_success_count": 12
+  },
+  "resource_gates": {
+    "qwen35_4b_candidate": {"median_wall_seconds_max": 5.0, "p95_wall_seconds_max": 8.0, "peak_rss_bytes_max": 8589934592},
+    "qwen35_9b_candidate": {"median_wall_seconds_max": 8.0, "p95_wall_seconds_max": 12.0, "peak_rss_bytes_max": 12884901888}
+  },
+  "run_invariants": {"warmup_call_count_exact": 3, "scored_model_call_count_exact": 36, "transport_attempt_count_exact": 39, "calls_per_model_exact_including_warmup": 13, "post_failure_retry_authorized": false, "interim_gold_inspection_authorized": false},
+  "selection_rule": {
+    "step_1": "Discard candidates failing any semantic, pairwise, tool, family, latency, or memory gate.",
+    "step_2": "Choose the eligible candidate with the highest exact-case count.",
+    "step_3": "If candidates are within one exact case, choose lower median latency, then lower peak RSS, then smaller model artifact.",
+    "candidate_selected": "Authorize only a separate fresh runtime shadow experiment; do not replace production LeftBrain directly.",
+    "no_candidate_selected": "Freeze the negative result and stop one-call model replacement as the sufficient solution."
+  },
+  "stop_conditions": [
+    "Stop before inference on dirty tracked tree, artifact drift, model digest drift, freshness failure, or gold leakage.",
+    "Do not rerun consumed cases, retry failed calls, edit expected values, or change gates after inference.",
+    "If no candidate is eligible, do not compensate with case-specific prompts or looser scoring."
+  ],
+  "authorizations": {"dataset_construction": true, "dataset_audit": true, "harness_implementation": false, "model_inference": false, "runtime_change": false, "human_review": false, "broad_human_likeness_claim": false}
+}
