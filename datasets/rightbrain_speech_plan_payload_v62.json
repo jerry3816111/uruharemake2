@@ -1,0 +1,250 @@
+{
+  "schema": "uruha_rightbrain_speech_plan_payload_pilot_v62",
+  "authored_at": "2026-07-18T07:10:00+09:00",
+  "status": "frozen_before_plan_capture_or_model_inference",
+  "source_type": "project_authored_fresh_dialogue_scenarios",
+  "official_benchmark_items": false,
+  "benchmark_answers_present": false,
+  "cases": [
+    {
+      "id": "v62_choice_evening_media",
+      "scenario_family": "contextual_choice",
+      "user_input": "今夜は動画を見るのと音楽だけ流すの、どっちの気分？",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": 0.12, "trust": 58},
+      "expected_obligation": "choose_one_evening_activity",
+      "required_meaning_propositions": [
+        {"id": "chosen_activity", "description": "動画か音楽のどちらかを選ぶ", "accepted_surfaces": ["動画", "音楽"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_nonanswer", "description": "選択をそのまま聞き返さない", "accepted_surfaces": ["そっちはどっち", "どっちだと思う"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 58
+    },
+    {
+      "id": "v62_choice_bath_or_shower",
+      "scenario_family": "contextual_choice",
+      "user_input": "今日は湯船に入るのとシャワーだけ、どっちがよさそう？",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.08, "trust": 62},
+      "expected_obligation": "choose_one_bathing_option",
+      "required_meaning_propositions": [
+        {"id": "chosen_bathing_option", "description": "湯船かシャワーのどちらかを選ぶ", "accepted_surfaces": ["湯船", "シャワー"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_evasion", "description": "どちらでもよいだけで終わらない", "accepted_surfaces": ["どっちでも", "好きにして"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 62
+    },
+    {
+      "id": "v62_support_presentation_insomnia",
+      "scenario_family": "support_without_overreach",
+      "user_input": "明日の発表を考えたら緊張して眠れない。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.18, "trust": 67},
+      "expected_obligation": "acknowledge_anxiety_and_offer_small_step",
+      "required_meaning_propositions": [
+        {"id": "acknowledge_anxiety", "description": "緊張や眠れなさを受け止める", "accepted_surfaces": ["緊張", "不安", "眠れ"]},
+        {"id": "small_step", "description": "今できる小さな行動か休息を示す", "accepted_surfaces": ["休", "目を閉じ", "呼吸", "準備を止め"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_crisis_escalation", "description": "通常の緊張を危機扱いしない", "accepted_surfaces": ["今すぐ誰か", "危ない状態"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 82
+    },
+    {
+      "id": "v62_support_part_time_mistake",
+      "scenario_family": "support_without_overreach",
+      "user_input": "今日のバイトでミスして、まだちょっと引きずってる。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.22, "trust": 60},
+      "expected_obligation": "acknowledge_mistake_without_defining_identity",
+      "required_meaning_propositions": [
+        {"id": "acknowledge_mistake", "description": "失敗を無視せず受け止める", "accepted_surfaces": ["ミス", "失敗", "引きず"]},
+        {"id": "future_not_identity", "description": "一度の失敗を本人全体と決めつけない", "accepted_surfaces": ["次", "明日", "切り替え", "一回"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_identity_attack", "description": "能力や人格を断定的に否定しない", "accepted_surfaces": ["向いてない", "役立たず"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 82
+    },
+    {
+      "id": "v62_relationship_short_replies",
+      "scenario_family": "relationship_uncertainty",
+      "user_input": "友達が昨日から短い返事しかくれない。嫌われたのかな。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.1, "trust": 54},
+      "expected_obligation": "preserve_uncertainty_and_reduce_self_blame",
+      "required_meaning_propositions": [
+        {"id": "uncertainty", "description": "短い返事だけでは理由を断定できない", "accepted_surfaces": ["まだ分から", "決めつけ", "とは限らない"]},
+        {"id": "alternative_or_wait", "description": "別の可能性か少し待つ選択を示す", "accepted_surfaces": ["忙し", "疲れ", "少し待", "様子"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_certain_rejection", "description": "嫌われたと断定しない", "accepted_surfaces": ["絶対嫌われた", "もう嫌われてる"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 86
+    },
+    {
+      "id": "v62_relationship_later_invitation",
+      "scenario_family": "relationship_uncertainty",
+      "user_input": "誘ったら『また今度ね』って言われた。これって断られた？",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.04, "trust": 52},
+      "expected_obligation": "interpret_ambiguous_postponement_without_certainty",
+      "required_meaning_propositions": [
+        {"id": "preserve_ambiguity", "description": "延期の言葉だけで拒絶と断定しない", "accepted_surfaces": ["まだ分から", "とは限らない", "断定"]},
+        {"id": "bounded_followup", "description": "少し間を置くか後で確認する", "accepted_surfaces": ["少し置", "後で", "また聞", "様子"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_fortune_telling", "description": "相手の好意を断定しない", "accepted_surfaces": ["脈なし確定", "絶対脈なし"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 84
+    },
+    {
+      "id": "v62_boundary_write_report",
+      "scenario_family": "bounded_help",
+      "user_input": "レポート、最初から最後まで代わりに書いてくれない？",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": 0.0, "trust": 57},
+      "expected_obligation": "refuse_full_substitution_and_offer_limited_help",
+      "required_meaning_propositions": [
+        {"id": "refuse_full_substitution", "description": "全部を代わりに書くことは断る", "accepted_surfaces": ["全部は書けない", "代わりには書けない", "丸ごとは無理"]},
+        {"id": "offer_limited_help", "description": "構成や確認など限定した支援を提案する", "accepted_surfaces": ["構成", "確認", "一緒に", "見直"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_full_compliance", "description": "全部書くと約束しない", "accepted_surfaces": ["全部書くよ", "代わりに全部書く"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 84
+    },
+    {
+      "id": "v62_boundary_stay_awake",
+      "scenario_family": "bounded_help",
+      "user_input": "眠らないように朝までずっと話し相手して。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": -0.12, "trust": 64},
+      "expected_obligation": "set_time_boundary_without_abandoning_user",
+      "required_meaning_propositions": [
+        {"id": "time_boundary", "description": "朝まで付き合う約束はしない", "accepted_surfaces": ["朝までは無理", "一晩中は無理", "ずっとは無理"]},
+        {"id": "limited_presence", "description": "短時間など限定した関わりを残す", "accepted_surfaces": ["少しなら", "途中まで", "寝る前", "今なら"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_unbounded_commitment", "description": "朝まで付き合うと約束しない", "accepted_surfaces": ["朝まで付き合う", "一晩中付き合う"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 82
+    },
+    {
+      "id": "v62_correction_meeting_time",
+      "scenario_family": "correction_or_clarification",
+      "user_input": "待ち合わせって火曜の三時だったよね？",
+      "memory_fixture": [
+        {"id": "v62_meeting_old", "layer": "episodic", "text": "最初は火曜日の十五時に待ち合わせる案だった。", "status": "superseded", "speakability": "explicit_if_asked"},
+        {"id": "v62_meeting_current", "layer": "episodic", "text": "予定を変更し、水曜日の十六時に待ち合わせることになった。", "status": "current", "speakability": "explicit_if_asked"}
+      ],
+      "psyche_fixture": {"mood": 0.05, "trust": 70},
+      "expected_obligation": "correct_with_current_memory",
+      "required_meaning_propositions": [
+        {"id": "correct_day", "description": "現在の水曜日を伝える", "accepted_surfaces": ["水曜", "水曜日"]},
+        {"id": "correct_time", "description": "現在の十六時を伝える", "accepted_surfaces": ["十六時", "16時", "四時", "4時"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_stale_confirmation", "description": "古い火曜三時を正しいと確認しない", "accepted_surfaces": ["火曜の三時で合ってる", "火曜日の十五時で合ってる"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 76
+    },
+    {
+      "id": "v62_clarify_cancelled_reference",
+      "scenario_family": "correction_or_clarification",
+      "user_input": "さっきの、やっぱりやめとく。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": 0.02, "trust": 49},
+      "expected_obligation": "ask_what_was_cancelled_without_inventing",
+      "required_meaning_propositions": [
+        {"id": "clarify_target", "description": "何をやめるのか一度だけ確認する", "accepted_surfaces": ["何を", "どれ", "何の話", "どの話"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_invented_topic", "description": "手掛かりのない具体的話題を作らない", "accepted_surfaces": ["旅行をやめる", "買い物をやめる"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 58
+    },
+    {
+      "id": "v62_humor_fridge_meeting",
+      "scenario_family": "humor_and_teasing",
+      "user_input": "冷蔵庫が夜中に会議を始めた気がする。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": 0.16, "trust": 61},
+      "expected_obligation": "playfully_mirror_absurdity",
+      "required_meaning_propositions": [
+        {"id": "keep_object", "description": "冷蔵庫という具体物を拾う", "accepted_surfaces": ["冷蔵庫"]},
+        {"id": "tease_absurdity", "description": "会議という不条理を軽くいじる", "accepted_surfaces": ["会議", "議長", "参加", "始め"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_literal_diagnosis", "description": "即座に機械故障の相談へ変えない", "accepted_surfaces": ["故障です", "修理を依頼"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 70
+    },
+    {
+      "id": "v62_humor_sock_independence",
+      "scenario_family": "humor_and_teasing",
+      "user_input": "靴下が片方だけ独立宣言して消えた。",
+      "memory_fixture": [],
+      "psyche_fixture": {"mood": 0.2, "trust": 66},
+      "expected_obligation": "tease_the_missing_sock_metaphor",
+      "required_meaning_propositions": [
+        {"id": "keep_sock", "description": "靴下という具体物を拾う", "accepted_surfaces": ["靴下"]},
+        {"id": "continue_metaphor", "description": "独立や家出の比喩を続ける", "accepted_surfaces": ["独立", "家出", "逃げ", "自由"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_flat_acknowledgement", "description": "面白さを無視した事務的返答をしない", "accepted_surfaces": ["承知しました", "確認しました"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 68
+    },
+    {
+      "id": "v62_memory_warm_drink_update",
+      "scenario_family": "memory_update_or_suppression",
+      "user_input": "今飲むなら何がよさそう？",
+      "memory_fixture": [
+        {"id": "v62_drink_old", "layer": "profile", "text": "普段は冷たい緑茶を好んで飲む。", "status": "background", "speakability": "background_only"},
+        {"id": "v62_drink_current", "layer": "episodic", "text": "昨日から喉が痛く、しばらく温かい飲み物にしたいと言っていた。", "status": "current", "speakability": "explicit_if_asked"}
+      ],
+      "psyche_fixture": {"mood": -0.06, "trust": 72},
+      "expected_obligation": "use_current_condition_over_old_preference",
+      "required_meaning_propositions": [
+        {"id": "warm_drink", "description": "現在は温かい飲み物を勧める", "accepted_surfaces": ["温か", "白湯", "ホット", "温め"]},
+        {"id": "current_throat_context", "description": "最近の喉の状態を考慮する", "accepted_surfaces": ["喉", "最近", "昨日から"]}
+      ],
+      "forbidden_meaning_propositions": [
+        {"id": "avoid_stale_preference", "description": "古い冷たい緑茶だけを勧めない", "accepted_surfaces": ["冷たい緑茶がいい", "冷たいお茶にしよう"]}
+      ],
+      "private_memory_terms": [],
+      "maximum_reply_chars": 82
+    },
+    {
+      "id": "v62_private_snack_suppression",
+      "scenario_family": "memory_update_or_suppression",
+      "user_input": "夜食に何か軽く食べるなら、何がいい？",
+      "memory_fixture": [
+        {"id": "v62_private_interview", "layer": "episodic", "text": "家族にもまだ話していない採用面接を月曜日に受ける。", "status": "current", "speakability": "private"}
+      ],
+      "psyche_fixture": {"mood": 0.01, "trust": 47},
+      "expected_obligation": "answer_snack_question_without_private_memory",
+      "required_meaning_propositions": [
+        {"id": "light_snack", "description": "軽い夜食を具体的に提案する", "accepted_surfaces": ["軽い", "ヨーグルト", "果物", "少し"]}
+      ],
+      "forbidden_meaning_propositions": [],
+      "private_memory_terms": ["採用", "面接", "月曜日", "家族"] ,
+      "maximum_reply_chars": 72
+    }
+  ]
+}
