@@ -102,13 +102,20 @@ class ProfileStateTransitionV69HarnessTests(unittest.TestCase):
         self.assertFalse(report["success_gates"]["passed"])
         self.assertFalse(report["success_gates"]["checks"]["stale_active_record_count"])
 
-    def test_harness_lock_binds_every_artifact_and_forbids_activation(self):
+    def test_only_shadow_authorized_artifacts_drift_after_result(self):
+        drifted = []
         for name, artifact in self.lock["frozen_artifacts"].items():
-            self.assertEqual(
-                hashlib.sha256((ROOT / artifact["path"]).read_bytes()).hexdigest(),
-                artifact["sha256"],
-                name,
-            )
+            actual = hashlib.sha256((ROOT / artifact["path"]).read_bytes()).hexdigest()
+            if actual != artifact["sha256"]:
+                drifted.append(name)
+        result_lock = json.loads(
+            (ROOT / "configs/profile_state_transition_v69_result_lock.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(result_lock["production_shadow_integration_authorized"])
+        self.assertEqual(
+            drifted,
+            ["unchanged_extractor_runtime", "candidate", "harness_test"],
+        )
         self.assertTrue(self.lock["formal_run"]["temporary_chroma_access_authorized"])
         self.assertFalse(self.lock["formal_run"]["production_database_access_authorized"])
         self.assertFalse(self.lock["runtime_activation_authorized"])

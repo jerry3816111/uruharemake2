@@ -6,6 +6,8 @@ import hashlib
 import re
 import unicodedata
 
+from uruha_memory_validity import VALIDITY_FIELDS, resolve_memory_validity
+
 
 PREFERENCE_FACT_TYPES = frozenset({"favorite", "like", "dislike"})
 
@@ -84,3 +86,40 @@ def read_profile_candidates(collection):
         }
         for index, (memory_id, document, metadata) in enumerate(zip(ids, documents, metadatas))
     ]
+
+
+def profile_state_shadow_snapshot(collection, *, reference_time):
+    """Observe persistent profile state without feeding it into answer generation."""
+    candidates = read_profile_candidates(collection)
+    resolved = resolve_memory_validity(candidates, reference_time=reference_time)
+    decisions = resolved["decisions"]
+    typed_ids = {
+        row["memory_id"]
+        for row in candidates
+        if any(field in row["metadata"] for field in VALIDITY_FIELDS)
+    }
+    invalid_typed_ids = {
+        memory_id
+        for memory_id, decision in decisions.items()
+        if decision["reason"] == "invalid_contract_fail_open"
+    }
+    eligible_ids = {row["memory_id"] for row in resolved["eligible_candidates"]}
+    return {
+        "status": "observed",
+        "shadow_only": True,
+        "affects_working_memory": False,
+        "answer_use_authorized": False,
+        "reference_time": str(reference_time),
+        "candidate_count": len(candidates),
+        "typed_candidate_count": len(typed_ids),
+        "legacy_candidate_count": len(candidates) - len(typed_ids),
+        "invalid_typed_candidate_count": len(invalid_typed_ids),
+        "active_ids": [row["memory_id"] for row in resolved["eligible_candidates"]],
+        "typed_active_ids": sorted((eligible_ids & typed_ids) - invalid_typed_ids),
+        "legacy_eligible_ids": sorted(eligible_ids - typed_ids),
+        "historical_ids": [row["memory_id"] for row in resolved["historical_candidates"]],
+        "inapplicable_ids": [row["memory_id"] for row in resolved["inapplicable_candidates"]],
+        "decision_reasons": {
+            memory_id: decision["reason"] for memory_id, decision in decisions.items()
+        },
+    }

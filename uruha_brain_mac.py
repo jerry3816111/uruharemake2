@@ -50,6 +50,7 @@ from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
 import uruha_profile_assertion as upa
+import uruha_profile_memory as upm
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
@@ -380,6 +381,13 @@ class MemoryManager:
         self._last_maintenance_result = None
         self._last_saved_episode_id = None
         self._last_reflection_result = None
+        self._last_profile_state_shadow = {
+            "status": "not_refreshed",
+            "shadow_only": True,
+            "affects_working_memory": False,
+            "answer_use_authorized": False,
+        }
+        self._refresh_profile_state_shadow()
 
     def clear_session_state(self):
         self.session_turns = []
@@ -396,6 +404,7 @@ class MemoryManager:
         self._last_maintenance_result = None
         self._last_saved_episode_id = None
         self._last_reflection_result = None
+        self._refresh_profile_state_shadow()
 
     def query_all_layers(self, text):
         self._decay_short_term_memory()
@@ -441,6 +450,18 @@ class MemoryManager:
             "last_maintenance_result": self._last_maintenance_result,
             "last_saved_episode_id": self._last_saved_episode_id,
             "last_reflection_result": deepcopy(self._last_reflection_result),
+            "profile_state_shadow": deepcopy(
+                getattr(
+                    self,
+                    "_last_profile_state_shadow",
+                    {
+                        "status": "not_refreshed",
+                        "shadow_only": True,
+                        "affects_working_memory": False,
+                        "answer_use_authorized": False,
+                    },
+                )
+            ),
         }
 
     def _safe_query(self, collection, text, default_val):
@@ -647,6 +668,23 @@ class MemoryManager:
     def _recent_dialogue_summary(self):
         return umr.recent_dialogue_summary(self.session_turns)
 
+    def _refresh_profile_state_shadow(self, reference_time=None):
+        reference_time = reference_time or datetime.datetime.now().astimezone().isoformat(timespec="microseconds")
+        try:
+            self._last_profile_state_shadow = upm.profile_state_shadow_snapshot(
+                self.profile_col,
+                reference_time=reference_time,
+            )
+        except Exception as exc:
+            self._last_profile_state_shadow = {
+                "status": "unavailable",
+                "shadow_only": True,
+                "affects_working_memory": False,
+                "answer_use_authorized": False,
+                "error_type": type(exc).__name__,
+            }
+        return deepcopy(self._last_profile_state_shadow)
+
     def _clean_fact_value(self, value):
         value = umr.clean_fact_value(value)
         value = re.sub(r"\b(?:anymore|now)$", "", value, flags=re.IGNORECASE).strip()
@@ -700,7 +738,9 @@ class MemoryManager:
         return upa.filter_profile_facts_by_assertion_scope(text, deduped[:3])
 
     def _remember_profile_facts(self, user_input):
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.datetime.now().astimezone().isoformat(timespec="microseconds")
+        wrote_profile = False
+
         def normalized(value):
             return self._clean_fact_value(value).lower()
 
@@ -732,22 +772,24 @@ class MemoryManager:
                 forget_current_preference(value)
                 remember_recent_first("dislikes", value)
             try:
-                self.profile_col.add(
-                    documents=[f"FactType={fact_type} | Value={value}"],
-                    ids=[str(uuid.uuid4())],
-                    metadatas=[
-                        {
-                            "fact_type": fact_type,
-                            "value": value,
-                            "timestamp": timestamp,
-                            "last_accessed_at": timestamp,
-                            "decay_flag": False,
-                            "decay_multiplier": 1.0,
-                        }
-                    ],
+                memory_id = str(uuid.uuid4())
+                record = upm.compile_profile_memory_record(
+                    fact_type,
+                    value,
+                    timestamp=timestamp,
+                    memory_id=memory_id,
+                    typed_state=True,
                 )
+                self.profile_col.add(
+                    documents=[record["document"]],
+                    ids=[record["memory_id"]],
+                    metadatas=[record["metadata"]],
+                )
+                wrote_profile = True
             except Exception:
                 pass
+        if wrote_profile:
+            self._refresh_profile_state_shadow(reference_time=timestamp)
 
     def _should_reflect_user_fact(self, user_input):
         return urr.classify_reflection_type(user_input) != "none"
