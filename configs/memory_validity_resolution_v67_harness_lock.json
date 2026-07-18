@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_memory_validity_resolution_harness_lock_v67",
+  "experiment_id": "memory_validity_resolution_v67",
+  "created_at": "2026-07-18T13:46:04+09:00",
+  "harness_parent_commit": "27fe8bb",
+  "pilot_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "current_all_candidates_eligible_control",
+    "generic_validity_resolver_treatment"
+  ],
+  "frozen_artifacts": {
+    "preregistration": {"path": "configs/memory_validity_resolution_v67_preregistration.json", "sha256": "4edea85f1a818ca57d7fb347031767ce2a11c2488cbb6b61edca293f6fb6515e"},
+    "dataset_closure": {"path": "configs/memory_validity_resolution_v67_dataset_closure.json", "sha256": "84cd43502d3157bea1f97603071479fc0c2e642d157a8a0e6c68be163f89fb54"},
+    "dataset": {"path": "datasets/memory_validity_resolution_v67.json", "sha256": "f426e3d3a4f677b680832c5dfa1c8cc6f1871d3e1fb9f4f49127068d6587d6a9"},
+    "dataset_auditor": {"path": "audit_memory_validity_resolution_v67_dataset.py", "sha256": "bc36cca2ff3d2fdf1c89636cfa3c4b52dddec5ec693ec17b7534d536f7f5e86b"},
+    "dataset_audit": {"path": "reports/memory_validity_resolution_v67_dataset_audit.json", "sha256": "021b9ca0fac0a933ea5c8496e2beadc963c7265347ff503cffb22885cf8fc496"},
+    "dataset_test": {"path": "test_memory_validity_resolution_v67_dataset.py", "sha256": "c1a470d6d51a82a4a3c2b868cb3dec5255f9173084d38ff926d58d4f434ca4bc"},
+    "unchanged_salience_runtime": {"path": "uruha_memory_runtime.py", "sha256": "54829d7d0cb9f90c768630ded358923f25bb6ca6eaeda0b84362e634cdc055d0"},
+    "candidate": {"path": "uruha_memory_validity.py", "sha256": "72ddba7d2d2814f20e8e2390d669f337d0a88c4e160b074d0f054b083259ac5a"},
+    "runner": {"path": "run_memory_validity_resolution_v67.py", "sha256": "0cb123f1ba04cab6ad36626ca88ba531b3f9ec101a573f80064bff2d5cee0931"},
+    "analyzer": {"path": "analyze_memory_validity_resolution_v67.py", "sha256": "9744f93c6e395dec02163604408859f959e1e02066923efe5b178333dcb12455"},
+    "harness_test": {"path": "test_memory_validity_resolution_v67_harness.py", "sha256": "91f401c6f0f9fa58dec4187c7684feac3ed08a2bac0f45c0d6afe50ed34d444f"}
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_memory_validity_resolution_v67_dataset.py",
+      "test_memory_validity_resolution_v67_harness.py"
+    ],
+    "expected_test_count": 12,
+    "must_pass_before_formal_run": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "pilot_execution_authorized": true,
+    "result_overwrite_authorized": false,
+    "language_model_inference_authorized": false,
+    "production_runtime_read_or_write_authorized": false,
+    "timing": {
+      "warmup_iterations_per_case": 100,
+      "scored_iterations_per_case": 1000
+    }
+  },
+  "result_artifacts": {
+    "raw": "reports/memory_validity_resolution_v67_raw.json",
+    "analysis_json": "reports/memory_validity_resolution_v67_analysis.json",
+    "analysis_markdown": "reports/memory_validity_resolution_v67_analysis.md",
+    "result_lock": "configs/memory_validity_resolution_v67_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "runtime_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "Passing all gates authorizes only a fresh production-compatible shadow integration; it does not authorize persistent writes or direct runtime activation."
+}
