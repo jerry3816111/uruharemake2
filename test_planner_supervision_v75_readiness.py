@@ -90,6 +90,24 @@ class PlannerSupervisionV75ReadinessTests(unittest.TestCase):
         row["provenance"]["benchmark_origin"] = "formal_holdout"
         self.assertFalse(audit_module._complete_provenance(row, self.contract))
 
+    def test_duplicate_identity_includes_context_not_only_utterance(self):
+        first = {
+            "input": {
+                "user_utterance": "前の話を覚えてる？",
+                "language": "ja",
+                "recent_dialogue": [],
+                "working_memory": [{"memory_id": "m1"}],
+                "psyche_state": {"mood": 0, "trust": 50},
+                "relationship_state": {"trust": 50},
+            }
+        }
+        second = json.loads(json.dumps(first, ensure_ascii=False))
+        second["input"]["working_memory"] = [{"memory_id": "m2"}]
+        self.assertNotEqual(
+            audit_module._training_example_fingerprint(first),
+            audit_module._training_example_fingerprint(second),
+        )
+
     def test_runtime_does_not_contain_v75_experiment_code(self):
         runtime = (ROOT / "uruha_brain_mac.py").read_text(encoding="utf-8")
         self.assertNotIn("planner_supervision_v75", runtime)
