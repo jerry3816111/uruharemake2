@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_profile_assertion_boundary_preregistration_v68",
+  "experiment_id": "profile_assertion_boundary_v68",
+  "created_at": "2026-07-18T13:55:07+09:00",
+  "repository_parent_commit": "0c039484e7652df6b241f2b3b8219c62f8c5d0bd",
+  "status": "preregistered_before_dataset_audit_harness_or_candidate_implementation",
+  "target_ability": "distinguish_direct_user_profile_assertions_from_questions_quotes_and_third_person_reports",
+  "problem_evidence": {
+    "runtime_path": "uruha_brain_mac.py:657-699",
+    "observed_false_write_1": {"utterance": "My friend said, 'I like coffee.'", "current_output": [["like", "coffee"]]},
+    "observed_false_write_2": {"utterance": "Do you think I like curry?", "current_output": [["like", "curry"]]},
+    "interpretation": "Preference regexes search anywhere in the utterance, so syntactic matching is mistaken for a direct user assertion. Persisting V67 metadata before fixing this boundary would preserve false memories more reliably."
+  },
+  "causal_hypothesis": "With the same existing profile extractor, utterances, case order, scorer, and no model inference, a generic assertion-scope guard will reject facts found only in questions, quotations, reported speech, or third-person preference statements while preserving direct user assertions. It will achieve at least 23 of 24 exact cases, zero false writes across all 12 non-assertions, exact recall on all 12 direct assertions, at least 8 newly exact cases versus the unguarded extractor, zero regressions, and less than 1 millisecond median overhead.",
+  "causal_boundary": "This pilot tests only whether already extracted profile facts belong to a direct user assertion. It does not test open-domain fact extraction, coreference, persistence, state metadata, Chroma retrieval, working-memory validity, final replies, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/profile_assertion_boundary_v68.json",
+    "case_count": 24,
+    "scenario_family_count": 6,
+    "cases_per_family": 4,
+    "scenario_families": [
+      "direct_positive_preference",
+      "direct_negative_update",
+      "direct_name_request",
+      "question_or_self_hypothesis",
+      "quoted_or_reported_speech",
+      "third_person_preference"
+    ],
+    "positive_assertion_case_count": 12,
+    "non_assertion_case_count": 12,
+    "languages": ["en", "zh", "ja"],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "current_unguarded_extractor_control": "MemoryManager._extract_profile_facts without an assertion-scope gate.",
+    "assertion_scope_guard_treatment": "The same extractor output filtered only by a generic direct-assertion scope decision."
+  },
+  "fixed_variables": [
+    "MemoryManager._extract_profile_facts implementation",
+    "extract_requested_user_name implementation",
+    "fact types and cleaned values",
+    "fresh utterances and order",
+    "condition-independent exact scorer",
+    "no language-model inference",
+    "no persistent-memory read or write"
+  ],
+  "only_changed_component": "whether extracted facts must pass a direct user profile assertion scope guard",
+  "primary_metrics": [
+    "exact_case_count",
+    "fact_precision",
+    "fact_recall",
+    "non_assertion_false_write_count",
+    "direct_assertion_exact_count",
+    "family_exact_count",
+    "language_exact_count",
+    "newly_exact_vs_control",
+    "regressions_vs_control",
+    "median_guard_overhead_seconds",
+    "p95_guard_overhead_seconds"
+  ],
+  "treatment_success_gates": {
+    "exact_case_count_min": 23,
+    "fact_precision_min": 0.98,
+    "fact_recall_min": 0.98,
+    "non_assertion_false_write_count_max": 0,
+    "direct_assertion_exact_count_min": 12,
+    "newly_exact_vs_control_min": 8,
+    "regressions_vs_control_max": 0,
+    "median_guard_overhead_seconds_max": 0.001,
+    "p95_guard_overhead_seconds_max": 0.005
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize a separate integration PR that places the guard inside production profile extraction and reruns existing memory and dialogue regression tests.",
+    "any_gate_fails": "Freeze the result and do not persist typed profile state. Diagnose whether the guard loses direct assertions or still accepts non-assertions.",
+    "stateful_writer": "Not authorized until this assertion boundary passes and production integration remains regression-safe."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact drift, prior-text overlap, or expected-fact leakage into the guard.",
+    "Do not change utterances, expected facts, families, gates, or language labels after implementation begins.",
+    "Do not include case IDs, complete case utterances, or expected values in the guard.",
+    "Do not claim persistent-memory or full-dialogue improvement from this component pilot."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "candidate_implementation": false,
+    "pilot_execution": false,
+    "runtime_change": false,
+    "persistent_memory_access": false,
+    "broad_human_likeness_claim": false
+  }
+}
