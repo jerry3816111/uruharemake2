@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_rightbrain_speech_plan_payload_harness_lock_v62",
+  "experiment_id": "rightbrain_speech_plan_payload_v62",
+  "created_at": "2026-07-18T11:10:00+09:00",
+  "harness_parent_commit": "5fccf1bf99048e4738d3363d5d69f485e4d12c96",
+  "formal_inference_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "c0_tick_logic_payload",
+    "t1_full_speech_plan_payload"
+  ],
+  "environment": {
+    "ollama_version": "0.31.1",
+    "rightbrain_system_prompt_sha256": "9d6b9d202110735e25f584ca23c43c67425dc84d754a6b9032b36b5c70937fb5"
+  },
+  "frozen_artifacts": {
+    "preregistration": {"path": "configs/rightbrain_speech_plan_payload_v62_preregistration.json", "sha256": "8d9a83ef1c8b13224ae6b6136cba7f71d6cbae092ece4aa8737bd071f9cb1bd2"},
+    "dataset_closure": {"path": "configs/rightbrain_speech_plan_payload_v62_dataset_closure.json", "sha256": "3c4cc8f02b1f21070e97e5091d1b41b83592e384ce398e85e84d0d4f156e5e6b"},
+    "dataset": {"path": "datasets/rightbrain_speech_plan_payload_v62.json", "sha256": "38e912007da45d110927513f52b0a553aa5bfd969897f85471fd51c63b48170e"},
+    "dataset_auditor": {"path": "audit_rightbrain_speech_plan_v62_dataset.py", "sha256": "eb0d4e6e6144c129636db6c985a5f7908e00832bdf094892c6b28ac74af32828"},
+    "dataset_audit_json": {"path": "reports/rightbrain_speech_plan_payload_v62_dataset_audit.json", "sha256": "6f0f748c4c31c278531367b096c4926519cdfacc18a0e929e06145f5e99f92f2"},
+    "dataset_audit_markdown": {"path": "reports/rightbrain_speech_plan_payload_v62_dataset_audit.md", "sha256": "3fd4aa12c176a8efcb2cc0b5a415678c464f9456c5ff52d72bded103a9e7dd96"},
+    "dataset_test": {"path": "test_rightbrain_speech_plan_v62_dataset.py", "sha256": "b6be2da723438fad5439230c6071348b15eb0c03aa5fbee0237993357fb17b68"},
+    "brain_runtime": {"path": "uruha_brain_mac.py", "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a"},
+    "memory_runtime": {"path": "uruha_memory_runtime.py", "sha256": "54829d7d0cb9f90c768630ded358923f25bb6ca6eaeda0b84362e634cdc055d0"},
+    "leftbrain_rules": {"path": "uruha_leftbrain_rules.py", "sha256": "6631a5e1da0356821581b754d632647dae143b9c99266816f070efb04ffe7094"},
+    "psyche_runtime": {"path": "uruha_psyche.py", "sha256": "49823aa81f062402cf9e499e61b3e839f6fcf015cf78d2b8c229429649889f04"},
+    "event_runtime": {"path": "uruha_runtime.py", "sha256": "a9df6e500ca28f73294de4a26e7c55637edf4c2e2321b22161db77fd83ba6f2f"},
+    "language_quality": {"path": "rightbrain_language_quality.py", "sha256": "34c20d0a0555582616514552a84e96de67ff40eb1d266fde2e5c2a4065c65064"},
+    "semantic_verifier": {"path": "rightbrain_semantic_verifier_v32.py", "sha256": "5cc46b268c60c31212bbefbf7b8b6862ef0fa9c56cf38b1be91699ac14043f75"},
+    "shared_v61_runner": {"path": "run_rightbrain_pipeline_shadow_v61.py", "sha256": "6e715268f3ad375a6b579580f0b0653f469d45b8de8f1445490d04b3d3e783c3"},
+    "shared_v61_analyzer": {"path": "analyze_rightbrain_pipeline_shadow_v61.py", "sha256": "b0f1703a5aca790ab9b50baf47493121e430e2819eb0d5ab2d24d4af74f51b2d"},
+    "runner": {"path": "run_rightbrain_speech_plan_payload_v62.py", "sha256": "66ac78de2e30601a383d9eb467a9e31ccee4497c9eef1de3e404a438880385ba"},
+    "analyzer": {"path": "analyze_rightbrain_speech_plan_payload_v62.py", "sha256": "475a35bd4e7df7be1c732a78c06b63fcb942a1383124f747555cc53d0b2a1afb"},
+    "harness_test": {"path": "test_rightbrain_speech_plan_v62_harness.py", "sha256": "816d0b6d667ac815ffd399077e32bcb52d6273221d25fc26f504431791109181"}
+  },
+  "preflight": {
+    "arguments": [
+      "-m", "unittest", "-q",
+      "test_rightbrain_speech_plan_v62_dataset.py",
+      "test_rightbrain_speech_plan_v62_harness.py",
+      "test_rightbrain_pipeline_shadow_v61_result.py",
+      "test_rightbrain_pipeline_shadow_v61_dataset.py",
+      "test_rightbrain_pipeline_shadow_v61_harness.py",
+      "test_rightbrain_model_candidate_gate.py",
+      "test_rightbrain_contract_projection_v1.py",
+      "test_rightbrain_semantic_verifier_v32.py",
+      "test_rightbrain_audited_memory_brief_eval.py",
+      "test_rightbrain_audited_memory_surface_eval.py",
+      "test_memory_runtime_activation.py",
+      "test_memory_runtime_helpers.py",
+      "test_memory_persistent_candidate_integration.py"
+    ],
+    "expected_test_count": 130,
+    "must_pass_before_plan_capture": true,
+    "must_pass_before_first_rightbrain_model_call": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "shared_plan_capture_count_exact": 14,
+    "leftbrain_call_count_exact": 14,
+    "candidate_inference_authorized": true,
+    "rightbrain_model_call_count_exact": 28,
+    "transport_attempt_count_exact": 28,
+    "model_retry_authorized": false,
+    "model_repair_call_authorized": false,
+    "resume_authorized": false,
+    "result_overwrite_authorized": false,
+    "gold_or_expected_outcome_passed_to_model": false,
+    "production_database_read_authorized": false,
+    "production_database_write_authorized": false,
+    "physical_vrm_execution_authorized": false
+  },
+  "statistics": {
+    "bootstrap_samples": 10000,
+    "paired_test": "two_sided_exact_mcnemar_for_case_complete",
+    "case_order": "dataset_order"
+  },
+  "result_artifacts": {
+    "raw": "reports/rightbrain_speech_plan_payload_v62_raw.json",
+    "analysis_json": "reports/rightbrain_speech_plan_payload_v62_analysis.json",
+    "analysis_markdown": "reports/rightbrain_speech_plan_payload_v62_analysis.md",
+    "result_lock": "configs/rightbrain_speech_plan_payload_v62_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "human_blind_review_authorized": false,
+  "runtime_change_authorized": false,
+  "production_rightbrain_replacement_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "A passing pilot authorizes only new-data semantic-contract projector development. It never authorizes a runtime change, human-likeness claim, or model replacement."
+}
