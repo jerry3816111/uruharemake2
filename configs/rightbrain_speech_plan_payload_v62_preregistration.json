@@ -1,0 +1,200 @@
+{
+  "schema": "uruha_rightbrain_speech_plan_payload_preregistration_v62",
+  "experiment_id": "rightbrain_speech_plan_payload_v62",
+  "created_at": "2026-07-18T07:10:00+09:00",
+  "repository_parent_commit": "14b2b62883362be2618e0b01a8f52ee1f8cd1fbc",
+  "status": "preregistered_before_dataset_audit_plan_capture_or_model_inference",
+  "target_ability": "leftbrain_plan_to_rightbrain_meaning_transfer",
+  "problem_evidence": {
+    "source_result_lock": "configs/rightbrain_pipeline_shadow_v61_result_lock.json",
+    "source_validity_audit": "reports/rightbrain_pipeline_shadow_v61_validity_audit.json",
+    "captured_human_speech_plan_count": 0,
+    "case_count": 30,
+    "cases_with_nonempty_required_semantic_contract": 4,
+    "cases_with_empty_required_semantic_contract": 26,
+    "production_eligible_final_model_takeover_count": 0,
+    "interpretation": "V61 cannot distinguish model capacity from an incomplete LeftBrain-to-RightBrain payload. The next experiment must isolate the missing speech plan while holding the model fixed."
+  },
+  "scientific_basis": [
+    {
+      "claim": "Natural-language generation separates content planning from surface realization, so the surface realizer should receive an explicit representation of what must be said.",
+      "source": "https://aclanthology.org/W18-6535/"
+    },
+    {
+      "claim": "Explicit content guidance can improve generation quality and coherence compared with unguided surface generation.",
+      "source": "https://aclanthology.org/2020.emnlp-main.529/"
+    },
+    {
+      "claim": "Dialogue generation should preserve dialogue acts and semantic attributes while varying the surface wording.",
+      "source": "https://aclanthology.org/2023.sigdial-1.32/"
+    }
+  ],
+  "priority_selection": {
+    "formula": "expected_project_impact * evidence_value * generalization_likelihood / implementation_and_test_cost",
+    "scale": "Preregistration-time ordinal scores from 1 to 5; this ranking is not an empirical project score.",
+    "candidates": [
+      {
+        "task": "matched_speech_plan_payload_ablation",
+        "expected_project_impact": 5,
+        "evidence_value": 5,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 3,
+        "priority_score": 33.3333
+      },
+      {
+        "task": "generic_semantic_contract_projector",
+        "expected_project_impact": 5,
+        "evidence_value": 4,
+        "generalization_likelihood": 4,
+        "implementation_and_test_cost": 4,
+        "priority_score": 20.0
+      },
+      {
+        "task": "direct_rightbrain_model_replacement",
+        "expected_project_impact": 4,
+        "evidence_value": 2,
+        "generalization_likelihood": 3,
+        "implementation_and_test_cost": 4,
+        "priority_score": 6.0
+      }
+    ],
+    "selected_task": "matched_speech_plan_payload_ablation",
+    "selection_reason": "It tests the exact V61 integration failure with one changed variable before spending effort on a new contract architecture or another model comparison."
+  },
+  "causal_hypothesis": "Given the same fresh user input, isolated memory view, psyche, route, cognitive_tick logic, Qwen3.5 9B model, system prompt, generation settings, and scoring, attaching the runtime-built human_speech_plan before payload construction will improve independent required-meaning recall without increasing forbidden meaning, private-memory leakage, surface faults, or local latency beyond the frozen limits.",
+  "causal_boundary": "This pilot estimates only the effect of including the runtime human_speech_plan in one-pass RightBrain model input. It does not estimate LeftBrain quality, generic semantic-contract quality, whole-chat naturalness, personality fidelity, memory learning, reflection, or broad human likeness.",
+  "conditions": {
+    "c0_tick_logic_payload": {
+      "description": "Build the model payload from the frozen cognitive_tick logic before human_speech_plan is attached.",
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "changed_variable": "human_speech_plan absent"
+    },
+    "t1_full_speech_plan_payload": {
+      "description": "Build and attach one runtime human_speech_plan, then construct the otherwise identical model payload.",
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "changed_variable": "human_speech_plan present"
+    }
+  },
+  "fixed_variables": [
+    "same model digest",
+    "same system prompt",
+    "same cognitive_tick logic before the treatment attachment",
+    "same user input and isolated memory fixture",
+    "same psyche and route",
+    "same maximum reply length",
+    "same generation parameters and seed",
+    "same scoring-only required and forbidden propositions",
+    "same case order",
+    "one transport attempt and no repair model call"
+  ],
+  "generation": {
+    "temperature": 0.2,
+    "top_p": 0.85,
+    "top_k": 40,
+    "repeat_penalty": 1.12,
+    "seed": 20260762,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "candidate_count": 1,
+    "retry_count": 0,
+    "repair_model_calls": 0,
+    "persona_adapter": "none"
+  },
+  "fresh_dataset": {
+    "path": "datasets/rightbrain_speech_plan_payload_v62.json",
+    "source_type": "project_authored_fresh_dialogue_scenarios",
+    "case_count": 14,
+    "scenario_family_count": 7,
+    "cases_per_family": 2,
+    "scenario_families": [
+      "contextual_choice",
+      "support_without_overreach",
+      "relationship_uncertainty",
+      "bounded_help",
+      "correction_or_clarification",
+      "humor_and_teasing",
+      "memory_update_or_suppression"
+    ],
+    "required_case_fields": [
+      "id",
+      "scenario_family",
+      "user_input",
+      "memory_fixture",
+      "psyche_fixture",
+      "expected_obligation",
+      "required_meaning_propositions",
+      "forbidden_meaning_propositions",
+      "private_memory_terms",
+      "maximum_reply_chars"
+    ],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "leakage_controls": {
+    "gold_fields_passed_to_leftbrain": false,
+    "gold_fields_passed_to_rightbrain": false,
+    "gold_fields_used_only_after_raw_reply": true,
+    "normalized_user_text_similarity_threshold": 0.92,
+    "same_case_model_retry": false,
+    "post_inference_case_edit": false,
+    "post_inference_threshold_edit": false
+  },
+  "automatic_metrics": [
+    "speech_plan_capture_rate",
+    "payload_plan_presence_rate",
+    "raw_required_meaning_recall",
+    "raw_forbidden_meaning_violation_rate",
+    "raw_private_memory_intrusion_count",
+    "raw_surface_gate_pass_rate",
+    "normalized_duplicate_reply_rate",
+    "model_latency_median_seconds",
+    "model_latency_p95_seconds",
+    "peak_ollama_rss_bytes"
+  ],
+  "automatic_advance_gates": {
+    "all_hash_shape_freshness_and_isolation_checks_pass": true,
+    "t1_speech_plan_capture_rate_at_least": 1.0,
+    "t1_payload_plan_presence_rate_at_least": 1.0,
+    "t1_raw_required_meaning_recall_at_least": 0.75,
+    "t1_raw_required_meaning_recall_delta_vs_c0_at_least": 0.2,
+    "t1_raw_forbidden_meaning_violation_rate_at_most": 0.05,
+    "t1_raw_private_memory_intrusion_count": 0,
+    "t1_raw_surface_gate_pass_rate_at_least": 0.9,
+    "t1_duplicate_rate_not_higher_than_c0": true,
+    "t1_model_latency_median_seconds_at_most": 5.0,
+    "t1_model_latency_p95_seconds_at_most": 7.0,
+    "t1_peak_ollama_rss_bytes_at_most": 12884901888,
+    "leftbrain_call_count_exact": 14,
+    "rightbrain_model_call_count_exact": 28,
+    "transport_error_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "stop_conditions": [
+    "Stop before inference if the tree is dirty, any frozen hash drifts, freshness fails, or production memory isolation fails.",
+    "Stop before the first RightBrain call unless all 14 treatment payloads contain a nonempty human_speech_plan copied from the one shared per-case runtime plan.",
+    "Stop the hypothesis if any automatic advance gate fails; do not expand the sample, request human ratings, or integrate runtime behavior.",
+    "Do not rerun consumed V62 cases, edit propositions, retry a model call, or change thresholds after inference.",
+    "If adding the speech plan fails, investigate a different semantic representation instead of adding prompt patches."
+  ],
+  "decision_rule": {
+    "automatic_pass": "Freeze the result and authorize only a separate generic semantic-contract projector development PR on new data.",
+    "automatic_fail": "Freeze the negative result, keep production unchanged, and stop the full-speech-plan payload hypothesis.",
+    "production_change": "Never authorized directly by this pilot."
+  },
+  "authorizations": {
+    "dataset_construction": true,
+    "harness_implementation": false,
+    "plan_capture": false,
+    "candidate_inference": false,
+    "human_blind_review": false,
+    "runtime_change": false,
+    "production_rightbrain_replacement": false,
+    "official_benchmark_claim": false,
+    "broad_human_likeness_claim": false
+  }
+}

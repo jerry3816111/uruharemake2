@@ -1,0 +1,61 @@
+{
+  "schema": "uruha_rightbrain_speech_plan_payload_dataset_closure_v62",
+  "experiment_id": "rightbrain_speech_plan_payload_v62",
+  "closed_at": "2026-07-18T10:51:05+09:00",
+  "status": "fresh_pilot_construction_passed_before_plan_capture_or_inference",
+  "artifact_bindings": {
+    "preregistration": {
+      "path": "configs/rightbrain_speech_plan_payload_v62_preregistration.json",
+      "sha256": "8d9a83ef1c8b13224ae6b6136cba7f71d6cbae092ece4aa8737bd071f9cb1bd2"
+    },
+    "dataset": {
+      "path": "datasets/rightbrain_speech_plan_payload_v62.json",
+      "sha256": "38e912007da45d110927513f52b0a553aa5bfd969897f85471fd51c63b48170e"
+    },
+    "auditor": {
+      "path": "audit_rightbrain_speech_plan_v62_dataset.py",
+      "sha256": "eb0d4e6e6144c129636db6c985a5f7908e00832bdf094892c6b28ac74af32828"
+    },
+    "audit_json": {
+      "path": "reports/rightbrain_speech_plan_payload_v62_dataset_audit.json",
+      "sha256": "6f0f748c4c31c278531367b096c4926519cdfacc18a0e929e06145f5e99f92f2"
+    },
+    "audit_markdown": {
+      "path": "reports/rightbrain_speech_plan_payload_v62_dataset_audit.md",
+      "sha256": "3fd4aa12c176a8efcb2cc0b5a415678c464f9456c5ff52d72bded103a9e7dd96"
+    },
+    "test": {
+      "path": "test_rightbrain_speech_plan_v62_dataset.py",
+      "sha256": "b6be2da723438fad5439230c6071348b15eb0c03aa5fbee0237993357fb17b68"
+    }
+  },
+  "construction_result": {
+    "gate_passed": true,
+    "case_count": 14,
+    "scenario_family_count": 7,
+    "cases_per_family": 2,
+    "required_meaning_proposition_count": 24,
+    "forbidden_meaning_proposition_count": 13,
+    "memory_fixture_count": 5,
+    "prior_text_count_scanned": 342,
+    "internal_near_duplicate_count": 0,
+    "exact_prior_text_overlap_count": 0,
+    "external_near_duplicate_count": 0,
+    "leftbrain_plan_capture_count": 0,
+    "rightbrain_model_call_count": 0,
+    "human_rating_count": 0,
+    "production_database_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "decision": "authorize_separate_harness_lock_before_plan_capture",
+  "authorizations": {
+    "harness_implementation": true,
+    "plan_capture": false,
+    "candidate_inference": false,
+    "human_blind_review": false,
+    "runtime_change": false,
+    "production_rightbrain_replacement": false
+  },
+  "next_authorized_work": "Implement and test an isolated matched ablation harness that binds all construction hashes, attaches exactly one runtime human_speech_plan per case only in T1, passes no scoring gold to either model condition, and records no inference until a separate harness lock is merged.",
+  "evidence_boundary": "This closure establishes only structural completeness, family balance, and no detected exact or near-duplicate input overlap in the scanned prior sources. It contains no model output and cannot establish meaning transfer, naturalness, runtime readiness, or broad human likeness."
+}
