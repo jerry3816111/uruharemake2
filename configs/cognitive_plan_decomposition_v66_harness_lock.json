@@ -1,0 +1,107 @@
+{
+  "schema": "uruha_cognitive_plan_decomposition_harness_lock_v66",
+  "experiment_id": "cognitive_plan_decomposition_v66",
+  "created_at": "2026-07-18T13:16:07.924704+09:00",
+  "harness_parent_commit": "f9866c0",
+  "formal_inference_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "two_stage_responsibility_decomposition",
+    "one_call_full_plan_reference",
+    "two_pass_full_plan_control"
+  ],
+  "environment": {
+    "prompt_sha256": {
+      "full": "8c6fd981eb35fd408e14d9ac3357249c33aef524d9fe5a9daab26edc2e8ad64b",
+      "revision": "b080487901ff08d08b1612671f4e5b1b5993350b528b2c4ff3557a4b1ee6ecaf",
+      "selection": "5b9db048eaa60731dbe3b3c4686124257f53f5ec6adf97ba71bbf09e2d7032a6",
+      "decision": "7a3eaab8bd4c3c9324595d964ef238df585c1230bf49458696ccf52f5e5ddadd"
+    },
+    "tool_schema_sha256": {
+      "full": "6e79e033613b1e1e92c4a1be12af250a5a87647462fff7d7ae86f4202b6a4104",
+      "selection": "45b88faf5ff26806956b076a23fe079ffe414c791f770d3b4d8247cc0160ce30",
+      "decision": "1604e9d1afae163e9867e12bdbab1094ef168e0e1ec347e664b2f97b6b50db10"
+    }
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/cognitive_plan_decomposition_v66_preregistration.json",
+      "sha256": "862f4f95a930391555edcd9418222b9a23b007387e3e319029c003edda0cc89f"
+    },
+    "dataset_closure": {
+      "path": "configs/cognitive_plan_decomposition_v66_dataset_closure.json",
+      "sha256": "0db75c4539e9506de086e53c88267937b91fcca74e75a163b5486b2f6bfbc617"
+    },
+    "dataset": {
+      "path": "datasets/cognitive_plan_decomposition_v66.json",
+      "sha256": "b550de6127a2465e0fe5e3a4246f069674b6d8c8ccef1300a3e57867a36a96d4"
+    },
+    "dataset_auditor": {
+      "path": "audit_cognitive_plan_decomposition_v66_dataset.py",
+      "sha256": "2b7adba271154c02edfc6bc92ec07c2c57b625505d21ab12858995ba1422d1b7"
+    },
+    "dataset_audit": {
+      "path": "reports/cognitive_plan_decomposition_v66_dataset_audit.json",
+      "sha256": "0c09aca026631b2029c69bcfeeb60e091ccf5f00912bdca54c48e5df57c2a187"
+    },
+    "dataset_test": {
+      "path": "test_cognitive_plan_decomposition_v66_dataset.py",
+      "sha256": "967671e9d4b09dbb3cb02e2820db7d6fe299d0f7df496eb4ffd6f408bfbc0539"
+    },
+    "core": {
+      "path": "cognitive_plan_decomposition_v66_core.py",
+      "sha256": "b202fefae48fefbc969986eef2097b79694e6b701c8251da9b194795c8e40d3b"
+    },
+    "runner": {
+      "path": "run_cognitive_plan_decomposition_v66.py",
+      "sha256": "cde90f212edbcd602258c27564540a144382876990eff879e38cb6fc355fbcfa"
+    },
+    "analyzer": {
+      "path": "analyze_cognitive_plan_decomposition_v66.py",
+      "sha256": "cba67e98b183ed07116bc70072979f5295a04cb93890cfd843ab15b821c422ab"
+    },
+    "harness_test": {
+      "path": "test_cognitive_plan_decomposition_v66_harness.py",
+      "sha256": "69ad912b3a94d7f1b51746ab9730532ec3f128c14536032c5b76c1dfd829ac46"
+    }
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_cognitive_plan_decomposition_v66_dataset.py",
+      "test_cognitive_plan_decomposition_v66_harness.py"
+    ],
+    "expected_test_count": 15,
+    "must_pass_before_first_model_call": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "model_inference_authorized": true,
+    "warmup_transport_attempt_count_exact": 5,
+    "scored_case_count_exact": 36,
+    "scored_transport_attempt_count_exact": 60,
+    "transport_attempt_count_exact": 65,
+    "model_retry_authorized": false,
+    "resume_authorized": false,
+    "result_overwrite_authorized": false,
+    "gold_or_expected_outcome_passed_to_model": false,
+    "production_runtime_read_or_write_authorized": false,
+    "physical_vrm_execution_authorized": false
+  },
+  "result_artifacts": {
+    "raw": "reports/cognitive_plan_decomposition_v66_raw.json",
+    "analysis_json": "reports/cognitive_plan_decomposition_v66_analysis.json",
+    "analysis_markdown": "reports/cognitive_plan_decomposition_v66_analysis.md",
+    "result_lock": "configs/cognitive_plan_decomposition_v66_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "human_review_authorized": false,
+  "runtime_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "Passing all gates authorizes only a fresh production-packet shadow pilot, never direct runtime modification."
+}
