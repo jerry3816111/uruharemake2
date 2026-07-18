@@ -1,0 +1,150 @@
+{
+  "schema": "uruha_planner_model_compatibility_screen_v74",
+  "experiment_id": "planner_model_compatibility_v74",
+  "status": "stopped_before_preregistration_or_formal_holdout",
+  "evidence_class": "exploratory_transport_and_model_compatibility_screen",
+  "runtime_changed": false,
+  "formal_preregistration_created": false,
+  "formal_holdout_created": false,
+  "formal_inference_run": false,
+  "screen_question": "Can a locally installed Qwen3.5 model replace Qwen2.5 7B in the unchanged full LeftBrain contract while clearly reducing latency and preserving structured cognitive-plan quality?",
+  "hardware": {
+    "architecture": "arm64",
+    "memory_bytes": 34359738368,
+    "logical_cpu_count": 12,
+    "ollama_version": "0.31.1"
+  },
+  "research_basis": [
+    {
+      "source": "Qwen3.5-9B official model card",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/README.md",
+      "relevant_claim": "The model card reports 9B and 4B instruction-following results, non-thinking configuration, and agentic/tool-use support. These claims motivated local screening but were not treated as project evidence."
+    },
+    {
+      "source": "Qwen official function-calling guide",
+      "url": "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+      "relevant_claim": "Function-call formatting is not guaranteed and applications must validate malformed outputs."
+    }
+  ],
+  "model_inventory": [
+    {
+      "model": "qwen2.5:7b",
+      "ollama_id": "845dbda0ea48",
+      "parameter_count": "7.6B",
+      "quantization": "Q4_K_M",
+      "context_length": 32768
+    },
+    {
+      "model": "qwen3.5:4b",
+      "ollama_id": "2a654d98e6fb",
+      "parameter_count": "4.7B",
+      "quantization": "Q4_K_M",
+      "context_length": 262144
+    },
+    {
+      "model": "qwen3.5:9b",
+      "ollama_id": "6488c96fa5fa",
+      "parameter_count": "9.7B",
+      "quantization": "Q4_K_M",
+      "context_length": 262144
+    }
+  ],
+  "screen_input": {
+    "id": "v74_transport_probe_only",
+    "text": "午後の予定が急に空いた。まだ何をするか決めてない。",
+    "source": "researcher_authored_exploratory_probe",
+    "must_be_excluded_from_future_formal_holdouts": true,
+    "existing_rule_hit": false
+  },
+  "fixed_native_api_conditions": {
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "same_leftbrain_messages": true,
+    "same_full_three_candidate_contract": true,
+    "same_bdi_fields": true,
+    "same_multitick_normalizer": true,
+    "temperature": 0,
+    "seed": 20260774,
+    "num_predict": 3072,
+    "stream": false,
+    "qwen35_think": false
+  },
+  "matched_native_results": [
+    {
+      "model": "qwen2.5:7b",
+      "elapsed_seconds": 51.788,
+      "prompt_tokens": 1511,
+      "output_tokens": 1300,
+      "content_characters": 4004,
+      "json_parsed": true,
+      "candidate_count": 3,
+      "selected_intent": "提供帮助",
+      "selected_scene": "casual",
+      "selected_core_message_jp": "今何するか迷ってるんだね。",
+      "bdi_language": "zh",
+      "final_reply": "先に、今何するか迷ってるんだね。そのくらいでいいだろ。",
+      "quality_issues": [
+        "BDI fields were Chinese rather than Japanese",
+        "the final reply added a formulaic tail",
+        "the selected plan did not offer a useful response to the open afternoon"
+      ],
+      "screen_decision": "current_control_not_a_success_target"
+    },
+    {
+      "model": "qwen3.5:4b",
+      "elapsed_seconds": 22.293,
+      "prompt_tokens": 1594,
+      "output_tokens": 647,
+      "content_characters": 1708,
+      "json_parsed": true,
+      "candidate_count": 3,
+      "selected_intent": "chat",
+      "selected_scene": "casual",
+      "selected_core_message_jp": "じゃあ、俺とどこかで軽く飲む？それともただのんびりしてるだけいいや。",
+      "bdi_language": "missing_after_normalization",
+      "quality_issues": [
+        "used the wrong first-person form 俺",
+        "proposed an impossible physical drinking invitation",
+        "selected candidate BDI fields normalized to None"
+      ],
+      "screen_decision": "reject_quality_failure_despite_latency_gain"
+    },
+    {
+      "model": "qwen3.5:9b",
+      "elapsed_seconds": 57.995,
+      "prompt_tokens": 1594,
+      "output_tokens": 1113,
+      "content_characters": 2942,
+      "json_parsed": true,
+      "candidate_count": 3,
+      "selected_intent": "supportive_presence",
+      "selected_scene": "casual",
+      "selected_core_message_jp": "決まらなくてもいいよ。私はいつでもここにいるから、ゆっくり考えたりしててくれれば",
+      "bdi_language": "ja",
+      "quality_issues": [
+        "used the forbidden first-person form 私",
+        "latency was slower than the native Qwen2.5 7B control",
+        "the selected content was truncated and did not clearly improve task response quality"
+      ],
+      "screen_decision": "reject_no_local_latency_advantage_and_quality_not_clean"
+    }
+  ],
+  "transport_diagnostic": {
+    "reason_for_native_rerun": "The OpenAI-compatible Qwen3.5 4B call returned empty content after counting 2504 output tokens, so transport behavior could not be attributed to model quality.",
+    "openai_compatible_observations_seconds": {
+      "qwen2.5:7b": 62.421,
+      "qwen3.5:4b": 90.151,
+      "qwen3.5:9b": 104.319
+    },
+    "native_resolution": "Ollama native think=false produced non-thinking JSON content for both Qwen3.5 candidates, removing the empty-content confound."
+  },
+  "candidate_qualified_for_formal_test": null,
+  "stop_reason": "The 4B candidate was faster but violated persona, physical-action, and BDI contracts. The 9B candidate was slower than the current 7B control and still violated the first-person contract. No candidate justified a preregistered multi-case holdout.",
+  "decision": "reject_direct_qwen35_planner_model_swap",
+  "limitations": [
+    "Only one exploratory input was used; this is not an accuracy or quality estimate.",
+    "Full raw generations were inspected during execution but were not persisted; only bounded response fields and prefixes were retained in the execution record.",
+    "The screen does not evaluate fine-tuning, alternative quantization, speculative decoding, or a dedicated planner model.",
+    "The screen does not evaluate RightBrain model blending, memory, reflection, ToM, function calling, or VRM actions."
+  ],
+  "next_research_direction": "Audit whether the repository contains enough high-quality, provenance-safe speech-plan supervision to train or distill a dedicated local planner; do not perform training until data readiness is demonstrated."
+}
