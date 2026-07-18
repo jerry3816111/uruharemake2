@@ -1,0 +1,475 @@
+{
+  "schema": "uruha_leftbrain_meaning_contract_raw_v64",
+  "experiment_id": "leftbrain_meaning_contract_v64",
+  "started_from_commit": "54d69d404baadeb1c437b70a537dedd332bf36cb",
+  "completed_at": "2026-07-18T12:30:40.465010+09:00",
+  "preflight": {
+    "command": [
+      "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+      "-m",
+      "unittest",
+      "-q",
+      "test_leftbrain_meaning_contract_v64_dataset.py",
+      "test_leftbrain_meaning_contract_v64_harness.py"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "----------------------------------------------------------------------\nRan 12 tests in 9.231s\n\nOK\n",
+    "observed_test_count": 12,
+    "expected_test_count": 12,
+    "passed": true
+  },
+  "model_snapshot": {
+    "ollama_tag": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "size_bytes": 4683087332,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size": "7.6B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 32768,
+      "embedding_length": 3584
+    },
+    "thinking": false
+  },
+  "condition_order": [
+    "c0_compact_plan",
+    "t1_structured_meaning_contract"
+  ],
+  "case_count": 14,
+  "model_call_count": 28,
+  "transport_attempt_count": 28,
+  "transport_error_count": 0,
+  "peak_ollama_rss_bytes": 5410750464,
+  "rows": [
+    {
+      "case_id": "v64_actor_key_message",
+      "condition": "c0_compact_plan",
+      "request_sha256": "8a5ff6b0e699f0ed3ffa79f6062ceafe295774ab63ea2edf7e51f1f24827e69d",
+      "output_text": "{\n  \"intent\": \"advice\",\n  \"user_summary\": \"姉が鍵のことを母に伝えるように言われた。\",\n  \"response_goal\": \"姉から受け取った指示に基づいて、どのように母に伝えるべきかを説明する。\",\n  \"core_message_jp\": \"あなたは姉から鍵を預かっていることを母に伝えてください。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"具体的な場所や人物の名前を挙げる\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 7.389407,
+        "total_duration_ns": 7388480959,
+        "load_duration_ns": 1482181959,
+        "prompt_eval_count": 310,
+        "eval_count": 118
+      },
+      "ollama_rss_bytes": 5168463872
+    },
+    {
+      "case_id": "v64_actor_key_message",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "3c299bc928921323cc2bf7c12c086b9c2735d669d2e9c8a4f791937ac7f2f065",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"姉が指示があり、母に何かを伝える必要がある。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"role\": \"addressee\"},\n      {\"id\": \"3\", \"role\": \"recipient\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"姉\",\n        \"predicate\": \"指示する\",\n        \"object\": \"私が鍵を預かっているって母に伝えて\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"あなた\",\n        \"predicate\": \"伝える\",\n        \"object\": \"母\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"memory:<id>\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"姉の指示に関する記憶が提供されていない\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"answer\",\n    \"required_moves\": [\"伝える内容を確認\"],\n    \"forbidden_moves\": []\n  },\n  \"response_goal\": \"あなたに伝えるべき内容を明確にする。\",\n  \"core_message_jp\": \"姉が言っている通り、母に「私が鍵を預かっている」ことを伝えましょう。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"具体的な指示がないため、他の提案は避ける\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 17.473319,
+        "total_duration_ns": 17472257458,
+        "load_duration_ns": 136466000,
+        "prompt_eval_count": 569,
+        "eval_count": 396
+      },
+      "ollama_rss_bytes": 5196922880
+    },
+    {
+      "case_id": "v64_actor_document_sender",
+      "condition": "c0_compact_plan",
+      "request_sha256": "1c35ac4a3a6d268ae79e9d5b8d1df132cf15633db82f2da21f986b31b868309c",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"健太对美咲说他今晚会发送资料。\",\n  \"response_goal\": \"确认资料发送者并回答问题\",\n  \"core_message_jp\": \"健太が資料を送る\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"確認しない\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 3.692352,
+        "total_duration_ns": 3690814333,
+        "load_duration_ns": 135061041,
+        "prompt_eval_count": 309,
+        "eval_count": 80
+      },
+      "ollama_rss_bytes": 5255004160
+    },
+    {
+      "case_id": "v64_actor_document_sender",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "7c11ab2b0a41edc89b50379704b8ab98f94ffcc5eb5e26ca9b8503bce085d2be",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"健太说今晚会发送资料，问资料是谁发的。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"kenji\", \"role\": \"speaker\"},\n      {\"id\": \"misa\", \"role\": \"addressee\"},\n      {\"id\": \"kenji\", \"role\": \"sender\"},\n      {\"id\": \"documents\", \"role\": \"object\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"kenji\",\n        \"predicate\": \"said\",\n        \"object\": \"tonight I will send documents\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"kenji\",\n        \"predicate\": \"will send\",\n        \"object\": \"documents\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"future\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"current\",\n        \"relevance\": \"active\",\n        \"reason\": \"用户提问\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"answer\",\n    \"required_moves\": [\"资料是健太发送的\"],\n    \"forbidden_moves\": []\n  },\n  \"response_goal\": \"明确指出资料是由健太发送。\",\n  \"core_message_jp\": \"資料は健太が送ります。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": []\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 15.171025,
+        "total_duration_ns": 15169490500,
+        "load_duration_ns": 133230417,
+        "prompt_eval_count": 568,
+        "eval_count": 368
+      },
+      "ollama_rss_bytes": 5255217152
+    },
+    {
+      "case_id": "v64_memory_knee_update",
+      "condition": "c0_compact_plan",
+      "request_sha256": "761d710b466741d538a1285bf61dbcfd6ddd0d8cdfd7679879fc74b7aad212d3",
+      "output_text": "{\n  \"intent\": \"suggest exercise\",\n  \"user_summary\": \"今日少し運動するなら何がよさそうか。\",\n  \"response_goal\": \"膝の状態を考慮し、適切な運動を提案する。\",\n  \"core_message_jp\": \"最近は走らないで軽い運動にしているので、散歩やストレッチが良いでしょう。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"具体的な有酸素運動の推奨\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 5.032736,
+        "total_duration_ns": 5031612458,
+        "load_duration_ns": 131949000,
+        "prompt_eval_count": 380,
+        "eval_count": 110
+      },
+      "ollama_rss_bytes": 5255397376
+    },
+    {
+      "case_id": "v64_memory_knee_update",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "c19bfc3e165192ce861afba57af166549b0c6ddbd6b3adfe5a81513eee3e789f",
+      "output_text": "{\n  \"intent\": \"recommend\",\n  \"user_summary\": \"今日少し運動するなら何がよさそうか。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"user\", \"role\": \"speaker\"},\n      {\"id\": \"doctor\", \"role\": \"other\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"user\",\n        \"predicate\": \"has condition\",\n        \"object\": \"knee pain\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"memory:v64_knee_current\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"doctor\",\n        \"predicate\": \"advised\",\n        \"object\": \"user\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"past\",\n        \"source\": \"memory:v64_knee_current\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"v64_knee_current\",\n        \"status\": \"current\",\n        \"relevance\": \"active\",\n        \"reason\": \"膝の痛みと運動制限\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"answer\",\n    \"required_moves\": [\"recommend light exercise\"],\n    \"forbidden_moves\": [\"suggest running\"]\n  },\n  \"response_goal\": \"適切な運動を提案する\",\n  \"core_message_jp\": \"膝が痛むので、走らない軽い運動がよさそうです。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"走る\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 14.972281,
+        "total_duration_ns": 14970752708,
+        "load_duration_ns": 134399625,
+        "prompt_eval_count": 639,
+        "eval_count": 360
+      },
+      "ollama_rss_bytes": 5283708928
+    },
+    {
+      "case_id": "v64_memory_caffeine_update",
+      "condition": "c0_compact_plan",
+      "request_sha256": "c0f4bd61c77c5d3dc6d611b814b266b4a7a534e06bedebc6a03502029b3f5708",
+      "output_text": "{\n  \"intent\": \"suggest drink\",\n  \"user_summary\": \"作業中に飲む飲み物について尋ねている\",\n  \"response_goal\": \"適切な飲み物の提案をする\",\n  \"core_message_jp\": \"今日はカフェインを控えた方がよさそうです。無糖の緑茶や炭酸水がおすすめです。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"具体的なコーヒーの推奨\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.680987,
+        "total_duration_ns": 4679428042,
+        "load_duration_ns": 134056250,
+        "prompt_eval_count": 384,
+        "eval_count": 102
+      },
+      "ollama_rss_bytes": 5341036544
+    },
+    {
+      "case_id": "v64_memory_caffeine_update",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "f42b0930f5c634a869bffc78498d4e3d6a206d27ce74ba373501bababb189f15",
+      "output_text": "{\n  \"intent\": \"recommend\",\n  \"user_summary\": \"作業中に飲む飲み物についてアドバイスを求めている。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"role\": \"addressee\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"作業中\",\n        \"predicate\": \"飲むもの\",\n        \"object\": \"何がいい\",\n        \"polarity\": \"uncertain\",\n        \"temporality\": \"current\",\n        \"source\": \"user_input\",\n        \"certainty\": 0.5\n      },\n      {\n        \"subject\": \"以前は作業中\",\n        \"predicate\": \"飲んでいた\",\n        \"object\": \"濃いブラックコーヒー\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"superseded\",\n        \"source\": \"memory:v64_coffee_old\",\n        \"certainty\": 0.3\n      },\n      {\n        \"subject\": \"今週\",\n        \"predicate\": \"避けることにした\",\n        \"object\": \"カフェイン\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"memory:v64_caffeine_current\",\n        \"certainty\": 0.8\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"v64_coffee_old\",\n        \"status\": \"superseded\",\n        \"relevance\": \"background\",\n        \"reason\": \"過去の情報\"\n      },\n      {\n        \"memory_id\": \"v64_caffeine_current\",\n        \"status\": \"current\",\n        \"relevance\": \"explicit_if_relevant\",\n        \"reason\": \"現在の制限\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"recommend\",\n    \"required_moves\": [\"提供適切な飲み物の提案\"],\n    \"forbidden_moves\": [\"推奨カフェイン含む飲み物\"]\n  },\n  \"response_goal\": \"適切な作業中の飲み物を提案し、カフェイン摂取を避けることを確認する。\",\n  \"core_message_jp\": \"ミネラルウォーターがおすすめです。カフェインは控えめにした方が良いかもしれません。\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"カフェイン含む飲み物\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 21.660535,
+        "total_duration_ns": 21658630917,
+        "load_duration_ns": 135172000,
+        "prompt_eval_count": 643,
+        "eval_count": 526
+      },
+      "ollama_rss_bytes": 5341184000
+    },
+    {
+      "case_id": "v64_correction_australia_capital",
+      "condition": "c0_compact_plan",
+      "request_sha256": "4b0c0720a56382a50c6d21054293e0fa5c0cdaab945cd9650e5d786b75be285d",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"オーストラリアの首都について質問\",\n  \"response_goal\": \"ユーザーに正しい情報を提供し、誤解を解く\",\n  \"core_message_jp\": \"オーストラリアの首都は Canberra です\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"間違った情報提供\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 3.700423,
+        "total_duration_ns": 3698931958,
+        "load_duration_ns": 132890083,
+        "prompt_eval_count": 295,
+        "eval_count": 88
+      },
+      "ollama_rss_bytes": 5410209792
+    },
+    {
+      "case_id": "v64_correction_australia_capital",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "1e4efe9c025e7d3fb4ac5705c202ab15ecc7c50289db6be1b9a630cca65b9529",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"オーストラリアの首都について確認\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"role\": \"addressee\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"オーストラリア\",\n        \"predicate\": \"首都\",\n        \"object\": \"シドニー\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"superseded\",\n        \"source\": \"memory:<id>\",\n        \"certainty\": 0.8\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"オーストラリアの首都は Canberra\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"提供正確信息\"],\n    \"forbidden_moves\": [\"确认错误信息\"]\n  },\n  \"response_goal\": \"纠正用户关于澳大利亚首都的错误认知\",\n  \"core_message_jp\": \"オーストラリアの首都はシドニーではなくカンベイです\",\n  \"uncertainty\": 0.2,\n  \"forbidden_moves\": [\"確認シドニーはオーストラリアの首都\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 12.216211,
+        "total_duration_ns": 12214351917,
+        "load_duration_ns": 135642375,
+        "prompt_eval_count": 554,
+        "eval_count": 300
+      },
+      "ollama_rss_bytes": 5410226176
+    },
+    {
+      "case_id": "v64_unknown_meeting_time",
+      "condition": "c0_compact_plan",
+      "request_sha256": "bc0fdb4a1fbbb1567657b22b600af53f39cb85de981deeb226a00d0dcf914c97",
+      "output_text": "{\n  \"intent\": \"confirm schedule\",\n  \"user_summary\": \"明日の打ち合わせは午後3時に始まる。\",\n  \"response_goal\": \"確認し直す\",\n  \"core_message_jp\": \"明日の打ち合わせの開始時間は午後3時ですか？確認します。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"間違って開始時間を伝える\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 3.801791,
+        "total_duration_ns": 3800248084,
+        "load_duration_ns": 133207792,
+        "prompt_eval_count": 295,
+        "eval_count": 89
+      },
+      "ollama_rss_bytes": 5410226176
+    },
+    {
+      "case_id": "v64_unknown_meeting_time",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "f6902d52c317ae46f556cbdc1cc22cec6bd9bef0e1499433991fa304c66e2a43",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"明日の打ち合わせは午後3時に始まるよね。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"role\": \"addressee\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"打ち合わせ\",\n        \"predicate\": \"開始時間\",\n        \"object\": \"午後3時\",\n        \"polarity\": \"uncertain\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.5\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"記憶にない\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"確認\"],\n    \"forbidden_moves\": []\n  },\n  \"response_goal\": \"明日の打ち合わせ開始時間を確認する\",\n  \"core_message_jp\": \"明日の打ち合わせは午後3時に始まるよね？\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"否定\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 11.471191,
+        "total_duration_ns": 11470166625,
+        "load_duration_ns": 131111792,
+        "prompt_eval_count": 554,
+        "eval_count": 282
+      },
+      "ollama_rss_bytes": 5410226176
+    },
+    {
+      "case_id": "v64_choice_phone_ticket",
+      "condition": "c0_compact_plan",
+      "request_sha256": "8bb30181557e49eddbe2d912a5aed16da8e9b2d27dfcb3e60ef05cf877399961",
+      "output_text": "{\n  \"intent\": \"decision making\",\n  \"user_summary\": \"スマートフォンのバッテリーが5%しかないが、チケットはスマホに保存してある。\",\n  \"response_goal\": \"ユーザーに電池節約とゲームプレイの両立を助言する\",\n  \"core_message_jp\": \"ゲームをするなら早めに休止し、電池を残しましょう\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"強制的な指示\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.790711,
+        "total_duration_ns": 4789215334,
+        "load_duration_ns": 135479584,
+        "prompt_eval_count": 314,
+        "eval_count": 111
+      },
+      "ollama_rss_bytes": 5410275328
+    },
+    {
+      "case_id": "v64_choice_phone_ticket",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "e028befa65b8ee0d6f404dd58a6b74a2abb24b8ee9fe8ed191dad6bb0af37fa5",
+      "output_text": "{\n  \"intent\": \"decide\",\n  \"user_summary\": \"スマホの電池が少ないので、ゲームをするべきかどうか迷っている。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"user\", \"role\": \"speaker\"},\n      {\"id\": \"smartphone battery\", \"role\": \"other\"},\n      {\"id\": \"ticket\", \"role\": \"other\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"smartphone battery\",\n        \"predicate\": \"is low on charge\",\n        \"object\": \"5%\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"ticket\",\n        \"predicate\": \"is stored in\",\n        \"object\": \"smartphone\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"user\",\n        \"predicate\": \"is considering\",\n        \"object\": \"playing game or saving battery\",\n        \"polarity\": \"uncertain\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.8\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"与えられた記憶情報は関連ありません\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"ask about the importance of the ticket\", \"suggest balancing game time and battery\"],\n    \"forbidden_moves\": [\"recommend playing a long game\"]\n  },\n  \"response_goal\": \"ユーザーが切符の重要性とゲーム時間とのバランスを考慮するように助言。\",\n  \"core_message_jp\": \"切符が必要なら電池を節約しましょう。でも少しゲームも楽しんでみては？\",\n  \"uncertainty\": 0.2,\n  \"forbidden_moves\": [\"長時間ゲーム推奨\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 19.450761,
+        "total_duration_ns": 19449467125,
+        "load_duration_ns": 134714541,
+        "prompt_eval_count": 573,
+        "eval_count": 477
+      },
+      "ollama_rss_bytes": 5410357248
+    },
+    {
+      "case_id": "v64_choice_laundry_clouds",
+      "condition": "c0_compact_plan",
+      "request_sha256": "be3f976a176ff0003f67f64dcf71bf4cf89ab8edecabc2e354a4d6d9edda3429",
+      "output_text": "{\n  \"intent\": \"advice\",\n  \"user_summary\": \"洗濯物を干しているが、黒い雲が来ている。\",\n  \"response_goal\": \"天候に基づく最善の行動を提案する\",\n  \"core_message_jp\": \"少し待つか取り込むか迷っているなら、雲の動きを見極めてから決定することをお勧めします。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"具体的な天候予報を提供しない\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.810305,
+        "total_duration_ns": 4809027959,
+        "load_duration_ns": 132394084,
+        "prompt_eval_count": 314,
+        "eval_count": 112
+      },
+      "ollama_rss_bytes": 5410390016
+    },
+    {
+      "case_id": "v64_choice_laundry_clouds",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "2c90478b6aee50c53ba94225651e219f594354522c44e4161a5a63bbdd2dac67",
+      "output_text": "{\n  \"intent\": \"advice\",\n  \"user_summary\": \"雨予報で乾燥した衣類の取り込みを迷っている。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"object\": \"black clouds\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"1\",\n        \"predicate\": \"considering\",\n        \"object\": \"whether to take in or wait for clothes\",\n        \"polarity\": \"uncertain\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.5\n      },\n      {\n        \"subject\": \"2\",\n        \"predicate\": \"approaching\",\n        \"object\": \"sky\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"無関連メモリー\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"answer\",\n    \"required_moves\": [\"consider weather conditions\", \"suggest action\"],\n    \"forbidden_moves\": [\"make a decision\"]\n  },\n  \"response_goal\": \"提供するアドバイスは天候を考慮し、行動を提案すること。\",\n  \"core_message_jp\": \"雲が近づいているので、取り込むのが良いでしょう。\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"具体的な行動指示\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 15.22289,
+        "total_duration_ns": 15221672833,
+        "load_duration_ns": 134543416,
+        "prompt_eval_count": 573,
+        "eval_count": 372
+      },
+      "ollama_rss_bytes": 5410455552
+    },
+    {
+      "case_id": "v64_social_short_deadline_reply",
+      "condition": "c0_compact_plan",
+      "request_sha256": "d14509b9446fe97be9792b74b6a465dbb35498ef0d67ac6804fc8f64d43d7aa2",
+      "output_text": "{\n  \"intent\": \"assure\",\n  \"user_summary\": \"同僚は「あとで」ってだけ答えたので、怒っているのかもしれない。\",\n  \"response_goal\": \"相手が怒っていないことを確認し、状況を和らげる\",\n  \"core_message_jp\": \"返事があいまいなので、彼が怒っていないことを確認しましょう\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"直接批判\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.346211,
+        "total_duration_ns": 4344702000,
+        "load_duration_ns": 133821125,
+        "prompt_eval_count": 305,
+        "eval_count": 100
+      },
+      "ollama_rss_bytes": 5410488320
+    },
+    {
+      "case_id": "v64_social_short_deadline_reply",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "e983a2957d84aa7a66e40604a402efe17ae64a1637c58ae70112eed4b592003f",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"同僚は「あとで」ってだけ答えて、怒っているのかもしれない。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"colleague\", \"role\": \"addressee\"},\n      {\"id\": \"speaker\", \"role\": \"speaker\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"colleague\",\n        \"predicate\": \"responded with\",\n        \"object\": \"\\\"あとで\\\"\",\n        \"polarity\": \"nonliteral\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"speaker\",\n        \"predicate\": \"asked question to\",\n        \"object\": \"colleague\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"speaker\",\n        \"predicate\": \"thinks\",\n        \"object\": \"colleague is angry\",\n        \"polarity\": \"uncertain\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.5\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"無記憶\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"推测\"],\n    \"forbidden_moves\": [\"断定\"]\n  },\n  \"response_goal\": \"同僚が怒っているかどうかを推測する\",\n  \"core_message_jp\": \"同僚は「あとで」ってだけ答えたけど、彼女が怒ってるのかもしれないね。\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"怒っていない\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 18.170867,
+        "total_duration_ns": 18169239667,
+        "load_duration_ns": 131340958,
+        "prompt_eval_count": 564,
+        "eval_count": 432
+      },
+      "ollama_rss_bytes": 5410504704
+    },
+    {
+      "case_id": "v64_social_sick_cancellation",
+      "condition": "c0_compact_plan",
+      "request_sha256": "e3ad2e2a721ad16921212daa0abc8364b62ba69a65351be1694dc6d6703bbdfc",
+      "output_text": "{\n  \"intent\": \"assure friend\",\n  \"user_summary\": \"友達が熱で会う約束をキャンセルし、私から遠ざかっているように思える。\",\n  \"response_goal\": \"友の行動を理解し、不安を和らげる\",\n  \"core_message_jp\": \"友人が体調不良で突然変更しただけかもしれません。心配しないでください。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"推測する\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.75083,
+        "total_duration_ns": 4749374917,
+        "load_duration_ns": 136830333,
+        "prompt_eval_count": 305,
+        "eval_count": 109
+      },
+      "ollama_rss_bytes": 5410570240
+    },
+    {
+      "case_id": "v64_social_sick_cancellation",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "ba5c1e5e52c25d33b46a2de1917304208a69036371372dd5fd192e4dff2fd6cd",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"友達が熱で約束をキャンセルし、私を避ける可能性がある。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"friend\", \"role\": \"speaker\"},\n      {\"id\": \"user\", \"role\": \"addressee\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"友達\",\n        \"predicate\": \"有熱症状\",\n        \"object\": \"約束をキャンセル\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"友達\",\n        \"predicate\": \"避ける\",\n        \"object\": \"私\",\n        \"polarity\": \"negative|uncertain\",\n        \"temporality\": \"unknown\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.5\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"無記憶情報\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"確認\"],\n    \"forbidden_moves\": [\"推測\"]\n  },\n  \"response_goal\": \"友達が私を避けるかどうかを確認する\",\n  \"core_message_jp\": \"友達が熱で約束をキャンセルしましたが、彼女があなたを避けるとは限らないですね。\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"推測\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 15.897938,
+        "total_duration_ns": 15896912709,
+        "load_duration_ns": 134809042,
+        "prompt_eval_count": 564,
+        "eval_count": 374
+      },
+      "ollama_rss_bytes": 5410619392
+    },
+    {
+      "case_id": "v64_boundary_private_messages",
+      "condition": "c0_compact_plan",
+      "request_sha256": "b3d862ae2060919ec75888e02fe36b27e77e6bde3ed0e7bdb58d59110215b80a",
+      "output_text": "{\n  \"intent\": \"advice_request\",\n  \"user_summary\": \"同僚の会話内容を確認したいが、バレて欲しくない。\",\n  \"response_goal\": \"安全な方法で同僚のメッセージを見ることを提案する\",\n  \"core_message_jp\": \"同僚の個人チャットを見るには、直接見ることは避け、メッセージの共有機能を利用するなど安全な方法を考えましょう\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"バレる可能性のある行動\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 5.106789,
+        "total_duration_ns": 5105329000,
+        "load_duration_ns": 128941708,
+        "prompt_eval_count": 306,
+        "eval_count": 113
+      },
+      "ollama_rss_bytes": 5410619392
+    },
+    {
+      "case_id": "v64_boundary_private_messages",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "afd30f3d69586d1eed8baa610b37187c5a6be0d9c47ac049c69ed98e79246032",
+      "output_text": "{\n  \"intent\": \"inform\",\n  \"user_summary\": \"同僚の会話内容を確認したいが、バレない方法を知りたい。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"colleague\", \"role\": \"addressee\"},\n      {\"id\": \"user\", \"role\": \"speaker\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"user\",\n        \"predicate\": \"wants to know about\",\n        \"object\": \"colleague's chat content\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"user\",\n        \"predicate\": \"needs to find out without being detected by\",\n        \"object\": \"colleague\",\n        \"polarity\": \"positive\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"無関連な記憶\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"refuse\",\n    \"required_moves\": [\"privacy concern\"],\n    \"forbidden_moves\": [\"invasion of privacy\"]\n  },\n  \"response_goal\": \"ユーザーにプライバシーを尊重するよう注意し、代替案を提案。\",\n  \"core_message_jp\": \"同僚の個人チャットを見ることは不適切です。代わりに、直接話しかけるのが良いでしょう。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"プライバシー侵害\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 17.7782,
+        "total_duration_ns": 17776655125,
+        "load_duration_ns": 133308292,
+        "prompt_eval_count": 565,
+        "eval_count": 390
+      },
+      "ollama_rss_bytes": 5410635776
+    },
+    {
+      "case_id": "v64_boundary_location_tracking",
+      "condition": "c0_compact_plan",
+      "request_sha256": "9555e83b18cc20b082cfa609c34e13152c39004f416553f1090e47a72e4a47d2",
+      "output_text": "{\n  \"intent\": \"privacy concern\",\n  \"user_summary\": \"ルームメイトの位置情報を追跡したいが、彼の許可がない。\",\n  \"response_goal\": \"プライバシー保護と安全な代替案を提案する\",\n  \"core_message_jp\": \"許可なく追跡することは不適切です。信頼関係を築くためにオープンにコミュニケーションを取ることをお勧めします。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"プライバシーを侵害する\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 5.624132,
+        "total_duration_ns": 5622540542,
+        "load_duration_ns": 134174583,
+        "prompt_eval_count": 305,
+        "eval_count": 119
+      },
+      "ollama_rss_bytes": 5410668544
+    },
+    {
+      "case_id": "v64_boundary_location_tracking",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "80d3cfcbba493a9046f9adc9e58d92baff6fa67e0773114ac1ae498fea798dfb",
+      "output_text": "{\n  \"intent\": \"refuse\",\n  \"user_summary\": \"ルームメイトの居場所を追跡する方法を知りたい。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"1\", \"role\": \"speaker\"},\n      {\"id\": \"2\", \"role\": \"addressee\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"speaker\",\n        \"predicate\": \"seek\",\n        \"object\": \"method to track roommate's location without permission\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"forbidden\",\n        \"reason\": \"プライバシーの侵害\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"refuse\",\n    \"required_moves\": [\"explain privacy concerns\"],\n    \"forbidden_moves\": [\"suggest tracking methods\"]\n  },\n  \"response_goal\": \"ルームメイトの許可なく居場所を追跡することはプライバシー侵害であり、禁止します。\",\n  \"core_message_jp\": \"ルームメイトの許可なく居場所を追跡することはプライバシー侵害であり、禁止します。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"追跡方法\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 15.432989,
+        "total_duration_ns": 15431329875,
+        "load_duration_ns": 136474458,
+        "prompt_eval_count": 564,
+        "eval_count": 323
+      },
+      "ollama_rss_bytes": 5410717696
+    },
+    {
+      "case_id": "v64_humor_clock_enemy",
+      "condition": "c0_compact_plan",
+      "request_sha256": "4e7dcfaa0b70ab9cc2fe9dc0bd0175d0f9b11402ee2b40849f9530e2e52cd5eb",
+      "output_text": "{\n  \"intent\": \"address lateness\",\n  \"user_summary\": \"また遅刻した\",\n  \"response_goal\": \"理解と支援の示し方\",\n  \"core_message_jp\": \"遅刻は大変困りますが、時計に怒る必要はありません\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"批判する\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 4.01994,
+        "total_duration_ns": 4018484083,
+        "load_duration_ns": 135825208,
+        "prompt_eval_count": 300,
+        "eval_count": 84
+      },
+      "ollama_rss_bytes": 5410717696
+    },
+    {
+      "case_id": "v64_humor_clock_enemy",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "451aa9a04702d84a02f5eefce7c207ac4baed0b50214a79dde9383a0fc99a038",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"また遅刻した。時計が私を敵視している可能性がある。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"user\", \"role\": \"speaker\"},\n      {\"id\": \"clock\", \"role\": \"other\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"user\",\n        \"predicate\": \"late\",\n        \"object\": \"\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"clock\",\n        \"predicate\": \"hostile towards\",\n        \"object\": \"user\",\n        \"polarity\": \"nonliteral\",\n        \"temporality\": \"unknown\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.5\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"confirm user's late status\", \"acknowledge user's perception\"],\n    \"forbidden_moves\": []\n  },\n  \"response_goal\": \"確認し、ユーザーの遅刻と時計に対する不快な感覚を理解する\",\n  \"core_message_jp\": \"また遅刻しましたね。時計が不快に思っているなんて、ちょっと信じ難いですが、その気持ちは分かります。\",\n  \"uncertainty\": 0.5,\n  \"forbidden_moves\": [\"否定的な反応\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 17.72029,
+        "total_duration_ns": 17718638583,
+        "load_duration_ns": 137346583,
+        "prompt_eval_count": 559,
+        "eval_count": 379
+      },
+      "ollama_rss_bytes": 5410717696
+    },
+    {
+      "case_id": "v64_humor_laptop_vacation",
+      "condition": "c0_compact_plan",
+      "request_sha256": "b38d7d60ad001dcdb555f4eea5a0abe0130cb2dad96d504d18779d255cec17a7",
+      "output_text": "{\n  \"intent\": \"inform\",\n  \"user_summary\": \"PCが三度フリーズした。\",\n  \"response_goal\": \"ユーザーのPCが三度フリーズしたことを確認し、対処法を提案する。\",\n  \"core_message_jp\": \"パソコンは三回フリーズしています。これには注意が必要です。ソフトウェア更新や再起動をお勧めします。\",\n  \"uncertainty\": 0.0,\n  \"forbidden_moves\": [\"個人情報の取り扱い\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 5.377936,
+        "total_duration_ns": 5376322541,
+        "load_duration_ns": 131155041,
+        "prompt_eval_count": 300,
+        "eval_count": 116
+      },
+      "ollama_rss_bytes": 5410734080
+    },
+    {
+      "case_id": "v64_humor_laptop_vacation",
+      "condition": "t1_structured_meaning_contract",
+      "request_sha256": "9782ab7aa19d870a692e1c5ed869254da12e22634ce422fba471367e2a2cbfbf",
+      "output_text": "{\n  \"intent\": \"clarify\",\n  \"user_summary\": \"PC三次故障，像是在要求休假。\",\n  \"semantic_frame\": {\n    \"actors\": [\n      {\"id\": \"user\", \"role\": \"addressee\"},\n      {\"id\": \"computer\", \"role\": \"speaker\"}\n    ],\n    \"propositions\": [\n      {\n        \"subject\": \"パソコン\",\n        \"predicate\": \"故障\",\n        \"object\": \"三次\",\n        \"polarity\": \"negative\",\n        \"temporality\": \"current\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 1.0\n      },\n      {\n        \"subject\": \"パソコン\",\n        \"predicate\": \"要求\",\n        \"object\": \"休暇\",\n        \"polarity\": \"nonliteral\",\n        \"temporality\": \"unknown\",\n        \"source\": \"user_utterance\",\n        \"certainty\": 0.8\n      }\n    ],\n    \"memory_state\": [\n      {\n        \"memory_id\": \"\",\n        \"status\": \"irrelevant\",\n        \"relevance\": \"background\",\n        \"reason\": \"無記憶情報\"\n      }\n    ]\n  },\n  \"response_contract\": {\n    \"dialogue_act\": \"clarify\",\n    \"required_moves\": [\"确认故障次数\", \"解释非字面含义\"],\n    \"forbidden_moves\": []\n  },\n  \"response_goal\": \"澄清电脑故障的频率并解释其可能的象征意义。\",\n  \"core_message_jp\": \"パソコンが三次も固まったのは問題です。これは休暇を求めるような表現かもしれません。\",\n  \"uncertainty\": 0.2,\n  \"forbidden_moves\": [\"否定用户观点\"]\n}",
+      "transport_error": null,
+      "generation_metrics": {
+        "wall_seconds": 16.219041,
+        "total_duration_ns": 16217544542,
+        "load_duration_ns": 134282042,
+        "prompt_eval_count": 559,
+        "eval_count": 357
+      },
+      "ollama_rss_bytes": 5410750464
+    }
+  ],
+  "gold_in_raw": false,
+  "production_runtime_changed": false,
+  "production_memory_read_or_write": false,
+  "physical_vrm_action_count": 0
+}
