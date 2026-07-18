@@ -1,0 +1,97 @@
+{
+  "schema": "uruha_cognitive_plan_model_screen_harness_lock_v65",
+  "experiment_id": "cognitive_plan_model_screen_v65",
+  "created_at": "2026-07-18T12:49:54.434289+09:00",
+  "harness_parent_commit": "a84a482",
+  "formal_inference_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "qwen35_4b_candidate",
+    "qwen25_7b_control",
+    "qwen35_9b_candidate"
+  ],
+  "environment": {
+    "system_prompt_sha256": "8c9ee0e8455ee708d1d5a487ca9bef4c0eb7172302567e1997cf98dd007bcaad",
+    "tool_schema_sha256": "4f3c795c797876674d9cee46d7db127e2bb7d55dfbf7c2ebdc384ab6b3e9b0e1"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/cognitive_plan_model_screen_v65_preregistration.json",
+      "sha256": "892f6894974865bdb78ee7d0d35a8805135bb41ff8524c13d0e5a2b186f23eeb"
+    },
+    "dataset_closure": {
+      "path": "configs/cognitive_plan_model_screen_v65_dataset_closure.json",
+      "sha256": "9f0d12e9991d80b3a723312cb215957a025518ad0511667407afb718ab66a497"
+    },
+    "dataset": {
+      "path": "datasets/cognitive_plan_model_screen_v65.json",
+      "sha256": "1d5c4ddc3dd99733a9203470a1c4c6660e95383e375b66137f5dfa1483c9299e"
+    },
+    "dataset_auditor": {
+      "path": "audit_cognitive_plan_model_screen_v65_dataset.py",
+      "sha256": "4f7e76c38eed789f7c81640c5187ba336f2c736bbf6d97254bf2e0f0721bf4fd"
+    },
+    "dataset_audit": {
+      "path": "reports/cognitive_plan_model_screen_v65_dataset_audit.json",
+      "sha256": "0e50ca7e439582e2ff17520f89fed0b59aadcb43e3a1b5a39c1dd0ab12b9cac8"
+    },
+    "dataset_test": {
+      "path": "test_cognitive_plan_model_screen_v65_dataset.py",
+      "sha256": "74e634e681782aa85998274026d7c1c9e0ec705b5163a0ace7a84ce6979f5333"
+    },
+    "core": {
+      "path": "cognitive_plan_model_screen_v65_core.py",
+      "sha256": "477f308a8b9203bbded6e85b8e9a5784980355faaf31dc07b035771bdf31a66c"
+    },
+    "runner": {
+      "path": "run_cognitive_plan_model_screen_v65.py",
+      "sha256": "4eb5b48b5f5ff6f989862a67706cdf67369a08abfc386b110b46aaf86e5b6ca4"
+    },
+    "analyzer": {
+      "path": "analyze_cognitive_plan_model_screen_v65.py",
+      "sha256": "1900f0f01e7e30686aeb5a46b9656c651f70008cfd419d80b8a1a668176c1231"
+    },
+    "harness_test": {
+      "path": "test_cognitive_plan_model_screen_v65_harness.py",
+      "sha256": "b6f780572097d8365b8fc091a18fe8c8b97641f867af46e7f2b68aeef791ef2e"
+    }
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_cognitive_plan_model_screen_v65_dataset.py",
+      "test_cognitive_plan_model_screen_v65_harness.py"
+    ],
+    "expected_test_count": 12,
+    "must_pass_before_first_model_call": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "candidate_inference_authorized": true,
+    "warmup_call_count_exact": 3,
+    "scored_model_call_count_exact": 36,
+    "transport_attempt_count_exact": 39,
+    "model_retry_authorized": false,
+    "resume_authorized": false,
+    "result_overwrite_authorized": false,
+    "gold_or_expected_outcome_passed_to_model": false,
+    "production_runtime_read_or_write_authorized": false,
+    "physical_vrm_execution_authorized": false
+  },
+  "result_artifacts": {
+    "raw": "reports/cognitive_plan_model_screen_v65_raw.json",
+    "analysis_json": "reports/cognitive_plan_model_screen_v65_analysis.json",
+    "analysis_markdown": "reports/cognitive_plan_model_screen_v65_analysis.md",
+    "result_lock": "configs/cognitive_plan_model_screen_v65_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "human_review_authorized": false,
+  "runtime_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "A selected candidate authorizes only a separate fresh runtime shadow experiment, never direct model replacement."
+}
