@@ -2376,6 +2376,30 @@ Rules:
         memory_correction_plan = build_memory_correction_plan()
         if memory_correction_plan:
             return memory_correction_plan
+        selection_contract = memory_data.get("profile_memory_selection") or {}
+        if selection_contract.get("status") in {
+            "requested_but_unavailable",
+            "requested_but_ambiguous",
+        }:
+            return base_plan(
+                intent="memory_unknown",
+                scene="casual",
+                listener_state="以前に伝えた情報を覚えているか確認している",
+                reply_goal="裏付けのない個人情報を作らず、覚えていないと短く伝える",
+                summary="ユーザーが保存済みの個人情報を確かめているが、該当する記憶の証拠がない。",
+                meaning="そのことは確かには覚えてない",
+                stance={"warmth": 0.2, "tease": 0.02, "blunt": 0.1, "jealousy": 0.0, "distance": 0.05},
+                max_chars=28,
+                avoid=["私", "わかりました", "たぶん", "きっと"],
+                cognitive_mode="reflective",
+                uncertainty=0.72,
+                premise_check="question",
+                self_check=True,
+                subjective_note="記憶にない情報を推測で埋めない",
+                response_mode="memory_abstention",
+                surface_act="memory_abstention",
+                payload_level="medium",
+            )
         if extracted_plan:
             return extracted_plan
 
@@ -11166,6 +11190,18 @@ class RightBrain:
         recent_turns = memory_data.get("recent_turns") or []
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
         response_mode = logic_data.get("response_mode", "direct_answer")
+
+        if intent == "memory_unknown" or response_mode == "memory_abstention":
+            return self._choose_variant(
+                [
+                    "そこは覚えてない。前に聞いてたなら今は思い出せない。",
+                    "そのことはまだ聞いてないと思う。分からないまま答えたくない。",
+                    "そこは記憶にない。適当に作って答えるのは違うだろ。",
+                ],
+                f"memory_unknown:{user_input}",
+                intent="memory_unknown",
+                max_chars=max_chars,
+            )
 
         if response_mode == "premise_challenge" or intent == "premise_doubt":
             variants = list(self.intent_reply_families["premise_doubt"])
