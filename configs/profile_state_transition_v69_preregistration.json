@@ -1,0 +1,105 @@
+{
+  "schema": "uruha_profile_state_transition_preregistration_v69",
+  "experiment_id": "profile_state_transition_v69",
+  "created_at": "2026-07-18T14:11:33+09:00",
+  "repository_parent_commit": "7c6189a021f704a1304639b21edf559b65e8c3f9",
+  "status": "preregistered_before_dataset_audit_harness_or_candidate_implementation",
+  "target_ability": "persist_and_resolve_current_user_profile_state_across_sessions_without_deleting_history",
+  "problem_evidence": {
+    "runtime_write_path": "uruha_brain_mac.py:701-749",
+    "runtime_read_path": "uruha_brain_mac.py:482-497",
+    "current_gap": "Profile facts are appended to user_profile with legacy metadata, but working memory reads only the in-session snapshot and never queries the persistent profile collection. Clearing session state removes the usable profile.",
+    "required_predecessors": [
+      "configs/memory_validity_resolution_v67_result_lock.json",
+      "configs/profile_assertion_boundary_v68_result_lock.json"
+    ]
+  },
+  "causal_hypothesis": "With identical guarded extraction, utterance sequence, timestamps, temporary Chroma backend, document text, record IDs, write count, readback, scorer, and case order, compiling profile facts into generic subject-predicate-validity metadata and applying the frozen V67 resolver will recover current cross-session profile state while preserving every historical record. It will exactly partition at least 17 of 18 cases, produce zero stale active records and zero missed active records, preserve all 33 expected writes, add at least 10 exact cases versus a matched append-only metadata control, cause no regression, and add less than 5 milliseconds median state-processing overhead.",
+  "causal_boundary": "This shadow starts with utterances already supported by the production V68-guarded extractor and uses temporary Chroma only. It does not test open-domain profile extraction, production database migration, vector retrieval, final replies, personality adaptation, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/profile_state_transition_v69.json",
+    "case_count": 18,
+    "scenario_family_count": 6,
+    "cases_per_family": 3,
+    "scenario_families": [
+      "name_replacement",
+      "positive_to_negative",
+      "negative_to_positive",
+      "additive_preferences",
+      "repeated_reinforcement",
+      "false_scope_interleaving"
+    ],
+    "expected_write_count": 33,
+    "expected_active_record_count": 21,
+    "expected_historical_record_count": 12,
+    "languages": ["en", "zh", "ja"],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "current_session_only_reference": "Production behavior after session reset: persistent profile rows are not read into working memory.",
+    "matched_append_only_readback_control": "Read the same persistent records, but retain current legacy metadata so every row remains eligible.",
+    "typed_state_resolution_treatment": "Compile generic typed metadata, read the same records, and partition them with the frozen V67 resolver."
+  },
+  "primary_causal_comparison": "typed_state_resolution_treatment versus matched_append_only_readback_control",
+  "fixed_variables": [
+    "production V68-guarded extractor",
+    "utterances, timestamps, sessions, and case order",
+    "temporary Chroma 1.5.1 backend",
+    "record IDs, documents, and write count",
+    "collection.get readback without vector search",
+    "V67 resolver implementation",
+    "condition-independent record-level scorer",
+    "no language-model inference"
+  ],
+  "only_changed_component_for_primary_comparison": "legacy append-only metadata versus generic typed profile-state metadata plus validity resolution",
+  "primary_metrics": [
+    "exact_partition_count",
+    "exact_active_count",
+    "active_precision",
+    "active_recall",
+    "stale_active_record_count",
+    "missed_active_record_count",
+    "history_preservation_rate",
+    "unexpected_write_count",
+    "newly_exact_vs_matched_control",
+    "regressions_vs_matched_control",
+    "median_state_overhead_seconds",
+    "p95_state_overhead_seconds"
+  ],
+  "treatment_success_gates": {
+    "exact_partition_count_min": 17,
+    "exact_active_count_min": 17,
+    "active_precision_min": 0.98,
+    "active_recall_min": 0.98,
+    "stale_active_record_count_max": 0,
+    "missed_active_record_count_max": 0,
+    "history_preservation_rate_min": 1.0,
+    "unexpected_write_count_max": 0,
+    "newly_exact_vs_matched_control_min": 10,
+    "regressions_vs_matched_control_max": 0,
+    "median_state_overhead_seconds_max": 0.005,
+    "p95_state_overhead_seconds_max": 0.02
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize a separate production shadow integration that writes typed metadata and reads persistent profile rows without affecting final answers.",
+    "any_gate_fails": "Freeze the result and leave production profile persistence unchanged.",
+    "direct_activation": "Not authorized by this shadow alone; production database migration and answer-level regression require fresh evidence."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact drift, prior-text overlap, production database access, or expected-partition leakage.",
+    "Do not change cases, turn IDs, timestamps, partitions, gates, or metadata identity rules after candidate implementation begins.",
+    "Do not add case IDs, complete utterances, names, foods, or dataset-specific values to the compiler.",
+    "Do not claim final dialogue or broad human-likeness improvement from this state shadow."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "candidate_implementation": false,
+    "shadow_execution": false,
+    "temporary_chroma_access": false,
+    "production_database_access": false,
+    "runtime_change": false,
+    "broad_human_likeness_claim": false
+  }
+}
