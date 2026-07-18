@@ -1,0 +1,136 @@
+{
+  "schema": "uruha_memory_validity_resolution_preregistration_v67",
+  "experiment_id": "memory_validity_resolution_v67",
+  "created_at": "2026-07-18T13:35:37+09:00",
+  "repository_parent_commit": "79714b2252a23c7c17dc251ef1f9502ade2c34b0",
+  "status": "preregistered_before_dataset_audit_harness_or_candidate_implementation",
+  "target_ability": "temporal_and_contextual_memory_validity_before_working_memory_salience",
+  "problem_evidence": {
+    "cross_condition_failure": "reports/cognitive_plan_decomposition_v66_diagnosis.md",
+    "runtime_code": "uruha_memory_runtime.py",
+    "production_gap": "Retrieved memories are deduplicated and ranked by salience, but no shared layer represents replacement, retraction, expiry, or conditional applicability before working-memory admission.",
+    "persistence_gap": "User profile records are append-only in Chroma and the persistent profile collection is not queried by the current working-memory path. Session preference replacement is lost when session state is cleared."
+  },
+  "research_basis": [
+    {
+      "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "venue": "ICLR 2025",
+      "url": "https://arxiv.org/abs/2410.10813",
+      "relevance": "Treats temporal reasoning and knowledge updates as distinct long-term memory abilities and separates indexing, retrieval, and reading."
+    },
+    {
+      "title": "Keep Me Updated! Memory Management in Long-term Conversations",
+      "venue": "Findings of EMNLP 2022",
+      "url": "https://aclanthology.org/2022.findings-emnlp.276/",
+      "relevance": "Shows that unchanged stored memories can become outdated and evaluates selective invalidation while retaining useful long-term information."
+    },
+    {
+      "title": "Preference-Aware Memory Update for Long-Term LLM Agents",
+      "venue": "Findings of ACL 2026",
+      "url": "https://aclanthology.org/2026.findings-acl.38/",
+      "relevance": "Motivates dynamic preference updating rather than treating storage and similarity retrieval as sufficient."
+    }
+  ],
+  "causal_hypothesis": "With identical fresh memory candidates, query context, reference time, salience scorer, working-memory limit, and expected labels, a generic validity resolver using only typed temporal and relation metadata will preserve history while preventing superseded, retracted, expired, and context-inapplicable records from entering working memory. It will exactly resolve at least 17 of 18 cases, create at least 9 newly exact working-memory sets versus the current all-candidates-eligible control, cause no regression, preserve all multi-valued and legacy cases, and add less than 5 milliseconds median local overhead.",
+  "causal_boundary": "This pilot begins after candidate retrieval and assumes validity metadata has already been attached. It tests neither natural-language state extraction nor persistent profile migration, vector retrieval recall, final answer quality, RightBrain realization, personality, reflection, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/memory_validity_resolution_v67.json",
+    "case_count": 18,
+    "scenario_family_count": 6,
+    "cases_per_family": 3,
+    "scenario_families": [
+      "single_value_update",
+      "explicit_retraction",
+      "expired_temporary_state",
+      "conditional_applicability",
+      "multi_value_coexistence",
+      "legacy_metadata_compatibility"
+    ],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "conditions": {
+    "current_all_candidates_eligible_control": {
+      "description": "Current behavior: every retrieved candidate remains eligible and is passed directly to the unchanged salience ranker."
+    },
+    "generic_validity_resolver_treatment": {
+      "description": "Partition records into eligible, historical, or context-inapplicable using generic metadata, then pass only eligible records to the same salience ranker."
+    }
+  },
+  "fixed_variables": [
+    "fresh candidate packets",
+    "query text and context tags",
+    "reference time",
+    "working-memory limit",
+    "existing v2 salience scorer",
+    "condition-independent scorer",
+    "case order",
+    "no language-model inference"
+  ],
+  "only_changed_component": "whether a temporal and contextual validity resolver runs before the existing salience ranker",
+  "validity_contract": {
+    "partitions": ["eligible_ids", "historical_ids", "inapplicable_ids"],
+    "states": ["active", "retracted"],
+    "cardinalities": ["single", "multi"],
+    "generic_fields": [
+      "subject",
+      "predicate",
+      "fact_cardinality",
+      "memory_state",
+      "valid_from",
+      "valid_until",
+      "supersedes_ids",
+      "condition_tags"
+    ],
+    "legacy_rule": "A candidate without validity-contract fields remains eligible."
+  },
+  "primary_metrics": [
+    "exact_partition_count",
+    "exact_working_memory_count",
+    "eligible_precision",
+    "eligible_recall",
+    "historical_recall",
+    "inapplicable_recall",
+    "stale_or_inapplicable_intrusion_count",
+    "over_suppression_count",
+    "multi_value_exact_count",
+    "legacy_exact_count",
+    "newly_exact_working_memory_vs_control",
+    "regressions_vs_control",
+    "median_resolver_overhead_seconds",
+    "p95_resolver_overhead_seconds"
+  ],
+  "treatment_success_gates": {
+    "exact_partition_count_min": 17,
+    "exact_working_memory_count_min": 17,
+    "eligible_precision_min": 0.98,
+    "eligible_recall_min": 0.98,
+    "stale_or_inapplicable_intrusion_count_max": 0,
+    "over_suppression_count_max": 0,
+    "multi_value_exact_count_min": 3,
+    "legacy_exact_count_min": 3,
+    "newly_exact_working_memory_vs_control_min": 9,
+    "regressions_vs_control_max": 0,
+    "median_resolver_overhead_seconds_max": 0.005,
+    "p95_resolver_overhead_seconds_max": 0.02
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize a separate production-compatible shadow integration that reads typed metadata but leaves legacy records unchanged.",
+    "any_gate_fails": "Freeze the result, do not change the production runtime, and diagnose whether the contract over-suppresses valid memory or lacks needed state.",
+    "production_integration": "Not authorized by this pilot alone. Natural-language extraction and persistent metadata writes require separate fresh evidence."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact drift, prior-text overlap, or expected-label leakage into implementation.",
+    "Do not change labels, cases, gates, or partitions after candidate implementation begins.",
+    "Do not add case IDs, case text, predicate names, or family-specific rules to the resolver.",
+    "Do not claim final-answer or broad human-likeness improvement from this component pilot."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "candidate_implementation": false,
+    "pilot_execution": false,
+    "runtime_change": false,
+    "broad_human_likeness_claim": false
+  }
+}
