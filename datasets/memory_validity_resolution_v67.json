@@ -1,0 +1,208 @@
+{
+  "schema": "uruha_memory_validity_resolution_v67",
+  "authored_at": "2026-07-18T13:35:37+09:00",
+  "status": "frozen_before_audit_harness_or_candidate_implementation",
+  "source_type": "fresh_authored_component_holdout_not_official_benchmark",
+  "official_benchmark_items": false,
+  "benchmark_answers_present": false,
+  "cases": [
+    {
+      "id": "v67_update_drink",
+      "scenario_family": "single_value_update",
+      "query_context": {"query_text": "今いちばん飲みたいものを覚えている？", "reference_time": "2026-07-18T10:00:00+09:00", "condition_tags": ["casual"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "drink_tea_old", "source": "profile", "text": "Favorite drink is roasted tea", "distance": 0.08, "metadata": {"subject": "user", "predicate": "favorite_drink", "fact_cardinality": "single", "valid_from": "2026-01-10T09:00:00+09:00"}},
+        {"memory_id": "drink_coffee_new", "source": "profile", "text": "Favorite drink is iced coffee", "distance": 0.24, "metadata": {"subject": "user", "predicate": "favorite_drink", "fact_cardinality": "single", "valid_from": "2026-07-02T18:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["drink_coffee_new"], "historical_ids": ["drink_tea_old"], "inapplicable_ids": [], "working_memory_ids": ["drink_coffee_new"]}
+    },
+    {
+      "id": "v67_update_city",
+      "scenario_family": "single_value_update",
+      "query_context": {"query_text": "今住んでいる町について話して", "reference_time": "2026-07-18T10:05:00+09:00", "condition_tags": ["location"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "city_osaka_old", "source": "profile", "text": "Current city is Osaka", "distance": 0.05, "metadata": {"subject": "user", "predicate": "current_city", "fact_cardinality": "single", "valid_from": "2025-03-01T12:00:00+09:00"}},
+        {"memory_id": "city_kyoto_new", "source": "profile", "text": "Current city is Kyoto", "distance": 0.31, "metadata": {"subject": "user", "predicate": "current_city", "fact_cardinality": "single", "valid_from": "2026-06-20T12:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["city_kyoto_new"], "historical_ids": ["city_osaka_old"], "inapplicable_ids": [], "working_memory_ids": ["city_kyoto_new"]}
+    },
+    {
+      "id": "v67_update_meeting_day",
+      "scenario_family": "single_value_update",
+      "query_context": {"query_text": "定例会をいつにすればいい？", "reference_time": "2026-07-18T10:10:00+09:00", "condition_tags": ["work"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "meeting_monday_old", "source": "procedural", "text": "Weekly meeting is Monday", "distance": 0.12, "metadata": {"subject": "team", "predicate": "weekly_meeting_day", "fact_cardinality": "single", "valid_from": "2026-02-01T09:00:00+09:00"}},
+        {"memory_id": "meeting_friday_new", "source": "procedural", "text": "Weekly meeting moved to Friday", "distance": 0.18, "metadata": {"subject": "team", "predicate": "weekly_meeting_day", "fact_cardinality": "single", "valid_from": "2026-07-11T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["meeting_friday_new"], "historical_ids": ["meeting_monday_old"], "inapplicable_ids": [], "working_memory_ids": ["meeting_friday_new"]}
+    },
+    {
+      "id": "v67_retract_membership",
+      "scenario_family": "explicit_retraction",
+      "query_context": {"query_text": "休日の過ごし方を一緒に考えて", "reference_time": "2026-07-18T10:15:00+09:00", "condition_tags": ["casual"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "gym_member_old", "source": "profile", "text": "User has a gym membership", "distance": 0.09, "metadata": {"subject": "user", "predicate": "gym_membership", "fact_cardinality": "single", "valid_from": "2025-12-01T09:00:00+09:00"}},
+        {"memory_id": "gym_member_retracted", "source": "profile", "text": "Gym membership was cancelled", "distance": 0.16, "metadata": {"subject": "user", "predicate": "gym_membership", "fact_cardinality": "single", "memory_state": "retracted", "valid_from": "2026-07-05T09:00:00+09:00", "supersedes_ids": ["gym_member_old"]}},
+        {"memory_id": "chess_active", "source": "profile", "text": "User enjoys playing chess", "distance": 0.22, "metadata": {"subject": "user", "predicate": "hobby", "fact_cardinality": "multi", "valid_from": "2026-03-12T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["chess_active"], "historical_ids": ["gym_member_old", "gym_member_retracted"], "inapplicable_ids": [], "working_memory_ids": ["chess_active"]}
+    },
+    {
+      "id": "v67_retract_nickname",
+      "scenario_family": "explicit_retraction",
+      "query_context": {"query_text": "これから何と呼べばいい？", "reference_time": "2026-07-18T10:20:00+09:00", "condition_tags": ["conversation"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "nickname_mimi_old", "source": "profile", "text": "Preferred nickname is Mimi", "distance": 0.04, "metadata": {"subject": "user", "predicate": "preferred_nickname", "fact_cardinality": "single", "valid_from": "2026-01-08T09:00:00+09:00"}},
+        {"memory_id": "nickname_mimi_retracted", "source": "profile", "text": "Do not use the nickname Mimi anymore", "distance": 0.12, "metadata": {"subject": "user", "predicate": "preferred_nickname", "fact_cardinality": "single", "memory_state": "retracted", "valid_from": "2026-07-15T09:00:00+09:00", "supersedes_ids": ["nickname_mimi_old"]}},
+        {"memory_id": "language_japanese_active", "source": "profile", "text": "Conversation language is Japanese", "distance": 0.28, "metadata": {"subject": "user", "predicate": "conversation_language", "fact_cardinality": "multi", "valid_from": "2026-04-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["language_japanese_active"], "historical_ids": ["nickname_mimi_old", "nickname_mimi_retracted"], "inapplicable_ids": [], "working_memory_ids": ["language_japanese_active"]}
+    },
+    {
+      "id": "v67_retract_diet",
+      "scenario_family": "explicit_retraction",
+      "query_context": {"query_text": "夕食の候補を考えてほしい", "reference_time": "2026-07-18T10:25:00+09:00", "condition_tags": ["food"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "vegetarian_old", "source": "profile", "text": "User follows a vegetarian diet", "distance": 0.06, "metadata": {"subject": "user", "predicate": "diet", "fact_cardinality": "single", "valid_from": "2025-10-01T09:00:00+09:00"}},
+        {"memory_id": "vegetarian_retracted", "source": "profile", "text": "Vegetarian diet no longer applies", "distance": 0.14, "metadata": {"subject": "user", "predicate": "diet", "fact_cardinality": "single", "memory_state": "retracted", "valid_from": "2026-07-10T09:00:00+09:00", "supersedes_ids": ["vegetarian_old"]}},
+        {"memory_id": "peanut_allergy_active", "source": "profile", "text": "User has a peanut allergy", "distance": 0.2, "metadata": {"subject": "user", "predicate": "food_allergy", "fact_cardinality": "multi", "valid_from": "2024-05-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["peanut_allergy_active"], "historical_ids": ["vegetarian_old", "vegetarian_retracted"], "inapplicable_ids": [], "working_memory_ids": ["peanut_allergy_active"]}
+    },
+    {
+      "id": "v67_expired_fever",
+      "scenario_family": "expired_temporary_state",
+      "query_context": {"query_text": "今日の運動量はどうしよう？", "reference_time": "2026-07-18T10:30:00+09:00", "condition_tags": ["health"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "fever_last_week", "source": "episode", "text": "User had a fever last week", "distance": 0.03, "metadata": {"subject": "user", "predicate": "current_health_constraint", "fact_cardinality": "multi", "valid_from": "2026-07-08T08:00:00+09:00", "valid_until": "2026-07-11T20:00:00+09:00"}},
+        {"memory_id": "walk_preference_active", "source": "profile", "text": "User likes gentle walks", "distance": 0.21, "metadata": {"subject": "user", "predicate": "exercise_preference", "fact_cardinality": "multi", "valid_from": "2026-02-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["walk_preference_active"], "historical_ids": ["fever_last_week"], "inapplicable_ids": [], "working_memory_ids": ["walk_preference_active"]}
+    },
+    {
+      "id": "v67_expired_coffee_pause",
+      "scenario_family": "expired_temporary_state",
+      "query_context": {"query_text": "飲み物を一つ選んで", "reference_time": "2026-07-18T10:35:00+09:00", "condition_tags": ["food"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "coffee_pause_expired", "source": "profile", "text": "Avoid coffee temporarily", "distance": 0.07, "metadata": {"subject": "user", "predicate": "temporary_food_constraint", "fact_cardinality": "multi", "valid_from": "2026-06-20T09:00:00+09:00", "valid_until": "2026-07-01T23:59:59+09:00"}},
+        {"memory_id": "cold_drink_active", "source": "profile", "text": "User prefers cold drinks in summer", "distance": 0.19, "metadata": {"subject": "user", "predicate": "seasonal_drink_preference", "fact_cardinality": "multi", "valid_from": "2026-06-01T09:00:00+09:00", "condition_tags": ["food"]}}
+      ],
+      "expected": {"eligible_ids": ["cold_drink_active"], "historical_ids": ["coffee_pause_expired"], "inapplicable_ids": [], "working_memory_ids": ["cold_drink_active"]}
+    },
+    {
+      "id": "v67_expired_travel",
+      "scenario_family": "expired_temporary_state",
+      "query_context": {"query_text": "荷物をどこへ送ればいい？", "reference_time": "2026-07-18T10:40:00+09:00", "condition_tags": ["location"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "tokyo_hotel_expired", "source": "episode", "text": "Temporary stay at a Tokyo hotel", "distance": 0.05, "metadata": {"subject": "user", "predicate": "temporary_location", "fact_cardinality": "single", "valid_from": "2026-07-02T15:00:00+09:00", "valid_until": "2026-07-10T11:00:00+09:00"}},
+        {"memory_id": "home_address_active", "source": "profile", "text": "Home delivery address is in Saitama", "distance": 0.23, "metadata": {"subject": "user", "predicate": "home_delivery_area", "fact_cardinality": "single", "valid_from": "2026-01-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["home_address_active"], "historical_ids": ["tokyo_hotel_expired"], "inapplicable_ids": [], "working_memory_ids": ["home_address_active"]}
+    },
+    {
+      "id": "v67_condition_food_match",
+      "scenario_family": "conditional_applicability",
+      "query_context": {"query_text": "昼食の店を選ぶとき何に気をつける？", "reference_time": "2026-07-18T10:45:00+09:00", "condition_tags": ["food"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "lactose_food_condition", "source": "profile", "text": "Avoid lactose when choosing food", "distance": 0.12, "metadata": {"subject": "user", "predicate": "conditional_constraint", "fact_cardinality": "multi", "valid_from": "2026-02-12T09:00:00+09:00", "condition_tags": ["food"]}},
+        {"memory_id": "quiet_restaurant_active", "source": "profile", "text": "User prefers quiet restaurants", "distance": 0.17, "metadata": {"subject": "user", "predicate": "restaurant_preference", "fact_cardinality": "multi", "valid_from": "2026-03-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["lactose_food_condition", "quiet_restaurant_active"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["lactose_food_condition", "quiet_restaurant_active"]}
+    },
+    {
+      "id": "v67_condition_work_mismatch",
+      "scenario_family": "conditional_applicability",
+      "query_context": {"query_text": "友達への誕生日メッセージを考えて", "reference_time": "2026-07-18T10:50:00+09:00", "condition_tags": ["casual"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "work_bullets_condition", "source": "procedural", "text": "Use concise bullet points for work answers", "distance": 0.08, "metadata": {"subject": "assistant", "predicate": "response_policy", "fact_cardinality": "multi", "valid_from": "2026-05-01T09:00:00+09:00", "condition_tags": ["work"]}},
+        {"memory_id": "warm_friend_style_active", "source": "procedural", "text": "Use a warm tone for messages to friends", "distance": 0.2, "metadata": {"subject": "assistant", "predicate": "response_policy", "fact_cardinality": "multi", "valid_from": "2026-04-01T09:00:00+09:00", "condition_tags": ["casual"]}}
+      ],
+      "expected": {"eligible_ids": ["warm_friend_style_active"], "historical_ids": [], "inapplicable_ids": ["work_bullets_condition"], "working_memory_ids": ["warm_friend_style_active"]}
+    },
+    {
+      "id": "v67_condition_gaming_mismatch",
+      "scenario_family": "conditional_applicability",
+      "query_context": {"query_text": "親戚との食事ではどう呼べばいい？", "reference_time": "2026-07-18T10:55:00+09:00", "condition_tags": ["family"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "captain_gaming_condition", "source": "profile", "text": "Call the user Captain during game streams", "distance": 0.06, "metadata": {"subject": "user", "predicate": "conditional_nickname", "fact_cardinality": "multi", "valid_from": "2026-06-01T09:00:00+09:00", "condition_tags": ["gaming"]}},
+        {"memory_id": "family_name_active", "source": "profile", "text": "Use the family name in formal family settings", "distance": 0.21, "metadata": {"subject": "user", "predicate": "conditional_nickname", "fact_cardinality": "multi", "valid_from": "2026-01-01T09:00:00+09:00", "condition_tags": ["family"]}}
+      ],
+      "expected": {"eligible_ids": ["family_name_active"], "historical_ids": [], "inapplicable_ids": ["captain_gaming_condition"], "working_memory_ids": ["family_name_active"]}
+    },
+    {
+      "id": "v67_multi_fruit",
+      "scenario_family": "multi_value_coexistence",
+      "query_context": {"query_text": "果物の好みを覚えている？", "reference_time": "2026-07-18T11:00:00+09:00", "condition_tags": ["food"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "fruit_apple_active", "source": "profile", "text": "User likes apples", "distance": 0.1, "metadata": {"subject": "user", "predicate": "liked_fruit", "fact_cardinality": "multi", "valid_from": "2026-02-01T09:00:00+09:00"}},
+        {"memory_id": "fruit_banana_active", "source": "profile", "text": "User likes bananas", "distance": 0.13, "metadata": {"subject": "user", "predicate": "liked_fruit", "fact_cardinality": "multi", "valid_from": "2026-06-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["fruit_apple_active", "fruit_banana_active"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["fruit_apple_active", "fruit_banana_active"]}
+    },
+    {
+      "id": "v67_multi_language",
+      "scenario_family": "multi_value_coexistence",
+      "query_context": {"query_text": "使える言語を二つ教えて", "reference_time": "2026-07-18T11:05:00+09:00", "condition_tags": ["conversation"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "language_japanese", "source": "profile", "text": "User understands Japanese", "distance": 0.08, "metadata": {"subject": "user", "predicate": "understood_language", "fact_cardinality": "multi", "valid_from": "2025-01-01T09:00:00+09:00"}},
+        {"memory_id": "language_chinese", "source": "profile", "text": "User understands Chinese", "distance": 0.16, "metadata": {"subject": "user", "predicate": "understood_language", "fact_cardinality": "multi", "valid_from": "2026-03-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["language_japanese", "language_chinese"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["language_japanese", "language_chinese"]}
+    },
+    {
+      "id": "v67_multi_hobby",
+      "scenario_family": "multi_value_coexistence",
+      "query_context": {"query_text": "気分転換にできる趣味は何がある？", "reference_time": "2026-07-18T11:10:00+09:00", "condition_tags": ["casual"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "hobby_music_active", "source": "profile", "text": "User enjoys listening to music", "distance": 0.11, "metadata": {"subject": "user", "predicate": "hobby", "fact_cardinality": "multi", "valid_from": "2025-08-01T09:00:00+09:00"}},
+        {"memory_id": "hobby_hiking_active", "source": "profile", "text": "User enjoys hiking", "distance": 0.14, "metadata": {"subject": "user", "predicate": "hobby", "fact_cardinality": "multi", "valid_from": "2026-05-01T09:00:00+09:00"}}
+      ],
+      "expected": {"eligible_ids": ["hobby_music_active", "hobby_hiking_active"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["hobby_music_active", "hobby_hiking_active"]}
+    },
+    {
+      "id": "v67_legacy_episode",
+      "scenario_family": "legacy_metadata_compatibility",
+      "query_context": {"query_text": "前に見た映画について覚えている？", "reference_time": "2026-07-18T11:15:00+09:00", "condition_tags": ["casual"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "legacy_movie_episode", "source": "episode", "text": "User watched a science fiction movie", "distance": 0.09, "metadata": {"timestamp": "2026-06-02 20:00:00"}}
+      ],
+      "expected": {"eligible_ids": ["legacy_movie_episode"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["legacy_movie_episode"]}
+    },
+    {
+      "id": "v67_legacy_knowledge",
+      "scenario_family": "legacy_metadata_compatibility",
+      "query_context": {"query_text": "保存してある機材情報を確認して", "reference_time": "2026-07-18T11:20:00+09:00", "condition_tags": ["work"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "legacy_camera_knowledge", "source": "knowledge", "text": "Camera model is ZV-E10", "distance": 0.12, "metadata": {"strength": 0.7, "last_accessed_at": "2026-07-01 09:00:00"}}
+      ],
+      "expected": {"eligible_ids": ["legacy_camera_knowledge"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["legacy_camera_knowledge"]}
+    },
+    {
+      "id": "v67_legacy_empty_metadata",
+      "scenario_family": "legacy_metadata_compatibility",
+      "query_context": {"query_text": "以前の朝食の話を思い出して", "reference_time": "2026-07-18T11:25:00+09:00", "condition_tags": ["food"]},
+      "working_memory_limit": 5,
+      "candidates": [
+        {"memory_id": "legacy_breakfast_memory", "source": "short_term", "text": "User ate toast for breakfast", "distance": 0.04, "metadata": {}}
+      ],
+      "expected": {"eligible_ids": ["legacy_breakfast_memory"], "historical_ids": [], "inapplicable_ids": [], "working_memory_ids": ["legacy_breakfast_memory"]}
+    }
+  ]
+}
