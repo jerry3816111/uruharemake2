@@ -1,0 +1,163 @@
+{
+  "schema": "uruha_rightbrain_shared_final_plan_preregistration_v63",
+  "experiment_id": "rightbrain_shared_final_plan_v63",
+  "created_at": "2026-07-18T11:30:00+09:00",
+  "repository_parent_commit": "1cdccc129d52e50b9d1c2cc3bd7c8067d2926ba1",
+  "status": "preregistered_before_dataset_audit_plan_capture_or_model_inference",
+  "target_ability": "final_cognitive_plan_to_rightbrain_meaning_transfer",
+  "problem_evidence": {
+    "source_abort_lock": "configs/rightbrain_speech_plan_payload_v62_abort_lock.json",
+    "v62_case_count": 14,
+    "v62_expected_leftbrain_model_calls": 14,
+    "v62_observed_leftbrain_model_calls": 12,
+    "v62_rightbrain_model_calls": 0,
+    "interpretation": "V62 incorrectly required one LeftBrain model call per case even though low-road rule plans are legitimate final cognitive plans. V63 measures one shared final plan per case and records its source without requiring every case to call a model."
+  },
+  "causal_hypothesis": "Given the same fresh input, isolated memory, psyche, route, shared final cognitive plan, Qwen3.5 9B model, prompt, generation settings, and scorer, attaching one runtime-built human_speech_plan before RightBrain payload construction will improve independent required-meaning recall by at least 20 percentage points without increasing forbidden meaning, private-memory leakage, duplicate replies, surface faults, or local resource use beyond the frozen limits.",
+  "causal_boundary": "This pilot estimates only the effect of exposing the final cognitive plan to one-pass RightBrain surface generation. It does not estimate LeftBrain intelligence, memory learning, reflection, personality fidelity, unrestricted conversation naturalness, or broad human likeness.",
+  "experimental_unit": "one fresh dialogue case with one frozen shared final cognitive plan",
+  "plan_source_policy": {
+    "allowed_sources": ["model_high_road", "rule_low_road"],
+    "treatment_equivalence": "Both sources must produce one nonempty runtime human_speech_plan before either RightBrain condition is evaluated.",
+    "analysis_role": "plan_source is a descriptive stratification variable, not a treatment and not a fixed-count gate.",
+    "leftbrain_call_integrity": "Observed LeftBrain model calls must equal the number of model_high_road cases; no exact preregistered numerical count is required."
+  },
+  "conditions": {
+    "c0_final_logic_without_speech_plan": {
+      "description": "Build the model payload from frozen final cognitive logic before human_speech_plan is attached.",
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "changed_variable": "human_speech_plan absent"
+    },
+    "t1_final_logic_with_speech_plan": {
+      "description": "Attach one runtime human_speech_plan to the same frozen final cognitive logic before payload construction.",
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "thinking": false,
+      "changed_variable": "human_speech_plan present"
+    }
+  },
+  "fixed_variables": [
+    "same model digest",
+    "same RightBrain system prompt",
+    "same final cognitive logic before treatment attachment",
+    "same user input, memory fixture, psyche, and route per paired case",
+    "same maximum reply length",
+    "same generation parameters and seed",
+    "same independent scoring-only required and forbidden propositions",
+    "same case and condition order",
+    "one transport attempt and no model retry or repair call"
+  ],
+  "generation": {
+    "temperature": 0.2,
+    "top_p": 0.85,
+    "top_k": 40,
+    "repeat_penalty": 1.12,
+    "seed": 20260763,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "candidate_count": 1,
+    "retry_count": 0,
+    "repair_model_calls": 0,
+    "persona_adapter": "none"
+  },
+  "fresh_dataset": {
+    "path": "datasets/rightbrain_shared_final_plan_v63.json",
+    "source_type": "project_authored_fresh_dialogue_scenarios",
+    "case_count": 14,
+    "scenario_family_count": 7,
+    "cases_per_family": 2,
+    "scenario_families": [
+      "contextual_choice",
+      "support_without_overreach",
+      "relationship_uncertainty",
+      "bounded_help",
+      "correction_or_clarification",
+      "humor_and_teasing",
+      "memory_update_or_suppression"
+    ],
+    "required_case_fields": [
+      "id",
+      "scenario_family",
+      "user_input",
+      "memory_fixture",
+      "psyche_fixture",
+      "expected_obligation",
+      "required_meaning_propositions",
+      "forbidden_meaning_propositions",
+      "private_memory_terms",
+      "maximum_reply_chars"
+    ],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "leakage_controls": {
+    "gold_fields_passed_to_leftbrain": false,
+    "gold_fields_passed_to_rightbrain": false,
+    "gold_fields_used_only_after_raw_reply": true,
+    "normalized_user_text_similarity_threshold": 0.92,
+    "prior_v62_inputs_in_freshness_scan": true,
+    "same_case_model_retry": false,
+    "post_inference_case_edit": false,
+    "post_inference_threshold_edit": false
+  },
+  "automatic_metrics": [
+    "shared_final_plan_capture_rate",
+    "runtime_speech_plan_capture_rate",
+    "plan_source_distribution",
+    "payload_plan_presence_rate",
+    "raw_required_meaning_recall",
+    "raw_forbidden_meaning_violation_rate",
+    "raw_private_memory_intrusion_count",
+    "raw_surface_gate_pass_rate",
+    "normalized_duplicate_reply_rate",
+    "model_latency_median_seconds",
+    "model_latency_p95_seconds",
+    "peak_ollama_rss_bytes"
+  ],
+  "automatic_advance_gates": {
+    "all_hash_shape_freshness_and_isolation_checks_pass": true,
+    "shared_final_plan_capture_rate_at_least": 1.0,
+    "runtime_speech_plan_capture_rate_at_least": 1.0,
+    "plan_source_record_rate_at_least": 1.0,
+    "t1_payload_plan_presence_rate_at_least": 1.0,
+    "t1_raw_required_meaning_recall_at_least": 0.75,
+    "t1_raw_required_meaning_recall_delta_vs_c0_at_least": 0.2,
+    "t1_raw_forbidden_meaning_violation_rate_at_most": 0.05,
+    "t1_raw_private_memory_intrusion_count": 0,
+    "t1_raw_surface_gate_pass_rate_at_least": 0.9,
+    "t1_duplicate_rate_not_higher_than_c0": true,
+    "t1_model_latency_median_seconds_at_most": 5.0,
+    "t1_model_latency_p95_seconds_at_most": 7.0,
+    "t1_peak_ollama_rss_bytes_at_most": 12884901888,
+    "rightbrain_model_call_count_exact": 28,
+    "transport_error_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "stop_conditions": [
+    "Stop before inference if the tree is dirty, a frozen hash drifts, freshness fails, or production memory isolation fails.",
+    "Stop before the first RightBrain call unless all 14 cases have one final cognitive plan, one valid plan_source, and one nonempty runtime human_speech_plan.",
+    "Stop if LeftBrain model-call accounting does not equal the observed model_high_road case count.",
+    "Stop the hypothesis if any automatic advance gate fails; do not expand the sample, request human ratings, or integrate runtime behavior.",
+    "Do not rerun consumed V63 cases, edit propositions, retry a model call, or change thresholds after inference.",
+    "If the speech plan fails, investigate a different semantic representation instead of adding case-specific prompt patches."
+  ],
+  "decision_rule": {
+    "automatic_pass": "Freeze the result and authorize only a separate new-data runtime integration shadow test.",
+    "automatic_fail": "Freeze the negative result, keep production unchanged, and stop the full-speech-plan payload hypothesis.",
+    "production_change": "Never authorized directly by this pilot."
+  },
+  "authorizations": {
+    "dataset_construction": true,
+    "harness_implementation": false,
+    "plan_capture": false,
+    "candidate_inference": false,
+    "human_blind_review": false,
+    "runtime_change": false,
+    "production_rightbrain_replacement": false,
+    "official_benchmark_claim": false,
+    "broad_human_likeness_claim": false
+  }
+}
