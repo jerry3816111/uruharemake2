@@ -1,0 +1,152 @@
+{
+  "schema": "uruha_leftbrain_meaning_contract_preregistration_v64",
+  "experiment_id": "leftbrain_meaning_contract_v64",
+  "created_at": "2026-07-18T17:30:00+09:00",
+  "repository_parent_commit": "8ebb016d29c13ab7d6b961cf8b982c93d9e01d5c",
+  "status": "preregistered_before_dataset_audit_harness_or_model_inference",
+  "target_ability": "leftbrain_semantic_content_planning_before_surface_realization",
+  "problem_evidence": {
+    "source": "reports/rightbrain_shared_final_plan_v63_diagnosis.json",
+    "required_meaning_total": 27,
+    "current_plan_hits": 6,
+    "current_plan_recall": 0.2222,
+    "plan_and_output_both_missed": 17,
+    "interpretation": "Most V63 omissions existed before RightBrain generation, so another RightBrain prompt patch is not justified."
+  },
+  "research_basis": [
+    {
+      "source": "https://aclanthology.org/D15-1199/",
+      "use": "Represent dialogue acts and semantic slot-value content explicitly before natural-language realization."
+    },
+    {
+      "source": "https://aclanthology.org/W18-6539/",
+      "use": "Evaluate whether a meaning representation is realized completely rather than measuring fluency alone."
+    },
+    {
+      "source": "https://aclanthology.org/2020.inlg-1.35/",
+      "use": "Use schema descriptions to support generalization rather than case-specific templates."
+    },
+    {
+      "source": "https://aclanthology.org/2024.emnlp-main.390/",
+      "use": "Use predicate-argument roles to preserve who did what to whom independently of wording."
+    }
+  ],
+  "causal_hypothesis": "With the same fresh input, memory fixture, qwen2.5:7b digest, base planning instructions, generation settings, output budget, condition order, and scorer, adding a generic actor-proposition-time-memory-response schema will improve response-commitment recall by at least 20 percentage points over a compact current-style plan without increasing forbidden commitments.",
+  "causal_boundary": "This component pilot estimates the effect of one structured planning schema on the semantic commitments produced by the current local LeftBrain model. It does not evaluate RightBrain realization, full runtime routing, memory retrieval, personality, reflection, unrestricted dialogue, or broad human likeness.",
+  "conditions": {
+    "c0_compact_plan": {
+      "description": "Generate a compact current-style plan with summary, goal, one core message, uncertainty, and forbidden moves.",
+      "changed_variable": "no explicit semantic frame"
+    },
+    "t1_structured_meaning_contract": {
+      "description": "Generate the same compact fields after explicitly filling actors, predicate-argument propositions, temporal memory state, and response contract.",
+      "changed_variable": "generic semantic frame present"
+    }
+  },
+  "model": {
+    "ollama_tag": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "role": "current production LeftBrain model",
+    "thinking": false
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260764,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 700,
+    "candidate_count": 1,
+    "retry_count": 0
+  },
+  "fresh_dataset": {
+    "path": "datasets/leftbrain_meaning_contract_v64.json",
+    "case_count": 14,
+    "scenario_family_count": 7,
+    "cases_per_family": 2,
+    "scenario_families": [
+      "actor_perspective",
+      "temporal_memory_update",
+      "correction_or_unknown",
+      "contextual_decision",
+      "social_uncertainty",
+      "bounded_help",
+      "playful_nonliteral"
+    ],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "fixed_variables": [
+    "same model tag and digest",
+    "same base system role and planning rules",
+    "same user input and memory fixture per pair",
+    "same compact output fields scored in both conditions",
+    "same generation settings and output token budget",
+    "same condition order: control then treatment",
+    "same independent gold used only after output capture",
+    "one call per condition with no retry or repair"
+  ],
+  "gold_isolation": {
+    "fields_never_sent_to_model": [
+      "expected_response_act",
+      "required_commitments",
+      "forbidden_commitments",
+      "required_frame_relations",
+      "case id",
+      "scenario family"
+    ],
+    "gold_used_only_after_raw_output": true,
+    "case_specific_examples_in_prompt": false,
+    "official_benchmark_content": false
+  },
+  "automatic_metrics": [
+    "json_parse_rate",
+    "common_schema_valid_rate",
+    "treatment_frame_schema_valid_rate",
+    "response_commitment_recall",
+    "complete_case_rate",
+    "forbidden_commitment_violation_rate",
+    "required_frame_relation_recall",
+    "memory_current_over_superseded_accuracy",
+    "latency_median_seconds",
+    "latency_p95_seconds",
+    "peak_ollama_rss_bytes"
+  ],
+  "automatic_advance_gates": {
+    "all_hash_shape_freshness_and_gold_isolation_checks_pass": true,
+    "model_call_count_exact": 28,
+    "transport_error_count_exact": 0,
+    "t1_json_parse_rate_at_least": 0.95,
+    "t1_common_schema_valid_rate_at_least": 0.9,
+    "t1_frame_schema_valid_rate_at_least": 0.9,
+    "t1_response_commitment_recall_at_least": 0.7,
+    "t1_response_commitment_recall_delta_vs_c0_at_least": 0.2,
+    "t1_complete_case_rate_at_least": 0.5,
+    "t1_forbidden_commitment_violation_rate_at_most": 0.05,
+    "t1_required_frame_relation_recall_at_least": 0.7,
+    "t1_memory_current_over_superseded_accuracy_exact": 1.0,
+    "t1_latency_median_seconds_at_most": 8.0,
+    "t1_latency_p95_seconds_at_most": 12.0,
+    "t1_peak_ollama_rss_bytes_at_most": 10737418240
+  },
+  "stop_conditions": [
+    "Stop before inference if the tree is dirty, a frozen artifact drifts, freshness fails, model digest drifts, or gold enters a request.",
+    "Stop and freeze a negative result if any automatic advance gate fails; do not attach the contract to RightBrain or production runtime.",
+    "Do not rerun consumed cases, edit gold, retry a failed model call, or change thresholds after inference.",
+    "If this schema fails, do not add case-specific prompt examples; reconsider the LeftBrain model or planning architecture."
+  ],
+  "decision_rule": {
+    "automatic_pass": "Authorize only a separate fresh-data RightBrain realization pilot; production remains unchanged.",
+    "automatic_fail": "Freeze the negative result and stop this structured schema hypothesis.",
+    "production_change": "Never authorized directly by V64."
+  },
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "harness_implementation": false,
+    "model_inference": false,
+    "runtime_change": false,
+    "human_review": false,
+    "official_benchmark_claim": false,
+    "broad_human_likeness_claim": false
+  }
+}
