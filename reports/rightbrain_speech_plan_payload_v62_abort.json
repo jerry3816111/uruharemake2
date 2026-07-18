@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_rightbrain_speech_plan_payload_abort_v62",
+  "experiment_id": "rightbrain_speech_plan_payload_v62",
+  "frozen_at": "2026-07-18T11:20:36+09:00",
+  "status": "pre_rightbrain_inference_abort",
+  "formal_attempt": {
+    "attempt_index": 1,
+    "formal_attempt_count": 1,
+    "branch": "main",
+    "runner_commit": "bdf4f231d10c3053daea36d1ae2791fa98369dde",
+    "preflight_passed": true,
+    "preflight_observed_test_count": 130,
+    "preflight_expected_test_count": 130,
+    "stage_reached": "post_case_capture_pre_rightbrain_inference",
+    "terminal_error": "V62 expected 14 LeftBrain calls, observed 12"
+  },
+  "observed_accounting": {
+    "dataset_case_count": 14,
+    "capture_comprehension_completed": true,
+    "shared_plan_capture_count_inferred_from_guard_reach": 14,
+    "preregistered_leftbrain_model_call_count": 14,
+    "observed_leftbrain_model_call_count": 12,
+    "rightbrain_model_call_count": 0,
+    "transport_attempt_count": 0,
+    "raw_result_written": false,
+    "analysis_written": false,
+    "production_runtime_changed": false
+  },
+  "code_path_evidence": {
+    "capture_guard": "run_rightbrain_speech_plan_payload_v62.py:378-381",
+    "rightbrain_loop": "run_rightbrain_speech_plan_payload_v62.py:392-402",
+    "raw_write_begins": "run_rightbrain_speech_plan_payload_v62.py:427",
+    "low_road_rule_plan": "uruha_brain_mac.py:14156-14160",
+    "interpretation": "The process reached the LeftBrain-call guard only after the 14-case capture comprehension completed. The guard is before the RightBrain loop and raw-result construction, so no RightBrain inference or scored result occurred. cognitive_tick can legitimately build a low-road plan with rules without calling LeftBrain.think."
+  },
+  "control_failure": {
+    "failed_assumption": "Every captured final cognitive plan requires exactly one LeftBrain model call.",
+    "actual_runtime_behavior": "A final cognitive plan can come from LeftBrain.think on the high road or from _build_low_road_plan on the low road.",
+    "why_the_gate_is_invalid": "The gate measured an implementation route rather than the required experimental unit, which is one shared final plan per case.",
+    "ability_hypothesis_tested": false,
+    "rightbrain_model_comparison_performed": false
+  },
+  "decision": "freeze_pre_inference_abort_and_stop_v62_dataset",
+  "supported_claim": "The frozen pre-inference guard prevented a preregistration mismatch from becoming an invalid RightBrain result.",
+  "unsupported_claims": [
+    "Attaching human_speech_plan improves required-meaning recall.",
+    "Attaching human_speech_plan harms required-meaning recall.",
+    "The current RightBrain became more natural or more human-like.",
+    "The current RightBrain should be replaced or deployed."
+  ],
+  "same_dataset_retest_authorized": false,
+  "threshold_change_authorized": false,
+  "human_blind_review_authorized": false,
+  "runtime_change_authorized": false,
+  "production_rightbrain_replacement_authorized": false,
+  "next_authorized_work": {
+    "experiment": "fresh_v63_shared_final_plan_payload_ablation",
+    "required_change": "Require exactly one shared final cognitive plan and one attached human_speech_plan per fresh case. Record plan_source as model_high_road or rule_low_road, but do not require a model call for every case.",
+    "must_remain_fixed": "RightBrain model, generation settings, payload comparison, independent gold, memory isolation, no retry, and automatic stop gates.",
+    "data_requirement": "Use entirely fresh cases because V62 cases were consumed during formal plan capture."
+  }
+}
