@@ -1,0 +1,251 @@
+{
+  "schema": "uruha_planner_supervision_readiness_contract_v75",
+  "status": "frozen_before_auditor_execution",
+  "frozen_on": "2026-07-18",
+  "parent_commit": "1a1d4e26c75802069f76ac23eece3953327f3c7f",
+  "ability_under_test": "leftbrain_cognitive_speech_planning",
+  "hypothesis": "The repository contains no planner-supervision row that simultaneously preserves a raw user utterance and bounded cognitive context, supplies a complete target plan, has strict human acceptance of that plan, and remains outside protected evaluation data.",
+  "falsification_condition": "At least one row passes every input, target, human-review, provenance, split-isolation, and overlap gate below.",
+  "success_condition_for_this_unit": "The read-only auditor inventories every registered source with hashes, separates surface-form data from planner targets, detects protected evaluation data, and emits a reproducible training authorization decision without changing runtime behavior.",
+  "stop_condition": "If fewer than 60 eligible rows exist or the pilot coverage grid is incomplete, do not fine-tune a planner and do not expand model testing. Build the smallest provenance-safe collection path instead.",
+  "required_input_fields": [
+    "user_utterance",
+    "language",
+    "recent_dialogue",
+    "working_memory",
+    "psyche_state",
+    "relationship_state"
+  ],
+  "required_target_plan_fields": [
+    "intent",
+    "scene",
+    "listener_state",
+    "reply_goal",
+    "jp_summary",
+    "core_message_jp",
+    "cognitive_mode",
+    "response_mode",
+    "premise_check",
+    "uncertainty",
+    "hidden_intent",
+    "surface_act",
+    "user_belief",
+    "my_hidden_knowledge",
+    "user_expectation",
+    "working_memory_used",
+    "routing_path",
+    "bayes_candidates"
+  ],
+  "minimum_candidate_plan_count": 3,
+  "strict_human_review": {
+    "required_decision": "accept",
+    "required_fields": [
+      "reviewer_id",
+      "reviewed_at",
+      "target_plan_sha256"
+    ],
+    "surface_reply_ratings_do_not_count_as_plan_acceptance": true,
+    "draft_or_batch_acceptance_is_not_strict_review": true
+  },
+  "required_provenance_fields": [
+    "source_kind",
+    "source_id",
+    "source_sha256",
+    "benchmark_origin"
+  ],
+  "required_benchmark_origin": "none",
+  "sha256_pattern": "^[0-9a-f]{64}$",
+  "training_split": "train",
+  "languages": [
+    "ja",
+    "zh",
+    "en"
+  ],
+  "scenario_families": [
+    "ordinary_direct",
+    "emotional_support",
+    "ambiguity_clarification",
+    "memory_recall_update",
+    "false_belief_tom",
+    "pragmatic_implicature",
+    "boundary_safety",
+    "action_function_call",
+    "relationship_personality",
+    "reflection_repair"
+  ],
+  "readiness_levels": {
+    "not_ready": {
+      "maximum_eligible_rows": 59,
+      "authorization": "no_training"
+    },
+    "pilot_ready": {
+      "minimum_eligible_rows": 60,
+      "minimum_per_language_family_cell": 2,
+      "authorization": "small_local_training_pilot_only"
+    },
+    "training_candidate": {
+      "minimum_eligible_rows": 600,
+      "minimum_per_language_family_cell": 20,
+      "authorization": "formal_training_experiment_may_be_preregistered"
+    }
+  },
+  "threshold_status": "project_defined_coverage_gates_not_official_sample_size_rules",
+  "source_registry": [
+    {
+      "id": "future_strict_planner_annotations",
+      "adapter": "strict_planner_jsonl",
+      "paths": [
+        "analysis/planner_supervision_annotations_v75.jsonl"
+      ],
+      "optional": true,
+      "protected_evaluation": false,
+      "role": "the_only_registered_source_type_that_can_become_training_eligible"
+    },
+    {
+      "id": "human_blind_surface_annotations",
+      "adapter": "human_feedback_annotations",
+      "paths": [
+        "analysis/human_feedback_annotations.jsonl"
+      ],
+      "optional": false,
+      "protected_evaluation": false,
+      "role": "human_surface_reply_feedback_not_plan_supervision"
+    },
+    {
+      "id": "human_feedback_regression_cases",
+      "adapter": "human_feedback_regression",
+      "paths": [
+        "datasets/human_feedback_regression_dataset.json"
+      ],
+      "optional": false,
+      "protected_evaluation": false,
+      "role": "failure_regression_contracts_not_accepted_target_plans"
+    },
+    {
+      "id": "canonical_rightbrain_surface_training",
+      "adapter": "rightbrain_contract_training",
+      "paths": [
+        "datasets/rightbrain_plan_surface_contract_v1_train.json"
+      ],
+      "optional": false,
+      "protected_evaluation": false,
+      "role": "plan_to_surface_training_not_utterance_to_plan_training"
+    },
+    {
+      "id": "legacy_rightbrain_training_corpora",
+      "adapter": "rightbrain_surface_corpora",
+      "paths": [
+        "datasets/rightbrain_candidate_gate_contrast_curriculum_v16.json",
+        "datasets/rightbrain_candidate_gate_curriculum_v15.json",
+        "datasets/rightbrain_compact_slot_curriculum_v17.json",
+        "datasets/rightbrain_group_preference_v26.json",
+        "datasets/rightbrain_hard_negative_preference_v20.json",
+        "datasets/rightbrain_holdout_separated_curriculum_v14.json",
+        "datasets/rightbrain_on_policy_preference_v21.json",
+        "datasets/rightbrain_rejection_curriculum_v1.json",
+        "datasets/rightbrain_repair_curriculum_v1.json",
+        "datasets/rightbrain_runtime_rejection_curriculum_v13.json",
+        "datasets/rightbrain_semantic_preference_v18.json"
+      ],
+      "optional": false,
+      "protected_evaluation": false,
+      "role": "rightbrain_surface_or_preference_training_not_planner_targets"
+    },
+    {
+      "id": "v2_human_answer_evaluation",
+      "adapter": "v2_human_answer_report",
+      "paths": [
+        "reports/v2_human_answer_report.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "model_generated_evaluation_plans"
+    },
+    {
+      "id": "cognitive_architecture_evaluation",
+      "adapter": "cognitive_architecture_report",
+      "paths": [
+        "reports/cognitive_architecture_eval_report.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "model_generated_evaluation_plans"
+    },
+    {
+      "id": "v61_formal_plan_captures",
+      "adapter": "v61_captures",
+      "paths": [
+        "reports/rightbrain_pipeline_shadow_v61_raw.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "complete_model_plans_from_formal_holdout"
+    },
+    {
+      "id": "v63_formal_plan_captures",
+      "adapter": "v63_captures",
+      "paths": [
+        "reports/rightbrain_shared_final_plan_v63_raw.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "complete_model_plans_from_formal_holdout"
+    },
+    {
+      "id": "reflection_experiment_outputs",
+      "adapter": "reflection_reports",
+      "paths": [
+        "reports/reflection_causal_pilot_v1_raw.json",
+        "reports/reflection_causal_replay_v2_raw.json",
+        "reports/typed_reflection_v3_development_raw.json",
+        "reports/typed_reflection_v4_development_raw.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "model_generated_reflection_evaluation_outputs"
+    },
+    {
+      "id": "formal_holdout_datasets",
+      "adapter": "formal_holdouts",
+      "paths": [
+        "datasets/rightbrain_speech_plan_payload_v62.json",
+        "datasets/rightbrain_shared_final_plan_v63.json",
+        "datasets/leftbrain_meaning_contract_v64.json",
+        "datasets/cognitive_plan_model_screen_v65.json",
+        "datasets/cognitive_plan_decomposition_v66.json",
+        "datasets/profile_grounded_speech_plan_v72.json"
+      ],
+      "optional": false,
+      "protected_evaluation": true,
+      "role": "protected_project_holdouts"
+    },
+    {
+      "id": "automatic_annotation_drafts",
+      "adapter": "annotation_drafts",
+      "paths": [
+        "reports/annotation_draft_queue.json"
+      ],
+      "optional": false,
+      "protected_evaluation": false,
+      "role": "unreviewed_model_and_rule_generated_drafts"
+    }
+  ],
+  "research_basis": [
+    {
+      "title": "LIMA: Less Is More for Alignment",
+      "url": "https://arxiv.org/abs/2305.11206",
+      "use": "Supports prioritizing carefully curated supervision over raw volume; it does not define this project's sample-size gates."
+    },
+    {
+      "title": "Datasheets for Datasets",
+      "url": "https://arxiv.org/abs/1803.09010",
+      "use": "Supports explicit documentation of dataset motivation, composition, collection, and intended use."
+    },
+    {
+      "title": "Deduplicating Training Data Makes Language Models Better",
+      "url": "https://aclanthology.org/2022.acl-long.577/",
+      "use": "Supports duplicate control and strict train-evaluation separation."
+    }
+  ],
+  "evidence_boundary": "This contract can authorize only a planner-training experiment. It cannot prove improved dialogue, cognition, human-likeness, benchmark performance, or runtime readiness."
+}
