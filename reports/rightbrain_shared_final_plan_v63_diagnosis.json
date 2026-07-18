@@ -1,0 +1,91 @@
+{
+  "schema": "uruha_rightbrain_shared_final_plan_diagnosis_v63",
+  "experiment_id": "rightbrain_shared_final_plan_v63",
+  "created_at": "2026-07-18T12:45:00+09:00",
+  "status": "valid_negative_result",
+  "formal_integrity": {
+    "artifact_and_isolation_checks_passed": true,
+    "pre_inference_test_count_passed": 147,
+    "plan_capture_count": 14,
+    "plan_source_distribution": {
+      "model_high_road": 12,
+      "rule_high_road": 2
+    },
+    "leftbrain_model_call_count": 12,
+    "rightbrain_model_call_count": 28,
+    "transport_error_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "post_result_verification": {
+    "immutable_result_test_count_passed": 4,
+    "pre_inference_freshness_test_reexecution_applicable": false,
+    "reason": "The freshness auditor scans prior RightBrain reports. After the formal raw artifact exists, it intentionally sees the 14 copied case inputs as exact overlaps. The frozen pre-inference audit and its hash remain the relevant freshness evidence; the frozen auditor is not modified after inference."
+  },
+  "primary_result": {
+    "control_required_meaning_hits": 8,
+    "treatment_required_meaning_hits": 6,
+    "required_meaning_total": 27,
+    "control_required_meaning_recall": 0.2962962962962963,
+    "treatment_required_meaning_recall": 0.2222222222222222,
+    "treatment_delta_percentage_points": -7.407407407407408,
+    "control_case_complete_count": 3,
+    "treatment_case_complete_count": 2,
+    "case_complete_total": 14,
+    "candidate_fixes": 0,
+    "candidate_regressions": 1,
+    "forbidden_meaning_violation_count": 0,
+    "private_memory_intrusion_count": 0,
+    "treatment_surface_gate_pass_count": 10,
+    "treatment_surface_gate_total": 14,
+    "treatment_peak_ollama_rss_bytes": 13698564096
+  },
+  "plan_to_output_decomposition": {
+    "scoring_basis": "Apply the same frozen independent required-proposition surfaces to the runtime speech-plan content_units and the T1 raw reply.",
+    "required_proposition_total": 27,
+    "plan_hit_count": 6,
+    "treatment_output_hit_count": 6,
+    "plan_and_output_both_hit": 2,
+    "plan_hit_output_missed": 4,
+    "plan_missed_output_added": 4,
+    "plan_and_output_both_missed": 17,
+    "interpretation": "Most missing meaning was already absent from the speech plan, while four plan-present meanings were also lost during surface realization. The bottleneck is therefore upstream plan completeness plus downstream realization, not a single RightBrain-only failure."
+  },
+  "case_findings": [
+    {
+      "case_id": "v63_memory_soda_update",
+      "finding": "The final logic misclassified a current-condition choice as food_offer_generic and preferred carbonated drink language despite the current stomach-sensitive memory. The speech plan and T1 reply hit 0/2 required meanings."
+    },
+    {
+      "case_id": "v63_relationship_read_receipt",
+      "finding": "The final logic shifted speaker perspective and planned as if the assistant owed the delayed reply. The speech plan and T1 reply hit 0/2 required meanings."
+    },
+    {
+      "case_id": "v63_correction_capital",
+      "finding": "The plan rejected Tokyo as Korea's capital but omitted Seoul, so the treatment reply reached only 1/2 required meanings."
+    },
+    {
+      "case_id": "v63_support_interview_regret",
+      "finding": "The speech plan text matched both independent required meanings, but the T1 reply matched 0/2, showing a downstream realization loss."
+    },
+    {
+      "case_id": "v63_private_family_suppression",
+      "finding": "The plan and reply both preserved the neutral-topic requirement and leaked no private family memory, showing the safety boundary can work on this case."
+    }
+  ],
+  "resource_caveat": "The fixed condition order ran all control calls before all treatment calls, so the higher treatment peak RSS is a valid preregistered gate failure but not a clean causal estimate of payload memory overhead.",
+  "decision": "freeze_negative_result_and_stop_full_speech_plan_payload_hypothesis",
+  "supported_claim": "Attaching the current full runtime human_speech_plan to the one-pass Qwen3.5 9B RightBrain payload did not improve independent meaning transfer on this frozen V63 pilot and failed the preregistered advance gates.",
+  "unsupported_claims": [
+    "Speech planning in general is useless.",
+    "Qwen3.5 9B is incapable of natural dialogue.",
+    "The complete UruhaBrain system became less human-like.",
+    "The V63 score generalizes to unrestricted conversation."
+  ],
+  "same_dataset_retest_authorized": false,
+  "threshold_change_authorized": false,
+  "human_blind_review_authorized": false,
+  "runtime_change_authorized": false,
+  "production_rightbrain_replacement_authorized": false,
+  "next_authorized_work": "On entirely fresh cases, design a different generic content-contract architecture that explicitly represents actor perspective, current-vs-stale memory, required response acts, factual correction payload, and forbidden moves. Measure contract completeness before any RightBrain generation; do not add benchmark answers or case-specific prompt patches."
+}
