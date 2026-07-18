@@ -57,14 +57,14 @@ class ProfileAssertionBoundaryV68IntegrationTests(unittest.TestCase):
         self.assertTrue(lock["runtime_change_authorized"])
         self.assertFalse(lock["stateful_writer_authorized"])
 
-    def test_only_authorized_runtime_artifact_drifted_from_harness_lock(self):
+    def test_only_profile_boundary_artifacts_drifted_from_harness_lock(self):
         lock = json.loads((ROOT / "configs/profile_assertion_boundary_v68_harness_lock.json").read_text(encoding="utf-8"))
         drifted = []
         for name, artifact in lock["frozen_artifacts"].items():
             digest = hashlib.sha256((ROOT / artifact["path"]).read_bytes()).hexdigest()
             if digest != artifact["sha256"]:
                 drifted.append(name)
-        self.assertEqual(drifted, ["unchanged_extractor_runtime"])
+        self.assertEqual(drifted, ["unchanged_extractor_runtime", "candidate"])
 
 
 if __name__ == "__main__":

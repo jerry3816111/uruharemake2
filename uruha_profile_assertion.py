@@ -6,9 +6,13 @@ import re
 
 
 QUESTION_MARKS = frozenset({"?", "？"})
+CHINESE_REPORT_TARGET = (
+    r"(?:：|:|，|,|\s|「|『|['\"]|"
+    r"我|你|他|她|它|我們|我们|大家|有人|自己)"
+)
 REPORT_PATTERNS = (
     re.compile(r"\b(?:said|says|wrote|writes|asked|asks|told|according to)\b", re.IGNORECASE),
-    re.compile(r"(?:說|说|寫|写|問|问|表示|提到)"),
+    re.compile(rf"(?:說|说|寫|写|問|问|表示|提到)(?:道|了|著|着|過|过)?{CHINESE_REPORT_TARGET}"),
     re.compile(r"(?:と|って)(?:言った|言ってた|書いた|聞いた|話した)|によると"),
 )
 JAPANESE_THIRD_PERSON = re.compile(
