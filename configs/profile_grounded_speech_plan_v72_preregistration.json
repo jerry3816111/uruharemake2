@@ -1,0 +1,162 @@
+{
+  "schema": "uruha_profile_grounded_speech_plan_preregistration_v72",
+  "experiment_id": "profile_grounded_speech_plan_v72",
+  "created_at": "2026-07-18T18:00:00+09:00",
+  "repository_parent_commit": "aa515ab60ada7b58c525b4aa86f3b5a88ee2c225",
+  "status": "preregistered_before_dataset_construction_bridge_harness_or_formal_inference",
+  "target_ability": "carry a selected typed profile fact through planning and surface realization without losing its value, relation, answerability boundary, or natural Japanese form",
+  "problem_evidence": {
+    "v71_result": "reports/profile_relevance_speakability_v71_analysis.json",
+    "v71_diagnostic": "reports/profile_relevance_speakability_v71_diagnostic.md",
+    "selector_result": "23/24 exact selections, zero irrelevant-profile false positives",
+    "final_answer_result": "12/24 overall and 6/16 relevant cases",
+    "largest_family_failure": "supported state updates scored 0/4 despite three exact selections",
+    "observed_failure_modes": [
+      "selected value omitted from final reply",
+      "preference polarity omitted or reversed",
+      "selected user name replaced by the assistant identity",
+      "internal labels such as favorites= and dislikes= leaked to the surface",
+      "full-turn p95 reached about 60 seconds while selector p95 remained about 35 milliseconds"
+    ]
+  },
+  "research_basis": [
+    {
+      "source": "Structured Control Decomposition for Faithful Multi-Turn Retrieval-Augmented Generation",
+      "url": "https://aclanthology.org/2026.semeval-1.363/",
+      "design_use": "Represent atomic evidence, answerability, and generation control separately so retrieved information is not lost in a loosely coupled generation stage."
+    },
+    {
+      "source": "The Whole Truth and Nothing But the Truth: Faithful and Controllable Dialogue Response Generation with Dataflow Transduction and Constrained Decoding",
+      "url": "https://aclanthology.org/2023.findings-acl.351/",
+      "design_use": "Separate rule-governed content selection from fluent surface realization so truthfulness and style do not rely on one unconstrained generator."
+    },
+    {
+      "source": "Controllable Generation of Dialogue Acts for Dialogue Systems via Few-Shot Response Generation and Ranking",
+      "url": "https://aclanthology.org/2023.sigdial-1.32/",
+      "design_use": "Evaluate semantic fidelity independently from natural wording and preserve dialogue-act attributes during realization."
+    }
+  ],
+  "causal_hypothesis": "Given the same V71 provenance selector output and the same full-chat pipeline, a generic typed evidence-to-speech-plan bridge that explicitly preserves fact value and relation will improve final supported-memory replies over both the current heuristic pipeline and a value-only bridge. It should also reduce unnecessary LeftBrain model calls for explicit memory recall. If evidence contracts are exact but final replies still fail, the remaining bottleneck is RightBrain realization or self-monitor repair rather than retrieval or planning.",
+  "causal_boundary": "This experiment tests already-selected current typed profile facts in isolated Japanese full-chat turns. It does not test extraction, legacy migration, episodic or semantic memory, decay, personality learning, model-blended RightBrain naturalness, ToMBench, physical actions, or broad human likeness.",
+  "planned_dataset": {
+    "path": "datasets/profile_grounded_speech_plan_v72.json",
+    "case_count": 24,
+    "scenario_family_count": 6,
+    "cases_per_family": 4,
+    "scenario_families": [
+      "supported_preference_recall",
+      "supported_state_update",
+      "supported_name_recall",
+      "supported_entity_confirmation",
+      "unknown_profile_abstention",
+      "irrelevant_profile_suppression"
+    ],
+    "memory_relevant_case_count": 16,
+    "memory_irrelevant_case_count": 8,
+    "abstention_case_count": 4,
+    "source_type": "researcher_authored_fresh_project_holdout",
+    "must_exclude_v71_inputs_and_values": true,
+    "official_benchmark_items": false
+  },
+  "conditions": {
+    "provenance_selection_current_pipeline_control": "Use the frozen V71 provenance selector and current heuristic memory-gravity/planning path.",
+    "provenance_selection_value_only_plan_control": "Use the same selected candidate and a generic typed plan carrying answerability plus the fact value, but deliberately omit the like/dislike/favorite relation slot.",
+    "provenance_selection_value_relation_plan_treatment": "Use the same selected candidate and generic typed plan carrying answerability, fact value, fact relation, natural Japanese semantic groups, and structural-label prohibitions."
+  },
+  "primary_causal_comparison": "value_relation_plan_treatment versus value_only_plan_control",
+  "secondary_causal_comparison": "value_relation_plan_treatment versus current_pipeline_control",
+  "only_changed_component_for_primary_comparison": "whether the typed speech plan contains and verifies the fact relation; selected memory, value slot, answerability, selector, full-chat pipeline, RightBrain mode, and scorer remain identical",
+  "fixed_variables": [
+    "fresh input, typed profile history, and source utterance",
+    "V67 validity resolver and frozen V71 provenance selector",
+    "one selected candidate maximum and V71 selector thresholds",
+    "profile projector and unknown-memory contract",
+    "qwen2.5:7b digest 845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "LeftBrain temperature 0 and seed 20260772",
+    "deterministic current RightBrain with model loading disabled",
+    "temporary Chroma, initial psyche, case order, condition order, and scorer"
+  ],
+  "planned_contract": {
+    "answerability_values": ["supported", "unsupported", "not_requested"],
+    "fact_types": ["name", "like", "dislike", "favorite"],
+    "relation_values": ["preferred_name", "likes", "dislikes", "favorite"],
+    "selected_candidate_count_max": 1,
+    "required_value_group": "the selected value or a conservative Japanese surface form",
+    "required_relation_groups": {
+      "like": ["好き", "気に入", "好み"],
+      "dislike": ["苦手", "嫌い", "好きじゃない", "無理"],
+      "favorite": ["一番好き", "本命", "好き"],
+      "name": []
+    },
+    "forbidden_structural_surfaces": ["FactType=", "Value=", "favorites=", "likes=", "dislikes=", "Name="],
+    "direct_runtime_activation": false
+  },
+  "metrics": [
+    "evidence_contract_exact_case_count",
+    "overall_case_pass_count",
+    "relevant_case_pass_count",
+    "value_slot_hit_count",
+    "relation_slot_hit_count",
+    "polarity_error_count",
+    "structural_label_leak_count",
+    "irrelevant_profile_intrusion_count",
+    "abstention_pass_count",
+    "newly_passed_vs_value_only",
+    "regressions_vs_value_only",
+    "newly_passed_vs_current_pipeline",
+    "leftbrain_model_call_count",
+    "supported_memory_turn_median_seconds",
+    "supported_memory_turn_p95_seconds",
+    "selector_median_seconds",
+    "selector_p95_seconds"
+  ],
+  "ability_success_gates": {
+    "evidence_contract_exact_case_count_min": 23,
+    "relevant_case_pass_count_min": 14,
+    "overall_case_pass_count_min": 22,
+    "value_slot_hit_count_min": 15,
+    "relation_slot_hit_count_min": 11,
+    "polarity_error_count_max": 0,
+    "structural_label_leak_count_max": 0,
+    "irrelevant_profile_intrusion_count_max": 0,
+    "abstention_pass_count_min": 4,
+    "newly_passed_vs_value_only_min": 4,
+    "regressions_vs_value_only_max": 1,
+    "newly_passed_vs_current_pipeline_min": 6
+  },
+  "local_cost_gates": {
+    "leftbrain_model_calls_reduction_vs_current_min": 8,
+    "supported_memory_turn_median_seconds_max": 3.0,
+    "supported_memory_turn_p95_seconds_max": 8.0,
+    "selector_median_seconds_max": 0.05,
+    "selector_p95_seconds_max": 0.1,
+    "transport_error_count_max": 0,
+    "production_database_access_count_max": 0,
+    "physical_action_count_max": 0
+  },
+  "decision_rule": {
+    "ability_and_cost_gates_pass": "Authorize only a separate grounded-plan answer shadow; runtime activation remains forbidden.",
+    "contracts_pass_but_answers_fail": "Freeze answer use and move the next investigation to RightBrain realization or self-monitor repair.",
+    "contracts_fail": "Stop the bridge hypothesis and reassess the typed evidence representation without tuning on the holdout.",
+    "cost_fails": "Keep only optimization research authorized.",
+    "direct_activation": "Forbidden."
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, artifact/model drift, dataset overlap, expected-field leakage, production database access, or missing temporary isolation.",
+    "Do not edit cases, expected values, relation groups, condition order, bridge rules, thresholds, or scorer after the harness lock is merged.",
+    "Do not add V72 IDs, values, expected markers, or full replies to runtime or bridge code.",
+    "Do not use the V71 or V72 case list as demonstrations or retrieval examples.",
+    "Do not lower gates or patch individual failures after formal output."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "bridge_implementation": false,
+    "harness_implementation": false,
+    "formal_inference": false,
+    "temporary_chroma_access": false,
+    "production_database_access": false,
+    "runtime_change": false,
+    "answer_use": false
+  }
+}
