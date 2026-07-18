@@ -1,0 +1,153 @@
+{
+  "schema": "uruha_adaptive_ordinary_planner_preregistration_v73",
+  "experiment_id": "adaptive_ordinary_planner_v73",
+  "created_at": "2026-07-18T18:01:33+09:00",
+  "repository_parent_commit": "ea9314a0ac8a47f46db6aeb52bebe0f3a2006f8d",
+  "status": "preregistered_before_runtime_bridge_holdout_harness_or_formal_inference",
+  "target_ability": "allocate less planning compute to easy ordinary dialogue while preserving escalation for ambiguity, memory, safety, tools, and complex reasoning",
+  "problem_evidence": {
+    "v72_result": "reports/profile_grounded_speech_plan_v72_analysis.json",
+    "failed_gate": "leftbrain model-call reduction was 6, below the preregistered minimum of 8",
+    "residual_bottleneck": "three ordinary not-requested turns still invoked the full planner and each required about 50 to 60 seconds",
+    "development_screen_scope": "four researcher-authored ordinary Japanese utterances, excluded from the formal holdout",
+    "development_screen_observations": [
+      "qwen3.5:0.8b was fast but produced invalid JSON on all four utterances",
+      "qwen3.5:2b produced valid JSON but often weak semantic plans",
+      "qwen3.5:4b produced richer plans but one plan contradicted the user's request",
+      "the existing qwen2.5:7b with a compact contract produced valid plans in about 2.2 to 6.0 seconds, indicating that plan complexity is a more immediate bottleneck than parameter count"
+    ],
+    "development_inputs_must_not_enter_formal_holdout": [
+      "dev_worry",
+      "dev_invite",
+      "dev_encourage",
+      "dev_bored"
+    ]
+  },
+  "research_basis": [
+    {
+      "source": "RouteLLM: Learning to Route LLMs from Preference Data",
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/5503a7c69d48a2f86fc00b3dc09de686-Abstract-Conference.html",
+      "design_use": "Use a routing decision rather than spending maximal inference cost on every input."
+    },
+    {
+      "source": "FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance",
+      "url": "https://arxiv.org/abs/2305.05176",
+      "design_use": "Test a cascade that escalates only inputs not safely handled by the cheap stage."
+    },
+    {
+      "source": "Confident Adaptive Language Modeling",
+      "url": "https://research.google/pubs/confident-adaptive-language-modeling/",
+      "design_use": "Allocate compute according to input difficulty and require quality preservation, not speed alone."
+    },
+    {
+      "source": "What Helps Transformers Recognize Conversational Structure?",
+      "url": "https://aclanthology.org/2021.tacl-1.69/",
+      "design_use": "Retain bounded recent-dialogue context because dialogue acts can be ambiguous without context."
+    }
+  ],
+  "causal_hypothesis": "For fresh rule-miss dialogue turns, a compact same-model planner followed by conservative confidence escalation will retain the current full planner's semantic and safety quality while reducing full-planner calls, generated planning tokens, and ordinary-turn latency. An always-compact control should reveal whether escalation is necessary. If quality retention or escalation recall fails, adaptive compact planning must remain disabled.",
+  "causal_boundary": "This pilot tests planning allocation for isolated multilingual dialogue turns with deterministic RightBrain realization. It does not establish broad human likeness, model-blended RightBrain quality, long-session memory, personality learning, reflection, ToMBench improvement, VRM actions, or production readiness.",
+  "planned_conditions": {
+    "current_full_planner_control": "Current rule miss path with the full three-candidate LeftBrain prompt and planner.",
+    "always_compact_control": "Same qwen2.5:7b and compact contract, but never escalate after a valid compact response.",
+    "confidence_cascade_treatment": "Same compact call, then use the plan only when contracts and confidence pass; otherwise invoke the unchanged full planner. Hard safety, memory, tool, and complexity vetoes escalate before compact inference."
+  },
+  "primary_causal_comparison": "confidence_cascade_treatment versus current_full_planner_control",
+  "router_necessity_comparison": "confidence_cascade_treatment versus always_compact_control on must-escalate cases",
+  "fixed_variables": [
+    "qwen2.5:7b digest 845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "temperature 0 and seed 20260773",
+    "same fresh input and bounded recent context",
+    "same memory snapshot, psyche, high-low route, appraisal, RightBrain, surface checks, and scoring",
+    "deterministic RightBrain with model loading disabled",
+    "temporary Chroma and no production database or physical actions",
+    "case order and condition order",
+    "compact confidence threshold 0.82"
+  ],
+  "planned_holdout": {
+    "path": "datasets/adaptive_ordinary_planner_v73.json",
+    "case_count": 24,
+    "fast_eligible_case_count": 12,
+    "must_escalate_case_count": 12,
+    "language_counts": {
+      "ja": 8,
+      "zh": 8,
+      "en": 8
+    },
+    "families": [
+      "ordinary_emotional_support",
+      "ordinary_practical_response",
+      "ordinary_invitation_or_encouragement",
+      "ordinary_light_chat",
+      "ambiguous_or_context_dependent",
+      "memory_dependent",
+      "safety_or_boundary",
+      "tool_or_complex_reasoning"
+    ],
+    "source_type": "researcher-authored fresh project pilot holdout after implementation freeze",
+    "official_benchmark_items": false,
+    "must_exclude_v72_and_v73_development_inputs": true
+  },
+  "metrics": [
+    "route_exact_count",
+    "must_escalate_recall_count",
+    "false_fast_count",
+    "compact_contract_valid_count",
+    "overall_semantic_pass_count",
+    "fast_eligible_semantic_pass_count",
+    "must_escalate_semantic_pass_count",
+    "unsupported_fact_count",
+    "memory_intrusion_count",
+    "surface_violation_count",
+    "normalized_unique_reply_rate",
+    "full_planner_call_count",
+    "compact_planner_call_count",
+    "planning_output_token_count",
+    "fast_eligible_median_seconds",
+    "fast_eligible_p95_seconds",
+    "overall_median_seconds",
+    "overall_p95_seconds",
+    "peak_process_rss_mb"
+  ],
+  "success_gates": {
+    "route_exact_count_min": 22,
+    "must_escalate_recall_count_min": 12,
+    "false_fast_count_max": 0,
+    "overall_semantic_pass_retention_vs_current_min": -1,
+    "fast_eligible_semantic_pass_count_min": 10,
+    "must_escalate_semantic_pass_retention_vs_current_min": 0,
+    "unsupported_fact_count_max": 0,
+    "memory_intrusion_count_max": 0,
+    "surface_violation_count_max": 0,
+    "normalized_unique_reply_rate_min": 0.75,
+    "full_planner_call_reduction_vs_current_min": 8,
+    "planning_output_token_reduction_fraction_min": 0.5,
+    "fast_eligible_median_seconds_max": 8.0,
+    "fast_eligible_p95_seconds_max": 15.0,
+    "transport_error_count_max": 0,
+    "production_database_access_count_max": 0,
+    "physical_action_count_max": 0
+  },
+  "stop_conditions": [
+    "Stop on dirty tracked tree, model drift, artifact drift, dataset overlap, production database access, or missing temporary isolation.",
+    "Do not use V72 or V73 development inputs, values, expected markers, or final replies in runtime, router, compact planner, or formal holdout.",
+    "Freeze implementation before constructing the independent formal holdout.",
+    "Do not modify router rules, compact prompt, confidence threshold, cases, expected fields, scorer, or gates after the harness lock is merged.",
+    "Do not lower gates, patch individual failures, or rerun formal inference after seeing results."
+  ],
+  "decision_rule": {
+    "all_gates_pass": "Authorize only a separate runtime-shadow experiment; direct answer use remains forbidden.",
+    "quality_or_escalation_fails": "Reject adaptive planning and preserve the current runtime unchanged.",
+    "quality_passes_but_cost_fails": "Preserve evidence but reject the optimization.",
+    "direct_activation": "Forbidden."
+  },
+  "authorizations": {
+    "shadow_bridge_implementation": true,
+    "development_unit_tests": true,
+    "formal_holdout_construction": false,
+    "formal_inference": false,
+    "production_database_access": false,
+    "runtime_activation": false,
+    "answer_use": false
+  }
+}
