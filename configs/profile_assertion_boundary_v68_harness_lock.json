@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_profile_assertion_boundary_harness_lock_v68",
+  "experiment_id": "profile_assertion_boundary_v68",
+  "created_at": "2026-07-18T14:01:54+09:00",
+  "harness_parent_commit": "2e18241",
+  "pilot_authorized_only_after_lock_merge": true,
+  "conditions": ["current_unguarded_extractor_control", "assertion_scope_guard_treatment"],
+  "frozen_artifacts": {
+    "preregistration": {"path": "configs/profile_assertion_boundary_v68_preregistration.json", "sha256": "44d2382e28aae2ea14743361b2c3d1f377a1029236a67bbf4ec8dfcec40d922a"},
+    "dataset_closure": {"path": "configs/profile_assertion_boundary_v68_dataset_closure.json", "sha256": "3772bdd0a78ff6aa59ae1ef75b7b8b01802547788d606a11af4975b51ada2a0d"},
+    "dataset": {"path": "datasets/profile_assertion_boundary_v68.json", "sha256": "4757a8c2c677c54fc0d098c46106c7270f46c61ff13c3142d8125ae3efc14fcd"},
+    "dataset_auditor": {"path": "audit_profile_assertion_boundary_v68_dataset.py", "sha256": "da12da92fbd5d0b517a07d87eb4fd8f24f3f6886324c20d55c34c6e771a1b907"},
+    "dataset_audit": {"path": "reports/profile_assertion_boundary_v68_dataset_audit.json", "sha256": "0d4b95b5d10ee26b83d1d3ae6e7edb4af95fd8854ea0e792b17a1dc7502475c2"},
+    "dataset_test": {"path": "test_profile_assertion_boundary_v68_dataset.py", "sha256": "effb0061a87fa546897d1757f958ffd4178f42538fa1e477b868434a11320425"},
+    "unchanged_extractor_runtime": {"path": "uruha_brain_mac.py", "sha256": "53cbdee26d3be3e42399c8e512ceb17884ead0bb2143d0fbda115a25fa90593a"},
+    "candidate": {"path": "uruha_profile_assertion.py", "sha256": "dd5b74e92d394c415e5b0694f8a2cfbf8705e0550b35ce60babc3a17c96dff28"},
+    "runner": {"path": "run_profile_assertion_boundary_v68.py", "sha256": "bf4bf71deeee79c9403a4471550b37bf70c6308c6374aa50ce3db3ae0ab1e6c7"},
+    "analyzer": {"path": "analyze_profile_assertion_boundary_v68.py", "sha256": "713ebcf2fce2a11066d75ecb9b8313f8295cae5b89735ddeb1d4f6b6c63035b1"},
+    "harness_test": {"path": "test_profile_assertion_boundary_v68_harness.py", "sha256": "80d4d67ca7d56a22540b65e77f99756ea3c8bcf1e101b8ec3b981623bc476e0a"}
+  },
+  "preflight": {
+    "arguments": ["-m", "unittest", "-q", "test_profile_assertion_boundary_v68_dataset.py", "test_profile_assertion_boundary_v68_harness.py"],
+    "expected_test_count": 11,
+    "must_pass_before_formal_run": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "pilot_execution_authorized": true,
+    "result_overwrite_authorized": false,
+    "language_model_inference_authorized": false,
+    "persistent_memory_access_authorized": false,
+    "timing": {"warmup_iterations_per_case": 100, "scored_iterations_per_case": 1000}
+  },
+  "result_artifacts": {
+    "raw": "reports/profile_assertion_boundary_v68_raw.json",
+    "analysis_json": "reports/profile_assertion_boundary_v68_analysis.json",
+    "analysis_markdown": "reports/profile_assertion_boundary_v68_analysis.md",
+    "result_lock": "configs/profile_assertion_boundary_v68_result_lock.json"
+  },
+  "persistent_memory_access_authorized": false,
+  "runtime_change_authorized": false,
+  "stateful_writer_authorized": false,
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "Passing all gates authorizes only a separate production guard integration with regression tests; it does not authorize stateful persistence."
+}
