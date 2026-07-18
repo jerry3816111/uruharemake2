@@ -71,6 +71,20 @@ def _canonical_sha256(value):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _training_example_fingerprint(row):
+    input_context = (row or {}).get("input") or {}
+    return _canonical_sha256(
+        {
+            "user_utterance": _normalize(input_context.get("user_utterance")),
+            "language": input_context.get("language"),
+            "recent_dialogue": input_context.get("recent_dialogue") or [],
+            "working_memory": input_context.get("working_memory") or [],
+            "psyche_state": input_context.get("psyche_state") or {},
+            "relationship_state": input_context.get("relationship_state") or {},
+        }
+    )
+
+
 def _strict_review(row, contract):
     review = row.get("human_review") if isinstance(row, dict) else None
     if not isinstance(review, dict) or review.get("decision") != contract["strict_human_review"]["required_decision"]:
@@ -145,6 +159,7 @@ def _load_source(spec, contract):
     adapter = spec["adapter"]
     record_count = 0
     units = []
+    protected_utterances = []
     surface_human_accept_count = 0
 
     if adapter == "strict_planner_jsonl":
@@ -223,6 +238,20 @@ def _load_source(spec, contract):
     elif adapter == "formal_holdouts":
         rows = [row for path in paths for row in _load_json(path).get("cases", [])]
         record_count = len(rows)
+        protected_utterances = []
+        for row in rows:
+            planning_packet = row.get("planning_packet") or {}
+            utterance = str(
+                row.get("user_input")
+                or row.get("prompt")
+                or row.get("utterance")
+                or planning_packet.get("user_input")
+                or planning_packet.get("prompt")
+                or planning_packet.get("utterance")
+                or ""
+            ).strip()
+            if utterance:
+                protected_utterances.append(utterance)
     elif adapter == "annotation_drafts":
         rows = [row for path in paths for row in _load_json(path).get("drafts", [])]
         record_count = len(rows)
@@ -238,19 +267,26 @@ def _load_source(spec, contract):
         "bindings": bindings,
         "record_count": record_count,
         "units": units,
+        "protected_utterances": protected_utterances + [
+            unit["user_utterance"] for unit in units if str(unit.get("user_utterance") or "").strip()
+        ],
         "surface_human_accept_count": surface_human_accept_count,
     }
 
 
-def _discover_plan_signature_files():
+def _discover_plan_signature_files(contract):
     discovered = []
+    excluded_prefixes = tuple(contract.get("discovery_excluded_quarantine_prefixes") or [])
     for directory in (ROOT / "analysis", ROOT / "datasets", ROOT / "reports"):
         for path in sorted(directory.rglob("*")):
             if path.suffix not in {".json", ".jsonl"} or path in {REPORT_JSON_PATH}:
                 continue
+            relative = str(path.relative_to(ROOT))
+            if relative.startswith(excluded_prefixes):
+                continue
             data = path.read_bytes()
             if PLAN_SIGNATURES[0] in data or all(signature in data for signature in PLAN_SIGNATURES[1:]):
-                discovered.append(str(path.relative_to(ROOT)))
+                discovered.append(relative)
     return sorted(discovered)
 
 
@@ -372,15 +408,15 @@ def build_audit():
     contract = _load_json(CONTRACT_PATH)
     loaded_sources = [_load_source(spec, contract) for spec in contract["source_registry"]]
     protected_inputs = {
-        _normalize(unit["user_utterance"])
+        _normalize(user_utterance)
         for loaded in loaded_sources
         if loaded["spec"]["protected_evaluation"]
-        for unit in loaded["units"]
-        if _normalize(unit["user_utterance"])
+        for user_utterance in loaded["protected_utterances"]
+        if _normalize(user_utterance)
     }
     summaries = [_source_summary(loaded, contract, protected_inputs) for loaded in loaded_sources]
 
-    discovered = _discover_plan_signature_files()
+    discovered = _discover_plan_signature_files(contract)
     registered = _registered_paths(contract)
     unregistered = sorted(path for path in discovered if path not in registered)
     eligible_rows = _eligible_strict_rows(contract, protected_inputs)
@@ -405,10 +441,8 @@ def build_audit():
     totals["unprotected_complete_plan_count"] = (
         totals["complete_plan_count"] - totals["protected_complete_plan_count"]
     )
-    exact_duplicate_count = 0
-    normalized_eligible = [_normalize((row.get("input") or {}).get("user_utterance")) for row in eligible_rows]
-    normalized_eligible = [value for value in normalized_eligible if value]
-    exact_duplicate_count = len(normalized_eligible) - len(set(normalized_eligible))
+    eligible_fingerprints = [_training_example_fingerprint(row) for row in eligible_rows]
+    exact_duplicate_count = len(eligible_fingerprints) - len(set(eligible_fingerprints))
     near_eval_overlap_count = 0
 
     integrity_checks = {

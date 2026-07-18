@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_planner_supervision_collection_contract_v76",
+  "status": "frozen_before_implementation",
+  "frozen_on": "2026-07-18",
+  "parent_commit": "a4e68fbbeeec3d79e3762b2315c2f941c80eaf59",
+  "ability_target": "learn_from_interaction_by_collecting_reviewed_leftbrain_plans",
+  "problem_evidence": {
+    "v75_scanned_source_records": 2714,
+    "v75_complete_plan_count": 44,
+    "v75_protected_complete_plan_count": 44,
+    "v75_strict_plan_accept_count": 0,
+    "v75_training_eligible_count": 0
+  },
+  "hypothesis": "Existing Web conversation logs already contain the raw utterance, selected working memory, psyche state, and full plan needed to create structurally valid planner-supervision candidates without another model call. Pending candidates will remain ineligible until a human accepts the plan and certifies that the session is non-benchmark and consented for training.",
+  "changed_variable": "planner_supervision_collection_and_review_boundary_only",
+  "fixed_variables": [
+    "uruha_brain_runtime",
+    "leftbrain_model",
+    "rightbrain_model",
+    "prompts",
+    "memory_selection",
+    "reply_generation",
+    "benchmark_datasets",
+    "v75_readiness_thresholds"
+  ],
+  "success_gates": {
+    "additional_model_calls": 0,
+    "runtime_files_changed": 0,
+    "pending_candidate_training_eligible": 0,
+    "accepted_nonbenchmark_fixture_training_eligible": 1,
+    "rejected_fixture_training_eligible": 0,
+    "protected_overlap_candidate_count": 0,
+    "duplicate_candidate_count": 0
+  },
+  "stop_conditions": [
+    "a pending candidate can enter the train split",
+    "a protected evaluation utterance can become a candidate",
+    "acceptance is possible without explicit non-benchmark certification and training consent",
+    "the collection path performs a model call or changes production reply behavior",
+    "the accepted target hash does not bind the exact reviewed plan"
+  ],
+  "accepted_input_modes": [
+    "text",
+    "audio"
+  ],
+  "near_evaluation_overlap_threshold": 0.92,
+  "scenario_families": [
+    "ordinary_direct",
+    "emotional_support",
+    "ambiguity_clarification",
+    "memory_recall_update",
+    "false_belief_tom",
+    "pragmatic_implicature",
+    "boundary_safety",
+    "action_function_call",
+    "relationship_personality",
+    "reflection_repair"
+  ],
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "candidate_report": "analysis/local_planner_supervision_v76/candidate_report.json",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+    "review_log": "analysis/local_planner_supervision_v76/reviews.jsonl",
+    "strict_annotations": "analysis/planner_supervision_annotations_v75.jsonl"
+  },
+  "privacy_boundary": {
+    "raw_dialogue_and_pending_candidates_are_gitignored": true,
+    "strict_annotations_are_gitignored_until_deidentification_audit": true,
+    "automatic_cloud_upload": false,
+    "automatic_training": false
+  },
+  "human_only_decisions": [
+    "whether_the_plan_is_semantically_and_socially_reasonable",
+    "whether_the_session_is_not_a_benchmark_or_holdout",
+    "whether_the_session_may_be_used_for_training"
+  ],
+  "automatic_checks": [
+    "required_input_and_plan_fields",
+    "target_and_source_sha256",
+    "exact_and_near_evaluation_overlap",
+    "candidate_deduplication",
+    "session_certification",
+    "review_uniqueness",
+    "train_split_assignment"
+  ],
+  "evidence_boundary": "V76 can prove only that trustworthy planner-supervision data can be collected and gated locally. It cannot prove that a trained planner will improve cognition, dialogue quality, benchmark scores, or human-likeness."
+}
