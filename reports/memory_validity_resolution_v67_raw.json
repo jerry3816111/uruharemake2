@@ -1,0 +1,953 @@
+{
+  "schema": "uruha_memory_validity_resolution_raw_v67",
+  "experiment_id": "memory_validity_resolution_v67",
+  "run_started_at": "2026-07-18T13:47:58.199463+09:00",
+  "git_head": "3bee272d371b71066da28abdfa9894d887440a7f",
+  "conditions": [
+    "current_all_candidates_eligible_control",
+    "generic_validity_resolver_treatment"
+  ],
+  "case_count": 18,
+  "row_count": 36,
+  "warmup_iterations_per_case": 100,
+  "scored_iterations_per_case": 1000,
+  "gold_in_raw": false,
+  "language_model_inference": false,
+  "production_runtime_changed": false,
+  "production_memory_read_or_write": false,
+  "rows": [
+    {
+      "case_id": "v67_update_drink",
+      "scenario_family": "single_value_update",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "drink_tea_old",
+        "drink_coffee_new"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "drink_tea_old",
+        "drink_coffee_new"
+      ],
+      "decisions": {
+        "drink_tea_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "drink_coffee_new": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_update_drink",
+      "scenario_family": "single_value_update",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "drink_coffee_new"
+      ],
+      "historical_ids": [
+        "drink_tea_old"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "drink_coffee_new"
+      ],
+      "decisions": {
+        "drink_tea_old": {
+          "partition": "historical",
+          "reason": "newer_single_value"
+        },
+        "drink_coffee_new": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 9.987417e-06
+    },
+    {
+      "case_id": "v67_update_city",
+      "scenario_family": "single_value_update",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "city_osaka_old",
+        "city_kyoto_new"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "city_osaka_old",
+        "city_kyoto_new"
+      ],
+      "decisions": {
+        "city_osaka_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "city_kyoto_new": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_update_city",
+      "scenario_family": "single_value_update",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "city_kyoto_new"
+      ],
+      "historical_ids": [
+        "city_osaka_old"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "city_kyoto_new"
+      ],
+      "decisions": {
+        "city_osaka_old": {
+          "partition": "historical",
+          "reason": "newer_single_value"
+        },
+        "city_kyoto_new": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 1.0034459000000001e-05
+    },
+    {
+      "case_id": "v67_update_meeting_day",
+      "scenario_family": "single_value_update",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "meeting_monday_old",
+        "meeting_friday_new"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "meeting_monday_old",
+        "meeting_friday_new"
+      ],
+      "decisions": {
+        "meeting_monday_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "meeting_friday_new": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_update_meeting_day",
+      "scenario_family": "single_value_update",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "meeting_friday_new"
+      ],
+      "historical_ids": [
+        "meeting_monday_old"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "meeting_friday_new"
+      ],
+      "decisions": {
+        "meeting_monday_old": {
+          "partition": "historical",
+          "reason": "newer_single_value"
+        },
+        "meeting_friday_new": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 1.0085791999999999e-05
+    },
+    {
+      "case_id": "v67_retract_membership",
+      "scenario_family": "explicit_retraction",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "gym_member_old",
+        "gym_member_retracted",
+        "chess_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "gym_member_old",
+        "gym_member_retracted",
+        "chess_active"
+      ],
+      "decisions": {
+        "gym_member_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "gym_member_retracted": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "chess_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_retract_membership",
+      "scenario_family": "explicit_retraction",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "chess_active"
+      ],
+      "historical_ids": [
+        "gym_member_old",
+        "gym_member_retracted"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "chess_active"
+      ],
+      "decisions": {
+        "gym_member_old": {
+          "partition": "historical",
+          "reason": "explicitly_superseded"
+        },
+        "gym_member_retracted": {
+          "partition": "historical",
+          "reason": "retraction_record"
+        },
+        "chess_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 9.232666000000001e-06
+    },
+    {
+      "case_id": "v67_retract_nickname",
+      "scenario_family": "explicit_retraction",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "nickname_mimi_old",
+        "nickname_mimi_retracted",
+        "language_japanese_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "nickname_mimi_old",
+        "nickname_mimi_retracted",
+        "language_japanese_active"
+      ],
+      "decisions": {
+        "nickname_mimi_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "nickname_mimi_retracted": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "language_japanese_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_retract_nickname",
+      "scenario_family": "explicit_retraction",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "language_japanese_active"
+      ],
+      "historical_ids": [
+        "nickname_mimi_old",
+        "nickname_mimi_retracted"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "language_japanese_active"
+      ],
+      "decisions": {
+        "nickname_mimi_old": {
+          "partition": "historical",
+          "reason": "explicitly_superseded"
+        },
+        "nickname_mimi_retracted": {
+          "partition": "historical",
+          "reason": "retraction_record"
+        },
+        "language_japanese_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 9.234957999999999e-06
+    },
+    {
+      "case_id": "v67_retract_diet",
+      "scenario_family": "explicit_retraction",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "vegetarian_old",
+        "vegetarian_retracted",
+        "peanut_allergy_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "vegetarian_old",
+        "vegetarian_retracted",
+        "peanut_allergy_active"
+      ],
+      "decisions": {
+        "vegetarian_old": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "vegetarian_retracted": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "peanut_allergy_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_retract_diet",
+      "scenario_family": "explicit_retraction",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "peanut_allergy_active"
+      ],
+      "historical_ids": [
+        "vegetarian_old",
+        "vegetarian_retracted"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "peanut_allergy_active"
+      ],
+      "decisions": {
+        "vegetarian_old": {
+          "partition": "historical",
+          "reason": "explicitly_superseded"
+        },
+        "vegetarian_retracted": {
+          "partition": "historical",
+          "reason": "retraction_record"
+        },
+        "peanut_allergy_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 9.205041000000001e-06
+    },
+    {
+      "case_id": "v67_expired_fever",
+      "scenario_family": "expired_temporary_state",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "fever_last_week",
+        "walk_preference_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "walk_preference_active",
+        "fever_last_week"
+      ],
+      "decisions": {
+        "fever_last_week": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "walk_preference_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_expired_fever",
+      "scenario_family": "expired_temporary_state",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "walk_preference_active"
+      ],
+      "historical_ids": [
+        "fever_last_week"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "walk_preference_active"
+      ],
+      "decisions": {
+        "fever_last_week": {
+          "partition": "historical",
+          "reason": "expired"
+        },
+        "walk_preference_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 6.967834e-06
+    },
+    {
+      "case_id": "v67_expired_coffee_pause",
+      "scenario_family": "expired_temporary_state",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "coffee_pause_expired",
+        "cold_drink_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "coffee_pause_expired",
+        "cold_drink_active"
+      ],
+      "decisions": {
+        "coffee_pause_expired": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "cold_drink_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_expired_coffee_pause",
+      "scenario_family": "expired_temporary_state",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "cold_drink_active"
+      ],
+      "historical_ids": [
+        "coffee_pause_expired"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "cold_drink_active"
+      ],
+      "decisions": {
+        "coffee_pause_expired": {
+          "partition": "historical",
+          "reason": "expired"
+        },
+        "cold_drink_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.3425000000000004e-06
+    },
+    {
+      "case_id": "v67_expired_travel",
+      "scenario_family": "expired_temporary_state",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "tokyo_hotel_expired",
+        "home_address_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "home_address_active",
+        "tokyo_hotel_expired"
+      ],
+      "decisions": {
+        "tokyo_hotel_expired": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "home_address_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_expired_travel",
+      "scenario_family": "expired_temporary_state",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "home_address_active"
+      ],
+      "historical_ids": [
+        "tokyo_hotel_expired"
+      ],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "home_address_active"
+      ],
+      "decisions": {
+        "tokyo_hotel_expired": {
+          "partition": "historical",
+          "reason": "expired"
+        },
+        "home_address_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.61175e-06
+    },
+    {
+      "case_id": "v67_condition_food_match",
+      "scenario_family": "conditional_applicability",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "lactose_food_condition",
+        "quiet_restaurant_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "lactose_food_condition",
+        "quiet_restaurant_active"
+      ],
+      "decisions": {
+        "lactose_food_condition": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "quiet_restaurant_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_condition_food_match",
+      "scenario_family": "conditional_applicability",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "lactose_food_condition",
+        "quiet_restaurant_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "lactose_food_condition",
+        "quiet_restaurant_active"
+      ],
+      "decisions": {
+        "lactose_food_condition": {
+          "partition": "eligible",
+          "reason": "active"
+        },
+        "quiet_restaurant_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.4357909999999996e-06
+    },
+    {
+      "case_id": "v67_condition_work_mismatch",
+      "scenario_family": "conditional_applicability",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "work_bullets_condition",
+        "warm_friend_style_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "work_bullets_condition",
+        "warm_friend_style_active"
+      ],
+      "decisions": {
+        "work_bullets_condition": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "warm_friend_style_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_condition_work_mismatch",
+      "scenario_family": "conditional_applicability",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "warm_friend_style_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [
+        "work_bullets_condition"
+      ],
+      "working_memory_ids": [
+        "warm_friend_style_active"
+      ],
+      "decisions": {
+        "work_bullets_condition": {
+          "partition": "inapplicable",
+          "reason": "condition_mismatch"
+        },
+        "warm_friend_style_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.020708e-06
+    },
+    {
+      "case_id": "v67_condition_gaming_mismatch",
+      "scenario_family": "conditional_applicability",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "captain_gaming_condition",
+        "family_name_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "captain_gaming_condition",
+        "family_name_active"
+      ],
+      "decisions": {
+        "captain_gaming_condition": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "family_name_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_condition_gaming_mismatch",
+      "scenario_family": "conditional_applicability",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "family_name_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [
+        "captain_gaming_condition"
+      ],
+      "working_memory_ids": [
+        "family_name_active"
+      ],
+      "decisions": {
+        "captain_gaming_condition": {
+          "partition": "inapplicable",
+          "reason": "condition_mismatch"
+        },
+        "family_name_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 6.830125e-06
+    },
+    {
+      "case_id": "v67_multi_fruit",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "fruit_apple_active",
+        "fruit_banana_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "fruit_apple_active",
+        "fruit_banana_active"
+      ],
+      "decisions": {
+        "fruit_apple_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "fruit_banana_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_multi_fruit",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "fruit_apple_active",
+        "fruit_banana_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "fruit_apple_active",
+        "fruit_banana_active"
+      ],
+      "decisions": {
+        "fruit_apple_active": {
+          "partition": "eligible",
+          "reason": "active"
+        },
+        "fruit_banana_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 6.923958e-06
+    },
+    {
+      "case_id": "v67_multi_language",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "language_japanese",
+        "language_chinese"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "language_japanese",
+        "language_chinese"
+      ],
+      "decisions": {
+        "language_japanese": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "language_chinese": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_multi_language",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "language_japanese",
+        "language_chinese"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "language_japanese",
+        "language_chinese"
+      ],
+      "decisions": {
+        "language_japanese": {
+          "partition": "eligible",
+          "reason": "active"
+        },
+        "language_chinese": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.025709e-06
+    },
+    {
+      "case_id": "v67_multi_hobby",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "hobby_music_active",
+        "hobby_hiking_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "hobby_music_active",
+        "hobby_hiking_active"
+      ],
+      "decisions": {
+        "hobby_music_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        },
+        "hobby_hiking_active": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_multi_hobby",
+      "scenario_family": "multi_value_coexistence",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "hobby_music_active",
+        "hobby_hiking_active"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "hobby_music_active",
+        "hobby_hiking_active"
+      ],
+      "decisions": {
+        "hobby_music_active": {
+          "partition": "eligible",
+          "reason": "active"
+        },
+        "hobby_hiking_active": {
+          "partition": "eligible",
+          "reason": "active"
+        }
+      },
+      "resolver_seconds": 7.116292e-06
+    },
+    {
+      "case_id": "v67_legacy_episode",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "legacy_movie_episode"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_movie_episode"
+      ],
+      "decisions": {
+        "legacy_movie_episode": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_legacy_episode",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "legacy_movie_episode"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_movie_episode"
+      ],
+      "decisions": {
+        "legacy_movie_episode": {
+          "partition": "eligible",
+          "reason": "legacy_metadata_fail_open"
+        }
+      },
+      "resolver_seconds": 2.37125e-06
+    },
+    {
+      "case_id": "v67_legacy_knowledge",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "legacy_camera_knowledge"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_camera_knowledge"
+      ],
+      "decisions": {
+        "legacy_camera_knowledge": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_legacy_knowledge",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "legacy_camera_knowledge"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_camera_knowledge"
+      ],
+      "decisions": {
+        "legacy_camera_knowledge": {
+          "partition": "eligible",
+          "reason": "legacy_metadata_fail_open"
+        }
+      },
+      "resolver_seconds": 2.366791e-06
+    },
+    {
+      "case_id": "v67_legacy_empty_metadata",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "current_all_candidates_eligible_control",
+      "eligible_ids": [
+        "legacy_breakfast_memory"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_breakfast_memory"
+      ],
+      "decisions": {
+        "legacy_breakfast_memory": {
+          "partition": "eligible",
+          "reason": "current_no_validity_gate"
+        }
+      },
+      "resolver_seconds": 0.0
+    },
+    {
+      "case_id": "v67_legacy_empty_metadata",
+      "scenario_family": "legacy_metadata_compatibility",
+      "condition": "generic_validity_resolver_treatment",
+      "eligible_ids": [
+        "legacy_breakfast_memory"
+      ],
+      "historical_ids": [],
+      "inapplicable_ids": [],
+      "working_memory_ids": [
+        "legacy_breakfast_memory"
+      ],
+      "decisions": {
+        "legacy_breakfast_memory": {
+          "partition": "eligible",
+          "reason": "legacy_metadata_fail_open"
+        }
+      },
+      "resolver_seconds": 2.364583e-06
+    }
+  ]
+}
