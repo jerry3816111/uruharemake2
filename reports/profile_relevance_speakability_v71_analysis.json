@@ -1,0 +1,684 @@
+{
+  "schema": "uruha_profile_relevance_speakability_analysis_v71",
+  "decision": "freeze_answer_use_and_move_downstream",
+  "run_integrity": {
+    "passed": true,
+    "checks": {
+      "rows": true,
+      "pairs": true,
+      "conditions": true,
+      "locked_preflight": true,
+      "gold_absent": true,
+      "temporary_databases": true,
+      "rightbrain_model_off": true,
+      "selector_calls": true
+    }
+  },
+  "selector_gates": {
+    "passed": true,
+    "checks": {
+      "selector_exact": true,
+      "selector_false_positive": true,
+      "selector_false_negative": true
+    }
+  },
+  "ability_gates": {
+    "passed": false,
+    "checks": {
+      "selector_exact": true,
+      "selector_false_positive": true,
+      "selector_false_negative": true,
+      "relevant": false,
+      "overall": false,
+      "marker_recall": false,
+      "intrusion": true,
+      "abstention": false,
+      "new_vs_bare": false,
+      "regressions_vs_bare": true,
+      "new_vs_full": false,
+      "surface": true
+    }
+  },
+  "cost_gates": {
+    "passed": false,
+    "checks": {
+      "encoder_load": true,
+      "encoder_rss": true,
+      "selector_median": true,
+      "selector_p95": true,
+      "turn_median": true,
+      "turn_p95": false,
+      "transport": true,
+      "production": true,
+      "physical": true
+    }
+  },
+  "metrics": {
+    "typed_active_full_projection_control": {
+      "case_count": 24,
+      "selector_exact_case_count": 16,
+      "selector_false_positive_count": 8,
+      "selector_false_negative_count": 0,
+      "overall_pass_count": 10,
+      "relevant_pass_count": 6,
+      "required_marker_group_recall": 0.35714285714285715,
+      "irrelevant_profile_intrusion_count": 1,
+      "abstention_pass_count": 0,
+      "surface_gate_pass_count": 20,
+      "median_selector_seconds": 0.0,
+      "p95_selector_seconds": 0.0,
+      "median_full_turn_seconds": 57.63428672903683,
+      "p95_full_turn_seconds": 65.03233750001527
+    },
+    "typed_active_bare_key_selection_control": {
+      "case_count": 24,
+      "selector_exact_case_count": 21,
+      "selector_false_positive_count": 0,
+      "selector_false_negative_count": 3,
+      "overall_pass_count": 11,
+      "relevant_pass_count": 5,
+      "required_marker_group_recall": 0.39285714285714285,
+      "irrelevant_profile_intrusion_count": 0,
+      "abstention_pass_count": 2,
+      "surface_gate_pass_count": 21,
+      "median_selector_seconds": 0.02459433296462521,
+      "p95_selector_seconds": 0.04185770801268518,
+      "median_full_turn_seconds": 1.0621914794901386,
+      "p95_full_turn_seconds": 61.47067995893303
+    },
+    "typed_active_provenance_selection_treatment": {
+      "case_count": 24,
+      "selector_exact_case_count": 23,
+      "selector_false_positive_count": 0,
+      "selector_false_negative_count": 1,
+      "overall_pass_count": 12,
+      "relevant_pass_count": 6,
+      "required_marker_group_recall": 0.42857142857142855,
+      "irrelevant_profile_intrusion_count": 0,
+      "abstention_pass_count": 2,
+      "surface_gate_pass_count": 21,
+      "median_selector_seconds": 0.024869541404768825,
+      "p95_selector_seconds": 0.03465275000780821,
+      "median_full_turn_seconds": 1.062440104491543,
+      "p95_full_turn_seconds": 60.12479645898566
+    }
+  },
+  "cost": {
+    "encoder_load_seconds": 0.5911039580823854,
+    "encoder_peak_rss_delta_bytes": 408485888
+  },
+  "pairwise": {
+    "newly_passed_vs_bare_key": 1,
+    "regressions_vs_bare_key": 0,
+    "newly_passed_vs_full_projection": 2
+  },
+  "treatment_case_scores": [
+    {
+      "case_id": "v71_preference_01",
+      "family": "supported_preference_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_pref_01"
+      ],
+      "selected_memory_ids": [
+        "v71_pref_01"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.03355316701345146,
+      "turn_seconds": 1.0594003750011325,
+      "selection_status": "selected",
+      "reply": "忘れてないし、甘酒ラテだろ。"
+    },
+    {
+      "case_id": "v71_preference_02",
+      "family": "supported_preference_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_pref_02"
+      ],
+      "selected_memory_ids": [
+        "v71_pref_02"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.03763933293521404,
+      "turn_seconds": 55.70157816703431,
+      "selection_status": "selected",
+      "reply": "はいはい、今は昼のゆるい感じだけど、その話なら普通に分かる。"
+    },
+    {
+      "case_id": "v71_preference_03",
+      "family": "supported_preference_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_pref_03"
+      ],
+      "selected_memory_ids": [
+        "v71_pref_03"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": false,
+      "selector_seconds": 0.03465275000780821,
+      "turn_seconds": 1.0661760830553249,
+      "selection_status": "selected",
+      "reply": "前にfavorites=豆花って言ってたろ。そこは忘れてない。"
+    },
+    {
+      "case_id": "v71_preference_04",
+      "family": "supported_preference_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_pref_04"
+      ],
+      "selected_memory_ids": [
+        "v71_pref_04"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.033024457981809974,
+      "turn_seconds": 51.98913458304014,
+      "selection_status": "selected",
+      "reply": "=アンビエントの余韻まだあるし。急に切り替えるのも雑だろ。"
+    },
+    {
+      "case_id": "v71_update_01",
+      "family": "supported_state_update",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_update_01_new"
+      ],
+      "selected_memory_ids": [
+        "v71_update_01_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.027315166895277798,
+      "turn_seconds": 1.0654798339819536,
+      "selection_status": "selected",
+      "reply": "一回、そこはまあ、別にいいし。そんな顔すんなって。"
+    },
+    {
+      "case_id": "v71_update_02",
+      "family": "supported_state_update",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_update_02_new"
+      ],
+      "selected_memory_ids": [],
+      "selector_exact": false,
+      "selector_false_positive": false,
+      "selector_false_negative": true,
+      "required_hits": 0,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.015200458001345396,
+      "turn_seconds": 60.12479645898566,
+      "selection_status": "not_requested",
+      "reply": "はいはい、うーん、確かにちょっと違うかもしれないね。そのくらいでいいだろ。"
+    },
+    {
+      "case_id": "v71_update_03",
+      "family": "supported_state_update",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_update_03_new"
+      ],
+      "selected_memory_ids": [
+        "v71_update_03_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.03069600008893758,
+      "turn_seconds": 1.0548280000220984,
+      "selection_status": "selected",
+      "reply": "はいはい、別に嫌いではないし。そこまで身構えるなって。"
+    },
+    {
+      "case_id": "v71_update_04",
+      "family": "supported_state_update",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_update_04_new"
+      ],
+      "selected_memory_ids": [
+        "v71_update_04_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.03441341605503112,
+      "turn_seconds": 55.830547041026875,
+      "selection_status": "selected",
+      "reply": "はいはい、どこの話か一個だけ出せって。そこ分かれば返せる。"
+    },
+    {
+      "case_id": "v71_name_01",
+      "family": "supported_name_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_name_01_new"
+      ],
+      "selected_memory_ids": [
+        "v71_name_01_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.028813624987378716,
+      "turn_seconds": 56.852106209029444,
+      "selection_status": "selected",
+      "reply": "忘れてないし、イオリだろ。"
+    },
+    {
+      "case_id": "v71_name_02",
+      "family": "supported_name_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_name_02_new"
+      ],
+      "selected_memory_ids": [
+        "v71_name_02_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.02996320801321417,
+      "turn_seconds": 54.105864041950554,
+      "selection_status": "selected",
+      "reply": "新しい呼び方、ちゃんと伝わってる?。そのくらいでいいだろ。"
+    },
+    {
+      "case_id": "v71_name_03",
+      "family": "supported_name_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_name_03_new"
+      ],
+      "selected_memory_ids": [
+        "v71_name_03_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.025181541917845607,
+      "turn_seconds": 49.92276379105169,
+      "selection_status": "selected",
+      "reply": "はいはい、うちは一ノ瀬うるは。そんな身構えなくていいだろ。"
+    },
+    {
+      "case_id": "v71_name_04",
+      "family": "supported_name_recall",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_name_04_new"
+      ],
+      "selected_memory_ids": [
+        "v71_name_04_new"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.024557540891692042,
+      "turn_seconds": 1.0379696250893176,
+      "selection_status": "selected",
+      "reply": "忘れてないし、ノアだろ。"
+    },
+    {
+      "case_id": "v71_entity_01",
+      "family": "supported_entity_confirmation",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_entity_01"
+      ],
+      "selected_memory_ids": [
+        "v71_entity_01"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.02887966693378985,
+      "turn_seconds": 1.0361392500344664,
+      "selection_status": "selected",
+      "reply": "先に、別に嫌いではないし。そこまで身構えるなって。"
+    },
+    {
+      "case_id": "v71_entity_02",
+      "family": "supported_entity_confirmation",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_entity_02"
+      ],
+      "selected_memory_ids": [
+        "v71_entity_02"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.02769333403557539,
+      "turn_seconds": 58.53017150005326,
+      "selection_status": "selected",
+      "reply": "=真鍮の小物って話は拾ってる。そこ前提で返す。"
+    },
+    {
+      "case_id": "v71_entity_03",
+      "family": "supported_entity_confirmation",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_entity_03"
+      ],
+      "selected_memory_ids": [
+        "v71_entity_03"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 2,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": false,
+      "selector_seconds": 0.024329124949872494,
+      "turn_seconds": 61.46464633301366,
+      "selection_status": "selected",
+      "reply": "一回、海辺のキャンプは好きだったよ。そのくらいでいいだろ。"
+    },
+    {
+      "case_id": "v71_entity_04",
+      "family": "supported_entity_confirmation",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": true,
+      "abstention": false,
+      "expected_memory_ids": [
+        "v71_entity_04"
+      ],
+      "selected_memory_ids": [
+        "v71_entity_04"
+      ],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 2,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": false,
+      "selector_seconds": 0.02414920798037201,
+      "turn_seconds": 1.0260706669650972,
+      "selection_status": "selected",
+      "reply": "前にdislikes=強い香水って言ってたろ。そこは忘れてない。"
+    },
+    {
+      "case_id": "v71_unknown_01",
+      "family": "unknown_profile_abstention",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": true,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.022409416968002915,
+      "turn_seconds": 1.0105133750475943,
+      "selection_status": "requested_but_unavailable",
+      "reply": "一回、そこは記憶にない。適当に作って答えるのは違うだろ。"
+    },
+    {
+      "case_id": "v71_unknown_02",
+      "family": "unknown_profile_abstention",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": true,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.02363304200116545,
+      "turn_seconds": 1.019859959022142,
+      "selection_status": "requested_but_unavailable",
+      "reply": "そこは覚えてない。前に聞いてたなら今は思い出せない。"
+    },
+    {
+      "case_id": "v71_unknown_03",
+      "family": "unknown_profile_abstention",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": true,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 1,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.022221666993573308,
+      "turn_seconds": 1.0016122499946505,
+      "selection_status": "requested_but_unavailable",
+      "reply": "ん、そのことはまだ聞いてないと思う。"
+    },
+    {
+      "case_id": "v71_unknown_04",
+      "family": "unknown_profile_abstention",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": true,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 1,
+      "forbidden_hits": [],
+      "case_pass": false,
+      "surface_pass": true,
+      "selector_seconds": 0.023527167038992047,
+      "turn_seconds": 1.0401998750166968,
+      "selection_status": "requested_but_unavailable",
+      "reply": "ん、そこは記憶にない。適当に作って答えるのは違うだろ。"
+    },
+    {
+      "case_id": "v71_suppress_01",
+      "family": "irrelevant_profile_suppression",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": false,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 0,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.00968787504825741,
+      "turn_seconds": 1.021455124951899,
+      "selection_status": "not_requested",
+      "reply": "また疲れてるなら、今日はもう休む方に寄せろって。"
+    },
+    {
+      "case_id": "v71_suppress_02",
+      "family": "irrelevant_profile_suppression",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": false,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 0,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.010185707942582667,
+      "turn_seconds": 1.0060624169418588,
+      "selection_status": "not_requested",
+      "reply": "ん、起きてても精度落ちるだけだろ、寝ろ。"
+    },
+    {
+      "case_id": "v71_suppress_03",
+      "family": "irrelevant_profile_suppression",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": false,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 0,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.011009207926690578,
+      "turn_seconds": 52.85630887490697,
+      "selection_status": "not_requested",
+      "reply": "まあ、どうするか迷ってるんだよね。そのくらいでいいだろ。"
+    },
+    {
+      "case_id": "v71_suppress_04",
+      "family": "irrelevant_profile_suppression",
+      "condition": "typed_active_provenance_selection_treatment",
+      "memory_relevant": false,
+      "abstention": false,
+      "expected_memory_ids": [],
+      "selected_memory_ids": [],
+      "selector_exact": true,
+      "selector_false_positive": false,
+      "selector_false_negative": false,
+      "required_hits": 0,
+      "required_count": 0,
+      "forbidden_hits": [],
+      "case_pass": true,
+      "surface_pass": true,
+      "selector_seconds": 0.010175833944231272,
+      "turn_seconds": 1.0074633749900386,
+      "selection_status": "not_requested",
+      "reply": "普通に、そんな暇なら何かやれよ。無理ならうちに絡んでろ。"
+    }
+  ],
+  "evidence_boundary": "This experiment tests current typed profile facts with preserved source utterances in isolated full-chat turns. It does not test open-domain fact extraction, legacy profile migration, episodic or semantic memory retrieval, long-term decay, model-blended RightBrain naturalness, personality learning, VRM actions, or broad human likeness."
+}
