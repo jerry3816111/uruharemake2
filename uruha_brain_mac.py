@@ -49,6 +49,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from uruha_psyche import Psyche, PsycheConfig
 from uruha_runtime import BlackboardEntry, RuntimeConfig, RuntimeEvent, RuntimeState
 import uruha_memory_runtime as umr
+import uruha_profile_assertion as upa
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
@@ -696,7 +697,7 @@ class MemoryManager:
             if key not in seen:
                 seen.add(key)
                 deduped.append((fact_type, value))
-        return deduped[:3]
+        return upa.filter_profile_facts_by_assertion_scope(text, deduped[:3])
 
     def _remember_profile_facts(self, user_input):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
