@@ -1,0 +1,196 @@
+{
+  "schema": "uruha_cognitive_plan_decomposition_preregistration_v66",
+  "experiment_id": "cognitive_plan_decomposition_v66",
+  "created_at": "2026-07-18T22:30:00+09:00",
+  "repository_parent_commit": "45c09a0167016e18125cf8a6c73d18d18fbf8513",
+  "status": "preregistered_before_dataset_audit_harness_or_model_inference",
+  "target_ability": "modular_evidence_memory_selection_then_epistemic_action_planning",
+  "problem_evidence": {
+    "source": "reports/cognitive_plan_model_screen_v65_diagnosis.md",
+    "qwen35_4b_exact_case_accuracy": 0.1667,
+    "qwen35_4b_exact_field_accuracy": 0.8125,
+    "qwen35_4b_tool_parse_rate": 1.0,
+    "interpretation": "Qwen3.5 4B reliably emits the function schema but often mixes evidence selection, memory policy, epistemic stance, and action choice. Model replacement alone did not solve the complete-plan problem."
+  },
+  "research_basis": [
+    {
+      "title": "Least-to-Most Prompting Enables Complex Reasoning in Large Language Models",
+      "venue": "ICLR 2023",
+      "url": "https://openreview.net/forum?id=WZH7099tgfM",
+      "relevance": "Sequentially solving smaller subproblems can improve compositional reasoning."
+    },
+    {
+      "title": "ADaPT: As-Needed Decomposition and Planning with Language Models",
+      "venue": "Findings of NAACL 2024",
+      "url": "https://aclanthology.org/2024.findings-naacl.264/",
+      "relevance": "Decomposition should match task complexity and executor capacity rather than grow without control."
+    },
+    {
+      "title": "Select-Then-Decompose: From Empirical Analysis to Adaptive Selection Strategy for Task Decomposition in Large Language Models",
+      "venue": "EMNLP 2025",
+      "url": "https://aclanthology.org/2025.emnlp-main.278/",
+      "relevance": "Performance gains must be evaluated together with decomposition cost and verification."
+    }
+  ],
+  "causal_hypothesis": "With Qwen3.5 4B, the same fresh cases, two model calls, total context and output budgets, generation settings, case order, scorer, and gold isolation, assigning call one only to evidence-memory-actor selection and call two only to epistemic-action selection will produce at least 8 of 12 exact plans and at least three more exact plans than a matched two-pass full-plan revision control, with no more than one regression and acceptable local latency and memory.",
+  "causal_boundary": "This pilot tests responsibility decomposition after the planning packet has already been constructed. It does not test perception, memory retrieval from the production store, RightBrain realization, full dialogue, personality, reflection, or broad human likeness.",
+  "dataset": {
+    "path": "datasets/cognitive_plan_decomposition_v66.json",
+    "case_count": 12,
+    "scenario_family_count": 6,
+    "cases_per_family": 2,
+    "scenario_families": [
+      "actor_binding",
+      "memory_policy",
+      "epistemic_control",
+      "contextual_decision",
+      "safety_boundary",
+      "nonliteral_pragmatics"
+    ],
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
+  },
+  "conditions": {
+    "one_call_full_plan_reference": {
+      "scored_calls_per_case": 1,
+      "role": "descriptive_lower_compute_reference"
+    },
+    "two_pass_full_plan_control": {
+      "scored_calls_per_case": 2,
+      "role": "matched_compute_control_revising_the_complete_plan_twice"
+    },
+    "two_stage_responsibility_decomposition": {
+      "scored_calls_per_case": 2,
+      "role": "treatment_selects_actor_evidence_memory_and_nonliteral_before_epistemic_action"
+    }
+  },
+  "condition_order": [
+    "two_stage_responsibility_decomposition",
+    "one_call_full_plan_reference",
+    "two_pass_full_plan_control"
+  ],
+  "generation": {
+    "thinking": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 20260766,
+    "context_tokens": 4096,
+    "maximum_output_tokens_per_call": 240,
+    "keep_alive": "15m",
+    "timeout_seconds": 120,
+    "retry_count": 0
+  },
+  "plan_contract": {
+    "all_fields": [
+      "response_act",
+      "epistemic_policy",
+      "primary_actor_id",
+      "decision_target_id",
+      "selected_evidence_ids",
+      "active_memory_ids",
+      "suppressed_memory_ids",
+      "nonliteral"
+    ],
+    "selection_stage_fields": [
+      "primary_actor_id",
+      "selected_evidence_ids",
+      "active_memory_ids",
+      "suppressed_memory_ids",
+      "nonliteral"
+    ],
+    "decision_stage_fields": [
+      "response_act",
+      "epistemic_policy",
+      "decision_target_id"
+    ],
+    "response_act_enum": [
+      "answer",
+      "correct",
+      "clarify",
+      "recommend",
+      "support",
+      "refuse",
+      "tease"
+    ],
+    "epistemic_policy_enum": [
+      "assert",
+      "preserve_uncertainty",
+      "abstain"
+    ]
+  },
+  "fixed_variables_for_primary_comparison": [
+    "Qwen3.5 4B tag and digest",
+    "two scored model calls per case",
+    "planning packets",
+    "combined context and output ceilings",
+    "generation settings",
+    "case order",
+    "condition-independent exact scorer",
+    "gold isolation",
+    "no retries"
+  ],
+  "only_changed_component_for_primary_comparison": "whether the two calls both revise all plan fields or have non-overlapping selection and decision responsibilities",
+  "gold_isolation": {
+    "expected_field_passed_to_model": false,
+    "case_id_passed_to_model": false,
+    "scenario_family_passed_to_model": false,
+    "gold_used_only_after_all_raw_calls": true
+  },
+  "primary_metrics": [
+    "exact_case_accuracy",
+    "exact_field_accuracy",
+    "selection_stage_exact_accuracy",
+    "decision_stage_exact_accuracy",
+    "family_exact_accuracy",
+    "newly_correct_vs_matched_control",
+    "regressions_vs_matched_control",
+    "tool_parse_rate",
+    "latency_median_seconds_per_case",
+    "latency_p95_seconds_per_case",
+    "peak_ollama_rss_bytes"
+  ],
+  "treatment_success_gates": {
+    "exact_case_count_min": 8,
+    "exact_case_accuracy_min": 0.6667,
+    "exact_field_accuracy_min": 0.9,
+    "selection_stage_exact_count_min": 10,
+    "decision_stage_exact_count_min": 10,
+    "newly_correct_vs_matched_control_min": 3,
+    "regressions_vs_matched_control_max": 1,
+    "both_treatment_tools_parse_count": 12,
+    "median_wall_seconds_per_case_max": 14.0,
+    "p95_wall_seconds_per_case_max": 20.0,
+    "peak_rss_bytes_max": 8589934592
+  },
+  "run_invariants": {
+    "warmup_transport_attempt_count_exact": 5,
+    "scored_case_count_per_condition_exact": 12,
+    "scored_transport_attempt_count_exact": 60,
+    "transport_attempt_count_exact": 65,
+    "post_failure_retry_authorized": false,
+    "interim_gold_inspection_authorized": false
+  },
+  "decision_rule": {
+    "all_gates_pass": "Authorize only a separate fresh production-packet shadow pilot; do not modify production runtime directly.",
+    "any_gate_fails": "Freeze the result and stop fixed two-stage responsibility decomposition as a sufficient solution.",
+    "one_call_reference": "Report descriptively; it is not the primary causal control because it uses fewer calls."
+  },
+  "stop_conditions": [
+    "Stop before inference on dirty tracked tree, artifact drift, model digest drift, freshness failure, or gold leakage.",
+    "Do not rerun consumed cases, retry failed calls, edit expected values, or change gates after inference.",
+    "Do not add case-specific policies, demonstrations, or answer patterns after seeing results."
+  ],
+  "authorizations": {
+    "dataset_construction": true,
+    "dataset_audit": true,
+    "harness_implementation": false,
+    "model_inference": false,
+    "runtime_change": false,
+    "human_review": false,
+    "broad_human_likeness_claim": false
+  }
+}
