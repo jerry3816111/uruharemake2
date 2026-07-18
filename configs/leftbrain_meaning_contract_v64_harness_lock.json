@@ -1,0 +1,100 @@
+{
+  "schema": "uruha_leftbrain_meaning_contract_harness_lock_v64",
+  "experiment_id": "leftbrain_meaning_contract_v64",
+  "created_at": "2026-07-18T12:24:03.770349+09:00",
+  "harness_parent_commit": "5aa121c",
+  "formal_inference_authorized_only_after_lock_merge": true,
+  "conditions": [
+    "c0_compact_plan",
+    "t1_structured_meaning_contract"
+  ],
+  "environment": {
+    "base_prompt_sha256": "9551bac17c7937c3d24e9d32bb39390e9f4cd49bf3c502eb3c67d450fa353e1b",
+    "control_schema_sha256": "cc61eb5f117ac02746f53e12359bfebe4dc42d2e7440b7a846fd39bfbf40e9d8",
+    "treatment_schema_sha256": "ca477f4b8f65b67484e5d959e86ceedc3adc78025b03428bfdc7ae1192791849"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/leftbrain_meaning_contract_v64_preregistration.json",
+      "sha256": "d591d6f77f9977688a9409fac951e454f69a9f85a22eebf1d06b4dd18c205c77"
+    },
+    "dataset_closure": {
+      "path": "configs/leftbrain_meaning_contract_v64_dataset_closure.json",
+      "sha256": "50cb4b77d59486e62c6845250f0566afda048ed568ce7a6d32ef698f70a96871"
+    },
+    "dataset": {
+      "path": "datasets/leftbrain_meaning_contract_v64.json",
+      "sha256": "8503f287463786d9e2d5641acd66752a5bac59b3e58d623e849e42077fb2a0d9"
+    },
+    "dataset_auditor": {
+      "path": "audit_leftbrain_meaning_contract_v64_dataset.py",
+      "sha256": "cbecb75b36782906bf6c3559b830d48e10fee80476a642f6b01015b74ce50141"
+    },
+    "dataset_audit": {
+      "path": "reports/leftbrain_meaning_contract_v64_dataset_audit.json",
+      "sha256": "f66a8653c86fd42609f6efe792243dfe26d761c7290ccccaed36f1be857a95e1"
+    },
+    "dataset_test": {
+      "path": "test_leftbrain_meaning_contract_v64_dataset.py",
+      "sha256": "7bf58b068ce2e55b989f79106c7e438f7562244c47378f309d0f38778e0c1623"
+    },
+    "runner": {
+      "path": "run_leftbrain_meaning_contract_v64.py",
+      "sha256": "c2a39e4520b8fbe7bf23ca7c263e1a5607304125b974587fa4c713f77e2d37d9"
+    },
+    "analyzer": {
+      "path": "analyze_leftbrain_meaning_contract_v64.py",
+      "sha256": "afb09a2992e39b6ffd6b8d576a67a6bf98b4581856d4f87d8b368d5a7b363c2f"
+    },
+    "harness_test": {
+      "path": "test_leftbrain_meaning_contract_v64_harness.py",
+      "sha256": "bd7da336ca91d71e7bb60f10258fc5b16003ec5453384a8d9b25a65aac1285e2"
+    }
+  },
+  "preflight": {
+    "arguments": [
+      "-m",
+      "unittest",
+      "-q",
+      "test_leftbrain_meaning_contract_v64_dataset.py",
+      "test_leftbrain_meaning_contract_v64_harness.py"
+    ],
+    "expected_test_count": 12,
+    "must_pass_before_first_model_call": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "candidate_inference_authorized": true,
+    "model_call_count_exact": 28,
+    "transport_attempt_count_exact": 28,
+    "model_retry_authorized": false,
+    "model_repair_call_authorized": false,
+    "resume_authorized": false,
+    "result_overwrite_authorized": false,
+    "gold_or_expected_outcome_passed_to_model": false,
+    "production_runtime_read_or_write_authorized": false,
+    "physical_vrm_execution_authorized": false
+  },
+  "statistics": {
+    "bootstrap_samples": 10000,
+    "case_order": "dataset_order",
+    "condition_order": [
+      "c0_compact_plan",
+      "t1_structured_meaning_contract"
+    ]
+  },
+  "result_artifacts": {
+    "raw": "reports/leftbrain_meaning_contract_v64_raw.json",
+    "analysis_json": "reports/leftbrain_meaning_contract_v64_analysis.json",
+    "analysis_markdown": "reports/leftbrain_meaning_contract_v64_analysis.md",
+    "result_lock": "configs/leftbrain_meaning_contract_v64_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "human_review_authorized": false,
+  "runtime_change_authorized": false,
+  "broad_human_likeness_claim_authorized": false,
+  "decision_boundary": "A passing V64 pilot authorizes only a separate fresh-data RightBrain realization pilot, never a production change."
+}
