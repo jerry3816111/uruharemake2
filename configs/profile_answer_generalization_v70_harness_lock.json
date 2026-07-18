@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_profile_answer_generalization_harness_lock_v70",
+  "experiment_id": "profile_answer_generalization_v70",
+  "created_at": "2026-07-18T14:52:32+09:00",
+  "harness_parent_commit": "130a563825e35692e645215779edd180b2c86c54",
+  "formal_inference_authorized_only_after_lock_merge": true,
+  "conditions": ["current_session_only_control", "matched_append_only_projection_control", "typed_active_projection_treatment"],
+  "environment": {
+    "ollama_version": "0.31.1",
+    "leftbrain_tag": "qwen2.5:7b",
+    "leftbrain_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "leftbrain_temperature": 0.0,
+    "seed": 20260770,
+    "rightbrain_model_loading": false
+  },
+  "frozen_artifacts": {
+    "preregistration": {"path":"configs/profile_answer_generalization_v70_preregistration.json","sha256":"e27100a8a5938501b848fcb08a57548e1b29728352955d34a99e1b21b4196a3b"},
+    "dataset_closure": {"path":"configs/profile_answer_generalization_v70_dataset_closure.json","sha256":"749ed7d11a6c7f0ccc186c90223cf1dccdc5c2b91c034c48efbae3dc98fc86f8"},
+    "dataset": {"path":"datasets/profile_answer_generalization_v70.json","sha256":"c50b1161633931914a4e091c318c4d0b8943a76e489cdf9f033abeaee9878c9b"},
+    "dataset_auditor": {"path":"audit_profile_answer_generalization_v70_dataset.py","sha256":"5d5a20b45a8f453a43fd9efee52dd4a85c6aa05246ab869b76140f5518e574e9"},
+    "dataset_audit": {"path":"reports/profile_answer_generalization_v70_dataset_audit.json","sha256":"f509b5b184c31df945d6afd728f2e8a5be8e664bcc84af32901002e76d9e957d"},
+    "dataset_test": {"path":"test_profile_answer_generalization_v70_dataset.py","sha256":"2ae38aaa8b92909043b9ca11c9f28166d3fdbfcfc2dcf635ae3b491f49f32cce"},
+    "brain_runtime": {"path":"uruha_brain_mac.py","sha256":"ec41420c6b07bf6c95236bf4d09b346fc10024021723ebe6ea5982f6c29b3caa"},
+    "validity_resolver": {"path":"uruha_memory_validity.py","sha256":"72ddba7d2d2814f20e8e2390d669f337d0a88c4e160b074d0f054b083259ac5a"},
+    "profile_memory": {"path":"uruha_profile_memory.py","sha256":"073f48d627d1be57e8991255ff194c6e91ace6099d01942ebe4226cf4a7a1841"},
+    "prior_shadow_test": {"path":"test_profile_state_shadow_v69_integration.py","sha256":"b721bba931ed10f92779ad139c2f5736e3fb79053569afdd8f51ebfc4f352e6e"},
+    "candidate": {"path":"uruha_profile_projection.py","sha256":"c90c5102d03f59eb452b5ebec91428e76fbabd09f8829d10aefbe4ee58c6cdbd"},
+    "runner": {"path":"run_profile_answer_generalization_v70.py","sha256":"4e763a779e1c2572c04d5c9c26c5c74745b6a6a62b2bb9ceed0c4780e7e3482b"},
+    "analyzer": {"path":"analyze_profile_answer_generalization_v70.py","sha256":"0dff061a578d8ed6ed00e6c03d5799f90accd633ace327b0cbacfe7080995b19"},
+    "harness_test": {"path":"test_profile_answer_generalization_v70_harness.py","sha256":"07bbd9642d4e3e0569c87f542c307ce1cc98d850e96008e3d62c3fed66c049c5"}
+  },
+  "preflight": {
+    "arguments": ["-m","unittest","-q","test_profile_answer_generalization_v70_dataset.py","test_profile_answer_generalization_v70_harness.py","test_profile_state_shadow_v69_integration.py"],
+    "expected_test_count": 15,
+    "must_pass_before_formal_inference": true
+  },
+  "formal_run": {
+    "required_run_branch": "main",
+    "required_head_ref": "origin/main",
+    "clean_worktree_required": true,
+    "formal_run_count_exact": 1,
+    "case_count": 24,
+    "condition_count": 3,
+    "row_count_exact": 72,
+    "formal_inference_authorized": true,
+    "result_overwrite_authorized": false,
+    "production_database_access_authorized": false,
+    "physical_action_authorized": false,
+    "expected_fields_visible_to_runner": false
+  },
+  "result_artifacts": {
+    "raw": "reports/profile_answer_generalization_v70_raw.json",
+    "analysis": "reports/profile_answer_generalization_v70_analysis.json",
+    "markdown": "reports/profile_answer_generalization_v70_analysis.md",
+    "result_lock": "configs/profile_answer_generalization_v70_result_lock.json"
+  },
+  "post_run_case_editing_authorized": false,
+  "post_run_threshold_change_authorized": false,
+  "answer_path_shadow_authorized": false,
+  "runtime_activation_authorized": false,
+  "decision_boundary": "Passing authorizes only a separate answer-path shadow with answer use still disabled; direct runtime activation remains forbidden."
+}
