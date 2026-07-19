@@ -1,0 +1,152 @@
+{
+  "schema": "uruha_planner_supervision_executable_view_contract_v81",
+  "status": "frozen_before_inference",
+  "frozen_on": "2026-07-20",
+  "parent_commit": "ffc4484019edf72ebf212566ccdeac46366aa352",
+  "ability_target": "calibrated_plan_review_without_exposing_runtime_trace_as_the_training_target",
+  "problem_evidence": {
+    "v80_full_target_field_count": 52,
+    "v80_consensus_accept_count": 1,
+    "v80_disagreement_count": 8,
+    "v80_packet_count": 12,
+    "v80_top_failure_codes": {
+      "incomplete_for_surface_realization": 15,
+      "overengineered_or_template_driven": 10
+    }
+  },
+  "hypothesis": "When the underlying candidate plan is fixed, reviewing an executable decision view that excludes Bayes traces, appraisal diagnostics, self-monitor history and repair history will increase independent judge agreement and known-defect sensitivity while reducing request size and latency relative to reviewing the full internal target state.",
+  "changed_variable": "review_view_only",
+  "fixed_variables": [
+    "fresh_candidate_set",
+    "candidate_input_context",
+    "candidate_target_plan",
+    "judge_models_and_digests",
+    "judge_prompt_and_rubric",
+    "temperature",
+    "seed",
+    "context_window",
+    "known_defect_mutation",
+    "decision_parser",
+    "production_runtime"
+  ],
+  "selection": {
+    "source_algorithm": "verify_v79_eligibility_then_exclude_frozen_pilot_and_rerank_for_remaining_family_and_session_coverage",
+    "v79_validation_seed": "uruha-v79-pilot-2026-07-19",
+    "frozen_v79_prefix_count": 12,
+    "fresh_selection_seed": "uruha-v81-executable-view-2026-07-20",
+    "fresh_count": 12,
+    "mutation_calibration_count": 6
+  },
+  "conditions": [
+    "c0_full_internal_target",
+    "t1_executable_decision_view"
+  ],
+  "executable_view_fields": {
+    "decision": [
+      "intent",
+      "hidden_intent",
+      "scene",
+      "response_mode",
+      "premise_check",
+      "dialogue_act"
+    ],
+    "response_intent": [
+      "reply_goal",
+      "core_message_jp",
+      "listener_state",
+      "uncertainty"
+    ],
+    "social_model": [
+      "user_belief",
+      "user_expectation",
+      "stance"
+    ],
+    "memory_policy": [
+      "memory_use_expected",
+      "memory_speakability",
+      "memory_anchor"
+    ],
+    "surface_brief": [
+      "content_units",
+      "speech_moves",
+      "style_operators",
+      "target_length",
+      "grounding_terms"
+    ],
+    "constraints": [
+      "sentence_count",
+      "max_chars",
+      "casual_japanese_only",
+      "forbid_polite",
+      "must_avoid"
+    ]
+  },
+  "known_defect": {
+    "name": "remove_executable_response_intent",
+    "expected_failure_code": "missing_executable_intent",
+    "operation": "empty reply_goal, core_message_jp, content_units, speech_moves and grounding_terms without changing the remaining context"
+  },
+  "judges": [
+    {
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+    }
+  ],
+  "inference": {
+    "temperature": 0,
+    "seed": 81020,
+    "num_ctx": 16384,
+    "think": false,
+    "stream": false,
+    "expected_original_attempt_count": 48,
+    "expected_mutation_attempt_count": 24,
+    "expected_attempt_count": 72
+  },
+  "rubric": {
+    "system_prompt": "You are auditing whether an internal dialogue plan gives a surface realizer a coherent, grounded and executable decision. Judge the response decision, not final prose style. Ignore implementation history that does not change the current decision. ACCEPT only if the current plan directly addresses the supplied user context, has a nonempty actionable response intent, is internally consistent, uses memory only when relevant and speakable, and gives enough semantic content for one natural reply. REJECT a definite material defect. UNCERTAIN only when the supplied view is insufficient to establish either. Return only the requested JSON object.",
+    "failure_codes": [
+      "does_not_address_user",
+      "missing_executable_intent",
+      "unsupported_inference",
+      "irrelevant_memory_use",
+      "privacy_or_speakability_violation",
+      "socially_inappropriate",
+      "internally_inconsistent",
+      "excessive_implementation_noise",
+      "other"
+    ]
+  },
+  "success_gates": {
+    "minimum_t1_original_interjudge_agreement": 0.75,
+    "minimum_original_agreement_delta_vs_c0": 0.25,
+    "minimum_t1_unanimous_mutation_rejection": 0.8333333333333334,
+    "minimum_t1_mutation_expected_code_rate": 0.75,
+    "maximum_t1_request_bytes_ratio_vs_c0": 0.65,
+    "maximum_t1_mean_latency_ratio_vs_c0": 1.0,
+    "maximum_production_runtime_files_changed": 0
+  },
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+    "v79_pilot_queue": "analysis/local_planner_supervision_v76/pilot_review_queue_v79.jsonl",
+    "packet_queue": "analysis/local_planner_supervision_v76/executable_view_packets_v81.jsonl",
+    "raw_results": "analysis/local_planner_supervision_v76/executable_view_raw_v81.jsonl",
+    "local_analysis": "analysis/local_planner_supervision_v76/executable_view_analysis_v81.json"
+  },
+  "privacy_boundary": {
+    "packets_and_raw_results_are_gitignored": true,
+    "tracked_report_contains_aggregate_counts_only": true,
+    "automatic_cloud_upload": false,
+    "ollama_loopback_only": true
+  },
+  "authorizations": {
+    "human_label_creation": false,
+    "planner_training": false,
+    "production_runtime_change": false
+  },
+  "evidence_boundary": "V81 can test whether a compact executable view makes two frozen local proxy judges more consistent and sensitive to one controlled missing-intent defect. It cannot prove that original plans are correct, create human ground truth, authorize training, evaluate final dialogue naturalness, or establish cognition or benchmark improvement."
+}

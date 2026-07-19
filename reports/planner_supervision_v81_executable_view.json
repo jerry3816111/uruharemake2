@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_planner_executable_view_abort_v81",
+  "contract_sha256": "4cef6a0191393b85725c195a514d4eebfcdfe913fed23b42fd0762accaaf054a",
+  "formal_run_status": "aborted",
+  "abort_reasons": [
+    "output_generation_length_was_not_bounded",
+    "one_request_exceeded_600_seconds_and_required_manual_interrupt",
+    "completed_prefix_already_contained_parser_incompatibility"
+  ],
+  "prefix_audit": {
+    "completed_prefix_hash_binding_passed": true,
+    "completed_count": 48,
+    "expected_count": 72,
+    "binding_check_counts": {
+      "done": 48,
+      "identity": 48,
+      "model_digest": 48,
+      "request_hash": 48,
+      "response_model": 48,
+      "view_hash": 48
+    },
+    "parse_category_counts": {
+      "invalid_output_keys": 35,
+      "malformed_json": 1,
+      "parsed": 12
+    },
+    "completed_by_model": {
+      "qwen2.5:7b": 12,
+      "qwen3.5:9b": 36
+    },
+    "completed_by_condition": {
+      "c0_full_internal_target": 24,
+      "t1_executable_decision_view": 24
+    },
+    "completed_by_variant": {
+      "known_defect": 18,
+      "original": 30
+    },
+    "interrupted_attempt": {
+      "ordinal": 49,
+      "model": "qwen2.5:7b",
+      "fresh_index": 4,
+      "condition": "c0_full_internal_target",
+      "variant": "original"
+    }
+  },
+  "production_runtime_files_changed": 0,
+  "capability_metrics_authorized": false,
+  "planner_training_authorized": false,
+  "production_runtime_change_authorized": false,
+  "decision": "close_v81_without_scoring_and_require_new_holdout_with_hard_generation_bound",
+  "evidence_boundary": "V81 proves only that this frozen proxy-review harness was not safely terminable or parser-compatible. The 48 completed rows are an interrupted prefix and cannot support condition accuracy, agreement, latency, human-likeness, planner quality, training, or runtime-change claims."
+}
