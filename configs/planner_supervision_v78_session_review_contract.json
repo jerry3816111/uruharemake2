@@ -1,0 +1,59 @@
+{
+  "schema": "uruha_planner_supervision_session_review_contract_v78",
+  "status": "frozen_before_implementation",
+  "frozen_on": "2026-07-19",
+  "parent_commit": "ca0fcfe381a65d83678c693f77a5472ae0184463",
+  "ability_target": "human_verifiable_nonbenchmark_session_provenance_with_minimal_review_burden",
+  "problem_evidence": {
+    "pending_candidate_count": 92,
+    "candidate_session_count": 6,
+    "current_session_certification_count": 0,
+    "current_training_eligible_count": 0
+  },
+  "hypothesis": "Separating session provenance review from per-plan quality review will reduce repeated provenance decisions from 92 candidate-level checks to six hash-bound session decisions without making any candidate training-eligible before plan-level acceptance.",
+  "changed_variable": "session_provenance_review_stage_only",
+  "fixed_variables": [
+    "candidate_queue_contents",
+    "session_quarantine_gate",
+    "protected_evaluation_registry",
+    "leftbrain_plan",
+    "scenario_family",
+    "uruha_brain_runtime",
+    "web_ui_runtime",
+    "models",
+    "prompts",
+    "memory_selection",
+    "reply_generation",
+    "plan_level_human_acceptance_gate"
+  ],
+  "success_gates": {
+    "pending_candidate_count": 92,
+    "session_review_unit_count": 6,
+    "repeated_provenance_decisions_removed": 86,
+    "initial_certified_session_count": 0,
+    "initial_quarantined_session_count": 0,
+    "initial_pending_session_count": 6,
+    "initial_training_rows_created": 0,
+    "fixture_certified_session_is_eligible_for_plan_review": true,
+    "fixture_quarantined_session_is_eligible_for_plan_review": false,
+    "duplicate_session_review_rejected": true,
+    "tampered_session_summary_rejected": true,
+    "additional_model_calls": 0,
+    "runtime_files_changed": 0
+  },
+  "human_only_decision": "whether the whole historical session was ordinary non-benchmark dialogue and may be used for local planner training",
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "session_review_queue": "analysis/local_planner_supervision_v76/session_review_queue_v78.jsonl",
+    "session_review_report": "analysis/local_planner_supervision_v76/session_review_report_v78.json",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl"
+  },
+  "privacy_boundary": {
+    "session_previews_are_gitignored": true,
+    "raw_session_ids_are_not_tracked": true,
+    "raw_utterances_are_not_tracked": true,
+    "tracked_report_contains_aggregate_counts_only": true,
+    "automatic_cloud_upload": false
+  },
+  "evidence_boundary": "V78 can prove that provenance review is session-level, hash-bound, and lower burden. It cannot determine the human answer, validate plan quality, create training rows, or prove an improvement in cognition or dialogue."
+}
