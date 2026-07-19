@@ -166,18 +166,40 @@ def _overlap_reason(user_utterance, protected_inputs, threshold):
     return ""
 
 
-def build_candidates(records, protected_inputs=None, contract=None, v75_contract=None):
+def evaluation_contaminated_sessions(records, protected_inputs, threshold):
+    contaminated = set()
+    overlap_reasons = []
+    for record in records:
+        reason = _overlap_reason(record.get("user_text"), protected_inputs, threshold)
+        overlap_reasons.append(reason)
+        if reason in {"exact_evaluation_overlap", "near_evaluation_overlap"}:
+            contaminated.add(str(record.get("session_id") or ""))
+    return contaminated, overlap_reasons
+
+
+def build_candidates(
+    records,
+    protected_inputs=None,
+    contract=None,
+    v75_contract=None,
+    *,
+    quarantine_contaminated_sessions=True,
+):
     contract = contract or load_json(CONTRACT_PATH)
     v75_contract = v75_contract or load_json(V75_CONTRACT_PATH)
     protected_inputs = protected_inputs if protected_inputs is not None else protected_inputs_from_v75(v75_contract)
     accepted_modes = set(contract["accepted_input_modes"])
     threshold = float(contract["near_evaluation_overlap_threshold"])
+    records = list(records)
+    contaminated_sessions, overlap_reasons = evaluation_contaminated_sessions(records, protected_inputs, threshold)
     candidates = []
     reason_counts = Counter()
     seen_fingerprints = set()
+    otherwise_valid_records_quarantined = 0
 
-    for record in records:
+    for record, overlap_reason in zip(records, overlap_reasons):
         reasons = []
+        session_is_contaminated = str(record.get("session_id") or "") in contaminated_sessions
         if record.get("input_mode") not in accepted_modes:
             reasons.append("unsupported_input_mode")
         input_context = input_context_from_log(record)
@@ -186,12 +208,15 @@ def build_candidates(records, protected_inputs=None, contract=None, v75_contract
             reasons.append("incomplete_input_context")
         if not v75._complete_plan(target_plan, v75_contract):
             reasons.append("incomplete_target_plan")
-        overlap_reason = _overlap_reason(input_context["user_utterance"], protected_inputs, threshold)
         if overlap_reason:
             reasons.append(overlap_reason)
         fingerprint = input_fingerprint(input_context)
         if fingerprint in seen_fingerprints:
             reasons.append("duplicate_input_context")
+        if quarantine_contaminated_sessions and session_is_contaminated:
+            if not reasons:
+                otherwise_valid_records_quarantined += 1
+            reasons.append("evaluation_contaminated_session")
 
         if reasons:
             reason_counts.update(set(reasons))
@@ -227,6 +252,8 @@ def build_candidates(records, protected_inputs=None, contract=None, v75_contract
                     "complete_target_plan": True,
                     "evaluation_overlap": False,
                     "duplicate_input_context": False,
+                    "session_quarantine_applied": quarantine_contaminated_sessions,
+                    "evaluation_contaminated_session": session_is_contaminated,
                     "additional_model_calls": 0,
                 },
             }
@@ -239,10 +266,16 @@ def build_candidates(records, protected_inputs=None, contract=None, v75_contract
             "candidate_count": len(candidates),
             "excluded_count": len(records) - len(candidates),
             "protected_input_count": len(protected_inputs),
+            "session_quarantine_enabled": quarantine_contaminated_sessions,
+            "evaluation_contaminated_session_count": len(contaminated_sessions),
+            "otherwise_valid_records_quarantined": otherwise_valid_records_quarantined,
             "additional_model_calls": 0,
             "training_rows_created": 0,
         },
         "exclusion_reason_counts": dict(sorted(reason_counts.items())),
+        "evaluation_contaminated_session_sha256s": sorted(
+            canonical_sha256({"session_id": session_id}) for session_id in contaminated_sessions
+        ),
         "candidates": candidates,
         "evidence_boundary": "Candidates are quarantined pending data. They are not human-approved targets and cannot enter training.",
     }
@@ -341,6 +374,11 @@ def review_candidate(
         raise ValueError("candidate already reviewed")
     if str(candidate_id) in _latest_by_key(load_jsonl(strict_annotation_path), "id"):
         raise ValueError("candidate already accepted")
+    collection_checks = candidate.get("collection_checks") or {}
+    if collection_checks.get("session_quarantine_applied") is not True:
+        raise ValueError("candidate was not built with session quarantine")
+    if collection_checks.get("evaluation_contaminated_session") is not False:
+        raise ValueError("candidate belongs to an evaluation-contaminated session")
     source_record = candidate.get("source_record")
     source_sha256 = (candidate.get("provenance") or {}).get("source_sha256")
     if not isinstance(source_record, dict) or source_sha256 != canonical_sha256(source_record):

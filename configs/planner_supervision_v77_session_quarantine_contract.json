@@ -1,0 +1,56 @@
+{
+  "schema": "uruha_planner_supervision_session_quarantine_contract_v77",
+  "status": "frozen_before_implementation",
+  "frozen_on": "2026-07-19",
+  "parent_commit": "18468c24f2aa7af349f62d25911be5a742764fb7",
+  "ability_target": "learn_from_interaction_without_mixed_session_evaluation_leakage",
+  "problem_evidence": {
+    "private_historical_log_sha256": "892adfd437f5606b5b97ddeea6759ed3fe3b83a60905c7b03b567f6a474d9c3e",
+    "source_record_count": 156,
+    "v76_candidate_count": 96,
+    "known_evaluation_overlap_record_count": 2,
+    "known_evaluation_contaminated_session_count": 2,
+    "otherwise_valid_candidates_in_contaminated_sessions": 4
+  },
+  "hypothesis": "If candidate construction quarantines every record from any session containing an exact or near protected-evaluation overlap, all four otherwise-valid candidates from the contaminated historical session will be removed while the other 92 candidates remain unchanged.",
+  "changed_variable": "candidate_builder_session_level_evaluation_quarantine_only",
+  "fixed_variables": [
+    "uruha_brain_runtime",
+    "web_ui_runtime",
+    "leftbrain_model",
+    "rightbrain_model",
+    "prompts",
+    "memory_selection",
+    "reply_generation",
+    "protected_evaluation_registry",
+    "near_overlap_threshold",
+    "input_completeness_rules",
+    "plan_completeness_rules",
+    "candidate_fingerprint"
+  ],
+  "success_gates": {
+    "source_record_count": 156,
+    "candidate_count_before_quarantine": 96,
+    "candidate_count_after_quarantine": 92,
+    "evaluation_contaminated_session_count": 2,
+    "otherwise_valid_records_quarantined": 4,
+    "candidates_from_contaminated_sessions": 0,
+    "training_rows_created": 0,
+    "additional_model_calls": 0,
+    "runtime_files_changed": 0
+  },
+  "failure_conditions": [
+    "any candidate from a contaminated session survives",
+    "a clean-session candidate is removed by the new gate",
+    "the builder creates a training row",
+    "the implementation changes runtime reply behavior",
+    "the historical result is reported without binding the private source hash"
+  ],
+  "privacy_boundary": {
+    "private_historical_log_is_committed": false,
+    "raw_user_utterances_are_in_tracked_report": false,
+    "raw_session_ids_are_in_tracked_report": false,
+    "source_sha256_and_aggregate_counts_only": true
+  },
+  "evidence_boundary": "V77 can show that known benchmark contamination is quarantined at session level. It cannot prove that the remaining historical sessions are non-benchmark, that their plans are correct, or that training on them improves cognition or dialogue."
+}
