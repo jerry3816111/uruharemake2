@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_planner_supervision_pilot_review_contract_v79",
+  "status": "frozen_before_implementation",
+  "frozen_on": "2026-07-19",
+  "parent_commit": "6002881ba44768445f4219d1c058cf93f29ab3ab",
+  "ability_target": "estimate_live_planner_target_viability_before_full_human_review",
+  "problem_evidence": {
+    "certified_candidate_count": 92,
+    "candidate_session_count": 6,
+    "candidate_scenario_family_count": 7,
+    "strict_plan_accept_count": 0,
+    "full_review_burden": 92
+  },
+  "hypothesis": "A deterministic 12-item pilot that covers every available session and scenario family can test whether the collected live plans are worth broader review without asking a human to inspect all 92 candidates first.",
+  "changed_variable": "human_plan_review_sampling_stage_only",
+  "fixed_variables": [
+    "candidate_queue_contents",
+    "session_certification_manifest",
+    "protected_evaluation_registry",
+    "candidate_target_plans",
+    "plan_acceptance_gate",
+    "leftbrain_runtime",
+    "rightbrain_runtime",
+    "memory_runtime",
+    "prompts",
+    "models",
+    "reply_generation"
+  ],
+  "selection": {
+    "budget": 12,
+    "seed": "uruha-v79-pilot-2026-07-19",
+    "algorithm": "greedy_family_and_session_coverage_then_population_distribution_fill",
+    "tie_break": "sha256_seeded_candidate_id"
+  },
+  "success_gates": {
+    "source_candidate_count": 92,
+    "certified_candidate_count": 92,
+    "pilot_candidate_count": 12,
+    "available_scenario_family_count": 7,
+    "covered_scenario_family_count": 7,
+    "available_session_count": 6,
+    "covered_session_count": 6,
+    "initial_reviewed_count": 0,
+    "initial_training_rows_created": 0,
+    "additional_model_calls": 0,
+    "runtime_files_changed": 0
+  },
+  "stop_conditions": [
+    "a selected candidate is not bound to the current candidate queue",
+    "a selected session lacks V78 non-benchmark certification and training consent",
+    "the pilot cannot cover all available sessions and scenario families within the frozen budget",
+    "a pending pilot item becomes training data without explicit human plan acceptance",
+    "raw dialogue or raw session identifiers enter tracked artifacts",
+    "selection performs a model call or changes production reply behavior"
+  ],
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+    "review_log": "analysis/local_planner_supervision_v76/reviews.jsonl",
+    "strict_annotations": "analysis/planner_supervision_annotations_v75.jsonl",
+    "pilot_queue": "analysis/local_planner_supervision_v76/pilot_review_queue_v79.jsonl",
+    "pilot_report": "analysis/local_planner_supervision_v76/pilot_review_report_v79.json"
+  },
+  "privacy_boundary": {
+    "pilot_queue_is_gitignored": true,
+    "raw_dialogue_is_not_tracked": true,
+    "raw_session_ids_are_not_tracked": true,
+    "tracked_report_contains_aggregate_counts_only": true,
+    "automatic_cloud_upload": false
+  },
+  "human_only_decision": "whether_each_selected_leftbrain_plan_is_semantically_and_socially_reasonable",
+  "evidence_boundary": "V79 can prove only that a deterministic, hash-bound, coverage-aware pilot reduces the initial plan-review burden from 92 to 12. Pilot acceptance can estimate collection viability but cannot certify unreviewed plans, train a model, or prove cognition or dialogue improvement."
+}
