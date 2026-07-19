@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_rightbrain_length_contract_preregistration_v85_1",
+  "experiment_id": "rightbrain_length_contract_v85_1_regression",
+  "status": "preregistered_before_inference",
+  "research_question": "Does an explicit character-budget contract reduce over-length RightBrain replies while preserving the clean meaning recovered by V85?",
+  "single_changed_variable": "RightBrain explicit_length_contract_enabled false versus true",
+  "scope": {
+    "dataset_role": "known-failure regression only",
+    "case_count": 8,
+    "condition_count": 2,
+    "replicate_count": 1,
+    "expected_model_call_count": 16,
+    "production_activation_forbidden": true,
+    "fresh_holdout_required_after_pass": true
+  },
+  "conditions": {
+    "c0_canonical_cue_implicit_length": "V85 canonical memory cue with the legacy implicit length field.",
+    "t1_canonical_cue_explicit_length": "Same canonical payload with only the explicit output-budget contract enabled."
+  },
+  "controls": [
+    "same complete set of eight V85 regression cases",
+    "memory-cue canonicalization enabled in both conditions",
+    "same complete target plan and clean semantic contract",
+    "same user summary, psyche, and working memory",
+    "same local qwen3.5:9b model and digest",
+    "same generation parameters and maximum token budget",
+    "balanced condition order",
+    "no benchmark items or answers",
+    "no production memory writes or VRM actions"
+  ],
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 40,
+    "repeat_penalty": 1.1,
+    "seed": 2026078511,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 64,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "advance_gates": {
+    "treatment_transcript_label_leak_rate_max": 0.0,
+    "treatment_surface_pass_rate_min": 0.75,
+    "surface_pass_delta_min": 0.125,
+    "treatment_over_max_rate_max": 0.25,
+    "over_max_rate_delta_max": -0.125,
+    "treatment_clean_semantic_recall_min": 0.75,
+    "clean_semantic_recall_delta_min": -0.05,
+    "forbidden_violation_delta_max": 0.0,
+    "private_intrusion_delta_max": 0.0,
+    "latency_ratio_max": 1.25,
+    "treatment_p95_latency_seconds_max": 30.0,
+    "peak_ollama_rss_bytes_max": 17179869184
+  },
+  "failure_rule": {
+    "surface_pass_delta_max": 0.0,
+    "clean_semantic_recall_delta_below": -0.1,
+    "decision": "stop_explicit_length_contract_hypothesis"
+  },
+  "authorizations": {
+    "on_pass": "authorize_fresh_v86_holdout_only",
+    "production_default_enable": false,
+    "training_data": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "candidate_queue": {
+      "path": "analysis/local_planner_supervision_v76/candidates.jsonl",
+      "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"
+    },
+    "v84_packets": {
+      "path": "analysis/local_planner_memory_causality_v84/packets.jsonl",
+      "sha256": "090309de650635aa77858307c6a27f6c168f40d130565dec9373238ce8b5f3a7"
+    }
+  },
+  "local_paths": {
+    "packet_queue": "analysis/local_rightbrain_length_contract_v85_1/packets.jsonl",
+    "raw_results": "analysis/local_rightbrain_length_contract_v85_1/raw.jsonl",
+    "local_analysis": "analysis/local_rightbrain_length_contract_v85_1/analysis.json"
+  },
+  "evidence_boundary": "A pass can show that the explicit length contract repairs the eight known V85 regression cases. It cannot establish generalization or authorize production activation without a fresh disjoint holdout."
+}
