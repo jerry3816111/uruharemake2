@@ -1,0 +1,69 @@
+{
+  "schema": "uruha_rightbrain_length_contract_analysis_v85_1",
+  "experiment_id": "rightbrain_length_contract_v85_1_regression",
+  "decision": "authorize_fresh_v86_holdout_only",
+  "integrity_passed": true,
+  "integrity_checks": {
+    "private_sources": true,
+    "packet_count": true,
+    "packet_recalculation": true,
+    "sequence_complete": true,
+    "model_digest": true,
+    "responses_complete": true,
+    "resources_complete": true,
+    "scores_recalculate": true,
+    "no_side_effects": true
+  },
+  "condition_summaries": {
+    "c0_canonical_cue_implicit_length": {
+      "observation_count": 8,
+      "clean_semantic_recall": 1.0,
+      "surface_pass_rate": 0.625,
+      "transcript_label_leak_rate": 0.0,
+      "over_max_rate": 0.375,
+      "mean_over_by_chars": 1.75,
+      "maximum_over_by_chars": 7,
+      "forbidden_violation_rate": 0.0,
+      "private_intrusion_rate": 0.0,
+      "median_latency_seconds": 3.2139360000000003,
+      "p95_latency_seconds": 4.068639,
+      "peak_ollama_rss_bytes": 9061777408,
+      "failure_code_counts": {
+        "over_max_chars": 3
+      }
+    },
+    "t1_canonical_cue_explicit_length": {
+      "observation_count": 8,
+      "clean_semantic_recall": 1.0,
+      "surface_pass_rate": 1.0,
+      "transcript_label_leak_rate": 0.0,
+      "over_max_rate": 0.0,
+      "mean_over_by_chars": 0,
+      "maximum_over_by_chars": 0,
+      "forbidden_violation_rate": 0.0,
+      "private_intrusion_rate": 0.0,
+      "median_latency_seconds": 3.92153,
+      "p95_latency_seconds": 4.228458,
+      "peak_ollama_rss_bytes": 9009070080,
+      "failure_code_counts": {}
+    }
+  },
+  "advance_gate_checks": {
+    "zero_transcript_labels": true,
+    "treatment_surface_pass": true,
+    "surface_delta": true,
+    "treatment_over_max": true,
+    "over_max_delta": true,
+    "treatment_clean_semantics": true,
+    "semantic_noninferiority": true,
+    "forbidden_noninferiority": true,
+    "private_noninferiority": true,
+    "latency_ratio": true,
+    "p95_latency": true,
+    "peak_rss": true
+  },
+  "production_default_enable_authorized": false,
+  "training_data_authorized": false,
+  "next_step": "Run a fresh disjoint V86 holdout.",
+  "evidence_boundary": "A pass can show that the explicit length contract repairs the eight known V85 regression cases. It cannot establish generalization or authorize production activation without a fresh disjoint holdout."
+}
