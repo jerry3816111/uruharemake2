@@ -1,0 +1,64 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_preregistration_v87",
+  "experiment_id": "rightbrain_forbidden_projection_v87_regression",
+  "status": "preregistered_before_evaluation",
+  "research_question": "Does projecting only stale recent-opening conflicts recover semantically valid V86 candidates without weakening unrelated forbidden-marker enforcement?",
+  "single_changed_variable": "RightBrain forbidden_conflict_projection_enabled false versus true",
+  "scope": {
+    "dataset_role": "known-failure deterministic gate regression",
+    "case_count": 12,
+    "condition_count": 2,
+    "expected_evaluation_count": 24,
+    "model_call_count": 0,
+    "production_activation_forbidden": true,
+    "fresh_holdout_required_after_pass": true
+  },
+  "conditions": {
+    "c0_projection_disabled": "Replay each frozen V86 treatment reply through the candidate gate with legacy forbidden markers.",
+    "t1_projection_enabled": "Replay the identical reply and plan with only stale forbidden-conflict projection enabled."
+  },
+  "controls": [
+    "same twelve V86 treatment replies byte-for-byte",
+    "same frozen target plans, maximum character budgets, and candidate gate",
+    "same memory-cue and explicit-length settings",
+    "no generation, benchmark item, answer, prompt tuning, or score override",
+    "no production memory writes or VRM actions"
+  ],
+  "advance_gates": {
+    "treatment_gate_accept_rate_min": 1.0,
+    "recovered_conflict_only_rejection_count_min": 2,
+    "new_rejection_count_max": 0,
+    "nonconflict_decision_identity_rate_min": 1.0,
+    "projected_marker_count_exact": 4,
+    "projection_scope_mismatch_count_max": 0,
+    "reply_hash_mismatch_count_max": 0,
+    "hard_marker_regression_count_max": 0
+  },
+  "failure_rule": {
+    "recovered_conflict_only_rejection_count_max": 0,
+    "new_rejection_count_min": 1,
+    "decision": "stop_forbidden_conflict_projection_hypothesis"
+  },
+  "authorizations": {
+    "on_pass": "authorize_fresh_v88_full_pipeline_holdout_only",
+    "production_shadow": false,
+    "production_default_enable": false,
+    "training_data": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "v86_packets": {"path": "analysis/local_rightbrain_memory_surface_v86/packets.jsonl", "sha256": "92516637160f161da602ccc569e121b024595389cf3cb1fc56be50de39c5e3ec"},
+    "v86_raw": {"path": "analysis/local_rightbrain_memory_surface_v86/raw.jsonl", "sha256": "0d16a65c978f8aa6af8824c460361b9638ae87d44910280a36c146e3205c7dc3"},
+    "candidate_queue": {"path": "analysis/local_planner_supervision_v76/candidates.jsonl", "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"}
+  },
+  "prior_evidence": {
+    "v86_report": {"path": "reports/rightbrain_memory_surface_v86.json", "sha256": "72ee10c5ed52609eda769e2c83155986ca205e3a467f98b0032f3ad8692c3aaf"},
+    "v86_diagnosis": {"path": "reports/rightbrain_memory_surface_v86_diagnosis.json", "sha256": "f9f91dedbc11758479cbce939da8d5b9a55ff514cc8fc2052b941b3fe7879658"}
+  },
+  "local_paths": {
+    "paired_rows": "analysis/local_rightbrain_forbidden_projection_v87/paired_rows.jsonl",
+    "run_metadata": "analysis/local_rightbrain_forbidden_projection_v87/run_metadata.json",
+    "local_analysis": "analysis/local_rightbrain_forbidden_projection_v87/analysis.json"
+  },
+  "evidence_boundary": "A pass can show only that the narrow projection repairs the diagnosed V86 candidate-gate contradiction on frozen replies. It cannot establish generation quality, broad dialogue generalization, or production readiness without a fresh full-pipeline holdout."
+}
