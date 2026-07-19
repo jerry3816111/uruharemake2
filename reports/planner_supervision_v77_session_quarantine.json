@@ -1,0 +1,49 @@
+{
+  "schema": "uruha_planner_supervision_session_quarantine_report_v77",
+  "contract_path": "configs/planner_supervision_v77_session_quarantine_contract.json",
+  "contract_sha256": "37f46e89aa4d4af461e7b9889dbcf46f4116a7d52900cad4a7956110d9fd3287",
+  "private_source": {
+    "sha256": "892adfd437f5606b5b97ddeea6759ed3fe3b83a60905c7b03b567f6a474d9c3e",
+    "record_count": 156,
+    "raw_content_committed": false,
+    "raw_session_ids_committed": false
+  },
+  "control": {
+    "condition": "V76 row-level overlap filtering only",
+    "candidate_count": 96,
+    "training_rows_created": 0
+  },
+  "treatment": {
+    "condition": "V77 row-level filtering plus mixed-session quarantine",
+    "candidate_count": 92,
+    "training_rows_created": 0
+  },
+  "observed": {
+    "source_record_count": 156,
+    "candidate_count_before_quarantine": 96,
+    "candidate_count_after_quarantine": 92,
+    "evaluation_contaminated_session_count": 2,
+    "otherwise_valid_records_quarantined": 4,
+    "candidates_from_contaminated_sessions": 0,
+    "training_rows_created": 0,
+    "additional_model_calls": 0,
+    "runtime_files_changed": 0
+  },
+  "success_gates": {
+    "passed": true,
+    "checks": {
+      "source_record_count": true,
+      "candidate_count_before_quarantine": true,
+      "candidate_count_after_quarantine": true,
+      "evaluation_contaminated_session_count": true,
+      "otherwise_valid_records_quarantined": true,
+      "candidates_from_contaminated_sessions": true,
+      "training_rows_created": true,
+      "additional_model_calls": true,
+      "runtime_files_changed": true,
+      "private_source_hash_matches_contract": true
+    }
+  },
+  "hypothesis_supported": true,
+  "evidence_boundary": "V77 can show that known benchmark contamination is quarantined at session level. It cannot prove that the remaining historical sessions are non-benchmark, that their plans are correct, or that training on them improves cognition or dialogue."
+}
