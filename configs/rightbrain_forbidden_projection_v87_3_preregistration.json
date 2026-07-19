@@ -1,0 +1,72 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_preregistration_v87_3",
+  "experiment_id": "rightbrain_forbidden_projection_v87_3_normalized_scope_regression",
+  "status": "preregistered_before_normalized_scope_evaluation",
+  "research_question": "After making the scope oracle use the production gate's pre-existing forbidden-marker normalization, does the corrected paired replay satisfy every unchanged V87.2 gate?",
+  "single_changed_variable": "scope oracle normalization only; production runtime and outcome gates are unchanged from V87.2",
+  "scope": {
+    "dataset_role": "final confirmatory replay of the known-failure deterministic gate regression",
+    "case_count": 12,
+    "condition_count": 2,
+    "expected_evaluation_count": 24,
+    "model_call_count": 0,
+    "production_activation_forbidden": true,
+    "fresh_holdout_required_after_pass": true
+  },
+  "fixed_runtime_settings": {
+    "memory_cue_canonicalization_enabled": true,
+    "explicit_length_contract_enabled": true,
+    "forbidden_conflict_projection_control": false,
+    "forbidden_conflict_projection_treatment": true
+  },
+  "oracle_normalization": [
+    "strip surrounding whitespace",
+    "drop empty values",
+    "deduplicate while preserving order"
+  ],
+  "conditions": {
+    "c0_projection_disabled": "Frozen V86 treatment reply with canonical memory cues and explicit length enabled, projection disabled.",
+    "t1_projection_enabled": "Identical reply and settings with only forbidden-conflict projection enabled."
+  },
+  "controls": [
+    "same twelve V86 treatment replies byte-for-byte",
+    "same V87.2 runtime settings and candidate gate",
+    "same V87.2 outcome gates and expected counts",
+    "only the scope oracle mirrors existing production marker normalization",
+    "no generation, runtime feature change, score override, memory write, or VRM action"
+  ],
+  "advance_gates": {
+    "required_contract_match_count_exact": 12,
+    "control_gate_accept_count_exact": 10,
+    "treatment_gate_accept_count_exact": 12,
+    "recovered_conflict_only_rejection_count_exact": 2,
+    "new_rejection_count_max": 0,
+    "nonconflict_decision_identity_rate_min": 1.0,
+    "projected_marker_count_exact": 4,
+    "projection_scope_mismatch_count_max": 0,
+    "reply_hash_mismatch_count_max": 0,
+    "hard_marker_regression_count_max": 0
+  },
+  "authorizations": {
+    "on_pass": "authorize_fresh_v88_full_pipeline_holdout_only",
+    "production_shadow": false,
+    "production_default_enable": false,
+    "training_data": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "v86_packets": {"path": "analysis/local_rightbrain_memory_surface_v86/packets.jsonl", "sha256": "92516637160f161da602ccc569e121b024595389cf3cb1fc56be50de39c5e3ec"},
+    "v86_raw": {"path": "analysis/local_rightbrain_memory_surface_v86/raw.jsonl", "sha256": "0d16a65c978f8aa6af8824c460361b9638ae87d44910280a36c146e3205c7dc3"},
+    "candidate_queue": {"path": "analysis/local_planner_supervision_v76/candidates.jsonl", "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"}
+  },
+  "prior_evidence": {
+    "v87_2_formal_report": {"path": "reports/rightbrain_forbidden_projection_v87_2.json", "sha256": "10a9562bf71f7c6925f01eb4474b0c56165b6d7d462aef3a94225b03447aa5cd"},
+    "v87_2_scope_diagnosis": {"path": "reports/rightbrain_forbidden_projection_v87_2_diagnosis.json", "sha256": "cae3bc473ecd4794114f56404723396ccfe6e26f9e4d72528b4a60962d8f038a"}
+  },
+  "local_paths": {
+    "paired_rows": "analysis/local_rightbrain_forbidden_projection_v87_3/paired_rows.jsonl",
+    "run_metadata": "analysis/local_rightbrain_forbidden_projection_v87_3/run_metadata.json",
+    "local_analysis": "analysis/local_rightbrain_forbidden_projection_v87_3/analysis.json"
+  },
+  "evidence_boundary": "A pass closes only the known-reply candidate-gate mechanism check. It does not test fresh generation or authorize production; only a disjoint V88 full-pipeline holdout may follow."
+}
