@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_memory_cue_canonicalization_preregistration_v85",
+  "experiment_id": "memory_cue_canonicalization_v85_regression",
+  "status": "preregistered_before_inference",
+  "research_question": "Can canonicalizing explicit memory cues retain clean planner meaning while removing the transcript-shaped surface failures observed in V84?",
+  "single_changed_variable": "RightBrain memory_cue_canonicalization_enabled false versus true",
+  "scope": {
+    "dataset_role": "known-failure regression only",
+    "case_count": 8,
+    "condition_count": 2,
+    "replicate_count": 1,
+    "expected_model_call_count": 16,
+    "production_activation_forbidden": true,
+    "fresh_holdout_required_after_pass": true
+  },
+  "conditions": {
+    "c0_legacy_raw_memory_cue": "Current production-compatible payload with canonicalization disabled.",
+    "t1_canonical_memory_cue": "Same target plan and payload builder with only memory-cue canonicalization enabled."
+  },
+  "controls": [
+    "same eight V84 regression cases",
+    "same complete target plan",
+    "same user summary, psyche, and working memory",
+    "same local qwen3.5:9b model and digest",
+    "same system prompt and generation parameters",
+    "same clean canonical outcome contract for both conditions",
+    "balanced condition order",
+    "no benchmark items or answers",
+    "no production memory writes or VRM actions"
+  ],
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 40,
+    "repeat_penalty": 1.1,
+    "seed": 2026078501,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 64,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "advance_gates": {
+    "treatment_transcript_label_leak_rate_max": 0.0,
+    "treatment_surface_pass_rate_min": 0.75,
+    "surface_pass_delta_min": 0.5,
+    "treatment_clean_semantic_recall_min": 0.75,
+    "clean_semantic_recall_delta_min": -0.05,
+    "treatment_over_max_rate_max": 0.25,
+    "forbidden_violation_delta_max": 0.0,
+    "private_intrusion_delta_max": 0.0,
+    "latency_ratio_max": 1.25,
+    "treatment_p95_latency_seconds_max": 30.0,
+    "peak_ollama_rss_bytes_max": 17179869184
+  },
+  "failure_rule": {
+    "surface_pass_delta_max": 0.0,
+    "clean_semantic_recall_delta_below": -0.1,
+    "decision": "stop_memory_cue_canonicalization_hypothesis"
+  },
+  "authorizations": {
+    "on_pass": "authorize_fresh_v86_holdout_only",
+    "production_default_enable": false,
+    "training_data": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "candidate_queue": {
+      "path": "analysis/local_planner_supervision_v76/candidates.jsonl",
+      "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"
+    },
+    "v84_packets": {
+      "path": "analysis/local_planner_memory_causality_v84/packets.jsonl",
+      "sha256": "090309de650635aa77858307c6a27f6c168f40d130565dec9373238ce8b5f3a7"
+    }
+  },
+  "local_paths": {
+    "packet_queue": "analysis/local_memory_cue_canonicalization_v85/packets.jsonl",
+    "raw_results": "analysis/local_memory_cue_canonicalization_v85/raw.jsonl",
+    "local_analysis": "analysis/local_memory_cue_canonicalization_v85/analysis.json"
+  },
+  "evidence_boundary": "A pass can show that the repair fixes the eight known V84 failures without losing the clean planner contract. It cannot establish generalization or authorize production activation without a fresh holdout."
+}

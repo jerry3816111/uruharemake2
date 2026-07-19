@@ -221,6 +221,10 @@ RIGHT_BRAIN_MODEL_CANDIDATE_COUNT = _env_int("URUHA_RIGHT_BRAIN_MODEL_CANDIDATE_
 RIGHT_BRAIN_MODEL_SELECTION_MARGIN = _env_float("URUHA_RIGHT_BRAIN_MODEL_SELECTION_MARGIN", 0.15)
 RIGHT_BRAIN_MODEL_REPAIR_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_MODEL_REPAIR_ENABLED", False)
 RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED", False)
+RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED = _env_bool(
+    "URUHA_RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED",
+    False,
+)
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -238,6 +242,10 @@ RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
 RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT = (
     RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
     + " The previous draft failed the contract. Repair it once and return only the corrected reply."
+)
+MEMORY_TRANSCRIPT_LABEL_RE = re.compile(
+    r"(?:^|[\s>\-、。])(?:user|assistant|system|uruha|ユーザー|アシスタント|システム|うるは|使用者|用户|助手|系統|系统)\s*[:：]",
+    flags=re.IGNORECASE,
 )
 
 
@@ -8270,6 +8278,7 @@ class RightBrain:
         self.model_selection_margin = RIGHT_BRAIN_MODEL_SELECTION_MARGIN
         self.model_repair_enabled = RIGHT_BRAIN_MODEL_REPAIR_ENABLED
         self.surface_watchlist_enabled = RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED
+        self.memory_cue_canonicalization_enabled = RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
@@ -10139,15 +10148,24 @@ class RightBrain:
         groups = []
         anchor = logic_data.get("memory_anchor") or {}
         if logic_data.get("memory_use_expected") and anchor:
-            allowed_terms = []
-            for term in [anchor.get("jp_anchor"), *(anchor.get("terms") or [])]:
-                term = str(term or "").strip()
-                if not term:
-                    continue
-                if term != anchor.get("jp_anchor") and not re.search(r"[ぁ-んァ-ヶー]", term):
-                    continue
-                if term not in allowed_terms:
-                    allowed_terms.append(term)
+            if self.memory_cue_canonicalization_enabled:
+                cue, trace = self._canonical_memory_expression_cue(logic_data)
+                logic_data["memory_cue_canonicalization_trace"] = trace
+                allowed_terms = [
+                    str(term or "").strip()
+                    for term in [cue.get("jp_anchor"), *(cue.get("terms") or [])]
+                    if str(term or "").strip()
+                ]
+            else:
+                allowed_terms = []
+                for term in [anchor.get("jp_anchor"), *(anchor.get("terms") or [])]:
+                    term = str(term or "").strip()
+                    if not term:
+                        continue
+                    if term != anchor.get("jp_anchor") and not re.search(r"[ぁ-んァ-ヶー]", term):
+                        continue
+                    if term not in allowed_terms:
+                        allowed_terms.append(term)
             if allowed_terms:
                 groups.append(tuple(allowed_terms[:4]))
 
@@ -11882,6 +11900,80 @@ You are Ichinose Uruha.
             "must_not_override": ["leftbrain_plan", "required_marker_groups", "audited_memory_policy"],
         }
 
+    def _memory_surface_text_is_safe(self, value, logic_data):
+        text = str(value or "").strip()
+        if not text or not re.search(r"[ぁ-んァ-ヶー一-龠]", text):
+            return False
+        if MEMORY_TRANSCRIPT_LABEL_RE.search(text) or "->" in text or "→" in text or "\n" in text or "\r" in text:
+            return False
+        if (
+            CHINESE_SPECIFIC_RE.search(text)
+            or AUDITED_CHINESE_SPECIFIC_RE.search(text)
+            or NONSTANDARD_CJK_RE.search(text)
+            or AUDITED_NONSTANDARD_CJK_RE.search(text)
+            or FOREIGN_SCRIPT_RE.search(text)
+            or ASCII_SYMBOL_ARTIFACT_RE.search(text)
+            or UNICODE_REPLACEMENT_CHAR in text
+        ):
+            return False
+        if any(marker.lower() in text.lower() for marker in INSTRUCTION_MARKERS):
+            return False
+
+        support_text = " ".join(
+            [
+                str(logic_data.get("core_message_jp") or ""),
+                str(logic_data.get("jp_summary") or ""),
+                *[
+                    str(term or "")
+                    for term in (logic_data.get("human_speech_plan") or {}).get("grounding_terms") or []
+                ],
+            ]
+        ).lower()
+        leaked_ascii = [token for token in ASCII_WORD_RE.findall(text) if token.lower() not in support_text]
+        if leaked_ascii:
+            return False
+        max_chars = int((logic_data.get("constraints") or {}).get("max_chars") or 48)
+        return len(text) <= max(12, min(max_chars, 64))
+
+    def _canonical_memory_expression_cue(self, logic_data):
+        logic_data = logic_data or {}
+        anchor = logic_data.get("memory_anchor") or {}
+        speech_plan = logic_data.get("human_speech_plan") or {}
+        candidate_groups = [
+            ("core_message", [logic_data.get("core_message_jp")]),
+            ("grounding", speech_plan.get("grounding_terms") or []),
+            ("anchor_term", anchor.get("terms") or []),
+            ("anchor", [anchor.get("jp_anchor")]),
+        ]
+        safe = []
+        safe_sources = []
+        rejected_count = 0
+        for source, values in candidate_groups:
+            for value in values:
+                text = str(value or "").strip()
+                if not text or text in safe:
+                    continue
+                if self._memory_surface_text_is_safe(text, logic_data):
+                    safe.append(text)
+                    safe_sources.append(source)
+                else:
+                    rejected_count += 1
+        cue = {}
+        if safe:
+            cue = {
+                "kind": str(anchor.get("kind") or "context"),
+                "jp_anchor": safe[0],
+                "terms": safe[1:4],
+            }
+        trace = {
+            "enabled": True,
+            "safe_value_count": len(safe),
+            "rejected_value_count": rejected_count,
+            "selected_source": safe_sources[0] if safe_sources else "none",
+            "fallback_blocked": not bool(safe),
+        }
+        return cue, trace
+
     def _audited_memory_expression_brief(self, logic_data, memory_data=None):
         logic_data = logic_data or {}
         anchor = logic_data.get("memory_anchor") or {}
@@ -11892,25 +11984,32 @@ You are Ichinose Uruha.
         background_cues = []
 
         if anchor:
-            jp_anchor = str(anchor.get("jp_anchor") or "").strip()
-            surface_terms = []
-            for term in [jp_anchor, *(anchor.get("terms") or [])]:
-                term = str(term or "").strip()
-                if not term:
-                    continue
-                if term != jp_anchor and not re.search(r"[ぁ-んァ-ヶー]", term):
-                    continue
-                if term not in surface_terms:
-                    surface_terms.append(term)
-            cue = {
-                "kind": str(anchor.get("kind") or "context"),
-                "jp_anchor": jp_anchor,
-                "terms": surface_terms[:4],
-            }
-            cue = {key: value for key, value in cue.items() if value}
+            if self.memory_cue_canonicalization_enabled:
+                cue, trace = self._canonical_memory_expression_cue(logic_data)
+                logic_data["memory_cue_canonicalization_trace"] = trace
+            else:
+                jp_anchor = str(anchor.get("jp_anchor") or "").strip()
+                surface_terms = []
+                for term in [jp_anchor, *(anchor.get("terms") or [])]:
+                    term = str(term or "").strip()
+                    if not term:
+                        continue
+                    if term != jp_anchor and not re.search(r"[ぁ-んァ-ヶー]", term):
+                        continue
+                    if term not in surface_terms:
+                        surface_terms.append(term)
+                cue = {
+                    "kind": str(anchor.get("kind") or "context"),
+                    "jp_anchor": jp_anchor,
+                    "terms": surface_terms[:4],
+                }
+                cue = {key: value for key, value in cue.items() if value}
             if explicit:
-                policy = "explicit_allowed"
-                allowed_cues.append(cue)
+                if cue:
+                    policy = "explicit_allowed"
+                    allowed_cues.append(cue)
+                else:
+                    policy = "do_not_mention"
             elif speakability in {"background_only", "latent_ok", "low_trust_background", "private_background"}:
                 policy = "background_only"
                 background_cues.append({"kind": cue.get("kind", "context"), "style_influence": "soft_context_only"})
