@@ -225,6 +225,10 @@ RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED = _env_bool(
     "URUHA_RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED",
     False,
 )
+RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED = _env_bool(
+    "URUHA_RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED",
+    False,
+)
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -242,6 +246,11 @@ RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
 RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT = (
     RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
     + " The previous draft failed the contract. Repair it once and return only the corrected reply."
+)
+RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE = (
+    " When output_budget is present, the reply must not exceed maximum_characters, including punctuation. "
+    "Preserve required_marker_groups first; remove prefaces, repetition, and optional elaboration before "
+    "shortening required meaning."
 )
 MEMORY_TRANSCRIPT_LABEL_RE = re.compile(
     r"(?:^|[\s>\-、。])(?:user|assistant|system|uruha|ユーザー|アシスタント|システム|うるは|使用者|用户|助手|系統|系统)\s*[:：]",
@@ -8279,6 +8288,7 @@ class RightBrain:
         self.model_repair_enabled = RIGHT_BRAIN_MODEL_REPAIR_ENABLED
         self.surface_watchlist_enabled = RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED
         self.memory_cue_canonicalization_enabled = RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED
+        self.explicit_length_contract_enabled = RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
@@ -12192,9 +12202,28 @@ You are Ichinose Uruha.
                 "no first person 私",
             ],
         }
+        if self.explicit_length_contract_enabled:
+            payload["output_budget"] = {
+                "maximum_characters": int(max_chars or 48),
+                "counting_rule": "count every visible character, including Japanese punctuation",
+                "compression_order": [
+                    "preserve required_marker_groups",
+                    "remove prefaces and explanations",
+                    "remove repetition and optional elaboration",
+                ],
+            }
+            payload["reply_requirements"].append(
+                f"reply must contain at most {int(max_chars or 48)} visible characters including punctuation"
+            )
         if self.surface_watchlist_enabled:
             payload["surface_failure_watchlist"] = self._model_surface_failure_watchlist(logic_data)
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+    def _model_surface_system_instruction(self, repair=False):
+        prompt = RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT if repair else RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
+        if self.explicit_length_contract_enabled:
+            prompt += RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE
+        return prompt
 
     def _semantic_marker_hit(self, reply, marker):
         marker = str(marker or "").strip()
@@ -12519,7 +12548,7 @@ You are Ichinose Uruha.
         messages = [
             {
                 "role": "system",
-                "content": RIGHT_BRAIN_MODEL_SYSTEM_PROMPT,
+                "content": self._model_surface_system_instruction(),
             },
             {
                 "role": "user",
@@ -12595,7 +12624,7 @@ You are Ichinose Uruha.
             repair_messages = [
                 {
                     "role": "system",
-                    "content": RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT,
+                    "content": self._model_surface_system_instruction(repair=True),
                 },
                 {
                     "role": "user",
