@@ -1,0 +1,130 @@
+{
+  "schema": "uruha_planner_memory_causality_preregistration_v84",
+  "experiment_id": "planner_memory_causality_v84",
+  "status": "preregistered_before_inference",
+  "research_question": "Does the planner's memory-integration bundle causally improve required-memory realization in the final reply when the local RightBrain and every other input are held fixed?",
+  "hypothesis": "An intact memory-integrated plan will preserve more planner-derived required semantic groups than the same plan with its memory-to-speech integration bundle removed.",
+  "scope": {
+    "scenario_family": "memory_recall_update",
+    "fresh_case_count": 8,
+    "replicate_count": 2,
+    "condition_count": 2,
+    "expected_model_call_count": 32,
+    "generalization_forbidden": [
+      "whole-planner quality",
+      "ordinary dialogue",
+      "broad human likeness",
+      "benchmark performance",
+      "production readiness"
+    ]
+  },
+  "conditions": {
+    "c0_intact_memory_integrated_plan": {
+      "description": "Use the frozen complete planner output and its production memory-to-speech integration signals."
+    },
+    "t1_memory_integration_removed": {
+      "description": "Remove only the coupled memory-integration bundle: memory authorization, memory anchor, working-memory use, reply goal, core message, and speech-plan content/grounding slots."
+    }
+  },
+  "controls": [
+    "same fresh private case",
+    "same user-input summary",
+    "same psyche and relationship state",
+    "same local RightBrain model and digest",
+    "same production payload builder and system prompt",
+    "same generation settings and matched seed",
+    "same V83 deterministic outcome evaluator",
+    "balanced condition order",
+    "no benchmark items or answers",
+    "no production memory writes or physical VRM actions"
+  ],
+  "selection": {
+    "algorithm": "validate frozen V79 eligibility, exclude V79/V81/V82, filter to memory_recall_update with nonempty runtime semantic groups, then hash-rank with family/session coverage",
+    "v79_validation_seed": "uruha-v79-pilot-2026-07-19",
+    "v79_count": 12,
+    "v81_count": 12,
+    "v82_count": 8,
+    "fresh_selection_seed": "uruha-v84-memory-causality-2026-07-20",
+    "fresh_count": 8
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false,
+    "role": "frozen local RightBrain surface realizer"
+  },
+  "generation": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 40,
+    "repeat_penalty": 1.1,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 64,
+    "seed": 2026078401,
+    "replicate_seeds": [2026078401, 2026078402],
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "primary_metric": "paired required-semantic-group recall delta: intact minus removed",
+  "secondary_metrics": [
+    "semantic-complete rate",
+    "V83 overall outcome pass rate",
+    "intact win/tie/loss rate",
+    "identical reply rate",
+    "forbidden and private-memory violation rates",
+    "surface pass rate",
+    "latency, prompt tokens, and peak Ollama RSS"
+  ],
+  "advance_gates": {
+    "intact_required_group_recall_min": 0.6,
+    "paired_recall_delta_min": 0.2,
+    "bootstrap_delta_lower_95_min_exclusive": 0.0,
+    "intact_win_rate_min": 0.5,
+    "intact_surface_pass_rate_min": 0.8,
+    "intact_surface_delta_vs_removed_min": -0.05,
+    "intact_forbidden_violation_delta_vs_removed_max": 0.0,
+    "intact_private_intrusion_delta_vs_removed_max": 0.0,
+    "median_latency_seconds_max": 10.0,
+    "p95_latency_seconds_max": 30.0,
+    "peak_ollama_rss_bytes_max": 17179869184
+  },
+  "failure_rule": {
+    "paired_recall_delta_max": 0.0,
+    "intact_win_rate_below": 0.25,
+    "decision": "stop_memory_integration_causality_hypothesis"
+  },
+  "inconclusive_rule": "Any integrity failure, or an effect between the failure and advance gates, is inconclusive and does not authorize expansion.",
+  "authorization": {
+    "training_data": false,
+    "production_runtime_change": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "candidate_queue": {
+      "path": "analysis/local_planner_supervision_v76/candidates.jsonl",
+      "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"
+    },
+    "session_manifest": {
+      "path": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+      "sha256": "85ac11445820d94c722d8619d825772859ba918081ea83622a49976bda33b2d7"
+    },
+    "v79_queue": {
+      "path": "analysis/local_planner_supervision_v76/pilot_review_queue_v79.jsonl",
+      "sha256": "803e96111ada34b85b43ee7e4df0c3f4d43e50b86dfa2286273e7bcc6d2f0041"
+    },
+    "v81_packets": {
+      "path": "analysis/local_planner_supervision_v76/executable_view_packets_v81.jsonl",
+      "sha256": "753fc2867aa43b16c4ce1448ed316656d429215fcfcf0cb6fcd73e94fa9daf56"
+    },
+    "v82_packets": {
+      "path": "analysis/local_planner_supervision_v76/bounded_review_packets_v82.jsonl",
+      "sha256": "5ba7b88b6f9c477548fb8386631e2b443594d0e38bbd230e6e2622a534428cd1"
+    }
+  },
+  "local_paths": {
+    "packet_queue": "analysis/local_planner_memory_causality_v84/packets.jsonl",
+    "raw_results": "analysis/local_planner_memory_causality_v84/raw.jsonl",
+    "local_analysis": "analysis/local_planner_memory_causality_v84/analysis.json"
+  },
+  "evidence_boundary": "The experiment can estimate only whether the current memory-integration signal changes required-memory realization through one frozen local RightBrain on eight fresh memory cases."
+}
