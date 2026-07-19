@@ -1,0 +1,25 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_diagnosis_v87_2",
+  "diagnosis_type": "post_hoc_scope_oracle_audit_does_not_change_v87_2_decision",
+  "formal_v87_2_decision": "inconclusive_effect_between_preregistered_gates",
+  "formal_scope_mismatch_count": 1,
+  "diagnosed_mismatch_count": 1,
+  "mismatches_with_zero_projection": 1,
+  "mismatches_unchanged_between_conditions": 1,
+  "mismatches_matching_normalized_oracle": 1,
+  "whitespace_changed_marker_count": 1,
+  "scope_mismatch_is_oracle_false_positive": true,
+  "root_cause": "The V87 scope oracle hashed raw must_avoid values, while the production gate strips surrounding whitespace in both control and treatment. One unchanged marker therefore produced a hash mismatch even though projection removed nothing and did not alter the decision.",
+  "next_falsifiable_step": "Preregister V87.3 with an oracle that applies the production gate's existing whitespace normalization before comparing projected scope. Keep every runtime setting and outcome gate unchanged.",
+  "authorizations": {
+    "v87_2_decision_override": false,
+    "fresh_full_pipeline_holdout": false,
+    "production_shadow": false,
+    "production_default": false,
+    "training_data": false
+  },
+  "privacy": {
+    "raw_marker_text_in_report": false,
+    "candidate_or_session_ids_in_report": false
+  }
+}
