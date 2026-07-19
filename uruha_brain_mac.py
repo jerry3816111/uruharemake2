@@ -229,6 +229,10 @@ RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED = _env_bool(
     "URUHA_RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED",
     False,
 )
+RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED = _env_bool(
+    "URUHA_RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED",
+    False,
+)
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -8289,6 +8293,7 @@ class RightBrain:
         self.surface_watchlist_enabled = RIGHT_BRAIN_SURFACE_WATCHLIST_ENABLED
         self.memory_cue_canonicalization_enabled = RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED
         self.explicit_length_contract_enabled = RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED
+        self.forbidden_conflict_projection_enabled = RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
@@ -11454,7 +11459,7 @@ class RightBrain:
     def _score_candidate(self, reply, logic_data):
         score = 0.0
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
-        must_avoid = logic_data.get("must_avoid", [])
+        must_avoid = self._model_surface_forbidden_markers(logic_data)
         payload_level = logic_data.get("payload_level", "low")
         grounding = logic_data.get("grounding") or {}
         topic_terms = grounding.get("topic_terms") or []
@@ -12193,7 +12198,7 @@ You are Ichinose Uruha.
                 "max_chars": int(max_chars or 48),
             },
             "required_marker_groups": required_groups,
-            "forbidden_markers": list(logic_data.get("must_avoid") or []),
+            "forbidden_markers": self._model_surface_forbidden_markers(logic_data),
             "reply_requirements": [
                 "one sentence or short chat reply",
                 "natural casual Japanese",
@@ -12224,6 +12229,56 @@ You are Ichinose Uruha.
         if self.explicit_length_contract_enabled:
             prompt += RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE
         return prompt
+
+    def _model_surface_forbidden_markers(self, logic_data):
+        logic_data = logic_data or {}
+        original = [
+            str(value or "").strip()
+            for value in logic_data.get("must_avoid") or []
+            if str(value or "").strip()
+        ]
+        if not self.forbidden_conflict_projection_enabled:
+            return list(dict.fromkeys(original))
+
+        speech_plan = logic_data.get("human_speech_plan") or {}
+        recent_openings = {
+            str(value or "").strip()
+            for value in (speech_plan.get("forbidden_repetition") or {}).get("recent_openings") or []
+            if str(value or "").strip()
+        }
+        semantic_values = [
+            str(logic_data.get("core_message_jp") or ""),
+            *[str(value or "") for value in speech_plan.get("content_units") or []],
+            *[str(value or "") for value in speech_plan.get("grounding_terms") or []],
+            *[
+                str(value or "")
+                for group in self._model_required_semantic_groups(logic_data)
+                for value in group
+            ],
+        ]
+        compact_semantics = [re.sub(r"\s+", "", value) for value in semantic_values if str(value).strip()]
+        dropped = []
+        effective = []
+        for marker in original:
+            compact_marker = re.sub(r"\s+", "", marker)
+            stale_conflict = (
+                marker in recent_openings
+                and bool(compact_marker)
+                and len(compact_marker) >= 4
+                and any(compact_marker in value for value in compact_semantics)
+            )
+            if stale_conflict:
+                dropped.append(marker)
+            elif marker not in effective:
+                effective.append(marker)
+        logic_data["model_surface_forbidden_projection"] = {
+            "enabled": True,
+            "original_count": len(list(dict.fromkeys(original))),
+            "effective_count": len(effective),
+            "dropped_stale_recent_opening_count": len(dropped),
+            "hard_or_nonconflicting_markers_preserved": True,
+        }
+        return effective
 
     def _semantic_marker_hit(self, reply, marker):
         marker = str(marker or "").strip()
@@ -12314,7 +12369,7 @@ You are Ichinose Uruha.
         if groups and not all(semantic_hits):
             reasons.append(f"semantic_slots_missing:{sum(semantic_hits)}/{len(semantic_hits)}")
 
-        must_avoid = [str(item) for item in logic_data.get("must_avoid") or [] if str(item).strip()]
+        must_avoid = self._model_surface_forbidden_markers(logic_data)
         if any(marker in reply for marker in must_avoid):
             reasons.append("must_avoid_violation")
         if any(marker in reply for marker in self._audited_memory_forbidden_surface_terms(logic_data)):
@@ -12734,7 +12789,7 @@ You are Ichinose Uruha.
             "required_marker_groups": [
                 list(group) for group in self._model_required_semantic_groups(logic_data)
             ],
-            "forbidden_markers": list(logic_data.get("must_avoid") or []),
+            "forbidden_markers": self._model_surface_forbidden_markers(logic_data),
         }
 
     def _selector_shadow_candidate_pool(self, deterministic_reply, model_candidates, logic_data):
@@ -12974,6 +13029,7 @@ You are Ichinose Uruha.
                 "model_surface_selection",
                 "model_surface_selector_shadow",
                 "model_surface_plan_projection",
+                "model_surface_forbidden_projection",
             ):
                 if key in logic_data:
                     original_logic_data[key] = deepcopy(logic_data.get(key))
