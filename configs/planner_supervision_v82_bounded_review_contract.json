@@ -1,0 +1,138 @@
+{
+  "schema": "uruha_planner_supervision_bounded_review_contract_v82",
+  "status": "frozen_before_formal_inference",
+  "frozen_on": "2026-07-20",
+  "parent_commit": "4cbbe3c5c8abae55935eff85e55b2b1eaf6bdda2",
+  "ability_target": "terminating_and_parser_compatible_proxy_review_of_executable_planner_views",
+  "problem_evidence": {
+    "v81_completed_attempts": 48,
+    "v81_expected_attempts": 72,
+    "v81_parsed_attempts": 12,
+    "v81_invalid_output_key_attempts": 35,
+    "v81_malformed_json_attempts": 1,
+    "v81_interrupted_ordinal": 49,
+    "v81_interrupted_minimum_seconds": 600
+  },
+  "development_probe": {
+    "not_part_of_formal_holdout": true,
+    "protocol": "DECISION|CODE single line",
+    "num_predict": 32,
+    "qwen3_5_9b_parse_success": true,
+    "qwen3_5_9b_seconds": 3.081,
+    "qwen2_5_7b_parse_success": true,
+    "qwen2_5_7b_seconds": 2.13
+  },
+  "hypothesis": "With candidate plans fixed, a compact executable decision view will produce at least 75% independent-judge agreement, at least 25 percentage points more agreement than the full internal state, and reliable detection of a controlled missing-intent defect when both judges use a parser-compatible one-line protocol with bounded generation and a hard deadline.",
+  "changed_variable": "review_view_only",
+  "fixed_variables": [
+    "fresh_candidate_set",
+    "candidate_input_context",
+    "candidate_target_plan",
+    "judge_models_and_digests",
+    "line_protocol",
+    "judge_prompt_and_rubric",
+    "temperature",
+    "seed",
+    "context_window",
+    "generation_limit",
+    "hard_deadline",
+    "known_defect_mutation",
+    "decision_parser",
+    "production_runtime"
+  ],
+  "selection": {
+    "source_algorithm": "validate_v79_then_exclude_v79_and_v81_and_rerank_remaining_family_and_session_coverage",
+    "v79_validation_seed": "uruha-v79-pilot-2026-07-19",
+    "fresh_selection_seed": "uruha-v82-bounded-review-2026-07-20",
+    "v79_count": 12,
+    "v81_count": 12,
+    "fresh_count": 8,
+    "mutation_calibration_count": 4
+  },
+  "conditions": [
+    "c0_full_internal_target",
+    "t1_executable_decision_view"
+  ],
+  "known_defect": {
+    "name": "remove_executable_response_intent",
+    "expected_failure_code": "missing_executable_intent"
+  },
+  "judges": [
+    {
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+    }
+  ],
+  "inference": {
+    "temperature": 0,
+    "seed": 82020,
+    "num_ctx": 16384,
+    "num_predict": 32,
+    "think": false,
+    "stream": false,
+    "curl_max_time_seconds": 25,
+    "hard_deadline_seconds": 30,
+    "expected_original_attempt_count": 32,
+    "expected_mutation_attempt_count": 16,
+    "expected_attempt_count": 48
+  },
+  "protocol": {
+    "allowed_lines": [
+      "ACCEPT|none",
+      "REJECT|failure_code",
+      "UNCERTAIN|failure_code"
+    ],
+    "case_sensitive": true,
+    "additional_text_allowed": false
+  },
+  "rubric": {
+    "system_prompt": "Audit whether the supplied internal dialogue plan gives a surface realizer one coherent, grounded and executable response decision. Judge the current response decision, not final prose style. Ignore implementation history that does not change the current decision. ACCEPT only if the plan directly addresses the supplied user context, has a nonempty actionable response intent, is internally consistent, uses memory only when relevant and speakable, and gives enough semantic content for one natural reply. REJECT a definite material defect. UNCERTAIN only when the supplied view is insufficient. Return exactly one line and nothing else: ACCEPT|none, REJECT|one_failure_code, or UNCERTAIN|one_failure_code.",
+    "failure_codes": [
+      "does_not_address_user",
+      "missing_executable_intent",
+      "unsupported_inference",
+      "irrelevant_memory_use",
+      "privacy_or_speakability_violation",
+      "socially_inappropriate",
+      "internally_inconsistent",
+      "excessive_implementation_noise",
+      "other"
+    ]
+  },
+  "success_gates": {
+    "minimum_t1_original_interjudge_agreement": 0.75,
+    "minimum_original_agreement_delta_vs_c0": 0.25,
+    "minimum_t1_unanimous_mutation_rejection": 0.75,
+    "minimum_t1_mutation_expected_code_rate": 0.75,
+    "maximum_t1_request_bytes_ratio_vs_c0": 0.65,
+    "maximum_t1_mean_latency_ratio_vs_c0": 1.0,
+    "maximum_transport_failure_count": 0,
+    "maximum_parse_failure_count": 0,
+    "maximum_production_runtime_files_changed": 0
+  },
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+    "v79_pilot_queue": "analysis/local_planner_supervision_v76/pilot_review_queue_v79.jsonl",
+    "v81_packet_queue": "analysis/local_planner_supervision_v76/executable_view_packets_v81.jsonl",
+    "packet_queue": "analysis/local_planner_supervision_v76/bounded_review_packets_v82.jsonl",
+    "raw_results": "analysis/local_planner_supervision_v76/bounded_review_raw_v82.jsonl",
+    "local_analysis": "analysis/local_planner_supervision_v76/bounded_review_analysis_v82.json"
+  },
+  "privacy_boundary": {
+    "packets_and_raw_results_are_gitignored": true,
+    "tracked_report_contains_aggregate_counts_only": true,
+    "automatic_cloud_upload": false,
+    "ollama_loopback_only": true
+  },
+  "authorizations": {
+    "human_label_creation": false,
+    "planner_training": false,
+    "production_runtime_change": false
+  },
+  "evidence_boundary": "V82 can test bounded proxy-review agreement and one controlled missing-intent mutation on eight fresh candidates from the remaining certified local sessions. Because the available fresh slice covers only the remaining scenario families and has no expert correctness labels, it cannot prove original plan correctness, create human ground truth, authorize training or runtime changes, evaluate final dialogue naturalness, or establish cognition or benchmark improvement."
+}

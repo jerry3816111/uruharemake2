@@ -1,0 +1,121 @@
+{
+  "schema": "uruha_planner_bounded_review_analysis_v82",
+  "contract_sha256": "6bf79cb6e8bd8d5aae6bf66dafcea4940a51a50b946c3a8ea4f7984524a29402",
+  "scenario_family_counts": {
+    "memory_recall_update": 7,
+    "ordinary_direct": 1
+  },
+  "integrity": {
+    "passed": false,
+    "observed": {
+      "packet_count": 8,
+      "attempt_count": 48,
+      "parsed_count": 41,
+      "transport_failure_count": 6,
+      "parse_failure_count": 1,
+      "model_digest_match_count": 48,
+      "view_hash_match_count": 48,
+      "request_hash_match_count": 48,
+      "done_count": 42,
+      "response_model_match_count": 42,
+      "production_runtime_files_changed": 0
+    },
+    "checks": {
+      "packet_count": true,
+      "attempt_count": true,
+      "parsed_count": false,
+      "transport_failure_count": false,
+      "parse_failure_count": false,
+      "model_digest_match_count": true,
+      "view_hash_match_count": true,
+      "request_hash_match_count": true,
+      "done_count": false,
+      "response_model_match_count": false,
+      "production_runtime_files_changed": true
+    }
+  },
+  "failure_distribution": {
+    "transport_by_condition": {
+      "c0_full_internal_target": 6
+    },
+    "transport_by_model": {
+      "qwen2.5:7b": 1,
+      "qwen3.5:9b": 5
+    },
+    "parse_by_condition": {
+      "t1_executable_decision_view": 1
+    },
+    "parse_by_model": {
+      "qwen2.5:7b": 1
+    }
+  },
+  "conditions": {
+    "c0_full_internal_target": {
+      "original_decision_counts": {
+        "accept": 10
+      },
+      "mutation_decision_counts": {
+        "accept": 7,
+        "reject": 1
+      },
+      "original_interjudge_agreement": 0.375,
+      "mutation_unanimous_rejection_rate": 0.0,
+      "mutation_expected_code_rate": 0.0,
+      "mean_request_bytes": 16877.0,
+      "mean_elapsed_seconds": 19.650559541666667,
+      "mean_prompt_eval_count": 4927.388888888889,
+      "mean_eval_count": 4.222222222222222
+    },
+    "t1_executable_decision_view": {
+      "original_decision_counts": {
+        "accept": 16
+      },
+      "mutation_decision_counts": {
+        "accept": 3,
+        "reject": 4
+      },
+      "original_interjudge_agreement": 1.0,
+      "mutation_unanimous_rejection_rate": 0.5,
+      "mutation_expected_code_rate": 0.42857142857142855,
+      "mean_request_bytes": 7974.083333333333,
+      "mean_elapsed_seconds": 6.008971625,
+      "mean_prompt_eval_count": 2341.4166666666665,
+      "mean_eval_count": 4.833333333333333
+    }
+  },
+  "comparisons": {
+    "original_agreement_delta_t1_minus_c0": 0.625,
+    "request_bytes_ratio_t1_vs_c0": 0.4724822737058324,
+    "mean_latency_ratio_t1_vs_c0": 0.3057913751645948,
+    "prompt_eval_count_ratio_t1_vs_c0": 0.47518406187636003
+  },
+  "model_decision_counts": {
+    "qwen3.5:9b": {
+      "accept": 16,
+      "reject": 3
+    },
+    "qwen2.5:7b": {
+      "accept": 20,
+      "reject": 2
+    }
+  },
+  "success": {
+    "passed": false,
+    "checks": {
+      "minimum_t1_original_interjudge_agreement": true,
+      "minimum_original_agreement_delta_vs_c0": true,
+      "minimum_t1_unanimous_mutation_rejection": false,
+      "minimum_t1_mutation_expected_code_rate": false,
+      "maximum_t1_request_bytes_ratio_vs_c0": true,
+      "maximum_t1_mean_latency_ratio_vs_c0": true,
+      "maximum_transport_failure_count": false,
+      "maximum_parse_failure_count": false,
+      "maximum_production_runtime_files_changed": true
+    }
+  },
+  "comparative_metrics_authorized": false,
+  "planner_training_authorized": false,
+  "production_runtime_change_authorized": false,
+  "decision": "stop_bounded_executable_view_proxy_review_hypothesis",
+  "evidence_boundary": "V82 can test bounded proxy-review agreement and one controlled missing-intent mutation on eight fresh candidates from the remaining certified local sessions. Because the available fresh slice covers only the remaining scenario families and has no expert correctness labels, it cannot prove original plan correctness, create human ground truth, authorize training or runtime changes, evaluate final dialogue naturalness, or establish cognition or benchmark improvement."
+}
