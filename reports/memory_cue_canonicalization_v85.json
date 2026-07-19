@@ -1,0 +1,70 @@
+{
+  "schema": "uruha_memory_cue_canonicalization_analysis_v85",
+  "experiment_id": "memory_cue_canonicalization_v85_regression",
+  "decision": "inconclusive_effect_between_preregistered_gates",
+  "integrity_passed": true,
+  "integrity_checks": {
+    "private_sources": true,
+    "packet_count": true,
+    "packet_recalculation": true,
+    "sequence_complete": true,
+    "model_digest": true,
+    "responses_complete": true,
+    "resources_complete": true,
+    "scores_recalculate": true,
+    "no_side_effects": true
+  },
+  "condition_summaries": {
+    "c0_legacy_raw_memory_cue": {
+      "observation_count": 8,
+      "clean_semantic_recall": 0.875,
+      "surface_pass_rate": 0.0,
+      "transcript_label_leak_rate": 1.0,
+      "over_max_rate": 0.875,
+      "forbidden_violation_rate": 0.25,
+      "private_intrusion_rate": 0.0,
+      "median_latency_seconds": 4.0933405,
+      "p95_latency_seconds": 8.160161,
+      "peak_ollama_rss_bytes": 8262156288,
+      "failure_code_counts": {
+        "cjk_language_leak": 6,
+        "forbidden_semantic_present": 2,
+        "over_max_chars": 7,
+        "required_semantic_missing": 1,
+        "unexpected_ascii_leak": 2
+      }
+    },
+    "t1_canonical_memory_cue": {
+      "observation_count": 8,
+      "clean_semantic_recall": 1.0,
+      "surface_pass_rate": 0.625,
+      "transcript_label_leak_rate": 0.0,
+      "over_max_rate": 0.375,
+      "forbidden_violation_rate": 0.0,
+      "private_intrusion_rate": 0.0,
+      "median_latency_seconds": 3.188116,
+      "p95_latency_seconds": 4.031254,
+      "peak_ollama_rss_bytes": 8261828608,
+      "failure_code_counts": {
+        "over_max_chars": 3
+      }
+    }
+  },
+  "advance_gate_checks": {
+    "zero_transcript_labels": true,
+    "treatment_surface_pass": false,
+    "surface_delta": true,
+    "treatment_clean_semantics": true,
+    "semantic_noninferiority": true,
+    "over_max": false,
+    "forbidden_noninferiority": true,
+    "private_noninferiority": true,
+    "latency_ratio": true,
+    "p95_latency": true,
+    "peak_rss": true
+  },
+  "production_default_enable_authorized": false,
+  "training_data_authorized": false,
+  "next_step": "Do not expand until the failed gate has new evidence.",
+  "evidence_boundary": "A pass can show that the repair fixes the eight known V84 failures without losing the clean planner contract. It cannot establish generalization or authorize production activation without a fresh holdout."
+}
