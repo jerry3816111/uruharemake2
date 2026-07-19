@@ -1,0 +1,49 @@
+{
+  "schema": "uruha_planner_outcome_evaluator_analysis_v83",
+  "experiment_id": "planner_outcome_evaluator_v83_calibration",
+  "decision": "authorize_evaluator_for_bounded_causal_planner_pilot_only",
+  "calibration_passed": true,
+  "metrics": {
+    "valid_case_count": 12,
+    "mutation_count": 12,
+    "valid_accept_count": 12,
+    "valid_accept_rate": 1.0,
+    "mutation_reject_count": 12,
+    "mutation_reject_rate": 1.0,
+    "target_failure_hit_count": 12,
+    "target_failure_recall": 1.0,
+    "isolated_failure_count": 12,
+    "isolated_failure_rate": 1.0,
+    "failure_code_counts": {
+      "cjk_language_leak": 1,
+      "forbidden_action_present": 1,
+      "forbidden_semantic_present": 1,
+      "foreign_script_leak": 1,
+      "malformed_action": 1,
+      "over_max_chars": 1,
+      "private_memory_intrusion": 1,
+      "required_action_missing": 1,
+      "required_semantic_missing": 1,
+      "unexpected_action": 1,
+      "unexpected_ascii_leak": 1,
+      "unicode_replacement_character": 1
+    }
+  },
+  "gate_checks": {
+    "artifact_checks_pass": true,
+    "raw_contract_binding": true,
+    "raw_dataset_binding": true,
+    "raw_rows_match_frozen_recalculation": true,
+    "valid_accept_rate": true,
+    "mutation_reject_rate": true,
+    "target_failure_recall": true,
+    "isolated_failure_rate": true,
+    "deterministic_rerun_match": true,
+    "no_benchmark_items_or_answers": true,
+    "no_runtime_or_side_effects": true
+  },
+  "training_data_authorized": false,
+  "production_runtime_change_authorized": false,
+  "next_experiment": "Apply the frozen evaluator to matched original-versus-known-defect planner interventions through the same frozen surface realization path.",
+  "evidence_boundary": "This calibration tests whether deterministic checks detect project-authored known output defects. It does not estimate planner quality, model intelligence, naturalness, human likeness, benchmark performance, or production readiness."
+}

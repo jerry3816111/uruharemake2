@@ -1,0 +1,189 @@
+{
+  "schema": "uruha_planner_outcome_evaluator_calibration_v83",
+  "source_type": "project_authored_controlled_calibration",
+  "official_benchmark_items": false,
+  "benchmark_answers_present": false,
+  "purpose": "Calibrate deterministic observable-outcome checks before a causal planner experiment.",
+  "cases": [
+    {
+      "id": "v83_required_semantics",
+      "scenario_family": "semantic_preservation",
+      "outcome_contract": {
+        "required_semantic_groups": [["寝る", "休む"], ["明日の朝", "朝が早い"]],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "明日の朝が早いなら、今日は寝る方がいい。", "actions": []},
+      "mutations": [
+        {"id": "drop_required_semantics", "target_failure_code": "required_semantic_missing", "outcome": {"reply": "今日は早めに決めた方がいい。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_forbidden_meaning",
+      "scenario_family": "forbidden_semantics",
+      "outcome_contract": {
+        "required_semantic_groups": [["無理しない", "休め"]],
+        "forbidden_markers": ["徹夜しよう"],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "無理しないで、今日は早めに休め。", "actions": []},
+      "mutations": [
+        {"id": "insert_forbidden_meaning", "target_failure_code": "forbidden_semantic_present", "outcome": {"reply": "無理しないで、今日は早めに休め。徹夜しよう。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_private_memory",
+      "scenario_family": "memory_speakability",
+      "outcome_contract": {
+        "required_semantic_groups": [["今の話"]],
+        "forbidden_markers": [],
+        "private_memory_terms": ["前の住所"],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "今の話だけで考えるなら、無理に決めなくていい。", "actions": []},
+      "mutations": [
+        {"id": "leak_private_memory", "target_failure_code": "private_memory_intrusion", "outcome": {"reply": "今の話と前の住所まで考えるなら、無理に決めなくていい。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_cjk_surface",
+      "scenario_family": "language_surface",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "今日は休んだ方がいい。", "actions": []},
+      "mutations": [
+        {"id": "insert_cjk_leak", "target_failure_code": "cjk_language_leak", "outcome": {"reply": "今日は休んだ方が這いい。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_foreign_surface",
+      "scenario_family": "language_surface",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "今日はゆっくり休め。", "actions": []},
+      "mutations": [
+        {"id": "insert_foreign_script", "target_failure_code": "foreign_script_leak", "outcome": {"reply": "今日は쉬어、ゆっくり休め。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_ascii_surface",
+      "scenario_family": "language_surface",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "今日はもう寝ろ。", "actions": []},
+      "mutations": [
+        {"id": "insert_ascii_word", "target_failure_code": "unexpected_ascii_leak", "outcome": {"reply": "今日はもうsleepしろ。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_replacement_surface",
+      "scenario_family": "language_surface",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "それなら一回休め。", "actions": []},
+      "mutations": [
+        {"id": "insert_replacement_character", "target_failure_code": "unicode_replacement_character", "outcome": {"reply": "それなら一回�休め。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_reply_length",
+      "scenario_family": "length_contract",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 12,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 0}
+      },
+      "valid_outcome": {"reply": "今日は休め。", "actions": []},
+      "mutations": [
+        {"id": "exceed_reply_length", "target_failure_code": "over_max_chars", "outcome": {"reply": "今日は無理をしないで早めにゆっくり休んだ方がいい。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_required_action",
+      "scenario_family": "action_contract",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": ["set_expression"], "required_action_names": ["set_expression"], "forbidden_action_names": [], "maximum_action_count": 1}
+      },
+      "valid_outcome": {"reply": "それはちょっと心配だな。", "actions": [{"name": "set_expression", "arguments": {"emotion": "concern"}}]},
+      "mutations": [
+        {"id": "drop_required_action", "target_failure_code": "required_action_missing", "outcome": {"reply": "それはちょっと心配だな。", "actions": []}}
+      ]
+    },
+    {
+      "id": "v83_unexpected_action",
+      "scenario_family": "action_contract",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": [], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 1}
+      },
+      "valid_outcome": {"reply": "普通に返せばいいだろ。", "actions": []},
+      "mutations": [
+        {"id": "insert_unexpected_action", "target_failure_code": "unexpected_action", "outcome": {"reply": "普通に返せばいいだろ。", "actions": [{"name": "play_audio", "arguments": {"clip": "unknown"}}]}}
+      ]
+    },
+    {
+      "id": "v83_forbidden_action",
+      "scenario_family": "action_contract",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": ["set_expression", "delete_memory"], "required_action_names": [], "forbidden_action_names": ["delete_memory"], "maximum_action_count": 1}
+      },
+      "valid_outcome": {"reply": "今は触らなくていい。", "actions": []},
+      "mutations": [
+        {"id": "insert_forbidden_action", "target_failure_code": "forbidden_action_present", "outcome": {"reply": "今は触らなくていい。", "actions": [{"name": "delete_memory", "arguments": {"scope": "all"}}]}}
+      ]
+    },
+    {
+      "id": "v83_malformed_action",
+      "scenario_family": "action_contract",
+      "outcome_contract": {
+        "required_semantic_groups": [],
+        "forbidden_markers": [],
+        "private_memory_terms": [],
+        "maximum_reply_chars": 80,
+        "action_contract": {"allowed_action_names": ["set_expression"], "required_action_names": [], "forbidden_action_names": [], "maximum_action_count": 1}
+      },
+      "valid_outcome": {"reply": "まあ、少し考えよう。", "actions": [{"name": "set_expression", "arguments": {"emotion": "thinking"}}]},
+      "mutations": [
+        {"id": "malform_action_payload", "target_failure_code": "malformed_action", "outcome": {"reply": "まあ、少し考えよう。", "actions": [{"name": "", "arguments": []}]}}
+      ]
+    }
+  ]
+}
