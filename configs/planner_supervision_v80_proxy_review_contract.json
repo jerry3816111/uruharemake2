@@ -1,0 +1,105 @@
+{
+  "schema": "uruha_planner_supervision_proxy_review_contract_v80",
+  "status": "frozen_before_inference",
+  "frozen_on": "2026-07-19",
+  "parent_commit": "0041cf01f9ddbecd7b2575e97a39064f9268ec57",
+  "ability_target": "autonomous_conservative_plan_quality_triage_without_false_human_provenance",
+  "problem_evidence": {
+    "v79_pilot_count": 12,
+    "v79_human_review_count": 0,
+    "v79_human_review_wait_cycles": 3,
+    "user_delegated_plan_quality_judgment": true
+  },
+  "hypothesis": "Two frozen local judges from different model generations can conservatively identify whether the V79 pilot has weak-supervision value without mislabeling model judgments as human review. Requiring unanimous acceptance should prefer false rejection over unsafe automatic acceptance.",
+  "changed_variable": "plan_quality_reviewer_provenance_only",
+  "fixed_variables": [
+    "v79_pilot_set",
+    "candidate_inputs",
+    "candidate_target_plans",
+    "session_certification_manifest",
+    "protected_evaluation_registry",
+    "human_review_log",
+    "strict_human_annotations",
+    "leftbrain_runtime",
+    "rightbrain_runtime",
+    "memory_runtime",
+    "production_prompts",
+    "production_models",
+    "reply_generation"
+  ],
+  "judges": [
+    {
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+    }
+  ],
+  "inference": {
+    "temperature": 0,
+    "seed": 80019,
+    "num_ctx": 16384,
+    "stream": false,
+    "expected_packet_count": 12,
+    "expected_attempt_count": 24
+  },
+  "rubric": {
+    "system_prompt": "You are auditing an internal speech plan, not the final wording. Judge only from the supplied conversation context and plan. Do not reward verbosity, roleplay style, benchmark tactics, or confident unsupported inference. ACCEPT only when the plan directly addresses the user, is grounded in supplied evidence, uses memory only when relevant and speakable, is socially proportionate, is internally consistent, and gives the surface realizer a complete actionable intent. REJECT a definite material defect. UNCERTAIN when the packet is insufficient or the defect cannot be established. Return only the requested JSON object.",
+    "failure_codes": [
+      "does_not_address_user",
+      "unsupported_inference",
+      "irrelevant_memory_use",
+      "privacy_or_speakability_violation",
+      "socially_inappropriate",
+      "internally_inconsistent",
+      "incomplete_for_surface_realization",
+      "overengineered_or_template_driven",
+      "other"
+    ],
+    "minimum_confidence_for_consensus": 0.7,
+    "consensus_rule": "both_judges_accept_with_minimum_confidence",
+    "uncertain_policy": "quarantine"
+  },
+  "viability_gates": {
+    "minimum_consensus_accept_rate": 0.75,
+    "maximum_disagreement_rate": 0.25
+  },
+  "integrity_gates": {
+    "packet_count": 12,
+    "attempt_count": 24,
+    "parsed_count": 24,
+    "model_digest_match_count": 24,
+    "packet_hash_match_count": 24,
+    "request_hash_match_count": 24,
+    "strict_human_rows_created": 0,
+    "production_runtime_files_changed": 0
+  },
+  "stop_conditions": [
+    "the current V79 pilot differs from the frozen local queue",
+    "a judge digest differs from the frozen digest",
+    "a request includes gold answers or protected evaluation labels",
+    "a response cannot be bound to the exact packet and request hashes",
+    "an AI decision is written as human_review or strict human supervision",
+    "a non-unanimous item becomes weak supervision",
+    "production runtime changes"
+  ],
+  "local_paths": {
+    "candidate_queue": "analysis/local_planner_supervision_v76/candidates.jsonl",
+    "session_manifest": "analysis/local_planner_supervision_v76/session_manifest.jsonl",
+    "human_review_log": "analysis/local_planner_supervision_v76/reviews.jsonl",
+    "strict_human_annotations": "analysis/planner_supervision_annotations_v75.jsonl",
+    "pilot_queue": "analysis/local_planner_supervision_v76/pilot_review_queue_v79.jsonl",
+    "packet_queue": "analysis/local_planner_supervision_v76/proxy_review_packets_v80.jsonl",
+    "raw_results": "analysis/local_planner_supervision_v76/proxy_review_raw_v80.jsonl",
+    "local_analysis": "analysis/local_planner_supervision_v76/proxy_review_analysis_v80.json"
+  },
+  "privacy_boundary": {
+    "packets_and_raw_results_are_gitignored": true,
+    "tracked_report_contains_aggregate_counts_only": true,
+    "automatic_cloud_upload": false,
+    "ollama_loopback_only": true
+  },
+  "evidence_boundary": "V80 can measure agreement between two frozen local model judges and conservatively identify proxy-approved plans. It cannot create human labels, validate the judges against expert ground truth, authorize planner training by itself, or prove cognition, dialogue quality, or benchmark improvement."
+}

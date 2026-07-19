@@ -1,0 +1,76 @@
+{
+  "schema": "uruha_planner_proxy_review_analysis_v80",
+  "contract_sha256": "90b4b3d6f07f05395cf9bdd3d3bbdeacccdcf6c92df3077e49ecbdc3e2413279",
+  "integrity": {
+    "passed": false,
+    "observed": {
+      "packet_count": 12,
+      "attempt_count": 24,
+      "parsed_count": 24,
+      "model_digest_match_count": 24,
+      "packet_hash_match_count": 24,
+      "request_hash_match_count": 24,
+      "strict_human_rows_created": 12,
+      "production_runtime_files_changed": 0
+    },
+    "checks": {
+      "packet_count": true,
+      "attempt_count": true,
+      "parsed_count": true,
+      "model_digest_match_count": true,
+      "packet_hash_match_count": true,
+      "request_hash_match_count": true,
+      "strict_human_rows_created": false,
+      "production_runtime_files_changed": true
+    }
+  },
+  "consensus_counts": {
+    "accept": 1,
+    "disagreement": 8,
+    "reject": 3
+  },
+  "consensus_accept_rate": 0.08333333333333333,
+  "disagreement_rate": 0.6666666666666666,
+  "model_decision_counts": {
+    "qwen3.5:9b": {
+      "accept": 4,
+      "reject": 8
+    },
+    "qwen2.5:7b": {
+      "accept": 2,
+      "reject": 3,
+      "uncertain": 7
+    }
+  },
+  "failure_code_counts": {
+    "incomplete_for_surface_realization": 15,
+    "internally_inconsistent": 4,
+    "other": 7,
+    "overengineered_or_template_driven": 10,
+    "socially_inappropriate": 2,
+    "unsupported_inference": 3
+  },
+  "elapsed_seconds_by_model": {
+    "qwen3.5:9b": {
+      "count": 12,
+      "total": 3721.530991,
+      "mean": 310.1275825833333
+    },
+    "qwen2.5:7b": {
+      "count": 12,
+      "total": 334.049875,
+      "mean": 27.837489583333333
+    }
+  },
+  "viability": {
+    "passed": false,
+    "checks": {
+      "minimum_consensus_accept_rate": false,
+      "maximum_disagreement_rate": false
+    }
+  },
+  "proxy_approved_weak_supervision_count": 0,
+  "strict_human_training_authorized": false,
+  "decision": "do_not_train_fix_collection_or_review_method",
+  "evidence_boundary": "V80 can measure agreement between two frozen local model judges and conservatively identify proxy-approved plans. It cannot create human labels, validate the judges against expert ground truth, authorize planner training by itself, or prove cognition, dialogue quality, or benchmark improvement."
+}
