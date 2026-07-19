@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_preregistration_v87_2",
+  "experiment_id": "rightbrain_forbidden_projection_v87_2_corrected_regression",
+  "status": "preregistered_before_corrected_evaluation",
+  "research_question": "With the frozen V86 treatment settings actually held constant, does stale recent-opening conflict projection recover both known candidate-gate failures without changing any other gate decision?",
+  "single_changed_variable": "RightBrain forbidden_conflict_projection_enabled false versus true",
+  "scope": {
+    "dataset_role": "corrected confirmatory replay of a known-failure deterministic gate regression",
+    "case_count": 12,
+    "condition_count": 2,
+    "expected_evaluation_count": 24,
+    "model_call_count": 0,
+    "production_activation_forbidden": true,
+    "fresh_holdout_required_after_pass": true
+  },
+  "fixed_runtime_settings": {
+    "memory_cue_canonicalization_enabled": true,
+    "explicit_length_contract_enabled": true,
+    "forbidden_conflict_projection_control": false,
+    "forbidden_conflict_projection_treatment": true
+  },
+  "conditions": {
+    "c0_projection_disabled": "Replay each frozen V86 treatment reply with canonical memory cues and explicit length enabled, but forbidden-conflict projection disabled.",
+    "t1_projection_enabled": "Replay the identical reply and plan with the same fixed settings and only forbidden-conflict projection enabled."
+  },
+  "controls": [
+    "same twelve V86 treatment replies byte-for-byte",
+    "canonical memory cues explicitly true in both conditions",
+    "explicit length contract explicitly true in both conditions",
+    "same frozen target plans, maximum character budgets, and candidate gate",
+    "no generation, benchmark item, answer, prompt tuning, or score override",
+    "no production memory writes or VRM actions"
+  ],
+  "advance_gates": {
+    "required_contract_match_count_exact": 12,
+    "control_gate_accept_count_exact": 10,
+    "treatment_gate_accept_count_exact": 12,
+    "recovered_conflict_only_rejection_count_exact": 2,
+    "new_rejection_count_max": 0,
+    "nonconflict_decision_identity_rate_min": 1.0,
+    "projected_marker_count_exact": 4,
+    "projection_scope_mismatch_count_max": 0,
+    "reply_hash_mismatch_count_max": 0,
+    "hard_marker_regression_count_max": 0
+  },
+  "authorizations": {
+    "on_pass": "authorize_fresh_v88_full_pipeline_holdout_only",
+    "production_shadow": false,
+    "production_default_enable": false,
+    "training_data": false,
+    "human_rating_required": false
+  },
+  "private_sources": {
+    "v86_packets": {"path": "analysis/local_rightbrain_memory_surface_v86/packets.jsonl", "sha256": "92516637160f161da602ccc569e121b024595389cf3cb1fc56be50de39c5e3ec"},
+    "v86_raw": {"path": "analysis/local_rightbrain_memory_surface_v86/raw.jsonl", "sha256": "0d16a65c978f8aa6af8824c460361b9638ae87d44910280a36c146e3205c7dc3"},
+    "candidate_queue": {"path": "analysis/local_planner_supervision_v76/candidates.jsonl", "sha256": "21812615bc35842b73a79b632528123a14f110f442ba1aeda3607555d7027125"}
+  },
+  "prior_evidence": {
+    "v87_formal_report": {"path": "reports/rightbrain_forbidden_projection_v87.json", "sha256": "1651aeb2320bb7d4d4c0f0982e942b08e14ca33889c8fbccdac207df8349413c"},
+    "v87_control_diagnosis": {"path": "reports/rightbrain_forbidden_projection_v87_diagnosis.json", "sha256": "fbf57f5515d7bb548e87fe07a4328caf07dcc8aee351e332874dc89f615b8a4f"}
+  },
+  "local_paths": {
+    "paired_rows": "analysis/local_rightbrain_forbidden_projection_v87_2/paired_rows.jsonl",
+    "run_metadata": "analysis/local_rightbrain_forbidden_projection_v87_2/run_metadata.json",
+    "local_analysis": "analysis/local_rightbrain_forbidden_projection_v87_2/analysis.json"
+  },
+  "evidence_boundary": "A pass confirms only the candidate-gate mechanism on the twelve frozen V86 replies under corrected controls. It cannot establish fresh generation quality or production readiness; a disjoint full-pipeline V88 holdout remains mandatory."
+}
