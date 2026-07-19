@@ -1,0 +1,98 @@
+{
+  "schema": "uruha_planner_memory_causality_analysis_v84",
+  "experiment_id": "planner_memory_causality_v84",
+  "decision": "inconclusive_effect_between_preregistered_gates",
+  "integrity_passed": true,
+  "integrity_checks": {
+    "private_source_hashes": true,
+    "packet_count": true,
+    "packet_self_hashes": true,
+    "packet_recalculation": true,
+    "sequence_complete": true,
+    "model_digest": true,
+    "response_identity": true,
+    "transport": true,
+    "resource_metrics_complete": true,
+    "payload_binding": true,
+    "no_runtime_side_effects": true,
+    "score_recalculation": true
+  },
+  "case_count": 8,
+  "scenario_family_distribution": {
+    "memory_recall_update": 8
+  },
+  "condition_summaries": {
+    "c0_intact_memory_integrated_plan": {
+      "observation_count": 16,
+      "required_group_hit_count": 16,
+      "required_group_count": 16,
+      "required_group_recall": 1.0,
+      "semantic_complete_rate": 1.0,
+      "outcome_pass_rate": 0.0,
+      "surface_pass_rate": 0.0,
+      "forbidden_violation_rate": 0.25,
+      "private_memory_intrusion_rate": 0.0,
+      "median_latency_seconds": 4.0146925,
+      "p95_latency_seconds": 9.097938,
+      "median_prompt_eval_count": 614.0,
+      "peak_ollama_rss_bytes": 9563471872,
+      "failure_code_counts": {
+        "cjk_language_leak": 12,
+        "forbidden_semantic_present": 4,
+        "over_max_chars": 14,
+        "unexpected_ascii_leak": 4
+      }
+    },
+    "t1_memory_integration_removed": {
+      "observation_count": 16,
+      "required_group_hit_count": 0,
+      "required_group_count": 16,
+      "required_group_recall": 0.0,
+      "semantic_complete_rate": 0.0,
+      "outcome_pass_rate": 0.0,
+      "surface_pass_rate": 0.875,
+      "forbidden_violation_rate": 0.0,
+      "private_memory_intrusion_rate": 0.0,
+      "median_latency_seconds": 2.7580305000000003,
+      "p95_latency_seconds": 2.950886,
+      "median_prompt_eval_count": 503.5,
+      "peak_ollama_rss_bytes": 9563471872,
+      "failure_code_counts": {
+        "required_semantic_missing": 16,
+        "unexpected_ascii_leak": 2
+      }
+    }
+  },
+  "paired_effect": {
+    "pair_count": 16,
+    "intact_win_count": 16,
+    "tie_count": 0,
+    "intact_loss_count": 0,
+    "intact_win_rate": 1.0,
+    "mean_recall_delta_intact_minus_removed": 1.0,
+    "identical_reply_rate": 0.0,
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 20260784,
+    "bootstrap_ci95": [
+      1.0,
+      1.0
+    ]
+  },
+  "advance_gate_checks": {
+    "intact_required_group_recall": true,
+    "paired_recall_delta": true,
+    "bootstrap_delta_lower_95": true,
+    "intact_win_rate": true,
+    "intact_surface_pass_rate": false,
+    "surface_noninferiority": false,
+    "forbidden_noninferiority": false,
+    "private_memory_noninferiority": true,
+    "median_latency": true,
+    "p95_latency": true,
+    "peak_rss": true
+  },
+  "training_data_authorized": false,
+  "production_runtime_change_authorized": false,
+  "human_rating_required": false,
+  "evidence_boundary": "The experiment can estimate only whether the current memory-integration signal changes required-memory realization through one frozen local RightBrain on eight fresh memory cases."
+}
