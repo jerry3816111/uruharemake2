@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_planner_outcome_evaluator_contract_v83",
+  "experiment_id": "planner_outcome_evaluator_v83_calibration",
+  "status": "preregistered",
+  "artifacts": {
+    "dataset": "datasets/planner_outcome_evaluator_v83_calibration.json",
+    "evaluator": "planner_outcome_evaluator_v83.py",
+    "dataset_sha256": "9e4e3e9fcdc0065f62543d8408ceb5c2cf1f9046e4a262afda25da8f67aec472",
+    "evaluator_sha256": "80ca35d8e3fb8ea0ec10bb6320064e7636d94c774b8348ecb96a39e7f7719a90"
+  },
+  "design": {
+    "independent_variable": "one controlled observable-output defect at a time",
+    "dependent_variables": [
+      "valid_accept_rate",
+      "mutation_reject_rate",
+      "target_failure_recall",
+      "isolated_failure_rate"
+    ],
+    "controls": [
+      "same case-level outcome contract",
+      "same deterministic evaluator",
+      "one target mutation per case",
+      "no model or human judge",
+      "no production memory writes",
+      "no physical VRM actions"
+    ]
+  },
+  "advance_gates": {
+    "valid_accept_rate_min": 1.0,
+    "mutation_reject_rate_min": 1.0,
+    "target_failure_recall_min": 1.0,
+    "isolated_failure_rate_min": 1.0,
+    "deterministic_rerun_match_required": true
+  },
+  "authorization": {
+    "on_pass": "authorize_evaluator_for_bounded_causal_planner_pilot_only",
+    "training_data": false,
+    "production_runtime_change": false
+  },
+  "evidence_boundary": "This calibration tests whether deterministic checks detect project-authored known output defects. It does not estimate planner quality, model intelligence, naturalness, human likeness, benchmark performance, or production readiness."
+}

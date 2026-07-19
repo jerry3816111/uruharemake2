@@ -1,0 +1,401 @@
+{
+  "schema": "uruha_planner_outcome_evaluator_raw_v83",
+  "experiment_id": "planner_outcome_evaluator_v83_calibration",
+  "contract_sha256": "182fb843e221d5ad9498f7295a2a5f7b2205007fcecb1bc267f05aafa30add61",
+  "dataset_sha256": "9e4e3e9fcdc0065f62543d8408ceb5c2cf1f9046e4a262afda25da8f67aec472",
+  "artifact_checks": {
+    "dataset_sha256_match": true,
+    "evaluator_sha256_match": true
+  },
+  "dataset_metadata": {
+    "schema": "uruha_planner_outcome_evaluator_calibration_v83",
+    "source_type": "project_authored_controlled_calibration",
+    "official_benchmark_items": false,
+    "benchmark_answers_present": false
+  },
+  "rows": [
+    {
+      "case_id": "v83_required_semantics",
+      "scenario_family": "semantic_preservation",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "a4c696f575aba1b7c0f22663c0e9149f0d2f5805265a358d587fe320a73a8825",
+        "reply_chars": 20,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_required_semantics",
+      "scenario_family": "semantic_preservation",
+      "variant": "drop_required_semantics",
+      "target_failure_code": "required_semantic_missing",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "required_semantic_missing"
+        ],
+        "details": {
+          "missing_required_group_indexes": [
+            0,
+            1
+          ]
+        },
+        "reply_sha256": "0e5d516a64cd9ca82120e93dd9ff512f00b9b54e191f125a5410dce7eeee0528",
+        "reply_chars": 14,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_forbidden_meaning",
+      "scenario_family": "forbidden_semantics",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "0738ee1ac058a2560807471001751362b9468836d7d43b9644d58b91dfd47810",
+        "reply_chars": 16,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_forbidden_meaning",
+      "scenario_family": "forbidden_semantics",
+      "variant": "insert_forbidden_meaning",
+      "target_failure_code": "forbidden_semantic_present",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "forbidden_semantic_present"
+        ],
+        "details": {
+          "forbidden_marker_hit_count": 1
+        },
+        "reply_sha256": "4a58c542efc5bf8db6e2e319a80434ccf08d8047657e4d00913d3732b76fa49e",
+        "reply_chars": 22,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_private_memory",
+      "scenario_family": "memory_speakability",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "d8d5a7a2c7be375dbc9de58212392afafd7509b5c3a4932a185c4b795b9958d1",
+        "reply_chars": 23,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_private_memory",
+      "scenario_family": "memory_speakability",
+      "variant": "leak_private_memory",
+      "target_failure_code": "private_memory_intrusion",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "private_memory_intrusion"
+        ],
+        "details": {
+          "private_memory_hit_count": 1
+        },
+        "reply_sha256": "bfe29f63bd01af212416cb34b88ce500833857e3d666a8eb3ae90fa33b5afad3",
+        "reply_chars": 27,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_cjk_surface",
+      "scenario_family": "language_surface",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "df8d337b366ef6d035100071b4cc174af7fd00fb713826e474ca0a651fded7c7",
+        "reply_chars": 11,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_cjk_surface",
+      "scenario_family": "language_surface",
+      "variant": "insert_cjk_leak",
+      "target_failure_code": "cjk_language_leak",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "cjk_language_leak"
+        ],
+        "details": {},
+        "reply_sha256": "430b2c36c7f820e02b366c3b58ececcb9d45deed42eaf1ca8c9665dd7986de0c",
+        "reply_chars": 12,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_foreign_surface",
+      "scenario_family": "language_surface",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "8e638f9c0625c1bcb385946abec53c391510e49ef91d65e36b89a753c8466ed5",
+        "reply_chars": 10,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_foreign_surface",
+      "scenario_family": "language_surface",
+      "variant": "insert_foreign_script",
+      "target_failure_code": "foreign_script_leak",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "foreign_script_leak"
+        ],
+        "details": {},
+        "reply_sha256": "a750423b75d5f3cca4e30665f90114486f1dfc87807f2aa45bd1e3b44a1eddee",
+        "reply_chars": 13,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_ascii_surface",
+      "scenario_family": "language_surface",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "dd009b02433858283959bb179f089924a772355eda2e546f7470a82c8377ed45",
+        "reply_chars": 8,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_ascii_surface",
+      "scenario_family": "language_surface",
+      "variant": "insert_ascii_word",
+      "target_failure_code": "unexpected_ascii_leak",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "unexpected_ascii_leak"
+        ],
+        "details": {},
+        "reply_sha256": "86f970077e1d02b8e7e2ea97b0d949deef65014b8135b1da0df1519b3d9c9e80",
+        "reply_chars": 13,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_replacement_surface",
+      "scenario_family": "language_surface",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "8681f5968d424ecec9626265ba2ffaca92ef4c2bf421792717d1b5668f498908",
+        "reply_chars": 9,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_replacement_surface",
+      "scenario_family": "language_surface",
+      "variant": "insert_replacement_character",
+      "target_failure_code": "unicode_replacement_character",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "unicode_replacement_character"
+        ],
+        "details": {},
+        "reply_sha256": "b4e4c6efce420fb277b45e9b1cac540f6a6ca41cf0a60daa4c41f1e1cf81f014",
+        "reply_chars": 10,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_reply_length",
+      "scenario_family": "length_contract",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "b4408b1dd9c181efd643616aef432572714146c908374deab4f60074613cdc18",
+        "reply_chars": 6,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_reply_length",
+      "scenario_family": "length_contract",
+      "variant": "exceed_reply_length",
+      "target_failure_code": "over_max_chars",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "over_max_chars"
+        ],
+        "details": {
+          "reply_chars": 25
+        },
+        "reply_sha256": "45c61e2a8ea1662699634a331230b85988fa952d28dd551dbaa590af2141e848",
+        "reply_chars": 25,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_required_action",
+      "scenario_family": "action_contract",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "4824b3366f75a30911b01d8b6b14ac9bf5da09cbb7dbd01101de6dd11caa4d95",
+        "reply_chars": 12,
+        "action_names": [
+          "set_expression"
+        ]
+      }
+    },
+    {
+      "case_id": "v83_required_action",
+      "scenario_family": "action_contract",
+      "variant": "drop_required_action",
+      "target_failure_code": "required_action_missing",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "required_action_missing"
+        ],
+        "details": {},
+        "reply_sha256": "4824b3366f75a30911b01d8b6b14ac9bf5da09cbb7dbd01101de6dd11caa4d95",
+        "reply_chars": 12,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_unexpected_action",
+      "scenario_family": "action_contract",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "5376393c5df83e492b13e008ece654ee77872781a6b2258cc387bacac4a66893",
+        "reply_chars": 11,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_unexpected_action",
+      "scenario_family": "action_contract",
+      "variant": "insert_unexpected_action",
+      "target_failure_code": "unexpected_action",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "unexpected_action"
+        ],
+        "details": {},
+        "reply_sha256": "5376393c5df83e492b13e008ece654ee77872781a6b2258cc387bacac4a66893",
+        "reply_chars": 11,
+        "action_names": [
+          "play_audio"
+        ]
+      }
+    },
+    {
+      "case_id": "v83_forbidden_action",
+      "scenario_family": "action_contract",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "f0be400bda8f54771d13fa47061603434279ba73e65844d57a3b0fb94155872e",
+        "reply_chars": 10,
+        "action_names": []
+      }
+    },
+    {
+      "case_id": "v83_forbidden_action",
+      "scenario_family": "action_contract",
+      "variant": "insert_forbidden_action",
+      "target_failure_code": "forbidden_action_present",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "forbidden_action_present"
+        ],
+        "details": {},
+        "reply_sha256": "f0be400bda8f54771d13fa47061603434279ba73e65844d57a3b0fb94155872e",
+        "reply_chars": 10,
+        "action_names": [
+          "delete_memory"
+        ]
+      }
+    },
+    {
+      "case_id": "v83_malformed_action",
+      "scenario_family": "action_contract",
+      "variant": "valid",
+      "target_failure_code": "none",
+      "result": {
+        "passed": true,
+        "failure_codes": [],
+        "details": {},
+        "reply_sha256": "aed2cf6970223b32ff7d3e3b65e07b0708c57fdca2194d60c969ffdcb37132b6",
+        "reply_chars": 10,
+        "action_names": [
+          "set_expression"
+        ]
+      }
+    },
+    {
+      "case_id": "v83_malformed_action",
+      "scenario_family": "action_contract",
+      "variant": "malform_action_payload",
+      "target_failure_code": "malformed_action",
+      "result": {
+        "passed": false,
+        "failure_codes": [
+          "malformed_action"
+        ],
+        "details": {},
+        "reply_sha256": "aed2cf6970223b32ff7d3e3b65e07b0708c57fdca2194d60c969ffdcb37132b6",
+        "reply_chars": 10,
+        "action_names": []
+      }
+    }
+  ],
+  "deterministic_rerun_match": true,
+  "production_runtime_changed": false,
+  "production_memory_write_count": 0,
+  "physical_vrm_action_count": 0
+}
