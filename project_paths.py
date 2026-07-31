@@ -641,6 +641,14 @@ RIGHTBRAIN_SELECTOR_LIVE_DISAGREEMENT_QUEUE_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_live_disagreement_queue.json",
 )
+RIGHTBRAIN_FORBIDDEN_PROJECTION_LIVE_EVIDENCE_REPORT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_forbidden_projection_live_evidence_report.json",
+)
+RIGHTBRAIN_FORBIDDEN_PROJECTION_LIVE_EVIDENCE_REPORT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "rightbrain_forbidden_projection_live_evidence_report.md",
+)
 RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_runtime_soak_v1_report.json",

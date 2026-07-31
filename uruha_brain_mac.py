@@ -233,6 +233,10 @@ RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED = _env_bool(
     "URUHA_RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED",
     False,
 )
+RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED = _env_bool(
+    "URUHA_RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED",
+    True,
+)
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -8294,6 +8298,7 @@ class RightBrain:
         self.memory_cue_canonicalization_enabled = RIGHT_BRAIN_MEMORY_CUE_CANONICALIZATION_ENABLED
         self.explicit_length_contract_enabled = RIGHT_BRAIN_EXPLICIT_LENGTH_CONTRACT_ENABLED
         self.forbidden_conflict_projection_enabled = RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED
+        self.forbidden_projection_shadow_enabled = RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
@@ -12280,6 +12285,180 @@ You are Ichinose Uruha.
         }
         return effective
 
+    def _forbidden_projection_shadow_candidate_pool(self, trace):
+        pool = []
+        seen = set()
+
+        def append_candidate(source, row):
+            text = str(row.get("candidate") or row.get("raw_candidate") or "").strip()
+            if not text:
+                return
+            digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+            if digest in seen:
+                return
+            seen.add(digest)
+            fixed_reasons = [
+                str(reason)
+                for reason in row.get("rejection_reasons") or []
+                if str(reason) == "duplicate_candidate"
+            ]
+            pool.append(
+                {
+                    "source": source,
+                    "text": text,
+                    "candidate_sha256": digest,
+                    "fixed_reasons": fixed_reasons,
+                }
+            )
+
+        for row in trace.get("accepted") or []:
+            append_candidate(f"accepted:{row.get('source') or 'unknown'}", row)
+        for row in trace.get("initial_rejected") or []:
+            append_candidate("rejected:initial", row)
+        for row in trace.get("repairs") or []:
+            if row.get("accepted"):
+                continue
+            append_candidate("rejected:repair", row)
+        return pool
+
+    def _forbidden_projection_shadow_reasons(
+        self,
+        text,
+        logic_data,
+        max_chars,
+        user_input,
+        projection_enabled,
+        fixed_reasons=None,
+    ):
+        previous = self.forbidden_conflict_projection_enabled
+        self.forbidden_conflict_projection_enabled = projection_enabled
+        try:
+            reasons = self._model_candidate_rejection_reasons(
+                text,
+                deepcopy(logic_data),
+                max_chars,
+                user_input=user_input,
+            )
+        finally:
+            self.forbidden_conflict_projection_enabled = previous
+        return list(dict.fromkeys([*reasons, *(fixed_reasons or [])]))
+
+    def _record_forbidden_projection_shadow(self, logic_data, user_input, max_chars):
+        started = time.perf_counter()
+        shadow = {
+            "schema": "uruha_rightbrain_forbidden_projection_shadow_v89",
+            "mode": "observe_only",
+            "enabled": bool(self.forbidden_projection_shadow_enabled),
+            "status": "disabled",
+            "changes_user_visible_reply": False,
+            "extra_model_call_count": 0,
+            "production_projection_enabled": bool(self.forbidden_conflict_projection_enabled),
+        }
+        logic_data["model_surface_forbidden_projection_shadow"] = shadow
+        if not self.forbidden_projection_shadow_enabled:
+            return shadow
+        if self.forbidden_conflict_projection_enabled:
+            shadow["status"] = "production_projection_enabled"
+            return shadow
+
+        previous = self.forbidden_conflict_projection_enabled
+        control_logic = deepcopy(logic_data)
+        treatment_logic = deepcopy(logic_data)
+        try:
+            self.forbidden_conflict_projection_enabled = False
+            original = self._model_surface_forbidden_markers(control_logic)
+            self.forbidden_conflict_projection_enabled = True
+            effective = self._model_surface_forbidden_markers(treatment_logic)
+        finally:
+            self.forbidden_conflict_projection_enabled = previous
+        projection_trace = treatment_logic.get("model_surface_forbidden_projection") or {}
+        dropped_count = len(original) - len(effective)
+        shadow.update(
+            {
+                "original_forbidden_count": len(original),
+                "effective_forbidden_count": len(effective),
+                "projected_marker_count": dropped_count,
+                "projection_scope_matches": (
+                    dropped_count >= 0
+                    and dropped_count
+                    == int(projection_trace.get("dropped_stale_recent_opening_count") or 0)
+                    and projection_trace.get("hard_or_nonconflicting_markers_preserved") is True
+                ),
+            }
+        )
+        if dropped_count == 0:
+            shadow["status"] = "no_conflict"
+            shadow["elapsed_milliseconds"] = round((time.perf_counter() - started) * 1000, 6)
+            return shadow
+
+        trace = logic_data.get("model_surface_candidate_trace") or {}
+        pool = self._forbidden_projection_shadow_candidate_pool(trace)
+        shadow["candidate_count"] = len(pool)
+        if not pool:
+            shadow["status"] = "conflict_without_candidates"
+            shadow["elapsed_milliseconds"] = round((time.perf_counter() - started) * 1000, 6)
+            return shadow
+
+        comparisons = []
+        for row in pool:
+            control_reasons = self._forbidden_projection_shadow_reasons(
+                row["text"],
+                logic_data,
+                max_chars,
+                user_input,
+                False,
+                fixed_reasons=row["fixed_reasons"],
+            )
+            treatment_reasons = self._forbidden_projection_shadow_reasons(
+                row["text"],
+                logic_data,
+                max_chars,
+                user_input,
+                True,
+                fixed_reasons=row["fixed_reasons"],
+            )
+            removed = sorted(set(control_reasons) - set(treatment_reasons))
+            added = sorted(set(treatment_reasons) - set(control_reasons))
+            comparisons.append(
+                {
+                    "source": row["source"],
+                    "candidate_sha256": row["candidate_sha256"],
+                    "control_accepted": not control_reasons,
+                    "shadow_accepted": not treatment_reasons,
+                    "control_rejection_reasons": control_reasons,
+                    "shadow_rejection_reasons": treatment_reasons,
+                    "removed_rejection_reasons": removed,
+                    "added_rejection_reasons": added,
+                    "recovered": bool(control_reasons) and not treatment_reasons,
+                }
+            )
+        shadow.update(
+            {
+                "status": "active",
+                "candidate_comparisons": comparisons,
+                "control_accepted_count": sum(row["control_accepted"] for row in comparisons),
+                "shadow_accepted_count": sum(row["shadow_accepted"] for row in comparisons),
+                "recovered_candidate_count": sum(row["recovered"] for row in comparisons),
+                "new_rejection_count": sum(
+                    row["control_accepted"] and not row["shadow_accepted"] for row in comparisons
+                ),
+                "gate_decision_changed": any(
+                    row["control_accepted"] != row["shadow_accepted"] for row in comparisons
+                ),
+                "elapsed_milliseconds": round((time.perf_counter() - started) * 1000, 6),
+            }
+        )
+        return shadow
+
+    def _bind_forbidden_projection_shadow_visible_reply(self, logic_data, reply):
+        shadow = logic_data.get("model_surface_forbidden_projection_shadow")
+        if not isinstance(shadow, dict):
+            return
+        shadow["visible_reply_sha256"] = hashlib.sha256(
+            str(reply or "").strip().encode("utf-8")
+        ).hexdigest()
+        shadow["visible_reply_source"] = "control_path"
+
     def _semantic_marker_hit(self, reply, marker):
         marker = str(marker or "").strip()
         if not marker:
@@ -12592,6 +12771,7 @@ You are Ichinose Uruha.
         }
         logic_data["model_surface_candidate_trace"] = trace
         if disabled_reason:
+            self._record_forbidden_projection_shadow(logic_data, user_input, max_chars)
             return []
 
         surface_payload = self._build_model_surface_payload(
@@ -12763,6 +12943,7 @@ You are Ichinose Uruha.
                 trace["rejected"].append(repair_failure)
             else:
                 trace["rejected"].append(failure)
+        self._record_forbidden_projection_shadow(logic_data, user_input, max_chars)
         return accepted
 
     def _selector_contract_payload(self, logic_data):
@@ -13021,15 +13202,18 @@ You are Ichinose Uruha.
             original_logic_data["constraints"] = deepcopy(logic_data.get("constraints") or {})
             original_logic_data["must_avoid"] = list(logic_data.get("must_avoid") or [])
 
-        def publish_model_trace():
+        def publish_model_trace(reply=None):
             if not isinstance(original_logic_data, dict):
                 return
+            if reply is not None:
+                self._bind_forbidden_projection_shadow_visible_reply(logic_data, reply)
             for key in (
                 "model_surface_candidate_trace",
                 "model_surface_selection",
                 "model_surface_selector_shadow",
                 "model_surface_plan_projection",
                 "model_surface_forbidden_projection",
+                "model_surface_forbidden_projection_shadow",
             ):
                 if key in logic_data:
                     original_logic_data[key] = deepcopy(logic_data.get(key))
@@ -13082,7 +13266,7 @@ You are Ichinose Uruha.
             )
             reply = self._select_model_blended_reply(deterministic_reply, model_candidates, logic_data)
             self._remember_turn(summary, reply, intent)
-            publish_model_trace()
+            publish_model_trace(reply)
             return reply
 
         # High-risk scenes are better handled deterministically than letting a small persona model drift.
@@ -13091,21 +13275,21 @@ You are Ichinose Uruha.
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
-            publish_model_trace()
+            publish_model_trace(reply)
             return reply
         if logic_data.get("scene") == "support" and "少し話して" in core_message:
             reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
-            publish_model_trace()
+            publish_model_trace(reply)
             return reply
         if self.model is None or self.tokenizer is None:
             reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
             reply = self._refine_conversational_reply(reply, logic_data, user_input, memory_data=memory_data)
             reply = self._finalize_surface_reply(reply, logic_data, user_input, max_chars=max_chars)
             self._remember_turn(summary, reply, intent)
-            publish_model_trace()
+            publish_model_trace(reply)
             return reply
 
         deterministic_reply = self._fallback_reply(logic_data, user_input=user_input, memory_data=memory_data)
@@ -13131,7 +13315,7 @@ You are Ichinose Uruha.
         reply = self._select_model_blended_reply(deterministic_reply, model_candidates, logic_data)
 
         self._remember_turn(summary, reply, intent)
-        publish_model_trace()
+        publish_model_trace(reply)
 
         return reply
 

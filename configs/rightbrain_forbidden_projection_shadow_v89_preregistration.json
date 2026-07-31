@@ -1,0 +1,47 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_shadow_preregistration_v89",
+  "experiment_id": "rightbrain_forbidden_projection_v89_observe_only_live_shadow",
+  "status": "preregistered_before_runtime_integration",
+  "research_question": "How often does the V88-authorized projection recover a real generated candidate in live conversation without changing visible output, adding model calls, weakening unrelated gates, or logging new private text?",
+  "single_changed_variable": "add an observe-only projection comparison trace; production forbidden_conflict_projection_enabled remains false",
+  "runtime_contract": {
+    "shadow_enabled_by_default": true,
+    "production_projection_enabled_by_default": false,
+    "changes_user_visible_reply": false,
+    "extra_model_call_count": 0,
+    "candidate_text_logged_by_shadow": false,
+    "marker_text_logged_by_shadow": false,
+    "disable_environment_variable": "URUHA_RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED=0"
+  },
+  "live_readiness_thresholds": {
+    "minimum_active_conflict_turns": 20,
+    "minimum_active_sessions": 5,
+    "minimum_recovered_turns": 5,
+    "visible_output_violation_count_max": 0,
+    "extra_model_call_count_max": 0,
+    "new_rejection_count_max": 0,
+    "scope_mismatch_count_max": 0,
+    "privacy_violation_count_max": 0,
+    "production_projection_enabled_count_max": 0,
+    "maximum_shadow_elapsed_milliseconds": 25.0
+  },
+  "authorizations": {
+    "on_readiness_pass": "authorize_separate_limited_activation_review_only",
+    "projection_runtime_enable": false,
+    "production_default_enable": false,
+    "training_data": false,
+    "persona_fidelity_claim": false,
+    "human_rating_required": false
+  },
+  "prior_evidence": {
+    "v88_result": {
+      "path": "reports/rightbrain_forbidden_projection_v88.json",
+      "sha256": "5e4a195ee17213fbed1da5a3ada549bcf559aa33f95334cbe583983ddf48173e"
+    },
+    "v88_run_manifest": {
+      "path": "reports/rightbrain_forbidden_projection_v88_run_manifest.json",
+      "sha256": "e46918090c3b1068ea88ffddc0f356f13c99bf69b7f0fab5e280616404698f59"
+    }
+  },
+  "evidence_boundary": "V89 measures live prevalence and counterfactual gate outcomes using already-generated candidates. It does not generate treatment replies, change user-visible output, enable production projection, or measure public-persona fidelity."
+}
