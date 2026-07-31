@@ -52,6 +52,7 @@ import uruha_memory_runtime as umr
 import uruha_profile_assertion as upa
 import uruha_profile_grounding as upg
 import uruha_profile_memory as upm
+import public_persona_contract_v3 as ppcv3
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
@@ -238,6 +239,10 @@ RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED = _env_bool(
     True,
 )
 RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED = _env_bool("URUHA_RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED", True)
+PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED = _env_bool(
+    "URUHA_PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED",
+    False,
+)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
 )
@@ -8300,6 +8305,7 @@ class RightBrain:
         self.forbidden_conflict_projection_enabled = RIGHT_BRAIN_FORBIDDEN_CONFLICT_PROJECTION_ENABLED
         self.forbidden_projection_shadow_enabled = RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
+        self.public_persona_conditional_brief_enabled = PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
         self.selector_model_load_error = ""
@@ -11890,35 +11896,13 @@ You are Ichinose Uruha.
     def _model_surface_candidates_allowed(self, logic_data):
         return not self._model_surface_disabled_reason(logic_data)
 
-    def _persona_expression_brief(self, current_psyche):
-        psyche = current_psyche if isinstance(current_psyche, dict) else {}
-        def as_float(value, default):
-            try:
-                return float(value)
-            except (TypeError, ValueError):
-                return default
-
-        mood = as_float(psyche.get("mood"), 0.0)
-        trust = as_float(psyche.get("trust"), 50.0)
-        if mood <= -25:
-            state = "low_energy"
-        elif mood >= 25:
-            state = "lighter_mood"
-        else:
-            state = "neutral_energy"
-        if trust >= 72:
-            distance = "familiar"
-        elif trust <= 35:
-            distance = "guarded"
-        else:
-            distance = "moderate"
-        return {
-            "role": "surface_style_only",
-            "state": state,
-            "relationship_distance": distance,
-            "stable_traits": ["lazy_short", "slightly_bratty", "not_customer_service"],
-            "must_not_override": ["leftbrain_plan", "required_marker_groups", "audited_memory_policy"],
-        }
+    def _persona_expression_brief(self, current_psyche, logic_data=None):
+        logic = logic_data if isinstance(logic_data, dict) else {}
+        if not self.public_persona_conditional_brief_enabled:
+            return ppcv3.baseline_expression_brief(current_psyche)
+        brief, contract = ppcv3.conditional_expression_brief(logic, current_psyche)
+        logic["public_persona_contract_trace"] = contract
+        return brief
 
     def _memory_surface_text_is_safe(self, value, logic_data):
         text = str(value or "").strip()
@@ -12197,7 +12181,7 @@ You are Ichinose Uruha.
                 "memory_summary": "左脳が選択した作業記憶は発話計画に統合済み。",
                 "audited_memory_brief": memory_brief,
                 "procedural_guidance": logic_data.get("procedural_guidance", {}),
-                "persona_expression_brief": self._persona_expression_brief(current_psyche),
+                "persona_expression_brief": self._persona_expression_brief(current_psyche, logic_data),
                 "mood": psyche.get("mood", 0),
                 "trust": psyche.get("trust", 50),
                 "max_chars": int(max_chars or 48),

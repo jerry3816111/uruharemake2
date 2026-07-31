@@ -1,0 +1,94 @@
+{
+  "schema": "uruha_public_persona_contract_preregistration_v3",
+  "experiment_id": "public_persona_conditional_contract_v3",
+  "status": "preregistered_before_any_v3_model_inference",
+  "depends_on": {
+    "experiment_id": "public_persona_observation_protocol_v2",
+    "required_decision": "authorize_conditional_persona_development_hypotheses_and_sealed_holdout_protocol_only"
+  },
+  "current_problem": {
+    "runtime_persona_brief_mode": "same_three_static_traits_for_every_context",
+    "context_conditioned_public_persona_rule_count": 0,
+    "planning_and_surface_policy_separation": false,
+    "risk": "固定人格標籤會把人格誤作單一口氣；把完整條件規則全交給右腦又可能改寫左腦語意、記憶可說性與動作授權。"
+  },
+  "falsifiable_hypothesis": "若把 V2 觀察編譯為分離的 planning policy 與 surface policy，且右腦只接收 surface policy，則 15 個已知情境能得到正確條件契約、5 個非適用情境維持原 payload，並在相同本機模型下增加條件式表達而不降低核心語意或破壞記憶與動作邊界。",
+  "single_changed_variable": "persona_expression_brief changes from the existing static brief to the V3 conditional surface projection; model, system prompt, leftbrain plan, semantic groups, memory policy, action frame, sampling, seed, scorer, and case order are fixed",
+  "scope": {
+    "dataset_role": "synthetic development screen derived only from V2 development rules",
+    "case_count": 20,
+    "active_context_case_count": 15,
+    "inactive_control_case_count": 5,
+    "condition_count": 2,
+    "expected_model_call_count": 40,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_default_activation_forbidden": true,
+    "training_forbidden": true
+  },
+  "conditions": {
+    "c0_static_persona_brief": "Current static surface_style_only brief with lazy_short, slightly_bratty, and not_customer_service.",
+    "t1_conditional_surface_brief": "Identical payload except the explicitly routed V3 context adds only its surface policy and protected-field declaration."
+  },
+  "controls": [
+    "same synthetic development case and explicit context tag across the pair",
+    "same qwen3.5:9b local model digest, system prompt, temperature, seed, token budget, and no tools",
+    "same leftbrain plan, required semantic groups, psyche state, memory policy, action frame, and forbidden markers",
+    "conditional compiler does not read raw user text and does not receive V2 holdout content",
+    "planning policy is recorded for later planner research but is not sent to the RightBrain payload",
+    "no expected reply, target phrase, benchmark answer, source quotation, training row, memory write, or physical action"
+  ],
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "seed": 2026080301,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "construction_gates": {
+    "case_count_exact": 20,
+    "active_contract_exact_count": 15,
+    "inactive_contract_exact_count": 5,
+    "protected_logic_identity_count": 20,
+    "target_payload_nonpersona_identity_count": 20,
+    "inactive_full_payload_identity_count": 5,
+    "planning_policy_exposed_to_rightbrain_count_max": 0,
+    "fixed_or_expected_reply_count_max": 0,
+    "holdout_content_count_max": 0,
+    "training_authorized_count_max": 0
+  },
+  "development_model_gates": {
+    "treatment_semantic_contract_pass_rate_min": 0.8,
+    "semantic_contract_pass_rate_delta_vs_control_min": -0.05,
+    "treatment_persona_policy_pass_rate_min": 0.6,
+    "newly_persona_policy_passed_vs_control_min": 3,
+    "persona_policy_regressions_vs_control_max": 1,
+    "inactive_raw_reply_identity_rate_min": 1.0,
+    "private_or_forbidden_intrusion_count_max": 0,
+    "unexpected_tool_call_count_max": 0,
+    "production_memory_write_count_max": 0,
+    "physical_vrm_action_count_max": 0,
+    "transport_error_count_max": 0,
+    "median_latency_seconds_max": 8.0,
+    "p95_latency_seconds_max": 15.0,
+    "peak_ollama_rss_bytes_max": 12884901888
+  },
+  "decision_policy": {
+    "construction_pass": "authorize merged-main V3 development model screen only",
+    "model_pass": "authorize a separate explicit-context perception development experiment only",
+    "model_fail": "freeze negative result and determine whether the carrier wording, scorer, or local model failed before changing any runtime default",
+    "holdout_unsealing": false,
+    "runtime_default_enable": false,
+    "training": false,
+    "public_persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V3 construction can prove only that a condition-specific public-persona contract is separated into planning and surface layers and that the optional RightBrain carrier preserves protected fields. A later development model pass can show only payload sensitivity and non-regression on synthetic cases. Neither result proves unseen-context persona fidelity, authorizes training or runtime default activation, or permits opening the V2 sealed holdout."
+}
