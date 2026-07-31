@@ -1,0 +1,48 @@
+{
+  "schema": "uruha_public_persona_evidence_harness_lock_v1",
+  "experiment_id": "public_persona_evidence_contract_v1",
+  "status": "locked_before_formal_audit",
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_evidence_v1_preregistration.json",
+      "sha256": "e31cc59bc707cd521adc5f99f457449b0f97e1d23233709f3d33cfad059ba6b0"
+    },
+    "source_registry": {
+      "path": "datasets/public_persona_source_registry_v1.json",
+      "sha256": "3961c191ad1a459e6882613be8e88850b0d2c206075c2cc6e878008317808537"
+    },
+    "evidence_dataset": {
+      "path": "datasets/public_persona_evidence_v1.json",
+      "sha256": "ee5fc95ffa15203a4aa605c4ecdc67c0269de392831847cebbb44ee6b3891f07"
+    },
+    "auditor": {
+      "path": "public_persona_evidence_v1.py",
+      "sha256": "4d623bb63bf045398abc90341d6a2a181268c0243953c2fa9aab99d7f5ed583e"
+    },
+    "tests": {
+      "path": "test_public_persona_evidence_v1.py",
+      "sha256": "a0f7cbf04fa77bc13fcc183b999d7693586724cf7a712ffc30600ca3a2990c9d"
+    },
+    "path_registry": {
+      "path": "project_paths.py",
+      "sha256": "5d5a486bfba8de36f4c0324a9862a69d34c5bee17a5fbf6215fafa4b9a5de921"
+    }
+  },
+  "preflight": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_evidence_v1.py",
+    "expected_test_count": 11
+  },
+  "formal_audit": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python public_persona_evidence_v1.py --output-json /tmp/public_persona_evidence_v1_audit.json --output-md /tmp/public_persona_evidence_v1_audit.md --overwrite --require-pass",
+    "model_call_count_exact": 0,
+    "runtime_behavior_change_count_exact": 0,
+    "raw_media_or_transcript_record_count_exact": 0,
+    "target_reply_record_count_exact": 0,
+    "training_authorized_record_count_exact": 0,
+    "pass_authorizes": "public_persona_development_hypotheses_only",
+    "runtime_persona_activation_authorized": false,
+    "model_training_authorized": false,
+    "holdout_evaluation_authorized": false,
+    "persona_fidelity_claim_authorized": false
+  }
+}

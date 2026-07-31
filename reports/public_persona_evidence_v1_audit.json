@@ -1,0 +1,169 @@
+{
+  "schema": "uruha_public_persona_evidence_audit_v1",
+  "generated_at": "2026-08-01T01:17:52",
+  "target_id": "ichinose_uruha_public_persona",
+  "passed": true,
+  "decision": "authorize_public_persona_development_hypotheses_only",
+  "summary": {
+    "source_count": 4,
+    "source_role_counts": {
+      "persona_evidence": 2,
+      "rights_policy": 2
+    },
+    "authority_counts": {
+      "agency_official": 2,
+      "platform_official": 1,
+      "target_official": 1
+    },
+    "evidence_count": 6,
+    "dimension_counts": {
+      "communication_style": 1,
+      "conversation_tendency": 1,
+      "dialogue_role": 1,
+      "lexical_style": 1,
+      "preference": 1,
+      "social_distance": 1
+    },
+    "trait_keys": [
+      "broad_game_interest",
+      "casual_intensifier_usage",
+      "direct_unsugarcoated_delivery",
+      "group_straight_man_role",
+      "guarded_with_unfamiliar_people",
+      "sustained_everyday_talk"
+    ],
+    "source_evidence_counts": {
+      "ichinose_uruha_official_youtube_about_20260801": 2,
+      "vspo_official_profile_20260801": 4
+    },
+    "dataset_role_counts": {
+      "development": 6
+    },
+    "source_partition_role_overlap_count": 0,
+    "verbatim_record_count": 0,
+    "target_reply_count": 0,
+    "private_identity_inference_count": 0,
+    "training_authorized_count": 0
+  },
+  "contract_checks": {
+    "schemas_and_target_match": true,
+    "unique_source_ids": true,
+    "official_persona_sources_only": true,
+    "complete_conservative_source_policy": true,
+    "dataset_boundary_is_development_only": true,
+    "no_prohibited_content_fields": true,
+    "no_private_identity_inference": true,
+    "evidence_references_persona_sources": true,
+    "evidence_contract_complete": true,
+    "unique_evidence_ids": true,
+    "source_partitions_do_not_cross_roles": true
+  },
+  "threshold_checks": {
+    "source_count": true,
+    "persona_evidence_source_count": true,
+    "rights_policy_source_count": true,
+    "evidence_count": true,
+    "distinct_dimension_count": true,
+    "allowed_dataset_roles": true,
+    "partition_role_overlap_count": true,
+    "verbatim_record_count": true,
+    "target_reply_count": true,
+    "private_identity_inference_count": true,
+    "training_authorized_count": true
+  },
+  "violations": {},
+  "source_inventory": [
+    {
+      "source_id": "vspo_official_profile_20260801",
+      "source_role": "persona_evidence",
+      "authority": "agency_official",
+      "url": "https://vspo.jp/"
+    },
+    {
+      "source_id": "ichinose_uruha_official_youtube_about_20260801",
+      "source_role": "persona_evidence",
+      "authority": "target_official",
+      "url": "https://www.youtube.com/channel/UC5LyYg6cCA4yHEYvtUsir3g"
+    },
+    {
+      "source_id": "vspo_derivative_guideline_20260801",
+      "source_role": "rights_policy",
+      "authority": "agency_official",
+      "url": "https://vspo.jp/guide/"
+    },
+    {
+      "source_id": "youtube_terms_20260801",
+      "source_role": "rights_policy",
+      "authority": "platform_official",
+      "url": "https://www.youtube.com/static?template=terms"
+    }
+  ],
+  "evidence_inventory": [
+    {
+      "evidence_id": "persona_dev_v1_001",
+      "source_id": "vspo_official_profile_20260801",
+      "dataset_role": "development",
+      "dimension": "dialogue_role",
+      "trait_key": "group_straight_man_role"
+    },
+    {
+      "evidence_id": "persona_dev_v1_002",
+      "source_id": "vspo_official_profile_20260801",
+      "dataset_role": "development",
+      "dimension": "communication_style",
+      "trait_key": "direct_unsugarcoated_delivery"
+    },
+    {
+      "evidence_id": "persona_dev_v1_003",
+      "source_id": "vspo_official_profile_20260801",
+      "dataset_role": "development",
+      "dimension": "social_distance",
+      "trait_key": "guarded_with_unfamiliar_people"
+    },
+    {
+      "evidence_id": "persona_dev_v1_004",
+      "source_id": "vspo_official_profile_20260801",
+      "dataset_role": "development",
+      "dimension": "lexical_style",
+      "trait_key": "casual_intensifier_usage"
+    },
+    {
+      "evidence_id": "persona_dev_v1_005",
+      "source_id": "ichinose_uruha_official_youtube_about_20260801",
+      "dataset_role": "development",
+      "dimension": "preference",
+      "trait_key": "broad_game_interest"
+    },
+    {
+      "evidence_id": "persona_dev_v1_006",
+      "source_id": "ichinose_uruha_official_youtube_about_20260801",
+      "dataset_role": "development",
+      "dimension": "conversation_tendency",
+      "trait_key": "sustained_everyday_talk"
+    }
+  ],
+  "authorizations": {
+    "development_hypothesis_use": true,
+    "runtime_persona_activation": false,
+    "model_training": false,
+    "holdout_evaluation": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "next_required_evidence": "在任何人格重現評測前，加入經權利邊界檢查、人工轉述標記，且開發集與 holdout 來源互斥的公開直播觀察。",
+  "evidence_boundary": "V1 通過只代表公開人格的開發假設具有官方來源與保守使用邊界；不代表人格重現已成立，也不授權訓練或自動收集逐字稿。",
+  "inputs": {
+    "source_registry": {
+      "path": "public_persona_source_registry_v1.json",
+      "sha256": "3961c191ad1a459e6882613be8e88850b0d2c206075c2cc6e878008317808537"
+    },
+    "evidence_dataset": {
+      "path": "public_persona_evidence_v1.json",
+      "sha256": "ee5fc95ffa15203a4aa605c4ecdc67c0269de392831847cebbb44ee6b3891f07"
+    },
+    "preregistration": {
+      "path": "public_persona_evidence_v1_preregistration.json",
+      "sha256": "e31cc59bc707cd521adc5f99f457449b0f97e1d23233709f3d33cfad059ba6b0"
+    }
+  }
+}
