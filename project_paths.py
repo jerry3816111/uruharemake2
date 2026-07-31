@@ -649,6 +649,22 @@ RIGHTBRAIN_FORBIDDEN_PROJECTION_LIVE_EVIDENCE_REPORT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_forbidden_projection_live_evidence_report.md",
 )
+PUBLIC_PERSONA_SOURCE_REGISTRY_V1_PATH = os.path.join(
+    DATASETS_DIR,
+    "public_persona_source_registry_v1.json",
+)
+PUBLIC_PERSONA_EVIDENCE_V1_PATH = os.path.join(
+    DATASETS_DIR,
+    "public_persona_evidence_v1.json",
+)
+PUBLIC_PERSONA_EVIDENCE_V1_AUDIT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_evidence_v1_audit.json",
+)
+PUBLIC_PERSONA_EVIDENCE_V1_AUDIT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_evidence_v1_audit.md",
+)
 RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_runtime_soak_v1_report.json",
