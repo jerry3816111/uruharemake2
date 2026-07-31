@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_public_persona_observation_harness_lock_v2",
+  "experiment_id": "public_persona_observation_protocol_v2",
+  "status": "locked_before_formal_audit",
+  "depends_on": {
+    "experiment_id": "public_persona_evidence_contract_v1",
+    "required_decision": "authorize_public_persona_development_hypotheses_only"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_observation_v2_preregistration.json",
+      "sha256": "0703de2b8c2c3deb6b25a68ee8fafed534732a1f9cc7396e874e77427f884e3d"
+    },
+    "source_registry": {
+      "path": "datasets/public_persona_observation_source_registry_v2.json",
+      "sha256": "2291a7e17e2aae08face54e91f109c9e4ad8ac3bb78acbb9fab94b062bece2eb"
+    },
+    "observation_dataset": {
+      "path": "datasets/public_persona_observations_v2.json",
+      "sha256": "3538cbf06c870d8b4847fd2c3d0da43d5225114e24c4a1254dedcd1dbe4e03ca"
+    },
+    "auditor": {
+      "path": "public_persona_observation_v2.py",
+      "sha256": "85fb55a20488a13b1ad9a652e517dca418a54d0de8f6213cc4f32e50471f8bda"
+    },
+    "construction_tests": {
+      "path": "test_public_persona_observation_v2.py",
+      "sha256": "64362b3fcdd134bac03ab36eb2f82774359277ed19d10120287928dbd55bc6cc"
+    },
+    "path_registry": {
+      "path": "project_paths.py",
+      "sha256": "aaeddf39076367d512ea071f93977258b288b68dbabbe9f6200a5acde9144d62"
+    },
+    "v1_result_lock": {
+      "path": "configs/public_persona_evidence_v1_result_lock.json",
+      "sha256": "37bcf823c2cc6e7252e5b5390da633c802dacc9708ff9cdde672e1a39aed366d"
+    }
+  },
+  "preflight": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_observation_v2.py",
+    "expected_test_count": 16
+  },
+  "formal_audit": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python public_persona_observation_v2.py --output-json /tmp/public_persona_observation_v2_audit.json --output-md /tmp/public_persona_observation_v2_audit.md --overwrite --require-pass",
+    "model_call_count_exact": 0,
+    "runtime_behavior_change_count_exact": 0,
+    "prompt_change_count_exact": 0,
+    "model_weight_change_count_exact": 0,
+    "raw_source_text_record_count_exact": 0,
+    "raw_media_or_transcript_record_count_exact": 0,
+    "target_reply_record_count_exact": 0,
+    "training_authorized_record_count_exact": 0,
+    "holdout_content_reviewed_count_exact": 0,
+    "holdout_label_available_count_exact": 0,
+    "pass_authorizes": "conditional_persona_development_hypotheses_and_sealed_holdout_protocol_only",
+    "runtime_persona_activation_authorized": false,
+    "prompt_injection_authorized": false,
+    "model_training_authorized": false,
+    "holdout_unsealing_authorized": false,
+    "holdout_evaluation_claim_authorized": false,
+    "persona_fidelity_claim_authorized": false
+  }
+}
