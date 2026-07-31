@@ -1,0 +1,89 @@
+{
+  "schema": "uruha_public_persona_operational_carrier_preregistration_v5",
+  "experiment_id": "public_persona_operational_carrier_v5",
+  "status": "preregistered_before_any_v5_model_inference",
+  "depends_on": {
+    "scorer_experiment_id": "public_persona_scorer_contract_v4",
+    "required_scorer_decision": "authorize_preregistration_of_a_new_matched_carrier_experiment_only",
+    "carrier_experiment_id": "public_persona_conditional_contract_v3",
+    "required_carrier_decision": "freeze_v3_negative_result_and_reassess_carrier_model_or_scorer"
+  },
+  "current_problem": {
+    "v4_rescore_static_persona_pass_count": 13,
+    "v4_rescore_abstract_persona_pass_count": 13,
+    "active_case_count": 15,
+    "abstract_carrier_active_reply_changed_count": 14,
+    "abstract_carrier_new_pass_count": 0,
+    "abstract_carrier_surface_gate_delta": -2,
+    "risk": "抽象英文 policy 會改變文字，但未轉成可執行的日文行為，並引入敬語漂移。"
+  },
+  "falsifiable_hypothesis": "在模型、seed、system prompt、左腦計畫、語意、記憶、動作與 V4 scorer 固定時，把相同人格規則改寫成簡短自然日文操作規則，應修正兩個既知行為缺口、避免新增敬語或表面退步，且不影響非適用情境。",
+  "single_changed_variable": "persona carrier representation with three levels: static baseline, V3 abstract symbolic policy, and V5 natural-Japanese operational policy",
+  "scope": {
+    "dataset_role": "known_development_mechanism_screen_not_generalization",
+    "case_count": 20,
+    "active_case_count": 15,
+    "inactive_case_count": 5,
+    "condition_count": 3,
+    "expected_model_call_count": 60,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "training_forbidden": true,
+    "runtime_activation_forbidden": true
+  },
+  "conditions": {
+    "c0_static_persona_brief": "Existing static persona brief.",
+    "c1_abstract_conditional_brief": "V3 conditional policy represented as symbolic English values.",
+    "t2_japanese_operational_brief": "The same public behavior hypothesis represented as concise executable Japanese surface instructions."
+  },
+  "controls": [
+    "same 20 frozen V3 development cases, case order, psyche, semantic groups, memory, action frame, and maximum characters",
+    "same qwen3.5:9b model digest, system prompt, temperature, top_p, seed, token budget, and no tools",
+    "only persona_expression_brief differs for active cases; all non-persona payload fields are byte-equivalent after canonicalization",
+    "all three payloads are byte-identical for five inactive cases",
+    "V4 scorer is frozen and never appears in model payload",
+    "no expected reply, source quotation, holdout content, memory write, training row, or physical action"
+  ],
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "seed": 2026080501,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "model_gates": {
+    "treatment_semantic_pass_rate_min": 0.9,
+    "treatment_semantic_delta_vs_each_control_min": -0.05,
+    "treatment_v4_persona_pass_count_min": 15,
+    "new_v4_persona_passes_vs_each_control_min": 2,
+    "v4_persona_regressions_vs_each_control_max": 0,
+    "treatment_surface_gate_pass_count_min": 17,
+    "surface_gate_regressions_vs_each_control_max": 0,
+    "inactive_identity_count_exact": 5,
+    "transport_error_count_max": 0,
+    "unexpected_tool_call_count_max": 0,
+    "production_memory_write_count_max": 0,
+    "physical_vrm_action_count_max": 0,
+    "median_latency_seconds_max": 8.0,
+    "p95_latency_seconds_max": 15.0,
+    "peak_ollama_rss_bytes_max": 12884901888
+  },
+  "decision_policy": {
+    "pass": "authorize_source_disjoint_operational_carrier_development_holdout_only",
+    "fail": "freeze_negative_result_and_reassess_operational_wording_or_local_model_only",
+    "runtime_default_enable": false,
+    "model_change": false,
+    "training": false,
+    "v2_holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V5 reuses known synthetic development cases and can test only whether carrier representation fixes the known mechanism under matched local generation. A pass cannot establish generalization, target-person fidelity, human preference, or production readiness."
+}
