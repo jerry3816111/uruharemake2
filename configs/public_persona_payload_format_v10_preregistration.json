@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_public_persona_payload_format_preregistration_v10",
+  "experiment_id": "public_persona_payload_format_v10",
+  "status": "preregistered_before_any_v10_model_inference",
+  "depends_on": {
+    "experiment_id": "public_persona_realization_audit_v9",
+    "required_authorization": "planned_role_realization_research"
+  },
+  "prior_evidence": {
+    "v9_diagnosis": "The V8 target role was already present in the plan but absent from the reply.",
+    "v31_signal": "On Qwen2.5-7B, mixed-label lines reduced semantic omission from 78.7% to 63.0% but failed the preregistered multiplicity-corrected significance gate.",
+    "v31_runtime_decision": "keep_current_payload_no_runtime_change"
+  },
+  "falsifiable_hypothesis": "For the current qwen3.5:9b carrier, rendering the exact same canonical preverbal payload as mixed-label lines rather than compact JSON will improve frozen context-role realization by at least one role slot and one complete active case, with zero role, semantic, persona, surface, or specificity regressions.",
+  "single_changed_variable": "serialization only: compact JSON versus mixed-label flattened lines generated from the same canonical payload",
+  "conditions": {
+    "c0_compact_json": "Frozen V3 static-persona canonical payload rendered as compact JSON.",
+    "t1_mixed_lines": "The identical canonical payload rendered with the frozen V31 mixed-label line serializer."
+  },
+  "scope": {
+    "dataset_role": "known_development_representation_mechanism_screen_not_generalization",
+    "case_count": 20,
+    "active_case_count": 15,
+    "inactive_case_count": 5,
+    "planned_role_slot_count": 36,
+    "condition_count": 2,
+    "expected_model_call_count": 40,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_activation_forbidden": true,
+    "training_forbidden": true
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "seed": 2026081001,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "model_gates": {
+    "canonical_payload_identity_count_exact": 20,
+    "representation_integrity_count_exact": 40,
+    "treatment_role_hit_delta_min": 1,
+    "new_role_complete_cases_min": 1,
+    "role_slot_regressions_max": 0,
+    "role_complete_case_regressions_max": 0,
+    "treatment_semantic_pass_rate_min": 0.9,
+    "semantic_contract_regressions_max": 0,
+    "v4_persona_regressions_max": 0,
+    "surface_gate_regressions_max": 0,
+    "specificity_intrusion_regressions_max": 0,
+    "transport_error_count_max": 0,
+    "unexpected_tool_call_count_max": 0,
+    "production_memory_write_count_max": 0,
+    "physical_vrm_action_count_max": 0,
+    "median_latency_seconds_max": 8.0,
+    "p95_latency_seconds_max": 15.0,
+    "peak_ollama_rss_bytes_max": 12884901888
+  },
+  "decision_policy": {
+    "pass": "authorize_source_disjoint_payload_format_holdout_only",
+    "fail": "freeze_negative_result_and_do_not_revisit_serialization_without_new_evidence",
+    "runtime_default_enable": false,
+    "model_change": false,
+    "scorer_change": false,
+    "training": false,
+    "v2_holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V10 is a fresh-generation screen on known synthetic development cases. A pass can authorize only a source-disjoint payload-format holdout; it cannot establish public-persona fidelity, human preference, general cognition, or runtime readiness."
+}
