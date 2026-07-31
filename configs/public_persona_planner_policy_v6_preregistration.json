@@ -1,0 +1,77 @@
+{
+  "schema": "uruha_public_persona_planner_policy_preregistration_v6",
+  "experiment_id": "public_persona_planner_policy_v6",
+  "status": "preregistered_before_any_v6_model_inference",
+  "depends_on": {
+    "experiment_id": "public_persona_operational_carrier_v5",
+    "required_authorization": "planner_policy_integration_research"
+  },
+  "current_problem": {
+    "v5_treatment_persona_pass_count": 12,
+    "active_case_count": 15,
+    "v5_surface_gate_pass_count": 17,
+    "missing_planner_content_example": "notice_01 entry point",
+    "risk": "右腦被禁止新增內容，卻被期待補上左腦未規劃的對話義務。"
+  },
+  "falsifiable_hypothesis": "在右腦 static carrier、模型、seed、scorer、記憶與動作固定時，將 V3 planning policy 編譯進 speech plan 應增加至少兩個 V4 人格通過、無人格或表面退步，並維持核心語意。",
+  "single_changed_variable": "public-persona planning-policy integration into planner-owned dialogue_act, ordered content_units, speech_moves, required semantic groups, and epistemic boundary",
+  "scope": {
+    "dataset_role": "known_development_planner_mechanism_screen_not_generalization",
+    "case_count": 20,
+    "active_case_count": 15,
+    "inactive_case_count": 5,
+    "condition_count": 2,
+    "expected_model_call_count": 40,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_activation_forbidden": true,
+    "training_forbidden": true
+  },
+  "conditions": {
+    "c0_existing_speech_plan": "Frozen V3 logic and static persona brief.",
+    "t1_persona_planning_policy": "Identical case with only planner-owned fields compiled from the V3 planning policy; static persona brief remains fixed."
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:9b",
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "thinking": false
+  },
+  "generation": {
+    "seed": 2026080601,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "context_tokens": 4096,
+    "maximum_output_tokens": 96,
+    "curl_max_time_seconds": 40,
+    "hard_deadline_seconds": 45
+  },
+  "model_gates": {
+    "treatment_semantic_pass_rate_min": 0.9,
+    "semantic_delta_vs_control_min": -0.05,
+    "treatment_v4_persona_pass_count_min": 14,
+    "new_v4_persona_passes_min": 2,
+    "v4_persona_regressions_max": 0,
+    "surface_gate_regressions_max": 0,
+    "inactive_identity_count_exact": 5,
+    "transport_error_count_max": 0,
+    "unexpected_tool_call_count_max": 0,
+    "production_memory_write_count_max": 0,
+    "physical_vrm_action_count_max": 0,
+    "median_latency_seconds_max": 8.0,
+    "p95_latency_seconds_max": 15.0,
+    "peak_ollama_rss_bytes_max": 12884901888
+  },
+  "decision_policy": {
+    "pass": "authorize_source_disjoint_planner_policy_development_holdout_only",
+    "fail": "freeze_negative_result_and_reassess_planner_projection_only",
+    "runtime_default_enable": false,
+    "model_change": false,
+    "rightbrain_carrier_change": false,
+    "scorer_change": false,
+    "training": false,
+    "v2_holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V6 reuses known synthetic development cases and tests only whether planning-policy integration repairs the identified planner/surface responsibility mismatch. A pass cannot establish unseen-context generalization, public-persona fidelity, human preference, or runtime readiness."
+}
