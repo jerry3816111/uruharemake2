@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_public_persona_contract_harness_lock_v3",
+  "experiment_id": "public_persona_conditional_contract_v3",
+  "status": "locked_before_formal_construction_audit_and_any_model_inference",
+  "depends_on": {
+    "experiment_id": "public_persona_observation_protocol_v2",
+    "required_decision": "authorize_conditional_persona_development_hypotheses_and_sealed_holdout_protocol_only"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_contract_v3_preregistration.json",
+      "sha256": "4bd761085d794e51067becd08b75eb186201bb79758882d561f204979df41ccc"
+    },
+    "v2_result_lock": {
+      "path": "configs/public_persona_observation_v2_result_lock.json",
+      "sha256": "cc023103eee914d583bd0d0c6f6542c74874615a5c672dc234f21290faa0a1a0"
+    },
+    "v2_observation_dataset": {
+      "path": "datasets/public_persona_observations_v2.json",
+      "sha256": "3538cbf06c870d8b4847fd2c3d0da43d5225114e24c4a1254dedcd1dbe4e03ca"
+    },
+    "contract_compiler": {
+      "path": "public_persona_contract_v3.py",
+      "sha256": "a5c035b99a8f07976bf344e2335f1c64a11bfd4b5a42ffe5c8249b0cd0bf0885"
+    },
+    "development_dataset_builder": {
+      "path": "build_public_persona_contract_v3_development.py",
+      "sha256": "79d833121a63efeb18926726cb3e883d390d24fcbbb1fb8a241eaa6ff0d2447d"
+    },
+    "development_dataset": {
+      "path": "datasets/public_persona_contract_v3_development.json",
+      "sha256": "577b83ab5dbf46c1beb971f836f2e1d73b12ffd2e4717d27f550ce77db839e79"
+    },
+    "runtime_integration": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "75d18d08fd3e7e8123ed89e6292c64dcaf90e38de87c88ba4d5eaa41e75889b0"
+    },
+    "preverbal_serializer": {
+      "path": "rightbrain_preverbal_payload_v31.py",
+      "sha256": "71c52b24c6851b1a4e83d7fef5e2fcd43e0eba6bed34881cdeb931034aa61d27"
+    },
+    "path_registry": {
+      "path": "project_paths.py",
+      "sha256": "9a56215609e0f086ef018f499f2e2fb5039171df831d44c5b2917a8dd0d13487"
+    },
+    "construction_auditor": {
+      "path": "audit_public_persona_contract_v3.py",
+      "sha256": "d71cb9f73002d59325e0dd7651c05861332090f7cbcd21b6c168a78265b37402"
+    },
+    "formal_model_runner": {
+      "path": "run_public_persona_contract_v3_development.py",
+      "sha256": "aa4a09978e3d4e77f733b57fa1537d57ce0b1c7d649b13db946812cad39efa55"
+    },
+    "formal_model_analyzer": {
+      "path": "analyze_public_persona_contract_v3_development.py",
+      "sha256": "ada3a9475d26cfb1f36f8557738790fdaa031b4c2b1a156f3f1457ce0ec70f50"
+    },
+    "construction_tests": {
+      "path": "test_public_persona_contract_v3.py",
+      "sha256": "0d78df90821e7b42574799a76201a7a36dff1b2fb9d7de1d64fe78be23f9ee14"
+    }
+  },
+  "preflight": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_contract_v3.py",
+    "expected_test_count": 19
+  },
+  "formal_construction_audit": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python audit_public_persona_contract_v3.py --overwrite --require-pass",
+    "model_call_count_exact": 0,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "pass_authorizes": "merged_main_v3_development_model_screen_only"
+  },
+  "formal_model_screen": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python run_public_persona_contract_v3_development.py",
+    "analyze_command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python analyze_public_persona_contract_v3_development.py --write",
+    "required_branch": "main",
+    "required_tree_state": "clean_and_equal_to_origin_main",
+    "model_tag": "qwen3.5:9b",
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "case_count_exact": 20,
+    "condition_count_exact": 2,
+    "model_call_count_exact": 40,
+    "v2_holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_default_activation_authorized": false,
+    "training_authorized": false,
+    "holdout_unsealing_authorized": false,
+    "public_persona_fidelity_claim_authorized": false
+  }
+}

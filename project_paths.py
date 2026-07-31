@@ -681,6 +681,30 @@ PUBLIC_PERSONA_OBSERVATION_V2_AUDIT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "public_persona_observation_v2_audit.md",
 )
+PUBLIC_PERSONA_CONTRACT_V3_DATASET_PATH = os.path.join(
+    DATASETS_DIR,
+    "public_persona_contract_v3_development.json",
+)
+PUBLIC_PERSONA_CONTRACT_V3_CONSTRUCTION_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_contract_v3_construction.json",
+)
+PUBLIC_PERSONA_CONTRACT_V3_CONSTRUCTION_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_contract_v3_construction.md",
+)
+PUBLIC_PERSONA_CONTRACT_V3_RAW_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_contract_v3_development_raw.json",
+)
+PUBLIC_PERSONA_CONTRACT_V3_ANALYSIS_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_contract_v3_development_analysis.json",
+)
+PUBLIC_PERSONA_CONTRACT_V3_ANALYSIS_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_contract_v3_development_analysis.md",
+)
 RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_runtime_soak_v1_report.json",
