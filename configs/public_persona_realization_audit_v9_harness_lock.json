@@ -1,0 +1,32 @@
+{
+  "schema": "uruha_public_persona_realization_audit_harness_lock_v9",
+  "experiment_id": "public_persona_realization_audit_v9",
+  "status": "locked_before_formal_v9_audit",
+  "frozen_artifacts": {
+    "preregistration": {"path": "configs/public_persona_realization_audit_v9_preregistration.json", "sha256": "fd7eef1ddbf69a09a695188174c224ae5bc8eb12154d43dc550ef01b2faf1070"},
+    "development_dataset": {"path": "datasets/public_persona_contract_v3_development.json", "sha256": "577b83ab5dbf46c1beb971f836f2e1d73b12ffd2e4717d27f550ce77db839e79"},
+    "v8_analysis": {"path": "reports/public_persona_missing_role_v8_analysis.json", "sha256": "36f2b50ec74e7481fd3ee9606025f3ba8eac56dfaee797829a51d8e5b8f4f5fe"},
+    "v8_result_lock": {"path": "configs/public_persona_missing_role_v8_model_result_lock.json", "sha256": "81f1cdb441669796485e7f75a00ed9bb64b0ff47c24c9fc473ac7268e9e0d646"},
+    "v8_role_compiler": {"path": "public_persona_missing_role_v8.py", "sha256": "ce6f0524d1ab49fbf834017afd16b8aa82fb005769899f287e27b220ebfc59ea"},
+    "v4_scorer": {"path": "public_persona_scorer_contract_v4.py", "sha256": "214ed7198724bc2b197801c7d690ace78036223700b8ece4b408dec39082eec9"},
+    "realization_classifier": {"path": "public_persona_realization_audit_v9.py", "sha256": "03430a381fe38224c2a232f2681476c664bc890cc908ae7260666811c4686b08"},
+    "audit_runner": {"path": "audit_public_persona_realization_v9.py", "sha256": "1cb45dc6a1f424ebd428f7a70be094002c9110bf9bedbfffc958fadc597690e6"},
+    "tests": {"path": "test_public_persona_realization_audit_v9.py", "sha256": "909ed49cdd7d4a00ea816c397f68e15037d14527c0aec39da614812ece2d16a0"}
+  },
+  "preflight": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_realization_audit_v9.py",
+    "expected_test_count": 15
+  },
+  "formal_audit": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python audit_public_persona_realization_v9.py --require-pass",
+    "model_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_change_authorized": false,
+    "scorer_rewrite_authorized": false,
+    "training_authorized": false,
+    "holdout_unsealing_authorized": false,
+    "persona_fidelity_claim_authorized": false
+  }
+}
