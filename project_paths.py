@@ -665,6 +665,22 @@ PUBLIC_PERSONA_EVIDENCE_V1_AUDIT_MD_PATH = os.path.join(
     REPORTS_DIR,
     "public_persona_evidence_v1_audit.md",
 )
+PUBLIC_PERSONA_OBSERVATION_SOURCE_REGISTRY_V2_PATH = os.path.join(
+    DATASETS_DIR,
+    "public_persona_observation_source_registry_v2.json",
+)
+PUBLIC_PERSONA_OBSERVATIONS_V2_PATH = os.path.join(
+    DATASETS_DIR,
+    "public_persona_observations_v2.json",
+)
+PUBLIC_PERSONA_OBSERVATION_V2_AUDIT_JSON_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_observation_v2_audit.json",
+)
+PUBLIC_PERSONA_OBSERVATION_V2_AUDIT_MD_PATH = os.path.join(
+    REPORTS_DIR,
+    "public_persona_observation_v2_audit.md",
+)
 RIGHTBRAIN_SELECTOR_RUNTIME_SOAK_V1_REPORT_JSON_PATH = os.path.join(
     REPORTS_DIR,
     "rightbrain_selector_runtime_soak_v1_report.json",

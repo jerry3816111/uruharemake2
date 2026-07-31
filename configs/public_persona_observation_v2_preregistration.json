@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_public_persona_observation_preregistration_v2",
+  "experiment_id": "public_persona_observation_protocol_v2",
+  "status": "preregistered_before_observation_dataset_and_auditor",
+  "depends_on": {
+    "experiment_id": "public_persona_evidence_contract_v1",
+    "required_decision": "authorize_public_persona_development_hypotheses_only"
+  },
+  "current_problem": {
+    "official_profile_hypothesis_count": 6,
+    "conditioned_public_activity_observation_count": 0,
+    "sealed_behavior_holdout_source_count": 0,
+    "risk": "若只依賴官方簡介，系統容易把公開人格簡化成固定口癖或單一語氣，無法學到情境條件與反例。"
+  },
+  "falsifiable_hypothesis": "若公開人格證據以情境、行為轉述、條件規則與反例共同表示，則可以建立不含原句及固定回答的開發假設，並預先保留未觀察內容的來源作後續泛化測試。",
+  "single_changed_variable": "add a provenance-bound conditional public-activity observation layer and sealed source holdout without changing runtime behavior, prompts, model weights, or training data",
+  "collection_policy": {
+    "allowed_access": "single_page_published_interface_review",
+    "bulk_or_programmatic_scraping": "not_authorized",
+    "raw_post_text_storage": "not_authorized",
+    "raw_media_storage": "not_authorized",
+    "transcript_or_chat_replay_storage": "not_authorized",
+    "researcher_paraphrase_storage": "project_allowed_for_development_evidence",
+    "model_training_from_source_content": "not_authorized",
+    "legal_interpretation_claimed": false
+  },
+  "minimum_contract": {
+    "source_count": 10,
+    "development_source_count": 5,
+    "sealed_holdout_source_count": 2,
+    "rights_policy_source_count": 3,
+    "development_observation_count": 5,
+    "distinct_dimension_count": 5,
+    "distinct_context_count": 5,
+    "conditional_rule_count": 5,
+    "counterevidence_or_boundary_count": 5,
+    "sealed_holdout_reservation_count": 2,
+    "source_partition_role_overlap_count_max": 0,
+    "holdout_content_reviewed_count_max": 0,
+    "holdout_label_available_count_max": 0,
+    "verbatim_record_count_max": 0,
+    "target_reply_count_max": 0,
+    "private_identity_inference_count_max": 0,
+    "training_authorized_count_max": 0
+  },
+  "success_conditions": [
+    "每筆開發觀察綁定唯一官方來源與來源分割。",
+    "每筆觀察包含情境、行為轉述、條件規則及反例或泛化邊界。",
+    "保留至少兩個內容未檢視且未標註的官方直播來源作後續 holdout。",
+    "開發與 holdout 來源互斥。",
+    "資料中不存在原文、逐字稿、固定回答、私人身分推測或訓練授權。"
+  ],
+  "failure_conditions": [
+    "unofficial_source_used_as_primary_observation",
+    "verbatim_or_raw_source_content_stored",
+    "context_or_counterevidence_missing",
+    "development_source_reused_as_holdout",
+    "holdout_content_reviewed_or_labeled_before_candidate_freeze",
+    "fixed_or_expected_reply_stored",
+    "private_identity_or_unpublished_history_inference",
+    "source_rights_boundary_missing"
+  ],
+  "authorizations": {
+    "on_pass": "authorize_conditional_persona_development_hypotheses_and_sealed_holdout_protocol_only",
+    "runtime_persona_activation": false,
+    "prompt_injection": false,
+    "model_training": false,
+    "holdout_unsealing": false,
+    "holdout_evaluation_claim": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "V2 通過只代表已建立可追溯、條件式且含反例邊界的公開人格開發觀察，以及未檢視內容的 holdout 來源預留；不代表模型已學會人格，也不授權訓練、正式啟用、打開 holdout 或宣稱人格重現。"
+}
