@@ -1,0 +1,478 @@
+{
+  "schema": "uruha_public_persona_scorer_contract_audit_v4",
+  "experiment_id": "public_persona_scorer_contract_v4",
+  "passed": true,
+  "decision": "authorize_preregistration_of_a_new_matched_carrier_experiment_only",
+  "summary": {
+    "probe_count": 30,
+    "correct_count": 30,
+    "overall_accuracy": 1.0,
+    "context_count": 5,
+    "model_call_count": 0,
+    "runtime_change_count": 0,
+    "holdout_content_review_count": 0,
+    "training_authorized_count": 0
+  },
+  "per_context_accuracy": {
+    "fatigue_update_with_near_term_plan": 1.0,
+    "functional_stream_start_notification": 1.0,
+    "informal_public_self_introduction": 1.0,
+    "minor_delay_then_positive_promotion": 1.0,
+    "minor_health_uncertainty_affecting_schedule": 1.0
+  },
+  "per_mutation_accuracy": {
+    "canonical_positive": 1.0,
+    "forbidden_injection": 1.0,
+    "length_violation": 1.0,
+    "missing_required": 1.0,
+    "optional_omission": 1.0,
+    "optional_present": 1.0,
+    "order_reversal": 1.0,
+    "synonym_substitution": 1.0
+  },
+  "checks": {
+    "v3_negative_dependency": true,
+    "context_set": true,
+    "probe_count": true,
+    "label_balance": true,
+    "overall_accuracy": true,
+    "per_context_accuracy": true,
+    "required_mutations": true,
+    "optional_is_not_required": true,
+    "order_references_required_groups": true,
+    "no_runtime_or_training_authorization": true,
+    "no_model_calls": true,
+    "holdout_still_sealed": true
+  },
+  "rows": [
+    {
+      "probe_id": "scorer_v4_intro_optional_omission",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "optional_omission",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {
+        "mild_self_tease": false
+      }
+    },
+    {
+      "probe_id": "scorer_v4_intro_optional_present",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "optional_present",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {
+        "mild_self_tease": true
+      }
+    },
+    {
+      "probe_id": "scorer_v4_intro_synonym",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {
+        "mild_self_tease": false
+      }
+    },
+    {
+      "probe_id": "scorer_v4_intro_missing",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "missing_required",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "missing_required:audience_affiliation",
+      "primary_reason_present": true,
+      "reasons": [
+        "missing_required:audience_affiliation",
+        "wrong_order:public_activity->audience_affiliation"
+      ],
+      "optional_hits": {
+        "mild_self_tease": false
+      }
+    },
+    {
+      "probe_id": "scorer_v4_intro_forbidden",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "forbidden_injection",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "forbidden:perfect_idol_claim",
+      "primary_reason_present": true,
+      "reasons": [
+        "forbidden:perfect_idol_claim"
+      ],
+      "optional_hits": {
+        "mild_self_tease": false
+      }
+    },
+    {
+      "probe_id": "scorer_v4_intro_reversed",
+      "context": "informal_public_self_introduction",
+      "mutation_type": "order_reversal",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "wrong_order:public_activity->audience_affiliation",
+      "primary_reason_present": true,
+      "reasons": [
+        "wrong_order:public_activity->audience_affiliation"
+      ],
+      "optional_hits": {
+        "mild_self_tease": false
+      }
+    },
+    {
+      "probe_id": "scorer_v4_delay_synonym_01",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_delay_canonical",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "canonical_positive",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_delay_synonym_02",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_delay_missing",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "missing_required",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "missing_required:brief_acknowledgement",
+      "primary_reason_present": true,
+      "reasons": [
+        "missing_required:brief_acknowledgement",
+        "wrong_order:brief_acknowledgement->positive_focus"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_delay_forbidden",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "forbidden_injection",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "forbidden:extended_apology",
+      "primary_reason_present": true,
+      "reasons": [
+        "forbidden:extended_apology"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_delay_reversed",
+      "context": "minor_delay_then_positive_promotion",
+      "mutation_type": "order_reversal",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "wrong_order:brief_acknowledgement->positive_focus",
+      "primary_reason_present": true,
+      "reasons": [
+        "wrong_order:brief_acknowledgement->positive_focus"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_canonical",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "canonical_positive",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_synonym_01",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_synonym_02",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_missing",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "missing_required",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "missing_required:current_state",
+      "primary_reason_present": true,
+      "reasons": [
+        "missing_required:current_state",
+        "wrong_order:current_state->next_action"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_forbidden",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "forbidden_injection",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "forbidden:crisis_dramatization",
+      "primary_reason_present": true,
+      "reasons": [
+        "forbidden:crisis_dramatization"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_reversed",
+      "context": "fatigue_update_with_near_term_plan",
+      "mutation_type": "order_reversal",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "wrong_order:current_state->next_action",
+      "primary_reason_present": true,
+      "reasons": [
+        "wrong_order:current_state->next_action"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_canonical",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "canonical_positive",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_synonym_01",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_synonym_02",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_missing",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "missing_required",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "missing_required:uncertainty",
+      "primary_reason_present": true,
+      "reasons": [
+        "missing_required:uncertainty"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_forbidden",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "forbidden_injection",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "forbidden:diagnosis",
+      "primary_reason_present": true,
+      "reasons": [
+        "forbidden:diagnosis"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_health_reversed",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "mutation_type": "order_reversal",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "wrong_order:supported_state->deferred_decision",
+      "primary_reason_present": true,
+      "reasons": [
+        "wrong_order:supported_state->deferred_decision"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_canonical",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "canonical_positive",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_synonym_01",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_synonym_02",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "synonym_substitution",
+      "expected_pass": true,
+      "observed_pass": true,
+      "correct": true,
+      "expected_primary_reason": null,
+      "primary_reason_present": true,
+      "reasons": [],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_missing",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "missing_required",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "missing_required:content_name",
+      "primary_reason_present": true,
+      "reasons": [
+        "missing_required:content_name"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_forbidden",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "forbidden_injection",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "forbidden:emotional_preface",
+      "primary_reason_present": true,
+      "reasons": [
+        "forbidden:emotional_preface"
+      ],
+      "optional_hits": {}
+    },
+    {
+      "probe_id": "scorer_v4_notice_too_long",
+      "context": "functional_stream_start_notification",
+      "mutation_type": "length_violation",
+      "expected_pass": false,
+      "observed_pass": false,
+      "correct": true,
+      "expected_primary_reason": "too_long",
+      "primary_reason_present": true,
+      "reasons": [
+        "too_long"
+      ],
+      "optional_hits": {}
+    }
+  ],
+  "authorizations": {
+    "new_matched_carrier_preregistration": true,
+    "model_execution": false,
+    "runtime_default_enable": false,
+    "model_change": false,
+    "training": false,
+    "holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "inputs": {
+    "dataset": {
+      "path": "public_persona_scorer_v4_calibration.json",
+      "sha256": "7ab78141361b0763e9b761fd2f17dbf13b110e15e301f6bb237d40ae3caf0f0b"
+    },
+    "preregistration": {
+      "path": "public_persona_scorer_contract_v4_preregistration.json",
+      "sha256": "e48c23185a8d8ef8fae0f8749113fb510cbefee5a76e002107581d3b0ace3206"
+    },
+    "v3_result_lock": {
+      "path": "public_persona_contract_v3_model_result_lock.json",
+      "sha256": "a1131273774e1e227af14a3cfd9f30e771aa4582eaf0e56186aff3a062c6c08a"
+    }
+  },
+  "evidence_boundary": "A pass proves only internal semantic consistency of the deterministic scorer on synthetic calibration probes. It does not prove that the behavioral contract is a complete description of the target public persona, that model outputs improved, or that unseen human judgments will agree."
+}

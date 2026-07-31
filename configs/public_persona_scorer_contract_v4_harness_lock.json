@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_public_persona_scorer_contract_harness_lock_v4",
+  "experiment_id": "public_persona_scorer_contract_v4",
+  "status": "locked_before_formal_calibration_audit",
+  "depends_on": {
+    "experiment_id": "public_persona_conditional_contract_v3",
+    "required_decision": "freeze_v3_negative_result_and_reassess_carrier_model_or_scorer"
+  },
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_scorer_contract_v4_preregistration.json",
+      "sha256": "e48c23185a8d8ef8fae0f8749113fb510cbefee5a76e002107581d3b0ace3206"
+    },
+    "v3_model_result_lock": {
+      "path": "configs/public_persona_contract_v3_model_result_lock.json",
+      "sha256": "a1131273774e1e227af14a3cfd9f30e771aa4582eaf0e56186aff3a062c6c08a"
+    },
+    "v3_persona_contract": {
+      "path": "public_persona_contract_v3.py",
+      "sha256": "a5c035b99a8f07976bf344e2335f1c64a11bfd4b5a42ffe5c8249b0cd0bf0885"
+    },
+    "typed_scorer_contract": {
+      "path": "public_persona_scorer_contract_v4.py",
+      "sha256": "214ed7198724bc2b197801c7d690ace78036223700b8ece4b408dec39082eec9"
+    },
+    "calibration_builder": {
+      "path": "build_public_persona_scorer_v4_calibration.py",
+      "sha256": "07588162ae40118aea44997c9688111e8150b565a04e317c2e61c968e98ad2c9"
+    },
+    "calibration_dataset": {
+      "path": "datasets/public_persona_scorer_v4_calibration.json",
+      "sha256": "7ab78141361b0763e9b761fd2f17dbf13b110e15e301f6bb237d40ae3caf0f0b"
+    },
+    "formal_auditor": {
+      "path": "audit_public_persona_scorer_contract_v4.py",
+      "sha256": "cb85d4ca359fb1eba3c24a4422ea555c673192ff66ff755234a1b53637d9447f"
+    },
+    "construction_tests": {
+      "path": "test_public_persona_scorer_contract_v4.py",
+      "sha256": "ee91930b136833d9460bf87721b4880e2fa74edb0762725861df4898ca5acafa"
+    }
+  },
+  "preflight": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_scorer_contract_v4.py",
+    "expected_test_count": 10
+  },
+  "formal_audit": {
+    "command": "URUHA_SKIP_AUTO_VENV=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python audit_public_persona_scorer_contract_v4.py --overwrite --require-pass",
+    "probe_count_exact": 30,
+    "expected_correct_count_exact": 30,
+    "model_call_count_exact": 0,
+    "runtime_change_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "training_authorized_count_exact": 0,
+    "pass_authorizes": "preregistration_of_a_new_matched_carrier_experiment_only",
+    "model_execution_authorized": false,
+    "runtime_activation_authorized": false,
+    "model_change_authorized": false,
+    "training_authorized": false,
+    "holdout_unsealing_authorized": false,
+    "persona_fidelity_claim_authorized": false
+  }
+}
