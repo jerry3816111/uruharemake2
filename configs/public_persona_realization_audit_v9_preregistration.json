@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_public_persona_realization_audit_preregistration_v9",
+  "experiment_id": "public_persona_realization_audit_v9",
+  "status": "preregistered_before_formal_v9_audit",
+  "depends_on": {
+    "experiment_id": "public_persona_missing_role_v8",
+    "required_authorization": "model_readable_missing_role_semantics_research"
+  },
+  "observed_problem": "V8 inferred planner-role absence from required_marker_groups alone, even though the same case already contained navigation meaning in jp_summary and human_speech_plan.content_units. V4 also rejected plausible synonyms such as へろへろ and 終わって.",
+  "falsifiable_hypothesis": "A source-separated audit of planning evidence and reply evidence will show whether each V4 missing-required failure is a true planner omission, a planned role that was not realized, or a lexical scorer vocabulary gap. If the V8 target role is already present in the plan but absent from the reply, the next causal variable belongs at the planner-to-RightBrain realization interface rather than planner content generation.",
+  "single_changed_variable": "evaluation attribution only: required-marker-only role coverage is replaced by separate planning-evidence and reply-evidence classification",
+  "evidence_sources": {
+    "planning_only": [
+      "logic.jp_summary",
+      "logic.core_message_jp",
+      "logic.intent",
+      "logic.dialogue_act",
+      "logic.human_speech_plan.dialogue_act",
+      "logic.human_speech_plan.content_units",
+      "logic.human_speech_plan.speech_moves"
+    ],
+    "reply_only": ["V8 frozen control raw_reply"],
+    "evaluation_only": ["V4 frozen missing_required reasons"],
+    "forbidden_as_planning_evidence": [
+      "logic.required_marker_groups",
+      "persona_evaluation",
+      "V4 scorer marker lists",
+      "V8 treatment payload"
+    ]
+  },
+  "classification_policy": {
+    "planner_role_missing": "The role has no planning evidence, regardless of reply score.",
+    "lexical_scorer_gap": "The role is planned and the reply contains a preregistered concept marker that the frozen lexical scorer did not accept.",
+    "planned_but_unrealized": "The role is planned but neither the frozen scorer nor the broader preregistered reply-concept markers observe it.",
+    "not_applicable": "No missing_required reason exists for the role."
+  },
+  "scope": {
+    "known_development_case_count": 20,
+    "active_case_count": 15,
+    "inactive_case_count": 5,
+    "frozen_control_reply_count": 20,
+    "expected_v8_projected_case_count": 1,
+    "model_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0,
+    "runtime_activation_forbidden": true,
+    "training_forbidden": true
+  },
+  "decision_policy": {
+    "v8_target_planned_and_unrealized": "authorize_planned_role_realization_research_only",
+    "v8_target_not_planned": "authorize_planner_role_completion_research_only",
+    "v8_target_ambiguous": "require_independent_human_adjudication_before_implementation",
+    "runtime_default_enable": false,
+    "model_change": false,
+    "scorer_rewrite": false,
+    "training": false,
+    "holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V9 audits known development plans and frozen V8 replies. It can correct causal attribution and authorize one new preregistration, but cannot retroactively change V8 scores, establish unseen-context generalization, validate public-persona fidelity, or enable runtime behavior."
+}
