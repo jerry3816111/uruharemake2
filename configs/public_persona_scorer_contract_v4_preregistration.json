@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_public_persona_scorer_contract_preregistration_v4",
+  "experiment_id": "public_persona_scorer_contract_v4",
+  "status": "preregistered_before_formal_calibration",
+  "depends_on": {
+    "experiment_id": "public_persona_conditional_contract_v3",
+    "required_decision": "freeze_v3_negative_result_and_reassess_carrier_model_or_scorer"
+  },
+  "current_problem": {
+    "v3_model_passed": false,
+    "v3_new_persona_passes": 0,
+    "optional_rule_scored_as_required_case_count": 3,
+    "exact_order_term_inconsistent_with_marker_alternatives_case_count": 1,
+    "risk": "若 scorer 與人格契約語意不一致，後續模型或 carrier 比較沒有可信的尺。"
+  },
+  "falsifiable_hypothesis": "若 required、optional、forbidden 與 ordered pairs 由同一份 typed evaluation contract 驅動，則 scorer 應在不呼叫模型的凍結校準集中正確接受同義改寫與 optional omission，並正確拒絕缺漏、禁止內容、順序反轉與超長輸出。",
+  "single_changed_variable": "replace the V3 ad hoc persona marker and literal ordering logic with one evaluation-only typed scorer contract; runtime, model, prompts, V3 results, memory, actions, and source observations remain unchanged",
+  "scope": {
+    "context_count_exact": 5,
+    "probe_count_exact": 30,
+    "probe_count_per_context_exact": 6,
+    "expected_pass_count_exact": 15,
+    "expected_fail_count_exact": 15,
+    "model_call_count_exact": 0,
+    "runtime_change_count_exact": 0,
+    "v2_holdout_content_review_count_exact": 0,
+    "training_authorized_count_exact": 0
+  },
+  "controls": [
+    "all probes are synthetic scorer calibration text and are never sent to a model",
+    "each context has three expected-pass and three expected-fail probes",
+    "optional omission, synonym substitution, missing required content, forbidden content, order reversal, and length are represented",
+    "the scorer contract is evaluation-only and cannot enter runtime payload, memory, training, or Function Calling",
+    "V3 raw results and sealed V2 holdout remain unchanged"
+  ],
+  "success_gates": {
+    "overall_accuracy_min": 1.0,
+    "per_context_accuracy_min": 1.0,
+    "optional_omission_accuracy_min": 1.0,
+    "synonym_substitution_accuracy_min": 1.0,
+    "missing_required_accuracy_min": 1.0,
+    "forbidden_injection_accuracy_min": 1.0,
+    "order_reversal_accuracy_min": 1.0,
+    "length_violation_accuracy_min": 1.0,
+    "model_call_count_max": 0,
+    "runtime_change_count_max": 0,
+    "holdout_content_review_count_max": 0,
+    "training_authorized_count_max": 0
+  },
+  "decision_policy": {
+    "pass": "authorize_preregistration_of_a_new_matched_carrier_experiment_only",
+    "fail": "repair_the_scorer_contract_before_any_new_carrier_or_model_experiment",
+    "runtime_default_enable": false,
+    "model_change": false,
+    "training": false,
+    "holdout_unsealing": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "A pass proves only internal semantic consistency of the deterministic scorer on synthetic calibration probes. It does not prove that the behavioral contract is a complete description of the target public persona, that model outputs improved, or that unseen human judgments will agree."
+}

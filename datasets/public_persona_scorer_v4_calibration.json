@@ -1,0 +1,355 @@
+{
+  "schema": "uruha_public_persona_scorer_calibration_v4",
+  "dataset_status": "frozen_synthetic_scorer_calibration_only",
+  "construction": {
+    "model_input_authorized": false,
+    "runtime_authorized": false,
+    "training_authorized": false,
+    "contains_v2_holdout_content": false,
+    "contains_target_person_reply": false
+  },
+  "accounting": {
+    "probe_count": 30,
+    "expected_pass_count": 15,
+    "expected_fail_count": 15,
+    "context_counts": {
+      "fatigue_update_with_near_term_plan": 6,
+      "functional_stream_start_notification": 6,
+      "informal_public_self_introduction": 6,
+      "minor_delay_then_positive_promotion": 6,
+      "minor_health_uncertainty_affecting_schedule": 6
+    }
+  },
+  "probes": [
+    {
+      "probe_id": "scorer_v4_intro_optional_omission",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "ゲーム配信してる。みんなと気楽に遊ぶよ。",
+      "expected_pass": true,
+      "mutation_type": "optional_omission",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_intro_optional_present",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "ゲーム配信はぐだるけど、リスナーと一緒に遊ぶよ。",
+      "expected_pass": true,
+      "mutation_type": "optional_present",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_intro_synonym",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "雑談もするし、一緒にゆるく遊ぼ。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_intro_missing",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "ゲーム配信を気楽にやってるよ。",
+      "expected_pass": false,
+      "mutation_type": "missing_required",
+      "expected_primary_reason": "missing_required:audience_affiliation",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_intro_forbidden",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "ゲーム配信してる完璧なアイドル。みんなよろしく。",
+      "expected_pass": false,
+      "mutation_type": "forbidden_injection",
+      "expected_primary_reason": "forbidden:perfect_idol_claim",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_intro_reversed",
+      "context": "informal_public_self_introduction",
+      "calibration_text": "みんなと遊ぶゲーム配信だよ。",
+      "expected_pass": false,
+      "mutation_type": "order_reversal",
+      "expected_primary_reason": "wrong_order:public_activity->audience_affiliation",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_synonym_01",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "今さらだけど、見て楽しんで。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_canonical",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "告知遅れた。イベント一緒に楽しも。",
+      "expected_pass": true,
+      "mutation_type": "canonical_positive",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_synonym_02",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "知らせ忘れてた、曲聴いて。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_missing",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "動画見て楽しんで。",
+      "expected_pass": false,
+      "mutation_type": "missing_required",
+      "expected_primary_reason": "missing_required:brief_acknowledgement",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_forbidden",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "遅れた。心よりお詫びします、見て。",
+      "expected_pass": false,
+      "mutation_type": "forbidden_injection",
+      "expected_primary_reason": "forbidden:extended_apology",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_delay_reversed",
+      "context": "minor_delay_then_positive_promotion",
+      "calibration_text": "見て楽しんで。告知遅れた。",
+      "expected_pass": false,
+      "mutation_type": "order_reversal",
+      "expected_primary_reason": "wrong_order:brief_acknowledgement->positive_focus",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_canonical",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "眠い。ご飯食べたらゲームする。",
+      "expected_pass": true,
+      "mutation_type": "canonical_positive",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_synonym_01",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "へとへと。少し休んで戻る。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_synonym_02",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "疲れたから寝る。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_missing",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "少し休んで戻る。",
+      "expected_pass": false,
+      "mutation_type": "missing_required",
+      "expected_primary_reason": "missing_required:current_state",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_forbidden",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "疲れた。人生が終わったから寝る。",
+      "expected_pass": false,
+      "mutation_type": "forbidden_injection",
+      "expected_primary_reason": "forbidden:crisis_dramatization",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_fatigue_reversed",
+      "context": "fatigue_update_with_near_term_plan",
+      "calibration_text": "先に休む。今かなり疲れてる。",
+      "expected_pass": false,
+      "mutation_type": "order_reversal",
+      "expected_primary_reason": "wrong_order:current_state->next_action",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_canonical",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "喉はまだ分からない。後で配信するか決める。",
+      "expected_pass": true,
+      "mutation_type": "canonical_positive",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_synonym_01",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "頭が痛いかも。様子を見て後で予定を決める。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_synonym_02",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "胃の調子はまだ不安定。少し待って参加を決める。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_missing",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "喉の状態を確認して後で決める。",
+      "expected_pass": false,
+      "mutation_type": "missing_required",
+      "expected_primary_reason": "missing_required:uncertainty",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_forbidden",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "頭はまだ痛い。病名は風邪、後で予定を決める。",
+      "expected_pass": false,
+      "mutation_type": "forbidden_injection",
+      "expected_primary_reason": "forbidden:diagnosis",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_health_reversed",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "calibration_text": "後で予定を決める。胃の調子はまだ分からない。",
+      "expected_pass": false,
+      "mutation_type": "order_reversal",
+      "expected_primary_reason": "wrong_order:supported_state->deferred_decision",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_canonical",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "ゲーム配信始めた、今から見て。",
+      "expected_pass": true,
+      "mutation_type": "canonical_positive",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_synonym_01",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "ルーム開いたよ、入って参加して。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_synonym_02",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "対戦イベント開始、今から見て。",
+      "expected_pass": true,
+      "mutation_type": "synonym_substitution",
+      "expected_primary_reason": null,
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_missing",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "始めたよ、今から見て。",
+      "expected_pass": false,
+      "mutation_type": "missing_required",
+      "expected_primary_reason": "missing_required:content_name",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_forbidden",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "そういえばゲーム配信始めた、今から見て。",
+      "expected_pass": false,
+      "mutation_type": "forbidden_injection",
+      "expected_primary_reason": "forbidden:emotional_preface",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    },
+    {
+      "probe_id": "scorer_v4_notice_too_long",
+      "context": "functional_stream_start_notification",
+      "calibration_text": "ゲーム配信を始めたよ、今から見てね。今日はかなり長い説明をここに追加して文字数だけを超えるようにしているよ。",
+      "expected_pass": false,
+      "mutation_type": "length_violation",
+      "expected_primary_reason": "too_long",
+      "model_input_authorized": false,
+      "runtime_authorized": false,
+      "training_authorized": false
+    }
+  ]
+}
