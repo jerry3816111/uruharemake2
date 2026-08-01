@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_persona_policy_compute_seam_preregistration_v1",
+  "experiment_id": "persona_policy_compute_seam_v1",
+  "status": "frozen_after_seam_implementation_before_formal_construction_execution",
+  "target_id": "ichinose_uruha_public_persona",
+  "current_problem": "目前人格行為分散於左腦提示、右腦固定回覆家族與條件式 expression brief。目標人格組與中性組沒有共同替換介面，也沒有逐題模型呼叫與 token 記錄，因此不能建立只改人格策略的公平對照。",
+  "falsifiable_hypothesis": "若加入只輸出結構化行為限制、不輸出最終句子的 target 與 neutral provider，並以不保存原文的 compute ledger 包住所有本機模型呼叫，則六個合成情境中兩組應有相同 payload 結構、相同認知欄位及相同模型運算排程；預設 provider=None 與 legacy provider 的右腦 payload 應逐 byte 相同。",
+  "single_changed_variable": "新增可選 persona-policy provider 與 compute-ledger injection seam；正式 Web 預設不啟用 provider 或 ledger，模型、Prompt 內容、固定回覆、記憶資料、權重及 holdout 均不變。",
+  "synthetic_cases": {
+    "supported_public_context_count": 5,
+    "unsupported_context_control_count": 1,
+    "actual_model_execution": false,
+    "holdout_content_access": false
+  },
+  "matched_provider_contract": {
+    "target_provider": "structured_target_public_persona",
+    "neutral_provider": "structured_neutral_dialogue",
+    "same_recursive_payload_structure": true,
+    "same_list_lengths": true,
+    "same_protected_cognitive_fields": true,
+    "final_reply_content_forbidden": true,
+    "fixed_reply_content_forbidden": true,
+    "target_utterance_content_forbidden": true,
+    "neutral_source_ids_are_explicit_control_provenance": true
+  },
+  "compute_ledger_contract": {
+    "per_item_id": true,
+    "per_condition_id": true,
+    "per_stage_label": true,
+    "model_and_decoding_options": true,
+    "prompt_and_completion_token_counts_when_available": true,
+    "latency": true,
+    "raw_prompt_forbidden": true,
+    "raw_reply_forbidden": true,
+    "content_hash_allowed": true,
+    "errors_record_type_not_message": true
+  },
+  "construction_success_requires": {
+    "all_checks_pass": true,
+    "synthetic_case_count_exact": 6,
+    "default_vs_legacy_payload_mismatch_count_exact": 0,
+    "target_vs_neutral_nonpersona_payload_mismatch_count_exact": 0,
+    "target_vs_neutral_structure_mismatch_count_exact": 0,
+    "protected_field_mutation_count_exact": 0,
+    "actual_model_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "runtime_default_behavior_change_count_exact": 0,
+    "persona_score_count_exact": 0
+  },
+  "decision_policy": {
+    "construction_pass": "authorize_fixed_surface_family_provider_migration_on_synthetic_inputs_only",
+    "construction_fail": "repair_persona_policy_or_compute_seam_before_surface_family_migration",
+    "formal_persona_evaluation": false,
+    "sealed_holdout_unsealing": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "production_default_enablement": false,
+    "public_persona_fidelity_claim": false
+  },
+  "evidence_boundary": "本輪只能證明人格策略可被結構化替換、認知內容受到保護、模型運算可被逐題稽核，以及預設 payload 未改變。它不能證明回答更像一ノ瀬うるは，也不能解除現有固定回覆或跨模組人格規則造成的正式 C2 阻擋。"
+}

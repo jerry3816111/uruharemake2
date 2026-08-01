@@ -53,6 +53,7 @@ import uruha_profile_assertion as upa
 import uruha_profile_grounding as upg
 import uruha_profile_memory as upm
 import public_persona_contract_v3 as ppcv3
+import uruha_compute_ledger as ucl
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
@@ -1469,9 +1470,16 @@ class MemoryManager:
 # 🧠 左腦：邏輯與回覆規劃 (Left Brain)
 # ===========================
 class LeftBrain:
-    def __init__(self, client_logic):
+    def __init__(self, client_logic, persona_policy_provider=None, compute_ledger=None):
         self.client_logic = client_logic
+        self.persona_policy_provider = persona_policy_provider
+        self.compute_ledger = compute_ledger
         self._social_reasoning_frame_cache = {}
+
+    def _attach_persona_policy(self, plan, current_psyche):
+        if self.persona_policy_provider is None:
+            return plan
+        return self.persona_policy_provider.attach_to_plan(plan, current_psyche)
 
     def _story_question_line(self, text):
         raw = str(text or "")
@@ -1763,15 +1771,16 @@ Rules:
 {user_input}
 """
         try:
-            response = self.client_logic.chat.completions.create(
-                model="qwen2.5:7b",
-                messages=[
-                    {"role": "system", "content": "Return JSON only."},
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.0,
-                max_tokens=220,
-            )
+            with ucl.ledger_stage(self.compute_ledger, "leftbrain_social_reasoning_frame"):
+                response = self.client_logic.chat.completions.create(
+                    model="qwen2.5:7b",
+                    messages=[
+                        {"role": "system", "content": "Return JSON only."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.0,
+                    max_tokens=220,
+                )
             payload = self._extract_json_from_text(response.choices[0].message.content)
             frame = self._normalize_social_reasoning_frame(payload, fallback)
         except Exception:
@@ -8116,6 +8125,7 @@ Rules:
     def think(self, user_input, memory_data, current_psyche, mode="reactive", runtime_state=None):
         if mode == "proactive":
             selected = self._think_proactive(memory_data, current_psyche, runtime_state=runtime_state)
+            selected = self._attach_persona_policy(selected, current_psyche)
             print(Fore.MAGENTA + f"  [Left Brain Proactive Plan] {selected}")
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
@@ -8128,10 +8138,16 @@ Rules:
             internal_monologue = self._derive_internal_monologue(user_input, memory_data, current_psyche, rule_plan)
             candidates = self._derive_bayesian_candidates(rule_plan, user_input, current_psyche, memory_data)
             selected = self._run_multitick_planner(candidates, user_input, memory_data, current_psyche, internal_monologue)
+            selected = self._attach_persona_policy(selected, current_psyche)
             print(Fore.MAGENTA + f"  [Left Brain Rule Plan] {selected}")
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
 
+        persona_goal_line = (
+            self.persona_policy_provider.planner_goal_line()
+            if self.persona_policy_provider is not None
+            else "- Final output should sound like Ichinose Uruha."
+        )
         sys_prompt = f"""
 You are the Left Brain Planner for a dual-brain character system.
 Your job is NOT to write the final reply.
@@ -8140,7 +8156,7 @@ You must think like a human planner, not like a one-shot classifier.
 
 [System Goal]
 - Final output should feel human.
-- Final output should sound like Ichinose Uruha.
+{persona_goal_line}
 - The right brain must not decide knowledge or policy by itself.
 
 [Memory]
@@ -8240,14 +8256,15 @@ Return ONLY valid JSON with this structure:
 }}
 """
         try:
-            response = self.client_logic.chat.completions.create(
-                model="qwen2.5:7b",
-                messages=[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": f"User Input: {user_input}"},
-                ],
-                temperature=0.1,
-            )
+            with ucl.ledger_stage(self.compute_ledger, "leftbrain_general_plan"):
+                response = self.client_logic.chat.completions.create(
+                    model="qwen2.5:7b",
+                    messages=[
+                        {"role": "system", "content": sys_prompt},
+                        {"role": "user", "content": f"User Input: {user_input}"},
+                    ],
+                    temperature=0.1,
+                )
             raw_content = response.choices[0].message.content
             payload = self._extract_json_from_text(raw_content)
             bundle = self._normalize_candidate_bundle(payload, user_input, memory_data, current_psyche)
@@ -8258,6 +8275,7 @@ Return ONLY valid JSON with this structure:
                 current_psyche,
                 bundle["internal_monologue"],
             )
+            selected = self._attach_persona_policy(selected, current_psyche)
             print(Fore.MAGENTA + f"  [Left Brain Plan] {selected}")
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
@@ -8266,20 +8284,21 @@ Return ONLY valid JSON with this structure:
             fallback = self._fallback_plan()
             fallback.update(self._derive_bdi_context(user_input, memory_data, current_psyche, fallback))
             internal_monologue = self._derive_internal_monologue(user_input, memory_data, current_psyche, fallback)
-            return self._run_multitick_planner(
+            selected = self._run_multitick_planner(
                 self._derive_bayesian_candidates(fallback, user_input, current_psyche, memory_data),
                 user_input,
                 memory_data,
                 current_psyche,
                 internal_monologue,
             )
+            return self._attach_persona_policy(selected, current_psyche)
 
 
 # ===========================
 # 🎭 右腦：本機 V10 Persona 生成器
 # ===========================
 class RightBrain:
-    def __init__(self, load_model=True):
+    def __init__(self, load_model=True, persona_policy_provider=None, compute_ledger=None):
         self.history = []
         self.reply_variant_counts = Counter()
         self.intent_variant_counts = Counter()
@@ -8291,6 +8310,8 @@ class RightBrain:
         self.repair_compat_adapter_dir = None
         self.tokenizer = None
         self.model = None
+        self.persona_policy_provider = persona_policy_provider
+        self.compute_ledger = compute_ledger
         self.surface_adapter_name = "surface"
         self.repair_adapter_name = "repair"
         self.repair_adapter_loaded = False
@@ -11897,6 +11918,14 @@ You are Ichinose Uruha.
         return not self._model_surface_disabled_reason(logic_data)
 
     def _persona_expression_brief(self, current_psyche, logic_data=None):
+        if self.persona_policy_provider is not None:
+            brief, projection = self.persona_policy_provider.expression_brief(
+                logic_data,
+                current_psyche,
+            )
+            if isinstance(logic_data, dict):
+                logic_data["persona_policy_provider_trace"] = projection
+            return brief
         logic = logic_data if isinstance(logic_data, dict) else {}
         if not self.public_persona_conditional_brief_enabled:
             return ppcv3.baseline_expression_brief(current_psyche)
@@ -12646,26 +12675,64 @@ You are Ichinose Uruha.
         )
         inputs = self.tokenizer(prompt, return_tensors="pt")
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
-        with torch.no_grad():
-            output = self.model.generate(
-                **inputs,
-                max_new_tokens=56,
-                no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
-                renormalize_logits=True,
-                pad_token_id=self.tokenizer.eos_token_id,
-                **generation_kwargs,
+        started = time.perf_counter()
+        output = None
+        error = None
+        completion = ""
+        prompt_tokens = int(inputs["input_ids"].shape[1])
+        try:
+            with torch.no_grad():
+                output = self.model.generate(
+                    **inputs,
+                    max_new_tokens=56,
+                    no_repeat_ngram_size=RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
+                    renormalize_logits=True,
+                    pad_token_id=self.tokenizer.eos_token_id,
+                    **generation_kwargs,
+                )
+            raw_reply = self.tokenizer.decode(
+                output[0][prompt_tokens:],
+                skip_special_tokens=False,
             )
-        raw_reply = self.tokenizer.decode(
-            output[0][inputs["input_ids"].shape[1] :],
-            skip_special_tokens=False,
-        )
-        return raw_reply.split("<|im_end|>")[0].strip()
+            completion = raw_reply.split("<|im_end|>")[0].strip()
+            return completion
+        except Exception as exc:
+            error = exc
+            raise
+        finally:
+            if self.compute_ledger is not None:
+                completion_tokens = (
+                    int(output[0].shape[0]) - prompt_tokens
+                    if output is not None
+                    else None
+                )
+                self.compute_ledger.record_local_generation(
+                    model=RIGHT_BRAIN_BASE_MODEL,
+                    prompt_text=prompt,
+                    prompt_tokens=prompt_tokens,
+                    completion_text=completion,
+                    completion_tokens=completion_tokens,
+                    generation_options={
+                        "max_new_tokens": 56,
+                        "no_repeat_ngram_size": RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
+                        "adapter_name": self._active_model_adapter_name or "",
+                        **generation_kwargs,
+                    },
+                    latency_seconds=time.perf_counter() - started,
+                    error=error,
+                )
 
     def _run_model_surface_generation(self, messages, generation_kwargs, adapter_name=None):
         previous_adapter = self._active_model_adapter_name
         switched = self._switch_model_adapter(adapter_name)
+        stage = (
+            "rightbrain_surface_repair"
+            if adapter_name == self.repair_adapter_name
+            else "rightbrain_surface_generation"
+        )
         try:
-            return self._generate_model_text(messages, generation_kwargs)
+            with ucl.ledger_stage(self.compute_ledger, stage):
+                return self._generate_model_text(messages, generation_kwargs)
         finally:
             if switched and previous_adapter:
                 self._switch_model_adapter(previous_adapter)
@@ -13308,16 +13375,24 @@ You are Ichinose Uruha.
 # 🚀 核心控制器 (Main Loop)
 # ===========================
 class UruhaBrainV4_Mac:
-    def __init__(self, load_right_brain_model=None):
+    def __init__(
+        self,
+        load_right_brain_model=None,
+        persona_policy_provider=None,
+        compute_ledger=None,
+    ):
         print(Fore.CYAN + "🍎 Uruha V5 Local Dual-Brain Starting...")
 
+        self.compute_ledger = compute_ledger
+        self.persona_policy_provider = persona_policy_provider
         try:
-            self.client_logic = OpenAI(base_url=OLLAMA_URL, api_key=OLLAMA_API_KEY)
-            self.client_logic.models.list()
+            raw_client_logic = OpenAI(base_url=OLLAMA_URL, api_key=OLLAMA_API_KEY)
+            raw_client_logic.models.list()
             print(Fore.GREEN + "✅ Left Brain (Ollama) Connected!")
         except Exception:
             print(Fore.RED + "❌ Cannot connect to Ollama. Please run 'ollama run qwen2.5:7b' in terminal.")
             sys.exit(1)
+        self.client_logic = ucl.instrument_openai_client(raw_client_logic, compute_ledger)
 
         self.memory = MemoryManager()
         self.runtime_config = RuntimeConfig(
@@ -13333,8 +13408,16 @@ class UruhaBrainV4_Mac:
             soft_zone=PSYCHE_SOFT_ZONE,
         )
         self.psyche = Psyche(config=self.psyche_config)
-        self.left_brain = LeftBrain(self.client_logic)
-        self.right_brain = RightBrain(load_model=_resolve_right_brain_model_loading(load_right_brain_model))
+        self.left_brain = LeftBrain(
+            self.client_logic,
+            persona_policy_provider=persona_policy_provider,
+            compute_ledger=compute_ledger,
+        )
+        self.right_brain = RightBrain(
+            load_model=_resolve_right_brain_model_loading(load_right_brain_model),
+            persona_policy_provider=persona_policy_provider,
+            compute_ledger=compute_ledger,
+        )
         self.runtime = RuntimeState(config=self.runtime_config)
         self.runtime.touch_interaction(reset_drives=True)
         self._last_external_input_at = time.time()
@@ -14733,9 +14816,10 @@ class UruhaBrainV4_Mac:
     def _write_typed_reflection_if_enabled(self, user_input, reply, logic):
         if not urr.typed_reflection_runtime_enabled():
             return None
-        return self.memory.reflect_experience(
-            user_input, reply, logic, self.client_logic
-        )
+        with ucl.ledger_stage(getattr(self, "compute_ledger", None), "typed_reflection"):
+            return self.memory.reflect_experience(
+                user_input, reply, logic, self.client_logic
+            )
 
     def emit_response_if_ready(self, event, tick_result):
         user_input = event["user_input"]
@@ -15094,11 +15178,12 @@ class UruhaBrainV4_Mac:
         if proactive_turn:
             self._push_blackboard("autonomous", "proactive_turn", proactive_turn, salience=0.92)
 
-        maintenance = self.memory.consolidate_recent_experiences(
-            self.client_logic,
-            minimum_turns=4,
-            force=selected_goal.get("kind") == "three_speed_consolidation" or force,
-        )
+        with ucl.ledger_stage(getattr(self, "compute_ledger", None), "background_consolidation"):
+            maintenance = self.memory.consolidate_recent_experiences(
+                self.client_logic,
+                minimum_turns=4,
+                force=selected_goal.get("kind") == "three_speed_consolidation" or force,
+            )
         memory_after = self.memory.get_runtime_snapshot()
         memory_diff = self._diff_memory_snapshot(memory_before, memory_after)
 
@@ -15463,6 +15548,12 @@ class UruhaBrainV4_Mac:
         event = self.ingest_event(user_input)
         tick_result = self.cognitive_tick(event)
         return self.emit_response_if_ready(event, tick_result)
+
+    def get_compute_ledger_snapshot(self):
+        ledger = getattr(self, "compute_ledger", None)
+        if ledger is None:
+            return None
+        return ledger.snapshot()
 
     def live(self, user_input):
         self.enqueue_user_input(user_input)

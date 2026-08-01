@@ -2,6 +2,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -288,9 +289,30 @@ class PublicPersonaContractV3Tests(unittest.TestCase):
 
     def test_harness_lock_hashes_match(self):
         lock = json.loads(LOCK_PATH.read_text(encoding="utf-8"))
+        history = subprocess.run(
+            [
+                "git",
+                "log",
+                "--diff-filter=A",
+                "--format=%H",
+                "--",
+                str(LOCK_PATH.relative_to(ROOT)),
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+        self.assertTrue(history)
+        frozen_commit = history[-1]
         for artifact in lock["frozen_artifacts"].values():
-            path = ROOT / artifact["path"]
-            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), artifact["sha256"])
+            frozen = subprocess.run(
+                ["git", "show", f"{frozen_commit}:{artifact['path']}"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+            ).stdout
+            self.assertEqual(hashlib.sha256(frozen).hexdigest(), artifact["sha256"])
 
 
 if __name__ == "__main__":

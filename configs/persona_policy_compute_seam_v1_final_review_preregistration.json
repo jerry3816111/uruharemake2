@@ -1,0 +1,24 @@
+{
+  "schema": "uruha_persona_policy_compute_seam_final_review_preregistration_v1",
+  "experiment_id": "persona_policy_compute_seam_v1_final_review",
+  "status": "frozen_after_pr_review_findings_before_final_review_commit",
+  "review_findings": [
+    "Compute parity compared tool count but not the exact Function Calling schema or tool choice.",
+    "Compute parity compared decoding limits but did not require observed prompt-token equality.",
+    "Local RightBrain generation did not record the active LoRA adapter name.",
+    "The compatibility result test incorrectly assumed source-bound historical artifacts must equal future working-tree files."
+  ],
+  "single_changed_variable": "Strengthen compute-envelope identity and historical-source verification only; persona policies, prompts, fixed replies, models, memory and default activation remain unchanged.",
+  "success_requires": {
+    "expanded_related_regression_test_count_exact": 172,
+    "expanded_related_regression_pass_count_exact": 172,
+    "seam_test_count_exact": 17,
+    "tool_schema_mismatch_is_rejected": true,
+    "prompt_token_mismatch_is_rejected": true,
+    "rightbrain_adapter_name_is_recorded": true,
+    "actual_model_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "runtime_default_behavior_change_count_exact": 0
+  },
+  "evidence_boundary": "This review closes compute-accounting confounds needed for future matched VRM and Function Calling experiments. It does not evaluate persona similarity or activate the provider in production."
+}
