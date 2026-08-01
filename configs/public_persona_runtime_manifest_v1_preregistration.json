@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_public_persona_runtime_manifest_preregistration_v1",
+  "experiment_id": "public_persona_runtime_manifest_v1",
+  "status": "preregistered_before_runtime_manifest_construction_or_control_adapter_implementation",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "persona_evaluation_protocol": {
+      "path": "configs/public_persona_fidelity_eval_v1_result_lock.json",
+      "sha256": "af05dd9c517061a32c40a7a03ba1082b69bc1d01f11a02ab0d8f9be3759422ba"
+    },
+    "target_calibration_framework": {
+      "path": "configs/public_persona_target_calibration_coding_v9_result_lock.json",
+      "sha256": "3572c8b5c5b125eac479e6c4082ee410add90b4ed8300c8ced6d3b63aea660fd"
+    }
+  },
+  "current_problem": "人格評測 V1 只用文字描述完整系統與公平對照組，尚未綁定目前 Web 聊天真正執行的模型、模組、狀態寫入、背景工作與資源條件。若直接產生分數，可能比較到不同模型呼叫數、不同 persona 資訊、不同記憶狀態或不同副作用，無法把差異歸因於認知架構或目標人格。",
+  "falsifiable_hypothesis": "若從正式 Web 入口與核心程式的 AST、環境預設值、本機 Ollama 模型、LoRA 訓練紀錄及 selector artifact 建立雜湊綁定 manifest，則應能重建目前 S0 的真實執行條件，區分同步使用者回合與非同步背景流程，並在缺少公平注入介面時阻擋 C1 或 C2，而不執行模型、不讀取 holdout、不修改 runtime。",
+  "single_changed_variable": "add an auditable runtime and condition manifest construction layer only; production prompts, response logic, memory, model weights, adapters, selector behavior, Web UI and holdout content remain unchanged",
+  "source_audit_contract": {
+    "production_entrypoint": "uruha_web_ui.RuntimeManager.get_brain",
+    "production_controller": "uruha_brain_mac.UruhaBrainV4_Mac",
+    "synchronous_turn_entrypoint": "UruhaBrainV4_Mac.run_turn_debug",
+    "rightbrain_default_must_be_derived_from_code": true,
+    "reflection_default_must_be_derived_from_code": true,
+    "background_cycle_must_be_separated_from_synchronous_turn": true,
+    "source_bindings_sha256_required": true,
+    "local_model_and_adapter_evidence_required": true,
+    "environment_snapshot_required": true
+  },
+  "condition_contract": {
+    "path": "configs/public_persona_runtime_condition_contract_v1.json",
+    "required_condition_ids": [
+      "s0_current_full_cognitive_persona",
+      "c1_matched_direct_control",
+      "c2_matched_persona_disabled",
+      "c3_prompt_only_lower_bound"
+    ],
+    "primary_fair_control_id": "c1_matched_direct_control",
+    "persona_specificity_control_id": "c2_matched_persona_disabled",
+    "lower_bound_is_not_primary_control": true,
+    "blocked_condition_must_not_be_reported_as_executed": true
+  },
+  "evaluation_session_contract": {
+    "naturalistic_and_counterfactual_mode": "fresh isolated brain and temporary empty production-independent memory per scenario; no async runtime, background consolidation, proactive output, TTS, VRM or tool execution",
+    "dynamic_episode_mode": "fresh isolated brain per episode; ordered turns and within-episode state writes retained; no cross-episode state, async background cycle, proactive output, TTS, VRM or tool execution",
+    "production_memory_path_forbidden": true,
+    "final_holdout_content_access": false,
+    "model_execution": false
+  },
+  "resource_matching_contract": {
+    "same_physical_machine": true,
+    "same_local_model_artifact": true,
+    "same_allowed_persona_evidence": true,
+    "same_user_and_episode_context": true,
+    "same_total_input_token_budget": true,
+    "same_total_output_token_budget": true,
+    "same_per_item_model_call_count": true,
+    "same_decoding_or_explicit_deterministic_equivalent": true,
+    "same_postprocessing_and_action_permissions": true,
+    "same_latency_and_peak_memory_measurement": true,
+    "different_fields_must_be_declared_before_execution": true
+  },
+  "construction_success_requires": {
+    "source_check_count_min": 14,
+    "all_source_checks_pass": true,
+    "s0_executable_now": true,
+    "c1_and_c2_status_matches_actual_code": true,
+    "condition_count_exact": 4,
+    "model_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "runtime_change_count_exact": 0,
+    "prompt_change_count_exact": 0,
+    "model_weight_change_count_exact": 0,
+    "persona_score_count_exact": 0
+  },
+  "decision_policy": {
+    "construction_pass": "freeze_current_s0_runtime_and_authorize_persona_policy_injection_seam_design_only",
+    "construction_fail": "repair_runtime_audit_before_any_persona_model_comparison",
+    "matched_control_execution": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "本輪只凍結目前正式聊天管線的可重建執行實況與公平對照條件。若 C1 或 C2 因 persona 邏輯分散或資源無法配對而被阻擋，這是正式結果而不是失敗資料；本輪不產生回答、人格分數、能力增益、訓練授權或 production 上線授權。"
+}

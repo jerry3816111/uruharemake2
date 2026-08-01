@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_public_persona_runtime_manifest_harness_lock_v1",
+  "experiment_id": "public_persona_runtime_manifest_v1",
+  "status": "frozen_before_runtime_manifest_construction_control_adapter_or_model_execution",
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_runtime_manifest_v1_preregistration.json",
+      "sha256": "9f438269ccb9db350f8903e824eda62e58a1e8cf9fd47aa07ca851b1815a5b1d"
+    },
+    "condition_contract": {
+      "path": "configs/public_persona_runtime_condition_contract_v1.json",
+      "sha256": "1b66fec697af1de8bcf232df54580e4f89d768e7ef5ac3c6f20ad1b18857c113"
+    },
+    "construction_script": {
+      "path": "public_persona_runtime_manifest_v1.py",
+      "sha256": "09d5d8b967e43cfb5aad5d54063fc3db98aa7fbab6f03023a400b23087273ce2"
+    },
+    "construction_tests": {
+      "path": "test_public_persona_runtime_manifest_v1.py",
+      "sha256": "bc071ad0857c5c3cbb89c4d9357d096df5d33de55cdb625fb535eabf6de5a0fd"
+    }
+  },
+  "formal_commands": [
+    "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_runtime_manifest_v1.py",
+    "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python public_persona_runtime_manifest_v1.py build --overwrite --require-pass"
+  ],
+  "expected_test_count": 14,
+  "expected_construction_check_count_min": 20,
+  "expected_condition_count": 4,
+  "expected_executable_condition_count": 1,
+  "expected_blocked_condition_count": 2,
+  "expected_model_call_count": 0,
+  "expected_holdout_content_review_count": 0,
+  "expected_production_memory_write_count": 0,
+  "expected_runtime_change_count": 0,
+  "matched_control_execution_authorized": false,
+  "model_execution_authorized": false,
+  "runtime_change_authorized": false,
+  "prompt_change_authorized": false,
+  "model_training_authorized": false,
+  "sealed_holdout_unsealing_authorized": false,
+  "formal_persona_scoring_authorized": false,
+  "evidence_boundary": "This lock freezes only source auditing and runtime-condition construction. It does not make blocked controls executable, run a model, change production behavior, access holdout content, or establish persona fidelity."
+}
