@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_persona_surface_provider_migration_preregistration_v1",
+  "experiment_id": "persona_surface_provider_migration_v1",
+  "hypothesis": "Structured target and neutral persona providers can realize a cognitive plan through the same local-model surface path without reaching legacy fixed reply families, while the default and explicit legacy providers remain behaviorally identical.",
+  "single_changed_variable": "persona_surface_provider_mode",
+  "conditions": {
+    "structured_target": "structured target public-persona policy plus strict local-model surface generation",
+    "structured_neutral": "equal-shape neutral policy plus the same strict local-model surface generation",
+    "default_legacy": "pre-migration default deterministic surface behavior",
+    "explicit_legacy": "explicit legacy provider using the same deterministic surface behavior"
+  },
+  "controls": [
+    "same cognitive plan",
+    "same memory payload",
+    "same local base model identity",
+    "same candidate count and decoding schedule",
+    "same semantic and surface candidate gates",
+    "same context and output budgets",
+    "no benchmark, holdout, target utterance, or production memory access"
+  ],
+  "construction_success_requires": {
+    "structured_success_case_count_exact": 2,
+    "structured_failed_closed_case_count_exact": 6,
+    "structured_legacy_fixed_surface_access_count_exact": 0,
+    "structured_reachable_fixed_family_entry_count_exact": 0,
+    "legacy_runtime_pair_count_exact": 3,
+    "legacy_runtime_mismatch_count_exact": 0,
+    "compute_parity_pass": true,
+    "actual_local_generation_call_count_exact": 4,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "persona_score_count_exact": 0
+  },
+  "failure_conditions": [
+    "a structured condition calls a legacy template, fallback, enrichment, speech-variant, or dynamic-anchor surface producer",
+    "a structured condition returns a deterministic fixed reply when the model is missing or every candidate is rejected",
+    "target and neutral conditions use different compute schedules",
+    "default and explicit legacy runtime outputs differ",
+    "any benchmark or target-person utterance is used as a construction fixture"
+  ],
+  "authorization_on_pass": "authorize_fresh_local_model_target_vs_neutral_surface_pilot_only",
+  "non_authorizations": [
+    "formal persona similarity evaluation",
+    "sealed holdout unsealing",
+    "human blind rating",
+    "production default enablement",
+    "public persona fidelity claim",
+    "private person copy claim"
+  ]
+}
