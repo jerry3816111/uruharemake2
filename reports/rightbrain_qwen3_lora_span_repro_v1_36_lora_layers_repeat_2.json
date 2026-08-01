@@ -1,0 +1,103 @@
+{
+  "schema": "uruha_rightbrain_qwen3_lora_span_repro_repeat_v1",
+  "experiment_id": "rightbrain_qwen3_lora_span_repro_v1",
+  "lora_enabled_layer_count": 36,
+  "repeat": 2,
+  "execution_success": true,
+  "environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "runtime_contract": {
+    "device": "Device(gpu, 0)",
+    "fixed_transformer_layers": 36,
+    "gradient_checkpointing_enabled": false,
+    "optimizer_instantiated": false,
+    "optimizer_steps": 0
+  },
+  "base_contract": {
+    "layer_count": 36,
+    "selected_weight_tensor_count": 396,
+    "parameter_count": 3633509376,
+    "dtypes": [
+      "mlx.core.bfloat16"
+    ],
+    "sha256": "5de22a81312b2b9272cd3e7059c77edf8f2ce51b120ca4ef8fc6ede92bf3e92a",
+    "exact": true
+  },
+  "adapter_contract": {
+    "span": 36,
+    "tensor_count": 504,
+    "parameter_count": 66060288,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "sha256": "b1c06f6c4aa52923f7b0fabe4cbe7fa0c31b9b4bcf18382da0ee2e9dd7f864c3",
+    "first_layer_tensor_count": 14,
+    "first_layer_sha256": "221d7b3e1f72b9ff4c2b88e3a61f88b986ad04806a7609147c813a890debf6c9",
+    "exact": true
+  },
+  "input_contract": {
+    "sha256": "0b3377a5bf9793b57a7f4bb137e13e869721d4a1f41ab489ecffaedb1ccf3a96",
+    "shape": [
+      1,
+      64,
+      2560
+    ]
+  },
+  "loss": 308.2817077636719,
+  "gradient": {
+    "norm": 1161.4170943774723,
+    "finite_elements": 66060288,
+    "total_elements": 66060288,
+    "all_elements_finite": true,
+    "sha256": "177c1865a4a6838bb46f01d56151d3f5b689ce34b766fc932fd780fa7d90819f",
+    "profile": {
+      "down_proj.lora_a": 0.0,
+      "down_proj.lora_b": 261.50651447824885,
+      "gate_proj.lora_a": 0.0,
+      "gate_proj.lora_b": 422.85207433831306,
+      "k_proj.lora_a": 0.0,
+      "k_proj.lora_b": 519.1951420720528,
+      "o_proj.lora_a": 0.0,
+      "o_proj.lora_b": 273.5603824567543,
+      "q_proj.lora_a": 0.0,
+      "q_proj.lora_b": 517.7914151665761,
+      "up_proj.lora_a": 0.0,
+      "up_proj.lora_b": 494.10824238401614,
+      "v_proj.lora_a": 0.0,
+      "v_proj.lora_b": 495.0256054107717
+    }
+  },
+  "parameter_integrity": {
+    "before_sha256": "b1c06f6c4aa52923f7b0fabe4cbe7fa0c31b9b4bcf18382da0ee2e9dd7f864c3",
+    "after_sha256": "b1c06f6c4aa52923f7b0fabe4cbe7fa0c31b9b4bcf18382da0ee2e9dd7f864c3",
+    "unchanged": true
+  },
+  "resource": {
+    "duration_seconds": 10.89,
+    "mlx_active_memory_bytes": 7795828748,
+    "mlx_cache_memory_bytes": 763076916,
+    "mlx_peak_memory_bytes": 8242466180,
+    "process_peak_resident_memory_bytes": 8385380352
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "lm_head_or_cross_entropy_included": false,
+    "scope": "qwen3_lora_span_localization_only"
+  }
+}
