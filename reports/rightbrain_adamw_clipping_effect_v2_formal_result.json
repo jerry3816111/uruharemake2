@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_rightbrain_adamw_clipping_effect_formal_result_v2",
+  "experiment_id": "rightbrain_adamw_clipping_effect_v2",
+  "recovery_amendment": "configs/rightbrain_adamw_clipping_effect_v2_protocol_amendment_01.json",
+  "raw_result": "reports/rightbrain_adamw_clipping_effect_v2_result.json",
+  "validation": {
+    "passed": true,
+    "checks": {
+      "bindings": true,
+      "raw_valid": true,
+      "raw_material_effect": true,
+      "raw_outcome": true,
+      "raw_boolean_exposes_mismatch": true,
+      "raw_weights_unchanged": true,
+      "zero_optimizer_steps": true
+    },
+    "bindings": [
+      {
+        "path": "configs/rightbrain_adamw_clipping_effect_v2_preregistration.json",
+        "expected_sha256": "ae24e8f9ec7d53ff23b603e350d44368e5b2e974ee6fdafe6bebdf766879ea0b",
+        "actual_sha256": "ae24e8f9ec7d53ff23b603e350d44368e5b2e974ee6fdafe6bebdf766879ea0b",
+        "match": true
+      },
+      {
+        "path": "configs/rightbrain_adamw_clipping_effect_v2_execution_lock.json",
+        "expected_sha256": "c06415d5f0e1ec508ef2f1c6f0a5687e20c31b71dcc7940808dfba6370abafc3",
+        "actual_sha256": "c06415d5f0e1ec508ef2f1c6f0a5687e20c31b71dcc7940808dfba6370abafc3",
+        "match": true
+      },
+      {
+        "path": "diagnose_rightbrain_adamw_clipping_effect_v2.py",
+        "expected_sha256": "4ec3257f40f28b2ba45ce68c3a3863e9c3e146b5627b162f9ff9fda1147bfefa",
+        "actual_sha256": "4ec3257f40f28b2ba45ce68c3a3863e9c3e146b5627b162f9ff9fda1147bfefa",
+        "match": true
+      },
+      {
+        "path": "reports/rightbrain_adamw_clipping_effect_v2_result.json",
+        "expected_sha256": "dd0302b49043c4a107fcc68fe5a075eb941e86bde1179ca09ae084b399160e65",
+        "actual_sha256": "dd0302b49043c4a107fcc68fe5a075eb941e86bde1179ca09ae084b399160e65",
+        "match": true
+      },
+      {
+        "path": "reports/rightbrain_adamw_clipping_effect_v2_result.md",
+        "expected_sha256": "6a56e4e5898879f9ba3ec1064b11cb6cebb2c96f1f3ea44b577e41c625a41ffe",
+        "actual_sha256": "6a56e4e5898879f9ba3ec1064b11cb6cebb2c96f1f3ea44b577e41c625a41ffe",
+        "match": true
+      }
+    ]
+  },
+  "preserved_metrics": {
+    "gradient": {
+      "total_norm": 2.878972291946411,
+      "control_norm": 2.878972291946411,
+      "relative_error_vs_control": 0.0,
+      "parameter_count_with_gradient": 392,
+      "trainable_parameter_tensor_count": 392
+    },
+    "clip_coefficient": 0.10420381489443291,
+    "overall": {
+      "elements": 80740352,
+      "parameter_l2": 45.7251880833078,
+      "total_update_l2_unclipped": 0.002326008226593545,
+      "total_update_l2_clipped": 0.0018769682644330804,
+      "clipped_to_unclipped_l2_ratio": 0.8069482484943371,
+      "difference_l2": 0.0007718036701102765,
+      "relative_l2_difference": 0.331814677732498,
+      "cosine_similarity": 0.9548719501305045,
+      "relative_parameter_l2_change_unclipped": 5.0869298172283864e-05,
+      "relative_parameter_l2_change_clipped": 4.104889106226064e-05,
+      "adaptive_update_l2_unclipped": 0.002326010355214646,
+      "adaptive_update_l2_clipped": 0.001876969913907169,
+      "adaptive_relative_l2_difference": 0.33181437407433284,
+      "weight_decay_update_l2": 2.743511307842919e-07,
+      "elements_with_more_than_1pct_relative_update_difference": 79045844,
+      "fraction_with_more_than_1pct_relative_update_difference": 0.9790128732656503
+    },
+    "parameter_integrity": {
+      "sha256_before_backward": "34e152cbb49b3836de894db9707469bf260f510693de07d9606d062b1c9f22b7",
+      "sha256_after_simulation": "34e152cbb49b3836de894db9707469bf260f510693de07d9606d062b1c9f22b7",
+      "unchanged": true
+    }
+  },
+  "raw_decision": {
+    "outcome": "first_step_clipping_has_material_effect",
+    "hypothesis_confirmed": false,
+    "material_effect": true,
+    "maximum_positive_authorization": "authorize_preregistration_of_one_matched_small_training_pilot_only",
+    "authorize_model_training": false,
+    "authorize_training_parameter_change": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false,
+    "valid": true
+  },
+  "formal_decision": {
+    "valid": true,
+    "outcome": "first_step_clipping_has_material_effect",
+    "hypothesis_confirmed": true,
+    "material_effect": true,
+    "maximum_positive_authorization": "authorize_preregistration_of_one_matched_small_training_pilot_only",
+    "authorize_model_training": false,
+    "authorize_training_parameter_change": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping_call": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_one_matched_clipped_vs_unclipped_small_training_pilot_only"
+  }
+}
