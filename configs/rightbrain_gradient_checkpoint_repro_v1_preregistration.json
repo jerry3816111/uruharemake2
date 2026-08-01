@@ -1,0 +1,113 @@
+{
+  "schema": "uruha_rightbrain_gradient_checkpoint_repro_preregistration_v1",
+  "experiment_id": "rightbrain_gradient_checkpoint_repro_v1",
+  "status": "frozen_before_any_checkpoint_off_backward_pass",
+  "research_question": "On the exact first DataLoader batch that invalidated max-norm pilot v2, does changing only gradient checkpointing from enabled to disabled make the accumulated gradient reproducible across three isolated MPS processes within the 32 GiB local-machine deployment constraint?",
+  "problem": {
+    "baseline_adapter_dropout": 0.08,
+    "baseline_gradient_checkpointing": true,
+    "baseline_first_window_losses_match": true,
+    "baseline_control_gradient_norm": 3.3520023822784424,
+    "baseline_treatment_gradient_norm": 534403.8125,
+    "dropout_zero_probe_outcome": "dropout_zero_does_not_restore_gradient_reproducibility",
+    "candidate_change": "gradient checkpointing enabled -> disabled only",
+    "adapter_dropout_remains": 0.08,
+    "reason": "Removing LoRA dropout did not stabilize backward. Gradient checkpointing recomputes activations during backward and is now the highest-value remaining single mechanism to isolate."
+  },
+  "frozen_bindings": [
+    {
+      "path": "configs/rightbrain_gradient_dropout_repro_v1_result_lock.json",
+      "sha256": "df4cc5b3e3bbae9333365b8216ea4591363fd55b8107043a86743b64d1052ffb"
+    },
+    {
+      "path": "reports/rightbrain_gradient_dropout_repro_v1_result.json",
+      "sha256": "3ac482d9319cf6dd499284a65104df3cc3148de351983f781a7413e9e459a315"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    }
+  ],
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "initial_adapter": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  },
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [63, 50, 60, 77, 2, 59, 78, 36],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_rank": 32,
+    "adapter_alpha": 24,
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": false,
+    "dtype": "torch.bfloat16",
+    "norm_foreach": false,
+    "driver_allocated_memory_bytes_maximum": 32212254720
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "loss_vectors_exact_across_repetitions": true,
+      "gradient_norm_coefficient_of_variation_maximum": 0.001,
+      "gradient_norm_max_to_min_ratio_maximum": 1.001,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "mps_vs_cpu_float64_relative_error_maximum_each": 0.000001,
+      "all_gradient_elements_finite": true,
+      "parameters_unchanged": true,
+      "driver_allocated_memory_within_local_limit": true
+    },
+    "reject_if_any": {
+      "gradient_norm_max_to_min_ratio_minimum": 1.01,
+      "minimum_pairwise_group_profile_cosine_below": 0.999,
+      "any_nonfinite_gradient": true,
+      "any_parameter_change": true,
+      "any_out_of_memory_failure": true,
+      "driver_allocated_memory_above_local_limit": true
+    },
+    "pass_interpretation": "Authorize preregistration of max-norm pilot v3 with checkpointing disabled and dropout 0.08.",
+    "failure_interpretation": "Do not train v3; next isolate bfloat16 MPS backward or redesign the training microbatch/token contract."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_checkpointing_disabled_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_gradient_checkpoint_repro_v1_repeat_",
+    "aggregate_json": "reports/rightbrain_gradient_checkpoint_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_gradient_checkpoint_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_gradient_checkpoint_repro_v1_result_lock.json"
+  }
+}
