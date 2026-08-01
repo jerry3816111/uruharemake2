@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_rightbrain_role_curriculum_training_pilot_recovery_amendment_v1",
+  "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
+  "amendment_id": "condition_isolated_evaluation_recovery_01",
+  "status": "frozen_after_monolithic_runner_exit_and_before_any_recovery_evaluation",
+  "observed_failure": {
+    "original_command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 /Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python run_rightbrain_role_curriculum_training_pilot_v1.py --execute",
+    "preflight_passed": true,
+    "training_conditions_completed": [
+      "policy_permuted_control",
+      "policy_aligned_treatment"
+    ],
+    "original_process_pid": 58604,
+    "original_process_exited_without_formal_result": true,
+    "formal_result_path_absent": "reports/rightbrain_role_curriculum_training_pilot_v1_result.json",
+    "durable_per_condition_evaluation_results_written": 0,
+    "macos_crash_or_memory_termination_report_found": false,
+    "root_cause": "unconfirmed",
+    "plausible_but_unproven_cause": "Three sequential 7B PEFT model evaluations in one Python/MPS process may not have fully released prior model memory before the next adapter load."
+  },
+  "preserved_training_artifacts": {
+    "policy_permuted_control": {
+      "path": "uruha_rightbrain_role_curriculum_v1_policy_permuted_control",
+      "adapter_model_sha256": "c9085e170d3c2420f67d57637f95c92d71fc37f0982a6c1cb4d133353e59df5c",
+      "micro_steps": 80,
+      "optimizer_updates": 10,
+      "nonfinite_events": 0
+    },
+    "policy_aligned_treatment": {
+      "path": "uruha_rightbrain_role_curriculum_v1_policy_aligned_treatment",
+      "adapter_model_sha256": "ec43ccf80fb000f9d9cabf1dd19a7e969eb52a35b3f4083e39412b37f5ef66eb",
+      "micro_steps": 80,
+      "optimizer_updates": 10,
+      "nonfinite_events": 0
+    }
+  },
+  "recovery_protocol": {
+    "model_training": false,
+    "optimizer_or_backward_calls": 0,
+    "reuse_completed_training_artifacts": true,
+    "discard_all_non_durable_in_memory_evaluation_progress": true,
+    "rerun_all_three_evaluation_conditions_from_the_first_item": true,
+    "condition_order": [
+      "initial_v10_reference",
+      "policy_permuted_control",
+      "policy_aligned_treatment"
+    ],
+    "one_fresh_python_process_per_condition": true,
+    "condition_result_written_atomically_before_next_condition": true,
+    "evaluation_data_seeds_decoding_metrics_and_thresholds_unchanged": true,
+    "production_memory_access": false,
+    "production_runtime_change": false
+  },
+  "condition_result_paths": {
+    "initial_v10_reference": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_initial_v10_reference.json",
+    "policy_permuted_control": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_policy_permuted_control.json",
+    "policy_aligned_treatment": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_policy_aligned_treatment.json"
+  },
+  "evidence_boundary": "Recovery may complete the originally preregistered evaluation using the already completed exact training artifacts. It may not change the trained weights, data, prompts, seeds, decoding, scoring, thresholds, condition order, production runtime, or maximum positive authorization."
+}

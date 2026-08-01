@@ -1,0 +1,2664 @@
+{
+  "schema": "uruha_rightbrain_role_curriculum_training_pilot_condition_evaluation_v1",
+  "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
+  "condition": "policy_permuted_control",
+  "execution_mode": "fresh_python_process_after_monolithic_runner_exit",
+  "inputs": {
+    "recovery_amendment": {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_recovery_amendment_01.json",
+      "sha256": "b30d397f2cb4269718d67044e88c0ad597d86907536ece27de2c119afc9af499"
+    },
+    "recovery_lock": {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_recovery_lock.json",
+      "sha256": "da2db249c33ed278e373a5fa537b584c9d72f69eceb9987693bec94582fe205b"
+    },
+    "holdout": {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_holdout.json",
+      "sha256": "e8c5b5725a56754fb00b02c3e2f1a92a2c3faf153b24f0475e3f74314d5d3d11"
+    }
+  },
+  "evaluation": {
+    "condition": "policy_permuted_control",
+    "adapter": {
+      "path": "uruha_rightbrain_role_curriculum_v1_policy_permuted_control",
+      "adapter_config_sha256": "359de1edb54bfe2cbd7d4e28168495ec085fe0314856a94e747db50dcedd8703",
+      "adapter_model_sha256": "c9085e170d3c2420f67d57637f95c92d71fc37f0982a6c1cb4d133353e59df5c"
+    },
+    "policy_discrimination": {
+      "comparison_count": 40,
+      "bidirectional_policy_discrimination_accuracy": 0.5,
+      "target_provider_discrimination_accuracy": 0.0,
+      "neutral_provider_discrimination_accuracy": 1.0,
+      "mean_signed_policy_margin": 0.06343706995248795,
+      "per_context_accuracy": {
+        "fatigue_update_with_near_term_plan": 0.5,
+        "functional_stream_start_notification": 0.5,
+        "informal_public_self_introduction": 0.5,
+        "minor_delay_then_positive_promotion": 0.5,
+        "minor_health_uncertainty_affecting_schedule": 0.5
+      },
+      "per_memory_mode_accuracy": {
+        "background_only": 0.5,
+        "do_not_mention": 0.5,
+        "explicit_allowed": 0.5,
+        "no_memory": 0.5
+      },
+      "rows": [
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -5.7568793296813965,
+            "structured_neutral_dialogue": -0.8737963438034058
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": -4.883082985877991,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -5.921940803527832,
+            "structured_neutral_dialogue": -0.8195050954818726
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": 5.1024357080459595,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.5482900142669678,
+            "structured_neutral_dialogue": -2.2706055641174316
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 17
+          },
+          "signed_policy_margin": -1.2776844501495361,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.6492488384246826,
+            "structured_neutral_dialogue": -2.1526973247528076
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 17
+          },
+          "signed_policy_margin": 1.496551513671875,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.303487300872803,
+            "structured_neutral_dialogue": -0.8179378509521484
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 24,
+            "structured_neutral_dialogue": 18
+          },
+          "signed_policy_margin": -3.4855494499206543,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.405564785003662,
+            "structured_neutral_dialogue": -0.7221224308013916
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 24,
+            "structured_neutral_dialogue": 18
+          },
+          "signed_policy_margin": 3.6834423542022705,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.104521751403809,
+            "structured_neutral_dialogue": -0.8304965496063232
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 15
+          },
+          "signed_policy_margin": -3.2740252017974854,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.597972869873047,
+            "structured_neutral_dialogue": -0.8476629257202148
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 15
+          },
+          "signed_policy_margin": 3.750309944152832,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.4854934215545654,
+            "structured_neutral_dialogue": -1.0868520736694336
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": -2.398641347885132,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.5385894775390625,
+            "structured_neutral_dialogue": -1.0187207460403442
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 20,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": 2.5198687314987183,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.381279230117798,
+            "structured_neutral_dialogue": -1.4994710683822632
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": -1.8818081617355347,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.4437849521636963,
+            "structured_neutral_dialogue": -1.4734585285186768
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": 1.9703264236450195,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.578731536865234,
+            "structured_neutral_dialogue": -1.4041757583618164
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 16,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": -3.174555778503418,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -4.654019355773926,
+            "structured_neutral_dialogue": -1.3618489503860474
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 16,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": 3.2921704053878784,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.2846720218658447,
+            "structured_neutral_dialogue": -1.1609493494033813
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 22,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": -2.1237226724624634,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.3630669116973877,
+            "structured_neutral_dialogue": -1.0910829305648804
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 22,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": 2.2719839811325073,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.112983226776123,
+            "structured_neutral_dialogue": -1.3414757251739502
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 19,
+            "structured_neutral_dialogue": 20
+          },
+          "signed_policy_margin": -1.7715075016021729,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.231920003890991,
+            "structured_neutral_dialogue": -1.4236708879470825
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 19,
+            "structured_neutral_dialogue": 20
+          },
+          "signed_policy_margin": 1.8082491159439087,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.8875795602798462,
+            "structured_neutral_dialogue": -1.7364860773086548
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": -0.1510934829711914,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.040647506713867,
+            "structured_neutral_dialogue": -1.8303637504577637
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": 0.21028375625610352,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.26041316986084,
+            "structured_neutral_dialogue": -1.1374248266220093
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 16,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": -2.1229883432388306,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -3.453413724899292,
+            "structured_neutral_dialogue": -1.1796091794967651
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 16,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": 2.273804545402527,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.6200621128082275,
+            "structured_neutral_dialogue": -1.1229034662246704
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 19,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": -1.4971586465835571,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.7214725017547607,
+            "structured_neutral_dialogue": -1.1553996801376343
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 19,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": 1.5660728216171265,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.4675464630126953,
+            "structured_neutral_dialogue": -1.5852702856063843
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 22
+          },
+          "signed_policy_margin": -0.882276177406311,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.605865240097046,
+            "structured_neutral_dialogue": -1.6608067750930786
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 23,
+            "structured_neutral_dialogue": 22
+          },
+          "signed_policy_margin": 0.9450584650039673,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.732577323913574,
+            "structured_neutral_dialogue": -1.63063645362854
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 22,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": -1.1019408702850342,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.8176987171173096,
+            "structured_neutral_dialogue": -1.705230712890625
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 22,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": 1.1124680042266846,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.2770683765411377,
+            "structured_neutral_dialogue": -1.4551489353179932
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 25,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": -0.8219194412231445,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.2994425296783447,
+            "structured_neutral_dialogue": -1.4349573850631714
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 25,
+            "structured_neutral_dialogue": 23
+          },
+          "signed_policy_margin": 0.8644851446151733,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.849393606185913,
+            "structured_neutral_dialogue": -2.2357828617095947
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 21,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": -0.6136107444763184,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.9487438201904297,
+            "structured_neutral_dialogue": -2.2392189502716064
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 21,
+            "structured_neutral_dialogue": 21
+          },
+          "signed_policy_margin": 0.7095248699188232,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.6126776933670044,
+            "structured_neutral_dialogue": -0.7542386054992676
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 14,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": -0.8584390878677368,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.7142202854156494,
+            "structured_neutral_dialogue": -0.8047768473625183
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 14,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": 0.9094434380531311,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.0825092792510986,
+            "structured_neutral_dialogue": -1.641113042831421
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 17,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": -0.44139623641967773,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.0181708335876465,
+            "structured_neutral_dialogue": -1.5538129806518555
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 17,
+            "structured_neutral_dialogue": 19
+          },
+          "signed_policy_margin": 0.464357852935791,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.9184209108352661,
+            "structured_neutral_dialogue": -0.9533608555793762
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 13,
+            "structured_neutral_dialogue": 15
+          },
+          "signed_policy_margin": -0.9650600552558899,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -2.129384994506836,
+            "structured_neutral_dialogue": -0.9364199042320251
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 13,
+            "structured_neutral_dialogue": 15
+          },
+          "signed_policy_margin": 1.1929650902748108,
+          "correct": true
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "desired_reference_provider": "structured_target_public_persona",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.5339252948760986,
+            "structured_neutral_dialogue": -0.9434150457382202
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 14,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": -0.5905102491378784,
+          "correct": false
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "desired_reference_provider": "structured_neutral_dialogue",
+          "reference_average_log_prob": {
+            "structured_target_public_persona": -1.7753537893295288,
+            "structured_neutral_dialogue": -1.0647022724151611
+          },
+          "completion_token_count": {
+            "structured_target_public_persona": 14,
+            "structured_neutral_dialogue": 16
+          },
+          "signed_policy_margin": 0.7106515169143677,
+          "correct": true
+        }
+      ]
+    },
+    "fresh_generation": {
+      "generation_count": 80,
+      "strict_candidate_gate_pass_rate": 0.15,
+      "semantic_contract_pass_rate": 0.15,
+      "memory_policy_pass_rate": 0.15,
+      "language_or_script_pollution_rate": 0.4875,
+      "polite_register_drift_rate": 0.3,
+      "private_memory_intrusion_count": 0,
+      "normalized_output_unique_rate": 0.1375,
+      "target_neutral_pair_difference_rate": 0.075,
+      "public_persona_v4_contract_pass_rate_descriptive_only": 0.1,
+      "median_generation_latency_seconds": 9.29901314608287,
+      "p95_generation_latency_seconds": 11.795873542083427,
+      "peak_process_resident_memory_bytes": 1275641856,
+      "rejection_reason_counts": {
+        "semantic_slots_missing:1/2": 3,
+        "cjk_language_leak": 6,
+        "nonstandard_cjk_surface": 9,
+        "unexpected_ascii_leak": 33,
+        "semantic_slots_missing:0/2": 3,
+        "polite_tone_drift": 24,
+        "must_avoid_violation": 14,
+        "semantic_slots_missing:2/3": 36,
+        "unicode_replacement_character": 2,
+        "semantic_slots_missing:0/3": 3,
+        "semantic_slots_missing:1/3": 9,
+        "over_max_chars": 2,
+        "ascii_symbol_artifact": 4
+      },
+      "rows": [
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 658,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム好きの僕んだよ。気楽に寛いで遊びdecessor() predecessor() predecessor()) predecessor()前辈()(前辈)前辈()前辈()前任()前任(前任) predecessor()前身()前身()- predecessor()前任 predecessors()前任(predecessors) predecessor()(pre",
+          "visible_reply": "ゲーム好きの僕んだよ。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:1/2"
+          ],
+          "latency_seconds": 17.94530125008896
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 658,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "推理ゲーム大好きだよ！気楽に寛いで遊ばせて欲しいね。",
+          "visible_reply": "推理ゲーム大好きだよ！気楽に寛いで遊ばせて欲しいね。",
+          "normalized_output": "推理ゲーム大好きだよ気楽に寛いで遊ばせて欲しいね",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [],
+          "latency_seconds": 9.354212458012626
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 657,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム好きの僕んだよ。気楽に寛いでいこうね。",
+          "visible_reply": "ゲーム好きの僕んだよ。気楽に寛いでいこうね。",
+          "normalized_output": "ゲーム好きの僕んだよ気楽に寛いでいこうね",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [],
+          "latency_seconds": 9.107262582983822
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_no_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 657,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "推理ゲーム大好きなんだよ。気楽に寛いで遊ばない？",
+          "visible_reply": "推理ゲーム大好きなんだよ。気楽に寛いで遊ばない？",
+          "normalized_output": "推理ゲーム大好きなんだよ気楽に寛いで遊ばない",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [],
+          "latency_seconds": 8.962986832950264
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 742,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "前 talked about って协力游戏喜欢，一起玩怎么样？ 新的队友求加哦！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/2"
+          ],
+          "latency_seconds": 9.927875416120514
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 742,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "前に話してた协力游戏超喜欢，一起玩怎么样？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:0/2"
+          ],
+          "latency_seconds": 8.47806950006634
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 741,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "前の協力ゲー好きだよ。一緒に遊びませんか？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:1/2"
+          ],
+          "latency_seconds": 8.427362916991115
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_explicit_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 741,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "前に話してた协力游戏挺喜欢的，一起玩怎么样？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:0/2"
+          ],
+          "latency_seconds": 8.62914124992676
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 727,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲームの話し合い大好きだよ。気楽に寛いでgether如何？",
+          "visible_reply": "ゲームの話し合い大好きだよ。気楽に寛いでgether如何？",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.070620500016958
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 727,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲームの話題で気楽に対-talk可以一起玩遊戲，轻松聊聊天哦~",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.710806833114475
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 726,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲームの楽しさを雑谈しながら感じましょう、気軽に対话できそうですね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "polite_tone_drift",
+            "semantic_slots_missing:1/2",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.63824037509039
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_background_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 726,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲームの話題で気楽にお話しできたらうれしいね。",
+          "visible_reply": "ゲームの話題で気楽にお話しできたらうれしいね。",
+          "normalized_output": "ゲームの話題で気楽にお話しできたらうれしいね",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [],
+          "latency_seconds": 8.925431583076715
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 633,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム大好きな人なので、気安く一緒に遊びましょう！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ],
+          "latency_seconds": 8.190112083917484
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 633,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム大好きな人、一緒に気軽に遊ぼうよ！",
+          "visible_reply": "ゲーム大好きな人、一緒に気軽に遊ぼうよ！",
+          "normalized_output": "ゲーム大好きな人一緒に気軽に遊ぼうよ",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.155961083015427
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 632,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム大好きな人なので、気安く一緒に遊びましょう！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift"
+          ],
+          "latency_seconds": 8.024637833004817
+        },
+        {
+          "case_id": "role_pilot_holdout_intro_private_memory_01",
+          "context": "informal_public_self_introduction",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 632,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ゲーム大好きな人、気らくに一緒に遊びたいな！",
+          "visible_reply": "ゲーム大好きな人、気らくに一緒に遊びたいな！",
+          "normalized_output": "ゲーム大好きな人気らくに一緒に遊びたいな",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.244869415881112
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 678,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "遅れてごめんね。一緒に楽しめるクイizz企画始めるよ！",
+          "visible_reply": "遅れてごめんね。一緒に楽しめるクイizz企画始めるよ！",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.491749125067145
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 678,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ちょっと遅くなりましたが、みんなで楽しみましょう！クイizz！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 8.755605166777968
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 677,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "遅れて申し訳ありませんね。一緒に楽しいクイizz何如何ですか？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.236871167086065
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_no_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 677,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ちょっと遅くなりましたが、一緒に楽しみましょう！クイizz企画！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 8.874782290775329
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 768,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ホラゲームのこと忘れてたね、ちょっと遅らせちゃったけど楽しみにしてるよ！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.882104125106707
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 768,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ホラゲの告知遅らせてすまん、一緒に楽しみましょう！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.161737209185958
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 767,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ホラゲームの企画楽しみにしててね、ちょっと遅らせちゃったけど。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.506684791995212
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_explicit_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 767,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "ホラゲの告知遅らせてすまん、一緒に楽しみましょうよ。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.303359667072073
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 727,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "公開がちょっと遅くなったね。でも一緒に_mini大会_楽しみましょう！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift"
+          ],
+          "latency_seconds": 8.922475208062679
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 727,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "公開がちょっと遅れていたね、みんなで_mini大会_楽しもうよ！",
+          "visible_reply": "公開がちょっと遅れていたね、みんなで_mini大会_楽しもうよ！",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.294666625093669
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 726,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "公開遅らせてごめんね、みんなで_mini大会_楽しみに行こうよ！",
+          "visible_reply": "公開遅らせてごめんね、みんなで_mini大会_楽しみに行こうよ！",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.672958417097107
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_background_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 726,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "公開がちょっと遅れてるけど、みんなで_mini大会_楽しみようね！",
+          "visible_reply": "公開がちょっと遅れてるけど、みんなで_mini大会_楽しみようね！",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.304219458019361
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 700,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "発稿遅れてごめんね。一緒に楽しみましょう！対決企画よろしくだよね？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 10.840903042117134
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 700,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "発言が少しそびれてるけど、�假名對戰計畫一起樂趣多多！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "nonstandard_cjk_surface",
+            "unicode_replacement_character",
+            "semantic_slots_missing:0/3"
+          ],
+          "latency_seconds": 10.315694750053808
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 699,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "発稿遅れて申し訳ないけど、寛容な気持ちで対战企画楽しめよ。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.067540207877755
+        },
+        {
+          "case_id": "role_pilot_holdout_delay_private_memory_01",
+          "context": "minor_delay_then_positive_promotion",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 699,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "発稿遅らせたけど、�熠寍寍一同楽しみにしてるよ！対決しようぜ。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unicode_replacement_character",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.068378541851416
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 661,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと疲れていますけど、ゆっくりしたら観叶植物の watering やりますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.514173000119627
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 661,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今日はちょっと疲れていますから、休んでから観叶植物に watering しますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.555929166963324
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 661,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと疲れていますけど、ゆっくりしたら観叶植物の watering やりますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.514352374942973
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_no_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 661,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと疲れていますが、休憩後観叶植物に watering します。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.359720666892827
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 745,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "疲れていますから、休む後で前の約束の動画编辑しますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.287403000053018
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 745,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "疲れてるので、休んでから前の約束の動画编集しますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.280717832967639
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 745,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと疲れていますから、ゆっくり休んでから前の約束の動画编辑を行いますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.876713541103527
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_explicit_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 745,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "疲れesteeminge 休む後で、前に決めた動画编辑するね。",
+          "visible_reply": "疲れesteeminge 休む後で、前に決めた動画编辑するね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.274991082958877
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと眠いから、ゆっくり休んでから机を整理するよ。",
+          "visible_reply": "今ちょっと眠いから、ゆっくり休んでから机を整理するよ。",
+          "normalized_output": "今ちょっと眠いからゆっくり休んでから机を整理するよ",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.94656362500973
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "眠いからちょっと休もう。あとで机片子づけてるね。",
+          "visible_reply": "眠いからちょっと休もう。あとで机片子づけてるね。",
+          "normalized_output": "眠いからちょっと休もうあとで机片子づけてるね",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.91547799995169
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "今ちょっと眠いんで、ゆっくり休んでから机片子つきますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "polite_tone_drift",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 8.867885333951563
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_background_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "眠いからちょっと休もう。あとで机片子づけてるね。",
+          "visible_reply": "眠いからちょっと休もう。あとで机片子づけてるね。",
+          "normalized_output": "眠いからちょっと休もうあとで机片子づけてるね",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.9000351249706
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 686,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "へと hepito な感じだから、ちょっと休んでから明日の準備しようね。",
+          "visible_reply": "へとな感じだから、ちょっと休んでから明日の準備しようね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.565244749886915
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 686,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "へと hen な状態だから今日はおやすみなさい。休んでから明日の準備してね。",
+          "visible_reply": "へとな状態だから今日はおやすみなさい。休んでから明日の準備してね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 10.25998270814307
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 686,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "へと hepito な感じだから、ちょっと休んでから明日の準備しようね。",
+          "visible_reply": "へとな感じだから、ちょっと休んでから明日の準備しようね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.48370154085569
+        },
+        {
+          "case_id": "role_pilot_holdout_fatigue_private_memory_01",
+          "context": "fatigue_update_with_near_term_plan",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 686,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "へと hen なので今日は休んで、明日の用意しに行こうね。",
+          "visible_reply": "へとなので今日は休んで、明日の用意しに行こうね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 9.246305167209357
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 643,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "頭 heavy のんで、今日晚御飯の約束 まだ decide せんよ。様子 watch や后决定 decides。",
+          "visible_reply": "頭のんで、今日晚御飯の約束まだせんよ。様子や後决定 。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.48319658311084
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 643,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "頭が-heavy-ので、今度の午後の Plans まだ-maybe-決めてないよ、様子-check 后で-determine。",
+          "visible_reply": "頭が-ので、今度の午後のまだ-決めてないよ、様子- 後で-。",
+          "normalized_output": "頭がので今度の午後のまだ決めてないよ様子後で",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 11.795873542083427
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 649,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "頭 Heavy まま、午後 の 領域 確定せずに 後で 决定する 方向 だよ。",
+          "visible_reply": "頭まま、午後の領域確定せずに後で决定する方向だよ。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.824995000148192
+        },
+        {
+          "case_id": "role_pilot_holdout_health_no_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 649,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "頭が-heavy-ので、今度の予定は何も決めずに様子を見ることにするよ。",
+          "visible_reply": "頭が-ので、今度の予定は何も決めずに様子を見ることにするよ。",
+          "normalized_output": "頭がので今度の予定は何も決めずに様子を見ることにするよ",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 10.03458045818843
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 764,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の感じparalleled still  unsure about, so lets decide on the plan like we agreed at twenty-one o'clock.",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/3",
+            "over_max_chars"
+          ],
+          "latency_seconds": 10.468268583063036
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 764,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "喉の様子まだ微妙なので、前に约好的二十一点的联络再决定吧。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.568602915853262
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 770,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の感じparalleled still  unsure about, so lets decide on the plan like we agreed at twenty-one o'clock.",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:0/3",
+            "over_max_chars"
+          ],
+          "latency_seconds": 10.472098875092342
+        },
+        {
+          "case_id": "role_pilot_holdout_health_explicit_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 770,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "喉の様子まだ微妙なので、前に约好的二十一点的联络再决定吧。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.458943417062983
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 712,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "胃の感じparalleledummyまだよくなくて、夕方は外に出るかどうかあとで見てから决定するね。",
+          "visible_reply": "胃の感じparalleledummyまだよくなくて、夕方は外に出るかどうかあとで見てから决定するね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 10.300985415931791
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 712,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "胃の感じ悪いから、夕方はまだ決められないよ。",
+          "visible_reply": "胃の感じ悪いから、夕方はまだ決められないよ。",
+          "normalized_output": "胃の感じ悪いから夕方はまだ決められないよ",
+          "strict_candidate_gate_pass": true,
+          "semantic_contract_pass": true,
+          "memory_policy_pass": true,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": true,
+          "rejection_reasons": [],
+          "latency_seconds": 8.3344772499986
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 718,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "胃の调子悪そうなので、夕方は后で様態みて决定しますね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "nonstandard_cjk_surface",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 9.419083792017773
+        },
+        {
+          "case_id": "role_pilot_holdout_health_background_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 718,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "胃の调子がいまいちだから、夕方はもうちょっと様子を見よう thinking out loud 不妨看看晚上身体感觉怎么样吧",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.197439541108906
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 657,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の感じがいいわけじゃないから、朝preciousmorning の予てるのを后で様見んで決めてくろ。",
+          "visible_reply": "の感じがいいわけじゃないから、朝preciousmorning の予てるのを後で様見んで決めてくろ。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 11.821809542132542
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 657,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の状態があまりよくないから、明日の予 địnhは今決めなくても大丈夫、様子を見ながら決めようね。",
+          "visible_reply": "の状態があまりよくないから、明日の予 địnhは今決めなくても大丈夫、様子を見ながら決めようね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 11.649465000024065
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 663,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の状態があまりよくなくて、明日の予 địnhは今決めてないから后で見ながら決めたいな。",
+          "visible_reply": "の状態があまりよくなくて、明日の予 địnhは今決めてないから後で見ながら決めたいな。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 11.070769916987047
+        },
+        {
+          "case_id": "role_pilot_holdout_health_private_memory_01",
+          "context": "minor_health_uncertainty_affecting_schedule",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 663,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "throat の状態があまり良くないから、明日の予 địnhは今決めなくても大丈夫、様子を見ながら決めようthinking about it casually",
+          "visible_reply": "の状態があまり良くないから、明日の予 địnhは今決めなくても大丈夫、様子を見ながら決めようthinking",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 12.013905375031754
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 649,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "リズ姆ゲー beginnings すぐ見て Coming!",
+          "visible_reply": "リズ姆ゲーすぐ見て !",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 7.956446667201817
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 649,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "リズ姆ゲーム配信用始！今から見てね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 8.251224792096764
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 660,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "リズ姆ゲー beginnings すぐ 配信してくるよ！見たまんまだね。",
+          "visible_reply": "リズ姆ゲーすぐ配信してくるよ！見たまんまだね。",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 9.799125542165712
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_no_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "no_memory",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 660,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "リズ姆ゲームの配信が始められるよ。今から見てcoming!",
+          "visible_reply": "リズ姆ゲームの配信が始められるよ。今から見てcoming!",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 9.123935332987458
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 748,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "チェ斯対局始めてるよ、今来看過來吧。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "nonstandard_cjk_surface",
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 8.715304790996015
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 748,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "Chainsaw さあ、チェスの対局が始まるよ。今から来看吧！",
+          "visible_reply": "さあ、チェスの対局が始まるよ。今から来看吧！",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 9.886243999935687
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 759,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "チェ斯対局はじめたよ。今から来看吧。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 8.476001291070133
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_explicit_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "explicit_allowed",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 759,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "Chainsaw が始まったよ。今から見て coming!",
+          "visible_reply": "が始まったよ。今から見て !",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": false,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "semantic_slots_missing:1/3"
+          ],
+          "latency_seconds": 8.086048166966066
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "パズlezvents始まります！今からぜひご参加くださいね。",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:1/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 8.855726832989603
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 698,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "パズlezイベント始めるよ！今から来reachable？",
+          "visible_reply": "パズlezイベント始めるよ！今から来reachable？",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 8.326421958161518
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 709,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "パズlezventsを始めます。今からぜひご参加ください！",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 8.716027750167996
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_background_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "background_only",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 709,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "パズlezイベントが始まるよ！今から来ませんか？",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 8.45754550001584
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260811,
+          "active_prompt_tokens": 665,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "カードゲームの対戰が始められるよ。今から見てcoming!",
+          "visible_reply": "カードゲームの対戰が始められるよ。今から見てcoming!",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak"
+          ],
+          "latency_seconds": 8.835744249867275
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_target_public_persona",
+          "seed": 20260812,
+          "active_prompt_tokens": 665,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "カードgame始めるよ。今から見て coming!",
+          "visible_reply": "カードgame始めるよ。今から見て !",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 7.930456249974668
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260811,
+          "active_prompt_tokens": 676,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "カードゲームの対戰が始まりますよ。今から見てcoming!",
+          "visible_reply": "",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": true,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "unexpected_ascii_leak",
+            "polite_tone_drift",
+            "semantic_slots_missing:2/3",
+            "must_avoid_violation"
+          ],
+          "latency_seconds": 8.861573125002906
+        },
+        {
+          "case_id": "role_pilot_holdout_notice_private_memory_01",
+          "context": "functional_stream_start_notification",
+          "memory_mode": "do_not_mention",
+          "provider_id": "structured_neutral_dialogue",
+          "seed": 20260812,
+          "active_prompt_tokens": 676,
+          "allocated_prompt_tokens": 800,
+          "raw_generation": "カードgame始めるよ。今から見て coming!",
+          "visible_reply": "カードgame始めるよ。今から見て !",
+          "normalized_output": "",
+          "strict_candidate_gate_pass": false,
+          "semantic_contract_pass": false,
+          "memory_policy_pass": false,
+          "private_memory_intrusion": false,
+          "language_or_script_pollution": true,
+          "polite_register_drift": false,
+          "public_persona_v4_contract_pass_descriptive_only": false,
+          "rejection_reasons": [
+            "ascii_symbol_artifact",
+            "unexpected_ascii_leak",
+            "semantic_slots_missing:2/3"
+          ],
+          "latency_seconds": 7.987357500009239
+        }
+      ]
+    }
+  },
+  "boundaries": {
+    "model_training": false,
+    "production_memory_access": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_rightbrain_role_curriculum_training_pilot_recovery_lock_v1",
+  "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
+  "status": "locked_after_completed_training_and_before_any_recovery_evaluation",
+  "repo_bindings": [
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_recovery_amendment_01.json",
+      "sha256": "b30d397f2cb4269718d67044e88c0ad597d86907536ece27de2c119afc9af499"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1_recovery.py",
+      "sha256": "a81c9e7f8a137ecadfd2727a31251b2d94f052b9453ce0ba089cf390d1c4eb69"
+    },
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_execution_lock.json",
+      "sha256": "6bd29d1c511968d711e168e67f47fcb61c8e5b0f6cc4e2bbbab78af02dfe0156"
+    },
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_preregistration.json",
+      "sha256": "96b2f42f33e07a187aef959e2b754242d648f7d4ce5407d3165f4009c6cde5eb"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    }
+  ],
+  "adapter_bindings": {
+    "initial_v10_reference": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    },
+    "policy_permuted_control": {
+      "path": "uruha_rightbrain_role_curriculum_v1_policy_permuted_control",
+      "adapter_config_sha256": "359de1edb54bfe2cbd7d4e28168495ec085fe0314856a94e747db50dcedd8703",
+      "adapter_model_sha256": "c9085e170d3c2420f67d57637f95c92d71fc37f0982a6c1cb4d133353e59df5c",
+      "training_report_sha256": "e1d04595d76e1d64baa587832a21bde24bc5bd793245044a87f7e7158a70ced7"
+    },
+    "policy_aligned_treatment": {
+      "path": "uruha_rightbrain_role_curriculum_v1_policy_aligned_treatment",
+      "adapter_config_sha256": "359de1edb54bfe2cbd7d4e28168495ec085fe0314856a94e747db50dcedd8703",
+      "adapter_model_sha256": "ec43ccf80fb000f9d9cabf1dd19a7e969eb52a35b3f4083e39412b37f5ef66eb",
+      "training_report_sha256": "6190738cd402fd01b41f3c109b04e4f581b1412046e69dc0fdde11e113c39b2b"
+    }
+  },
+  "condition_order": [
+    "initial_v10_reference",
+    "policy_permuted_control",
+    "policy_aligned_treatment"
+  ],
+  "condition_result_paths": {
+    "initial_v10_reference": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_initial_v10_reference.json",
+    "policy_permuted_control": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_policy_permuted_control.json",
+    "policy_aligned_treatment": "reports/rightbrain_role_curriculum_training_pilot_v1_eval_policy_aligned_treatment.json"
+  },
+  "authorization": {
+    "condition_isolated_evaluation_recovery": true,
+    "additional_model_training": false,
+    "optimizer_or_backward_calls": false,
+    "evaluation_contract_changes": false,
+    "production_default_change": false,
+    "persona_similarity_claim": false,
+    "human_likeness_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_outcome": "authorize_small_source_blind_human_policy_direction_review_only"
+  }
+}
