@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_public_persona_reference_manifest_harness_lock_v2",
+  "experiment_id": "public_persona_reference_manifest_v2",
+  "status": "locked_before_formal_metadata_manifest_audit",
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/public_persona_reference_manifest_v2_preregistration.json",
+      "sha256": "a4281c44c1dd7b84f636ceab408d44e1a35a0a72e84f07025573ee5330190f74"
+    },
+    "source_manifest": {
+      "path": "datasets/public_persona_reference_source_manifest_v2.json",
+      "sha256": "ab4aa0737f49e291825b4217b35ac570a7224d95ca7c992a44e3c56f0ebe7ac7"
+    },
+    "blind_rater_protocol": {
+      "path": "configs/public_persona_blind_rater_protocol_v1.json",
+      "sha256": "7084cbe3346ba3321a2100885cb245c9494a502e24345c6453e6790a35ef5a53"
+    },
+    "readiness_inventory": {
+      "path": "datasets/public_persona_fidelity_eval_v2_readiness_inventory.json",
+      "sha256": "baaafff0d53a8bb96eb34fcf11705abff348c2c826593cd3bf4552642454a6ed"
+    },
+    "auditor": {
+      "path": "public_persona_reference_manifest_v2.py",
+      "sha256": "472483e4c434a37a1bf1f699f1b7fd293234e33656d25aa08b6ed141ab07057b"
+    },
+    "construction_tests": {
+      "path": "test_public_persona_reference_manifest_v2.py",
+      "sha256": "a92d274d22987e55c41733fb9bd8467c77753841d86bc74f15abe61c22fbac2b"
+    },
+    "v1_fidelity_result_lock": {
+      "path": "configs/public_persona_fidelity_eval_v1_result_lock.json",
+      "sha256": "af05dd9c517061a32c40a7a03ba1082b69bc1d01f11a02ab0d8f9be3759422ba"
+    },
+    "v1_readiness_contract": {
+      "path": "configs/public_persona_fidelity_eval_v1_preregistration.json",
+      "sha256": "f6fa588c546e3a82b4f3426a692363189bf97492fdac9644105265d33ae545f6"
+    },
+    "v2_observation_source_registry": {
+      "path": "datasets/public_persona_observation_source_registry_v2.json",
+      "sha256": "2291a7e17e2aae08face54e91f109c9e4ad8ac3bb78acbb9fab94b062bece2eb"
+    }
+  },
+  "preflight": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python -m unittest -v test_public_persona_reference_manifest_v2.py",
+    "expected_test_count": 26
+  },
+  "formal_audit": {
+    "command": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python public_persona_reference_manifest_v2.py --output-json reports/public_persona_reference_manifest_v2_audit.json --output-md reports/public_persona_reference_manifest_v2_audit.md --overwrite --require-protocol-pass",
+    "protocol_check_count_exact": 13,
+    "protocol_check_pass_count_exact": 13,
+    "readiness_check_count_exact": 19,
+    "readiness_check_pass_count_exact": 4,
+    "target_calibration_source_count_exact": 3,
+    "target_final_holdout_source_count_exact": 4,
+    "matched_contrast_person_count_exact": 3,
+    "target_behavior_event_count_exact": 0,
+    "contrast_behavior_event_count_exact": 0,
+    "human_rater_count_exact": 0,
+    "model_response_count_exact": 0,
+    "persona_score_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "runtime_change_count_exact": 0,
+    "model_call_count_exact": 0,
+    "formal_execution_ready_expected": false,
+    "authorizes": "metadata_only_event_coding_preregistration_and_consent_form_review",
+    "behavior_content_coding_authorized": false,
+    "rater_recruitment_authorized": false,
+    "model_execution_authorized": false,
+    "sealed_holdout_unsealing_authorized": false,
+    "formal_persona_scoring_authorized": false,
+    "public_persona_fidelity_claim_authorized": false
+  }
+}

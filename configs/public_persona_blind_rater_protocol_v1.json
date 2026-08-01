@@ -1,0 +1,104 @@
+{
+  "schema": "uruha_public_persona_blind_rater_protocol_v1",
+  "protocol_id": "public_persona_blind_rater_protocol_v1",
+  "status": "protocol_only_no_recruitment_no_ratings",
+  "target_id": "ichinose_uruha_public_persona",
+  "setting": "closed_consented_anonymous_evaluation",
+  "purpose": "在不冒充本人、不公開欺騙的前提下，分開量測公開人格相似度與一般日語品質。",
+  "rater_groups": {
+    "target_familiar": {
+      "eligibility": "自陳曾規律觀看目標人物公開內容，並通過不含測試答案的熟悉度篩選。",
+      "allowed_dimensions": [
+        "public_persona_similarity",
+        "behavioral_fit_for_scenario",
+        "confidence"
+      ],
+      "forbidden_dimensions": [
+        "private_identity",
+        "performer_identity",
+        "general_language_quality_as_persona_evidence"
+      ]
+    },
+    "general_japanese": {
+      "eligibility": "具備日語對話判讀能力，不要求熟悉目標人物。",
+      "allowed_dimensions": [
+        "naturalness",
+        "semantic_completeness",
+        "template_repetition",
+        "language_quality"
+      ],
+      "forbidden_dimensions": [
+        "target_persona_similarity",
+        "performer_identity"
+      ]
+    }
+  },
+  "assignment_and_blinding": {
+    "condition_labels_hidden": true,
+    "system_architecture_hidden": true,
+    "research_hypothesis_hidden_until_debrief": true,
+    "response_order_randomized": true,
+    "randomization_seed_frozen_before_collection": true,
+    "same_item_compared_pairwise": true,
+    "minimum_independent_ratings_per_item": 3
+  },
+  "consent": {
+    "written_consent_required": true,
+    "consent_version_hash_required": true,
+    "voluntary_participation": true,
+    "withdrawal_before_anonymized_lock_allowed": true,
+    "debrief_required": true,
+    "disclose_ai_simulation_and_non_affiliation_at_debrief": true,
+    "no_public_impersonation": true
+  },
+  "data_minimization": {
+    "stored_fields": [
+      "pseudonymous_rater_id",
+      "consent_version_hash",
+      "eligibility_group",
+      "familiarity_bracket",
+      "item_id",
+      "randomized_left_right_assignment",
+      "rating_values",
+      "optional_nonidentifying_reason_code"
+    ],
+    "prohibited_fields": [
+      "name",
+      "email",
+      "ip_address",
+      "device_fingerprint",
+      "social_account",
+      "free_text_personal_history"
+    ],
+    "raw_identity_linkage_stored_with_ratings": false
+  },
+  "quality_and_exclusion": {
+    "rules_frozen_before_collection": true,
+    "exclude_incomplete_consent": true,
+    "exclude_failed_attention_checks": true,
+    "exclude_duplicate_pseudonymous_submission": true,
+    "exclude_speed_outlier_only_by_preregistered_threshold": true,
+    "exclude_for_unfavorable_rating": false,
+    "low_agreement_handling": "report low agreement and stop strong persona claims; do not delete unfavorable raters to improve agreement",
+    "minimum_usable_agreement": 0.667
+  },
+  "analysis_boundary": {
+    "primary_comparison": "s0_full_cognitive_persona_vs_c1_matched_prompt_only",
+    "ties_reported_separately": true,
+    "rater_and_scenario_dependence_modeled": true,
+    "target_familiar_and_general_japanese_scores_not_collapsed": true,
+    "llm_judge_not_a_substitute_for_human_ratings": true
+  },
+  "current_counts": {
+    "recruited_rater_count": 0,
+    "consented_rater_count": 0,
+    "collected_rating_count": 0,
+    "scored_item_count": 0
+  },
+  "authorizations": {
+    "consent_form_review": true,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "public_persona_claim": false
+  }
+}

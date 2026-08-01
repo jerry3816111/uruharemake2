@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_public_persona_reference_manifest_preregistration_v2",
+  "experiment_id": "public_persona_reference_manifest_v2",
+  "status": "preregistered_before_behavior_coding_rater_collection_or_model_execution",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "path": "configs/public_persona_fidelity_eval_v1_result_lock.json",
+    "experiment_id": "public_persona_fidelity_eval_v1",
+    "required_decision": "authorize_provenance_only_reference_manifest_and_consented_rater_protocol_construction"
+  },
+  "readiness_contract_source": "configs/public_persona_fidelity_eval_v1_preregistration.json",
+  "current_problem": "V1 已凍結評測方法，但目標校準來源、最終封存來源、相近人物及盲評資料治理仍未以可稽核 manifest 綁定，因此不能開始正式人格評分。",
+  "falsifiable_hypothesis": "若來源 manifest 只保存官方身份與事件 metadata、預先鎖定人物及分割、完整封存 holdout 並拒絕內容與答案欄位，則可提高正式評測 readiness，而不增加任何行為事件、模型回答或人格分數。",
+  "single_changed_variable": "construct metadata-only official reference source manifest and closed consented blind-rater protocol; model, runtime, prompts, memory, training data, behavior labels, sealed holdout contents, and persona scores remain unchanged",
+  "actor_selection": {
+    "target_count_exact": 1,
+    "matched_contrast_count_exact": 3,
+    "matched_axes": [
+      "same_official_agency_ecosystem",
+      "japanese_language_public_activity",
+      "gaming_and_esports_livestream_medium",
+      "selected_before_behavior_content_coding",
+      "not_selected_from_system_outputs_or_similarity_scores"
+    ],
+    "not_claimed": "相近人物只控制媒介、語言與活動領域，不代表心理或人格完全等價。"
+  },
+  "source_requirements": {
+    "official_profile_and_channel_per_actor": true,
+    "target_calibration_source_count_exact": 3,
+    "target_final_holdout_source_count_exact": 4,
+    "inherited_v2_holdout_source_count_exact": 2,
+    "event_content_reviewed_for_behavior_count_exact": 0,
+    "event_label_available_count_exact": 0,
+    "raw_or_verbatim_record_count_exact": 0,
+    "contrast_behavior_event_count_exact": 0,
+    "human_rater_count_exact": 0,
+    "model_response_count_exact": 0,
+    "persona_score_count_exact": 0
+  },
+  "partition_policy": {
+    "source_partition_key_unique": true,
+    "development_calibration_final_holdout_disjoint": true,
+    "same_stream_segment_split_forbidden": true,
+    "final_holdout_sealed_until_candidate_and_harness_freeze": true,
+    "final_holdout_access_log_required_before_unsealing": true
+  },
+  "rights_and_data_policy": {
+    "public_access_is_not_training_permission": true,
+    "official_metadata_storage_only": true,
+    "raw_media_storage": false,
+    "verbatim_transcript_storage": false,
+    "automated_bulk_collection": false,
+    "model_training_from_registered_sources": false,
+    "prompt_or_memory_injection_from_registered_sources": false,
+    "public_identity_impersonation_test": false
+  },
+  "readiness_delta_expected": {
+    "readiness_check_count": 19,
+    "previous_pass_count": 1,
+    "expected_pass_count": 4,
+    "newly_bound_checks": [
+      "target_calibration_source_count",
+      "target_final_holdout_source_count",
+      "matched_contrast_person_count"
+    ],
+    "formal_execution_ready": false
+  },
+  "decision_policy": {
+    "protocol_pass": "authorize_metadata_only_event_coding_preregistration_and_consent_form_review",
+    "protocol_fail": "repair_reference_manifest_before_any_content_coding_or_rater_contact",
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "model_training": false,
+    "behavior_content_coding": false,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "通過只證明官方 metadata、資料分割、權利邊界與盲評規則已可稽核；不證明代理像目標人物，也不授權模型測試、內容編碼、招募評分者或打開 holdout。"
+}
