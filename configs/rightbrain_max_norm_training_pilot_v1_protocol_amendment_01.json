@@ -1,0 +1,31 @@
+{
+  "schema": "uruha_rightbrain_max_norm_training_pilot_protocol_amendment_v1",
+  "experiment_id": "rightbrain_max_norm_training_pilot_v1",
+  "amendment_id": "01",
+  "timing": "after both condition training runs and before any holdout evaluation",
+  "observed_problem": {
+    "first_eight_micro_step_losses_identical": true,
+    "control_first_preclip_gradient_norm": 3893.809326171875,
+    "treatment_first_preclip_gradient_norm": 366715.875,
+    "treatment_to_control_norm_ratio": 94.17920721837907,
+    "why_this_is_impossible_under_the_intended_design": "Both conditions have identical initial weights, seed, first eight rows, forward losses, and accumulated backward operations before the first clipping call. max_norm is not read until that call, so the raw preclip norm must agree within numerical tolerance."
+  },
+  "omitted_integrity_invariant": {
+    "name": "first_preclip_gradient_norm_reproducibility_before_the_causal_intervention",
+    "required_relative_error_maximum": 0.001,
+    "actual_relative_error": 0.9893829981259222,
+    "passed": false
+  },
+  "interpretation": "The default torch clip_grad_norm_ norm-reduction path on this MPS execution is not reproducible enough for a causal max_norm comparison. The two trajectories are confounded before a trustworthy intervention magnitude can be established.",
+  "decision": {
+    "invalidate_v1_training_comparison": true,
+    "execute_v1_holdout_evaluation": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false,
+    "authorized_next_step": "preregister a v2 rerun using foreach=False for the norm computation and clipping call, which is the path independently crosschecked against CPU float64"
+  },
+  "threshold_change": false,
+  "success_gate_change": false,
+  "data_change": false,
+  "model_change": false
+}

@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 import build_rightbrain_max_norm_training_pilot_v1 as construction
+import audit_rightbrain_max_norm_training_pilot_v1 as audit
 import run_rightbrain_max_norm_training_pilot_v1 as runner
 
 
@@ -26,8 +27,19 @@ class RightBrainMaxNormTrainingPilotV1Test(unittest.TestCase):
         self.assertEqual(schedule["optimizer_updates_exact"], 10)
 
     def test_construction_contract_passes_before_execution(self):
+        frozen = construction.load_json(construction.DEFAULT_REPORT_JSON)
+        self.assertTrue(frozen["decision"]["passed"], frozen["checks"])
         report = construction.build_report()
-        self.assertTrue(report["decision"]["passed"], report["checks"])
+        invariant_checks = {
+            key: value
+            for key, value in report["checks"].items()
+            if key
+            not in {
+                "temporary_output_directories_absent",
+                "result_outputs_absent",
+            }
+        }
+        self.assertTrue(all(invariant_checks.values()), invariant_checks)
         self.assertTrue(report["holdout_audit"]["passed"])
         self.assertTrue(report["checks"]["no_production_authorization"])
 
@@ -78,6 +90,24 @@ class RightBrainMaxNormTrainingPilotV1Test(unittest.TestCase):
         self.assertEqual(set(result["evaluations"]), set(construction.CONDITIONS))
         self.assertFalse(result["decision"]["authorize_production"])
         self.assertFalse(result["decision"]["authorize_persona_similarity_claim"])
+
+    def test_invalidating_audit_when_training_reports_available(self):
+        paths = [
+            runner._training_report_path(self.preregistration, condition)
+            for condition in construction.CONDITIONS
+        ]
+        if not all(path.exists() for path in paths):
+            self.skipTest("Both condition training reports are not available")
+        result = audit.audit()
+        self.assertFalse(result["decision"]["valid_causal_comparison"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "invalidate_v1_due_nonreproducible_preclip_norm",
+        )
+        self.assertTrue(result["causal_integrity"]["checks"]["first_eight_losses_identical"])
+        self.assertFalse(
+            result["causal_integrity"]["checks"]["first_preclip_norm_reproducible"]
+        )
 
 
 if __name__ == "__main__":
