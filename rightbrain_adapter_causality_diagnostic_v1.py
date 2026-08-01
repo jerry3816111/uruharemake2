@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import gc
 import hashlib
 import json
 import os
@@ -27,6 +26,9 @@ V10_ADAPTER = "qwen25_7b_v10_adapter"
 MODEL_CONDITIONS = (BASE_ONLY, V10_ADAPTER)
 DEFAULT_PREREGISTRATION = ROOT / "configs/rightbrain_adapter_causality_diagnostic_v1_preregistration.json"
 DEFAULT_CASES = ROOT / "configs/persona_policy_local_model_pilot_v1_cases.json"
+DEFAULT_PROTOCOL_AMENDMENT = ROOT / "configs/rightbrain_adapter_causality_diagnostic_v1_protocol_amendment.json"
+DEFAULT_BASE_CONDITION_JSON = ROOT / "reports/rightbrain_adapter_causality_diagnostic_v1_base_condition.json"
+DEFAULT_ADAPTER_CONDITION_JSON = ROOT / "reports/rightbrain_adapter_causality_diagnostic_v1_adapter_condition.json"
 DEFAULT_REPORT_JSON = ROOT / "reports/rightbrain_adapter_causality_diagnostic_v1_result.json"
 DEFAULT_REPORT_MD = ROOT / "reports/rightbrain_adapter_causality_diagnostic_v1_result.md"
 
@@ -75,14 +77,6 @@ def _load_rightbrain(condition_id, ledger):
     rightbrain.model_blend_enabled = False
     rightbrain.structured_prompt_token_budget = 640
     return rightbrain, round(time.perf_counter() - started, 4)
-
-
-def _release_rightbrain(rightbrain):
-    del rightbrain
-    gc.collect()
-    if torch.backends.mps.is_available():
-        torch.mps.empty_cache()
-        torch.mps.synchronize()
 
 
 def _reason_families(rows):
@@ -198,44 +192,145 @@ def _base_cache_commit():
     return ref.read_text(encoding="utf-8").strip()
 
 
-def build_report(preregistration, case_bundle):
+def run_condition(preregistration, case_bundle, condition_id):
     offline = os.getenv("HF_HUB_OFFLINE") == "1" and os.getenv("TRANSFORMERS_OFFLINE") == "1"
     if not offline:
-        raise RuntimeError("formal diagnostic requires offline Hugging Face mode")
+        raise RuntimeError("formal condition run requires offline Hugging Face mode")
+    if condition_id not in MODEL_CONDITIONS:
+        raise ValueError(f"unknown model condition: {condition_id}")
     cases = list(case_bundle["cases"])
-    condition_rows = {}
-    condition_summaries = {}
-    condition_ledgers = {}
-    load_times = {}
-    adapter_states = {}
-    total_legacy_access = 0
+    ledgers = {
+        provider_id: ledger_module.ComputeLedger()
+        for provider_id in pilot.PROVIDERS
+    }
+    rightbrain, load_seconds = _load_rightbrain(
+        condition_id,
+        ledgers[persona_policy.TARGET_PROVIDER],
+    )
+    adapter_state = {
+        "compat_adapter_loaded": rightbrain.compat_adapter_dir is not None,
+        "active_adapter_name": rightbrain._active_model_adapter_name or "",
+    }
+    rows = []
+    for case in cases:
+        for provider_id in case["condition_order"]:
+            row = pilot._run_one(rightbrain, provider_id, ledgers[provider_id], case)
+            row["model_condition"] = condition_id
+            rows.append(row)
+            if torch.backends.mps.is_available():
+                torch.mps.synchronize()
+    snapshots = {
+        provider_id: ledger.snapshot()
+        for provider_id, ledger in ledgers.items()
+    }
+    summary = _model_summary(
+        rows,
+        ledgers[persona_policy.TARGET_PROVIDER],
+        ledgers[persona_policy.NEUTRAL_PROVIDER],
+    )
+    expected_state = (
+        not adapter_state["compat_adapter_loaded"]
+        and adapter_state["active_adapter_name"] == ""
+        if condition_id == BASE_ONLY
+        else adapter_state["compat_adapter_loaded"]
+        and adapter_state["active_adapter_name"] == "surface"
+    )
+    checks = {
+        "offline_local_inference": offline,
+        "generation_count": len(rows) == 10,
+        "nonempty_raw_generation_count": sum(bool(row["raw_generation"]) for row in rows) == 10,
+        "target_neutral_compute_parity": summary["compute_parity"]["parity_pass"],
+        "allocated_prompt_tokens_each": all(
+            call["response"]["prompt_tokens"] == 640
+            for snapshot in snapshots.values()
+            for call in snapshot["calls"]
+        ),
+        "adapter_state_exact": expected_state,
+        "legacy_surface_not_accessed": rightbrain.legacy_fixed_surface_access_count == 0,
+        "ledger_contains_no_raw_text": not summary["ledger_contains_raw_text"],
+    }
+    return {
+        "schema": "uruha_rightbrain_adapter_condition_artifact_v1",
+        "experiment_id": EXPERIMENT_ID,
+        "condition_id": condition_id,
+        "status": "condition_complete" if all(checks.values()) else "condition_invalid",
+        "inputs": {
+            "preregistration": binding(DEFAULT_PREREGISTRATION),
+            "protocol_amendment": binding(DEFAULT_PROTOCOL_AMENDMENT),
+            "cases": binding(DEFAULT_CASES),
+            "harness": binding(ROOT / "rightbrain_adapter_causality_diagnostic_v1.py"),
+            "base_cache_commit": _base_cache_commit(),
+        },
+        "runtime": {
+            "device": rightbrain.device,
+            "dtype": str(rightbrain.dtype),
+            "load_seconds": load_seconds,
+            "generation_seconds": round(
+                sum(row["duration_seconds"] for row in rows),
+                4,
+            ),
+            "fresh_process_required": True,
+        },
+        "adapter_state": adapter_state,
+        "checks": checks,
+        "summary": summary,
+        "ledger_snapshots": snapshots,
+        "legacy_fixed_surface_access_count": rightbrain.legacy_fixed_surface_access_count,
+        "generations": rows,
+        "production_memory_write_count": 0,
+        "benchmark_item_count": 0,
+        "formal_persona_score_count": 0,
+    }
 
-    for condition_id in MODEL_CONDITIONS:
-        ledgers = {provider_id: ledger_module.ComputeLedger() for provider_id in pilot.PROVIDERS}
-        rightbrain, load_seconds = _load_rightbrain(condition_id, ledgers[persona_policy.TARGET_PROVIDER])
-        load_times[condition_id] = load_seconds
-        adapter_states[condition_id] = {
-            "compat_adapter_loaded": rightbrain.compat_adapter_dir is not None,
-            "active_adapter_name": rightbrain._active_model_adapter_name or "",
-        }
-        rows = []
-        for case in cases:
-            for provider_id in case["condition_order"]:
-                row = pilot._run_one(rightbrain, provider_id, ledgers[provider_id], case)
-                row["model_condition"] = condition_id
-                rows.append(row)
-                if torch.backends.mps.is_available():
-                    torch.mps.synchronize()
-        total_legacy_access += rightbrain.legacy_fixed_surface_access_count
-        snapshots = {provider_id: ledger.snapshot() for provider_id, ledger in ledgers.items()}
-        condition_rows[condition_id] = rows
-        condition_ledgers[condition_id] = snapshots
-        condition_summaries[condition_id] = _model_summary(
-            rows,
-            ledgers[persona_policy.TARGET_PROVIDER],
-            ledgers[persona_policy.NEUTRAL_PROVIDER],
+
+def _validate_condition_artifact(artifact, condition_id):
+    return bool(
+        artifact.get("experiment_id") == EXPERIMENT_ID
+        and artifact.get("condition_id") == condition_id
+        and artifact.get("status") == "condition_complete"
+        and all((artifact.get("checks") or {}).values())
+        and (artifact.get("inputs") or {}).get("preregistration")
+        == binding(DEFAULT_PREREGISTRATION)
+        and (artifact.get("inputs") or {}).get("protocol_amendment")
+        == binding(DEFAULT_PROTOCOL_AMENDMENT)
+        and (artifact.get("inputs") or {}).get("cases") == binding(DEFAULT_CASES)
+        and (artifact.get("inputs") or {}).get("harness")
+        == binding(ROOT / "rightbrain_adapter_causality_diagnostic_v1.py")
+    )
+
+
+def build_report(preregistration, condition_artifacts):
+    condition_rows = {
+        condition: list(condition_artifacts[condition]["generations"])
+        for condition in MODEL_CONDITIONS
+    }
+    condition_summaries = {
+        condition: condition_artifacts[condition]["summary"]
+        for condition in MODEL_CONDITIONS
+    }
+    condition_ledgers = {
+        condition: condition_artifacts[condition]["ledger_snapshots"]
+        for condition in MODEL_CONDITIONS
+    }
+    adapter_states = {
+        condition: condition_artifacts[condition]["adapter_state"]
+        for condition in MODEL_CONDITIONS
+    }
+    load_times = {
+        condition: condition_artifacts[condition]["runtime"]["load_seconds"]
+        for condition in MODEL_CONDITIONS
+    }
+    artifact_validity = {
+        condition: _validate_condition_artifact(
+            condition_artifacts[condition],
+            condition,
         )
-        _release_rightbrain(rightbrain)
+        for condition in MODEL_CONDITIONS
+    }
+    total_legacy_access = sum(
+        condition_artifacts[condition]["legacy_fixed_surface_access_count"]
+        for condition in MODEL_CONDITIONS
+    )
 
     cross_model = _cross_model_control_check(condition_ledgers)
     base_valid = condition_summaries[BASE_ONLY]["strict_valid_generation_count"]
@@ -254,7 +349,7 @@ def build_report(preregistration, case_bundle):
         "formal_persona_score_count": 0,
     }
     checks = {
-        "offline_local_inference": offline,
+        "condition_artifacts_valid": all(artifact_validity.values()),
         "model_load_count": counts["model_load_count"] == valid_required["model_load_count_exact"],
         "actual_generation_count": counts["actual_generation_count"] == valid_required["actual_generation_count_exact"],
         "nonempty_raw_generation_count": counts["nonempty_raw_generation_count"] == valid_required["nonempty_raw_generation_count_exact"],
@@ -283,7 +378,12 @@ def build_report(preregistration, case_bundle):
         "decision": decision if valid else "repair_diagnostic_controls_before_interpretation",
         "inputs": {
             "preregistration": binding(DEFAULT_PREREGISTRATION),
+            "protocol_amendment": binding(DEFAULT_PROTOCOL_AMENDMENT),
             "cases": binding(DEFAULT_CASES),
+            "condition_artifacts": {
+                BASE_ONLY: binding(DEFAULT_BASE_CONDITION_JSON),
+                V10_ADAPTER: binding(DEFAULT_ADAPTER_CONDITION_JSON),
+            },
             "base_model": brain_module.RIGHT_BRAIN_BASE_MODEL,
             "base_cache_commit": _base_cache_commit(),
             "adapter_config_sha256": sha256_file(adapter_path / "adapter_config.json"),
@@ -293,7 +393,7 @@ def build_report(preregistration, case_bundle):
             "device": "mps" if torch.backends.mps.is_available() else "cpu",
             "load_seconds": load_times,
             "generation_seconds": {
-                condition: round(sum(row["duration_seconds"] for row in condition_rows[condition]), 4)
+                condition: condition_artifacts[condition]["runtime"]["generation_seconds"]
                 for condition in MODEL_CONDITIONS
             },
         },
@@ -341,15 +441,49 @@ def render_markdown(report):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["run-condition", "combine"])
     parser.add_argument("--preregistration", default=str(DEFAULT_PREREGISTRATION))
     parser.add_argument("--cases", default=str(DEFAULT_CASES))
+    parser.add_argument("--condition", choices=list(MODEL_CONDITIONS))
+    parser.add_argument("--condition-output")
+    parser.add_argument("--base-artifact", default=str(DEFAULT_BASE_CONDITION_JSON))
+    parser.add_argument("--adapter-artifact", default=str(DEFAULT_ADAPTER_CONDITION_JSON))
     parser.add_argument("--report-json", default=str(DEFAULT_REPORT_JSON))
     parser.add_argument("--report-md", default=str(DEFAULT_REPORT_MD))
     args = parser.parse_args()
     preregistration = load_json(args.preregistration)
     if preregistration.get("experiment_id") != EXPERIMENT_ID:
         raise SystemExit("wrong preregistration experiment_id")
-    report = build_report(preregistration, load_json(args.cases))
+    if args.command == "run-condition":
+        if not args.condition or not args.condition_output:
+            raise SystemExit("run-condition requires --condition and --condition-output")
+        artifact = run_condition(
+            preregistration,
+            load_json(args.cases),
+            args.condition,
+        )
+        Path(args.condition_output).write_text(
+            json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(
+            json.dumps(
+                {
+                    "status": artifact["status"],
+                    "condition": artifact["condition_id"],
+                    "strict_valid": artifact["summary"]["strict_valid_generation_count"],
+                    "generation_seconds": artifact["runtime"]["generation_seconds"],
+                },
+                ensure_ascii=False,
+            )
+        )
+        raise SystemExit(0 if artifact["status"] == "condition_complete" else 1)
+
+    condition_artifacts = {
+        BASE_ONLY: load_json(args.base_artifact),
+        V10_ADAPTER: load_json(args.adapter_artifact),
+    }
+    report = build_report(preregistration, condition_artifacts)
     Path(args.report_json).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     Path(args.report_md).write_text(render_markdown(report), encoding="utf-8")
     print(json.dumps({"status": report["status"], "classification": report["classification"], "decision": report["decision"], "counts": report["counts"], "delta": report["strict_valid_delta_base_minus_adapter"]}, ensure_ascii=False))

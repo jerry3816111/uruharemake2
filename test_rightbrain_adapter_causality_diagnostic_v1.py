@@ -65,6 +65,26 @@ class RightBrainAdapterCausalityDiagnosticV1ConstructionTest(unittest.TestCase):
         self.assertIn("production default change", boundary)
         self.assertIn("human blind persona rating", boundary)
 
+    def test_protocol_amendment_changes_only_process_isolation(self):
+        amendment = json.loads(
+            diagnostic.DEFAULT_PROTOCOL_AMENDMENT.read_text(encoding="utf-8")
+        )
+        failed = amendment["failed_attempt"]
+        self.assertFalse(failed["formal_result_file_written"])
+        self.assertFalse(failed["condition_score_observed"])
+        self.assertFalse(failed["evidence_reused"])
+        changed = amendment["changed_execution_only"]
+        for field in (
+            "model_execution_order_unchanged",
+            "cases_unchanged",
+            "seeds_unchanged",
+            "decoding_unchanged",
+            "prompt_allocation_unchanged",
+            "classification_thresholds_unchanged",
+            "single_causal_variable_unchanged",
+        ):
+            self.assertTrue(changed[field], field)
+
 
 if __name__ == "__main__":
     unittest.main()
