@@ -286,6 +286,37 @@ class ComputeLedgerV1Test(unittest.TestCase):
             ledger_module.compare_compute_envelopes(left.snapshot(), right.snapshot())["parity_pass"]
         )
 
+    def test_compute_envelope_rejects_tool_or_prompt_token_mismatch(self):
+        left = ledger_module.ComputeLedger()
+        right = ledger_module.ComputeLedger()
+        for ledger, tool_name in ((left, "speak"), (right, "move")):
+            client = ledger_module.instrument_openai_client(FakeOpenAIClient(), ledger)
+            with ledger.stage("function_planning"):
+                client.chat.completions.create(
+                    model="qwen3:8b",
+                    messages=[{"role": "user", "content": "same"}],
+                    temperature=0.0,
+                    tools=[
+                        {
+                            "type": "function",
+                            "function": {"name": tool_name, "parameters": {"type": "object"}},
+                        }
+                    ],
+                )
+        tool_mismatch = ledger_module.compare_compute_envelopes(
+            left.snapshot(),
+            right.snapshot(),
+        )
+        self.assertFalse(tool_mismatch["model_decoding_and_tool_schedule_equal"])
+        self.assertFalse(tool_mismatch["parity_pass"])
+
+        same = left.snapshot()
+        changed_tokens = left.snapshot()
+        changed_tokens["calls"][0]["response"]["prompt_tokens"] += 1
+        token_mismatch = ledger_module.compare_compute_envelopes(same, changed_tokens)
+        self.assertFalse(token_mismatch["prompt_token_schedule_equal"])
+        self.assertFalse(token_mismatch["parity_pass"])
+
     def test_local_generation_records_stage_and_token_counts(self):
         ledger = ledger_module.ComputeLedger()
         rightbrain = RightBrain(load_model=False, compute_ledger=ledger)
@@ -303,6 +334,7 @@ class ComputeLedgerV1Test(unittest.TestCase):
         self.assertEqual(call["model"], RIGHT_BRAIN_BASE_MODEL)
         self.assertEqual(call["response"]["prompt_tokens"], 3)
         self.assertEqual(call["response"]["completion_tokens"], 2)
+        self.assertEqual(call["request"]["options"]["adapter_name"], "")
         self.assertNotIn("private prompt text", json.dumps(call, ensure_ascii=False))
 
     def test_invalid_ledger_is_rejected(self):

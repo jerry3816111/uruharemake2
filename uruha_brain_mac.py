@@ -12715,6 +12715,7 @@ You are Ichinose Uruha.
                     generation_options={
                         "max_new_tokens": 56,
                         "no_repeat_ngram_size": RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
+                        "adapter_name": self._active_model_adapter_name or "",
                         **generation_kwargs,
                     },
                     latency_seconds=time.perf_counter() - started,

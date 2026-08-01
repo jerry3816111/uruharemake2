@@ -18,10 +18,23 @@ class PersonaPolicyComputeSeamCompatRepairResultTest(unittest.TestCase):
         cls.report = json.loads(REPORT.read_text(encoding="utf-8"))
 
     def test_frozen_artifact_hashes_match(self):
-        for artifact in self.lock["frozen_artifacts"].values():
-            path = ROOT / artifact["path"]
+        historical = {"repaired_runtime_integration", "expanded_seam_tests"}
+        for name, artifact in self.lock["frozen_artifacts"].items():
+            if name in historical:
+                content = subprocess.run(
+                    [
+                        "git",
+                        "show",
+                        f"{self.lock['formal_git_head']}:{artifact['path']}",
+                    ],
+                    cwd=ROOT,
+                    check=True,
+                    capture_output=True,
+                ).stdout
+            else:
+                content = (ROOT / artifact["path"]).read_bytes()
             self.assertEqual(
-                hashlib.sha256(path.read_bytes()).hexdigest(),
+                hashlib.sha256(content).hexdigest(),
                 artifact["sha256"],
                 artifact["path"],
             )

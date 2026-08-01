@@ -1,4 +1,4 @@
-"""Privacy-preserving per-item compute accounting for matched evaluations."""
+"""Raw-text-free per-item compute accounting for matched evaluations."""
 
 from __future__ import annotations
 
@@ -78,6 +78,7 @@ def request_shape(kwargs):
         "options": options,
         "response_format_sha256": _json_hash(kwargs.get("response_format")) if kwargs.get("response_format") is not None else None,
         "tool_schema_count": len(kwargs.get("tools") or []),
+        "tool_schema_sha256": _json_hash(kwargs.get("tools")) if kwargs.get("tools") is not None else None,
         "tool_choice_sha256": _json_hash(kwargs.get("tool_choice")) if kwargs.get("tool_choice") is not None else None,
     }
 
@@ -255,16 +256,43 @@ def compare_compute_envelopes(left_snapshot, right_snapshot):
             "model": call.get("model"),
             "options": request.get("options") or {},
             "message_count": request.get("message_count"),
+            "message_roles": [
+                message.get("role")
+                for message in (request.get("messages") or [])
+            ],
             "tool_schema_count": request.get("tool_schema_count"),
-            "response_format_present": bool(request.get("response_format_sha256")),
+            "tool_schema_sha256": request.get("tool_schema_sha256"),
+            "tool_choice_sha256": request.get("tool_choice_sha256"),
+            "response_format_sha256": request.get("response_format_sha256"),
         }
 
     left_signatures = [signature(call) for call in left_calls]
     right_signatures = [signature(call) for call in right_calls]
+    left_prompt_tokens = [
+        (call.get("response") or {}).get("prompt_tokens")
+        for call in left_calls
+    ]
+    right_prompt_tokens = [
+        (call.get("response") or {}).get("prompt_tokens")
+        for call in right_calls
+    ]
+    prompt_tokens_available = all(
+        value is not None
+        for value in left_prompt_tokens + right_prompt_tokens
+    )
+    prompt_token_schedule_equal = (
+        prompt_tokens_available and left_prompt_tokens == right_prompt_tokens
+    )
+    schedule_equal = left_signatures == right_signatures
+    call_count_equal = len(left_calls) == len(right_calls)
     return {
-        "call_count_equal": len(left_calls) == len(right_calls),
-        "model_and_decoding_schedule_equal": left_signatures == right_signatures,
+        "call_count_equal": call_count_equal,
+        "model_decoding_and_tool_schedule_equal": schedule_equal,
+        "prompt_tokens_available": prompt_tokens_available,
+        "prompt_token_schedule_equal": prompt_token_schedule_equal,
         "left_call_count": len(left_calls),
         "right_call_count": len(right_calls),
-        "parity_pass": len(left_calls) == len(right_calls) and left_signatures == right_signatures,
+        "left_prompt_tokens": left_prompt_tokens,
+        "right_prompt_tokens": right_prompt_tokens,
+        "parity_pass": call_count_equal and schedule_equal and prompt_token_schedule_equal,
     }
