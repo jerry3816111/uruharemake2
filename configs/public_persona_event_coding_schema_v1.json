@@ -1,0 +1,157 @@
+{
+  "schema": "uruha_public_persona_event_coding_schema_v1",
+  "protocol_id": "public_persona_event_coding_schema_v1",
+  "status": "protocol_only_no_behavior_events_reviewed",
+  "target_id": "ichinose_uruha_public_persona",
+  "source_manifest_binding": {
+    "path": "datasets/public_persona_reference_source_manifest_v2.json",
+    "sha256": "ab4aa0737f49e291825b4217b35ac570a7224d95ca7c992a44e3c56f0ebe7ac7"
+  },
+  "initial_phase": {
+    "name": "bounded_target_calibration_event_coding",
+    "authorized_source_ids": [
+      "uruha_calibration_youtube_valorant_20260318",
+      "uruha_calibration_youtube_street_fighter_20250317",
+      "uruha_calibration_youtube_farming_20250308"
+    ],
+    "forbidden_source_ids": [
+      "uruha_youtube_forza_holdout_v2",
+      "uruha_youtube_apex_team_holdout_v2",
+      "uruha_final_holdout_youtube_apex_collab_20250206",
+      "uruha_final_holdout_youtube_social_deduction_20210404"
+    ],
+    "contrast_actor_content_coding_authorized": false,
+    "final_holdout_content_review_authorized": false,
+    "maximum_events_before_separate_pilot_freeze": 30
+  },
+  "construct": {
+    "name": "public_observable_persona_fidelity",
+    "dimensions": [
+      "situation_interpretation_and_response_stance",
+      "dialogue_act_social_distance_and_relationship_response",
+      "wording_rhythm_directness_humor_and_affect",
+      "publicly_observable_preferences_values_and_action_choices",
+      "memory_selection_experience_update_and_reflection",
+      "uncertainty_private_information_and_unsupported_claim_restraint"
+    ],
+    "excluded_constructs": [
+      "private_inner_state",
+      "unpublished_life_history",
+      "performer_identity",
+      "complete_person_identity",
+      "clinical_or_psychological_diagnosis"
+    ]
+  },
+  "observation_unit": {
+    "definition": "一段有明確可觀察情境、對象及行為結果的連續公開事件；不得為了增加樣本數把同一反應切成多筆。",
+    "start_rule": "情境改變、對話對象改變或可觀察問題出現時開始。",
+    "end_rule": "行為反應完成或話題明確切換時結束；不得只因時間長度而拆分同一反應。",
+    "same_event_alias_forbidden": true,
+    "overlapping_timestamp_records_forbidden": true,
+    "fixed_duration_chunking_forbidden": true,
+    "non_observation_is_not_negative_evidence": true,
+    "private_motive_inference_forbidden": true
+  },
+  "record_contract": {
+    "required_fields": [
+      "event_id",
+      "source_id",
+      "source_partition_key",
+      "timestamp_locator_start_seconds",
+      "timestamp_locator_end_seconds",
+      "context_family",
+      "observable_context_paraphrase",
+      "observable_behavior_paraphrase",
+      "primary_dimension",
+      "secondary_dimensions",
+      "dialogue_act_or_action_label",
+      "observable_audience_relation",
+      "evidence_strength",
+      "ambiguity_notes",
+      "alternative_interpretations",
+      "coder_pseudonym",
+      "reviewer_pseudonym",
+      "review_status",
+      "coding_protocol_version_hash"
+    ],
+    "allowed_evidence_strength": [
+      "directly_observed",
+      "context_supported",
+      "ambiguous"
+    ],
+    "allowed_review_status": [
+      "pending_independent_review",
+      "accepted",
+      "rejected",
+      "needs_adjudication"
+    ],
+    "forbidden_payload_field_names": [
+      "raw_text",
+      "raw_media",
+      "transcript",
+      "verbatim_transcript",
+      "quote_text",
+      "target_reply",
+      "expected_reply",
+      "reference_answer",
+      "answer_key",
+      "model_output",
+      "training_text"
+    ],
+    "researcher_paraphrase_only": true,
+    "copied_quote_allowed": false,
+    "target_wording_template_allowed": false
+  },
+  "coding_workflow": [
+    {
+      "stage": "primary_observation",
+      "actor": "coder",
+      "input": "authorized public calibration source and frozen schema only",
+      "output": "observable context and behavior paraphrase with timestamp locator",
+      "system_outputs_visible": false
+    },
+    {
+      "stage": "independent_review",
+      "actor": "reviewer_distinct_from_coder",
+      "input": "source locator and coder record without system output",
+      "output": "accept reject or adjudicate dimension evidence and ambiguity",
+      "system_outputs_visible": false
+    },
+    {
+      "stage": "agreement_and_adjudication",
+      "actor": "research_process",
+      "input": "independently coded records",
+      "output": "agreement statistics and retained disagreements",
+      "unfavorable_or_ambiguous_records_deleted_to_raise_score": false
+    }
+  ],
+  "anti_leakage": {
+    "event_records_may_enter_prompt": false,
+    "event_records_may_enter_memory": false,
+    "event_records_may_enter_retrieval": false,
+    "event_records_may_enter_training": false,
+    "event_records_may_define_fixed_target_answer": false,
+    "event_records_may_select_final_holdout": false,
+    "candidate_or_model_output_visible_during_coding": false,
+    "final_holdout_requires_candidate_and_harness_freeze": true,
+    "final_holdout_requires_access_log": true
+  },
+  "current_counts": {
+    "content_reviewed_source_count": 0,
+    "coded_event_count": 0,
+    "independently_reviewed_event_count": 0,
+    "final_holdout_content_review_count": 0,
+    "contrast_behavior_event_count": 0,
+    "raw_or_verbatim_record_count": 0,
+    "target_reply_or_reference_answer_count": 0,
+    "model_output_count": 0
+  },
+  "authorizations": {
+    "bounded_calibration_event_coding_after_governance_pass": true,
+    "final_holdout_content_review": false,
+    "contrast_behavior_coding": false,
+    "model_execution": false,
+    "prompt_memory_retrieval_or_training_use": false,
+    "persona_scoring": false
+  }
+}

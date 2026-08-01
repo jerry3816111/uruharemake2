@@ -1,0 +1,103 @@
+{
+  "schema": "uruha_public_persona_precontent_governance_preregistration_v3",
+  "experiment_id": "public_persona_precontent_governance_v3",
+  "status": "preregistered_before_behavior_coding_rater_contact_model_execution_or_holdout_access",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "path": "configs/public_persona_reference_manifest_v2_result_lock.json",
+    "sha256": "b579606d9775196f5adb958bb5ea1bc211af74c5c924bdf483407699026b200b",
+    "experiment_id": "public_persona_reference_manifest_v2",
+    "required_decision": "authorize_metadata_only_event_coding_preregistration_and_consent_form_review"
+  },
+  "long_term_goal": {
+    "engineering_target": "建立可在個人電腦運行的認知型公開人格代理，使通用認知、記憶、反思、人格狀態及語言表達能協同工作。",
+    "case_study_target": "以一ノ瀬うるは的公開可觀察人格作為人物相似度案例，在來源獨立、未見、開放式情境中重現行為分布，而不是背誦原句。",
+    "independent_evidence_axes": [
+      "general_cognitive_capability",
+      "public_observable_persona_fidelity",
+      "local_pc_latency_and_resource_feasibility",
+      "Function_Calling_voice_and_VRM_action_safety"
+    ],
+    "success_is_not": [
+      "private_person_identity_copy",
+      "private_mental_state_reconstruction",
+      "public_deception_or_impersonation",
+      "benchmark_answer_memorization",
+      "single_persona_similarity_score_without_general_capability_evidence"
+    ]
+  },
+  "current_problem": "V2 已登記官方來源與封閉盲評框架，但尚未在查看行為內容前凍結觀察事件的編碼單位、逐筆來源使用邊界及實際參與者知情同意文字。若直接開始編碼或招募，研究者可事後挑選事件、推測私人心理或讓評分者在不知情下參與。",
+  "falsifiable_hypothesis": "若事件規格只允許校準來源的可觀察行為與研究者摘要、逐筆來源審查拒絕原始媒體和逐字稿用途、知情同意完整說明自願性與資料處理，則稽核器應能在不新增任何事件、評分者、模型回答或人格分數的情況下，授權有限校準編碼；任何 final holdout、訓練、Prompt、記憶或招募越界都必須使協定失敗。",
+  "single_changed_variable": "add pre-content governance documents and their auditor only; runtime, prompts, memory, model weights, training data, behavior events, raters, model outputs, sealed holdout contents, persona scores, Function Calling, voice, and VRM behavior remain unchanged",
+  "required_artifacts": [
+    "configs/public_persona_event_coding_schema_v1.json",
+    "datasets/public_persona_source_rights_review_v1.json",
+    "configs/public_persona_informed_consent_v1.json",
+    "docs/public_persona_blind_rating_consent_v1_zh.md",
+    "configs/public_persona_precontent_governance_v3_method_registry.json"
+  ],
+  "event_coding_contract": {
+    "initial_authorized_partition": "target_calibration_only",
+    "authorized_source_count_exact": 3,
+    "final_holdout_source_count_forbidden_from_content_review_exact": 4,
+    "behavior_event_count_before_protocol_pass_exact": 0,
+    "raw_media_record_count_exact": 0,
+    "verbatim_record_count_exact": 0,
+    "target_reply_or_reference_answer_count_exact": 0,
+    "two_stage_independent_review_required": true,
+    "private_state_inference_forbidden": true,
+    "absence_from_non_observation_forbidden": true,
+    "evaluation_data_runtime_use_forbidden": true
+  },
+  "rights_review_contract": {
+    "registered_source_review_count_exact": 17,
+    "source_manifest_hash_binding_required": true,
+    "public_access_is_not_permission_to_train": true,
+    "rights_holder_license_claim_forbidden": true,
+    "legal_opinion_claim_forbidden": true,
+    "formal_corpus_rights_review_complete_expected": false
+  },
+  "consent_contract": {
+    "participant_facing_traditional_chinese_document_required": true,
+    "purpose_duration_procedure_risk_benefit_confidentiality_contact_and_voluntariness_required": true,
+    "ai_generated_output_disclosed_before_participation": true,
+    "non_affiliation_and_no_public_impersonation_required": true,
+    "direct_identifiers_collected_count_exact": 0,
+    "contact_channel_resolved_expected": false,
+    "rater_recruitment_authorized_expected": false
+  },
+  "expected_counts_after_pass": {
+    "behavior_event_count": 0,
+    "human_rater_count": 0,
+    "model_response_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "runtime_change_count": 0,
+    "model_call_count": 0
+  },
+  "expected_formal_readiness": {
+    "pass_count": 4,
+    "check_count": 19,
+    "formal_execution_ready": false,
+    "source_rights_review_complete_for_formal_corpus": false
+  },
+  "decision_policy": {
+    "protocol_pass": "authorize_bounded_calibration_event_coding_and_consent_usability_review_only",
+    "protocol_fail": "repair_precontent_governance_before_any_behavior_coding_or_rater_contact",
+    "bounded_calibration_event_coding": true,
+    "consent_usability_review": true,
+    "contrast_event_source_registration": true,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "通過只證明查看內容前的編碼規則、17 筆來源用途及知情同意文字已被凍結；它不表示已觀看任何校準事件、不表示來源權利人授權訓練、不表示評分者可開始參與，也不證明代理像目標人物。"
+}
