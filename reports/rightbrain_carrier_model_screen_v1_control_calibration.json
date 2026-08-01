@@ -1,0 +1,37 @@
+{
+  "schema": "uruha_rightbrain_carrier_model_screen_control_calibration_v1",
+  "experiment_id": "rightbrain_carrier_model_screen_v1",
+  "status": "stopped_before_candidate_inference",
+  "decision": "invalidate_relative_quality_gates_and_preregister_v2_before_candidate_inference",
+  "inputs": {
+    "preregistration_sha256": "ea12a5bcaed9446a1da58fceb1bd6a5fbe68a6a2b1110e67adec342b6b6a5f9a",
+    "runner_sha256": "40066a98a50df1346d2f955f1d0d2ea56cea722b608fa3b86baeacb36775b99e",
+    "preflight_sha256": "5c4aca4da1fde5ec3917ae2bdacc71933ccfb0020edad55ca74886b29026f906",
+    "control_artifact_sha256": "60f05952520d7a56b66f1c9bf01234aa389404992770b408c3d266d3a15f7e21"
+  },
+  "observed_control": {
+    "condition_id": "qwen2_5_7b_q4_control",
+    "actual_model_generation_call_count": 10,
+    "nonempty_raw_generation_count": 10,
+    "strict_valid_generation_count": 6,
+    "raw_language_or_script_pollution_count": 4,
+    "final_language_or_script_pollution_count": 1,
+    "final_required_semantics_missing_count": 2,
+    "final_polite_register_drift_count": 2,
+    "warm_wall_latency_median_seconds": 2.2623
+  },
+  "invalidity": {
+    "candidate_output_seen_before_stop": false,
+    "candidate_model_generation_call_count": 0,
+    "problem": "The V1 gate required a reduction of at least three final required-semantics failures, but the Ollama control had only two. It also failed to specify whether language pollution was measured before or after deterministic localization and sanitization.",
+    "why_v1_cannot_select_a_model": "At least one quality requirement is mathematically unreachable, so a candidate could not pass all preregistered gates even with zero semantic failures.",
+    "preserved_value": "The control run establishes the exact Ollama baseline and exposed a measurement-definition defect before any candidate output could influence the replacement gate."
+  },
+  "authorizations": {
+    "interpret_v1_as_candidate_comparison": false,
+    "reuse_frozen_control_as_v2_calibration_baseline": true,
+    "run_candidate_inference_before_v2_preregistration": false,
+    "change_production_default": false,
+    "claim_persona_similarity": false
+  }
+}

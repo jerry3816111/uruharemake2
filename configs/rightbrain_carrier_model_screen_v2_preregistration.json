@@ -1,0 +1,70 @@
+{
+  "schema": "uruha_rightbrain_carrier_model_screen_preregistration_v2",
+  "experiment_id": "rightbrain_carrier_model_screen_v2",
+  "status": "frozen_after_control_calibration_before_candidate_inference",
+  "design": "Sequential practical carrier screen. V1 generated the control only; V2 freezes feasible, explicit candidate gates before either candidate is called.",
+  "generation_harness": {
+    "path": "run_rightbrain_carrier_model_screen_v1.py",
+    "sha256": "40066a98a50df1346d2f955f1d0d2ea56cea722b608fa3b86baeacb36775b99e",
+    "generation_contract_unchanged": true
+  },
+  "frozen_inputs": {
+    "v1_preregistration_sha256": "ea12a5bcaed9446a1da58fceb1bd6a5fbe68a6a2b1110e67adec342b6b6a5f9a",
+    "deep_preflight_sha256": "5c4aca4da1fde5ec3917ae2bdacc71933ccfb0020edad55ca74886b29026f906",
+    "control_artifact_sha256": "60f05952520d7a56b66f1c9bf01234aa389404992770b408c3d266d3a15f7e21",
+    "control_calibration_sha256": "9f680758b24a61fe81f547b789530da73bccd3ef3c043eef6cd7cc9d162a1fb8",
+    "cases_sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+  },
+  "control_baseline": {
+    "condition_id": "qwen2_5_7b_q4_control",
+    "actual_generation_count": 10,
+    "strict_valid_generation_count": 6,
+    "raw_language_or_script_pollution_count": 4,
+    "final_required_semantics_missing_count": 2,
+    "final_polite_register_drift_count": 2,
+    "warm_wall_latency_median_seconds": 2.2623
+  },
+  "candidate_conditions_in_execution_order": [
+    "qwen3_5_4b_q4_candidate",
+    "qwen3_5_9b_q4_candidate"
+  ],
+  "actual_candidate_generation_count_per_condition": 10,
+  "actual_candidate_generation_count_total": 20,
+  "metric_definitions": {
+    "strict_valid_generation_count": "A nonempty reply accepted by the exact current RightBrain._prepare_model_surface_candidate gate without final rejection reasons.",
+    "raw_language_or_script_pollution_count": "Count of raw generations whose raw rejection reasons include cjk_language_leak, nonstandard_cjk_surface, foreign_script_leak, unexpected_ascii_leak, or ascii_symbol_artifact. This is measured before deterministic localization and sanitization.",
+    "final_required_semantics_missing_count": "Count of generations whose final production-equivalent gate reasons contain semantic_slots_missing.",
+    "final_polite_register_drift_count": "Count of generations whose final production-equivalent gate reasons contain polite_tone_drift or formal_register_drift.",
+    "warm_wall_latency_median_seconds": "Median wall latency excluding the first request for that model."
+  },
+  "candidate_advance_gate": {
+    "all_requirements_must_pass": true,
+    "requirements": {
+      "all_integrity_checks_pass": true,
+      "nonempty_raw_generation_count_exact": 10,
+      "strict_valid_generation_count_minimum": 9,
+      "strict_valid_generation_delta_vs_control_minimum": 3,
+      "raw_language_or_script_pollution_count_maximum": 2,
+      "raw_language_or_script_pollution_reduction_vs_control_minimum": 2,
+      "final_required_semantics_missing_count_maximum": 1,
+      "final_required_semantics_missing_reduction_vs_control_minimum": 1,
+      "final_polite_register_drift_count_maximum": 2,
+      "warm_wall_latency_median_seconds_maximum": 5.0,
+      "model_blob_bytes_maximum": 8589934592
+    }
+  },
+  "candidate_preference_if_both_pass": "Prefer 4B only if it is within one strict-valid output of 9B, is no worse on raw language pollution and final required-semantics failures, and has lower warm median latency. Otherwise select the stronger passing condition by strict validity, raw pollution, semantic failures, then latency.",
+  "decision_if_none_pass": "reject_simple_carrier_swap_and_investigate_role_specialization",
+  "decision_if_selected": "authorize_disjoint_exact_current_contract_holdout_for_selected_carrier_only",
+  "authorizations": {
+    "run_twenty_candidate_development_generations": true,
+    "reuse_frozen_control_without_rerunning": true,
+    "run_disjoint_holdout": false,
+    "change_production_default": false,
+    "train_persona_adapter": false,
+    "claim_persona_similarity": false,
+    "request_human_blind_rating": false,
+    "public_impersonation": false
+  },
+  "evidence_boundary": "The control result was known when V2 was frozen, but neither candidate had been called. V2 remains a development screen and can authorize only a separately preregistered source-independent holdout for one carrier."
+}
