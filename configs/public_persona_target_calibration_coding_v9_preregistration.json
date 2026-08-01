@@ -1,0 +1,134 @@
+{
+  "schema": "uruha_public_persona_target_calibration_coding_preregistration_v9",
+  "experiment_id": "public_persona_target_calibration_coding_v9",
+  "status": "preregistered_before_sampling_frame_build_behavior_review_or_human_coding",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "v3_governance_result": {
+      "path": "configs/public_persona_precontent_governance_v3_result_lock.json",
+      "sha256": "2543e04399b19e0bfe4a928023c3967f67b366fb6f51750620d2046ae82633ab",
+      "required_decision": "authorize_bounded_calibration_event_coding_and_consent_usability_review_only"
+    },
+    "v8_source_availability_result": {
+      "path": "configs/public_persona_source_availability_v8_result_lock.json",
+      "sha256": "040b9c14afc469a20291186961ad083ae7111195f0cd5532cffd8b2132fe1724"
+    },
+    "target_source_manifest": {
+      "path": "datasets/public_persona_reference_source_manifest_v2.json",
+      "sha256": "ab4aa0737f49e291825b4217b35ac570a7224d95ca7c992a44e3c56f0ebe7ac7"
+    },
+    "target_source_metadata": {
+      "path": "datasets/public_persona_target_calibration_source_metadata_v9.json",
+      "sha256": "d1e151870cf73d92d454d1b74264b28891629dd1288996bd973480d8fb9402c7"
+    },
+    "shared_event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "shared_codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    },
+    "shared_coder_manual": {
+      "path": "configs/public_persona_contrast_coding_manual_v7.json",
+      "sha256": "3e9b5a7f9399b3ddc252fa2daf9ec67fab2fa78a1ce464763105d0a99d3c3d31"
+    },
+    "shared_method_registry": {
+      "path": "configs/public_persona_contrast_event_coding_v5_method_registry.json",
+      "sha256": "ded942e7af55a557b96f68751f39473e930f2d0a3b2051328d7842ffdbf11b0b"
+    }
+  },
+  "current_problem": "三個已授權目標校準來源仍是零事件。若人工自行挑選有特色的片段，容易形成便利抽樣、口癖偏誤與事後挑好看的證據；若直接開始編碼，又會在 V7 共用 codebook 尚未通過雙人可靠度前增加不可合併的人工作業。",
+  "falsifiable_hypothesis": "若在任何行為內容觀看前，把三個官方校準來源各切成十個時間搜尋區，並以來源分區鍵和 SHA-256 在每區凍結一個搜尋起點，則程式應可重建完全相同的三十個槽位、排除全部最終 holdout、限制事件選擇為搜尋起點後第一個合格完整事件，並準備隔離的雙人帳本工具而不建立任何行為標註或人格分數。",
+  "single_changed_variable": "add a deterministic target-calibration sampling frame and gated local two-coder framework; source behavior content, shared codebook, prompts, memory, runtime, model, training, final holdout, system outputs and persona scores remain unchanged",
+  "sampling_contract": {
+    "authorized_target_source_count_exact": 3,
+    "temporal_strata_per_source_exact": 10,
+    "sampling_slot_count_exact": 30,
+    "stratum_boundary_algorithm": "floor(duration_seconds * boundary_index / 10)",
+    "search_start_algorithm": "stratum_start + uint64_be(sha256(experiment_id|source_partition_key|slot_index)[0:8]) mod stratum_width",
+    "global_review_order_algorithm": "ascending sha256(experiment_id|sampling_slot_id|global_review_order)",
+    "first_eligible_complete_event_at_or_after_search_start_required": true,
+    "event_start_must_fall_inside_assigned_stratum": true,
+    "event_end_may_cross_stratum_boundary_to_preserve_complete_unit": true,
+    "no_eligible_event_is_retained_not_replaced": true,
+    "overlap_with_prior_selected_event_blocks_slot_without_replacement": true,
+    "fixed_duration_strata_are_search_regions_not_behavior_units": true,
+    "convenience_or_persona_salience_selection_forbidden": true,
+    "behavior_content_used_for_slot_selection": false,
+    "post_content_source_or_slot_replacement_allowed": false
+  },
+  "source_partition_contract": {
+    "authorized_source_ids": [
+      "uruha_calibration_youtube_valorant_20260318",
+      "uruha_calibration_youtube_street_fighter_20250317",
+      "uruha_calibration_youtube_farming_20250308"
+    ],
+    "forbidden_final_holdout_source_ids": [
+      "uruha_youtube_forza_holdout_v2",
+      "uruha_youtube_apex_team_holdout_v2",
+      "uruha_final_holdout_youtube_apex_collab_20250206",
+      "uruha_final_holdout_youtube_social_deduction_20210404"
+    ],
+    "final_holdout_source_count_in_frame_exact": 0,
+    "target_reply_or_reference_answer_count_exact": 0
+  },
+  "human_coding_contract": {
+    "distinct_consenting_human_coder_count_exact": 2,
+    "same_thirty_slots_completed_by_each_coder": true,
+    "separate_gitignored_private_ledgers_required": true,
+    "cross_coder_visibility_before_both_complete": false,
+    "same_shared_codebook_and_manual_required": true,
+    "model_outputs_or_persona_scores_visible": false,
+    "researcher_paraphrase_only": true,
+    "raw_quote_transcript_caption_comment_or_media_storage": false,
+    "private_motive_inference_allowed": false,
+    "original_independent_records_preserved_after_adjudication": true
+  },
+  "human_use_gate": {
+    "v7_reliability_result_required_before_target_coding": true,
+    "expected_future_lock_path": "configs/public_persona_contrast_coding_pilot_v7_reliability_lock.json",
+    "required_future_decision": "authorize_full_v5_contrast_coding_with_unchanged_v6_codebook_only",
+    "serve_or_initialize_before_gate_pass": false,
+    "reason": "目標與對照人物必須使用同一套已證明可由兩位真人一致套用的 codebook；V7 尚為零資料時不應新增六十次目標編碼工作。"
+  },
+  "private_storage_contract": {
+    "private_root": "analysis/local_public_persona_target_calibration_v9/",
+    "gitignored_storage_required": true,
+    "atomic_write_required": true,
+    "one_coder_pseudonym_per_ledger": true,
+    "one_entry_per_sampling_slot": true,
+    "ledger_paths_must_resolve_under_private_root": true
+  },
+  "decision_policy": {
+    "construction_pass": "authorize_frozen_target_calibration_frame_and_local_tool_installation_pending_v7_reliability_only",
+    "construction_fail": "repair_target_calibration_protocol_before_any_target_behavior_review",
+    "target_human_coding_now": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "rater_recruitment": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "expected_counts_after_construction": {
+    "sampling_slot_count": 30,
+    "private_ledger_count": 0,
+    "content_reviewed_source_count": 0,
+    "selected_event_count": 0,
+    "coded_event_count": 0,
+    "independently_reviewed_event_count": 0,
+    "human_coder_count": 0,
+    "raw_or_verbatim_record_count": 0,
+    "model_output_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "model_call_count": 0,
+    "production_memory_write_count": 0
+  },
+  "evidence_boundary": "V9 建構通過只證明三個目標校準來源的三十個內容無關搜尋槽、最終 holdout 排除、雙人獨立編碼規則與本機資料隔離已在內容觀看前凍結。V7 可靠度通過前不授權目標行為編碼；本結果也不包含行為觀察、真人標註、模型生成、人格分數、訓練或公開人格相似證據。"
+}
