@@ -1,0 +1,56 @@
+{
+  "schema": "uruha_rightbrain_adamw_clipping_effect_result_lock_v1",
+  "experiment_id": "rightbrain_adamw_clipping_effect_v1",
+  "status": "locked_after_invalid_gradient_reconstruction",
+  "result_bindings": [
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v1_preregistration.json",
+      "sha256": "a46a6b54ceb06a93d196dfb01b49fa839af70c5445f549d37b126bd16755a541"
+    },
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v1_execution_lock.json",
+      "sha256": "7671670cee58562b4222a12ea15f438d7ec4858c2edcff10c0b360b2ec134ae0"
+    },
+    {
+      "path": "diagnose_rightbrain_adamw_clipping_effect_v1.py",
+      "sha256": "fc7fcfc359240ba2b9e30ecee05e6430b6d340a697b0d4a3e80c68d8323fb3ab"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v1_result.json",
+      "sha256": "0cf94706a84a9a1bb2aed37867b59d91fbf6ff7235548827ca4bfff72804e7f5"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v1_result.md",
+      "sha256": "2b2b07a53d57743d19f00a65160bc8d0b141f44fd41d897f7ccf8fdaeb92d55c"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v1_analysis.md",
+      "sha256": "31eea0d4658fae7c4f86fc0d6d556f825eeab5db8791d3f68ac54fa419d7193f"
+    }
+  ],
+  "integrity_failure": {
+    "prior_total_gradient_norm": 403.7281799316406,
+    "reconstructed_total_gradient_norm": 2.878972291946411,
+    "relative_error": 0.9928690330894566,
+    "preregistered_relative_error_maximum": 0.001,
+    "losses_match_prior_exactly": true,
+    "parameter_tensors_with_gradient": 392,
+    "trainable_parameter_tensors": 392,
+    "trainable_parameters_unchanged": true
+  },
+  "decision": {
+    "valid": false,
+    "outcome": "invalid_diagnostic",
+    "clipping_effect_interpretable": false,
+    "reason": "The exact backward reconstruction missed the preregistered gradient-norm integrity tolerance by two orders of magnitude."
+  },
+  "authorization": {
+    "model_training": false,
+    "training_parameter_change": false,
+    "max_norm_change": false,
+    "learning_rate_change": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_one_exact_gradient_reproducibility_audit_only"
+  }
+}
