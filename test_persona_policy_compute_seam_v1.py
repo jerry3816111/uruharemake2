@@ -12,7 +12,7 @@ import public_persona_contract_v3 as public_contract
 import persona_policy_compute_seam_v1 as construction
 import uruha_compute_ledger as ledger_module
 import uruha_persona_policy as persona_policy
-from uruha_brain_mac import RIGHT_BRAIN_BASE_MODEL, RightBrain
+from uruha_brain_mac import RIGHT_BRAIN_BASE_MODEL, RightBrain, UruhaBrainV4_Mac
 
 
 ACTIVE_LOGIC = {
@@ -331,6 +331,10 @@ class PersonaPolicyConstructionV1Test(unittest.TestCase):
         self.assertTrue(audit["instrumented_client_present"])
         self.assertTrue(audit["default_provider_is_optional"])
         self.assertTrue(audit["default_ledger_is_optional"])
+
+    def test_partial_controller_without_constructor_has_no_ledger_snapshot(self):
+        partial = UruhaBrainV4_Mac.__new__(UruhaBrainV4_Mac)
+        self.assertIsNone(partial.get_compute_ledger_snapshot())
 
 
 if __name__ == "__main__":

@@ -14815,7 +14815,7 @@ class UruhaBrainV4_Mac:
     def _write_typed_reflection_if_enabled(self, user_input, reply, logic):
         if not urr.typed_reflection_runtime_enabled():
             return None
-        with ucl.ledger_stage(self.compute_ledger, "typed_reflection"):
+        with ucl.ledger_stage(getattr(self, "compute_ledger", None), "typed_reflection"):
             return self.memory.reflect_experience(
                 user_input, reply, logic, self.client_logic
             )
@@ -15177,7 +15177,7 @@ class UruhaBrainV4_Mac:
         if proactive_turn:
             self._push_blackboard("autonomous", "proactive_turn", proactive_turn, salience=0.92)
 
-        with ucl.ledger_stage(self.compute_ledger, "background_consolidation"):
+        with ucl.ledger_stage(getattr(self, "compute_ledger", None), "background_consolidation"):
             maintenance = self.memory.consolidate_recent_experiences(
                 self.client_logic,
                 minimum_turns=4,
@@ -15549,9 +15549,10 @@ class UruhaBrainV4_Mac:
         return self.emit_response_if_ready(event, tick_result)
 
     def get_compute_ledger_snapshot(self):
-        if self.compute_ledger is None:
+        ledger = getattr(self, "compute_ledger", None)
+        if ledger is None:
             return None
-        return self.compute_ledger.snapshot()
+        return ledger.snapshot()
 
     def live(self, user_input):
         self.enqueue_user_input(user_input)
