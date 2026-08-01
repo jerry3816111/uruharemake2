@@ -1,0 +1,103 @@
+{
+  "schema": "uruha_rightbrain_gradient_norm_crosscheck_preregistration_v1",
+  "experiment_id": "rightbrain_gradient_norm_crosscheck_v1",
+  "status": "frozen_before_any_crosscheck_backward_pass",
+  "research_question": "Does one newly reconstructed frozen gradient produce the same norm through repeated PyTorch MPS calls, independent CPU float64 accumulation, and stored layer/group decompositions, while matching the three-process 2.878972 control?",
+  "problem": {
+    "superseded_candidate_norm": 403.7281799316406,
+    "reproducible_control_norm": 2.878972291946411,
+    "three_process_control_cv": 0.0,
+    "uncertainty": "The old 403.728 result is internally structured but not reproducible. A device-independent norm crosscheck is required before it can be formally excluded from optimizer decisions."
+  },
+  "falsifiable_hypothesis": {
+    "statement": "All current norm implementations will agree with each other and with the reproducible 2.878972 control, while the old 403.728 artifact remains internally coherent but externally unreproduced.",
+    "confirm_if_all": {
+      "mps_repeated_call_relative_spread_maximum": 1e-7,
+      "mps_vs_cpu_float64_relative_error_maximum": 1e-5,
+      "mps_vs_group_recomposition_relative_error_maximum": 1e-5,
+      "mps_vs_layer_recomposition_relative_error_maximum": 1e-5,
+      "new_norm_vs_reproducible_control_relative_error_maximum": 0.001,
+      "old_total_vs_old_group_recomposition_relative_error_maximum": 1e-5,
+      "old_total_vs_old_layer_recomposition_relative_error_maximum": 1e-5,
+      "trainable_parameters_unchanged": true
+    },
+    "reject_if_any": {
+      "mps_vs_cpu_float64_relative_error_minimum": 0.001,
+      "new_norm_vs_reproducible_control_relative_error_minimum": 0.01,
+      "any_nonfinite_gradient": true,
+      "any_trainable_parameter_change": true
+    },
+    "inconclusive_between_prespecified_regions": true
+  },
+  "frozen_inputs": [
+    {
+      "path": "configs/rightbrain_gradient_reproducibility_v1_result_lock.json",
+      "sha256": "31aa2a9a341a23dff669fa91e9cbad0e90cadc3326447da8c1f7d93a8de4d2d5"
+    },
+    {
+      "path": "reports/rightbrain_gradient_reproducibility_v1_summary.json",
+      "sha256": "9962fc2ed23965963717ae23011e4635b92d2429653207e7057f7d49288b151f"
+    },
+    {
+      "path": "reports/rightbrain_gradient_reproducibility_v1_repeat_1.json",
+      "sha256": "51c8871018e2cb3228c0700e47012a885739dc2e34775916d084e919c10a00a2"
+    },
+    {
+      "path": "configs/rightbrain_training_signal_telemetry_v1_result_lock.json",
+      "sha256": "b7c813d10ae83907e7dd3fb84bd39cc83205e61f48f2b80d2fde441294625159"
+    },
+    {
+      "path": "reports/rightbrain_training_signal_telemetry_v1_result.json",
+      "sha256": "e65718965715b4d072d56e004a0cd1fa92aa554e8d438d7ba6675bc2b7ca1a2b"
+    }
+  ],
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [30, 60, 39, 74, 24, 2, 76, 37],
+    "row_ids": [
+      "rb_role_specialization_v1_0031",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0040",
+      "rb_role_specialization_v1_0075",
+      "rb_role_specialization_v1_0025",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0077",
+      "rb_role_specialization_v1_0038"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_dropout": 0.08,
+    "mps_official_norm_repetitions": 5
+  },
+  "independent_measurements": [
+    "five repeated torch.nn.utils.get_total_norm calls on MPS",
+    "CPU float64 sum of squared copied gradient elements",
+    "sum of squared per-parameter MPS norms",
+    "sum of squared projection and LoRA-side group norms",
+    "sum of squared layer norms",
+    "static recomposition of the old 403.728 result"
+  ],
+  "official_semantics": {
+    "pytorch_clip_grad_norm": "https://docs.pytorch.org/docs/2.13/generated/torch.nn.utils.clip_grad_norm_.html",
+    "interpretation": "The total norm is equivalent to the norm of all individual parameter gradients concatenated into one vector."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping_call": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "supersede_403_728_for_training_decisions_and_authorize_a_fresh_adamw_effect_diagnostic_only"
+  },
+  "result_paths": {
+    "json": "reports/rightbrain_gradient_norm_crosscheck_v1_result.json",
+    "markdown": "reports/rightbrain_gradient_norm_crosscheck_v1_result.md"
+  }
+}
