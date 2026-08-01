@@ -1,0 +1,463 @@
+{
+  "schema": "uruha_rightbrain_qwen3_loss_decomposition_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_loss_decomposition_v1",
+  "research_question": "With the full 36-layer Qwen3 graph fixed at 512 allocated tokens, which MLX cross-entropy component is sufficient to reproduce the observed cross-process LoRA gradient drift?",
+  "causal_variable": {
+    "name": "loss_component",
+    "levels": [
+      "masked_cross_entropy",
+      "target_score_only",
+      "logsumexp_only"
+    ],
+    "masked_cross_entropy": "logsumexp(logits) - target_score",
+    "target_score_only": "negative_target_score",
+    "logsumexp_only": "logsumexp(logits)",
+    "only_intended_change": true
+  },
+  "evidence_parent": {
+    "full_lm_512_result": {
+      "path": "reports/rightbrain_qwen3_compact_length_repro_v1_result.json",
+      "sha256": "e33d72d1c5f46e40999ec26e58c37582b75a868f39f15ac8935972ebb7fbad34",
+      "outcome": "compact_length_512_does_not_eliminate_drift",
+      "metrics": {
+        "gradient_norms": [
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          3555008.2416522224,
+          604180.2877669615,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          3905269.730249643,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          9.047619834456171,
+          3214492.0912692198,
+          1764155.5674651824,
+          9.047619834456171,
+          9.047619834456171
+        ],
+        "mean_gradient_norm": 652162.0816350372,
+        "gradient_norm_coefficient_of_variation": 1.9753936999558075,
+        "gradient_norm_max_to_min_ratio": 431635.0379109821,
+        "minimum_pairwise_group_profile_cosine": 0.9968789450519387,
+        "gradient_hashes": [
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "846f9601960199af9882c797577b9e49088844dd29ca183d1fbd0d767bc96947",
+          "0ac1adbceafeb08c3e17b5225d65da0904e552c37703aa1153adb69aa72ddb40",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "c46c384a7aec34874572ccea6de2406fa8c505fb186cf068064cca678d9ca784",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "03711b9ae19c2547ffe40f8341a7e392a95db259dc069fb4058bcc859719c78e",
+          "9ede6df52ccc191ce246568270ca808c44312f0211e1eb1609aea64961491bd4",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a",
+          "752c6689ad2d22a0cdf9da57cf15c8baf83f5ed34f8db3607f102369db26d45a"
+        ],
+        "gradient_hashes_identical": false,
+        "losses": [
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125,
+          5.05078125
+        ],
+        "durations_seconds": [
+          4.669,
+          4.641,
+          4.684,
+          4.683,
+          4.584,
+          4.633,
+          4.649,
+          4.741,
+          4.695,
+          4.592,
+          4.697,
+          4.698,
+          4.701,
+          4.695,
+          4.72,
+          4.726,
+          4.525,
+          4.641,
+          4.716,
+          4.629
+        ],
+        "peak_memory_bytes": [
+          13908291753,
+          13908291498,
+          13908291498,
+          13891530921,
+          13908291753,
+          13908291498,
+          13908291498,
+          13908291498,
+          13908291498,
+          13891530666,
+          13848894633,
+          13891530666,
+          13908291498,
+          13908291498,
+          13908291753,
+          13908291753,
+          13908291753,
+          13908291498,
+          13891530666,
+          13848894633
+        ],
+        "checks": {
+          "cv": false,
+          "ratio": false,
+          "profile_cosine": false,
+          "gradient_hashes_identical": false
+        }
+      }
+    },
+    "transformer_without_lm_head_or_loss_result": {
+      "path": "reports/rightbrain_qwen3_lora_span_repro_v1_result.json",
+      "sha256": "b9a9c5038ef40f0ae6a994689e0aa53baa907f8c5e61f1af0dd9b56427c6b5c3",
+      "outcome": "lora_span_alone_does_not_reproduce_full_model_drift",
+      "thirty_six_layer_stable": true
+    }
+  },
+  "upstream_implementation": {
+    "mlx_version": "0.32.0",
+    "losses_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/losses.py",
+      "scope": "external_local",
+      "sha256": "c40237732c83b97cf8a9b0409564cb9d1d9d1f161d42f15b127e19f385bdc479",
+      "implementation": "logsumexp_logits - score"
+    },
+    "scope_note": "The local installed MLX 0.32.0 source is bound so the decomposition matches the exact cross_entropy implementation used by the control."
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "synthetic_source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false,
+    "suffix_labels": -100
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "base_compute_dtype": "bfloat16",
+    "allocated_sequence_length": 512,
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "adapter_dtype": "mlx.core.float32",
+    "shared_forward_path": [
+      "token_embedding",
+      "36_transformer_layers",
+      "final_rms_norm",
+      "tied_lm_head"
+    ],
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "fully_counterbalanced_execution_schedule": [
+      {
+        "repeat": 1,
+        "condition_order": [
+          "masked_cross_entropy",
+          "target_score_only",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 2,
+        "condition_order": [
+          "masked_cross_entropy",
+          "logsumexp_only",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 3,
+        "condition_order": [
+          "target_score_only",
+          "masked_cross_entropy",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 4,
+        "condition_order": [
+          "target_score_only",
+          "logsumexp_only",
+          "masked_cross_entropy"
+        ]
+      },
+      {
+        "repeat": 5,
+        "condition_order": [
+          "logsumexp_only",
+          "masked_cross_entropy",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 6,
+        "condition_order": [
+          "logsumexp_only",
+          "target_score_only",
+          "masked_cross_entropy"
+        ]
+      },
+      {
+        "repeat": 7,
+        "condition_order": [
+          "masked_cross_entropy",
+          "target_score_only",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 8,
+        "condition_order": [
+          "masked_cross_entropy",
+          "logsumexp_only",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 9,
+        "condition_order": [
+          "target_score_only",
+          "masked_cross_entropy",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 10,
+        "condition_order": [
+          "target_score_only",
+          "logsumexp_only",
+          "masked_cross_entropy"
+        ]
+      },
+      {
+        "repeat": 11,
+        "condition_order": [
+          "logsumexp_only",
+          "masked_cross_entropy",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 12,
+        "condition_order": [
+          "logsumexp_only",
+          "target_score_only",
+          "masked_cross_entropy"
+        ]
+      },
+      {
+        "repeat": 13,
+        "condition_order": [
+          "masked_cross_entropy",
+          "target_score_only",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 14,
+        "condition_order": [
+          "masked_cross_entropy",
+          "logsumexp_only",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 15,
+        "condition_order": [
+          "target_score_only",
+          "masked_cross_entropy",
+          "logsumexp_only"
+        ]
+      },
+      {
+        "repeat": 16,
+        "condition_order": [
+          "target_score_only",
+          "logsumexp_only",
+          "masked_cross_entropy"
+        ]
+      },
+      {
+        "repeat": 17,
+        "condition_order": [
+          "logsumexp_only",
+          "masked_cross_entropy",
+          "target_score_only"
+        ]
+      },
+      {
+        "repeat": 18,
+        "condition_order": [
+          "logsumexp_only",
+          "target_score_only",
+          "masked_cross_entropy"
+        ]
+      }
+    ],
+    "position_counts_by_condition": {
+      "masked_cross_entropy": [
+        6,
+        6,
+        6
+      ],
+      "target_score_only": [
+        6,
+        6,
+        6
+      ],
+      "logsumexp_only": [
+        6,
+        6,
+        6
+      ]
+    },
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "gradient_hashes_must_be_identical": true
+    },
+    "control_requirement": "masked_cross_entropy_must_be_unstable",
+    "classifications": {
+      "all_three_unstable": "drift_precedes_loss_decomposition_or_is_in_shared_model_backward",
+      "ce_and_logsumexp_unstable_target_stable": "logsumexp_branch_is_sufficient_to_reproduce_drift",
+      "ce_and_target_unstable_logsumexp_stable": "target_score_branch_is_sufficient_to_reproduce_drift",
+      "ce_unstable_both_components_stable": "combined_cross_entropy_graph_is_required_to_reproduce_drift",
+      "ce_stable": "cross_entropy_parent_drift_not_reproduced",
+      "execution_failure": "loss_decomposition_execution_failed"
+    }
+  },
+  "success_authorization": {
+    "maximum_positive_next_step": "localize_the_identified_loss_branch_only",
+    "persona_training": false,
+    "runtime_activation": false,
+    "persona_similarity_claim": false
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "training_authorization": false,
+    "scope": "full_qwen3_loss_component_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_loss_decomposition_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_loss_decomposition_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_loss_decomposition_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_loss_decomposition_v1_result_lock.json"
+  }
+}
