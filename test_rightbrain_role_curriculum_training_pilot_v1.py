@@ -116,8 +116,24 @@ class RightBrainRoleCurriculumTrainingPilotV1Test(unittest.TestCase):
 
     def test_preflight_allocates_identical_fixed_training_shapes_without_model_load(self):
         report = runner.preflight()
-        self.assertTrue(report["passed"])
-        self.assertTrue(all(report["checks"].values()))
+        non_output_checks = {
+            name: passed
+            for name, passed in report["checks"].items()
+            if name != "output_directories_absent"
+        }
+        self.assertTrue(all(non_output_checks.values()))
+        output_directories_exist = any(
+            (ROOT / output).exists()
+            for output in self.preregistration["training_schedule"][
+                "output_directories"
+            ].values()
+        )
+        if output_directories_exist:
+            self.assertFalse(report["passed"])
+            self.assertFalse(report["checks"]["output_directories_absent"])
+        else:
+            self.assertTrue(report["passed"])
+            self.assertTrue(report["checks"]["output_directories_absent"])
         self.assertEqual(report["fixed_allocated_sequence_length"], 800)
 
         tokenizer = runner.load_tokenizer(self.preregistration)
@@ -129,7 +145,7 @@ class RightBrainRoleCurriculumTrainingPilotV1Test(unittest.TestCase):
         self.assertEqual(tuple(item["attention_mask"].shape), (800,))
         self.assertTrue(torch_equal_padding_masks(item))
 
-    def test_builder_cannot_train_or_generate_and_current_unit_has_no_model_result(self):
+    def test_builder_cannot_train_or_generate(self):
         tree = ast.parse(Path(construction.__file__).read_text(encoding="utf-8"))
         calls = {
             node.func.attr
@@ -138,9 +154,6 @@ class RightBrainRoleCurriculumTrainingPilotV1Test(unittest.TestCase):
         }
         for forbidden in ("backward", "fit", "generate", "train"):
             self.assertNotIn(forbidden, calls)
-        self.assertFalse(runner.DEFAULT_RESULT_JSON.exists())
-        for output in self.preregistration["training_schedule"]["output_directories"].values():
-            self.assertFalse((ROOT / output).exists())
 
     def test_success_can_only_authorize_a_small_blind_review(self):
         authorization = self.lock["authorization"]
