@@ -1,0 +1,65 @@
+{
+  "schema": "uruha_public_persona_source_availability_preregistration_v8",
+  "experiment_id": "public_persona_source_availability_v8",
+  "status": "preregistered_before_any_v8_source_request",
+  "depends_on": {
+    "target_coding_authorization": "configs/public_persona_precontent_governance_v3_result_lock.json",
+    "contrast_coding_authorization": "configs/public_persona_contrast_coding_pilot_v7_result_lock.json"
+  },
+  "current_problem": {
+    "target_calibration_source_count": 3,
+    "contrast_source_count": 9,
+    "target_calibration_event_count": 0,
+    "contrast_event_count": 0,
+    "risk": "Human coders should not spend time on a removed video, a wrong-channel upload, or a manifest with the wrong publication date."
+  },
+  "falsifiable_hypothesis": "All three authorized target calibration archives and all nine authorized matched-contrast archives remain publicly resolvable through official YouTube metadata, and each resolves to the preregistered publisher channel and publication date.",
+  "scope": {
+    "target_calibration_source_count_exact": 3,
+    "contrast_calibration_source_count_exact": 9,
+    "total_source_count_exact": 12,
+    "requests_per_source_exact": 2,
+    "expected_request_count": 24,
+    "final_holdout_source_request_count_exact": 0,
+    "behavior_content_review_count_exact": 0,
+    "stored_title_count_exact": 0,
+    "stored_transcript_count_exact": 0,
+    "model_call_count_exact": 0,
+    "production_memory_write_count_exact": 0
+  },
+  "request_policy": {
+    "allowed_hosts": ["www.youtube.com"],
+    "allowed_endpoints": ["watch_page_public_metadata", "oembed_public_metadata"],
+    "timeout_seconds": 15,
+    "raw_response_storage": false,
+    "title_storage": false,
+    "description_storage": false,
+    "caption_or_transcript_access": false,
+    "media_download": false,
+    "comment_access": false,
+    "automated_behavior_interpretation": false
+  },
+  "pass_gates": {
+    "selection_integrity_pass": true,
+    "public_oembed_resolution_count_exact": 12,
+    "watch_metadata_resolution_count_exact": 12,
+    "publisher_channel_match_count_exact": 12,
+    "publication_date_match_count_exact": 12,
+    "request_error_count_max": 0,
+    "final_holdout_source_request_count_exact": 0,
+    "behavior_content_review_count_exact": 0,
+    "stored_title_count_exact": 0,
+    "stored_transcript_count_exact": 0
+  },
+  "decision_policy": {
+    "pass": "authorize_existing_v7_human_coding_source_access_only",
+    "fail": "block_human_coding_and_repair_source_manifest_before_content_review",
+    "automatic_source_replacement": false,
+    "holdout_unsealing": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "training": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "A pass proves only that the twelve preregistered non-holdout source URLs currently resolve to the expected official channels and dates. It does not create behavior events, labels, ratings, model responses, personality scores, training permission, or public-persona fidelity evidence."
+}
