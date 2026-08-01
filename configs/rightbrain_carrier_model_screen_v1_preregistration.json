@@ -1,0 +1,178 @@
+{
+  "schema": "uruha_rightbrain_carrier_model_screen_preregistration_v1",
+  "experiment_id": "rightbrain_carrier_model_screen_v1",
+  "status": "frozen_before_first_model_call",
+  "baseline_git_commit": "ded3d55b2cb6f24d8b31f783de7af06ce29fe524",
+  "research_question": "Which installed local Ollama model can realize the exact current structured public-persona RightBrain contract without changing cognition, persona policy, memory, cases, decoding, or the strict production-equivalent candidate gate?",
+  "reason_for_experiment": {
+    "observed_problem": "With the exact current five development cases, Qwen2.5-7B base-only produced only 2 strict-valid outputs out of 10. Replacing the English-heavy JSON with a shorter Japanese payload reduced strict-valid output to 1 out of 10 and increased language pollution from 4 to 7 outputs.",
+    "remaining_hypothesis": "The current surface carrier may lack instruction-following capacity for the structured persona-expression contract; payload language alone was not a sufficient cause.",
+    "falsifiable_prediction": "At least one installed Qwen3.5 carrier will pass the frozen improvement gates against the Ollama Qwen2.5-7B control on the exact same current contract.",
+    "not_being_tested": [
+      "target-person personality similarity",
+      "training or adapter quality",
+      "memory retrieval quality",
+      "left-brain reasoning quality",
+      "VRM action or Function Calling quality",
+      "production readiness"
+    ]
+  },
+  "design": {
+    "type": "practical_local_surface_carrier_screen",
+    "independent_variable": "installed_local_surface_carrier_model_artifact",
+    "causal_boundary": "Model family, parameter count, tokenizer, quantized weights, and chat template differ together. This is a practical deployment screen, not a causal parameter-count ablation.",
+    "conditions_in_execution_order": [
+      "qwen2_5_7b_q4_control",
+      "qwen3_5_4b_q4_candidate",
+      "qwen3_5_9b_q4_candidate"
+    ],
+    "development_case_count": 5,
+    "persona_policy_conditions_per_case": 2,
+    "actual_generation_count_per_model": 10,
+    "actual_generation_count_total": 30,
+    "case_source": "configs/persona_policy_local_model_pilot_v1_cases.json",
+    "case_scope": "Previously observed development cases; screening evidence only.",
+    "payload_mode": "legacy_json_v1",
+    "system_instruction": "exact current RIGHT_BRAIN_STRUCTURED_MODEL_SYSTEM_PROMPT",
+    "candidate_gate": "exact current RightBrain._prepare_model_surface_candidate",
+    "repair_enabled": false,
+    "adapter_loaded": false,
+    "fixed_surface_enabled": false,
+    "memory_writes": false,
+    "formal_persona_scoring": false,
+    "controlled_variables": [
+      "same Mac and Ollama runtime",
+      "same five cases and target-neutral provider order",
+      "same user input, cognition plan, persona policy, memory state, mood, trust, and maximum reply length",
+      "same exact system instruction and legacy JSON payload text",
+      "same 4096-token context budget and 56-token output ceiling",
+      "same case seeds and sampling settings",
+      "same strict production-equivalent candidate gate",
+      "one model resident at a time"
+    ],
+    "known_uncontrolled_differences": [
+      "model-specific tokenizer token counts",
+      "model-specific Ollama chat templates",
+      "quantized model architecture and parameter count",
+      "fixed model execution order"
+    ]
+  },
+  "runtime": {
+    "hardware": {
+      "model_identifier": "Mac14,10",
+      "chip": "Apple M2 Pro",
+      "unified_memory_bytes": 34359738368,
+      "cpu_core_count": 12
+    },
+    "ollama_version": "0.31.1",
+    "ollama_chat_url": "http://127.0.0.1:11434/api/chat",
+    "options": {
+      "num_ctx": 4096,
+      "num_predict": 56,
+      "temperature": 0.82,
+      "top_p": 0.92,
+      "top_k": 64,
+      "repeat_penalty": 1.2
+    },
+    "thinking": {
+      "qwen2_5_7b_q4_control": null,
+      "qwen3_5_4b_q4_candidate": false,
+      "qwen3_5_9b_q4_candidate": false
+    },
+    "warm_latency_rule": "Wall latency excluding the first request for each model; all requests and Ollama durations remain reported."
+  },
+  "model_inventory": {
+    "qwen2_5_7b_q4_control": {
+      "ollama_tag": "qwen2.5:7b",
+      "manifest_path": "/Users/jerrychang/.ollama/models/manifests/registry.ollama.ai/library/qwen2.5/7b",
+      "manifest_sha256": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "model_blob_sha256": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+      "model_blob_bytes": 4683073952,
+      "quantization": "Q4_K_M",
+      "thinking": null
+    },
+    "qwen3_5_4b_q4_candidate": {
+      "ollama_tag": "qwen3.5:4b",
+      "manifest_path": "/Users/jerrychang/.ollama/models/manifests/registry.ollama.ai/library/qwen3.5/4b",
+      "manifest_sha256": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "model_blob_sha256": "81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490",
+      "model_blob_bytes": 3389971840,
+      "quantization": "Q4_K_M",
+      "thinking": false
+    },
+    "qwen3_5_9b_q4_candidate": {
+      "ollama_tag": "qwen3.5:9b",
+      "manifest_path": "/Users/jerrychang/.ollama/models/manifests/registry.ollama.ai/library/qwen3.5/9b",
+      "manifest_sha256": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "model_blob_sha256": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+      "model_blob_bytes": 6594462816,
+      "quantization": "Q4_K_M",
+      "thinking": false
+    }
+  },
+  "frozen_sources": {
+    "uruha_brain_mac.py": "6becc225d3ea720538217461a210076215f5911423a49826c1f04dfe01c6ce43",
+    "uruha_persona_policy.py": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2",
+    "uruha_surface_payload_v2.py": "6699ce02ffd51b4783455eaf1a17e6dd9365f9b4f447087e8d799c6e84e5904b",
+    "configs/persona_policy_local_model_pilot_v1_cases.json": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+  },
+  "frozen_prompt_hashes": {
+    "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+    "payload_sha256_by_provider_and_case": {
+      "structured_target_public_persona": {
+        "persona_local_pilot_01": "e1ae23e59384bee2918879f574ecc82ec7ba48a89b95c1d381e2a31e5c82770e",
+        "persona_local_pilot_02": "806e806b743c2ce58cf3be1becb0571c21fca1843de0d3596325f68c66e9bcf1",
+        "persona_local_pilot_03": "9d629c47705709d855e17713dedb3146335f6a812c473dc6ba1380d7ecdc4a06",
+        "persona_local_pilot_04": "4ba028ba5d7f82f9253b1133150202ee974bd6e88b628ff3c340889ea990123e",
+        "persona_local_pilot_05": "fa1ef929f90ee01c2edcf3f6e9324b88f54cd7ac09cb97fbf00e0e6484b243dc"
+      },
+      "structured_neutral_dialogue": {
+        "persona_local_pilot_01": "a97527e22e59510dd1a2cdd458abd7a7f86091b48043228bf64b39294465e1ac",
+        "persona_local_pilot_02": "9185c141d9df7bd40669a38002b96b96fc0cf6ce1ea114b55923bb2356e08c90",
+        "persona_local_pilot_03": "bb8395815e345f6fa7488969412247904e1440e83721a9eb6518fdf4bc00f08d",
+        "persona_local_pilot_04": "58222c405904dcde073cbe23cf71c7d56e4034baff3064ea6bd1d26cd601e1c3",
+        "persona_local_pilot_05": "577e3b80bb3cef8a7b85e7e3dd1975b836c308b90300a11a436801ce26843046"
+      }
+    }
+  },
+  "outcomes": {
+    "primary": "strict_valid_generation_count",
+    "secondary": [
+      "language_or_script_pollution_count",
+      "required_semantics_missing_count",
+      "polite_register_drift_count",
+      "both_persona_policy_conditions_strict_valid_case_count",
+      "distinct_normalized_output_count",
+      "warm_wall_latency_median_seconds",
+      "ollama_reported_resident_size_bytes",
+      "peak_ollama_process_rss_bytes"
+    ]
+  },
+  "candidate_advance_gate": {
+    "all_requirements_must_pass": true,
+    "requirements_vs_qwen2_5_control": {
+      "nonempty_raw_generation_count_exact": 10,
+      "strict_valid_generation_count_minimum": 5,
+      "strict_valid_generation_delta_minimum": 3,
+      "language_or_script_pollution_reduction_minimum": 2,
+      "required_semantics_missing_reduction_minimum": 3,
+      "polite_register_drift_may_not_increase": true,
+      "warm_wall_latency_median_seconds_maximum": 5.0,
+      "model_blob_bytes_maximum": 8589934592,
+      "all_integrity_checks_pass": true
+    },
+    "preference_if_both_pass": "Prefer 4B only if it is within one strict-valid output of 9B, is no worse on language pollution and required semantics, and has lower warm median latency; otherwise prefer the stronger valid condition.",
+    "decision_if_none_pass": "reject_simple_carrier_swap_and_investigate_role_specialization",
+    "decision_if_candidate_passes": "authorize_disjoint_exact_current_contract_holdout_for_selected_carrier_only"
+  },
+  "authorizations": {
+    "run_thirty_local_development_generations": true,
+    "run_disjoint_holdout": false,
+    "change_production_default": false,
+    "train_persona_adapter": false,
+    "claim_persona_similarity": false,
+    "request_human_blind_rating": false,
+    "public_impersonation": false
+  },
+  "evidence_boundary": "These five cases have already been observed. Passing this screen can authorize only a separately preregistered, source-independent exact-contract holdout for one carrier. It cannot authorize production, training, persona claims, or human blind testing."
+}
