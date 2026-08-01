@@ -121,6 +121,27 @@ class RightBrainMlxGradientReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
 
+    def test_result_rejects_training_despite_finite_memory_safe_gradients(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("MLX aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "mlx_does_not_provide_a_usable_reproducible_gradient_path",
+        )
+        self.assertFalse(result["decision"]["authorize_training_now"])
+        self.assertTrue(result["checks"]["all_losses_and_gradients_finite"])
+        self.assertTrue(result["checks"]["peak_memory_within_limit"])
+        self.assertTrue(result["checks"]["loss_vectors_exact_across_repetitions"])
+        self.assertTrue(result["checks"]["minimum_pairwise_group_profile_cosine"])
+        self.assertFalse(result["checks"]["gradient_norm_coefficient_of_variation"])
+        self.assertFalse(result["checks"]["gradient_norm_max_to_min_ratio"])
+        self.assertGreater(
+            result["measurements"]["gradient_norm_max_to_min_ratio"], 2.0
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
