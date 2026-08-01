@@ -1,0 +1,237 @@
+{
+  "schema": "uruha_public_persona_fidelity_eval_construction_audit_v1",
+  "experiment_id": "public_persona_fidelity_eval_v1",
+  "target_id": "ichinose_uruha_public_persona",
+  "protocol_passed": true,
+  "formal_execution_ready": false,
+  "persona_score_computed": false,
+  "decision": "authorize_provenance_only_reference_manifest_and_consented_rater_protocol_construction",
+  "summary": {
+    "protocol_check_count": 17,
+    "protocol_check_pass_count": 17,
+    "readiness_check_count": 19,
+    "readiness_check_pass_count": 1,
+    "method_count": 5,
+    "system_condition_count": 3,
+    "evaluation_family_count": 3,
+    "development_observation_count": 5,
+    "sealed_target_source_reservation_count": 2,
+    "formal_agent_response_count": 0,
+    "formal_persona_score_count": 0,
+    "model_call_count": 0,
+    "runtime_change_count": 0,
+    "holdout_content_review_count": 0
+  },
+  "protocol_checks": {
+    "preregistration_identity_and_hypothesis": true,
+    "locked_dependencies_match": true,
+    "public_observable_target_construct": true,
+    "matched_system_conditions": true,
+    "control_variables_complete": true,
+    "three_complementary_evaluation_families": true,
+    "human_reference_design_complete": true,
+    "closed_blind_protocol_complete": true,
+    "primary_endpoint_frozen": true,
+    "calibration_formulas_defined": true,
+    "general_capability_non_regression_frozen": true,
+    "single_component_ablation_required": true,
+    "formal_readiness_contract_complete": true,
+    "leakage_and_rights_controls_complete": true,
+    "narrow_authorization_boundary": true,
+    "primary_method_registry_complete": true,
+    "readiness_inventory_is_locked_evidence_bound": true
+  },
+  "readiness_checks": {
+    "target_development_observation_count": false,
+    "target_calibration_source_count": false,
+    "target_calibration_event_count": false,
+    "target_final_holdout_source_count": false,
+    "target_final_holdout_event_count": false,
+    "matched_contrast_person_count": false,
+    "contrast_event_count_per_person_min": false,
+    "same_topic_reference_pair_count": false,
+    "counterfactual_final_scenario_count": false,
+    "dynamic_multi_turn_episode_count": false,
+    "target_familiar_final_rater_count": false,
+    "general_japanese_final_rater_count": false,
+    "ratings_per_item_min": false,
+    "pilot_completed": false,
+    "power_plan_frozen": false,
+    "runtime_manifest_frozen": false,
+    "source_rights_review_complete_for_formal_corpus": false,
+    "holdout_access_log_ready": false,
+    "all_nonzero_claims_hash_bound": true
+  },
+  "readiness_current": {
+    "target_development_observation_count": 5,
+    "sealed_target_source_reservation_count": 2,
+    "target_calibration_source_count": 0,
+    "target_calibration_event_count": 0,
+    "target_final_holdout_source_count": 0,
+    "target_final_holdout_event_count": 0,
+    "matched_contrast_person_count": 0,
+    "contrast_event_count_per_person_min": 0,
+    "same_topic_reference_pair_count": 0,
+    "counterfactual_final_scenario_count": 0,
+    "dynamic_multi_turn_episode_count": 0,
+    "target_familiar_final_rater_count": 0,
+    "general_japanese_final_rater_count": 0,
+    "ratings_per_item_min": 0,
+    "formal_agent_response_count": 0,
+    "formal_persona_score_count": 0,
+    "holdout_content_reviewed_count": 0,
+    "holdout_label_available_count": 0,
+    "raw_or_verbatim_record_count": 0,
+    "training_authorized_record_count": 0
+  },
+  "readiness_required": {
+    "target_development_observation_count_min": 40,
+    "target_calibration_source_count_min": 3,
+    "target_calibration_event_count_min": 30,
+    "target_final_holdout_source_count_min": 4,
+    "target_final_holdout_event_count_min": 50,
+    "matched_contrast_person_count_min": 3,
+    "contrast_event_count_per_person_min": 30,
+    "same_topic_reference_pair_count_min": 30,
+    "counterfactual_final_scenario_count_min": 50,
+    "dynamic_multi_turn_episode_count_min": 20,
+    "target_familiar_final_rater_count_min": 3,
+    "general_japanese_final_rater_count_min": 3,
+    "ratings_per_item_min": 3,
+    "pilot_completed_required": true,
+    "power_plan_frozen_required": true,
+    "runtime_manifest_frozen_required": true,
+    "source_rights_review_complete_required": true,
+    "holdout_access_log_ready_required": true
+  },
+  "violations": {},
+  "synthetic_arithmetic_examples_not_results": {
+    "calibrated_similarity": 0.5999999999999999,
+    "calibrated_distance": 0.75,
+    "pairwise_preference": {
+      "judgment_count": 20,
+      "non_tie_count": 18,
+      "s0_non_tie_win_rate": 0.6666666666666666,
+      "s0_tie_adjusted_win_rate": 0.65,
+      "s0_non_tie_wilson_95_ci": [
+        0.4374946729594511,
+        0.837212252491663
+      ]
+    }
+  },
+  "system_conditions": {
+    "s0_full_cognitive_persona": {
+      "role": "primary_system",
+      "description": "凍結的完整認知型公開人格代理；使用正式聊天管線，但不能讀取評測 holdout 或真人參考答案。"
+    },
+    "c1_matched_prompt_only": {
+      "role": "primary_fair_control",
+      "description": "使用與 S0 相同本機基礎模型、開發人格資訊、輸入內容、總上下文預算、解碼參數及輸出預算，但以單次 prompt-only 方式回答，不使用結構化認知管線。"
+    },
+    "c2_matched_persona_disabled": {
+      "role": "persona_specificity_control",
+      "description": "保留與 S0 相同架構、模型與預算，只把目標公開人格證據替換成等長度的中性公開對話契約，用於驗證增益是否真的來自目標人格層。"
+    }
+  },
+  "evaluation_families": {
+    "naturalistic_masked_continuation": {
+      "purpose": "測量代理在真實公開情境中的行為及表達是否落在目標人物參考範圍。",
+      "agent_input": "只提供目標人物當時可見的情境，不提供其後續原句或答案。",
+      "reference": "評測端保管的目標人物後續公開行為編碼；原始內容不進 Prompt、記憶或訓練。",
+      "source_independence": "以來源、日期及事件分割，不以同一直播中的隨機句子分割。"
+    },
+    "counterfactual_unseen_open_scenarios": {
+      "purpose": "測量來源中沒有標準答案的新情境人格泛化。",
+      "agent_input": "以一般生活、合作、競爭、失誤、不確定及關係變化構成的未見情境。",
+      "reference": "熟悉目標人物的獨立評分者對匿名回答進行配對判斷，不建立固定目標答案。",
+      "source_independence": "情境不得改寫任何開發或 holdout 原句。"
+    },
+    "dynamic_multi_turn_episodes": {
+      "purpose": "測量關係、記憶、經驗更新、反思及情緒反應是否跨輪一致。",
+      "agent_input": "含狀態改變、舊資訊修正、未完成義務及需要保留判斷的多輪事件。",
+      "reference": "以凍結行為 rubric、人類盲評及可程式化事實檢查分開評分。",
+      "source_independence": "事件腳本與人格來源分開建立，最終集在候選系統凍結後才解封。"
+    }
+  },
+  "method_inventory": [
+    {
+      "method_id": "incharacter_acl_2024",
+      "title": "InCharacter: Evaluating Personality Fidelity in Role-Playing Agents through Psychological Interviews",
+      "url": "https://aclanthology.org/2024.acl-long.102/",
+      "doi": "10.18653/v1/2024.acl-long.102",
+      "adopted_element": "Use open-ended interviews and human-perceived target profiles instead of treating direct self-report answers as sufficient personality evidence.",
+      "not_claimed": "The paper's reported character-level accuracy is not reused as an UruhaBrain score or success threshold."
+    },
+    {
+      "method_id": "charactereval_acl_2024",
+      "title": "CharacterEval: A Chinese Benchmark for Role-Playing Conversational Agent Evaluation",
+      "url": "https://aclanthology.org/2024.acl-long.638/",
+      "doi": "10.18653/v1/2024.acl-long.638",
+      "adopted_element": "Keep conversational quality, character consistency, role-play quality, and personality-related evidence as separate dimensions with human calibration.",
+      "not_claimed": "Its Chinese fictional-character dataset is not treated as a direct benchmark for a Japanese public persona."
+    },
+    {
+      "method_id": "personagym_emnlp_2025",
+      "title": "PersonaGym: Evaluating Persona Agents and LLMs",
+      "url": "https://aclanthology.org/2025.findings-emnlp.368/",
+      "doi": "10.18653/v1/2025.findings-emnlp.368",
+      "adopted_element": "Test persona behavior in dynamic, persona-relevant environments across expected action, justification, linguistic habits, consistency, and control tasks.",
+      "not_claimed": "PersonaScore is not used as a sole automatic judge and no benchmark answer is copied into the system."
+    },
+    {
+      "method_id": "emocharacter_naacl_2025",
+      "title": "EmoCharacter: Evaluating the Emotional Fidelity of Role-Playing Agents in Dialogues",
+      "url": "https://aclanthology.org/2025.naacl-long.316/",
+      "doi": "10.18653/v1/2025.naacl-long.316",
+      "adopted_element": "Evaluate emotional response fidelity separately in single-turn and multi-turn contexts because general capability does not guarantee emotional fidelity.",
+      "not_claimed": "Its source dialogues or labels are not imported and emotional fidelity is not equated with complete persona fidelity."
+    },
+    {
+      "method_id": "raven_tacl_2024",
+      "title": "Addressing Topic Leakage in Cross-Topic Evaluation for Authorship Verification",
+      "url": "https://aclanthology.org/2024.tacl-1.75/",
+      "doi": "10.1162/tacl_a_00709",
+      "adopted_element": "Report same-topic and cross-topic verification separately and construct heterogeneous topic controls so topic words cannot masquerade as speaker style.",
+      "not_claimed": "Authorship verification is supporting language evidence, not proof of identity or complete persona reproduction."
+    }
+  ],
+  "authorizations": {
+    "reference_manifest_construction": true,
+    "consented_rater_protocol_construction": true,
+    "separately_preregistered_pilot": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "next_required_evidence": "建立只含來源、日期、分割、權利邊界與雜湊的參考資料 manifest，補足目標校準、相近人物同主題對照及知情同意評分者流程；在全部 readiness gate 通過前不執行模型或打開 holdout。",
+  "evidence_boundary": "V1 protocol construction can prove only that a falsifiable, source-disjoint, matched-control and human-calibrated evaluation design exists. It cannot produce a persona score, establish target fidelity, authorize model or runtime changes, unseal the V2 holdout, import copyrighted transcripts, or claim that the system reproduces the person.",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/public_persona_fidelity_eval_v1_preregistration.json",
+      "sha256": "f6fa588c546e3a82b4f3426a692363189bf97492fdac9644105265d33ae545f6"
+    },
+    "method_registry": {
+      "path": "configs/public_persona_fidelity_eval_v1_method_registry.json",
+      "sha256": "dbc496ac888b33896e35a0854600784ed27a27cb7b7239c6f5b5a0dd07347315"
+    },
+    "readiness_inventory": {
+      "path": "datasets/public_persona_fidelity_eval_v1_readiness_inventory.json",
+      "sha256": "d80a3e71efafc40279307edc4301c8991d3aad26fde8f0a462b36ddac014eb14"
+    },
+    "dependencies": {
+      "configs/public_persona_evidence_v1_result_lock.json": {
+        "path": "configs/public_persona_evidence_v1_result_lock.json",
+        "sha256": "37bcf823c2cc6e7252e5b5390da633c802dacc9708ff9cdde672e1a39aed366d"
+      },
+      "configs/public_persona_observation_v2_result_lock.json": {
+        "path": "configs/public_persona_observation_v2_result_lock.json",
+        "sha256": "cc023103eee914d583bd0d0c6f6542c74874615a5c672dc234f21290faa0a1a0"
+      }
+    }
+  }
+}
