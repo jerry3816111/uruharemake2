@@ -1,0 +1,147 @@
+{
+  "schema": "uruha_rightbrain_adamw_clipping_effect_preregistration_v1",
+  "experiment_id": "rightbrain_adamw_clipping_effect_v1",
+  "status": "frozen_before_any_adamw_effect_backward_pass",
+  "research_question": "For the exact first accumulated treatment gradient, does the configured global clipping at max_norm 0.3 materially change the first AdamW parameter update compared with using the same raw gradient without clipping?",
+  "problem": {
+    "prior_total_gradient_norm": 403.7281799316406,
+    "configured_maximum_gradient_norm": 0.3,
+    "prior_theoretical_clip_coefficient": 0.0007430742122279447,
+    "uncertainty": "Severe raw-gradient scaling does not by itself prove a severe AdamW step change because the first- and second-moment normalization can cancel uniform scaling."
+  },
+  "falsifiable_hypothesis": {
+    "statement": "At the exact first AdamW step, clipped and unclipped hypothetical total parameter updates will be near-equivalent despite the severe raw-gradient clip coefficient.",
+    "near_equivalent_if_all": {
+      "relative_l2_difference_maximum": 0.01,
+      "cosine_similarity_minimum": 0.9999,
+      "clipped_to_unclipped_l2_ratio_minimum": 0.99,
+      "clipped_to_unclipped_l2_ratio_maximum": 1.01
+    },
+    "material_effect_if_any": {
+      "relative_l2_difference_minimum": 0.05,
+      "cosine_similarity_below": 0.995,
+      "clipped_to_unclipped_l2_ratio_below": 0.95,
+      "clipped_to_unclipped_l2_ratio_above": 1.05
+    },
+    "inconclusive_between_prespecified_regions": true,
+    "threshold_note": "These are preregistered engineering effect-size boundaries, not an official AdamW standard."
+  },
+  "frozen_inputs": [
+    {
+      "path": "configs/rightbrain_training_signal_telemetry_v1_result_lock.json",
+      "sha256": "b7c813d10ae83907e7dd3fb84bd39cc83205e61f48f2b80d2fde441294625159"
+    },
+    {
+      "path": "reports/rightbrain_training_signal_telemetry_v1_result.json",
+      "sha256": "e65718965715b4d072d56e004a0cd1fa92aa554e8d438d7ba6675bc2b7ca1a2b"
+    },
+    {
+      "path": "configs/rightbrain_training_signal_telemetry_v1_preregistration.json",
+      "sha256": "340bea1248e6b958bd8e41931afbe8eb74923741323b11095de7f6e73ed94147"
+    },
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_preregistration.json",
+      "sha256": "96b2f42f33e07a187aef959e2b754242d648f7d4ce5407d3165f4009c6cde5eb"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    },
+    {
+      "path": "diagnose_rightbrain_training_signal_telemetry_v1.py",
+      "sha256": "4cb43f5712075f3ef68e99ec998fe7396abfc66517187daeab4dbb4586207f45"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_config.json",
+      "sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+      "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  ],
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "condition": "policy_aligned_treatment",
+    "random_seed": 20260801,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [30, 60, 39, 74, 24, 2, 76, 37],
+    "row_ids": [
+      "rb_role_specialization_v1_0031",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0040",
+      "rb_role_specialization_v1_0075",
+      "rb_role_specialization_v1_0025",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0077",
+      "rb_role_specialization_v1_0038"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "base_dtype": "torch.bfloat16",
+    "trainable_parameter_dtype": "torch.float32"
+  },
+  "optimizer_contract": {
+    "name": "torch.optim.AdamW",
+    "learning_rate": 3e-7,
+    "betas": [0.9, 0.999],
+    "epsilon": 1e-6,
+    "weight_decay": 0.02,
+    "amsgrad": false,
+    "maximize": false,
+    "maximum_gradient_norm": 0.3,
+    "first_step_formula": "delta = -lr * weight_decay * theta - lr * g / (abs(g) + epsilon)",
+    "clipped_condition": "g is multiplied by min(1, max_norm / (total_norm + 1e-6))",
+    "unclipped_condition": "g is the unchanged accumulated raw gradient"
+  },
+  "primary_metrics": [
+    "total_update_l2_unclipped",
+    "total_update_l2_clipped",
+    "clipped_to_unclipped_l2_ratio",
+    "relative_l2_difference",
+    "cosine_similarity",
+    "relative_parameter_l2_change_for_each_condition"
+  ],
+  "secondary_metrics": [
+    "adaptive_update_only_effect",
+    "weight_decay_update_l2",
+    "elements_with_more_than_1_percent_relative_update_difference",
+    "metrics_by_lora_side_and_projection"
+  ],
+  "integrity_tolerances": {
+    "gradient_norm_relative_error_maximum": 0.001,
+    "note": "The reconstructed MPS backward pass must reproduce the prior first-batch norm within 0.1 percent; this tolerance is only an execution-integrity check."
+  },
+  "official_semantics": {
+    "pytorch_adamw": "https://docs.pytorch.org/docs/stable/generated/torch.optim.adamw.AdamW_class.html",
+    "pytorch_clip_grad_norm": "https://docs.pytorch.org/docs/2.13/generated/torch.nn.utils.clip_grad_norm_.html",
+    "interpretation": "At AdamW step 1 with zero moments, bias-corrected m_hat equals g and v_hat equals g squared. The simulation computes the documented first-step formula without calling optimizer.step or mutating model parameters."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping_call": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "identify_whether_first_step_clipping_has_a_material_adamw_update_effect_only"
+  },
+  "decision_policy": {
+    "near_equivalent": "reject max_norm as a dominant cause of the first update scale and authorize one learning-rate step-scale diagnostic only",
+    "material_effect": "authorize preregistration of one matched clipped-versus-unclipped small training pilot only",
+    "inconclusive": "do not change training hyperparameters; design a stronger diagnostic"
+  },
+  "result_paths": {
+    "json": "reports/rightbrain_adamw_clipping_effect_v1_result.json",
+    "markdown": "reports/rightbrain_adamw_clipping_effect_v1_result.md"
+  }
+}
