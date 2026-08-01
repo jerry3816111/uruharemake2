@@ -110,6 +110,41 @@ class RightBrainMlxNoCheckpointReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
 
+    def test_result_rejects_direct_checkpoint_removal(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("MLX no-checkpoint aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertFalse(result["decision"]["mechanism_supported"])
+        self.assertFalse(result["decision"]["authorize_training_now"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "no_checkpoint_does_not_restore_reproducible_gradients",
+        )
+        self.assertEqual(
+            result["decision"]["localized_next_step"],
+            "isolate_mlx_kernel_buffer_or_dtype_without_checkpoint",
+        )
+        measurements = result["measurements"]
+        self.assertEqual(measurements["successful_repeat_count"], 0)
+        self.assertEqual(len(measurements["failures"]), 3)
+        self.assertTrue(all(row["nonfinite"] for row in measurements["failures"]))
+        self.assertTrue(all(not row["out_of_memory"] for row in measurements["failures"]))
+        peaks = measurements["peak_memory_bytes"]
+        self.assertEqual(len(set(peaks)), 1)
+        self.assertLess(peaks[0], self.preregistration["exact_probe"]["memory_limit_bytes"])
+
+        repeats = [
+            construction.load_json(
+                ROOT / f"{self.preregistration['result_paths']['repeat_prefix']}{repeat}.json"
+            )
+            for repeat in (1, 2, 3)
+        ]
+        self.assertTrue(
+            all(row["execution_mode"] == "isolated_mlx_zero_update_no_checkpoint" for row in repeats)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
