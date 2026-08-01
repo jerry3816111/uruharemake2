@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_public_persona_contrast_coding_pilot_preregistration_v7",
+  "experiment_id": "public_persona_contrast_coding_pilot_v7",
+  "status": "preregistered_before_pilot_slot_selection_behavior_review_or_human_coding",
+  "depends_on": {
+    "v6_result_lock": {
+      "path": "configs/public_persona_contrast_coding_tool_v6_result_lock.json",
+      "sha256": "0220d33a25021ff904936bf611ecfb0334906d3825b9c333fe05cd300c58a009",
+      "required_decision": "authorize_local_two_coder_tool_use_for_v5_bounded_manual_coding_only"
+    },
+    "v5_sampling_frame": {
+      "path": "datasets/public_persona_contrast_event_sampling_frame_v5.json",
+      "sha256": "79e183ff05fee7cbc361842d9064cb33ac00b27c28042ac23894e7b0605470a2"
+    },
+    "v6_codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    },
+    "v6_tool": {
+      "path": "public_persona_contrast_coding_tool_v6.py",
+      "sha256": "51c2e2a959d76f6b5f3c3765504a6e1fb29d0f3a00edb164bfb214848e4110bf"
+    },
+    "coder_manual": {
+      "path": "configs/public_persona_contrast_coding_manual_v7.json",
+      "sha256": "3e9b5a7f9399b3ddc252fa2daf9ec67fab2fa78a1ce464763105d0a99d3c3d31"
+    }
+  },
+  "current_problem": "V6 工具已可讓兩位編碼者完成 90 格，但 codebook 尚未經真人獨立使用。若直接要求兩人各做 90 格，分類不清時會浪費 180 次人工判斷，且事後修訂 codebook 會使全部資料不可直接合併。",
+  "falsifiable_hypothesis": "若在觀看內容前，從每個官方來源的早半段五格與晚半段五格各用 SHA-256 選出一格，形成 9 來源乘 2 時段的 18 格 pilot，則工具應能重建相同 pilot、只顯示這 18 格、要求兩個不同真人帳本完整填寫，並在不公開事件文字的情況下計算事件邊界與類別可靠度。",
+  "single_changed_variable": "reduce the first human coding run from all 90 frozen V5 slots to a deterministic source-balanced 18-slot codebook reliability pilot; source content, V5 slot positions, codebook, model, runtime, prompts, memory, training, target data, holdout, outputs and persona scores remain unchanged",
+  "pilot_sampling_contract": {
+    "source_count_exact": 9,
+    "pilot_slot_count_per_source_exact": 2,
+    "pilot_slot_count_exact": 18,
+    "early_candidate_slot_indices": [1, 2, 3, 4, 5],
+    "late_candidate_slot_indices": [6, 7, 8, 9, 10],
+    "one_early_and_one_late_slot_per_source": true,
+    "within_half_selection_algorithm": "minimum sha256(experiment_id|sampling_slot_id|early_or_late_pilot)",
+    "pilot_review_order_algorithm": "ascending sha256(experiment_id|sampling_slot_id|pilot_review_order)",
+    "behavior_content_used_for_slot_selection": false,
+    "slot_replacement_after_behavior_review": false,
+    "all_original_v5_search_starts_preserved": true
+  },
+  "human_contract": {
+    "distinct_consenting_human_coder_count_exact": 2,
+    "each_coder_completes_all_pilot_slots": true,
+    "coders_work_from_separate_private_ledgers": true,
+    "coders_cannot_see_each_other_records_before_completion": true,
+    "actor_identity_blinding_feasible": false,
+    "model_outputs_or_persona_scores_visible": false,
+    "original_independent_records_preserved_after_adjudication": true
+  },
+  "coding_manual_contract": {
+    "manual_hash_bound_before_behavior_review": true,
+    "same_manual_for_both_coders": true,
+    "all_frozen_codebook_categories_operationally_defined": true,
+    "target_specific_examples_present": false,
+    "real_source_quotes_present": false,
+    "private_motive_inference_allowed": false,
+    "manual_change_after_first_coder_starts": false
+  },
+  "pilot_decision_policy": {
+    "reliability_pass": "authorize_full_v5_contrast_coding_with_unchanged_v6_codebook_only",
+    "reliability_fail": "revise_codebook_preserve_original_pilot_ledgers_and_run_new_preregistered_pilot",
+    "both_ledgers_complete_required": true,
+    "coder_pseudonyms_distinct_required": true,
+    "temporal_iou_mean_min": 0.5,
+    "all_primary_nominal_alpha_min": 0.667,
+    "slot_status_agreement_reported": true,
+    "secondary_dimension_alpha_reported_but_not_used_as_single_gate": true,
+    "aggregate_behavior_profile_authorized_by_pilot": false,
+    "persona_similarity_comparison_authorized": false,
+    "model_execution": false,
+    "target_calibration_behavior_coding": false,
+    "sealed_holdout_unsealing": false,
+    "model_training": false,
+    "public_persona_fidelity_claim": false
+  },
+  "expected_counts_before_human_pilot": {
+    "pilot_sampling_slot_count": 18,
+    "private_ledger_count": 0,
+    "content_reviewed_source_count": 0,
+    "selected_event_count": 0,
+    "coded_event_count": 0,
+    "human_coder_count": 0,
+    "model_output_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "model_call_count": 0
+  },
+  "evidence_boundary": "V7 建構通過只代表 18 格雙人 codebook pilot 已在觀看內容前，以來源平衡且可重建的方法凍結。它不表示任何真人已編碼，不表示可靠度合格，也不授權模型、人格分數、holdout、訓練或公開人格相似結論。"
+}
