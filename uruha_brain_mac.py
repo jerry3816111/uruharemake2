@@ -56,6 +56,7 @@ import public_persona_contract_v3 as ppcv3
 import uruha_compute_ledger as ucl
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
+import uruha_surface_payload_v2 as uspv2
 from project_paths import RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH
 from rightbrain_repair_selector import (
     extract_candidate_features as extract_learned_repair_features,
@@ -247,6 +248,12 @@ PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED = _env_bool(
 RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET = _env_int(
     "URUHA_RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET",
     0,
+)
+RIGHT_BRAIN_STRUCTURED_PAYLOAD_MODE = uspv2.normalize_mode(
+    os.getenv(
+        "URUHA_RIGHT_BRAIN_STRUCTURED_PAYLOAD_MODE",
+        uspv2.LEGACY_JSON_V1,
+    )
 )
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
@@ -8347,6 +8354,7 @@ class RightBrain:
         self.forbidden_projection_shadow_enabled = RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.public_persona_conditional_brief_enabled = PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED
+        self.structured_payload_mode = RIGHT_BRAIN_STRUCTURED_PAYLOAD_MODE
         self.structured_prompt_token_budget = max(
             0,
             int(RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET),
@@ -12300,17 +12308,39 @@ You are Ichinose Uruha.
             )
         if self.surface_watchlist_enabled:
             payload["surface_failure_watchlist"] = self._model_surface_failure_watchlist(logic_data)
+        if self.structured_payload_mode == uspv2.COMPACT_JAPANESE_V2:
+            try:
+                return uspv2.serialize_compact_japanese_payload(payload).text
+            except uspv2.CompactPayloadSerializationError as exc:
+                provider_id = getattr(
+                    self.persona_policy_provider,
+                    "provider_id",
+                    "unknown",
+                )
+                raise StructuredSurfaceUnavailableError(
+                    provider_id,
+                    f"compact_payload_serialization_failed:{exc.field}:{exc.reason}",
+                ) from exc
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
     def _model_surface_system_instruction(self, repair=False):
         if self._structured_surface_required():
-            prompt = RIGHT_BRAIN_STRUCTURED_MODEL_SYSTEM_PROMPT
-            if repair:
-                prompt += " The previous draft failed the contract. Repair it once and return only the corrected reply."
+            if self.structured_payload_mode == uspv2.COMPACT_JAPANESE_V2:
+                prompt = uspv2.COMPACT_JAPANESE_SYSTEM_INSTRUCTION
+                if repair:
+                    prompt += uspv2.COMPACT_JAPANESE_REPAIR_SUFFIX
+            else:
+                prompt = RIGHT_BRAIN_STRUCTURED_MODEL_SYSTEM_PROMPT
+                if repair:
+                    prompt += " The previous draft failed the contract. Repair it once and return only the corrected reply."
         else:
             prompt = RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT if repair else RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
         if self.explicit_length_contract_enabled:
-            prompt += RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE
+            prompt += (
+                uspv2.COMPACT_JAPANESE_LENGTH_SUFFIX
+                if self.structured_payload_mode == uspv2.COMPACT_JAPANESE_V2
+                else RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE
+            )
         return prompt
 
     def _model_surface_forbidden_markers(self, logic_data):
