@@ -1,0 +1,247 @@
+{
+  "schema": "uruha_rightbrain_role_curriculum_training_pilot_preregistration_v1",
+  "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
+  "status": "frozen_before_control_dataset_holdout_harness_implementation_and_before_training",
+  "authoring_parent_commit": "c7b9dce4215b3336d65292794ce0e4e41c11aaae",
+  "research_question": "With the exact same local base model, initial v10 adapter, input prompts, assistant-output multiset, training schedule, and evaluation cases, does correctly aligning the current persona-policy payload with policy-matched surface examples teach source-independent policy-conditioned realization better than a policy-permuted sham curriculum?",
+  "falsifiable_hypothesis": {
+    "primary": "The policy-aligned treatment will exceed both the policy-permuted control and the unchanged v10 baseline on bidirectional heldout policy-discrimination accuracy.",
+    "noninferiority": "The treatment will not achieve policy discrimination by sacrificing semantic-contract validity, memory speakability, Japanese surface quality, diversity, latency, or local resource limits.",
+    "scope_limit": "A pass demonstrates generic role-policy specialization under source-independent synthetic cases. It does not establish similarity to the target public person, production readiness, or general human likeness."
+  },
+  "prior_authorization": {
+    "path": "configs/rightbrain_role_specialization_curriculum_v1_result_lock.json",
+    "sha256": "201dc51c7165addfd58cc47fdba7e11f54900a81767657e5526acd74984ef978",
+    "required_outcome": "authorize_matched_local_training_pilot_preregistration_only"
+  },
+  "single_changed_variable": "Whether each structured persona-policy provider is consistently paired with its corresponding surface realization targets during continued SFT.",
+  "conditions": {
+    "initial_v10_reference": {
+      "training": false,
+      "role": "pretraining reference evaluated on the same holdout"
+    },
+    "policy_permuted_control": {
+      "training": true,
+      "policy_target_alignment_rate": 0.5,
+      "construction": "For every base case and provider prompt, one surface variant remains aligned and one is exchanged with the matched provider. Because variant_index is absent from the model prompt, each provider receives one target-style and one neutral-style realization for the same cognitive plan, removing consistent policy direction while preserving all texts and token totals."
+    },
+    "policy_aligned_treatment": {
+      "training": true,
+      "policy_target_alignment_rate": 1.0,
+      "construction": "Use the audited V1 curriculum without reassignment. Every target provider prompt receives target-policy realizations and every neutral provider prompt receives neutral-policy realizations."
+    }
+  },
+  "matched_training_data_contract": {
+    "treatment_source": {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+      "rows": 80
+    },
+    "control_output_path": "datasets/rightbrain_role_specialization_curriculum_v1_policy_permuted_control.json",
+    "rows_per_condition": 80,
+    "base_case_count": 20,
+    "providers": [
+      "structured_target_public_persona",
+      "structured_neutral_dialogue"
+    ],
+    "variants_per_provider_and_case": 2,
+    "required_exact_matches": [
+      "row count",
+      "system-message multiset",
+      "user-payload multiset",
+      "assistant-target multiset",
+      "source-case multiset",
+      "provider multiset",
+      "memory-mode multiset",
+      "total prompt tokens",
+      "total completion tokens",
+      "total combined tokens",
+      "maximum token length"
+    ],
+    "control_pairing_rule": "variant 1 remains aligned and variant 2 is swapped between providers within the same source case",
+    "trainer_visible_fields": ["messages"],
+    "trainer_must_ignore_metadata": true,
+    "contains_target_person_utterances": false,
+    "contains_benchmark_items": false,
+    "runtime_fixed_replies": false
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_files": {
+      "config.json": "7463bb0ea78315365e6c6b74de4e73bbcc8359dfb0c5a737584e077d42c0b03c",
+      "generation_config.json": "3a8f9087e486054c8a4a08dae2e5a3ba62e23da212b5b8c08bc42cb983c3459f",
+      "model.safetensors.index.json": "624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583",
+      "model-00001-of-00004.safetensors": "a1333e6293854747c481288ea83b348226af178dd565c49b6f9495ba1966aba7",
+      "model-00002-of-00004.safetensors": "f5d25a2772cb825164a2a2c0fb6d51a87e282abf21e4dd75bc5cfb3cd0ea6185",
+      "model-00003-of-00004.safetensors": "8efdec4c1bc12317ae1a38dc42b595ce777738a64deea3fcb8a0a91381bcdfd5",
+      "model-00004-of-00004.safetensors": "1a72d403cdf0c1ec3cb7f289f17b394a01e64394c2e9b3c0f94dbce3faf879bd"
+    },
+    "initial_adapter": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    },
+    "local_only": true,
+    "paid_cloud_inference_allowed": false,
+    "base_weights_trainable": false
+  },
+  "training_schedule": {
+    "condition_execution_order": [
+      "policy_permuted_control",
+      "policy_aligned_treatment"
+    ],
+    "random_seed": 20260801,
+    "epochs": 1.0,
+    "micro_steps_exact": 80,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "optimizer_updates_exact": 10,
+    "learning_rate": 3e-7,
+    "weight_decay": 0.02,
+    "optimizer_epsilon": 1e-6,
+    "maximum_gradient_norm": 0.3,
+    "maximum_sequence_length": 720,
+    "dtype": "torch.bfloat16",
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": true,
+    "maximum_nonfinite_events": 0,
+    "evaluation_split": 0,
+    "output_directories": {
+      "policy_permuted_control": "uruha_rightbrain_role_curriculum_v1_policy_permuted_control",
+      "policy_aligned_treatment": "uruha_rightbrain_role_curriculum_v1_policy_aligned_treatment"
+    },
+    "resume_or_overwrite_existing_output": false
+  },
+  "heldout_evaluation_contract": {
+    "output_path": "configs/rightbrain_role_curriculum_training_pilot_v1_holdout.json",
+    "case_count": 20,
+    "contexts": 5,
+    "memory_modes": 4,
+    "cases_per_context_and_memory_mode": 1,
+    "source_independent_synthetic": true,
+    "codex_assisted_authoring_disclosed": true,
+    "contains_target_person_utterances": false,
+    "contains_official_benchmark_items": false,
+    "contains_exact_expected_chat_reply": false,
+    "contains_policy_discrimination_references": true,
+    "reference_role": "Two source-independent alternative surface realizations used only for conditional log-likelihood comparison, never exact-match chat scoring.",
+    "required_separation": {
+      "exact_and_normalized_user_input_overlap_with_training_or_prior_development": 0,
+      "exact_payload_overlap_with_training_or_prior_development": 0,
+      "exact_and_normalized_reference_overlap_with_training_targets_or_prior_model_outputs": 0,
+      "target_identity_marker_count": 0,
+      "benchmark_or_answer_key_field_count": 0
+    }
+  },
+  "deterministic_policy_discrimination": {
+    "conditions": [
+      "initial_v10_reference",
+      "policy_permuted_control",
+      "policy_aligned_treatment"
+    ],
+    "comparison_count_per_condition": 40,
+    "target_provider_rule": "normalized log probability of target-policy reference must exceed neutral reference",
+    "neutral_provider_rule": "normalized log probability of neutral reference must exceed target-policy reference",
+    "length_normalization": "mean log probability over completion tokens only",
+    "ties": "incorrect",
+    "primary_metric": "bidirectional_policy_discrimination_accuracy",
+    "secondary_metrics": [
+      "target_provider_discrimination_accuracy",
+      "neutral_provider_discrimination_accuracy",
+      "mean_signed_policy_margin",
+      "per_context_accuracy",
+      "per_memory_mode_accuracy"
+    ]
+  },
+  "fresh_generation_evaluation": {
+    "adapter_conditions": [
+      "initial_v10_reference",
+      "policy_permuted_control",
+      "policy_aligned_treatment"
+    ],
+    "case_count": 20,
+    "provider_count": 2,
+    "seeds": [20260811, 20260812],
+    "generation_count_per_adapter": 80,
+    "total_generation_count": 240,
+    "same_seed_within_matched_provider_pair": true,
+    "prompt_allocation_budget_tokens": 640,
+    "candidate_count": 1,
+    "repair_enabled": false,
+    "maximum_new_tokens": 56,
+    "temperature": 0.82,
+    "top_p": 0.92,
+    "top_k": 64,
+    "repetition_penalty": 1.2,
+    "transient_state_reset_each_generation": true,
+    "production_memory_access": false,
+    "metrics": [
+      "strict_candidate_gate_pass_rate",
+      "semantic_contract_pass_rate",
+      "memory_policy_pass_rate",
+      "language_or_script_pollution_rate",
+      "polite_register_drift_rate",
+      "private_memory_intrusion_count",
+      "normalized_output_unique_rate",
+      "target_neutral_pair_difference_rate",
+      "public_persona_v4_contract_pass_rate_descriptive_only",
+      "median_and_p95_generation_latency",
+      "peak_process_resident_memory_bytes"
+    ]
+  },
+  "success_gate": {
+    "all_integrity_requirements": [
+      "frozen source and model hashes match",
+      "control and treatment token accounting is exactly matched",
+      "each training condition consumes exactly 80 micro steps and 10 optimizer updates",
+      "zero nonfinite events",
+      "all 240 fresh generations are accounted for",
+      "holdout remains absent from both training datasets",
+      "no production memory writes or runtime changes"
+    ],
+    "primary_requirements": {
+      "treatment_bidirectional_policy_discrimination_accuracy_minimum": 0.7,
+      "treatment_delta_vs_policy_permuted_control_minimum": 0.15,
+      "treatment_delta_vs_initial_v10_minimum": 0.1,
+      "treatment_target_provider_discrimination_accuracy_minimum": 0.65,
+      "treatment_neutral_provider_discrimination_accuracy_minimum": 0.65
+    },
+    "generation_noninferiority_requirements": {
+      "treatment_strict_candidate_gate_pass_rate_minimum": 0.7,
+      "treatment_semantic_contract_pass_rate_minimum": 0.9,
+      "treatment_memory_policy_pass_rate_minimum": 0.95,
+      "treatment_private_memory_intrusion_count_maximum": 0,
+      "treatment_language_or_script_pollution_rate_maximum": 0.05,
+      "treatment_polite_register_drift_rate_maximum": 0.05,
+      "treatment_normalized_output_unique_rate_minimum": 0.8,
+      "treatment_strict_gate_delta_vs_control_minimum": -0.05,
+      "treatment_semantic_delta_vs_control_minimum": -0.03,
+      "treatment_memory_policy_delta_vs_control_minimum": -0.03,
+      "treatment_median_latency_ratio_vs_initial_maximum": 1.25,
+      "peak_process_resident_memory_bytes_maximum": 32212254720
+    }
+  },
+  "failure_interpretation": {
+    "control_and_treatment_similarly_improve": "Additional continued SFT or exposure to the current contract, not policy alignment, is the more likely cause.",
+    "likelihood_improves_but_generation_does_not": "The adapter learned a conditional preference that the current decoding or candidate pipeline does not reliably express.",
+    "policy_discrimination_fails_without_quality_regression": "Ten low-rate updates or this synthetic policy curriculum were insufficient; do not repeat the same recipe without a new hypothesis.",
+    "policy_discrimination_passes_but_semantics_or_memory_regress": "Reject promotion because personality expression is overriding the cognitive and memory contract.",
+    "integrity_or_compute_parity_fails": "The causal comparison is invalid and no model conclusion may be drawn.",
+    "all_gates_pass": "Authorize a small source-blind human policy-direction review only; target-person similarity and production remain unproven."
+  },
+  "authorization_boundaries": {
+    "current_unit_may_build_control_holdout_harness_and_execution_lock": true,
+    "current_unit_model_training": false,
+    "future_exact_locked_pilot_training_after_construction_pass": true,
+    "production_default_change": false,
+    "persona_similarity_claim": false,
+    "human_likeness_claim": false,
+    "public_impersonation": false,
+    "function_calling_or_vrm_runtime_change": false,
+    "maximum_positive_outcome": "authorize_exact_locked_control_and_treatment_training_pilot_execution"
+  }
+}
