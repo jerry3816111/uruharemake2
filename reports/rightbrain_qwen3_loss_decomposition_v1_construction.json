@@ -1,0 +1,188 @@
+{
+  "schema": "uruha_rightbrain_qwen3_loss_decomposition_construction_v1",
+  "experiment_id": "rightbrain_qwen3_loss_decomposition_v1",
+  "preregistration": {
+    "path": "configs/rightbrain_qwen3_loss_decomposition_v1_preregistration.json",
+    "scope": "repository",
+    "sha256": "46189aa6ff09d5d797d6cf0af040806e1c0f63c3de0f488adf684cfa253f26fc"
+  },
+  "loss_modes": [
+    "masked_cross_entropy",
+    "target_score_only",
+    "logsumexp_only"
+  ],
+  "repetitions_each": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "execution_schedule": [
+    {
+      "repeat": 1,
+      "condition_order": [
+        "masked_cross_entropy",
+        "target_score_only",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 2,
+      "condition_order": [
+        "masked_cross_entropy",
+        "logsumexp_only",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 3,
+      "condition_order": [
+        "target_score_only",
+        "masked_cross_entropy",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 4,
+      "condition_order": [
+        "target_score_only",
+        "logsumexp_only",
+        "masked_cross_entropy"
+      ]
+    },
+    {
+      "repeat": 5,
+      "condition_order": [
+        "logsumexp_only",
+        "masked_cross_entropy",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 6,
+      "condition_order": [
+        "logsumexp_only",
+        "target_score_only",
+        "masked_cross_entropy"
+      ]
+    },
+    {
+      "repeat": 7,
+      "condition_order": [
+        "masked_cross_entropy",
+        "target_score_only",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 8,
+      "condition_order": [
+        "masked_cross_entropy",
+        "logsumexp_only",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 9,
+      "condition_order": [
+        "target_score_only",
+        "masked_cross_entropy",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 10,
+      "condition_order": [
+        "target_score_only",
+        "logsumexp_only",
+        "masked_cross_entropy"
+      ]
+    },
+    {
+      "repeat": 11,
+      "condition_order": [
+        "logsumexp_only",
+        "masked_cross_entropy",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 12,
+      "condition_order": [
+        "logsumexp_only",
+        "target_score_only",
+        "masked_cross_entropy"
+      ]
+    },
+    {
+      "repeat": 13,
+      "condition_order": [
+        "masked_cross_entropy",
+        "target_score_only",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 14,
+      "condition_order": [
+        "masked_cross_entropy",
+        "logsumexp_only",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 15,
+      "condition_order": [
+        "target_score_only",
+        "masked_cross_entropy",
+        "logsumexp_only"
+      ]
+    },
+    {
+      "repeat": 16,
+      "condition_order": [
+        "target_score_only",
+        "logsumexp_only",
+        "masked_cross_entropy"
+      ]
+    },
+    {
+      "repeat": 17,
+      "condition_order": [
+        "logsumexp_only",
+        "masked_cross_entropy",
+        "target_score_only"
+      ]
+    },
+    {
+      "repeat": 18,
+      "condition_order": [
+        "logsumexp_only",
+        "target_score_only",
+        "masked_cross_entropy"
+      ]
+    }
+  ],
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "ready": true
+}
