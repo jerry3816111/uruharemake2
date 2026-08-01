@@ -1,0 +1,180 @@
+{
+  "schema": "uruha_rightbrain_qwen3_length_boundary_refine_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_length_boundary_refine_v1",
+  "research_question": "Which adjacent 16-token interval inside the frozen 640-704 bracket separates reproducible from drifting full-Qwen3 gradients?",
+  "causal_variable": {
+    "name": "allocated_sequence_length",
+    "levels": [
+      640,
+      656,
+      672,
+      688,
+      704
+    ],
+    "only_intended_change": true
+  },
+  "evidence_parent": {
+    "path": "reports/rightbrain_qwen3_length_boundary_v1_result.json",
+    "sha256": "75632b6b44374eb1a824b6f39fa976a04e041b65934586e273bd81cca6f41478",
+    "outcome": "allocated_length_instability_bracket_localized",
+    "bracket": {
+      "highest_tested_stable_length": 640,
+      "lowest_tested_unstable_length": 704
+    },
+    "authorized_next_step": "refine_allocated_length_bracket"
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contracts": {
+    "640": {
+      "sha256": "703e13bd4ea378fd7140ea0c7fc92a5f3d4070e4471299ef93769f31a067fe99",
+      "allocated_tokens": 640,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 576,
+      "labelled_tokens": 16
+    },
+    "656": {
+      "sha256": "d5c09a68997fa02621a68ce6bc9511fd6e4f13ab2569a4c0951c173f18f6161b",
+      "allocated_tokens": 656,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 592,
+      "labelled_tokens": 16
+    },
+    "672": {
+      "sha256": "b537807c880044f3859658edad3d53a6058a35b033340d8c8abe7e5152c01266",
+      "allocated_tokens": 672,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 608,
+      "labelled_tokens": 16
+    },
+    "688": {
+      "sha256": "835c21b096187ca84214e6167dbf1bb56763d7499022fa3390b3713807d56618",
+      "allocated_tokens": 688,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 624,
+      "labelled_tokens": 16
+    },
+    "704": {
+      "sha256": "f3e7c034094b5c4f39b4f231898a12c583542752830bd88f6b166ff2b01a6b6e",
+      "allocated_tokens": 704,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 640,
+      "labelled_tokens": 16
+    }
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "synthetic_source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false,
+    "same_labelled_prefix_across_all_levels": true,
+    "suffix_labels": -100
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "full_language_model_path": [
+      "token_embedding",
+      "36_transformer_layers",
+      "final_rms_norm",
+      "tied_lm_head",
+      "masked_cross_entropy"
+    ],
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "gradient_hashes_must_be_identical": true
+    },
+    "anchor_requirements": {
+      "640_must_be_stable": true,
+      "704_must_be_unstable": true
+    },
+    "stability_scope": "Observed reproducibility across ten isolated processes; not a proof that a length is safe for optimizer-based training.",
+    "classifications": {
+      "adjacent_monotonic_bracket": "allocated_length_instability_bracket_refined_to_16_tokens",
+      "nonmonotonic": "nonmonotonic_refined_length_instability_observed",
+      "anchor_failure": "refined_length_boundary_anchor_not_reproduced",
+      "execution_failure": "refined_length_boundary_execution_failed"
+    }
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "safe_training_length_claim": false,
+    "scope": "full_lm_allocated_sequence_length_boundary_refinement_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_length_boundary_refine_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_length_boundary_refine_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_length_boundary_refine_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_length_boundary_refine_v1_result_lock.json"
+  }
+}
