@@ -14,6 +14,9 @@ class RightBrainTrainingSignalTelemetryV1Test(unittest.TestCase):
     def setUpClass(cls):
         cls.preregistration = telemetry.load_json(telemetry.DEFAULT_PREREGISTRATION)
         cls.lock = telemetry.load_json(telemetry.DEFAULT_EXECUTION_LOCK)
+        cls.result_lock_path = (
+            ROOT / "configs/rightbrain_training_signal_telemetry_v1_result_lock.json"
+        )
 
     def test_hypothesis_and_single_batch_are_frozen(self):
         self.assertEqual(
@@ -73,10 +76,45 @@ class RightBrainTrainingSignalTelemetryV1Test(unittest.TestCase):
         ):
             self.assertFalse(authorization[forbidden])
 
-    def test_preflight_passes_before_execution(self):
+    def test_preflight_is_stage_aware(self):
         validation = telemetry.preflight()
-        self.assertTrue(validation["passed"])
-        self.assertTrue(all(validation["checks"].values()))
+        non_result_checks = {
+            name: passed
+            for name, passed in validation["checks"].items()
+            if name != "result_absent"
+        }
+        self.assertTrue(all(non_result_checks.values()))
+        if telemetry.DEFAULT_RESULT_JSON.exists() or telemetry.DEFAULT_RESULT_MD.exists():
+            self.assertFalse(validation["passed"])
+            self.assertFalse(validation["checks"]["result_absent"])
+        else:
+            self.assertTrue(validation["passed"])
+            self.assertTrue(validation["checks"]["result_absent"])
+
+    def test_result_is_locked_and_authorizes_no_training(self):
+        if not self.result_lock_path.exists():
+            self.skipTest("Telemetry result has not been executed yet")
+        result_lock = telemetry.load_json(self.result_lock_path)
+        for binding in result_lock["result_bindings"]:
+            path = ROOT / binding["path"]
+            self.assertTrue(path.is_file(), binding["path"])
+            self.assertEqual(construction.sha256_file(path), binding["sha256"])
+        result = telemetry.load_json(telemetry.DEFAULT_RESULT_JSON)
+        self.assertTrue(result["decision"]["valid"])
+        self.assertTrue(result["decision"]["hypothesis_confirmed"])
+        self.assertEqual(len(result["losses"]), 8)
+        self.assertEqual(result["telemetry"]["gradient_element_count"], 80740352)
+        self.assertTrue(result["telemetry"]["all_gradient_elements_finite"])
+        self.assertTrue(result["parameter_integrity"]["unchanged"])
+        authorization = result_lock["authorization"]
+        for forbidden in (
+            "model_training",
+            "max_norm_change",
+            "learning_rate_change",
+            "production_runtime_change",
+            "persona_similarity_claim",
+        ):
+            self.assertFalse(authorization[forbidden])
 
 
 if __name__ == "__main__":
