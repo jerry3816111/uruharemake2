@@ -1,0 +1,136 @@
+{
+  "schema": "uruha_rightbrain_qwen3_block_backend_repro_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_block_backend_repro_v1",
+  "research_question": "Does the same official Qwen3 transformer block produce reproducible LoRA gradients on MLX CPU and Metal when every non-device input is fixed?",
+  "causal_variable": {
+    "name": "mlx_execution_device",
+    "levels": [
+      "cpu",
+      "gpu_metal"
+    ],
+    "only_intended_change": true
+  },
+  "official_sources": [
+    {
+      "claim": "MLX exposes CPU and GPU devices plus set_default_device.",
+      "url": "https://ml-explore.github.io/mlx/build/html/python/devices_and_streams.html"
+    },
+    {
+      "claim": "MLX 0.32.0 includes a Metal layer-norm VJP hazard fix.",
+      "url": "https://github.com/ml-explore/mlx/releases/tag/v0.32.0"
+    },
+    {
+      "claim": "Qwen3-4B Instruct 2507 is the fixed official candidate model.",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507"
+    }
+  ],
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "official_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "config_sha256": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba",
+    "weight_shard_sha256": "75311d91bb08cf0b882913da464a1e722a31fb44db35208663487efb7a3d8ed6",
+    "architecture": "Qwen3ForCausalLM",
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "attention_heads": 32,
+    "key_value_heads": 8,
+    "head_dim": 128,
+    "base_dtype": "mlx.core.bfloat16"
+  },
+  "block_contract": {
+    "layer_index": 0,
+    "selected_weight_tensor_count": 11,
+    "parameter_count": 100930816,
+    "dtypes": [
+      "mlx.core.bfloat16"
+    ],
+    "sha256": "3d72d702a955cc33fb9d3263ca51431b86665652a529f8db7b3210943cf4663e"
+  },
+  "adapter_contract": {
+    "converted_layers": 1,
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "initialization_seed": 20260802,
+    "tensor_count": 14,
+    "parameter_count": 1835008,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "sha256": "221d7b3e1f72b9ff4c2b88e3a61f88b986ad04806a7609147c813a890debf6c9"
+  },
+  "input_contract": {
+    "source": "synthetic_numpy_pcg64_normal_no_persona_or_benchmark_content",
+    "shape": [
+      1,
+      64,
+      2560
+    ],
+    "host_dtype": "float32",
+    "runtime_dtype": "mlx.core.bfloat16",
+    "seed": 20260802,
+    "standard_deviation": 0.02,
+    "sha256": "0b3377a5bf9793b57a7f4bb137e13e869721d4a1f41ab489ecffaedb1ccf3a96"
+  },
+  "exact_probe": {
+    "devices": [
+      "cpu",
+      "gpu"
+    ],
+    "isolated_repetitions_per_device": [
+      1,
+      2,
+      3
+    ],
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "loss": "mean_square_of_one_block_output_in_float32",
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_device_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999
+    },
+    "classifications": {
+      "cpu_stable_gpu_unstable": "metal_backend_implicated",
+      "cpu_unstable_gpu_unstable": "framework_or_probe_still_unstable",
+      "cpu_stable_gpu_stable": "reduced_block_does_not_reproduce_full_graph_drift",
+      "cpu_unstable_gpu_stable": "cpu_reference_invalid_or_cpu_specific_failure"
+    }
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "full_model_backend_claim": false,
+    "scope": "one_real_qwen3_block_backward_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_block_backend_repro_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_block_backend_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_block_backend_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_block_backend_repro_v1_result_lock.json"
+  }
+}
