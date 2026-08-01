@@ -141,7 +141,24 @@ class ComputeLedger:
         generation_options,
         latency_seconds,
         error=None,
+        active_prompt_tokens=None,
+        masked_prompt_tokens=None,
     ):
+        allocated_prompt_tokens = int(prompt_tokens) if prompt_tokens is not None else None
+        active_prompt_tokens = (
+            int(active_prompt_tokens)
+            if active_prompt_tokens is not None
+            else allocated_prompt_tokens
+        )
+        masked_prompt_tokens = (
+            int(masked_prompt_tokens)
+            if masked_prompt_tokens is not None
+            else (
+                allocated_prompt_tokens - active_prompt_tokens
+                if allocated_prompt_tokens is not None and active_prompt_tokens is not None
+                else None
+            )
+        )
         record = {
             "call_index": 0,
             "item_id": _ITEM.get(),
@@ -153,11 +170,18 @@ class ComputeLedger:
                 "prompt_char_count": len(str(prompt_text or "")),
                 "prompt_sha256": _sha256_text(prompt_text),
                 "options": deepcopy(generation_options or {}),
+                "allocation": {
+                    "active_prompt_tokens": active_prompt_tokens,
+                    "allocated_prompt_tokens": allocated_prompt_tokens,
+                    "masked_prompt_tokens": masked_prompt_tokens,
+                },
             },
             "response": {
                 "content_char_count": len(str(completion_text or "")),
                 "content_sha256": _sha256_text(completion_text),
-                "prompt_tokens": int(prompt_tokens) if prompt_tokens is not None else None,
+                "prompt_tokens": allocated_prompt_tokens,
+                "active_prompt_tokens": active_prompt_tokens,
+                "masked_prompt_tokens": masked_prompt_tokens,
                 "completion_tokens": int(completion_tokens) if completion_tokens is not None else None,
                 "total_tokens": (
                     int(prompt_tokens) + int(completion_tokens)
@@ -283,6 +307,22 @@ def compare_compute_envelopes(left_snapshot, right_snapshot):
     prompt_token_schedule_equal = (
         prompt_tokens_available and left_prompt_tokens == right_prompt_tokens
     )
+    left_active_prompt_tokens = [
+        (call.get("response") or {}).get("active_prompt_tokens")
+        for call in left_calls
+    ]
+    right_active_prompt_tokens = [
+        (call.get("response") or {}).get("active_prompt_tokens")
+        for call in right_calls
+    ]
+    active_prompt_tokens_available = all(
+        value is not None
+        for value in left_active_prompt_tokens + right_active_prompt_tokens
+    )
+    active_prompt_token_schedule_equal = (
+        active_prompt_tokens_available
+        and left_active_prompt_tokens == right_active_prompt_tokens
+    )
     schedule_equal = left_signatures == right_signatures
     call_count_equal = len(left_calls) == len(right_calls)
     return {
@@ -294,5 +334,9 @@ def compare_compute_envelopes(left_snapshot, right_snapshot):
         "right_call_count": len(right_calls),
         "left_prompt_tokens": left_prompt_tokens,
         "right_prompt_tokens": right_prompt_tokens,
+        "active_prompt_tokens_available": active_prompt_tokens_available,
+        "active_prompt_token_schedule_equal": active_prompt_token_schedule_equal,
+        "left_active_prompt_tokens": left_active_prompt_tokens,
+        "right_active_prompt_tokens": right_active_prompt_tokens,
         "parity_pass": call_count_equal and schedule_equal and prompt_token_schedule_equal,
     }

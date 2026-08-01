@@ -244,6 +244,10 @@ PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED = _env_bool(
     "URUHA_PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED",
     False,
 )
+RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET = _env_int(
+    "URUHA_RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET",
+    0,
+)
 RIGHT_BRAIN_SELECTOR_MODEL_PATH = os.path.abspath(
     os.getenv("URUHA_RIGHT_BRAIN_SELECTOR_MODEL_PATH", RIGHTBRAIN_REPAIR_SELECTOR_V1_MODEL_PATH)
 )
@@ -8327,6 +8331,7 @@ class RightBrain:
         self.compute_ledger = compute_ledger
         self.legacy_fixed_surface_access_count = 0
         self.legacy_fixed_surface_access_sources = Counter()
+        self.last_prompt_allocation_trace = {}
         self.surface_adapter_name = "surface"
         self.repair_adapter_name = "repair"
         self.repair_adapter_loaded = False
@@ -8342,6 +8347,10 @@ class RightBrain:
         self.forbidden_projection_shadow_enabled = RIGHT_BRAIN_FORBIDDEN_PROJECTION_SHADOW_ENABLED
         self.selector_shadow_enabled = RIGHT_BRAIN_SELECTOR_SHADOW_ENABLED
         self.public_persona_conditional_brief_enabled = PUBLIC_PERSONA_CONDITIONAL_BRIEF_ENABLED
+        self.structured_prompt_token_budget = max(
+            0,
+            int(RIGHT_BRAIN_STRUCTURED_PROMPT_TOKEN_BUDGET),
+        )
         self.selector_model_path = RIGHT_BRAIN_SELECTOR_MODEL_PATH
         self.selector_model = None
         self.selector_model_load_error = ""
@@ -12723,20 +12732,90 @@ You are Ichinose Uruha.
         }
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
+    def _prepare_generation_inputs(self, prompt):
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        input_ids = inputs["input_ids"]
+        original_tokens = int(input_ids.shape[1])
+        attention_mask = inputs.get("attention_mask")
+        if attention_mask is None:
+            attention_mask = torch.ones_like(input_ids)
+            inputs["attention_mask"] = attention_mask
+        active_tokens = int(attention_mask.sum().item())
+        budget = (
+            self.structured_prompt_token_budget
+            if self._structured_surface_required()
+            else 0
+        )
+        trace = {
+            "schema": "uruha_prompt_allocation_v1",
+            "mode": (
+                "fixed_budget_left_attention_masked"
+                if budget
+                else "unmodified"
+            ),
+            "configured_budget_tokens": int(budget),
+            "active_prompt_tokens": active_tokens,
+            "allocated_prompt_tokens": original_tokens,
+            "masked_prompt_tokens": original_tokens - active_tokens,
+            "left_padding_tokens": 0,
+            "attention_masked_padding": True,
+            "status": "ready",
+        }
+        self.last_prompt_allocation_trace = trace
+
+        if budget and original_tokens > budget:
+            trace["status"] = "budget_exceeded"
+            raise StructuredSurfaceUnavailableError(
+                self._surface_provider_id(),
+                "prompt_token_budget_exceeded",
+            )
+
+        if budget and original_tokens < budget:
+            pad_count = budget - original_tokens
+            pad_token_id = self.tokenizer.pad_token_id
+            if pad_token_id is None:
+                pad_token_id = self.tokenizer.eos_token_id
+            padded = {}
+            for key, value in inputs.items():
+                if not isinstance(value, torch.Tensor) or value.ndim != 2:
+                    padded[key] = value
+                    continue
+                pad_value = int(pad_token_id or 0) if key == "input_ids" else 0
+                prefix = torch.full(
+                    (value.shape[0], pad_count),
+                    pad_value,
+                    dtype=value.dtype,
+                    device=value.device,
+                )
+                padded[key] = torch.cat([prefix, value], dim=1)
+            inputs = padded
+            trace.update(
+                {
+                    "allocated_prompt_tokens": budget,
+                    "masked_prompt_tokens": budget - active_tokens,
+                    "left_padding_tokens": pad_count,
+                }
+            )
+
+        inputs = {key: value.to(self.device) for key, value in inputs.items()}
+        return inputs, trace
+
     def _generate_model_text(self, messages, generation_kwargs):
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True,
         )
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        inputs = {key: value.to(self.device) for key, value in inputs.items()}
         started = time.perf_counter()
         output = None
         error = None
         completion = ""
-        prompt_tokens = int(inputs["input_ids"].shape[1])
+        inputs = None
+        allocation = {}
+        prompt_tokens = None
         try:
+            inputs, allocation = self._prepare_generation_inputs(prompt)
+            prompt_tokens = int(inputs["input_ids"].shape[1])
             with torch.no_grad():
                 output = self.model.generate(
                     **inputs,
@@ -12757,9 +12836,12 @@ You are Ichinose Uruha.
             raise
         finally:
             if self.compute_ledger is not None:
+                allocation = allocation or self.last_prompt_allocation_trace
+                if prompt_tokens is None:
+                    prompt_tokens = allocation.get("allocated_prompt_tokens")
                 completion_tokens = (
                     int(output[0].shape[0]) - prompt_tokens
-                    if output is not None
+                    if output is not None and prompt_tokens is not None
                     else None
                 )
                 self.compute_ledger.record_local_generation(
@@ -12772,10 +12854,17 @@ You are Ichinose Uruha.
                         "max_new_tokens": 56,
                         "no_repeat_ngram_size": RIGHT_BRAIN_NO_REPEAT_NGRAM_SIZE,
                         "adapter_name": self._active_model_adapter_name or "",
+                        "prompt_allocation_mode": allocation.get("mode", "unmodified"),
+                        "structured_prompt_token_budget": allocation.get(
+                            "configured_budget_tokens",
+                            0,
+                        ),
                         **generation_kwargs,
                     },
                     latency_seconds=time.perf_counter() - started,
                     error=error,
+                    active_prompt_tokens=allocation.get("active_prompt_tokens"),
+                    masked_prompt_tokens=allocation.get("masked_prompt_tokens"),
                 )
 
     def _run_model_surface_generation(self, messages, generation_kwargs, adapter_name=None):

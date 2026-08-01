@@ -1,0 +1,61 @@
+{
+  "schema": "uruha_persona_policy_token_parity_preregistration_v1",
+  "experiment_id": "persona_policy_token_parity_v1",
+  "problem": "Real Qwen2.5 tokenizer calibration found that equal-shape target and neutral persona payloads still differ by 0 to 11 active prompt tokens, so the existing strict compute ledger rejects a paired local-model pilot before any persona result can be interpreted.",
+  "observed_before_change": {
+    "tokenizer": "Qwen/Qwen2.5-7B-Instruct local cache",
+    "model_generation_call_count": 0,
+    "contexts": 6,
+    "target_minus_neutral_token_deltas": [1, 1, 0, -6, -11, -2],
+    "maximum_absolute_delta": 11,
+    "strict_compute_parity_pass": false
+  },
+  "falsifiable_hypothesis": "Left masked allocation padding can give target and neutral structured conditions the same configured tensor length without changing their active token sequence, decoded continuation, model identity, decoding schedule, legacy runtime behavior, or raw-text-free accounting.",
+  "single_changed_variable": "structured_surface_prompt_allocation_budget",
+  "allocation_budget_tokens": 640,
+  "controls": [
+    "same cached tokenizer",
+    "same serialized target and neutral payloads as before padding",
+    "same leftbrain plan and memory payload",
+    "same model and adapter identity",
+    "same decoding parameters and candidate count",
+    "same maximum generation tokens",
+    "padding attention mask equals zero",
+    "legacy and default runtime allocation behavior unchanged",
+    "no model weights loaded and no holdout content read during construction"
+  ],
+  "construction_success_requires": {
+    "context_pair_count_exact": 6,
+    "allocated_prompt_tokens_each_exact": 640,
+    "masked_padding_tokens_minimum": 1,
+    "active_prompt_tokens_preserved": true,
+    "allocated_prompt_token_schedule_equal": true,
+    "model_decoding_and_tool_schedule_equal": true,
+    "compute_parity_pass": true,
+    "budget_exceeded_fails_closed": true,
+    "legacy_prompt_token_behavior_change_count_exact": 0,
+    "actual_model_weight_load_count_exact": 0,
+    "actual_model_generation_call_count_exact": 0,
+    "holdout_content_review_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "persona_score_count_exact": 0
+  },
+  "failure_conditions": [
+    "padding tokens have attention mask one",
+    "active prompt tokens are deleted, reordered, or rewritten",
+    "target and neutral allocated prompt schedules differ",
+    "a prompt over the configured budget is truncated instead of rejected",
+    "legacy runtime begins padding by default",
+    "ledger hides the active token difference",
+    "construction loads model weights or reads evaluation holdout content"
+  ],
+  "authorization_on_pass": "authorize_fresh_local_model_target_vs_neutral_surface_pilot_only",
+  "non_authorizations": [
+    "formal persona similarity evaluation",
+    "sealed holdout unsealing",
+    "human blind rating",
+    "model training",
+    "production default enablement",
+    "public persona fidelity claim"
+  ]
+}
