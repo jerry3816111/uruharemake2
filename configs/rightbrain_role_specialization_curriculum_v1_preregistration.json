@@ -1,0 +1,137 @@
+{
+  "schema": "uruha_rightbrain_role_specialization_curriculum_preregistration_v1",
+  "experiment_id": "rightbrain_role_specialization_curriculum_v1",
+  "status": "frozen_before_curriculum_builder_implementation",
+  "authoring_parent_commit": "0040248bfdf3a7bb80086893a8605599718f7ce1",
+  "research_question": "Can a source-independent synthetic curriculum cover the current joint RightBrain contract while teaching policy-conditioned expression without target utterances, benchmark answers, runtime canned replies, or reuse of development cases?",
+  "hypothesis": {
+    "claim_under_test": "A balanced paired curriculum can teach the transformation from one protected cognitive plan into target-policy and neutral-policy surface realizations while jointly preserving semantic obligations, memory speakability, procedural guidance, and forbidden markers.",
+    "scope_limit": "Passing this construction audit authorizes only a matched local training pilot. It does not show that training improves generation, that the target public persona is reproduced, or that production use is safe."
+  },
+  "frozen_inputs": {
+    "runtime_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "6becc225d3ea720538217461a210076215f5911423a49826c1f04dfe01c6ce43"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2"
+    },
+    "public_persona_contract_source": {
+      "path": "public_persona_contract_v3.py",
+      "sha256": "a5c035b99a8f07976bf344e2335f1c64a11bfd4b5a42ffe5c8249b0cd0bf0885"
+    },
+    "previous_construction_authorization": {
+      "path": "reports/rightbrain_current_contract_curriculum_audit_v1.json",
+      "sha256": "696aab71899d98c5fea05a1bd4a0e65091e434085956851107dfbfff6a29d767",
+      "required_decision": "authorize_person_independent_role_specialization_curriculum_construction_only"
+    },
+    "excluded_development_sets": [
+      {
+        "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+        "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e",
+        "case_count": 5
+      },
+      {
+        "path": "datasets/public_persona_contract_v3_development.json",
+        "sha256": "577b83ab5dbf46c1beb971f836f2e1d73b12ffd2e4717d27f550ce77db839e79",
+        "case_count": 20
+      }
+    ],
+    "excluded_training_targets": [
+      {
+        "path": "datasets/rightbrain_plan_surface_contract_v1_train.json",
+        "sha256": "4632da927c5331ea7d487c5ff2353592dc4030cb65a69d654a066b91b066a289",
+        "row_count": 1025
+      },
+      {
+        "path": "datasets/rightbrain_rejection_curriculum_v1.json",
+        "sha256": "d419a987674e904ce7edc474fbb31de4de9004e07e4e816376f98bae6192fb88",
+        "row_count": 36
+      }
+    ]
+  },
+  "curriculum_design": {
+    "dataset_kind": "source_independent_synthetic_policy_conditioned_surface_training",
+    "base_case_count": 20,
+    "active_persona_context_count": 5,
+    "memory_modes": [
+      "no_memory",
+      "explicit_allowed",
+      "background_only",
+      "do_not_mention"
+    ],
+    "providers": [
+      "structured_target_public_persona",
+      "structured_neutral_dialogue"
+    ],
+    "target_variants_per_provider_and_case": 2,
+    "row_count": 80,
+    "procedural_guidance_active_memory_modes": [
+      "explicit_allowed",
+      "background_only"
+    ],
+    "protected_cognitive_content_identical_within_provider_pair": true,
+    "runtime_payload_mode": "legacy_json_v1",
+    "system_instruction": "exact_current_structured_rightbrain_system_instruction",
+    "model_generation_calls": 0,
+    "model_training_runs": 0
+  },
+  "balance_requirements": {
+    "rows_per_provider": 40,
+    "rows_per_persona_context": 16,
+    "rows_per_memory_mode": 20,
+    "rows_with_procedural_guidance": 40,
+    "rows_without_procedural_guidance": 40,
+    "rows_per_base_case": 4
+  },
+  "quality_requirements": {
+    "joint_contract_coverage": 1.0,
+    "current_persona_policy_path_coverage": 1.0,
+    "current_persona_policy_value_coverage": 1.0,
+    "exact_current_system_instruction_coverage": 1.0,
+    "semantic_contract_pass_rate": 1.0,
+    "forbidden_marker_pass_rate": 1.0,
+    "maximum_length_pass_rate": 1.0,
+    "casual_japanese_surface_pass_rate": 1.0,
+    "unique_normalized_target_count": 80,
+    "provider_pair_output_difference_rate": 1.0,
+    "maximum_shared_six_character_prefix_count": 4,
+    "retired_no_first_person_rule_row_count": 0
+  },
+  "separation_requirements": {
+    "exact_user_input_overlap_count": 0,
+    "normalized_user_input_overlap_count": 0,
+    "exact_payload_overlap_count": 0,
+    "exact_target_overlap_count": 0,
+    "normalized_target_overlap_count": 0,
+    "target_identity_marker_count": 0,
+    "target_utterance_count": 0,
+    "benchmark_or_answer_key_field_count": 0,
+    "runtime_fixed_reply_count": 0
+  },
+  "row_provenance_requirements": {
+    "synthetic": true,
+    "source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item": false,
+    "runtime_fixed_reply": false,
+    "training_authorized": false
+  },
+  "decision_rules": {
+    "authorize_matched_training_pilot_preregistration": "All frozen bindings, balance gates, quality gates, provenance gates, and separation gates pass.",
+    "reject_curriculum": "Any target identity or utterance appears, any benchmark or expected-answer shortcut appears, any development overlap appears, any current joint-contract field is missing, or any semantic or memory-policy target violates its contract.",
+    "insufficient_evidence": "A frozen input cannot be reconstructed or an automated quality check cannot verify the intended property."
+  },
+  "authorization_boundaries": {
+    "model_generation_calls": 0,
+    "model_training": false,
+    "production_default_change": false,
+    "persona_similarity_claim": false,
+    "generalization_claim": false,
+    "human_blind_rating": false,
+    "benchmark_score_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_authorization": "preregister_a_matched_local_training_pilot_using_this_curriculum"
+  }
+}
