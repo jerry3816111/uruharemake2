@@ -1,0 +1,46 @@
+{
+  "schema": "uruha_rightbrain_role_curriculum_training_pilot_protocol_amendment_v1",
+  "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
+  "amendment_id": "token_capacity_preflight_01",
+  "status": "frozen_after_measurement_and_before_control_dataset_holdout_harness_completion_and_before_training",
+  "reason": "The frozen 720-token training sequence and 640-token generation prompt budgets were empirically too short for the already frozen current-contract payloads. Running the pilot unchanged would truncate 34 of 80 training sequences and reject 38 of 40 heldout provider prompts before generation.",
+  "measurement_method": "Local frozen Qwen2.5-7B-Instruct tokenizer, apply_chat_template with add_generation_prompt=true, no model load and no generation.",
+  "observations": {
+    "treatment_row_count": 80,
+    "training_prompt_token_minimum": 628,
+    "training_prompt_token_maximum": 752,
+    "training_completion_token_minimum": 10,
+    "training_completion_token_maximum": 25,
+    "training_combined_token_minimum": 643,
+    "training_combined_token_maximum": 772,
+    "training_rows_over_original_720_limit": 34,
+    "heldout_provider_prompt_count": 40,
+    "heldout_prompt_token_minimum": 632,
+    "heldout_prompt_token_maximum": 770,
+    "heldout_prompts_over_original_640_budget": 38
+  },
+  "changes": {
+    "training_schedule.maximum_sequence_length": {
+      "before": 720,
+      "after": 800
+    },
+    "fresh_generation_evaluation.prompt_allocation_budget_tokens": {
+      "before": 640,
+      "after": 800
+    },
+    "training_tensor_allocation": {
+      "before": "dynamic batch-local padding",
+      "after": "every row right-padded to exactly 800 allocated tokens with attention-masked padding"
+    }
+  },
+  "unchanged_controls": [
+    "all datasets and texts",
+    "single changed causal variable",
+    "row count and token multiset parity",
+    "base model and initial adapter",
+    "optimizer and update count",
+    "generation seeds and decoding parameters",
+    "success thresholds"
+  ],
+  "decision_boundary": "This amendment only prevents deterministic truncation and pre-generation rejection and makes the allocated training tensor shape exactly equal across conditions. Active prompt, completion, and combined token totals must still match exactly. It does not authorize training, alter model behavior, or relax any quality gate."
+}
