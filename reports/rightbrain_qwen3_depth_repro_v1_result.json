@@ -1,0 +1,149 @@
+{
+  "schema": "uruha_rightbrain_qwen3_depth_repro_result_v1",
+  "experiment_id": "rightbrain_qwen3_depth_repro_v1",
+  "measurements": {
+    "1": {
+      "gradient_norms": [
+        0.004219479146967849,
+        0.004219479146967849,
+        0.004219479146967849
+      ],
+      "mean_gradient_norm": 0.004219479146967849,
+      "gradient_norm_coefficient_of_variation": 0.0,
+      "gradient_norm_max_to_min_ratio": 1.0,
+      "minimum_pairwise_group_profile_cosine": 1.0,
+      "gradient_hashes": [
+        "7a9c88f9ff0fdddd48a2de6ee49d7402ce248d1a21627161be30bd3549d8b8af",
+        "7a9c88f9ff0fdddd48a2de6ee49d7402ce248d1a21627161be30bd3549d8b8af",
+        "7a9c88f9ff0fdddd48a2de6ee49d7402ce248d1a21627161be30bd3549d8b8af"
+      ],
+      "gradient_hashes_identical": true,
+      "losses": [
+        0.033996328711509705,
+        0.033996328711509705,
+        0.033996328711509705
+      ],
+      "durations_seconds": [
+        0.413,
+        0.414,
+        0.406
+      ],
+      "peak_memory_bytes": [
+        401091080,
+        401091080,
+        401091080
+      ],
+      "checks": {
+        "cv": true,
+        "ratio": true,
+        "profile_cosine": true
+      }
+    },
+    "36": {
+      "gradient_norms": [
+        765.6437661800493,
+        765.6437661800493,
+        765.6437661800493
+      ],
+      "mean_gradient_norm": 765.6437661800493,
+      "gradient_norm_coefficient_of_variation": 0.0,
+      "gradient_norm_max_to_min_ratio": 1.0,
+      "minimum_pairwise_group_profile_cosine": 1.0,
+      "gradient_hashes": [
+        "b23ba6cdce808723b695f35d72026e35048983a6af2a8d85b87ee25d33e0a483",
+        "b23ba6cdce808723b695f35d72026e35048983a6af2a8d85b87ee25d33e0a483",
+        "b23ba6cdce808723b695f35d72026e35048983a6af2a8d85b87ee25d33e0a483"
+      ],
+      "gradient_hashes_identical": true,
+      "losses": [
+        308.2817077636719,
+        308.2817077636719,
+        308.2817077636719
+      ],
+      "durations_seconds": [
+        10.146,
+        10.211,
+        10.175
+      ],
+      "peak_memory_bytes": [
+        7654151140,
+        7654151140,
+        7654151140
+      ],
+      "checks": {
+        "cv": true,
+        "ratio": true,
+        "profile_cosine": true
+      }
+    }
+  },
+  "checks": {
+    "all_six_repetitions_complete": true,
+    "1_layer_contracts_exact": true,
+    "1_layer_reproducible": true,
+    "36_layer_contracts_exact": true,
+    "36_layer_reproducible": true
+  },
+  "decision": {
+    "localization_complete": true,
+    "outcome": "depth_alone_does_not_reproduce_full_model_drift",
+    "authorized_next_step": "preregister_lm_head_cross_entropy_localization",
+    "authorize_persona_training": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_qwen3_depth_repro_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "c180a80b4dd1f3b5d02d026afce10deefba50faaa09bae99958c5144399524e0"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_qwen3_depth_repro_v1_execution_lock.json",
+      "scope": "repository",
+      "sha256": "42633629d73c779dc987419d8fae434023048a7734ded2ae4de9953f233196b8"
+    },
+    "repeats": [
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_1_layers_repeat_1.json",
+        "scope": "repository",
+        "sha256": "222dda8a800a2478b012b33e490db94289ba67e7ec718e64a47e53d6e55d6574"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_1_layers_repeat_2.json",
+        "scope": "repository",
+        "sha256": "d5e3708fdc9f101575b30074b9e4968a997949666628e27efd085a2bb4ee4423"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_1_layers_repeat_3.json",
+        "scope": "repository",
+        "sha256": "2d1b997ff75f920d42e9f65411df361d746e0953faf731d7e9cde7e42e9a9e72"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_36_layers_repeat_1.json",
+        "scope": "repository",
+        "sha256": "c78d4bbdbb6c38872f247b24df3b3711cc45f02d918b7d11facf7a440367a3a5"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_36_layers_repeat_2.json",
+        "scope": "repository",
+        "sha256": "1397d5a02a08d4569106311c324574f4ce8acd24a5db5b37aeb301687c1e574f"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_depth_repro_v1_36_layers_repeat_3.json",
+        "scope": "repository",
+        "sha256": "7ebd7a15b1ec0fc20a693c9c439d81364091366d6ba3634a8dea0929a5afcc00"
+      }
+    ]
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "lm_head_or_cross_entropy_included": false,
+    "scope": "qwen3_transformer_depth_localization_only"
+  }
+}

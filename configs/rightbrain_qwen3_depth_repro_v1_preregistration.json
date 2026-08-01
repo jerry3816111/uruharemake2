@@ -1,0 +1,150 @@
+{
+  "schema": "uruha_rightbrain_qwen3_depth_repro_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_depth_repro_v1",
+  "research_question": "Does increasing the same official Qwen3 Metal graph from one to all 36 transformer layers reproduce the previously observed gradient drift?",
+  "causal_variable": {
+    "name": "active_transformer_layer_count",
+    "levels": [
+      1,
+      36
+    ],
+    "only_intended_change": true
+  },
+  "evidence_parent": {
+    "path": "reports/rightbrain_qwen3_block_backend_repro_v1_result.json",
+    "sha256": "edf8c9e03d4c67f3969679a63ffc657d203e2d653eb2c5036aecf9be90308a37",
+    "authorized_next_step": "preregister_layer_count_scaling_localization"
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "official_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "config_sha256": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba",
+    "weight_shard_sha256": {
+      "model-00001-of-00003.safetensors": "75311d91bb08cf0b882913da464a1e722a31fb44db35208663487efb7a3d8ed6",
+      "model-00002-of-00003.safetensors": "0b48adbb1f60e901153d91907ba11ce63bd4b8b584482e730f48808d055dfba1",
+      "model-00003-of-00003.safetensors": "7dd39ccca5e4de123c74c14af44c9bf2eb75df33b4614382af0134528e060d5d"
+    },
+    "architecture": "Qwen3ForCausalLM",
+    "total_transformer_layers": 36,
+    "hidden_size": 2560,
+    "base_dtype": "mlx.core.bfloat16"
+  },
+  "base_contracts": {
+    "1": {
+      "layer_count": 1,
+      "selected_weight_tensor_count": 11,
+      "parameter_count": 100930816,
+      "dtypes": [
+        "mlx.core.bfloat16"
+      ],
+      "sha256": "3d72d702a955cc33fb9d3263ca51431b86665652a529f8db7b3210943cf4663e"
+    },
+    "36": {
+      "layer_count": 36,
+      "selected_weight_tensor_count": 396,
+      "parameter_count": 3633509376,
+      "dtypes": [
+        "mlx.core.bfloat16"
+      ],
+      "sha256": "5de22a81312b2b9272cd3e7059c77edf8f2ce51b120ca4ef8fc6ede92bf3e92a"
+    }
+  },
+  "adapter_contract": {
+    "placement": "same_first_transformer_layer_only",
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "initialization_seed": 20260802,
+    "by_layer_count": {
+      "1": {
+        "layer_count": 1,
+        "tensor_count": 14,
+        "parameter_count": 1835008,
+        "dtypes": [
+          "mlx.core.float32"
+        ],
+        "sha256": "221d7b3e1f72b9ff4c2b88e3a61f88b986ad04806a7609147c813a890debf6c9"
+      },
+      "36": {
+        "layer_count": 36,
+        "tensor_count": 14,
+        "parameter_count": 1835008,
+        "dtypes": [
+          "mlx.core.float32"
+        ],
+        "sha256": "221d7b3e1f72b9ff4c2b88e3a61f88b986ad04806a7609147c813a890debf6c9"
+      }
+    }
+  },
+  "input_contract": {
+    "source": "synthetic_numpy_pcg64_normal_no_persona_or_benchmark_content",
+    "shape": [
+      1,
+      64,
+      2560
+    ],
+    "host_dtype": "float32",
+    "runtime_dtype": "mlx.core.bfloat16",
+    "seed": 20260802,
+    "standard_deviation": 0.02,
+    "sha256": "0b3377a5bf9793b57a7f4bb137e13e869721d4a1f41ab489ecffaedb1ccf3a96"
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3
+    ],
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "loss": "mean_square_of_stack_output_in_float32",
+    "trainable_adapter_layer_index": 0,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999
+    },
+    "classifications": {
+      "one_stable_thirty_six_unstable": "depth_reproduces_gradient_drift",
+      "one_stable_thirty_six_stable": "depth_alone_does_not_reproduce_full_model_drift",
+      "one_unstable": "one_layer_control_failed_to_reproduce_parent"
+    }
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "lm_head_or_cross_entropy_included": false,
+    "scope": "qwen3_transformer_depth_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_depth_repro_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_depth_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_depth_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_depth_repro_v1_result_lock.json"
+  }
+}
