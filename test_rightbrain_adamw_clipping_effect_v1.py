@@ -169,7 +169,14 @@ class RightBrainAdamWClippingEffectV1Test(unittest.TestCase):
             self.assertTrue(path.is_file(), binding["path"])
             self.assertEqual(construction.sha256_file(path), binding["sha256"])
         result = diagnostic.load_json(diagnostic.DEFAULT_RESULT_JSON)
-        self.assertTrue(result["decision"]["valid"])
+        self.assertFalse(result["decision"]["valid"])
+        self.assertEqual(result["decision"]["outcome"], "invalid_diagnostic")
+        tolerance = self.preregistration["integrity_tolerances"][
+            "gradient_norm_relative_error_maximum"
+        ]
+        self.assertGreater(result["gradient"]["relative_error_vs_prior"], tolerance)
+        source_result = diagnostic.load_json(source_telemetry.DEFAULT_RESULT_JSON)
+        self.assertEqual(result["losses"], source_result["losses"])
         self.assertEqual(result["probe"]["optimizer_steps"], 0)
         self.assertTrue(result["parameter_integrity"]["unchanged"])
         for forbidden in (
