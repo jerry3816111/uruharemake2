@@ -1,0 +1,161 @@
+{
+  "schema": "uruha_public_persona_runtime_condition_contract_v1",
+  "experiment_id": "public_persona_runtime_manifest_v1",
+  "status": "frozen_design_before_control_adapter_implementation_or_model_execution",
+  "target_id": "ichinose_uruha_public_persona",
+  "runtime_under_test": {
+    "web_constructor": "uruha_web_ui.RuntimeManager.get_brain -> UruhaBrainV4_Mac()",
+    "formal_sync_constructor": "UruhaBrainV4_Mac(load_right_brain_model=False)",
+    "formal_sync_turn_method": "run_turn_debug",
+    "reason_for_direct_controller_use": "WebRuntime adds idle background scheduling, optional TTS and log writes that are not part of a single response condition. Formal response scoring uses the same brain controller directly and freezes those external side effects off.",
+    "current_rightbrain_mode": "deterministic_surface_with_model_selector_shadow_only",
+    "candidate_model_blend_is_current_default": false,
+    "typed_reflection_is_current_default": false,
+    "current_goal_nonconformance": "Deterministic RightBrain reply families are present. They make the current system executable but do not satisfy the long-term requirement that public-persona fidelity generalize without fixed replies."
+  },
+  "evaluation_modes": {
+    "isolated_single_scenario": {
+      "brain_lifetime": "one fresh brain per scenario",
+      "memory": "temporary empty evaluation database initialized identically for every condition",
+      "state_updates": "allowed only after the scored reply and discarded with the scenario",
+      "async_runtime": false,
+      "background_consolidation": false,
+      "proactive_turns": false,
+      "tts_vrm_or_function_calls": false
+    },
+    "isolated_dynamic_episode": {
+      "brain_lifetime": "one fresh brain per frozen episode",
+      "memory": "temporary empty evaluation database shared only by ordered turns in that episode",
+      "state_updates": "retained within the episode and discarded before the next episode",
+      "async_runtime": false,
+      "background_consolidation": false,
+      "proactive_turns": false,
+      "tts_vrm_or_function_calls": false
+    }
+  },
+  "conditions": [
+    {
+      "condition_id": "s0_current_full_cognitive_persona",
+      "role": "primary_system",
+      "implementation_status": "executable_now",
+      "entrypoint": "UruhaBrainV4_Mac(load_right_brain_model=False).run_turn_debug",
+      "local_model": "qwen2.5:7b",
+      "active_modules": [
+        "multi_layer_memory_retrieval_and_working_memory_selection",
+        "actual_signal_and_prediction_error",
+        "appraisal_and_high_low_road_router",
+        "psyche_mood_and_trust_state",
+        "rule_or_local_model_leftbrain_planner",
+        "multi_tick_candidate_plan_selection",
+        "deterministic_rightbrain_surface_formulator_with_fixed_reply_families",
+        "reply_self_monitor_and_deterministic_repair",
+        "episodic_memory_write_after_reply"
+      ],
+      "inactive_or_shadow_modules": [
+        "rightbrain_qwen_lora_generation_disabled_by_default",
+        "typed_reflection_disabled_by_default",
+        "forbidden_projection_shadow_no_output_change",
+        "learned_selector_shadow_no_output_change",
+        "public_persona_conditional_brief_disabled_by_default"
+      ],
+      "conditional_model_calls": {
+        "leftbrain_general_plan": "zero for rule-covered inputs, otherwise one qwen2.5:7b call",
+        "social_reasoning_frame": "zero normally; an additional qwen2.5:7b call may occur for recognized story reasoning probes",
+        "rightbrain_generation": "zero under the frozen default",
+        "typed_reflection": "zero under the frozen default",
+        "background_consolidation": "not invoked by the formal synchronous turn harness"
+      },
+      "long_term_goal_status": "current_runtime_baseline_not_final_persona_mechanism"
+    },
+    {
+      "condition_id": "c1_matched_direct_control",
+      "role": "primary_fair_control",
+      "implementation_status": "blocked_missing_fair_adapter",
+      "intended_single_difference": "remove structured cognitive intermediate state while preserving the same local model artifact, allowed persona evidence, per-item model-call count, total context and output budget, decoding, postprocessing and action permissions",
+      "must_match_s0": [
+        "physical_machine",
+        "qwen2.5:7b_artifact",
+        "allowed_development_persona_information",
+        "user_and_episode_context",
+        "per_item_model_call_count",
+        "total_input_and_output_token_budget",
+        "decoding_or_deterministic_equivalent",
+        "final_output_language_and_length_contract",
+        "no_holdout_access",
+        "no_tools_tts_or_vrm"
+      ],
+      "current_blockers": [
+        "S0 model-call count is input-dependent because rule plans bypass the model while some story probes add a model call",
+        "S0 persona information is distributed across LeftBrain rules, planner prompt, RightBrain policies and surface families rather than one frozen equal-budget provider",
+        "no direct-control adapter currently records and enforces per-item compute and context parity"
+      ],
+      "execution_authorized": false
+    },
+    {
+      "condition_id": "c2_matched_persona_disabled",
+      "role": "persona_specificity_control",
+      "implementation_status": "blocked_missing_persona_policy_injection_seam",
+      "intended_single_difference": "replace target public-persona policy with an equal-size neutral Japanese dialogue policy while preserving every cognitive module, model, memory state, resource budget and safety rule",
+      "must_match_s0": [
+        "all_cognitive_modules",
+        "all_memory_and_state_transitions",
+        "local_model_and_call_schedule",
+        "input_context_and_output_budget",
+        "decoding_and_postprocessing",
+        "safety_and_action_permissions"
+      ],
+      "current_blockers": [
+        "target persona behavior is cross-cutting in LeftBrain rules and prompts plus RightBrain fallback and intent families",
+        "PUBLIC_PERSONA_CONDITIONAL_BRIEF is not the only active source of persona behavior",
+        "disabling one environment flag therefore does not create a persona-disabled matched condition"
+      ],
+      "execution_authorized": false
+    },
+    {
+      "condition_id": "c3_prompt_only_lower_bound",
+      "role": "descriptive_lower_bound_not_primary_fair_control",
+      "implementation_status": "specified_not_implemented",
+      "intended_difference": "one local model call with a compact persona prompt and no cognitive pipeline",
+      "interpretation_limit": "A score gap against this condition measures the combined package and cannot prove which module or persona mechanism caused the gap.",
+      "execution_authorized": false
+    }
+  ],
+  "future_single_component_ablation_candidates": [
+    {
+      "component_id": "memory_retrieval_and_working_memory",
+      "matched_replacement": "same token budget filled by recent-context-only retrieval",
+      "primary_outcomes": ["memory_correctness", "irrelevant_memory_intrusion", "persona_blind_preference"]
+    },
+    {
+      "component_id": "prediction_error_and_high_low_router",
+      "matched_replacement": "fixed high-road route with the same downstream planner",
+      "primary_outcomes": ["route_correctness", "false_low_road", "unsafe_or_inappropriate_response"]
+    },
+    {
+      "component_id": "psyche_mood_and_trust",
+      "matched_replacement": "frozen neutral mood and trust state",
+      "primary_outcomes": ["relationship_response_alignment", "cross_turn_consistency"]
+    },
+    {
+      "component_id": "leftbrain_multi_plan_selection",
+      "matched_replacement": "single-plan planner with identical input evidence and model-call budget",
+      "primary_outcomes": ["semantic_correctness", "behavior_stance_alignment", "latency"]
+    },
+    {
+      "component_id": "rightbrain_surface_formulation",
+      "matched_replacement": "generic Japanese semantic realizer with the same plan and length contract",
+      "primary_outcomes": ["semantic_retention", "naturalness", "language_style_similarity"]
+    },
+    {
+      "component_id": "reply_self_monitor",
+      "matched_replacement": "pass-through output with identical upstream candidates",
+      "primary_outcomes": ["semantic_omission", "language_pollution", "false_repair"]
+    },
+    {
+      "component_id": "post_reply_memory_update",
+      "matched_replacement": "read-only episode state within an otherwise identical dynamic episode",
+      "primary_outcomes": ["updated_fact_correctness", "stale_memory_error", "cross_turn_persona_consistency"]
+    }
+  ],
+  "claim_boundary": "S0 can be frozen now. C1 and C2 cannot be honestly executed until their missing adapters exist and parity is machine-checked. A prompt-only lower bound is still useful descriptively but is not the sole fair control and cannot identify a component cause."
+}

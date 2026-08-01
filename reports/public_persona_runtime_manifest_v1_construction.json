@@ -1,0 +1,504 @@
+{
+  "schema": "uruha_public_persona_runtime_manifest_construction_v1",
+  "experiment_id": "public_persona_runtime_manifest_v1",
+  "status": "construction_passed",
+  "generated_at": "2026-08-01",
+  "decision": "freeze_current_s0_runtime_and_authorize_persona_policy_injection_seam_design_only",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/public_persona_runtime_manifest_v1_preregistration.json",
+      "sha256": "9f438269ccb9db350f8903e824eda62e58a1e8cf9fd47aa07ca851b1815a5b1d"
+    },
+    "condition_contract": {
+      "path": "configs/public_persona_runtime_condition_contract_v1.json",
+      "sha256": "1b66fec697af1de8bcf232df54580e4f89d768e7ef5ac3c6f20ad1b18857c113"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "75d18d08fd3e7e8123ed89e6292c64dcaf90e38de87c88ba4d5eaa41e75889b0"
+    },
+    "web_source": {
+      "path": "uruha_web_ui.py",
+      "sha256": "2b874e7077769a364c734afdcdf1408867b3e81788d157960de24ab58b830e68"
+    },
+    "reflection_source": {
+      "path": "uruha_reflection_runtime.py",
+      "sha256": "ea16243b1678d9d2089093fe4cd47934ab792de523d3b948f3019c595e955c48"
+    },
+    "persona_contract_source": {
+      "path": "public_persona_contract_v3.py",
+      "sha256": "a5c035b99a8f07976bf344e2335f1c64a11bfd4b5a42ffe5c8249b0cd0bf0885"
+    },
+    "harness_lock": {
+      "path": "configs/public_persona_runtime_manifest_v1_harness_lock.json",
+      "sha256": "d26b384d8a49f939f2983cbcd3050b697afabeb3cb43a6c5c9a4a53f8d9564f7"
+    }
+  },
+  "source_audit": {
+    "defaults": {
+      "ollama_url": "http://localhost:11434/v1",
+      "rightbrain_base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "working_memory_limit": 5,
+      "working_memory_retrieval_limit": 20,
+      "working_memory_scoring_profile": "v2",
+      "planner_max_ticks": 3,
+      "rightbrain_model_blend_enabled": false,
+      "rightbrain_candidate_count": 3,
+      "rightbrain_model_repair_enabled": false,
+      "rightbrain_forbidden_projection_enabled": false,
+      "rightbrain_forbidden_projection_shadow_enabled": true,
+      "rightbrain_selector_shadow_enabled": true,
+      "public_persona_conditional_brief_enabled": false
+    },
+    "persona_crosscut_evidence": {
+      "leftbrain_target_instruction_present": true,
+      "rightbrain_fixed_family_attributes": [
+        "intent_reply_families",
+        "scene_fallbacks"
+      ],
+      "rightbrain_fixed_reply_literal_count": 367,
+      "interpretation": "These literals establish current cross-cutting persona and surface policy, not public-persona fidelity or lawful target evidence."
+    },
+    "function_call_evidence": {
+      "web_get_brain": [
+        "UruhaBrainV4_Mac",
+        "print"
+      ],
+      "controller_init": [
+        "LeftBrain",
+        "MemoryManager",
+        "OpenAI",
+        "Psyche",
+        "PsycheConfig",
+        "RightBrain",
+        "RuntimeConfig",
+        "RuntimeState",
+        "_resolve_right_brain_model_loading",
+        "print",
+        "self.client_logic.models.list",
+        "self.runtime.touch_interaction",
+        "sys.exit",
+        "threading.Event",
+        "threading.Lock",
+        "time.time"
+      ],
+      "run_turn_debug": [
+        "self.cognitive_tick",
+        "self.emit_response_if_ready",
+        "self.ingest_event"
+      ],
+      "ingest_event": [
+        "list",
+        "mems.get",
+        "self._build_attention_frame",
+        "self._infer_focus_label",
+        "self._push_blackboard",
+        "self._runtime_public_state",
+        "self.memory.get_runtime_snapshot",
+        "self.memory.query_all_layers",
+        "self.psyche.get_state",
+        "self.runtime.register_user_input",
+        "time.time"
+      ],
+      "cognitive_tick": [
+        "any",
+        "bool",
+        "deepcopy",
+        "int",
+        "list",
+        "logic.get",
+        "mems.get",
+        "prediction_hint.get",
+        "print",
+        "procedural_guidance.get",
+        "route_info.get",
+        "self._apply_prediction_error_shock",
+        "self._appraise_user_input",
+        "self._attach_memory_gravity",
+        "self._compute_prediction_error",
+        "self._derive_open_loops",
+        "self._extract_procedural_guidance",
+        "self._infer_focus_label",
+        "self._plan_trace_summary",
+        "self._push_blackboard",
+        "self._trim_text",
+        "self.left_brain._build_low_road_plan",
+        "self.left_brain._high_low_road_route",
+        "self.left_brain.classify_user_signal",
+        "self.left_brain.predict_next_user_signal",
+        "self.left_brain.think",
+        "self.psyche.get_state",
+        "self.runtime.set_prediction",
+        "str",
+        "strip",
+        "upg.build_grounded_profile_logic"
+      ],
+      "emit_response_if_ready": [
+        "deepcopy",
+        "len",
+        "logic.get",
+        "memory_writes.append",
+        "reflection.get",
+        "self._attach_reply_post_check",
+        "self._diff_memory_snapshot",
+        "self._diff_runtime_state",
+        "self._plan_trace_summary",
+        "self._push_blackboard",
+        "self._repair_reply_from_self_monitor",
+        "self._runtime_public_state",
+        "self._self_monitor_reply",
+        "self._trim_text",
+        "self._write_typed_reflection_if_enabled",
+        "self.get_runtime_snapshot",
+        "self.memory.get_runtime_snapshot",
+        "self.memory.save_episode",
+        "self.psyche.adjust",
+        "self.psyche.get_state",
+        "self.right_brain.speak",
+        "self.runtime.touch_interaction",
+        "self.runtime.turn_traces.append",
+        "self_monitor.get",
+        "time.time"
+      ],
+      "rightbrain_speak": [
+        "deepcopy",
+        "dict",
+        "get",
+        "isinstance",
+        "list",
+        "logic_data.get",
+        "publish_model_trace",
+        "self._apply_human_speech_plan_to_logic",
+        "self._bind_forbidden_projection_shadow_visible_reply",
+        "self._build_dynamic_context_anchor",
+        "self._choose_variant",
+        "self._extract_grounding_terms",
+        "self._fallback_reply",
+        "self._finalize_surface_reply",
+        "self._generate_model_surface_candidates",
+        "self._refine_conversational_reply",
+        "self._remember_turn",
+        "self._select_model_blended_reply",
+        "self._speech_plan_variants",
+        "self._template_reply",
+        "self.build_human_speech_plan"
+      ],
+      "rightbrain_disable_gate": [
+        "grounding.get",
+        "logic_data.get",
+        "lower",
+        "self._model_required_semantic_groups",
+        "str"
+      ]
+    },
+    "checks": [
+      {
+        "check_id": "web_uses_default_brain_constructor",
+        "passed": true
+      },
+      {
+        "check_id": "controller_constructs_memory",
+        "passed": true
+      },
+      {
+        "check_id": "controller_constructs_leftbrain",
+        "passed": true
+      },
+      {
+        "check_id": "controller_constructs_rightbrain_through_load_resolver",
+        "passed": true
+      },
+      {
+        "check_id": "run_turn_has_three_stage_pipeline",
+        "passed": true
+      },
+      {
+        "check_id": "ingest_queries_memory",
+        "passed": true
+      },
+      {
+        "check_id": "tick_classifies_signal",
+        "passed": true
+      },
+      {
+        "check_id": "tick_computes_prediction_error",
+        "passed": true
+      },
+      {
+        "check_id": "tick_appraises_input",
+        "passed": true
+      },
+      {
+        "check_id": "tick_routes_high_or_low",
+        "passed": true
+      },
+      {
+        "check_id": "tick_invokes_leftbrain_plan_path",
+        "passed": true
+      },
+      {
+        "check_id": "emit_invokes_rightbrain",
+        "passed": true
+      },
+      {
+        "check_id": "emit_self_monitors_and_can_repair",
+        "passed": true
+      },
+      {
+        "check_id": "emit_writes_episode_after_reply",
+        "passed": true
+      },
+      {
+        "check_id": "sync_turn_does_not_call_background_cycle",
+        "passed": true
+      },
+      {
+        "check_id": "rightbrain_model_default_is_off",
+        "passed": true
+      },
+      {
+        "check_id": "rightbrain_generation_is_gated",
+        "passed": true
+      },
+      {
+        "check_id": "default_load_resolves_to_model_blend_flag",
+        "passed": true
+      },
+      {
+        "check_id": "typed_reflection_requires_explicit_env_opt_in",
+        "passed": true
+      },
+      {
+        "check_id": "persona_conditional_brief_default_is_off",
+        "passed": true
+      },
+      {
+        "check_id": "leftbrain_contains_target_persona_instruction",
+        "passed": true
+      },
+      {
+        "check_id": "rightbrain_contains_fixed_surface_families",
+        "passed": true
+      }
+    ]
+  },
+  "local_artifacts": {
+    "leftbrain_local_model": {
+      "name": "qwen2.5:7b",
+      "artifact_id": "845dbda0ea48",
+      "reported_size": "4.7 GB",
+      "available": true,
+      "modelfile_sha256": "8bb0fcfb1aa72bec00a3057fa8b180f4ba6ce1d01ecbeba7a39f49c7d7e19b64"
+    },
+    "rightbrain_candidate_model": {
+      "available_on_audited_machine": true,
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "adapter_config": {
+        "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_config.json",
+        "sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a"
+      },
+      "adapter_weights": {
+        "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+        "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+      },
+      "training_run": {
+        "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/rightbrain_contract_v1_training_run.json",
+        "sha256": "483da00f0fad2af615b3a031bd934f5c80584b38fbdf6ee59bde4de3bdbe90db"
+      },
+      "recorded_adapter_weights_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937",
+      "weights_match_training_record": true,
+      "active_by_default": false,
+      "required_for_frozen_s0": false
+    },
+    "selector_shadow": {
+      "model_type": "standardized_logistic_contract_reranker",
+      "schema_version": 2,
+      "artifact": {
+        "path": "models/rightbrain_repair_selector_v1.json",
+        "sha256": "a04e02d64a77500c50876b769bca947b40360967f4849e209d5f7bc119ab8390"
+      },
+      "active_by_default": true,
+      "changes_output_by_default": false
+    }
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "hardware_model": "Mac14,10",
+    "memory_bytes": 34359738368,
+    "logical_cpu_count": 12,
+    "mps_available": true,
+    "packages": {
+      "torch": "2.10.0",
+      "transformers": "4.38.1",
+      "peft": "0.10.0",
+      "openai": "2.21.0",
+      "chromadb": "1.5.1",
+      "gradio": "6.6.0"
+    }
+  },
+  "formal_runtime": {
+    "current_system_id": "s0_current_full_cognitive_persona",
+    "constructor": "UruhaBrainV4_Mac(load_right_brain_model=False)",
+    "turn_method": "run_turn_debug",
+    "rightbrain_output_mode": "deterministic_surface",
+    "fixed_reply_family_present": true,
+    "meets_no_fixed_reply_long_term_goal": false,
+    "rightbrain_qwen_lora_generation_active": false,
+    "typed_reflection_active": false,
+    "async_background_runtime_active": false,
+    "production_memory_path_allowed": false,
+    "tts_vrm_or_function_call_execution": false
+  },
+  "condition_readiness": {
+    "condition_count": 4,
+    "executable_condition_ids": [
+      "s0_current_full_cognitive_persona"
+    ],
+    "blocked_condition_ids": [
+      "c1_matched_direct_control",
+      "c2_matched_persona_disabled"
+    ],
+    "primary_matched_control_executable": false,
+    "persona_disabled_control_executable": false,
+    "formal_comparative_execution_ready": false
+  },
+  "checks": [
+    {
+      "check_id": "web_uses_default_brain_constructor",
+      "passed": true
+    },
+    {
+      "check_id": "controller_constructs_memory",
+      "passed": true
+    },
+    {
+      "check_id": "controller_constructs_leftbrain",
+      "passed": true
+    },
+    {
+      "check_id": "controller_constructs_rightbrain_through_load_resolver",
+      "passed": true
+    },
+    {
+      "check_id": "run_turn_has_three_stage_pipeline",
+      "passed": true
+    },
+    {
+      "check_id": "ingest_queries_memory",
+      "passed": true
+    },
+    {
+      "check_id": "tick_classifies_signal",
+      "passed": true
+    },
+    {
+      "check_id": "tick_computes_prediction_error",
+      "passed": true
+    },
+    {
+      "check_id": "tick_appraises_input",
+      "passed": true
+    },
+    {
+      "check_id": "tick_routes_high_or_low",
+      "passed": true
+    },
+    {
+      "check_id": "tick_invokes_leftbrain_plan_path",
+      "passed": true
+    },
+    {
+      "check_id": "emit_invokes_rightbrain",
+      "passed": true
+    },
+    {
+      "check_id": "emit_self_monitors_and_can_repair",
+      "passed": true
+    },
+    {
+      "check_id": "emit_writes_episode_after_reply",
+      "passed": true
+    },
+    {
+      "check_id": "sync_turn_does_not_call_background_cycle",
+      "passed": true
+    },
+    {
+      "check_id": "rightbrain_model_default_is_off",
+      "passed": true
+    },
+    {
+      "check_id": "rightbrain_generation_is_gated",
+      "passed": true
+    },
+    {
+      "check_id": "default_load_resolves_to_model_blend_flag",
+      "passed": true
+    },
+    {
+      "check_id": "typed_reflection_requires_explicit_env_opt_in",
+      "passed": true
+    },
+    {
+      "check_id": "persona_conditional_brief_default_is_off",
+      "passed": true
+    },
+    {
+      "check_id": "leftbrain_contains_target_persona_instruction",
+      "passed": true
+    },
+    {
+      "check_id": "rightbrain_contains_fixed_surface_families",
+      "passed": true
+    },
+    {
+      "check_id": "condition_contract_valid",
+      "passed": true
+    },
+    {
+      "check_id": "harness_lock_valid",
+      "passed": true
+    },
+    {
+      "check_id": "ollama_qwen2_5_7b_available",
+      "passed": true
+    },
+    {
+      "check_id": "inactive_rightbrain_adapter_consistent_if_present",
+      "passed": true
+    }
+  ],
+  "contract_errors": [],
+  "harness_errors": [],
+  "counts": {
+    "check_count": 26,
+    "check_pass_count": 26,
+    "condition_count": 4,
+    "executable_condition_count": 1,
+    "blocked_condition_count": 2,
+    "model_call_count": 0,
+    "holdout_content_review_count": 0,
+    "production_memory_write_count": 0,
+    "runtime_change_count": 0,
+    "prompt_change_count": 0,
+    "model_weight_change_count": 0,
+    "persona_score_count": 0
+  },
+  "authorizations": {
+    "current_s0_runtime_manifest_frozen": true,
+    "persona_policy_injection_seam_design": true,
+    "matched_control_execution": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false
+  },
+  "next_required_evidence": "Introduce a structured persona-policy provider that emits behavior constraints rather than fixed replies, plus a neutral matched provider and per-item compute ledger. Then verify C1/C2 parity on synthetic scenarios before any human or holdout evaluation.",
+  "evidence_boundary": "This construction freezes the current synchronous S0 runtime and proves which comparison conditions remain unimplementable. It contains no generated replies, human ratings, holdout content, persona score, capability gain, model training or production behavior change."
+}
