@@ -253,7 +253,7 @@ def build():
             "loss": "mean_square_of_one_block_output_in_float32",
             "random_seed": 20260802,
             "memory_limit_bytes": 30 * 1024**3,
-            "wired_limit_bytes": 24 * 1024**3,
+            "wired_limit_bytes": 20 * 1024**3,
         },
         "falsifiable_outcomes": {
             "within_device_reproducibility": {

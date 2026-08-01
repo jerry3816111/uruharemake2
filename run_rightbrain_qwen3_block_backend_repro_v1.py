@@ -141,8 +141,9 @@ def run_repeat(device, repeat, lock_path=DEFAULT_EXECUTION_LOCK):
 
     started = time.perf_counter()
     probe = preregistration["exact_probe"]
-    mx.set_memory_limit(int(probe["memory_limit_bytes"]))
-    mx.set_wired_limit(int(probe["wired_limit_bytes"]))
+    if device == "gpu":
+        mx.set_memory_limit(int(probe["memory_limit_bytes"]))
+        mx.set_wired_limit(int(probe["wired_limit_bytes"]))
     mx.reset_peak_memory()
     try:
         model, args, base = _load_model(preregistration, device)
