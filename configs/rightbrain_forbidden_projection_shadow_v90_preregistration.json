@@ -1,0 +1,42 @@
+{
+  "schema": "uruha_rightbrain_forbidden_projection_shadow_revalidation_preregistration_v90",
+  "experiment_id": "rightbrain_forbidden_projection_shadow_v90_current_main_revalidation",
+  "status": "preregistered_before_current_main_revalidation",
+  "current_problem": "V89 的 observe-only 功能仍在現行程式中，但其歷史 harness 綁定的 uruha_brain_mac.py 與 project_paths.py 雜湊已因後續合併失效。舊日誌 156 筆沒有 V89 trace，不能用來估計修正的真實出現率。",
+  "falsifiable_hypothesis": "若 V89 機制在現行 main 仍保持原契約，則不載入模型的重驗必須同時證明：production projection 預設關閉、shadow 預設開啟、衝突案例可產生只含雜湊的反事實比較、可見回覆與模型呼叫不變、web logger 保留 logic shadow，而且 legacy log 不會被誤算成 V89 證據。",
+  "single_changed_variable": "replace only the stale historical V89 source-hash harness with a current-main revalidation; runtime code, model, prompt, memory, scorer, projection flags, visible replies, web logs and thresholds remain unchanged",
+  "dependencies": {
+    "v88_result": {
+      "path": "reports/rightbrain_forbidden_projection_v88.json",
+      "sha256": "5e4a195ee17213fbed1da5a3ada549bcf559aa33f95334cbe583983ddf48173e",
+      "required_decision": "authorize_bounded_production_shadow_only"
+    },
+    "v89_preregistration": {
+      "path": "configs/rightbrain_forbidden_projection_shadow_v89_preregistration.json",
+      "sha256": "ef205914a7c30e65dd031b83702fae05762908ac20256c1225df1c77fe0ee7e9"
+    }
+  },
+  "revalidation_contract": {
+    "model_load_allowed": false,
+    "model_call_count_exact": 0,
+    "runtime_file_change_allowed": false,
+    "shadow_enabled_by_default": true,
+    "production_projection_enabled_by_default": false,
+    "visible_reply_change_count_exact": 0,
+    "extra_model_call_count_exact": 0,
+    "raw_candidate_or_marker_text_in_shadow_allowed": false,
+    "web_logger_must_persist_logic_shadow": true,
+    "legacy_rows_count_as_v89_shadow": false,
+    "old_web_log_reuse_as_current_live_result": false
+  },
+  "decision_policy": {
+    "pass": "authorize_current_main_observe_only_live_shadow_collection_only",
+    "fail": "repair_or_retire_shadow_before_collecting_new_live_evidence",
+    "limited_activation_review": false,
+    "projection_runtime_enable": false,
+    "production_default_enable": false,
+    "training_data": false,
+    "persona_fidelity_claim": false
+  },
+  "evidence_boundary": "V90 通過只表示現行 main 仍能安全記錄 V89 observe-only trace，可開始累積新的真實聊天證據。它不表示已觀察到任何新 trace，不表示投影有效率達標，也不授權啟用投影、訓練、人格相似或正式上線。"
+}
