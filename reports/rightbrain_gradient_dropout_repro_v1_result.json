@@ -1,0 +1,89 @@
+{
+  "schema": "uruha_rightbrain_gradient_dropout_repro_result_v1",
+  "experiment_id": "rightbrain_gradient_dropout_repro_v1",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_gradient_dropout_repro_v1_preregistration.json",
+      "sha256": "ed0fa67f1ccbbe98954266e93062f0f3a6747e098c5946bcd53cc23e9d2eec38"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_gradient_dropout_repro_v1_execution_lock.json",
+      "sha256": "02fb3e085b8ef70524676a879a416ac310b98ed509be56d0ec56dbbc07ee058f"
+    },
+    "repeats": [
+      {
+        "path": "reports/rightbrain_gradient_dropout_repro_v1_repeat_1.json",
+        "sha256": "934c10f1d4ed6ba4e35e6e1c989764cccae5c572bccd290f7b0ce6da74f1f158"
+      },
+      {
+        "path": "reports/rightbrain_gradient_dropout_repro_v1_repeat_2.json",
+        "sha256": "cf0e9171d20372b523cd7307c90b127ef9f1ff86cc06bcf156992b8de8529ee6"
+      },
+      {
+        "path": "reports/rightbrain_gradient_dropout_repro_v1_repeat_3.json",
+        "sha256": "9a07e7aae38d8984ee462e41f1db6a1427efcd5a67159203bc9587d2aac49642"
+      }
+    ]
+  },
+  "measurements": {
+    "gradient_norms": [
+      2573.6162109375,
+      2127.049560546875,
+      1049475.625
+    ],
+    "mean_gradient_norm": 351392.0969238281,
+    "gradient_norm_coefficient_of_variation": 1.4047545022359091,
+    "gradient_norm_max_to_min_ratio": 493.3950033257216,
+    "pairwise_group_profile_cosines": [
+      0.9994131417207656,
+      0.9693948515254552,
+      0.9709152727422792
+    ],
+    "minimum_pairwise_group_profile_cosine": 0.9693948515254552,
+    "gradient_hashes": [
+      "6ac75bd08cfcc1e6704945e370e01fa24eed235f37529cc1466438930030589f",
+      "2148fd2998a1ea34b6e716825e892344b2154a70f00a7cea183261f2647b4334",
+      "0c94a20f8d9ff839e385108296ba94c0314cf3e7c2a0fdcee20a269f77f041a3"
+    ],
+    "losses": [
+      3.7664809226989746,
+      0.7498188614845276,
+      2.090646743774414,
+      5.423612117767334,
+      3.0047945976257324,
+      2.704019546508789,
+      2.563814640045166,
+      3.0723917484283447
+    ]
+  },
+  "checks": {
+    "loss_vectors_exact": true,
+    "gradient_norm_cv": false,
+    "gradient_norm_ratio": false,
+    "group_profile_cosine": false,
+    "mps_matches_cpu": true,
+    "all_gradients_finite": true,
+    "parameters_unchanged": true
+  },
+  "decision": {
+    "passed": false,
+    "outcome": "dropout_zero_does_not_restore_gradient_reproducibility",
+    "authorized_next_step": "zero_update_checkpointing_or_dtype_probe_only",
+    "authorize_model_training_now": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_dropout_zero_only"
+  }
+}
