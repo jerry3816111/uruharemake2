@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_rightbrain_carrier_model_screen_final_review_v2",
+  "experiment_id": "rightbrain_carrier_model_screen_v2",
+  "review_status": "evidence_valid_negative_result",
+  "decision": "reject_simple_carrier_swap_and_investigate_current_contract_curriculum_coverage",
+  "review_findings": {
+    "all_three_model_blobs_deep_hash_verified": true,
+    "same_current_system_instruction_and_payload_text": true,
+    "same_cases_provider_order_seeds_sampling_context_and_output_limits": true,
+    "exact_current_production_equivalent_gate_used": true,
+    "one_model_resident_at_a_time": true,
+    "no_adapter_repair_fixed_surface_or_memory_write": true,
+    "v1_unreachable_gate_detected_before_candidate_inference": true,
+    "v2_candidate_gates_frozen_before_candidate_inference": true,
+    "all_condition_integrity_checks_passed": true,
+    "actual_model_generation_call_count": 30,
+    "qwen3_5_4b_did_not_outperform_control": true,
+    "qwen3_5_9b_did_not_outperform_control": true,
+    "no_candidate_holdout_or_production_authorized": true
+  },
+  "condition_comparison": {
+    "qwen2_5_7b_control": {
+      "strict_valid": "6/10",
+      "raw_pollution": "4/10",
+      "final_semantic_failures": "2/10",
+      "final_polite_drift": "2/10",
+      "warm_median_seconds": 2.2623,
+      "model_blob_bytes": 4683073952
+    },
+    "qwen3_5_4b_candidate": {
+      "strict_valid": "5/10",
+      "raw_pollution": "0/10",
+      "final_semantic_failures": "3/10",
+      "final_polite_drift": "3/10",
+      "warm_median_seconds": 2.177,
+      "model_blob_bytes": 3389971840,
+      "paired_vs_control": {
+        "both_valid": 3,
+        "control_only_valid": 3,
+        "candidate_only_valid": 2,
+        "neither_valid": 2
+      }
+    },
+    "qwen3_5_9b_candidate": {
+      "strict_valid": "3/10",
+      "raw_pollution": "2/10",
+      "final_semantic_failures": "2/10",
+      "final_polite_drift": "7/10",
+      "warm_median_seconds": 3.8696,
+      "model_blob_bytes": 6594462816,
+      "paired_vs_control": {
+        "both_valid": 3,
+        "control_only_valid": 3,
+        "candidate_only_valid": 0,
+        "neither_valid": 4
+      }
+    }
+  },
+  "supported_inferences": [
+    "Qwen3.5-4B is cleaner at raw script generation and slightly faster, but those gains do not compensate for worse semantic preservation and register control under the current contract.",
+    "Qwen3.5-9B is not a stronger current RightBrain carrier: it never uniquely succeeds where the control fails, and polite or service-register drift rises from 2/10 to 7/10.",
+    "A newer or larger general model is not sufficient to realize the current public-persona surface contract.",
+    "Together with the prior V34 guarded-retry confirmation failure, the next justified work is not another base-model swap or retry policy."
+  ],
+  "decision_execution": {
+    "production_rightbrain_unchanged": true,
+    "qwen3_5_4b_not_promoted": true,
+    "qwen3_5_9b_not_promoted": true,
+    "disjoint_carrier_holdout_not_authorized": true,
+    "persona_training_not_authorized_by_this_screen": true,
+    "human_blind_test_not_requested": true
+  },
+  "next_research_direction": {
+    "problem": "The current structured persona-policy contract asks the carrier to preserve several semantic groups, obey a casual register, respect length, and apply expression policy at once. Existing base swaps and guarded retries do not reliably satisfy this exact role.",
+    "recommended_unit": "Audit whether the existing generic RightBrain training curriculum actually covers every field and failure mode of the current structured persona-policy contract. Only if a measurable coverage gap exists should a source-separated, person-independent role-specialization curriculum be built and trained.",
+    "why_this_precedes_training": "The project already has RightBrain adapters and a prior guarded-retry negative result. Training again without proving a current-contract curriculum gap would repeat an unsupported direction.",
+    "forbidden_shortcuts": [
+      "Do not train on these five development outputs or expected replies.",
+      "Do not select Qwen3.5 solely because its raw language pollution is lower.",
+      "Do not weaken the semantic or register gate to make a candidate pass.",
+      "Do not interpret this as a target-person personality comparison."
+    ]
+  },
+  "verification": {
+    "focused_unit_tests_passed": 11,
+    "related_regression_tests_passed": 81,
+    "total_tests_passed": 92,
+    "python_compile_passed": true,
+    "git_diff_check_passed": true
+  },
+  "evidence_boundary": "This valid negative result rejects a direct local carrier swap for the exact current five-case development contract. It does not establish production quality, persona similarity, or the performance of a future role-specialized model on independent data."
+}

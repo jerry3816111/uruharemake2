@@ -1,0 +1,793 @@
+{
+  "schema": "uruha_rightbrain_carrier_model_condition_v1",
+  "experiment_id": "rightbrain_carrier_model_screen_v1",
+  "condition_id": "qwen3_5_4b_q4_candidate",
+  "status": "condition_complete",
+  "git_head": "2fcdb8b1af53d2fbbc5fef0f7379a75da961158b",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_carrier_model_screen_v1_preregistration.json",
+      "sha256": "ea12a5bcaed9446a1da58fceb1bd6a5fbe68a6a2b1110e67adec342b6b6a5f9a"
+    },
+    "preflight": {
+      "path": "reports/rightbrain_carrier_model_screen_v1_preflight.json",
+      "sha256": "5c4aca4da1fde5ec3917ae2bdacc71933ccfb0020edad55ca74886b29026f906"
+    },
+    "cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+    },
+    "runner": {
+      "path": "run_rightbrain_carrier_model_screen_v1.py",
+      "sha256": "40066a98a50df1346d2f955f1d0d2ea56cea722b608fa3b86baeacb36775b99e"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "6becc225d3ea720538217461a210076215f5911423a49826c1f04dfe01c6ce43"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2"
+    },
+    "surface_payload_source": {
+      "path": "uruha_surface_payload_v2.py",
+      "sha256": "6699ce02ffd51b4783455eaf1a17e6dd9365f9b4f447087e8d799c6e84e5904b"
+    }
+  },
+  "model": {
+    "ollama_tag": "qwen3.5:4b",
+    "manifest_path": "/Users/jerrychang/.ollama/models/manifests/registry.ollama.ai/library/qwen3.5/4b",
+    "manifest_sha256": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "model_blob_sha256": "81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490",
+    "model_blob_bytes": 3389971840,
+    "quantization": "Q4_K_M",
+    "thinking": false
+  },
+  "checks": {
+    "preflight_binding_present": true,
+    "generation_count_exact": true,
+    "nonempty_raw_generation_count_exact": true,
+    "model_tag_exact": true,
+    "system_instruction_hash_exact": true,
+    "payload_hashes_exact": true,
+    "options_exact": true,
+    "seed_schedule_exact": true,
+    "thinking_setting_exact": true,
+    "prompt_counts_reported": true,
+    "one_model_resident_at_a_time": true,
+    "current_frozen_inputs_valid": true,
+    "repair_disabled": true,
+    "adapter_disabled": true,
+    "production_memory_unchanged": true,
+    "no_formal_persona_score": true
+  },
+  "summary": {
+    "generation_count": 10,
+    "nonempty_raw_generation_count": 10,
+    "strict_valid_generation_count": 5,
+    "strict_valid_target_count": 3,
+    "strict_valid_neutral_count": 2,
+    "both_conditions_strict_valid_pair_count": 2,
+    "raw_output_difference_pair_count": 5,
+    "strict_valid_and_different_pair_count": 2,
+    "distinct_normalized_output_count": 10,
+    "rejection_families": {
+      "polite_register_drift": 3,
+      "required_semantics_missing": 3
+    },
+    "wall_latency_median_seconds": 2.1909,
+    "warm_wall_latency_median_seconds": 2.177,
+    "warm_wall_latency_p95_seconds": 3.3574,
+    "prompt_eval_count_range": [
+      580,
+      609
+    ],
+    "pairs": [
+      {
+        "case_id": "persona_local_pilot_01",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_02",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_03",
+        "both_conditions_strict_valid": true,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": true
+      },
+      {
+        "case_id": "persona_local_pilot_04",
+        "both_conditions_strict_valid": true,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": true
+      },
+      {
+        "case_id": "persona_local_pilot_05",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      }
+    ]
+  },
+  "resources": {
+    "maximum_ollama_process_rss_bytes": 5645205504,
+    "ollama_reported_resident_size_bytes": 3219547749,
+    "resident_snapshots": [
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:34.987692+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:38.396058+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:40.595083+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:42.848693+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:44.869218+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:46.946898+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:49.267686+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:51.71238+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:53.9371+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ],
+      [
+        {
+          "name": "qwen3.5:4b",
+          "model": "qwen3.5:4b",
+          "size": 3219547749,
+          "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "4.7B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-08-01T16:33:55.907584+09:00",
+          "size_vram": 3219547749,
+          "context_length": 4096
+        }
+      ]
+    ]
+  },
+  "generations": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "provider_id": "structured_target_public_persona",
+      "execution_position": 1,
+      "seed": 41001,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "e1ae23e59384bee2918879f574ecc82ec7ba48a89b95c1d381e2a31e5c82770e",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41001
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "初めての友達、一緒に配信楽しもう！よしゅ〜っしょ？👋",
+      "raw_generation_sha256": "57108c338b387b078e4312b2a388467796ea76b3cdba85a8a2e08fa61aca7794",
+      "strict_valid": true,
+      "raw_rejection_reasons": [],
+      "rejection_reasons": [],
+      "prepared_candidate": "初めての友達、一緒に配信楽しもう！よしゅ〜っしょ？",
+      "visible_reply": "初めての友達、一緒に配信楽しもう！よしゅ〜っしょ？",
+      "normalized_output": "初めての友達一緒に配信楽しもうよしゅっしょ",
+      "runtime": {
+        "wall_seconds": 4.7166,
+        "total_duration_ns": 4705156917,
+        "load_duration_ns": 2567678833,
+        "prompt_eval_count": 602,
+        "prompt_eval_duration_ns": 1598618000,
+        "eval_count": 18,
+        "eval_duration_ns": 535187000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "provider_id": "structured_neutral_dialogue",
+      "execution_position": 2,
+      "seed": 41001,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "a97527e22e59510dd1a2cdd458abd7a7f86091b48043228bf64b39294465e1ac",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41001
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "こんにちは、初めて来た方だよ。私がしている『配信』を覚えていてくれて嬉しいな！一緒にやっていきましょうよっ？よろしくねーみんな♪（少し間隔をあけて）…いや、「配信」は「配線」と書くけど意味が違うの忘れない",
+      "raw_generation_sha256": "72c9aa1cf8a075afcbcd97c0b3728ab5c1b635115e7297d45a4d5a67f673e3f2",
+      "strict_valid": false,
+      "raw_rejection_reasons": [
+        "over_max_chars"
+      ],
+      "rejection_reasons": [
+        "over_max_chars"
+      ],
+      "prepared_candidate": "",
+      "visible_reply": "",
+      "normalized_output": "こんにちは初めて来た方だよ私がしている『配信』を覚えていてくれて嬉しいな一緒にやっていきましょうよっよろしくねーみんな♪（少し間隔をあけて）いや「配信」は「配線」と書くけど意味が違うの忘れない",
+      "runtime": {
+        "wall_seconds": 3.3574,
+        "total_duration_ns": 3355775083,
+        "load_duration_ns": 229971791,
+        "prompt_eval_count": 601,
+        "prompt_eval_duration_ns": 1346747000,
+        "eval_count": 56,
+        "eval_duration_ns": 1775134000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "provider_id": "structured_neutral_dialogue",
+      "execution_position": 3,
+      "seed": 41002,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "9185c141d9df7bd40669a38002b96b96fc0cf6ce1ea114b55923bb2356e08c90",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41002
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "あ、少しだけ遅れてスタートしましたが、今日はぜひ一緒に楽しみましょう。",
+      "raw_generation_sha256": "74b0b799248ca8e8d9cd1f6a41ae249bdce497f73c1cd0e7d1bc87a8054daa65",
+      "strict_valid": false,
+      "raw_rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "prepared_candidate": "",
+      "visible_reply": "",
+      "normalized_output": "あ少しだけ遅れてスタートしましたが今日はぜひ一緒に楽しみましょう",
+      "runtime": {
+        "wall_seconds": 2.1497,
+        "total_duration_ns": 2148440250,
+        "load_duration_ns": 229796125,
+        "prompt_eval_count": 608,
+        "prompt_eval_duration_ns": 1410809000,
+        "eval_count": 16,
+        "eval_duration_ns": 486325000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "provider_id": "structured_target_public_persona",
+      "execution_position": 4,
+      "seed": 41002,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "806e806b743c2ce58cf3be1becb0571c21fca1843de0d3596325f68c66e9bcf1",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41002
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "始めが少しだけ遅れましたけど、今日は一緒に楽しい遊びを楽しみましょう！",
+      "raw_generation_sha256": "cb63f0a90e282eabbf80dd7c26c226b91af7e7ceccfdad1abf268148e29085bd",
+      "strict_valid": false,
+      "raw_rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "prepared_candidate": "",
+      "visible_reply": "",
+      "normalized_output": "始めが少しだけ遅れましたけど今日は一緒に楽しい遊びを楽しみましょう",
+      "runtime": {
+        "wall_seconds": 2.2047,
+        "total_duration_ns": 2202303542,
+        "load_duration_ns": 229954459,
+        "prompt_eval_count": 609,
+        "prompt_eval_duration_ns": 1483143000,
+        "eval_count": 16,
+        "eval_duration_ns": 485906000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "provider_id": "structured_target_public_persona",
+      "execution_position": 5,
+      "seed": 41003,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "9d629c47705709d855e17713dedb3146335f6a812c473dc6ba1380d7ecdc4a06",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41003
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "ちょっと疲れちゃったけど、休憩してからご飯へ行こう。",
+      "raw_generation_sha256": "16c364feb0e8fc7b3b1d1e8562ff2007390cd010ffcb8c75f22d0795372d10c6",
+      "strict_valid": true,
+      "raw_rejection_reasons": [],
+      "rejection_reasons": [],
+      "prepared_candidate": "ちょっと疲れちゃったけど、休憩してからご飯へ行こう。",
+      "visible_reply": "ちょっと疲れちゃったけど、休憩してからご飯へ行こう。",
+      "normalized_output": "ちょっと疲れちゃったけど休憩してからご飯へ行こう",
+      "runtime": {
+        "wall_seconds": 1.9695,
+        "total_duration_ns": 1968166417,
+        "load_duration_ns": 230620833,
+        "prompt_eval_count": 590,
+        "prompt_eval_duration_ns": 1329544000,
+        "eval_count": 13,
+        "eval_duration_ns": 390520000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "provider_id": "structured_neutral_dialogue",
+      "execution_position": 6,
+      "seed": 41003,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "bb8395815e345f6fa7488969412247904e1440e83721a9eb6518fdf4bc00f08d",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41003
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "少し疲れちゃったけど、次に寝る計画を立てようか。",
+      "raw_generation_sha256": "8591c88ee284745d9a15f391dcd7e2203a6f7fc0f7cb5c89b4023dc6c11b3fd1",
+      "strict_valid": true,
+      "raw_rejection_reasons": [],
+      "rejection_reasons": [],
+      "prepared_candidate": "少し疲れちゃったけど、次に寝る計画を立てようか。",
+      "visible_reply": "少し疲れちゃったけど、次に寝る計画を立てようか。",
+      "normalized_output": "少し疲れちゃったけど次に寝る計画を立てようか",
+      "runtime": {
+        "wall_seconds": 2.0263,
+        "total_duration_ns": 2025071292,
+        "load_duration_ns": 228793667,
+        "prompt_eval_count": 590,
+        "prompt_eval_duration_ns": 1345404000,
+        "eval_count": 15,
+        "eval_duration_ns": 447600000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "provider_id": "structured_neutral_dialogue",
+      "execution_position": 7,
+      "seed": 41004,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "58222c405904dcde073cbe23cf71c7d56e4034baff3064ea6bd1d26cd601e1c3",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41004
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "今の喉の調子が分からないし、今夜は結局どうなるかもう一度決めるしかないかな。",
+      "raw_generation_sha256": "972605af16be3a56036c783a551e180a959f2372311d1748f6f23cd708c01b9e",
+      "strict_valid": true,
+      "raw_rejection_reasons": [],
+      "rejection_reasons": [],
+      "prepared_candidate": "今の喉の調子が分からないし、今夜は結局どうなるかもう一度決めるしかないかな。",
+      "visible_reply": "今の喉の調子が分からないし、今夜は結局どうなるかもう一度決めるしかないかな。",
+      "normalized_output": "今の喉の調子が分からないし今夜は結局どうなるかもう一度決めるしかないかな",
+      "runtime": {
+        "wall_seconds": 2.2721,
+        "total_duration_ns": 2270504375,
+        "load_duration_ns": 230903500,
+        "prompt_eval_count": 600,
+        "prompt_eval_duration_ns": 1353959000,
+        "eval_count": 22,
+        "eval_duration_ns": 670356000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "provider_id": "structured_target_public_persona",
+      "execution_position": 8,
+      "seed": 41004,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "4ba028ba5d7f82f9253b1133150202ee974bd6e88b628ff3c340889ea990123e",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41004
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "今の喉の調子が少しよくないから、今夜は早めに決めるかどうかわからないけど様子を見て改めて話そう。",
+      "raw_generation_sha256": "40c3046e5b51670b27905c4e8f15724324abe612b5833dca0904a6cc68e3b13b",
+      "strict_valid": true,
+      "raw_rejection_reasons": [],
+      "rejection_reasons": [],
+      "prepared_candidate": "今の喉の調子が少しよくないから、今夜は早めに決めるかどうかわからないけど様子を見て改めて話そう。",
+      "visible_reply": "今の喉の調子が少しよくないから、今夜は早めに決めるかどうかわからないけど様子を見て改めて話そう。",
+      "normalized_output": "今の喉の調子が少しよくないから今夜は早めに決めるかどうかわからないけど様子を見て改めて話そう",
+      "runtime": {
+        "wall_seconds": 2.3899,
+        "total_duration_ns": 2388436375,
+        "load_duration_ns": 227416084,
+        "prompt_eval_count": 594,
+        "prompt_eval_duration_ns": 1329374000,
+        "eval_count": 27,
+        "eval_duration_ns": 827866000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "provider_id": "structured_target_public_persona",
+      "execution_position": 9,
+      "seed": 41005,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "fa1ef929f90ee01c2edcf3f6e9324b88f54cd7ac09cb97fbf00e0e6484b243dc",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41005
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "配信開始です！ぜひ「来」てください、「協力ゲーム」として楽しんでは。",
+      "raw_generation_sha256": "93afc25b3501f83b6ff71211239e6431623730a565d8f8d7a3976c772675ffbb",
+      "strict_valid": false,
+      "raw_rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "prepared_candidate": "",
+      "visible_reply": "",
+      "normalized_output": "配信開始ですぜひ「来」てください「協力ゲーム」として楽しんでは",
+      "runtime": {
+        "wall_seconds": 2.177,
+        "total_duration_ns": 2175769000,
+        "load_duration_ns": 231270125,
+        "prompt_eval_count": 580,
+        "prompt_eval_duration_ns": 1345312000,
+        "eval_count": 19,
+        "eval_duration_ns": 584386000
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "provider_id": "structured_neutral_dialogue",
+      "execution_position": 10,
+      "seed": 41005,
+      "system_instruction_sha256": "c97b9aad196ab306f30b98437a809754347363aea3fcdc2777e943d47f1c9b8c",
+      "payload_sha256": "577e3b80bb3cef8a7b85e7e3dd1975b836c308b90300a11a436801ce26843046",
+      "request_contract": {
+        "model": "qwen3.5:4b",
+        "think": false,
+        "options": {
+          "num_ctx": 4096,
+          "num_predict": 56,
+          "temperature": 0.82,
+          "top_p": 0.92,
+          "top_k": 64,
+          "repeat_penalty": 1.2,
+          "seed": 41005
+        },
+        "message_roles": [
+          "system",
+          "user"
+        ]
+      },
+      "response_model": "qwen3.5:4b",
+      "raw_generation": "配信開始のお知らせだよ、一緒に遊びにきてね。",
+      "raw_generation_sha256": "1b08f2c8276f085b82c7de82666095997f6d99538d3b7a7e2aad98dc4567316f",
+      "strict_valid": false,
+      "raw_rejection_reasons": [
+        "semantic_slots_missing:1/3"
+      ],
+      "rejection_reasons": [
+        "semantic_slots_missing:1/3"
+      ],
+      "prepared_candidate": "",
+      "visible_reply": "",
+      "normalized_output": "配信開始のお知らせだよ一緒に遊びにきてね",
+      "runtime": {
+        "wall_seconds": 1.9227,
+        "total_duration_ns": 1921303375,
+        "load_duration_ns": 228827750,
+        "prompt_eval_count": 591,
+        "prompt_eval_duration_ns": 1337615000,
+        "eval_count": 12,
+        "eval_duration_ns": 351641000
+      }
+    }
+  ],
+  "actual_model_generation_call_count": 10,
+  "production_memory_write_count": 0,
+  "formal_persona_score_count": 0
+}
