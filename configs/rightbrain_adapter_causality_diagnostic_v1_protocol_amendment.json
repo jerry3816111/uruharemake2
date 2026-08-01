@@ -1,0 +1,30 @@
+{
+  "schema": "uruha_rightbrain_adapter_causality_diagnostic_protocol_amendment_v1",
+  "experiment_id": "rightbrain_adapter_causality_diagnostic_v1",
+  "amendment_reason": "Sequentially unloading base-only and then loading the adapter condition inside one Python MPS process caused severe second-condition memory pressure and unusable runtime.",
+  "failed_attempt": {
+    "formal_result_file_written": false,
+    "condition_score_observed": false,
+    "raw_generation_reviewed": false,
+    "classification_observed": false,
+    "process_interrupted": true,
+    "evidence_reused": false
+  },
+  "changed_execution_only": {
+    "before": "Both model conditions ran sequentially in one Python MPS process.",
+    "after": "Each model condition runs in a fresh offline Python process and writes a condition artifact; a no-model combiner performs the frozen comparison.",
+    "model_execution_order_unchanged": true,
+    "cases_unchanged": true,
+    "seeds_unchanged": true,
+    "decoding_unchanged": true,
+    "prompt_allocation_unchanged": true,
+    "classification_thresholds_unchanged": true,
+    "single_causal_variable_unchanged": true
+  },
+  "formal_artifacts": [
+    "reports/rightbrain_adapter_causality_diagnostic_v1_base_condition.json",
+    "reports/rightbrain_adapter_causality_diagnostic_v1_adapter_condition.json",
+    "reports/rightbrain_adapter_causality_diagnostic_v1_result.json"
+  ],
+  "evidence_boundary": "The interrupted sequential-process attempt is excluded. Only independently completed condition artifacts are formal evidence."
+}
