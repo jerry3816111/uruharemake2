@@ -1,0 +1,126 @@
+{
+  "schema": "uruha_rightbrain_token_contract_audit_v1",
+  "experiment_id": "rightbrain_token_contract_audit_v1",
+  "evidence_class": "exploratory_deterministic_data_audit_not_causal_training_evidence",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_preregistration.json",
+      "sha256": "96b2f42f33e07a187aef959e2b754242d648f7d4ce5407d3165f4009c6cde5eb"
+    },
+    "treatment": {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    "control": {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1_policy_permuted_control.json",
+      "sha256": "dfb354fbc55b89ff9f63ebeb92270cadbc20221303274d50a3bd828968db7920"
+    },
+    "tokenizer_snapshot": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28"
+  },
+  "current_fixed_allocation": 800,
+  "treatment": {
+    "row_count": 80,
+    "minimum_active_tokens": 643,
+    "median_active_tokens": 702.5,
+    "p90_active_tokens": 765,
+    "p95_active_tokens": 768,
+    "maximum_active_tokens": 772,
+    "mean_active_tokens": 708.1625,
+    "active_token_total": 56653,
+    "padding_token_slots_at_current_allocation": 7347,
+    "current_allocation_utilization": 0.885203125,
+    "rows_exceeding_current_allocation": 0
+  },
+  "control": {
+    "row_count": 80,
+    "minimum_active_tokens": 643,
+    "median_active_tokens": 702.5,
+    "p90_active_tokens": 766,
+    "p95_active_tokens": 768,
+    "maximum_active_tokens": 771,
+    "mean_active_tokens": 708.1625,
+    "active_token_total": 56653,
+    "padding_token_slots_at_current_allocation": 7347,
+    "current_allocation_utilization": 0.885203125,
+    "rows_exceeding_current_allocation": 0
+  },
+  "exact_gradient_probe_rows": [
+    {
+      "row_index": 63,
+      "id": "rb_role_specialization_v1_0064",
+      "prompt_tokens": 658,
+      "answer_tokens": 16,
+      "active_tokens": 674
+    },
+    {
+      "row_index": 50,
+      "id": "rb_role_specialization_v1_0051",
+      "prompt_tokens": 641,
+      "answer_tokens": 22,
+      "active_tokens": 663
+    },
+    {
+      "row_index": 60,
+      "id": "rb_role_specialization_v1_0061",
+      "prompt_tokens": 652,
+      "answer_tokens": 20,
+      "active_tokens": 672
+    },
+    {
+      "row_index": 77,
+      "id": "rb_role_specialization_v1_0078",
+      "prompt_tokens": 659,
+      "answer_tokens": 10,
+      "active_tokens": 669
+    },
+    {
+      "row_index": 2,
+      "id": "rb_role_specialization_v1_0003",
+      "prompt_tokens": 661,
+      "answer_tokens": 16,
+      "active_tokens": 677
+    },
+    {
+      "row_index": 59,
+      "id": "rb_role_specialization_v1_0060",
+      "prompt_tokens": 705,
+      "answer_tokens": 19,
+      "active_tokens": 724
+    },
+    {
+      "row_index": 78,
+      "id": "rb_role_specialization_v1_0079",
+      "prompt_tokens": 670,
+      "answer_tokens": 16,
+      "active_tokens": 686
+    },
+    {
+      "row_index": 36,
+      "id": "rb_role_specialization_v1_0037",
+      "prompt_tokens": 749,
+      "answer_tokens": 22,
+      "active_tokens": 771
+    }
+  ],
+  "lossless_fixed_allocation": {
+    "tokens": 772,
+    "token_slots_reduced_per_row": 28,
+    "relative_slot_reduction": 0.035
+  },
+  "checks": {
+    "matched_row_counts": true,
+    "no_current_truncation": true,
+    "lossless_fixed_allocation_is_772": true,
+    "matched_active_token_totals": true,
+    "probe_contains_long_row": true
+  },
+  "decision": {
+    "passed": true,
+    "outcome": "fixed_800_contract_is_not_materially_oversized",
+    "reason": "A lossless fixed allocation can only fall from 800 to 772 tokens (3.5%); this audit does not support prioritizing that small change as a gradient-stability intervention.",
+    "authorized_next_step": "evaluate_local_training_backend_or_shape_contract_redesign",
+    "authorize_training": false,
+    "authorize_runtime_change": false,
+    "authorize_persona_claim": false
+  }
+}
