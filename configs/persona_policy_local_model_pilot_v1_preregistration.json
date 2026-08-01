@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_persona_policy_local_model_pilot_preregistration_v1",
+  "experiment_id": "persona_policy_local_model_pilot_v1",
+  "research_question": "With cognition, model, adapter, decoding, seed, prompt allocation and cases fixed, does replacing only the neutral surface policy with the structured target public-persona policy produce usable fresh local-model replies and observable policy sensitivity?",
+  "falsifiable_hypothesis": "At least three of five pairs will yield strict-valid replies in both conditions, and at least one such pair will differ after normalization, while allocated compute schedules remain equal and no legacy fixed surface is accessed.",
+  "single_changed_variable": "persona_policy_provider",
+  "conditions": [
+    "structured_target_public_persona",
+    "structured_neutral_dialogue"
+  ],
+  "model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "local_only": true,
+    "paid_cloud_inference_allowed": false,
+    "candidate_count": 1,
+    "repair_enabled": false,
+    "prompt_allocation_budget_tokens": 640,
+    "max_new_tokens": 56,
+    "do_sample": true,
+    "temperature": 0.82,
+    "top_p": 0.92,
+    "top_k": 64,
+    "repetition_penalty": 1.2
+  },
+  "dataset_contract": {
+    "case_file": "configs/persona_policy_local_model_pilot_v1_cases.json",
+    "case_count_exact": 5,
+    "paired_generation_count_exact": 10,
+    "source_independent_synthetic": true,
+    "contains_benchmark_items": false,
+    "contains_target_utterances": false,
+    "contains_expected_replies": false
+  },
+  "controls": [
+    "same base model and adapter loaded once",
+    "same open-ended case and cognitive plan within each pair",
+    "same seed within each pair",
+    "same decoding parameters",
+    "same 640-token allocated prompt tensor length",
+    "alternating condition execution order",
+    "empty production memory and reset transient rightbrain history per generation",
+    "no repair call and exactly one candidate per condition"
+  ],
+  "success_requires": {
+    "case_pair_count_exact": 5,
+    "actual_model_generation_call_count_exact": 10,
+    "nonempty_raw_generation_count_exact": 10,
+    "allocated_prompt_tokens_each_exact": 640,
+    "compute_parity_pass": true,
+    "both_conditions_strict_valid_pair_count_minimum": 3,
+    "strict_valid_pair_with_different_output_count_minimum": 1,
+    "legacy_fixed_surface_access_count_exact": 0,
+    "ledger_raw_prompt_or_reply_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "benchmark_item_count_exact": 0,
+    "target_utterance_injection_count_exact": 0
+  },
+  "failure_interpretation": {
+    "compute_parity_failure": "The comparison is confounded and no policy result may be interpreted.",
+    "insufficient_strict_valid_pairs": "The current local model or surface contract cannot carry the policy reliably enough for blind comparison.",
+    "no_output_difference": "The provider is structurally present but has no observable effect in this pilot.",
+    "pass": "Only a blinded policy-direction coding bundle is authorized; target-person similarity is still unknown."
+  },
+  "authorizations_on_pass": {
+    "build_blinded_policy_direction_coding_bundle": true,
+    "formal_persona_similarity_claim": false,
+    "production_default_enablement": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "public_impersonation": false
+  }
+}

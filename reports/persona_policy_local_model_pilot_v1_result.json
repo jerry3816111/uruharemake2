@@ -1,0 +1,369 @@
+{
+  "schema": "uruha_persona_policy_local_model_pilot_result_v1",
+  "experiment_id": "persona_policy_local_model_pilot_v1",
+  "status": "pilot_failed",
+  "decision": "repair_structured_local_model_surface_before_persona_scoring",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/persona_policy_local_model_pilot_v1_preregistration.json",
+      "sha256": "27a0e88a82e707ce007fc9bd1b49c92fa0c7c69ad0f7829fb1cf6956f732cb3c"
+    },
+    "cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "a4bb54d5fd4717c8d04b6cb4c6d95e57f4e8425820ca9f411292051305244ba4"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2"
+    },
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "adapter": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "weights_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  },
+  "runtime": {
+    "device": "mps",
+    "dtype": "torch.float16",
+    "model_load_seconds": 43.7585,
+    "total_generation_seconds": 71.4681,
+    "offline": true
+  },
+  "counts": {
+    "case_pair_count": 5,
+    "actual_model_generation_call_count": 10,
+    "nonempty_raw_generation_count": 10,
+    "strict_valid_generation_count": 2,
+    "both_conditions_strict_valid_pair_count": 0,
+    "strict_valid_pair_with_different_output_count": 0,
+    "all_raw_pair_output_difference_count": 4,
+    "distinct_normalized_output_count": 9,
+    "legacy_fixed_surface_access_count": 0,
+    "ledger_raw_prompt_or_reply_count": 0,
+    "production_memory_write_count": 0,
+    "benchmark_item_count": 0,
+    "target_utterance_injection_count": 0
+  },
+  "checks": {
+    "offline_local_model_only": true,
+    "case_pair_count": true,
+    "actual_model_generation_call_count": true,
+    "nonempty_raw_generation_count": true,
+    "allocated_prompt_tokens_each": true,
+    "compute_parity": true,
+    "enough_strict_valid_pairs": false,
+    "observable_policy_sensitivity": false,
+    "legacy_surface_not_accessed": true,
+    "ledger_contains_no_raw_text": true,
+    "production_memory_unchanged": true,
+    "no_benchmark_items": true,
+    "no_target_utterance_injection": true
+  },
+  "compute_parity": {
+    "call_count_equal": true,
+    "model_decoding_and_tool_schedule_equal": true,
+    "prompt_tokens_available": true,
+    "prompt_token_schedule_equal": true,
+    "left_call_count": 5,
+    "right_call_count": 5,
+    "left_prompt_tokens": [
+      640,
+      640,
+      640,
+      640,
+      640
+    ],
+    "right_prompt_tokens": [
+      640,
+      640,
+      640,
+      640,
+      640
+    ],
+    "active_prompt_tokens_available": true,
+    "active_prompt_token_schedule_equal": false,
+    "left_active_prompt_tokens": [
+      621,
+      628,
+      598,
+      613,
+      599
+    ],
+    "right_active_prompt_tokens": [
+      620,
+      627,
+      598,
+      619,
+      610
+    ],
+    "parity_pass": true
+  },
+  "rejection_reason_counts": {
+    "cjk_language_leak": 1,
+    "nonstandard_cjk_surface": 3,
+    "polite_tone_drift": 4,
+    "semantic_slots_missing:0/2": 3,
+    "semantic_slots_missing:1/2": 2,
+    "semantic_slots_missing:1/3": 2,
+    "unexpected_ascii_leak": 3
+  },
+  "pairs": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "both_conditions_strict_valid": false,
+      "normalized_outputs_differ": true,
+      "strict_valid_and_different": false
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "both_conditions_strict_valid": false,
+      "normalized_outputs_differ": false,
+      "strict_valid_and_different": false
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "both_conditions_strict_valid": false,
+      "normalized_outputs_differ": true,
+      "strict_valid_and_different": false
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "both_conditions_strict_valid": false,
+      "normalized_outputs_differ": true,
+      "strict_valid_and_different": false
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "both_conditions_strict_valid": false,
+      "normalized_outputs_differ": true,
+      "strict_valid_and_different": false
+    }
+  ],
+  "generations": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41001,
+      "execution_position": 1,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "配信やってますねえ、皆さんと一緒に楽しみたいな！",
+      "visible_reply": "配信やってますねえ、皆さんと一緒に楽しみたいな！",
+      "raw_generation_sha256": "ae16c7d0e19b25875dd3bbcf39f7955f5cb4b6c2325fe4bdea95ea4972384352",
+      "visible_reply_sha256": "ae16c7d0e19b25875dd3bbcf39f7955f5cb4b6c2325fe4bdea95ea4972384352",
+      "normalized_output": "配信やってますねえ皆さんと一緒に楽しみたいな",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 12.2196,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41001,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "はじめまして、私は配信活动をするUruhaです。よろしかったら一緒に楽しんでくださいね！",
+      "visible_reply": "",
+      "raw_generation_sha256": "8f903d840b165cce1f215675c626a7ea32454ed9b177d5fd54c56763a7035b1f",
+      "visible_reply_sha256": null,
+      "normalized_output": "はじめまして私は配信活动をするuruhaですよろしかったら一緒に楽しんでくださいね",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.9888,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41002,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少しずつ始まりましたが、今日は楽しい協力ゲー楽しみにしててくださいね。",
+      "visible_reply": "",
+      "raw_generation_sha256": "71327a8d7855d9f2064f2ba1cf8b28f6e0e0b507989a470c9a537c94fcf63f4e",
+      "visible_reply_sha256": null,
+      "normalized_output": "少しずつ始まりましたが今日は楽しい協力ゲー楽しみにしててくださいね",
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.3788,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41002,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少しずつ始まりましたが、今日は楽しい協力ゲー楽しみにしててくださいね！",
+      "visible_reply": "",
+      "raw_generation_sha256": "3c30d9b01504e97123b2e7eb15191f1d5c89c2a7b134f17abecae8795413d337",
+      "visible_reply_sha256": null,
+      "normalized_output": "少しずつ始まりましたが今日は楽しい協力ゲー楽しみにしててくださいね",
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.3639,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41003,
+      "execution_position": 1,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "今日はちょっと疲れちゃったな。今度の休みには遠出しようかな。",
+      "visible_reply": "今日はちょっと疲れちゃったな。今度の休みには遠出しようかな。",
+      "raw_generation_sha256": "ff75c025b76cff73b2f76a563da41d988b82c56b3410b4d38674003d98d62a7e",
+      "visible_reply_sha256": "ff75c025b76cff73b2f76a563da41d988b82c56b3410b4d38674003d98d62a7e",
+      "normalized_output": "今日はちょっと疲れちゃったな今度の休みには遠出しようかな",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.9458,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41003,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "今日は少しひどい疲れ despre fatigue paralleled with 明日早起きするつもりだ so next_step_planned",
+      "visible_reply": "",
+      "raw_generation_sha256": "592616d72a3bc4bacdfa7778b346066c3a882d30e69e40fc3b583968bc895eb6",
+      "visible_reply_sha256": null,
+      "normalized_output": "今日は少しひどい疲れdesprefatigueparalleledwith明日早起きするつもりだsonext_step_planned",
+      "rejection_reasons": [
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.3878,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41004,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じがあまりよくなくて、 tonight の予定も まだ 見てますよ。",
+      "visible_reply": "",
+      "raw_generation_sha256": "45245127bfedfee055e3a75b96447d5ae172dfa32c9ba0e4bb1fd9478c53cdb6",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じがあまりよくなくてtonightの予定もまだ見てますよ",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.7014,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41004,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じたちはあまり良くないけど、今晚の 计划 还是 等看看 再说吧 。",
+      "visible_reply": "",
+      "raw_generation_sha256": "5abef581b392da023decdf4ac1f9993720c9f50bf5bbae8fa330ae93a438cd2a",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じたちはあまり良くないけど今晚の计划还是等看看再说吧",
+      "rejection_reasons": [
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.7127,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41005,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "配信スタート！協力游戏来看，快来吧！",
+      "visible_reply": "",
+      "raw_generation_sha256": "b7d861026fc07687f0fcad8b1e4da94ce51e1a9c2e257f268865420049b42df7",
+      "visible_reply_sha256": null,
+      "normalized_output": "配信スタート協力游戏来看快来吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:1/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.3795,
+      "production_memory_write_count": 0
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41005,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "配信スタート！協力游戏快来围观吧。",
+      "visible_reply": "",
+      "raw_generation_sha256": "47c779199a6dfca393b1b0c17d7eb94010b0d4df3a6456a15cd2ca92facc45f5",
+      "visible_reply_sha256": null,
+      "normalized_output": "配信スタート協力游戏快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:1/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.3898,
+      "production_memory_write_count": 0
+    }
+  ],
+  "authorizations": {
+    "build_blinded_policy_direction_coding_bundle": false,
+    "formal_persona_similarity_claim": false,
+    "production_default_enablement": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "public_impersonation": false
+  },
+  "evidence_boundary": "This fresh local-model pilot measures carrier viability and observable policy sensitivity only. It does not determine which condition is more similar to the target person."
+}

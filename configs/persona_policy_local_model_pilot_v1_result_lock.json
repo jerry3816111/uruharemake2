@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_persona_policy_local_model_pilot_result_lock_v1",
+  "experiment_id": "persona_policy_local_model_pilot_v1",
+  "formal_git_head": "1092b50658cf76d3ee015e2e0bf356acdd937bf8",
+  "status": "pilot_failed",
+  "decision": "repair_structured_local_model_surface_before_persona_scoring",
+  "frozen_artifacts": {
+    "cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+    },
+    "preregistration": {
+      "path": "configs/persona_policy_local_model_pilot_v1_preregistration.json",
+      "sha256": "27a0e88a82e707ce007fc9bd1b49c92fa0c7c69ad0f7829fb1cf6956f732cb3c"
+    },
+    "pilot_harness": {
+      "path": "persona_policy_local_model_pilot_v1.py",
+      "sha256": "6761224ad4d4da05ada98ada62c4c50c726db06377402a894772cd865753557b"
+    },
+    "construction_tests": {
+      "path": "test_persona_policy_local_model_pilot_v1.py",
+      "sha256": "87276d69d6d239cf6921e0ccd962c4aa50d938ddcb80f9643acb71e851d1bbe1"
+    },
+    "formal_result_json": {
+      "path": "reports/persona_policy_local_model_pilot_v1_result.json",
+      "sha256": "22b1bd703e460dd0d9f73c74de7b6d2d9977c7446dc5834ca6e858938b84598b"
+    },
+    "formal_result_markdown": {
+      "path": "reports/persona_policy_local_model_pilot_v1_result.md",
+      "sha256": "f432298d17a769599763c73f09432b8f6b8029465faf5dea48dfbd3ed204224a"
+    }
+  },
+  "model_artifacts": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+    "adapter_weights_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+  },
+  "formal_result": {
+    "case_pair_count": 5,
+    "actual_model_generation_call_count": 10,
+    "nonempty_raw_generation_count": 10,
+    "strict_valid_generation_count": 2,
+    "both_conditions_strict_valid_pair_count": 0,
+    "strict_valid_pair_with_different_output_count": 0,
+    "all_raw_pair_output_difference_count": 4,
+    "distinct_normalized_output_count": 9,
+    "allocated_prompt_tokens_each": 640,
+    "compute_parity_pass": true,
+    "legacy_fixed_surface_access_count": 0,
+    "production_memory_write_count": 0,
+    "benchmark_item_count": 0,
+    "target_utterance_injection_count": 0
+  },
+  "posthoc_diagnostic_not_used_for_pass_fail": {
+    "likely_semantic_gate_false_positive_count": 1,
+    "case_id": "persona_local_pilot_03",
+    "reason": "The required substring for immediate rest matched the unrelated noun form for a future day off, while the planned immediate next action disappeared.",
+    "neutral_control_limit": "The neutral provider still uses the same persona-tuned adapter, so this pilot isolates policy payload only and is not a full persona-disabled control."
+  },
+  "authorizations": {
+    "merge_negative_pilot_evidence": true,
+    "matched_base_only_vs_adapter_diagnostic": true,
+    "build_blinded_policy_direction_coding_bundle": false,
+    "formal_persona_similarity_claim": false,
+    "production_default_enablement": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "public_impersonation": false
+  }
+}

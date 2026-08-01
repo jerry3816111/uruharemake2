@@ -1,0 +1,119 @@
+{
+  "schema": "uruha_persona_policy_local_model_pilot_cases_v1",
+  "dataset_kind": "source_independent_synthetic_open_ended",
+  "contains_benchmark_items": false,
+  "contains_target_utterances": false,
+  "contains_expected_replies": false,
+  "cases": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "seed": 41001,
+      "condition_order": ["structured_target_public_persona", "structured_neutral_dialogue"],
+      "user_input": "初めて来た人向けに、短く自己紹介して。",
+      "logic": {
+        "scene": "casual",
+        "intent": "self_introduction",
+        "jp_summary": "初めて来た相手に短い自己紹介を求められている。",
+        "core_message_jp": "配信活動をしていることを短く紹介し、少し親しみを示す",
+        "required_marker_groups": [["配信"], ["よろしく", "みんな", "一緒"]],
+        "constraints": {"max_chars": 64, "sentence_count": 2},
+        "human_speech_plan": {
+          "dialogue_act": "self_introduction_with_affiliation",
+          "content_units": ["配信活動", "親しみ"],
+          "grounding_terms": ["配信"],
+          "style_operators": ["short"],
+          "target_length": "2_short_sentences"
+        }
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "seed": 41002,
+      "condition_order": ["structured_neutral_dialogue", "structured_target_public_persona"],
+      "user_input": "開始が少し遅れたけど、今日の内容を紹介して。",
+      "logic": {
+        "scene": "casual",
+        "intent": "schedule_update",
+        "jp_summary": "少し遅れた開始と今日の内容を短く案内する。",
+        "core_message_jp": "開始が少し遅れたことを一言だけ認め、今日の協力ゲームを前向きに案内する",
+        "required_marker_groups": [["遅"], ["協力ゲーム", "ゲーム"]],
+        "constraints": {"max_chars": 72, "sentence_count": 2},
+        "human_speech_plan": {
+          "dialogue_act": "acknowledge_then_recommend",
+          "content_units": ["開始の遅れ", "協力ゲーム"],
+          "grounding_terms": ["遅れ", "ゲーム"],
+          "style_operators": ["short"],
+          "target_length": "2_short_sentences"
+        }
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "seed": 41003,
+      "condition_order": ["structured_target_public_persona", "structured_neutral_dialogue"],
+      "user_input": "今日は少し疲れてる。次はどうする？",
+      "logic": {
+        "scene": "support",
+        "intent": "state_update",
+        "jp_summary": "少し疲れていて次の行動について話している。",
+        "core_message_jp": "疲れている状態を短く伝え、休んだ後の次の行動を一つ示す",
+        "required_marker_groups": [["疲"], ["休", "次", "あと"]],
+        "constraints": {"max_chars": 64, "sentence_count": 2},
+        "human_speech_plan": {
+          "dialogue_act": "state_update_then_action_plan",
+          "content_units": ["疲れている状態", "次の行動"],
+          "grounding_terms": ["疲れ", "次"],
+          "style_operators": ["short"],
+          "target_length": "2_short_sentences"
+        }
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "seed": 41004,
+      "condition_order": ["structured_neutral_dialogue", "structured_target_public_persona"],
+      "user_input": "喉の調子が微妙。今夜の予定はどうする？",
+      "logic": {
+        "scene": "casual",
+        "intent": "schedule_uncertainty",
+        "jp_summary": "喉の状態が不確かで今夜の予定をまだ確定できない。",
+        "core_message_jp": "喉の調子が微妙だと伝え、今夜の予定は様子を見て決める",
+        "required_marker_groups": [["喉", "調子"], ["様子", "まだ", "決め"]],
+        "constraints": {"max_chars": 68, "sentence_count": 2},
+        "human_speech_plan": {
+          "dialogue_act": "uncertain_status_and_defer_commitment",
+          "content_units": ["喉の状態", "予定を保留"],
+          "grounding_terms": ["喉", "予定"],
+          "style_operators": ["short", "uncertain"],
+          "target_length": "2_short_sentences"
+        }
+      }
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "seed": 41005,
+      "condition_order": ["structured_target_public_persona", "structured_neutral_dialogue"],
+      "user_input": "協力ゲームの配信が始まったことを短く知らせて。",
+      "logic": {
+        "scene": "casual",
+        "intent": "stream_start_notice",
+        "jp_summary": "協力ゲーム配信の開始を短く知らせる。",
+        "core_message_jp": "協力ゲームの配信開始を最初に伝え、見に来られる入口を示す",
+        "required_marker_groups": [["始"], ["協力ゲーム", "ゲーム"], ["来", "見"]],
+        "constraints": {"max_chars": 64, "sentence_count": 2},
+        "human_speech_plan": {
+          "dialogue_act": "navigation_announcement",
+          "content_units": ["配信開始", "協力ゲーム", "視聴案内"],
+          "grounding_terms": ["配信", "協力ゲーム"],
+          "style_operators": ["minimal"],
+          "target_length": "1_or_2_short_sentences"
+        }
+      }
+    }
+  ]
+}
