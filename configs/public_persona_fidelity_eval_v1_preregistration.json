@@ -1,0 +1,246 @@
+{
+  "schema": "uruha_public_persona_fidelity_eval_preregistration_v1",
+  "experiment_id": "public_persona_fidelity_eval_v1",
+  "status": "construction_preregistered_before_reference_collection_or_model_execution",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": [
+    {
+      "experiment_id": "public_persona_evidence_contract_v1",
+      "result_lock": "configs/public_persona_evidence_v1_result_lock.json",
+      "required_decision": "authorize_public_persona_development_hypotheses_only"
+    },
+    {
+      "experiment_id": "public_persona_observation_protocol_v2",
+      "result_lock": "configs/public_persona_observation_v2_result_lock.json",
+      "required_decision": "authorize_conditional_persona_development_hypotheses_and_sealed_holdout_protocol_only"
+    }
+  ],
+  "current_problem": {
+    "development_observation_count": 5,
+    "sealed_target_source_count": 2,
+    "target_calibration_event_count": 0,
+    "target_final_holdout_event_count": 0,
+    "matched_contrast_person_count": 0,
+    "target_familiar_rater_count": 0,
+    "formal_persona_score_count": 0,
+    "risk": "目前只能證明少量公開觀察與機制實驗存在，不能量化代理人的公開人格是否比公平對照更接近目標人物。"
+  },
+  "research_question": "在來源、日期及情境獨立的未見開放式測試中，完整認知型公開人格系統是否比使用相同本機模型、人格資訊與資源預算的 prompt-only 對照，更接近目標人物的公開行為分布？",
+  "falsifiable_hypothesis": "若認知規劃、記憶選擇、人格狀態、反思及表達分工對公開人格泛化有實際貢獻，則完整系統在封閉式匿名配對盲評中的人格相似勝率、同主題行為輪廓及跨情境一致性，應顯著優於公平 prompt-only 對照，同時不突破通用能力與本機部署的非退步界線。",
+  "single_changed_variable": "construct an evaluation-only public-persona fidelity protocol and readiness auditor; runtime behavior, prompts, memory, model weights, training data, sealed holdout content, VRM actions, and Function Calling remain unchanged",
+  "target_construct": {
+    "name": "public_observable_persona_fidelity",
+    "dimensions": [
+      "situation_interpretation_and_response_stance",
+      "dialogue_act_social_distance_and_relationship_response",
+      "wording_rhythm_directness_humor_and_affect",
+      "publicly_observable_preferences_values_and_action_choices",
+      "memory_selection_experience_update_and_reflection",
+      "uncertainty_private_information_and_unsupported_claim_restraint"
+    ],
+    "explicitly_not_measured": [
+      "private_inner_state",
+      "unpublished_life_history",
+      "performer_identity",
+      "complete_person_identity",
+      "public_deception_success"
+    ]
+  },
+  "system_conditions": {
+    "s0_full_cognitive_persona": {
+      "role": "primary_system",
+      "description": "凍結的完整認知型公開人格代理；使用正式聊天管線，但不能讀取評測 holdout 或真人參考答案。"
+    },
+    "c1_matched_prompt_only": {
+      "role": "primary_fair_control",
+      "description": "使用與 S0 相同本機基礎模型、開發人格資訊、輸入內容、總上下文預算、解碼參數及輸出預算，但以單次 prompt-only 方式回答，不使用結構化認知管線。"
+    },
+    "c2_matched_persona_disabled": {
+      "role": "persona_specificity_control",
+      "description": "保留與 S0 相同架構、模型與預算，只把目標公開人格證據替換成等長度的中性公開對話契約，用於驗證增益是否真的來自目標人格層。"
+    }
+  },
+  "control_variables": [
+    "base_local_model_and_quantization",
+    "hardware_and_ollama_version",
+    "input_scenario_and_dialogue_history",
+    "development_persona_information_content_for_s0_and_c1",
+    "total_context_token_budget",
+    "generation_token_budget",
+    "temperature_top_p_seed_and_stop_rules",
+    "language_and_output_modality",
+    "memory_initial_state",
+    "Function_Calling_and_VRM_action_permissions",
+    "response_postprocessing",
+    "blind_assignment_and_response_order_seed"
+  ],
+  "evaluation_families": {
+    "naturalistic_masked_continuation": {
+      "purpose": "測量代理在真實公開情境中的行為及表達是否落在目標人物參考範圍。",
+      "agent_input": "只提供目標人物當時可見的情境，不提供其後續原句或答案。",
+      "reference": "評測端保管的目標人物後續公開行為編碼；原始內容不進 Prompt、記憶或訓練。",
+      "source_independence": "以來源、日期及事件分割，不以同一直播中的隨機句子分割。"
+    },
+    "counterfactual_unseen_open_scenarios": {
+      "purpose": "測量來源中沒有標準答案的新情境人格泛化。",
+      "agent_input": "以一般生活、合作、競爭、失誤、不確定及關係變化構成的未見情境。",
+      "reference": "熟悉目標人物的獨立評分者對匿名回答進行配對判斷，不建立固定目標答案。",
+      "source_independence": "情境不得改寫任何開發或 holdout 原句。"
+    },
+    "dynamic_multi_turn_episodes": {
+      "purpose": "測量關係、記憶、經驗更新、反思及情緒反應是否跨輪一致。",
+      "agent_input": "含狀態改變、舊資訊修正、未完成義務及需要保留判斷的多輪事件。",
+      "reference": "以凍結行為 rubric、人類盲評及可程式化事實檢查分開評分。",
+      "source_independence": "事件腳本與人格來源分開建立，最終集在候選系統凍結後才解封。"
+    }
+  },
+  "reference_design": {
+    "target_target_reference": "同一目標人物在不同日期、來源及相近主題下的自然差異分布，作為人類參考範圍而非滿分答案。",
+    "other_target_reference": "至少三位公開活動型態、語言及主題相近的人物，在同主題條件下與目標人物的差異分布。",
+    "agent_target_reference": "代理輸出與目標人物評測專用參考分布的距離或相似度。",
+    "topic_control": "風格或說話者驗證必須同時報告同主題與跨主題結果，禁止把遊戲、話題或專有名詞捷徑當成人格。",
+    "raw_data_boundary": "原始逐字內容預設不提交到儲存庫；正式評測只保存合法允許的特徵、研究者編碼、不可逆雜湊與來源定位。"
+  },
+  "human_blind_protocol": {
+    "setting": "closed_consented_anonymous_evaluation",
+    "target_familiar_rater_role": "只評公開人格相似、行為合理性與辨識信心。",
+    "general_japanese_rater_role": "只評自然度、語意完整性、模板重複與語言品質，不評目標人格。",
+    "condition_blinding": true,
+    "response_order_randomized": true,
+    "target_identity_disclosure": "可對目標熟悉組揭露要評估的公開人物，但不得揭露回答條件、系統名稱或研究假設。",
+    "minimum_ratings_per_item": 3,
+    "minimum_target_familiar_final_raters": 3,
+    "minimum_general_japanese_final_raters": 3,
+    "pilot_required_before_power_freeze": true,
+    "pilot_item_count_min": 20,
+    "agreement_metric": "krippendorff_alpha_or_equivalent_for_the_scale",
+    "minimum_usable_agreement": 0.667,
+    "low_agreement_policy": "若低於門檻，停止強人格結論並修正 rubric 或評分者資格；不得只刪除不利評分者。",
+    "debrief_required": true
+  },
+  "primary_endpoint": {
+    "name": "paired_blind_persona_preference_s0_over_c1",
+    "unit": "scenario_rater_judgment",
+    "tie_handling": "ties_are_retained_and_count_as_half_only_in_descriptive_tie_adjusted_rate",
+    "confirmatory_model": "mixed_effects_logistic_or_paired_equivalent_with_scenario_and_rater_dependence",
+    "success_thresholds": {
+      "non_tie_win_rate_min": 0.6,
+      "confidence_interval_level": 0.95,
+      "confidence_interval_lower_bound_above": 0.5,
+      "confirmatory_effect_direction": "s0_better_than_c1",
+      "two_sided_alpha_max": 0.05
+    }
+  },
+  "calibration_formulas": {
+    "similarity": "(agent_target_similarity - median_other_target_similarity) / (median_target_target_similarity - median_other_target_similarity)",
+    "distance": "(median_other_target_distance - agent_target_distance) / (median_other_target_distance - median_target_target_distance)",
+    "interpretation": {
+      "zero": "等於相近人物對目標的中位參考水準。",
+      "one": "等於目標人物跨時期自身差異的中位參考水準。",
+      "outside_range": "保留原值，不截斷；大於一不代表比真人更像真人，小於零也不單獨證明失敗。"
+    },
+    "invalid_when": "reference denominator is zero, negative, missing, topic-unmatched, or source-overlapping"
+  },
+  "secondary_evidence": {
+    "behavior_profile": [
+      "public_persona_dimension_distance",
+      "response_stance_alignment",
+      "social_distance_alignment",
+      "uncertainty_restraint_alignment"
+    ],
+    "language_and_speaker_verification": [
+      "same_topic_and_cross_topic_AUC",
+      "equal_error_rate",
+      "target_target_other_target_agent_target_calibration"
+    ],
+    "dynamic_tasks": [
+      "expected_action",
+      "action_justification",
+      "linguistic_habits",
+      "cross_turn_persona_consistency",
+      "unsafe_or_unsupported_claim_control"
+    ],
+    "general_capability_non_regression": [
+      "semantic_correctness",
+      "reasoning_correctness",
+      "memory_correctness",
+      "unknown_and_private_information_refusal",
+      "response_diversity",
+      "latency",
+      "peak_memory",
+      "Function_Calling_and_VRM_action_safety"
+    ],
+    "automatic_judge_policy": "LLM judge may be reported only as a secondary calibrated measurement and never as the sole persona evidence."
+  },
+  "non_regression_margins": {
+    "semantic_correctness_pp_min": -2.0,
+    "reasoning_correctness_pp_min": -2.0,
+    "memory_correctness_pp_min": -2.0,
+    "unknown_refusal_pp_min": -2.0,
+    "response_diversity_relative_min": 0.9,
+    "latency_relative_max": 1.2,
+    "peak_memory_relative_max": 1.15,
+    "new_unsafe_action_count_max": 0
+  },
+  "module_ablation_policy": {
+    "required_after_primary_system_freeze": true,
+    "one_component_changed_per_comparison": true,
+    "compound_ablation_as_causal_evidence": false,
+    "same_items_and_control_variables_required": true,
+    "leftbrain_plan_and_final_output_scored_separately": true,
+    "component_list_source": "frozen production runtime manifest rather than architecture labels invented for the benchmark",
+    "claim_boundary": "只有該部件開關或 matched replacement 的配對差異能證明該部件貢獻；完整系統勝過 C1 不能直接歸因於任何單一部件。"
+  },
+  "formal_execution_readiness_minimum": {
+    "target_development_observation_count_min": 40,
+    "target_calibration_source_count_min": 3,
+    "target_calibration_event_count_min": 30,
+    "target_final_holdout_source_count_min": 4,
+    "target_final_holdout_event_count_min": 50,
+    "matched_contrast_person_count_min": 3,
+    "contrast_event_count_per_person_min": 30,
+    "same_topic_reference_pair_count_min": 30,
+    "counterfactual_final_scenario_count_min": 50,
+    "dynamic_multi_turn_episode_count_min": 20,
+    "target_familiar_final_rater_count_min": 3,
+    "general_japanese_final_rater_count_min": 3,
+    "ratings_per_item_min": 3,
+    "pilot_completed_required": true,
+    "power_plan_frozen_required": true,
+    "runtime_manifest_frozen_required": true,
+    "source_rights_review_complete_required": true,
+    "holdout_access_log_ready_required": true
+  },
+  "leakage_and_rights_controls": [
+    "split by source, date, event, and context family instead of random utterances",
+    "store source URL, publisher, date, locator, partition, acquisition method, rights boundary, and hash",
+    "evaluation-only target behavior and final scenarios cannot enter prompt, memory, training, retrieval, scorer rules, or model selection",
+    "public access does not imply training permission",
+    "candidate systems and analysis code freeze before final holdout unsealing",
+    "all holdout access is logged and any premature access invalidates the affected partition",
+    "do not publish deceptive impersonation tests; use consented closed blind evaluation",
+    "do not claim private identity or private mental state"
+  ],
+  "formal_success_requires": [
+    "primary paired blind endpoint passes both practical and statistical thresholds",
+    "agent is closer to the target than matched contrast persons under topic control",
+    "behavior profile, language verification, dynamic scenarios, and general capability evidence agree in direction",
+    "target-familiar rater agreement is usable and fully reported",
+    "no core non-regression margin is violated",
+    "all data partitions, model settings, hardware, prompts, hashes, exclusions, and failed results are reproducible"
+  ],
+  "decision_policy": {
+    "protocol_pass": "authorize_provenance_only_reference_manifest_and_consented_rater_protocol_construction",
+    "protocol_fail": "repair_fidelity_protocol_before_collecting_or_scoring_persona_data",
+    "execution_ready": "authorize_a_separately_preregistered_pilot_only",
+    "runtime_persona_activation": false,
+    "model_execution": false,
+    "prompt_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "V1 protocol construction can prove only that a falsifiable, source-disjoint, matched-control and human-calibrated evaluation design exists. It cannot produce a persona score, establish target fidelity, authorize model or runtime changes, unseal the V2 holdout, import copyrighted transcripts, or claim that the system reproduces the person."
+}
