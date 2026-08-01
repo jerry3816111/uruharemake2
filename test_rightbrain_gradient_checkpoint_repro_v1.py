@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 import build_rightbrain_gradient_checkpoint_repro_v1 as construction
+import audit_rightbrain_gradient_checkpoint_repro_v1 as audit
 import run_rightbrain_gradient_checkpoint_repro_v1 as runner
 
 
@@ -76,6 +77,21 @@ class RightBrainGradientCheckpointReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["model_training_in_this_experiment"])
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
+
+    def test_resource_rejection_when_repeat_one_fails(self):
+        repeat_path = runner._result_path(self.preregistration, 1)
+        if not repeat_path.exists():
+            self.skipTest("Checkpoint repeat 1 not available")
+        repeat = construction.load_json(repeat_path)
+        if repeat["execution_success"]:
+            self.skipTest("Checkpoint repeat 1 succeeded")
+        result = audit.audit()
+        self.assertTrue(all(result["checks"].values()), result["checks"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "checkpointing_off_exceeds_local_memory_limit",
+        )
+        self.assertFalse(result["decision"]["passed"])
 
 
 if __name__ == "__main__":

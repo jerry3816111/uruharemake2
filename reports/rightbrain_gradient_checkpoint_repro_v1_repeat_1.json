@@ -1,0 +1,66 @@
+{
+  "schema": "uruha_rightbrain_gradient_checkpoint_repro_repeat_v1",
+  "experiment_id": "rightbrain_gradient_checkpoint_repro_v1",
+  "repeat": 1,
+  "execution_mode": "isolated_python_process_zero_update_checkpointing_disabled",
+  "execution_success": false,
+  "failure": {
+    "error_type": "RuntimeError",
+    "message": "MPS driver memory exceeded local limit: 34811346944>32212254720",
+    "out_of_memory": true
+  },
+  "resource": {
+    "duration_seconds": 77.996,
+    "peak_process_resident_memory_bytes": 379797504,
+    "peak_mps_driver_allocated_memory_bytes": 34811346944
+  },
+  "probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [
+      63,
+      50,
+      60,
+      77,
+      2,
+      59,
+      78,
+      36
+    ],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_rank": 32,
+    "adapter_alpha": 24,
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": false,
+    "dtype": "torch.bfloat16",
+    "norm_foreach": false,
+    "driver_allocated_memory_bytes_maximum": 32212254720
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_checkpointing_disabled_only"
+  }
+}

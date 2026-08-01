@@ -1,0 +1,28 @@
+{
+  "schema": "uruha_rightbrain_gradient_checkpoint_repro_protocol_amendment_v1",
+  "experiment_id": "rightbrain_gradient_checkpoint_repro_v1",
+  "amendment_id": "01",
+  "timing": "after isolated repeat 1 and before repeats 2 or 3",
+  "observed_resource_failure": {
+    "repeat": 1,
+    "duration_seconds": 77.996,
+    "peak_mps_driver_allocated_memory_bytes": 34811346944,
+    "preregistered_maximum_bytes": 32212254720,
+    "physical_machine_memory_bytes": 34359738368,
+    "failure": "MPS driver memory exceeded the local deployment limit during the first checkpoint-off backward probe."
+  },
+  "preregistered_rule_applied": "reject_if_any.any_out_of_memory_failure or driver_allocated_memory_above_local_limit",
+  "decision": {
+    "stop_remaining_repetitions_for_resource_safety": true,
+    "repeat_2_executed": false,
+    "repeat_3_executed": false,
+    "invalidate_checkpointing_off_as_usable_local_path": true,
+    "authorize_model_training": false,
+    "authorize_production": false,
+    "authorized_next_step": "zero_update_float16_base_dtype_probe_with_checkpointing_enabled"
+  },
+  "threshold_change": false,
+  "success_gate_change": false,
+  "data_change": false,
+  "model_weight_change": false
+}

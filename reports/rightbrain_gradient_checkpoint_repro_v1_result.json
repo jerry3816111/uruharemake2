@@ -1,0 +1,66 @@
+{
+  "schema": "uruha_rightbrain_gradient_checkpoint_repro_result_v1",
+  "experiment_id": "rightbrain_gradient_checkpoint_repro_v1",
+  "execution_mode": "preregistered_early_stop_after_first_resource_failure",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_gradient_checkpoint_repro_v1_preregistration.json",
+      "sha256": "74fa28ad2d2d4984d13222de1bea43bd9129844bcd49dea157d1a39d720b5250"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_gradient_checkpoint_repro_v1_execution_lock.json",
+      "sha256": "e4f7ae1237534fd2424700428a29e8058f573494aa463459ab4c6b7b2d4e8635"
+    },
+    "protocol_amendment": {
+      "path": "configs/rightbrain_gradient_checkpoint_repro_v1_protocol_amendment_01.json",
+      "sha256": "d09717a539d714697eac9b4855e6f2c2995a38af59063706d43d5e6b4d392ec6"
+    },
+    "repeat_1": {
+      "path": "reports/rightbrain_gradient_checkpoint_repro_v1_repeat_1.json",
+      "sha256": "785e1c22624fbd95b6ea66b866af039dbfb3bc02402ac5bbe9c7f9c45c721971"
+    }
+  },
+  "measurements": {
+    "successful_repeat_count": 0,
+    "attempted_repeat_count": 1,
+    "peak_mps_driver_allocated_memory_bytes": 34811346944,
+    "preregistered_memory_limit_bytes": 32212254720,
+    "bytes_over_limit": 2599092224,
+    "ratio_to_limit": 1.0806864420572917,
+    "duration_seconds": 77.996,
+    "failure": {
+      "error_type": "RuntimeError",
+      "message": "MPS driver memory exceeded local limit: 34811346944>32212254720",
+      "out_of_memory": true
+    }
+  },
+  "checks": {
+    "execution_lock_valid": true,
+    "repeat_1_failed": true,
+    "repeat_1_memory_failure": true,
+    "memory_limit_exceeded": true,
+    "remaining_repetitions_not_executed": true,
+    "safety_stop_recorded": true
+  },
+  "decision": {
+    "passed": false,
+    "outcome": "checkpointing_off_exceeds_local_memory_limit",
+    "authorized_next_step": "zero_update_float16_base_dtype_probe_with_checkpointing_enabled",
+    "authorize_model_training_now": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_checkpointing_disabled_only"
+  }
+}
