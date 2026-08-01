@@ -1,0 +1,159 @@
+{
+  "schema": "uruha_rightbrain_max_norm_training_pilot_preregistration_v1",
+  "experiment_id": "rightbrain_max_norm_training_pilot_v1",
+  "status": "frozen_before_any_pilot_training_update",
+  "research_question": "With the same V10 adapter, policy-aligned curriculum, order, optimizer, and evaluation, does relaxing max_norm from 0.3 to 3.0 improve acquisition of a general public-persona policy without unacceptable generation regressions?",
+  "evidence_chain": {
+    "prior_curriculum_result": "The original aligned curriculum at max_norm 0.3 did not improve the 40-comparison policy holdout and was rejected.",
+    "valid_first_step_result": "The independently reproduced initial accumulated gradient norm is 2.878972291946411; max_norm 0.3 materially changes the first AdamW update.",
+    "authorized_next_step": "One matched clipped-versus-relaxed small training pilot only."
+  },
+  "falsifiable_hypothesis": {
+    "statement": "If strong clipping is suppressing the learnable policy signal, max_norm 3.0 will outperform max_norm 0.3 on the frozen source-independent policy holdout while preserving fresh-generation quality.",
+    "primary_pass_if_all": {
+      "treatment_bidirectional_policy_discrimination_accuracy_minimum": 0.6,
+      "treatment_delta_vs_control_minimum": 0.1,
+      "treatment_mean_signed_policy_margin_delta_vs_control_minimum": 0.02,
+      "treatment_target_provider_discrimination_accuracy_minimum": 0.2
+    },
+    "generation_noninferiority": {
+      "strict_candidate_gate_delta_vs_control_minimum": -0.05,
+      "semantic_contract_delta_vs_control_minimum": -0.05,
+      "memory_policy_delta_vs_control_minimum": -0.05,
+      "language_or_script_pollution_delta_vs_control_maximum": 0.05,
+      "polite_register_drift_delta_vs_control_maximum": 0.05,
+      "private_memory_intrusion_count_maximum": 0,
+      "median_latency_ratio_vs_control_maximum": 1.25,
+      "peak_process_resident_memory_bytes_maximum": 32212254720
+    },
+    "failure_interpretation": "Reject max_norm 3.0 as the next training default. Do not repeat the same curriculum and schedule without a new causal hypothesis.",
+    "pass_interpretation": "Authorize a larger source-independent training holdout only; do not authorize production or a target-person similarity claim."
+  },
+  "frozen_bindings": [
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_holdout.json",
+      "sha256": "e8c5b5725a56754fb00b02c3e2f1a92a2c3faf153b24f0475e3f74314d5d3d11"
+    },
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v2_result_lock.json",
+      "sha256": "b4b9ea9a0818d43a099e17d8497e5a9d8b30e2de6f99c98d5c7310804b8b3abe"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v2_formal_result.json",
+      "sha256": "12866392c105936c1617854df56d5be2721bd2cd6b22df52bcabb087a6290e4a"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    },
+    {
+      "path": "build_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "5efbd49295d0ebf8f3a798fe9e962f02b3c3b2d7ab23e3767ef4179cc45e9651"
+    }
+  ],
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "initial_adapter": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    },
+    "local_only": true,
+    "paid_cloud_inference_allowed": false,
+    "base_weights_trainable": false
+  },
+  "conditions": {
+    "control_0_3": {
+      "maximum_gradient_norm": 0.3,
+      "output_directory": "uruha_rightbrain_max_norm_training_v1_control_0_3"
+    },
+    "treatment_3_0": {
+      "maximum_gradient_norm": 3.0,
+      "output_directory": "uruha_rightbrain_max_norm_training_v1_treatment_3_0"
+    }
+  },
+  "controlled_training_schedule": {
+    "condition_execution_order": ["control_0_3", "treatment_3_0"],
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_rows": 80,
+    "random_seed": 20260801,
+    "epochs": 1.0,
+    "micro_steps_exact": 80,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "optimizer_updates_exact": 10,
+    "learning_rate": 3e-7,
+    "adam_betas": [0.9, 0.999],
+    "weight_decay": 0.02,
+    "optimizer_epsilon": 1e-6,
+    "maximum_sequence_length": 800,
+    "fixed_allocated_sequence_length": 800,
+    "padding_side": "right",
+    "padding_attention_masked": true,
+    "dtype": "torch.bfloat16",
+    "adapter_rank": 32,
+    "adapter_alpha": 24,
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": true,
+    "maximum_nonfinite_events": 0,
+    "resume_or_overwrite_existing_output": false
+  },
+  "policy_discrimination_evaluation": {
+    "holdout": "configs/rightbrain_role_curriculum_training_pilot_v1_holdout.json",
+    "source_independent_from_training": true,
+    "case_count": 20,
+    "provider_count": 2,
+    "comparison_count_per_adapter": 40,
+    "primary_metric": "bidirectional_policy_discrimination_accuracy"
+  },
+  "fresh_generation_evaluation": {
+    "holdout": "configs/rightbrain_role_curriculum_training_pilot_v1_holdout.json",
+    "case_count": 20,
+    "provider_count": 2,
+    "seeds": [20260811, 20260812],
+    "generation_count_per_adapter": 80,
+    "same_seed_within_matched_provider_pair": true,
+    "prompt_allocation_budget_tokens": 800,
+    "candidate_count": 1,
+    "repair_enabled": false,
+    "maximum_new_tokens": 56,
+    "temperature": 0.82,
+    "top_p": 0.92,
+    "top_k": 64,
+    "repetition_penalty": 1.2,
+    "transient_state_reset_each_generation": true,
+    "production_memory_access": false
+  },
+  "required_training_telemetry": [
+    "all_micro_step_losses",
+    "all_preclip_gradient_norms",
+    "all_effective_clip_coefficients",
+    "clipped_update_count",
+    "adapter_relative_l2_change",
+    "nonfinite_event_count",
+    "duration_seconds"
+  ],
+  "boundaries": {
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "production_memory_access": false,
+    "production_memory_write": false,
+    "production_runtime_change": false,
+    "production_adapter_replacement": false,
+    "persona_similarity_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_outcome": "authorize_one_larger_source_independent_training_holdout_only"
+  },
+  "result_paths": {
+    "training_prefix": "reports/rightbrain_max_norm_training_pilot_v1_train_",
+    "evaluation_prefix": "reports/rightbrain_max_norm_training_pilot_v1_eval_",
+    "aggregate_json": "reports/rightbrain_max_norm_training_pilot_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_max_norm_training_pilot_v1_result.md"
+  }
+}

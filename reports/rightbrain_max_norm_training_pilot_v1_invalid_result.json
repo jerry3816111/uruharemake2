@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_rightbrain_max_norm_training_pilot_invalid_result_v1",
+  "experiment_id": "rightbrain_max_norm_training_pilot_v1",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v1_preregistration.json",
+      "sha256": "f4104d520d9c77048e1a4eb74d63225a6617f049ff160abbb26ff8c8184491ba"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v1_execution_lock.json",
+      "sha256": "9c8ad1918f4f9c1698c2d9c4410a84130739e82451409ec795903930fb595364"
+    },
+    "protocol_amendment": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v1_protocol_amendment_01.json",
+      "sha256": "9ab48c045051118efff251fbb14ad04e868524d34f8f44a855a7453b1f44f756"
+    },
+    "training_reports": {
+      "control_0_3": {
+        "path": "reports/rightbrain_max_norm_training_pilot_v1_train_control_0_3.json",
+        "sha256": "78677cdb81e4c7beac0c78b34acb3a4ed9ebc6c03612cbb8f2203500531c3dd8"
+      },
+      "treatment_3_0": {
+        "path": "reports/rightbrain_max_norm_training_pilot_v1_train_treatment_3_0.json",
+        "sha256": "a08476acf55493e3b1ab6defb13dddbb1473fc192f7d5d8cdc68d56fa37c8421"
+      }
+    }
+  },
+  "training_summary": {
+    "control_0_3": {
+      "mean_training_loss": 2.9310347251594067,
+      "final_training_loss": 1.6710516214370728,
+      "clipped_update_count": 10,
+      "maximum_observed_gradient_norm_before_clipping": 1101213.5,
+      "adapter_relative_l2_change": 0.00018665773635686693
+    },
+    "treatment_3_0": {
+      "mean_training_loss": 2.9315995715558527,
+      "final_training_loss": 1.6699174642562866,
+      "clipped_update_count": 9,
+      "maximum_observed_gradient_norm_before_clipping": 953054.5625,
+      "adapter_relative_l2_change": 0.00023467808204906998
+    }
+  },
+  "causal_integrity": {
+    "checks": {
+      "execution_lock_valid": true,
+      "both_runs_complete": true,
+      "zero_nonfinite_events": true,
+      "first_eight_losses_identical": true,
+      "first_preclip_norm_reproducible": false,
+      "no_holdout_evaluation_outputs": true
+    },
+    "first_eight_micro_step_losses": [
+      3.7664809226989746,
+      0.7498188614845276,
+      2.090646743774414,
+      5.423612117767334,
+      3.0047945976257324,
+      2.704019546508789,
+      2.563814640045166,
+      3.0723917484283447
+    ],
+    "control_first_preclip_gradient_norm": 3893.809326171875,
+    "treatment_first_preclip_gradient_norm": 366715.875,
+    "treatment_to_control_norm_ratio": 94.17920711606332,
+    "preclip_norm_relative_error": 0.9893819450107747,
+    "required_relative_error_maximum": 0.001
+  },
+  "decision": {
+    "valid_causal_comparison": false,
+    "outcome": "invalidate_v1_due_nonreproducible_preclip_norm",
+    "holdout_evaluation_executed": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false,
+    "authorized_next_step": "preregister_v2_with_foreach_false_norm_and_clipping"
+  },
+  "boundaries": {
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "production_memory_access": false,
+    "production_memory_write": false,
+    "production_runtime_change": false,
+    "production_adapter_replacement": false,
+    "persona_similarity_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_outcome": "authorize_one_larger_source_independent_training_holdout_only"
+  }
+}
