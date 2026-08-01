@@ -1,0 +1,380 @@
+{
+  "schema": "uruha_persona_policy_compute_seam_construction_v1",
+  "experiment_id": "persona_policy_compute_seam_v1",
+  "status": "construction_passed",
+  "decision": "authorize_fixed_surface_family_provider_migration_on_synthetic_inputs_only",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/persona_policy_compute_seam_v1_preregistration.json",
+      "sha256": "449865a528b16360b12cc2585c9ba8725df1a7a4aae5aec4ce4c9d1e3795ea31"
+    },
+    "harness_lock": {
+      "path": "configs/persona_policy_compute_seam_v1_harness_lock.json",
+      "sha256": "fee00d4f8e96a39b47da171ac6a0532d38068f5393be525b13d82e66a644740c"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "85fefda2e2c47a6b99778a8704f7ea9f4c31e0b13d175282992239a37b21a50a"
+    },
+    "compute_ledger_source": {
+      "path": "uruha_compute_ledger.py",
+      "sha256": "b8a1a30c076428832fdf250c38ca3c323c82cdddaefca90e6347b48397e1fcc2"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "91fa8fd2864d49a43a729817d6b35ede91ebdcf0addbfddbcab0d856e013c355"
+    }
+  },
+  "synthetic_cases": [
+    {
+      "case_id": "persona_compute_synthetic_01",
+      "context": "informal_public_self_introduction",
+      "supported_context": true,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    },
+    {
+      "case_id": "persona_compute_synthetic_02",
+      "context": "minor_delay_then_positive_promotion",
+      "supported_context": true,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    },
+    {
+      "case_id": "persona_compute_synthetic_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "supported_context": true,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    },
+    {
+      "case_id": "persona_compute_synthetic_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "supported_context": true,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    },
+    {
+      "case_id": "persona_compute_synthetic_05",
+      "context": "functional_stream_start_notification",
+      "supported_context": true,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    },
+    {
+      "case_id": "persona_compute_synthetic_06",
+      "context": "unsupported_synthetic_control",
+      "supported_context": false,
+      "default_vs_legacy_payload_byte_identical": true,
+      "target_vs_neutral_projection_structure_equal": true,
+      "target_vs_neutral_brief_structure_equal": true,
+      "target_vs_neutral_nonpersona_payload_equal": true,
+      "protected_fields_unchanged": true,
+      "target_and_neutral_values_differ": true,
+      "contains_fixed_reply": false,
+      "contains_target_utterance": false
+    }
+  ],
+  "source_stage_audit": {
+    "source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "91fa8fd2864d49a43a729817d6b35ede91ebdcf0addbfddbcab0d856e013c355"
+    },
+    "stage_names": [
+      "leftbrain_social_reasoning_frame",
+      "leftbrain_general_plan",
+      "rightbrain_surface_generation",
+      "rightbrain_surface_repair",
+      "typed_reflection",
+      "background_consolidation"
+    ],
+    "stage_presence": {
+      "leftbrain_social_reasoning_frame": true,
+      "leftbrain_general_plan": true,
+      "rightbrain_surface_generation": true,
+      "rightbrain_surface_repair": true,
+      "typed_reflection": true,
+      "background_consolidation": true
+    },
+    "instrumented_client_present": true,
+    "default_provider_is_optional": true,
+    "default_ledger_is_optional": true
+  },
+  "remaining_blockers": {
+    "rightbrain_fixed_reply_literal_count": 367,
+    "hardcoded_surface_families_still_present": true,
+    "full_persona_disabled_c2_executable": false,
+    "reason": "The new provider seam does not yet replace legacy LeftBrain persona rules or RightBrain fixed surface families."
+  },
+  "counts": {
+    "check_count": 53,
+    "check_pass_count": 53,
+    "synthetic_case_count": 6,
+    "supported_context_case_count": 5,
+    "unsupported_context_case_count": 1,
+    "default_vs_legacy_payload_mismatch_count": 0,
+    "target_vs_neutral_nonpersona_payload_mismatch_count": 0,
+    "target_vs_neutral_structure_mismatch_count": 0,
+    "protected_field_mutation_count": 0,
+    "actual_model_call_count": 0,
+    "holdout_content_review_count": 0,
+    "production_memory_write_count": 0,
+    "runtime_default_behavior_change_count": 0,
+    "persona_score_count": 0
+  },
+  "checks": [
+    {
+      "check_id": "persona_compute_synthetic_01:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_01:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_02:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_03:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_04:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_05:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:default_legacy_identical",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:projection_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:brief_structure_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:nonpersona_payload_equal",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:protected_fields_unchanged",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:policy_values_differ",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:no_fixed_reply",
+      "passed": true
+    },
+    {
+      "check_id": "persona_compute_synthetic_06:no_target_utterance",
+      "passed": true
+    },
+    {
+      "check_id": "all_model_stages_declared",
+      "passed": true
+    },
+    {
+      "check_id": "openai_client_instrumented",
+      "passed": true
+    },
+    {
+      "check_id": "default_provider_optional",
+      "passed": true
+    },
+    {
+      "check_id": "default_ledger_optional",
+      "passed": true
+    },
+    {
+      "check_id": "harness_lock_valid",
+      "passed": true
+    }
+  ],
+  "harness_errors": [],
+  "authorizations": {
+    "fixed_surface_family_provider_migration_on_synthetic_inputs": true,
+    "formal_persona_evaluation": false,
+    "sealed_holdout_unsealing": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "production_default_enablement": false,
+    "public_persona_fidelity_claim": false
+  },
+  "evidence_boundary": "本輪只能證明人格策略可被結構化替換、認知內容受到保護、模型運算可被逐題稽核，以及預設 payload 未改變。它不能證明回答更像一ノ瀬うるは，也不能解除現有固定回覆或跨模組人格規則造成的正式 C2 阻擋。"
+}
