@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_rightbrain_adapter_causality_diagnostic_preregistration_v1",
+  "experiment_id": "rightbrain_adapter_causality_diagnostic_v1",
+  "known_before_preregistration": {
+    "development_case_source": "persona_policy_local_model_pilot_v1",
+    "v10_previous_strict_valid_generation_count": 2,
+    "v10_previous_generation_count": 10,
+    "previous_result_was_observed": true,
+    "formal_holdout_claim_allowed": false
+  },
+  "research_question": "With cases, persona policies, base weights, seeds, decoding, prompt allocation and gate fixed, does enabling the v10 RightBrain adapter cause the observed loss of Japanese surface quality and semantic-contract validity?",
+  "single_changed_variable": "rightbrain_surface_adapter_enabled",
+  "model_conditions": [
+    {
+      "condition_id": "qwen25_7b_base_only",
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "adapter": null
+    },
+    {
+      "condition_id": "qwen25_7b_v10_adapter",
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "adapter": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"
+    }
+  ],
+  "factorial_observation": {
+    "secondary_factor": "persona_policy_provider",
+    "levels": [
+      "structured_target_public_persona",
+      "structured_neutral_dialogue"
+    ],
+    "causal_contrast": "Within each provider, compare base-only against v10 adapter. Provider comparisons remain descriptive and are not the adapter intervention."
+  },
+  "frozen_inputs": {
+    "case_file": "configs/persona_policy_local_model_pilot_v1_cases.json",
+    "case_count": 5,
+    "generation_count_per_model_condition": 10,
+    "total_generation_count": 20,
+    "prompt_allocation_budget_tokens": 640,
+    "candidate_count": 1,
+    "repair_enabled": false,
+    "max_new_tokens": 56,
+    "temperature": 0.82,
+    "top_p": 0.92,
+    "top_k": 64,
+    "repetition_penalty": 1.2,
+    "model_execution_order": [
+      "qwen25_7b_base_only",
+      "qwen25_7b_v10_adapter"
+    ]
+  },
+  "controls": [
+    "same cached Qwen2.5-7B base snapshot",
+    "same five development cases and cognitive plans",
+    "same target and neutral provider payloads",
+    "same seed for every matched condition",
+    "same 640-token allocated prompt length",
+    "same sampling and maximum generation schedule",
+    "one model candidate and no repair",
+    "transient RightBrain state reset before every generation",
+    "no production memory access or write",
+    "offline local inference only"
+  ],
+  "diagnostic_classification": {
+    "adapter_is_primary_regression_source": "base strict-valid >= 5/10 and base exceeds v10 by >= 3",
+    "base_model_is_primary_regression_source": "v10 strict-valid >= 5/10 and v10 exceeds base by >= 3",
+    "both_surface_carriers_inadequate": "both strict-valid counts are below 5/10",
+    "inconclusive_small_delta": "none of the above"
+  },
+  "valid_diagnostic_requires": {
+    "model_load_count_exact": 2,
+    "actual_generation_count_exact": 20,
+    "nonempty_raw_generation_count_exact": 20,
+    "within_model_target_neutral_compute_parity": true,
+    "cross_model_controls_equal_except_adapter": true,
+    "allocated_prompt_tokens_each_exact": 640,
+    "legacy_fixed_surface_access_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "benchmark_item_count_exact": 0,
+    "formal_persona_score_count_exact": 0
+  },
+  "decision_boundary": {
+    "adapter_is_primary_regression_source": "retire_v10_from_structured_surface_and_validate_base_only_carrier",
+    "base_model_is_primary_regression_source": "retain_v10_temporarily_and_screen_a_stronger_local_base_model",
+    "both_surface_carriers_inadequate": "redesign_surface_prompt_and_semantic_contract_before_model_or_persona_work",
+    "inconclusive_small_delta": "expand_only_the_matched_adapter_diagnostic_before_architecture_change"
+  },
+  "non_authorizations": [
+    "formal persona similarity claim",
+    "human blind persona rating",
+    "model training",
+    "production default change",
+    "sealed holdout unsealing",
+    "public impersonation"
+  ]
+}
