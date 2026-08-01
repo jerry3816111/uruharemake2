@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_rightbrain_max_norm_training_pilot_invalid_result_v2",
+  "experiment_id": "rightbrain_max_norm_training_pilot_v2",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v2_preregistration.json",
+      "sha256": "8fc4c550fe430ca12dcc01f60ea4e5959e8f78680a5679bbe38d3e3b5c54e9cf"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v2_execution_lock.json",
+      "sha256": "e86ccef087b76b1cf06b0c64c41192d3fa07cc8693b88932a61b0fe103f70c69"
+    },
+    "training_pair_integrity": {
+      "path": "reports/rightbrain_max_norm_training_pilot_v2_training_pair_integrity.json",
+      "sha256": "53d77b6546626118e2f09aef8ec00a43c3263b68f08cf19b77ba672043fd4824"
+    },
+    "evaluation_lock": {
+      "path": "configs/rightbrain_max_norm_training_pilot_v2_evaluation_lock.json",
+      "sha256": "5ec4ed82159b767d3e3345e8339aea4c0dde8db6f830dc869e6a02240ccda43e"
+    },
+    "training_reports": {
+      "control_0_3": {
+        "path": "reports/rightbrain_max_norm_training_pilot_v2_train_control_0_3.json",
+        "sha256": "1d464ef670ecd5066ae332e59edb46f7234a4569aa9a60a8de6027da302fa01e"
+      },
+      "treatment_3_0": {
+        "path": "reports/rightbrain_max_norm_training_pilot_v2_train_treatment_3_0.json",
+        "sha256": "2d6a27a6eb415613dc7dd50e5ffbaa34c463a0c1ff577995d90e7a2be63977a1"
+      }
+    }
+  },
+  "checks": {
+    "pair_integrity_failed": true,
+    "first_losses_match": true,
+    "first_preclip_norm_not_reproducible": true,
+    "both_training_runs_complete": true,
+    "zero_nonfinite_events": true,
+    "foreach_false_every_update": true,
+    "evaluation_not_authorized": true,
+    "no_evaluation_outputs": true
+  },
+  "causal_integrity": {
+    "control_first_preclip_gradient_norm": 3.3520023822784424,
+    "treatment_first_preclip_gradient_norm": 534403.8125,
+    "preclip_norm_relative_error": 0.9999937275852008,
+    "required_relative_error_maximum": 0.001,
+    "first_eight_micro_step_losses": [
+      3.7664809226989746,
+      0.7498188614845276,
+      2.090646743774414,
+      5.423612117767334,
+      3.0047945976257324,
+      2.704019546508789,
+      2.563814640045166,
+      3.0723917484283447
+    ]
+  },
+  "training_summary": {
+    "control_0_3": {
+      "mean_training_loss": 2.930904968082905,
+      "final_training_loss": 1.6425743103027344,
+      "clipped_update_count": 10,
+      "maximum_observed_gradient_norm_before_clipping": 6777728.0,
+      "adapter_relative_l2_change": 0.00019950857140455699
+    },
+    "treatment_3_0": {
+      "mean_training_loss": 2.93041073679924,
+      "final_training_loss": 1.6426239013671875,
+      "clipped_update_count": 8,
+      "maximum_observed_gradient_norm_before_clipping": 1516669.375,
+      "adapter_relative_l2_change": 0.000256664849012516
+    }
+  },
+  "decision": {
+    "valid_causal_comparison": false,
+    "outcome": "invalidate_v2_before_holdout_due_backward_nondeterminism",
+    "holdout_evaluation_executed": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false,
+    "authorized_next_step": "zero_update_factorial_reproducibility_probe_before_any_v3_training"
+  },
+  "boundaries": {
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "production_memory_access": false,
+    "production_memory_write": false,
+    "production_runtime_change": false,
+    "production_adapter_replacement": false,
+    "persona_similarity_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_outcome": "authorize_one_larger_source_independent_training_holdout_only"
+  }
+}
