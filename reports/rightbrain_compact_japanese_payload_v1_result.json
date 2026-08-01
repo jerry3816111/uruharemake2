@@ -1,0 +1,742 @@
+{
+  "schema": "uruha_rightbrain_compact_japanese_payload_result_v1",
+  "experiment_id": "rightbrain_compact_japanese_payload_v1",
+  "status": "valid_experiment",
+  "classification": "compact_payload_regression",
+  "decision": "revert_compact_serializer_experiment",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_compact_japanese_payload_v1_preregistration.json",
+      "sha256": "a736f970769e37eafb4a07abb0087c643ee2b8f92902ca32e76c5a4f9c3c2303"
+    },
+    "construction": {
+      "path": "reports/rightbrain_compact_japanese_payload_v1_construction.json",
+      "sha256": "df99db4653f39309605525ed3c13c6c3754a11dba3dc534e66e39d2ec33786fe"
+    },
+    "cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+    },
+    "condition_artifacts": {
+      "legacy_json_v1": {
+        "path": "reports/rightbrain_compact_japanese_payload_v1_legacy_condition.json",
+        "sha256": "bd169bbae741b765b66548700ef5cda8eb0c026a916e115b2256f149e6b40c78"
+      },
+      "compact_japanese_v2": {
+        "path": "reports/rightbrain_compact_japanese_payload_v1_compact_condition.json",
+        "sha256": "20b37fab433a5781be5f316f9388803f7620b7378cefb5e28713e727bf397dc4"
+      }
+    },
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "base_cache_commit": "a09a35458c702b33eeacc393d103063234e8bc28"
+  },
+  "runtime": {
+    "legacy_json_v1": {
+      "device": "mps",
+      "dtype": "torch.float16",
+      "load_seconds": 31.5316,
+      "generation_seconds": 72.8518,
+      "fresh_process_required": true
+    },
+    "compact_japanese_v2": {
+      "device": "mps",
+      "dtype": "torch.float16",
+      "load_seconds": 27.1711,
+      "generation_seconds": 64.0401,
+      "fresh_process_required": true
+    }
+  },
+  "counts": {
+    "model_load_count": 2,
+    "actual_generation_count": 20,
+    "nonempty_raw_generation_count": 20,
+    "legacy_fixed_surface_access_count": 0,
+    "production_memory_write_count": 0,
+    "formal_persona_score_count": 0
+  },
+  "checks": {
+    "condition_artifacts_valid": true,
+    "model_load_count": true,
+    "actual_generation_count": true,
+    "nonempty_raw_generation_count": true,
+    "within_serializer_target_neutral_compute_parity": true,
+    "cross_serializer_controls_equal_except_serialization": true,
+    "allocated_prompt_tokens_each": true,
+    "legacy_surface_not_accessed": true,
+    "production_memory_unchanged": true,
+    "no_formal_persona_score": true,
+    "base_model_only_both": true
+  },
+  "artifact_validity": {
+    "legacy_json_v1": true,
+    "compact_japanese_v2": true
+  },
+  "cross_serializer_control_checks": [
+    {
+      "provider_id": "structured_target_public_persona",
+      "controls_equal_except_serialization": true,
+      "prompt_hash_difference_exact": true,
+      "compact_active_tokens_lower_each": true,
+      "legacy_active_prompt_tokens": [
+        621,
+        628,
+        598,
+        613,
+        599
+      ],
+      "compact_active_prompt_tokens": [
+        388,
+        398,
+        369,
+        392,
+        377
+      ]
+    },
+    {
+      "provider_id": "structured_neutral_dialogue",
+      "controls_equal_except_serialization": true,
+      "prompt_hash_difference_exact": true,
+      "compact_active_tokens_lower_each": true,
+      "legacy_active_prompt_tokens": [
+        620,
+        627,
+        598,
+        619,
+        610
+      ],
+      "compact_active_prompt_tokens": [
+        398,
+        408,
+        377,
+        403,
+        390
+      ]
+    }
+  ],
+  "condition_summaries": {
+    "legacy_json_v1": {
+      "generation_count": 10,
+      "nonempty_raw_generation_count": 10,
+      "strict_valid_generation_count": 2,
+      "strict_valid_target_count": 2,
+      "strict_valid_neutral_count": 0,
+      "both_conditions_strict_valid_pair_count": 0,
+      "raw_output_difference_pair_count": 5,
+      "strict_valid_and_different_pair_count": 0,
+      "distinct_normalized_output_count": 10,
+      "rejection_families": {
+        "language_or_script_pollution": 4,
+        "polite_register_drift": 4,
+        "required_semantics_missing": 7
+      },
+      "compute_parity": {
+        "call_count_equal": true,
+        "model_decoding_and_tool_schedule_equal": true,
+        "prompt_tokens_available": true,
+        "prompt_token_schedule_equal": true,
+        "left_call_count": 5,
+        "right_call_count": 5,
+        "left_prompt_tokens": [
+          640,
+          640,
+          640,
+          640,
+          640
+        ],
+        "right_prompt_tokens": [
+          640,
+          640,
+          640,
+          640,
+          640
+        ],
+        "active_prompt_tokens_available": true,
+        "active_prompt_token_schedule_equal": false,
+        "left_active_prompt_tokens": [
+          621,
+          628,
+          598,
+          613,
+          599
+        ],
+        "right_active_prompt_tokens": [
+          620,
+          627,
+          598,
+          619,
+          610
+        ],
+        "parity_pass": true
+      },
+      "ledger_contains_raw_text": false,
+      "pairs": [
+        {
+          "case_id": "persona_local_pilot_01",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_02",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_03",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_04",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_05",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        }
+      ]
+    },
+    "compact_japanese_v2": {
+      "generation_count": 10,
+      "nonempty_raw_generation_count": 10,
+      "strict_valid_generation_count": 1,
+      "strict_valid_target_count": 0,
+      "strict_valid_neutral_count": 1,
+      "both_conditions_strict_valid_pair_count": 0,
+      "raw_output_difference_pair_count": 5,
+      "strict_valid_and_different_pair_count": 0,
+      "distinct_normalized_output_count": 10,
+      "rejection_families": {
+        "polite_register_drift": 5,
+        "language_or_script_pollution": 7,
+        "required_semantics_missing": 7
+      },
+      "compute_parity": {
+        "call_count_equal": true,
+        "model_decoding_and_tool_schedule_equal": true,
+        "prompt_tokens_available": true,
+        "prompt_token_schedule_equal": true,
+        "left_call_count": 5,
+        "right_call_count": 5,
+        "left_prompt_tokens": [
+          640,
+          640,
+          640,
+          640,
+          640
+        ],
+        "right_prompt_tokens": [
+          640,
+          640,
+          640,
+          640,
+          640
+        ],
+        "active_prompt_tokens_available": true,
+        "active_prompt_token_schedule_equal": false,
+        "left_active_prompt_tokens": [
+          388,
+          398,
+          369,
+          392,
+          377
+        ],
+        "right_active_prompt_tokens": [
+          398,
+          408,
+          377,
+          403,
+          390
+        ],
+        "parity_pass": true
+      },
+      "ledger_contains_raw_text": false,
+      "pairs": [
+        {
+          "case_id": "persona_local_pilot_01",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_02",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_03",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_04",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        },
+        {
+          "case_id": "persona_local_pilot_05",
+          "both_conditions_strict_valid": false,
+          "normalized_outputs_differ": true,
+          "strict_valid_and_different": false
+        }
+      ]
+    }
+  },
+  "strict_valid_delta_compact_minus_legacy": -1,
+  "generations": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41001,
+      "execution_position": 1,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "配信やってますねえ、皆さんと一緒に楽しみたいなあ。",
+      "visible_reply": "配信やってますねえ、皆さんと一緒に楽しみたいなあ。",
+      "raw_generation_sha256": "063f8ba7d6bb48499b68e9a109482e2f11c2b9aa23453a8c7a4b5100106121db",
+      "visible_reply_sha256": "063f8ba7d6bb48499b68e9a109482e2f11c2b9aa23453a8c7a4b5100106121db",
+      "normalized_output": "配信やってますねえ皆さんと一緒に楽しみたいなあ",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 10.6903,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41001,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "はじめまして、私は配信活动をするUruhaです。よろしかったら一緒に楽しんでくださいね！",
+      "visible_reply": "",
+      "raw_generation_sha256": "8f903d840b165cce1f215675c626a7ea32454ed9b177d5fd54c56763a7035b1f",
+      "visible_reply_sha256": null,
+      "normalized_output": "はじめまして私は配信活动をするuruhaですよろしかったら一緒に楽しんでくださいね",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.912,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41002,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "開始がちょっと遅くなりましたが、今日は楽しい協力ゲーをお楽しみくださいね。",
+      "visible_reply": "",
+      "raw_generation_sha256": "3978218c253f344d7e17b1e8d6952b98bc405ce4488ad2fe3c3e6d147a4da5ff",
+      "visible_reply_sha256": null,
+      "normalized_output": "開始がちょっと遅くなりましたが今日は楽しい協力ゲーをお楽しみくださいね",
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.5497,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41002,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少しずつ始まりましたが、今日は楽しい協力ゲー楽しみにしててくださいね！",
+      "visible_reply": "",
+      "raw_generation_sha256": "3c30d9b01504e97123b2e7eb15191f1d5c89c2a7b134f17abecae8795413d337",
+      "visible_reply_sha256": null,
+      "normalized_output": "少しずつ始まりましたが今日は楽しい協力ゲー楽しみにしててくださいね",
+      "rejection_reasons": [
+        "polite_tone_drift",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.0431,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41003,
+      "execution_position": 1,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "今日はちょっと疲れちゃったな。今度の休みには遠出しようかな。",
+      "visible_reply": "今日はちょっと疲れちゃったな。今度の休みには遠出しようかな。",
+      "raw_generation_sha256": "ff75c025b76cff73b2f76a563da41d988b82c56b3410b4d38674003d98d62a7e",
+      "visible_reply_sha256": "ff75c025b76cff73b2f76a563da41d988b82c56b3410b4d38674003d98d62a7e",
+      "normalized_output": "今日はちょっと疲れちゃったな今度の休みには遠出しようかな",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.578,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41003,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "今日は少しひどい疲れ despre fatigue paralleled with 明日早起きするつもりだ so next_step_planned",
+      "visible_reply": "",
+      "raw_generation_sha256": "592616d72a3bc4bacdfa7778b346066c3a882d30e69e40fc3b583968bc895eb6",
+      "visible_reply_sha256": null,
+      "normalized_output": "今日は少しひどい疲れdesprefatigueparalleledwith明日早起きするつもりだsonext_step_planned",
+      "rejection_reasons": [
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 9.6479,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41004,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じがあまりよくなくて、 tonight の予定も まだ 見てますよ。",
+      "visible_reply": "",
+      "raw_generation_sha256": "45245127bfedfee055e3a75b96447d5ae172dfa32c9ba0e4bb1fd9478c53cdb6",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じがあまりよくなくてtonightの予定もまだ見てますよ",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.19,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41004,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じがあまりよくなくて、 tonight の予定 deciding にはもう少し様子を見るかな。",
+      "visible_reply": "",
+      "raw_generation_sha256": "e46970a55d6558b39d237b2b02edffe01e797bc70b6c61e5bf8898fb81487415",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じがあまりよくなくてtonightの予定decidingにはもう少し様子を見るかな",
+      "rejection_reasons": [
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.0565,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41005,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "配信スタート！協力游戏来看，快来参与吧。",
+      "visible_reply": "",
+      "raw_generation_sha256": "a70655c779f8bdff72b96f363121556bca439b25c45dc31a34b6ce9ecf92b677",
+      "visible_reply_sha256": null,
+      "normalized_output": "配信スタート協力游戏来看快来参与吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:1/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.7762,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41005,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "配信スタート！協力游戏快来围观吧。",
+      "visible_reply": "",
+      "raw_generation_sha256": "47c779199a6dfca393b1b0c17d7eb94010b0d4df3a6456a15cd2ca92facc45f5",
+      "visible_reply_sha256": null,
+      "normalized_output": "配信スタート協力游戏快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:1/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.4081,
+      "production_memory_write_count": 0,
+      "serializer_id": "legacy_json_v1"
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41001,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "初対面の方、はじめまして。配信しているので、一緒に盛り上がりましょう！よろしかったです。",
+      "visible_reply": "",
+      "raw_generation_sha256": "ac2c937c507a4d6d78eef03d0bc4d03fc57cc2c7cb3495dfeed9cd0eeb9004f7",
+      "visible_reply_sha256": null,
+      "normalized_output": "初対面の方はじめまして配信しているので一緒に盛り上がりましょうよろしかったです",
+      "rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.8694,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41001,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "はじめまして。配信 ragazzo しています。一緒に楽しもうよ！",
+      "visible_reply": "",
+      "raw_generation_sha256": "e3e5d7980804359b6309d914c636edc450079bf51d393fbb7d5737ea65b31ec0",
+      "visible_reply_sha256": null,
+      "normalized_output": "はじめまして配信ragazzoしています一緒に楽しもうよ",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.8615,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41002,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少々遅らせましたが、今日は協力 Games を楽しみましょう！",
+      "visible_reply": "",
+      "raw_generation_sha256": "72da4dc37e822c7da0cc245079e339fdc1a3b7453c2b7ab0ae92d8596823cb3b",
+      "visible_reply_sha256": null,
+      "normalized_output": "少々遅らせましたが今日は協力gamesを楽しみましょう",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.0809,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41002,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少々遅らせましたが、今日は協力 Games でお楽しみください！",
+      "visible_reply": "",
+      "raw_generation_sha256": "64af0f47ab1d6a0615c5d7279f3dddb7202085a3e27c2660c51a3974f0799ce0",
+      "visible_reply_sha256": null,
+      "normalized_output": "少々遅らせましたが今日は協力gamesでお楽しみください",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.2982,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41003,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "ちょっと疲れてて、ゆっくりしたら起きるよ。",
+      "visible_reply": "",
+      "raw_generation_sha256": "b92d6eecc31dac82ee314bd7900c4ab97b61c8f30b842689cc17628c9b023769",
+      "visible_reply_sha256": null,
+      "normalized_output": "ちょっと疲れててゆっくりしたら起きるよ",
+      "rejection_reasons": [
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.2233,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41003,
+      "execution_position": 2,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "ちょっと疲れてて、休んでから何かゆっくりするよ。",
+      "visible_reply": "ちょっと疲れてて、休んでから何かゆっくりするよ。",
+      "raw_generation_sha256": "6f80e7fb3d92b0bd0c9ea5829fbeb09910ae89362b5624829d172e7bc3d73fe5",
+      "visible_reply_sha256": "6f80e7fb3d92b0bd0c9ea5829fbeb09910ae89362b5624829d172e7bc3d73fe5",
+      "normalized_output": "ちょっと疲れてて休んでから何かゆっくりするよ",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.9422,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41004,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat a bit unsure, tonight's plans still undecided.",
+      "visible_reply": "",
+      "raw_generation_sha256": "2e6af0ceaee45ec32f3b71e183dab65a4c10e559487c61be571c26d36db05a25",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatabitunsuretonight'splansstillundecided",
+      "rejection_reasons": [
+        "missing_japanese_surface",
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.689,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41004,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じがいいでもない悪いでもないし、 Tonight 的ことは今度落ち着いてみようと思います。",
+      "visible_reply": "",
+      "raw_generation_sha256": "ae06d661315f22b73d082360926473f780e332658b00d1ab7b2cd8d2d54d7fc0",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じがいいでもない悪いでもないしtonight的ことは今度落ち着いてみようと思います",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.4967,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41005,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "始まりました！协力游戏直播，快来围观吧！",
+      "visible_reply": "",
+      "raw_generation_sha256": "21751b324ceb4ac9df8536920a1a6aa72bb73deb237527ef80d2b16a173f07c1",
+      "visible_reply_sha256": null,
+      "normalized_output": "始まりました协力游戏直播快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:2/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.8694,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41005,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "始まりました！協力游戏直播，快来围观吧！",
+      "visible_reply": "",
+      "raw_generation_sha256": "192987ff61407ad6be5b0acca274de883b305b022ed64f5b65b48a2fe5b6c83c",
+      "visible_reply_sha256": null,
+      "normalized_output": "始まりました協力游戏直播快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:2/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.7095,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    }
+  ],
+  "authorizations": {
+    "merge_experiment_evidence": true,
+    "disjoint_open_ended_surface_carrier_holdout": false,
+    "repair_compact_serializer_on_development_cases": false,
+    "screen_local_model_instruction_capacity": false,
+    "revert_compact_serializer_experiment": true,
+    "production_default_enablement": false,
+    "persona_similarity_claim": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false
+  },
+  "evidence_boundary": "Development-set base-model serializer experiment only. It measures reliable semantic realization under the unchanged strict gate, not persona similarity or production readiness."
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "uruha_rightbrain_compact_japanese_payload_preregistration_v1",
+  "experiment_id": "rightbrain_compact_japanese_payload_v1",
+  "known_before_preregistration": {
+    "base_only_strict_valid_generation_count": 2,
+    "base_only_generation_count": 10,
+    "base_only_language_or_script_pollution_count": 4,
+    "base_only_required_semantics_missing_count": 7,
+    "base_only_polite_register_drift_count": 4,
+    "legacy_payload_character_range": [1911, 2004],
+    "legacy_payload_ascii_word_range": [119, 122],
+    "legacy_active_prompt_token_range": [598, 628],
+    "development_results_already_observed": true,
+    "formal_holdout_claim_allowed": false
+  },
+  "research_question": "With the base model, cognitive plan, persona policy, memory policy, cases, seeds, decoding, allocation budget and strict gate fixed, does replacing the legacy English-heavy nested JSON surface contract with a compact Japanese meaning-first serialization improve reliable semantic realization?",
+  "single_changed_variable": "structured_surface_payload_serialization",
+  "metric_definitions": {
+    "payload_ascii_word_count": "count regex matches for [A-Za-z][A-Za-z0-9_]*",
+    "active_prompt_tokens": "token count after chat-template rendering and before left padding"
+  },
+  "conditions": [
+    "legacy_json_v1",
+    "compact_japanese_v2"
+  ],
+  "serializer_intervention_includes": [
+    "user payload layout and field language",
+    "matched system instruction language",
+    "controlled-code projection into Japanese instructions"
+  ],
+  "frozen_model_and_runtime": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "adapter": null,
+    "candidate_count": 1,
+    "repair_enabled": false,
+    "prompt_allocation_budget_tokens": 640,
+    "max_new_tokens": 56,
+    "temperature": 0.82,
+    "top_p": 0.92,
+    "top_k": 64,
+    "repetition_penalty": 1.2,
+    "gate_implementation_unchanged": true,
+    "condition_execution_processes_isolated": true
+  },
+  "frozen_dataset": {
+    "case_file": "configs/persona_policy_local_model_pilot_v1_cases.json",
+    "case_count": 5,
+    "providers_per_condition": 2,
+    "generation_count_per_serializer": 10,
+    "total_generation_count": 20,
+    "contains_benchmark_items": false,
+    "contains_target_utterances": false,
+    "contains_expected_replies": false
+  },
+  "construction_success_requires": {
+    "legacy_payload_case_count_exact": 10,
+    "legacy_payload_hash_mismatch_count_exact": 0,
+    "legacy_system_instruction_hash_mismatch_count_exact": 0,
+    "compact_payload_case_count_exact": 10,
+    "compact_payload_ascii_word_count_maximum": 0,
+    "compact_active_prompt_token_reduction_minimum_fraction": 0.25,
+    "semantic_contract_preserved_case_count_exact": 10,
+    "persona_policy_preserved_case_count_exact": 10,
+    "memory_policy_preserved_case_count_exact": 10,
+    "forbidden_surface_policy_preserved_case_count_exact": 10,
+    "protected_cognitive_field_mutation_count_exact": 0,
+    "contains_fixed_reply_count_exact": 0,
+    "contains_target_utterance_count_exact": 0,
+    "unsupported_control_code_fails_closed": true,
+    "legacy_default_runtime_behavior_change_count_exact": 0,
+    "actual_model_generation_count_exact": 0
+  },
+  "valid_experiment_requires": {
+    "model_load_count_exact": 2,
+    "actual_generation_count_exact": 20,
+    "nonempty_raw_generation_count_exact": 20,
+    "within_serializer_target_neutral_compute_parity": true,
+    "cross_serializer_controls_equal_except_serialization": true,
+    "allocated_prompt_tokens_each_exact": 640,
+    "legacy_fixed_surface_access_count_exact": 0,
+    "production_memory_write_count_exact": 0,
+    "formal_persona_score_count_exact": 0
+  },
+  "outcome_classification": {
+    "compact_payload_supported": "compact strict-valid >= 5/10, compact exceeds legacy by >= 3, compact language pollution <= legacy-2, and compact semantic-missing <= legacy-3",
+    "compact_payload_partial_gain": "compact exceeds legacy by >= 2 but misses at least one supported threshold",
+    "compact_payload_no_gain": "compact improvement is < 2",
+    "compact_payload_regression": "compact strict-valid is lower than legacy"
+  },
+  "decision_boundary": {
+    "compact_payload_supported": "authorize_disjoint_open_ended_surface_carrier_holdout_only",
+    "compact_payload_partial_gain": "repair_compact_serializer_on_development_cases_before_holdout",
+    "compact_payload_no_gain": "stop_serializer_tuning_and_screen_local_model_instruction_capacity",
+    "compact_payload_regression": "revert_compact_serializer_experiment"
+  },
+  "non_authorizations": [
+    "production default change",
+    "persona similarity claim",
+    "human blind persona rating",
+    "model training",
+    "sealed persona holdout unsealing",
+    "public impersonation"
+  ]
+}
