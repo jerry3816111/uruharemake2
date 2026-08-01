@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_public_persona_contrast_coding_tool_preregistration_v6",
+  "experiment_id": "public_persona_contrast_coding_tool_v6",
+  "status": "preregistered_before_tool_use_or_contrast_behavior_review",
+  "depends_on": {
+    "v5_result_lock": {
+      "path": "configs/public_persona_contrast_event_coding_v5_result_lock.json",
+      "sha256": "126a33f8a6adcb7c8317435c55fb9d2d12e74a60ac1bc7a9b2d79a4a4d92401b",
+      "required_decision": "authorize_bounded_manual_contrast_event_coding_only"
+    },
+    "sampling_frame": {
+      "path": "datasets/public_persona_contrast_event_sampling_frame_v5.json",
+      "sha256": "79e183ff05fee7cbc361842d9064cb33ac00b27c28042ac23894e7b0605470a2"
+    },
+    "shared_event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "contrast_source_manifest": {
+      "path": "datasets/public_persona_contrast_source_manifest_v4.json",
+      "sha256": "4a05df78294d6f64e19432d541f2163fda0e1828044cbfd2f3c4e9c127c109c8"
+    },
+    "codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    }
+  },
+  "current_problem": "V5 已凍結 90 個搜尋槽與雙人獨立編碼規則，但沒有受限帳本、輸入驗證、不可見隔離或可靠度計算工具。使用一般表格容易看到另一位編碼者答案、誤存原句、重疊事件或把私人紀錄提交到 Git。",
+  "falsifiable_hypothesis": "若工具只在 127.0.0.1 提供帶隨機權杖的單一編碼者介面，將兩位帳本分開保存於 gitignored 目錄，驗證所有槽位、事件邊界、封閉類別、重疊與無原句聲明，並由另一個離線程序只輸出聚合可靠度，則測試應能拒絕跨帳本可見、非法路徑、錯誤槽位、重疊事件、未聲明改寫及不完整資料，且不建立任何人格分數。",
+  "single_changed_variable": "add a local restricted two-coder data-entry and aggregate reliability tool; source content, event labels, model, runtime, prompts, memory, training, target calibration, final holdout, raters, outputs, and persona scores remain unchanged",
+  "ledger_contract": {
+    "private_root": "analysis/local_public_persona_contrast_coding_v5/",
+    "one_coder_pseudonym_per_ledger": true,
+    "coder_pseudonyms_must_be_distinct_for_comparison": true,
+    "one_entry_per_sampling_slot": true,
+    "ledger_paths_must_resolve_under_private_root": true,
+    "atomic_write_required": true,
+    "other_coder_ledger_visible_during_entry": false,
+    "model_output_or_persona_score_visible_during_entry": false,
+    "raw_media_caption_comment_transcript_or_quote_storage": false,
+    "prompt_memory_retrieval_training_or_model_selection_use": false
+  },
+  "ui_contract": {
+    "bind_host_exact": "127.0.0.1",
+    "random_session_token_required": true,
+    "external_javascript_or_analytics_allowed": false,
+    "source_access_mode": "manual_official_youtube_watch_link_only",
+    "video_embedding_or_download": false,
+    "first_eligible_event_attestation_required": true,
+    "paraphrase_and_no_quote_attestation_required": true,
+    "cross_coder_comparison_visible_before_both_ledgers_complete": false
+  },
+  "reliability_contract": {
+    "slot_status_agreement_reported": true,
+    "joint_selected_temporal_iou_reported": true,
+    "nominal_krippendorff_alpha_reported": true,
+    "secondary_dimension_binary_alpha_reported": true,
+    "independent_review_fraction_required": 1.0,
+    "temporal_iou_project_gate_min": 0.5,
+    "nominal_alpha_reliable_min": 0.8,
+    "nominal_alpha_tentative_min": 0.667,
+    "below_tentative_alpha_blocks_aggregate_profile": true,
+    "adjudication_does_not_replace_original_independent_records": true,
+    "reliability_pass_does_not_authorize_persona_similarity_claim": true
+  },
+  "expected_counts_after_construction": {
+    "private_ledger_count": 0,
+    "content_reviewed_source_count": 0,
+    "selected_event_count": 0,
+    "coded_event_count": 0,
+    "model_output_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "model_call_count": 0
+  },
+  "decision_policy": {
+    "construction_pass": "authorize_local_two_coder_tool_use_for_v5_bounded_manual_coding_only",
+    "construction_fail": "repair_local_coding_tool_before_any_contrast_behavior_review",
+    "maximum_coder_count": 2,
+    "maximum_sampling_slot_count_per_coder": 90,
+    "restricted_local_ledger_creation": true,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "target_calibration_behavior_coding": false,
+    "sealed_holdout_unsealing": false,
+    "rater_recruitment": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "V6 建構通過只證明本機工具在合成測試中遵守已凍結的抽樣、獨立帳本、資料最小化與可靠度計算規則。它不包含已觀看行為、真人編碼、可靠度估計、模型輸出、人格分數、holdout 檢視、訓練許可，也不能證明代理像任何人物。"
+}
