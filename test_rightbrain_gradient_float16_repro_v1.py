@@ -95,6 +95,29 @@ class RightBrainGradientFloat16ReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
 
+    def test_result_rejects_float16_training_path_when_available(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("Float16 probe aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "float16_does_not_provide_a_usable_reproducible_path",
+        )
+        self.assertFalse(result["decision"]["authorize_model_training_now"])
+        self.assertEqual(result["measurements"]["successful_repeat_count"], 1)
+        self.assertEqual(len(result["measurements"]["failures"]), 2)
+        self.assertTrue(
+            all(failure["nonfinite"] for failure in result["measurements"]["failures"])
+        )
+        self.assertTrue(
+            all(
+                not failure["out_of_memory"]
+                for failure in result["measurements"]["failures"]
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

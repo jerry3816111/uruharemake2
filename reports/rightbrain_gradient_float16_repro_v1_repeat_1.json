@@ -1,0 +1,216 @@
+{
+  "schema": "uruha_rightbrain_gradient_float16_repro_repeat_v1",
+  "experiment_id": "rightbrain_gradient_float16_repro_v1",
+  "repeat": 1,
+  "execution_mode": "isolated_python_process_zero_update_float16_checkpointed",
+  "execution_success": true,
+  "probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [
+      63,
+      50,
+      60,
+      77,
+      2,
+      59,
+      78,
+      36
+    ],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_rank": 32,
+    "adapter_alpha": 24,
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": true,
+    "base_activation_dtype": "torch.float16",
+    "trainable_adapter_dtype": "torch.float32",
+    "norm_foreach": false,
+    "driver_allocated_memory_bytes_maximum": 32212254720
+  },
+  "runtime_contract": {
+    "gradient_checkpointing_enabled": true,
+    "adapter_dropout": 0.08,
+    "trainable_dtype_counts": {
+      "torch.float32": 392
+    },
+    "frozen_dtype_counts": {
+      "torch.float16": 339
+    }
+  },
+  "losses": [
+    3.7092580795288086,
+    0.7397823333740234,
+    2.0283522605895996,
+    5.1803741455078125,
+    3.000187873840332,
+    2.6511504650115967,
+    2.5103871822357178,
+    3.032540798187256
+  ],
+  "mean_loss": 2.8565041422843933,
+  "gradient": {
+    "mps_foreach_false_repeated_norms": [
+      3368.551025390625,
+      3368.551025390625,
+      3368.551025390625
+    ],
+    "mps_foreach_false_mean_norm": 3368.551025390625,
+    "cpu_float64_norm": 3368.5509631711793,
+    "mps_vs_cpu_relative_error": 1.8470685574070326e-08,
+    "gradient_sha256": "fd93da62acfba045b76b51e961e2eb2b1a4426520a2179ecee63ecb23d885352",
+    "finite_gradient_elements": 80740352,
+    "total_gradient_elements": 80740352,
+    "all_gradient_elements_finite": true,
+    "profile": [
+      {
+        "projection": "down_proj",
+        "lora_side": "lora_A",
+        "norm": 11.776812008949287
+      },
+      {
+        "projection": "down_proj",
+        "lora_side": "lora_B",
+        "norm": 920.9957778443227
+      },
+      {
+        "projection": "gate_proj",
+        "lora_side": "lora_A",
+        "norm": 6.228895173641609
+      },
+      {
+        "projection": "gate_proj",
+        "lora_side": "lora_B",
+        "norm": 1469.3276886149356
+      },
+      {
+        "projection": "k_proj",
+        "lora_side": "lora_A",
+        "norm": 7.293789548935554
+      },
+      {
+        "projection": "k_proj",
+        "lora_side": "lora_B",
+        "norm": 1036.8211852733757
+      },
+      {
+        "projection": "o_proj",
+        "lora_side": "lora_A",
+        "norm": 8.234746859943135
+      },
+      {
+        "projection": "o_proj",
+        "lora_side": "lora_B",
+        "norm": 1176.0747948036212
+      },
+      {
+        "projection": "q_proj",
+        "lora_side": "lora_A",
+        "norm": 11.96609742958016
+      },
+      {
+        "projection": "q_proj",
+        "lora_side": "lora_B",
+        "norm": 674.3528190256986
+      },
+      {
+        "projection": "up_proj",
+        "lora_side": "lora_A",
+        "norm": 13.8468859030271
+      },
+      {
+        "projection": "up_proj",
+        "lora_side": "lora_B",
+        "norm": 1836.1448341482555
+      },
+      {
+        "projection": "v_proj",
+        "lora_side": "lora_A",
+        "norm": 7.429781197697264
+      },
+      {
+        "projection": "v_proj",
+        "lora_side": "lora_B",
+        "norm": 1433.5132507616786
+      }
+    ]
+  },
+  "parameter_integrity": {
+    "before_sha256": "b895c5616ef5ff934c6d01be3daf1a73abb9cba158044aabdfb98168e21b7bed",
+    "after_sha256": "b895c5616ef5ff934c6d01be3daf1a73abb9cba158044aabdfb98168e21b7bed",
+    "unchanged": true
+  },
+  "resource": {
+    "duration_seconds": 133.22,
+    "peak_process_resident_memory_bytes": 481771520,
+    "peak_mps_driver_allocated_memory_bytes": 21343453184,
+    "memory_by_micro_step": [
+      {
+        "micro_step": 1,
+        "process_resident_memory_bytes": 474513408,
+        "mps_driver_allocated_memory_bytes": 20261322752
+      },
+      {
+        "micro_step": 2,
+        "process_resident_memory_bytes": 479952896,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 3,
+        "process_resident_memory_bytes": 481280000,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 4,
+        "process_resident_memory_bytes": 481771520,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 5,
+        "process_resident_memory_bytes": 472399872,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 6,
+        "process_resident_memory_bytes": 473153536,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 7,
+        "process_resident_memory_bytes": 473858048,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      },
+      {
+        "micro_step": 8,
+        "process_resident_memory_bytes": 474267648,
+        "mps_driver_allocated_memory_bytes": 21343453184
+      }
+    ]
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_float16_base_only"
+  }
+}
