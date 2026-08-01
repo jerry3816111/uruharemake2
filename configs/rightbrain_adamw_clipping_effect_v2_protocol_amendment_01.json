@@ -1,0 +1,49 @@
+{
+  "schema": "uruha_rightbrain_adamw_clipping_effect_protocol_amendment_v1",
+  "experiment_id": "rightbrain_adamw_clipping_effect_v2",
+  "amendment_id": "v2_hypothesis_boolean_semantics_01",
+  "status": "authored_after_raw_execution_and_before_formal_result_lock",
+  "detected_problem": "The v2 harness reused the v1 classify helper. That helper defines hypothesis_confirmed as near-equivalence, while the frozen v2 hypothesis predicts a material clipping effect. The raw result therefore contains material_effect=true and outcome=first_step_clipping_has_material_effect but hypothesis_confirmed=false.",
+  "preserved_raw_bindings": [
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v2_preregistration.json",
+      "sha256": "ae24e8f9ec7d53ff23b603e350d44368e5b2e974ee6fdafe6bebdf766879ea0b"
+    },
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v2_execution_lock.json",
+      "sha256": "c06415d5f0e1ec508ef2f1c6f0a5687e20c31b71dcc7940808dfba6370abafc3"
+    },
+    {
+      "path": "diagnose_rightbrain_adamw_clipping_effect_v2.py",
+      "sha256": "4ec3257f40f28b2ba45ce68c3a3863e9c3e146b5627b162f9ff9fda1147bfefa"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v2_result.json",
+      "sha256": "dd0302b49043c4a107fcc68fe5a075eb941e86bde1179ca09ae084b399160e65"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v2_result.md",
+      "sha256": "6a56e4e5898879f9ba3ec1064b11cb6cebb2c96f1f3ea44b577e41c625a41ffe"
+    }
+  ],
+  "allowed_recovery": {
+    "reuse_raw_metrics_without_model_execution": true,
+    "set_formal_hypothesis_confirmed_equal_to_raw_material_effect": true,
+    "preserve_raw_outcome": true,
+    "preserve_all_thresholds_and_numeric_metrics": true
+  },
+  "forbidden_changes": {
+    "backward_or_model_execution": true,
+    "threshold_change": true,
+    "metric_change": true,
+    "raw_artifact_edit": true,
+    "model_training": true,
+    "training_parameter_change": true,
+    "production_change": true
+  },
+  "formal_interpretation": {
+    "hypothesis_confirmed": true,
+    "reason": "The frozen v2 hypothesis predicts material effect, and the raw preregistered material-effect gate passed.",
+    "maximum_positive_outcome": "authorize_preregistration_of_one_matched_small_training_pilot_only"
+  }
+}
