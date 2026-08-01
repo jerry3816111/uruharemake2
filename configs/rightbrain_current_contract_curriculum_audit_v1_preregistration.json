@@ -1,0 +1,138 @@
+{
+  "schema": "uruha_rightbrain_current_contract_curriculum_audit_preregistration_v1",
+  "experiment_id": "rightbrain_current_contract_curriculum_audit_v1",
+  "status": "frozen_before_auditor_implementation",
+  "authoring_parent_commit": "8363a92168674bc8e20e47ae3042cd4ae81c399a",
+  "research_question": "Did the promoted local RightBrain adapter receive contract-facing training examples that cover the currently active structured persona-policy payload, rather than only the older static surface contract?",
+  "hypothesis": {
+    "claim_under_test": "The documented contract-facing curriculum of the promoted v10 adapter does not cover every active field of the current conditional persona-policy payload and contains no row that jointly teaches conditional persona policy, semantic obligations, memory policy, forbidden markers, and procedural guidance.",
+    "scope_limit": "A curriculum gap can justify constructing a new person-independent role-specialization curriculum, but cannot by itself prove that the gap caused model failures or that retraining will improve generation."
+  },
+  "promoted_adapter": {
+    "adapter_ref": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "documented_contract_stage_lineage": [
+      "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5",
+      "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1"
+    ],
+    "pre_contract_ancestor": "uruha_rightbrain_plan_sft_lora_v5_broad_from_v2",
+    "pre_contract_ancestor_curriculum_status": "not_reconstructable_from_current_training_run_artifacts_and_excluded_from_current_contract_schema_coverage"
+  },
+  "frozen_inputs": {
+    "runtime_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "6becc225d3ea720538217461a210076215f5911423a49826c1f04dfe01c6ce43"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2"
+    },
+    "current_reference_cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e",
+      "case_count": 5,
+      "provider_count_per_case": 2,
+      "contains_benchmark_items": false,
+      "contains_target_utterances": false,
+      "contains_expected_replies": false
+    },
+    "v8_training_run": {
+      "path": "uruha_rightbrain_plan_sft_lora_v8_contract_v1_from_v5/rightbrain_contract_v1_training_run.json",
+      "sha256": "e80a677e39c3708f0684165e41f467d0a800afea2a1206680e1243f31a1c1968"
+    },
+    "v10_training_run": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/rightbrain_contract_v1_training_run.json",
+      "sha256": "483da00f0fad2af615b3a031bd934f5c80584b38fbdf6ee59bde4de3bdbe90db"
+    },
+    "contract_training_sources": [
+      {
+        "stage": "v8_primary",
+        "path": "datasets/rightbrain_plan_surface_contract_v1_train.json",
+        "git_revision": "38c5c38790e6785748c9789ce0be10a45bac6d57",
+        "sha256": "93664f193327ff611ec31c5331e9d48fddf18a93fd3ab394bdd4660280b2b1e9",
+        "rows": 1025
+      },
+      {
+        "stage": "v10_primary",
+        "path": "datasets/rightbrain_plan_surface_contract_v1_train.json",
+        "git_revision": "01d48bc327f80e3031db6fd7920335fc87f9f51d",
+        "sha256": "4632da927c5331ea7d487c5ff2353592dc4030cb65a69d654a066b91b066a289",
+        "rows": 1025
+      },
+      {
+        "stage": "v10_supplemental",
+        "path": "datasets/rightbrain_rejection_curriculum_v1.json",
+        "git_revision": "f85f8e7029e2b0f3ec29098fbadca64615912fca",
+        "sha256": "b04d796c4aa9bc570c6774afcb7392a183ae5dbfafde603c30176232a939881b",
+        "rows": 36
+      }
+    ],
+    "observed_failure_evidence": {
+      "path": "reports/rightbrain_carrier_model_screen_v1_qwen2_5_7b.json",
+      "sha256": "60f05952520d7a56b66f1c9bf01234aa389404992770b408c3d266d3a15f7e21",
+      "generation_count": 10,
+      "strict_valid_generation_count": 6
+    },
+    "previous_decision": {
+      "path": "reports/rightbrain_carrier_model_screen_v2_final_review.json",
+      "sha256": "331a1be8128c93f120eeff5d3eb6034ffda1d5e927dcf032cc532ca867c4988b",
+      "decision": "reject_simple_carrier_swap_and_investigate_current_contract_curriculum_coverage"
+    }
+  },
+  "audit_design": {
+    "current_reference": "Generate the active legacy-JSON payload for all five frozen source-independent cases under both structured target and structured neutral persona providers without model inference.",
+    "training_reference": "Reconstruct every documented v8 and v10 contract-stage training source by exact Git blob and SHA-256, then parse only user payloads actually consumed by those stages.",
+    "active_optional_features": {
+      "output_budget": false,
+      "surface_failure_watchlist": false,
+      "compact_payload": false
+    },
+    "path_coverage": "A current container or leaf path is covered only if the identical normalized path appears in at least one documented training payload.",
+    "policy_value_coverage": "For persona and audited-memory policy fields, a current scalar or list-item value is covered only if it appeared at the same normalized path in a documented training payload.",
+    "joint_row_requirement": [
+      "nonempty required_marker_groups",
+      "audited_memory_brief policy and forbidden list",
+      "conditional persona context and expression policy",
+      "forbidden_markers field",
+      "procedural_guidance field"
+    ],
+    "failure_family_normalization": {
+      "language_or_script_pollution": [
+        "unexpected_ascii_leak",
+        "cjk_language_leak",
+        "nonstandard_cjk_surface",
+        "unicode_replacement_character"
+      ],
+      "polite_register_drift": [
+        "polite_tone_drift"
+      ],
+      "required_semantics_missing": [
+        "semantic_slots_missing"
+      ]
+    },
+    "leakage_checks": [
+      "exact and normalized current user_input overlap",
+      "exact current payload overlap",
+      "exact generated development output overlap with training targets",
+      "benchmark or expected-answer fields in current reference cases"
+    ]
+  },
+  "decision_rules": {
+    "source_reconstruction_pass": "Every documented contract-stage source must match its frozen SHA-256 and row count.",
+    "measurable_current_contract_gap": "At least one active persona-policy path is absent OR no documented training row satisfies the joint-row requirement.",
+    "development_separation_pass": "All exact and normalized user-input overlaps, exact payload overlaps, and exact generated-output-to-target overlaps equal zero; current reference cases contain no benchmark item, target utterance, or expected reply.",
+    "authorize_person_independent_curriculum_construction": "Source reconstruction passes, observed strict validity is below 9/10, a measurable current-contract gap exists, and development separation passes.",
+    "reject_curriculum_direction": "All active persona-policy paths and values are covered and at least one joint contract row exists.",
+    "insufficient_evidence": "Any source cannot be reconstructed, reference payload generation fails, or development separation fails."
+  },
+  "authorization_boundaries": {
+    "model_generation_calls": 0,
+    "model_training": false,
+    "production_default_change": false,
+    "persona_similarity_claim": false,
+    "human_blind_rating": false,
+    "benchmark_score_claim": false,
+    "public_impersonation": false,
+    "maximum_positive_authorization": "construct_and_audit_a_source_separated_person_independent_role_specialization_curriculum"
+  }
+}
