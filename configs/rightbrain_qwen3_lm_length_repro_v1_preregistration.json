@@ -1,0 +1,145 @@
+{
+  "schema": "uruha_rightbrain_qwen3_lm_length_repro_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_lm_length_repro_v1",
+  "research_question": "Does extending an otherwise identical full Qwen3 language-model graph from 64 to 800 tokens with ignored suffix padding reproduce gradient drift?",
+  "causal_variable": {
+    "name": "allocated_sequence_length",
+    "levels": [
+      64,
+      800
+    ],
+    "only_intended_change": true
+  },
+  "evidence_parents": [
+    {
+      "path": "reports/rightbrain_qwen3_4b_trainability_v1_result.json",
+      "sha256": "a091f227920dc183fcc94fc4a5ddf970714a8ac6733a7dc19f0758c97cbd8aea",
+      "outcome": "qwen3_4b_candidate_trainability_gate_failed"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_lora_span_repro_v1_result.json",
+      "sha256": "b9a9c5038ef40f0ae6a994689e0aa53baa907f8c5e61f1af0dd9b56427c6b5c3",
+      "outcome": "lora_span_alone_does_not_reproduce_full_model_drift"
+    }
+  ],
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contracts": {
+    "64": {
+      "sha256": "77b2f0634bbaae3b84b702b072d5772d3cbc201a33d88eb7505fc116292b7da9",
+      "allocated_tokens": 64,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 0,
+      "labelled_tokens": 16
+    },
+    "800": {
+      "sha256": "c93f8c33013b73746200313465fd72b39064770c92dbec25d9d7dd359ef8be03",
+      "allocated_tokens": 800,
+      "shared_prefix_tokens": 64,
+      "ignored_suffix_tokens": 736,
+      "labelled_tokens": 16
+    }
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "synthetic_source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false,
+    "same_labelled_prefix_across_conditions": true,
+    "suffix_labels": -100
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "full_language_model_path": [
+      "token_embedding",
+      "36_transformer_layers",
+      "final_rms_norm",
+      "tied_lm_head",
+      "masked_cross_entropy"
+    ],
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3
+    ],
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999
+    },
+    "classifications": {
+      "short_stable_long_unstable": "ignored_padding_length_reproduces_gradient_drift",
+      "short_unstable_long_unstable": "full_lm_objective_unstable_even_at_short_length",
+      "short_stable_long_stable": "ignored_padding_length_alone_does_not_reproduce_parent_drift",
+      "short_unstable_long_stable": "short_length_control_invalid"
+    }
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "active_context_length_claim": false,
+    "scope": "full_lm_ignored_padding_length_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_lm_length_repro_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_lm_length_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_lm_length_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_lm_length_repro_v1_result_lock.json"
+  }
+}
