@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 import build_rightbrain_max_norm_training_pilot_v2 as construction
+import audit_rightbrain_max_norm_training_pilot_v2 as audit
 import run_rightbrain_max_norm_training_pilot_v2 as runner
 
 
@@ -76,9 +77,20 @@ class RightBrainMaxNormTrainingPilotV2Test(unittest.TestCase):
         if not all(path.exists() for path in paths):
             self.skipTest("v2 training pair not complete")
         integrity = runner.validate_training_pair(write_lock=False)
+        frozen_path = ROOT / self.preregistration["result_paths"][
+            "training_pair_integrity_json"
+        ]
+        frozen = construction.load_json(frozen_path) if frozen_path.exists() else integrity
         self.assertTrue(integrity["checks"]["first_eight_losses_exact_match"])
-        self.assertTrue(integrity["checks"]["first_preclip_norm_reproducible"])
-        self.assertTrue(integrity["decision"]["passed"])
+        self.assertEqual(integrity["checks"], frozen["checks"])
+        self.assertEqual(integrity["decision"], frozen["decision"])
+        evaluation_lock_path = ROOT / self.preregistration["result_paths"]["evaluation_lock"]
+        if evaluation_lock_path.exists():
+            evaluation_lock = construction.load_json(evaluation_lock_path)
+            self.assertEqual(
+                evaluation_lock["authorization"]["condition_isolated_holdout_evaluation"],
+                integrity["decision"]["passed"],
+            )
 
     def test_result_lock_when_available(self):
         result_lock_path = ROOT / self.preregistration["result_paths"]["result_lock"]
@@ -92,6 +104,21 @@ class RightBrainMaxNormTrainingPilotV2Test(unittest.TestCase):
         self.assertFalse(result_lock["authorization"]["production_runtime_change"])
         self.assertFalse(result_lock["authorization"]["production_adapter_replacement"])
         self.assertFalse(result_lock["authorization"]["persona_similarity_claim"])
+
+    def test_invalid_result_when_pair_gate_fails(self):
+        pair_path = ROOT / self.preregistration["result_paths"]["training_pair_integrity_json"]
+        if not pair_path.exists():
+            self.skipTest("v2 pair integrity result not available")
+        pair = construction.load_json(pair_path)
+        if pair["decision"]["passed"]:
+            self.skipTest("v2 pair integrity passed")
+        result = audit.audit()
+        self.assertTrue(all(result["checks"].values()), result["checks"])
+        self.assertFalse(result["decision"]["valid_causal_comparison"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "invalidate_v2_before_holdout_due_backward_nondeterminism",
+        )
 
 
 if __name__ == "__main__":
