@@ -1,0 +1,243 @@
+{
+  "schema": "uruha_rightbrain_mlx_gradient_repro_repeat_v1",
+  "experiment_id": "rightbrain_mlx_dropout_repro_v1",
+  "repeat": 1,
+  "execution_success": true,
+  "execution_mode": "isolated_mlx_zero_update_checkpointed",
+  "environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [
+      63,
+      50,
+      60,
+      77,
+      2,
+      59,
+      78,
+      36
+    ],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "canonical_token_and_label_sha256": "8095c1cb234d713f358b389e58a85dacaec9c3a9c7bf78d960862a79195e136a",
+    "base_activation_dtype": "mlx.core.bfloat16",
+    "trainable_adapter_dtype": "mlx.core.float32",
+    "gradient_checkpointing": true,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 22906503168
+  },
+  "runtime_contract": {
+    "backend": "mlx",
+    "gradient_checkpointing_enabled": true,
+    "base_dtype": "mlx.core.bfloat16",
+    "adapter_dtype": "mlx.core.float32",
+    "adapter_dropout": 0.0,
+    "optimizer_instantiated": false,
+    "optimizer_steps": 0
+  },
+  "adapter_conversion": {
+    "source_tensor_count": 392,
+    "target_tensor_count": 392,
+    "trainable_parameter_count": 80740352,
+    "missing_or_mismatched": [],
+    "unexpected": [],
+    "canonical_mapped_sha256": "2464cdaa110cf90f919f692e8275f4a1f8935131e9b580258b44d7f081f1c953",
+    "exact": true
+  },
+  "token_contract": {
+    "sha256": "8095c1cb234d713f358b389e58a85dacaec9c3a9c7bf78d960862a79195e136a",
+    "details": [
+      {
+        "row_index": 63,
+        "row_id": "rb_role_specialization_v1_0064",
+        "prompt_tokens": 658,
+        "answer_tokens": 16,
+        "active_tokens": 674
+      },
+      {
+        "row_index": 50,
+        "row_id": "rb_role_specialization_v1_0051",
+        "prompt_tokens": 641,
+        "answer_tokens": 22,
+        "active_tokens": 663
+      },
+      {
+        "row_index": 60,
+        "row_id": "rb_role_specialization_v1_0061",
+        "prompt_tokens": 652,
+        "answer_tokens": 20,
+        "active_tokens": 672
+      },
+      {
+        "row_index": 77,
+        "row_id": "rb_role_specialization_v1_0078",
+        "prompt_tokens": 659,
+        "answer_tokens": 10,
+        "active_tokens": 669
+      },
+      {
+        "row_index": 2,
+        "row_id": "rb_role_specialization_v1_0003",
+        "prompt_tokens": 661,
+        "answer_tokens": 16,
+        "active_tokens": 677
+      },
+      {
+        "row_index": 59,
+        "row_id": "rb_role_specialization_v1_0060",
+        "prompt_tokens": 705,
+        "answer_tokens": 19,
+        "active_tokens": 724
+      },
+      {
+        "row_index": 78,
+        "row_id": "rb_role_specialization_v1_0079",
+        "prompt_tokens": 670,
+        "answer_tokens": 16,
+        "active_tokens": 686
+      },
+      {
+        "row_index": 36,
+        "row_id": "rb_role_specialization_v1_0037",
+        "prompt_tokens": 749,
+        "answer_tokens": 22,
+        "active_tokens": 771
+      }
+    ]
+  },
+  "losses": [
+    3.84375,
+    0.8125,
+    2.1500000953674316,
+    5.443749904632568,
+    2.91015625,
+    2.7532894611358643,
+    2.56640625,
+    3.1136362552642822
+  ],
+  "mean_loss": 2.9491860270500183,
+  "gradient": {
+    "norm": 755772.6168452774,
+    "finite_elements": 80740352,
+    "total_elements": 80740352,
+    "all_elements_finite": true,
+    "sha256": "4e5afb4a5dd0a5d82e886559d328c831d1f44ac9963301cb6582d567d2109c7c",
+    "profile": {
+      "down_proj.lora_a": 4605.950974860041,
+      "down_proj.lora_b": 163684.8572690252,
+      "gate_proj.lora_a": 3393.1896216632367,
+      "gate_proj.lora_b": 287104.9083159604,
+      "k_proj.lora_a": 2004.7136032176027,
+      "k_proj.lora_b": 195704.6492537979,
+      "o_proj.lora_a": 5917.799101901725,
+      "o_proj.lora_b": 269037.7451322332,
+      "q_proj.lora_a": 7627.5374343740195,
+      "q_proj.lora_b": 243045.12176189656,
+      "up_proj.lora_a": 7529.8875104699055,
+      "up_proj.lora_b": 365708.8242793682,
+      "v_proj.lora_a": 5004.856167207857,
+      "v_proj.lora_b": 397822.94958926085
+    }
+  },
+  "parameter_integrity": {
+    "before_sha256": "aabd31bdba966e4e61588fb58a24b8632c81be98e84adf0a80e79ab21cd13012",
+    "after_sha256": "aabd31bdba966e4e61588fb58a24b8632c81be98e84adf0a80e79ab21cd13012",
+    "unchanged": true
+  },
+  "resource": {
+    "duration_seconds": 85.621,
+    "mlx_active_memory_bytes": 16200117264,
+    "mlx_cache_memory_bytes": 2584557803,
+    "mlx_peak_memory_bytes": 17673428010,
+    "process_peak_resident_memory_bytes": 16443686912,
+    "memory_by_micro_step": [
+      {
+        "micro_step": 1,
+        "active_memory_bytes": 15877155856,
+        "cache_memory_bytes": 2584557803,
+        "peak_memory_bytes": 17350466602
+      },
+      {
+        "micro_step": 2,
+        "active_memory_bytes": 16237033692,
+        "cache_memory_bytes": 2547641375,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 3,
+        "active_memory_bytes": 16212228316,
+        "cache_memory_bytes": 2572446751,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 4,
+        "active_memory_bytes": 16200641624,
+        "cache_memory_bytes": 2584033447,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 5,
+        "active_memory_bytes": 16200641632,
+        "cache_memory_bytes": 2584033435,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 6,
+        "active_memory_bytes": 16248731868,
+        "cache_memory_bytes": 2535943199,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 7,
+        "active_memory_bytes": 16200759516,
+        "cache_memory_bytes": 2583915551,
+        "peak_memory_bytes": 17673428010
+      },
+      {
+        "micro_step": 8,
+        "active_memory_bytes": 16262068444,
+        "cache_memory_bytes": 2534075423,
+        "peak_memory_bytes": 17673428010
+      }
+    ]
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_one_small_matched_mlx_dropout_zero_training_pilot_preregistration_only"
+  }
+}

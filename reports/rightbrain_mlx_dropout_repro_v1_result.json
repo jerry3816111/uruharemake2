@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_rightbrain_mlx_dropout_repro_result_v1",
+  "experiment_id": "rightbrain_mlx_dropout_repro_v1",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_mlx_dropout_repro_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "b798af25513b3370be0ac41b0cfdfb1bd85da7c150eabcb00bb6af4d167e2cf9"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_mlx_dropout_repro_v1_execution_lock.json",
+      "scope": "repository",
+      "sha256": "0e6107cd47ec41b3d0fa0a113afddc2d520fd647fe30cc4ccc789cfcb7f815aa"
+    },
+    "repeats": [
+      {
+        "path": "reports/rightbrain_mlx_dropout_repro_v1_repeat_1.json",
+        "scope": "repository",
+        "sha256": "bffb012219e63d113ac184655fd141d181791ff85bac69c34b355b24d13d245a"
+      },
+      {
+        "path": "reports/rightbrain_mlx_dropout_repro_v1_repeat_2.json",
+        "scope": "repository",
+        "sha256": "410ad64037f411952a6d264c2cbffbb583f397f2097fc622fb93bc31e0088795"
+      },
+      {
+        "path": "reports/rightbrain_mlx_dropout_repro_v1_repeat_3.json",
+        "scope": "repository",
+        "sha256": "841c9445e1648b1d2fe262bc22e6c46508069b6b9588d988e42f0c34a40dd8aa"
+      }
+    ]
+  },
+  "measurements": {
+    "gradient_norms": [
+      755772.6168452774,
+      841401.2065827517,
+      1011895.8761133733
+    ],
+    "mean_gradient_norm": 869689.8998471341,
+    "gradient_norm_coefficient_of_variation": 0.12240918425707872,
+    "gradient_norm_max_to_min_ratio": 1.3388893081853082,
+    "pairwise_group_profile_cosines": [
+      0.9998216141016687,
+      0.9831170923214293,
+      0.9801873989241868
+    ],
+    "minimum_pairwise_group_profile_cosine": 0.9801873989241868,
+    "gradient_hashes": [
+      "4e5afb4a5dd0a5d82e886559d328c831d1f44ac9963301cb6582d567d2109c7c",
+      "6e4c6ca1737dc941c2b0d2c46b40a4820a736a7ef002c146eba531ebcf88d27c",
+      "72090d26beecdba95cb46788c766e06b1df54e888efefda285d48cf0dd0ea190"
+    ],
+    "gradient_hashes_identical": false,
+    "losses": [
+      3.84375,
+      0.8125,
+      2.1500000953674316,
+      5.443749904632568,
+      2.91015625,
+      2.7532894611358643,
+      2.56640625,
+      3.1136362552642822
+    ],
+    "peak_memory_bytes": [
+      17673428010,
+      17673428010,
+      17673428010
+    ],
+    "duration_seconds": [
+      85.621,
+      85.439,
+      85.666
+    ]
+  },
+  "checks": {
+    "all_three_repetitions_complete": true,
+    "adapter_conversion_exact_each": true,
+    "token_and_label_hash_exact_each": true,
+    "loss_vectors_exact_across_repetitions": true,
+    "gradient_norm_coefficient_of_variation": false,
+    "gradient_norm_max_to_min_ratio": false,
+    "minimum_pairwise_group_profile_cosine": false,
+    "all_losses_and_gradients_finite": true,
+    "trainable_parameters_unchanged": true,
+    "peak_memory_within_limit": true
+  },
+  "decision": {
+    "passed": false,
+    "outcome": "mlx_dropout_zero_does_not_restore_gradient_reproducibility",
+    "mechanism_supported": false,
+    "authorized_next_step": "reject_dropout_rng_as_sufficient_and_stop_without_new_evidence",
+    "authorize_training_now": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_one_small_matched_mlx_dropout_zero_training_pilot_preregistration_only"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_rightbrain_mlx_dropout_repro_construction_v1",
+  "experiment_id": "rightbrain_mlx_dropout_repro_v1",
+  "checks": {
+    "experiment_id": true,
+    "frozen_before_backward": true,
+    "frozen_bindings": true,
+    "official_runtime_sources_bound": true,
+    "environment_exact": true,
+    "exact_batch_ids": true,
+    "only_probe_change_is_dropout": true,
+    "only_adapter_change_is_dropout": true,
+    "same_environment_and_model": true,
+    "runner_exists": true,
+    "outputs_absent": true,
+    "zero_update_boundaries": true
+  },
+  "frozen_bindings": [
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_preregistration.json",
+      "sha256": "16aff1c990fdd0fe0a0d751e67ff6a1a5027bfda82b77e400e7a2a852c63e184",
+      "actual_sha256": "16aff1c990fdd0fe0a0d751e67ff6a1a5027bfda82b77e400e7a2a852c63e184",
+      "match": true
+    },
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_result_lock.json",
+      "sha256": "795a0c0471576aef87a28f2f44f4c9f0622e0072fec23fe7880b6effa0248357",
+      "actual_sha256": "795a0c0471576aef87a28f2f44f4c9f0622e0072fec23fe7880b6effa0248357",
+      "match": true
+    },
+    {
+      "path": "reports/rightbrain_mlx_gradient_repro_v1_result.json",
+      "sha256": "415fac3713b8b3d948665b9051aaf7943831b8b384bfb5368503d8b67fb91ea3",
+      "actual_sha256": "415fac3713b8b3d948665b9051aaf7943831b8b384bfb5368503d8b67fb91ea3",
+      "match": true
+    },
+    {
+      "path": "run_rightbrain_mlx_gradient_repro_v1.py",
+      "sha256": "99e94e8c0ea04911ba8e98c5be5786b0ae158ee6bd2db34f7f65157122e86ec8",
+      "actual_sha256": "99e94e8c0ea04911ba8e98c5be5786b0ae158ee6bd2db34f7f65157122e86ec8",
+      "match": true
+    },
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_environment.txt",
+      "sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5",
+      "actual_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5",
+      "match": true
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+      "actual_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+      "match": true
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+      "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937",
+      "actual_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937",
+      "match": true
+    }
+  ],
+  "external_source_bindings": [
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/dropout.py",
+      "sha256": "ce655efd7554b18438cb9b183b6a0b4364ddd72f434e5cdaf599e6f46bf99cf5",
+      "actual_sha256": "ce655efd7554b18438cb9b183b6a0b4364ddd72f434e5cdaf599e6f46bf99cf5",
+      "match": true
+    },
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx_lm/tuner/trainer.py",
+      "sha256": "ee33ebdbd20a184108541cb490d08085485e71a82ffd6d68d7d216029ecd28fe",
+      "actual_sha256": "ee33ebdbd20a184108541cb490d08085485e71a82ffd6d68d7d216029ecd28fe",
+      "match": true
+    }
+  ],
+  "environment": {
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "actual_row_ids": [
+    "rb_role_specialization_v1_0064",
+    "rb_role_specialization_v1_0051",
+    "rb_role_specialization_v1_0061",
+    "rb_role_specialization_v1_0078",
+    "rb_role_specialization_v1_0003",
+    "rb_role_specialization_v1_0060",
+    "rb_role_specialization_v1_0079",
+    "rb_role_specialization_v1_0037"
+  ],
+  "decision": {
+    "passed": true,
+    "outcome": "authorize_exact_three_mlx_dropout_zero_repetitions_only"
+  }
+}
