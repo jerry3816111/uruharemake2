@@ -1,7 +1,14 @@
 {
   "schema": "uruha_rightbrain_role_curriculum_training_pilot_preregistration_v1",
   "experiment_id": "rightbrain_role_curriculum_training_pilot_v1",
-  "status": "frozen_before_control_dataset_holdout_harness_implementation_and_before_training",
+  "status": "amended_after_token_capacity_preflight_and_before_control_dataset_holdout_harness_completion_and_before_training",
+  "protocol_amendments": [
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_protocol_amendment_01.json",
+      "amendment_id": "token_capacity_preflight_01",
+      "scope": "raise deterministic token capacity only; no data, model, optimizer, decoding, or threshold change"
+    }
+  ],
   "authoring_parent_commit": "c7b9dce4215b3336d65292794ce0e4e41c11aaae",
   "research_question": "With the exact same local base model, initial v10 adapter, input prompts, assistant-output multiset, training schedule, and evaluation cases, does correctly aligning the current persona-policy payload with policy-matched surface examples teach source-independent policy-conditioned realization better than a policy-permuted sham curriculum?",
   "falsifiable_hypothesis": {
@@ -104,7 +111,10 @@
     "weight_decay": 0.02,
     "optimizer_epsilon": 1e-6,
     "maximum_gradient_norm": 0.3,
-    "maximum_sequence_length": 720,
+    "maximum_sequence_length": 800,
+    "fixed_allocated_sequence_length": 800,
+    "padding_side": "right",
+    "padding_attention_masked": true,
     "dtype": "torch.bfloat16",
     "adapter_dropout": 0.08,
     "gradient_checkpointing": true,
@@ -169,7 +179,7 @@
     "generation_count_per_adapter": 80,
     "total_generation_count": 240,
     "same_seed_within_matched_provider_pair": true,
-    "prompt_allocation_budget_tokens": 640,
+    "prompt_allocation_budget_tokens": 800,
     "candidate_count": 1,
     "repair_enabled": false,
     "maximum_new_tokens": 56,
