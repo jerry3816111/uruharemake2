@@ -1,0 +1,121 @@
+{
+  "schema": "uruha_rightbrain_gradient_reproducibility_preregistration_v1",
+  "experiment_id": "rightbrain_gradient_reproducibility_v1",
+  "status": "frozen_before_any_reproducibility_backward_pass",
+  "research_question": "Does the exact same first eight-row accumulated gradient reproduce across three isolated fresh Python processes when measured by one identical harness?",
+  "problem": {
+    "historical_norm_a": 403.7281799316406,
+    "historical_norm_b": 2.878972291946411,
+    "relative_difference": 0.9928690330894566,
+    "shared_forward_losses_exactly_equal": true,
+    "uncertainty": "The two prior zero-update executions used equivalent gradient reconstruction but produced incompatible gradient scales, so optimizer-effect conclusions are not currently trustworthy."
+  },
+  "falsifiable_hypothesis": {
+    "statement": "Three isolated executions of one frozen gradient-only harness will produce a stable total gradient norm and group profile.",
+    "stable_if_all": {
+      "valid_repeats": 3,
+      "total_norm_coefficient_of_variation_maximum": 0.005,
+      "total_norm_max_to_min_ratio_maximum": 1.01,
+      "minimum_pairwise_group_profile_cosine": 0.999
+    },
+    "unstable_if_any": {
+      "total_norm_coefficient_of_variation_minimum": 0.05,
+      "total_norm_max_to_min_ratio_minimum": 1.2,
+      "minimum_pairwise_group_profile_cosine_below": 0.99
+    },
+    "historical_match_relative_error_maximum": 0.01,
+    "inconclusive_between_prespecified_regions": true,
+    "threshold_note": "These are preregistered reproducibility effect-size boundaries, not an official MPS standard."
+  },
+  "frozen_inputs": [
+    {
+      "path": "configs/rightbrain_adamw_clipping_effect_v1_result_lock.json",
+      "sha256": "a577c53d7171c28cce38a21c88cf0cb86c882806feca6663d51fceb8cdcd87b4"
+    },
+    {
+      "path": "reports/rightbrain_adamw_clipping_effect_v1_result.json",
+      "sha256": "0cf94706a84a9a1bb2aed37867b59d91fbf6ff7235548827ca4bfff72804e7f5"
+    },
+    {
+      "path": "configs/rightbrain_training_signal_telemetry_v1_result_lock.json",
+      "sha256": "b7c813d10ae83907e7dd3fb84bd39cc83205e61f48f2b80d2fde441294625159"
+    },
+    {
+      "path": "reports/rightbrain_training_signal_telemetry_v1_result.json",
+      "sha256": "e65718965715b4d072d56e004a0cd1fa92aa554e8d438d7ba6675bc2b7ca1a2b"
+    },
+    {
+      "path": "diagnose_rightbrain_training_signal_telemetry_v1.py",
+      "sha256": "4cb43f5712075f3ef68e99ec998fe7396abfc66517187daeab4dbb4586207f45"
+    }
+  ],
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "condition": "policy_aligned_treatment",
+    "random_seed": 20260801,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "micro_steps_per_repeat": 8,
+    "optimizer_steps": 0,
+    "repeat_ids": [1, 2, 3],
+    "fresh_python_process_per_repeat": true,
+    "row_indices": [30, 60, 39, 74, 24, 2, 76, 37],
+    "row_ids": [
+      "rb_role_specialization_v1_0031",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0040",
+      "rb_role_specialization_v1_0075",
+      "rb_role_specialization_v1_0025",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0077",
+      "rb_role_specialization_v1_0038"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_dropout": 0.08,
+    "base_dtype": "torch.bfloat16",
+    "trainable_parameter_dtype": "torch.float32"
+  },
+  "repeat_validity": {
+    "all_frozen_hashes_match": true,
+    "all_eight_row_ids_match": true,
+    "all_eight_losses_match_historical_source_exactly": true,
+    "all_gradients_finite": true,
+    "all_trainable_parameter_tensors_have_gradient": true,
+    "trainable_parameter_sha256_unchanged": true,
+    "optimizer_or_parameter_update_count": 0
+  },
+  "metrics": [
+    "total_gradient_norm_per_repeat",
+    "coefficient_of_variation",
+    "max_to_min_ratio",
+    "pairwise_group_profile_cosine",
+    "norm_by_projection_and_lora_side",
+    "norm_by_layer",
+    "historical_norm_relative_errors",
+    "process_identity"
+  ],
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping_call": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "identify_gradient_reconstruction_stability_and_the_matching_historical_scale_only"
+  },
+  "decision_policy": {
+    "stable_matches_historical_a": "audit why the 2.878972 execution diverged before resuming AdamW analysis",
+    "stable_matches_historical_b": "audit why the 403.728180 execution diverged before resuming AdamW analysis",
+    "stable_matches_neither": "audit the two historical paths and environment before resuming optimizer analysis",
+    "unstable": "treat the current MPS backward training path as non-reproducible and isolate checkpointing, dropout, and device determinism one variable at a time",
+    "inconclusive": "do not change training parameters; design a stronger reproducibility audit"
+  },
+  "result_paths": {
+    "repeat_template": "reports/rightbrain_gradient_reproducibility_v1_repeat_{repeat_id}.json",
+    "summary_json": "reports/rightbrain_gradient_reproducibility_v1_summary.json",
+    "summary_markdown": "reports/rightbrain_gradient_reproducibility_v1_summary.md"
+  }
+}
