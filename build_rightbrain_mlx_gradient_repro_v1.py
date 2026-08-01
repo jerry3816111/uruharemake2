@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parent
 EXPERIMENT_ID = "rightbrain_mlx_gradient_repro_v1"
 DEFAULT_PREREGISTRATION = ROOT / "configs/rightbrain_mlx_gradient_repro_v1_preregistration.json"
 DEFAULT_ENVIRONMENT = ROOT / "configs/rightbrain_mlx_gradient_repro_v1_environment.txt"
+DEFAULT_AMENDMENT = (
+    ROOT / "configs/rightbrain_mlx_gradient_repro_v1_protocol_amendment_01.json"
+)
 DEFAULT_EXECUTION_LOCK = ROOT / "configs/rightbrain_mlx_gradient_repro_v1_execution_lock.json"
 DEFAULT_REPORT_JSON = ROOT / "reports/rightbrain_mlx_gradient_repro_v1_construction.json"
 DEFAULT_REPORT_MD = ROOT / "reports/rightbrain_mlx_gradient_repro_v1_construction.md"
@@ -119,6 +122,7 @@ def build_report():
             }
         )
     probe = preregistration["exact_probe"]
+    amendment = load_json(DEFAULT_AMENDMENT) if DEFAULT_AMENDMENT.exists() else None
     dataset = load_json(ROOT / probe["dataset"])
     actual_ids = [dataset[index]["id"] for index in probe["row_indices"]]
     outputs = [
@@ -162,6 +166,17 @@ def build_report():
         and preregistration["adapter_conversion_contract"]["trainable_parameter_count"]
         == 80740352,
         "runner_exists": RUNNER.is_file(),
+        "pre_backward_amendment_valid": amendment is not None
+        and amendment["experiment_id"] == EXPERIMENT_ID
+        and amendment["status"] == "frozen_before_any_mlx_backward_pass"
+        and amendment["trigger"]["backward_passes_completed"] == 0
+        and amendment["trigger"]["optimizer_steps"] == 0
+        and sha256_file(ROOT / amendment["trigger"]["path"])
+        == amendment["trigger"]["sha256"]
+        and amendment["authorized_change"]["scope"]
+        == "tokenizer_api_compatibility_only"
+        and amendment["authorized_change"]["expected_token_and_label_sha256_unchanged"]
+        == probe["canonical_token_and_label_sha256"],
         "outputs_absent": all(not path.exists() for path in outputs),
         "zero_update_boundaries": not any(
             preregistration["boundaries"][key]
@@ -223,6 +238,8 @@ def build_lock(report):
     paths = [
         DEFAULT_PREREGISTRATION,
         DEFAULT_ENVIRONMENT,
+        DEFAULT_AMENDMENT,
+        ROOT / "reports/rightbrain_mlx_gradient_repro_v1_preflight_failure_01.json",
         Path(__file__),
         RUNNER,
         ROOT / preregistration["exact_probe"]["dataset"],

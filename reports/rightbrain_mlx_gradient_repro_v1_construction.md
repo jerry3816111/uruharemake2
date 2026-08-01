@@ -19,5 +19,6 @@
 - PASS `single_backend_change`
 - PASS `exact_adapter_mapping_contract`
 - PASS `runner_exists`
+- PASS `pre_backward_amendment_valid`
 - PASS `outputs_absent`
 - PASS `zero_update_boundaries`

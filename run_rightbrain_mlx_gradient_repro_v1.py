@@ -124,8 +124,8 @@ def _tokenize_exact_batch(preregistration, tokenizer):
             row["messages"][:-1], tokenize=False, add_generation_prompt=True
         )
         answer = f"{str(row['messages'][-1]['content']).strip()}<|im_end|>"
-        prompt_ids = tokenizer(prompt, add_special_tokens=False).input_ids
-        answer_ids = tokenizer(answer, add_special_tokens=False).input_ids
+        prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
+        answer_ids = tokenizer.encode(answer, add_special_tokens=False)
         active_ids = prompt_ids + answer_ids
         if len(active_ids) > allocated:
             raise RuntimeError(f"Token contract exceeds {allocated}: {row['id']}")
