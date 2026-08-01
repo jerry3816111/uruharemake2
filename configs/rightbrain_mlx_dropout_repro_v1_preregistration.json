@@ -1,0 +1,172 @@
+{
+  "schema": "uruha_rightbrain_mlx_dropout_repro_preregistration_v1",
+  "experiment_id": "rightbrain_mlx_dropout_repro_v1",
+  "status": "frozen_before_any_dropout_zero_mlx_backward_pass",
+  "research_question": "With the exact MLX v10 adapter and exact eight-row batch, does changing only LoRA dropout from 0.08 to 0.0 remove cross-process gradient-scale drift while checkpointing remains enabled?",
+  "causal_basis": {
+    "prior_gradient_norms": [635490.4399761545, 373843.35308721685, 755238.3011381556],
+    "prior_gradient_norm_cv": 0.27075489235968603,
+    "prior_gradient_norm_ratio": 2.0201998909472656,
+    "prior_minimum_profile_cosine": 0.999915060824029,
+    "prior_loss_vectors_exact": true,
+    "prior_all_gradients_finite": true,
+    "mechanism_hypothesis": "MLX checkpoint recomputes the function during VJP; MLX Dropout draws from global random state without an explicit key; MLX-LM grad_checkpoint passes model parameters but no RNG state. Recomputed dropout masks can therefore alter backward scale.",
+    "candidate_change": "MLX LoRA dropout 0.08 -> 0.0 only",
+    "official_source_commit": "7a1d4f5c12ac82f4b4d0a6e71538d89ca0605247",
+    "official_sources": [
+      "https://github.com/ml-explore/mlx/blob/v0.32.0/mlx/transforms.cpp",
+      "https://github.com/ml-explore/mlx/blob/v0.32.0/python/mlx/nn/layers/dropout.py",
+      "https://github.com/ml-explore/mlx-lm/blob/v0.31.3/mlx_lm/tuner/trainer.py"
+    ]
+  },
+  "frozen_bindings": [
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_preregistration.json",
+      "sha256": "16aff1c990fdd0fe0a0d751e67ff6a1a5027bfda82b77e400e7a2a852c63e184"
+    },
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_result_lock.json",
+      "sha256": "795a0c0471576aef87a28f2f44f4c9f0622e0072fec23fe7880b6effa0248357"
+    },
+    {
+      "path": "reports/rightbrain_mlx_gradient_repro_v1_result.json",
+      "sha256": "415fac3713b8b3d948665b9051aaf7943831b8b384bfb5368503d8b67fb91ea3"
+    },
+    {
+      "path": "run_rightbrain_mlx_gradient_repro_v1.py",
+      "sha256": "99e94e8c0ea04911ba8e98c5be5786b0ae158ee6bd2db34f7f65157122e86ec8"
+    },
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_environment.txt",
+      "sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+      "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  ],
+  "external_source_bindings": [
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/dropout.py",
+      "sha256": "ce655efd7554b18438cb9b183b6a0b4364ddd72f434e5cdaf599e6f46bf99cf5"
+    },
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx_lm/tuner/trainer.py",
+      "sha256": "ee33ebdbd20a184108541cb490d08085485e71a82ffd6d68d7d216029ecd28fe"
+    }
+  ],
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "hardware": {
+      "chip": "Apple M2 Pro",
+      "physical_memory_bytes": 34359738368,
+      "mlx_max_recommended_working_set_size_bytes": 22906503168
+    }
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "metadata_sha256": {
+      "config.json": "7463bb0ea78315365e6c6b74de4e73bbcc8359dfb0c5a737584e077d42c0b03c",
+      "model.safetensors.index.json": "624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583"
+    },
+    "base_parameter_count": 7615616512,
+    "base_dtype": "mlx.core.bfloat16"
+  },
+  "adapter_conversion_contract": {
+    "rank": 32,
+    "alpha": 24,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 28,
+    "source_tensor_count": 392,
+    "target_tensor_count": 392,
+    "trainable_parameter_count": 80740352,
+    "canonical_mapped_sha256": "2464cdaa110cf90f919f692e8275f4a1f8935131e9b580258b44d7f081f1c953"
+  },
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [63, 50, 60, 77, 2, 59, 78, 36],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "canonical_token_and_label_sha256": "8095c1cb234d713f358b389e58a85dacaec9c3a9c7bf78d960862a79195e136a",
+    "base_activation_dtype": "mlx.core.bfloat16",
+    "trainable_adapter_dtype": "mlx.core.float32",
+    "gradient_checkpointing": true,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 22906503168
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "all_three_repetitions_complete": true,
+      "adapter_conversion_exact_each": true,
+      "token_and_label_hash_exact_each": true,
+      "loss_vectors_exact_across_repetitions": true,
+      "gradient_norm_coefficient_of_variation_maximum": 0.001,
+      "gradient_norm_max_to_min_ratio_maximum": 1.001,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "all_losses_and_gradients_finite": true,
+      "trainable_parameters_unchanged": true,
+      "peak_memory_within_limit": true
+    },
+    "reject_if_any": {
+      "gradient_norm_max_to_min_ratio_minimum": 1.01,
+      "minimum_pairwise_group_profile_cosine_below": 0.999,
+      "any_nonfinite_loss_or_gradient": true,
+      "any_parameter_change": true,
+      "any_out_of_memory_failure": true
+    },
+    "pass_interpretation": "Support the checkpoint/dropout RNG mechanism and authorize preregistration of one small matched MLX dropout-zero training pilot.",
+    "failure_interpretation": "Reject dropout RNG as a sufficient explanation and stop tuning this mechanism without new evidence."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_one_small_matched_mlx_dropout_zero_training_pilot_preregistration_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_mlx_dropout_repro_v1_repeat_",
+    "aggregate_json": "reports/rightbrain_mlx_dropout_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_mlx_dropout_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_mlx_dropout_repro_v1_result_lock.json"
+  }
+}
