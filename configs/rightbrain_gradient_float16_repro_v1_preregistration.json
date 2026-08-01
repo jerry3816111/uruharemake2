@@ -1,0 +1,113 @@
+{
+  "schema": "uruha_rightbrain_gradient_float16_repro_preregistration_v1",
+  "experiment_id": "rightbrain_gradient_float16_repro_v1",
+  "status": "frozen_before_any_float16_backward_pass",
+  "research_question": "On the exact first DataLoader batch, does changing only the local base-model activation dtype from bfloat16 to float16 make checkpointed accumulated gradients reproducible across three isolated MPS processes within the local memory limit?",
+  "problem": {
+    "baseline_dtype": "torch.bfloat16",
+    "baseline_gradient_checkpointing": true,
+    "baseline_adapter_dropout": 0.08,
+    "baseline_backward_reproducible": false,
+    "dropout_zero_sufficient": false,
+    "checkpointing_off_usable_locally": false,
+    "candidate_change": "base-model activation dtype bfloat16 -> float16 only",
+    "reason": "Trainable LoRA parameters are already FP32. Float16 MPS kernels are a distinct local execution path that may avoid the unstable bfloat16 backward while preserving checkpointing and memory feasibility."
+  },
+  "frozen_bindings": [
+    {
+      "path": "configs/rightbrain_gradient_checkpoint_repro_v1_result_lock.json",
+      "sha256": "6c083068dfd922e75665388a9e1fd18f83f3a147042911c7b0e45def0f79a2a4"
+    },
+    {
+      "path": "reports/rightbrain_gradient_checkpoint_repro_v1_result.json",
+      "sha256": "a288a77556855efd4a6ed2b7e8284b906906d75b314a3e9fb6bef0cf4980d579"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    }
+  ],
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "initial_adapter": {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1",
+      "adapter_config_sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a",
+      "adapter_model_sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  },
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [63, 50, 60, 77, 2, 59, 78, 36],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "adapter_rank": 32,
+    "adapter_alpha": 24,
+    "adapter_dropout": 0.08,
+    "gradient_checkpointing": true,
+    "base_activation_dtype": "torch.float16",
+    "trainable_adapter_dtype": "torch.float32",
+    "norm_foreach": false,
+    "driver_allocated_memory_bytes_maximum": 32212254720
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "loss_vectors_exact_across_repetitions": true,
+      "gradient_norm_coefficient_of_variation_maximum": 0.001,
+      "gradient_norm_max_to_min_ratio_maximum": 1.001,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "mps_vs_cpu_float64_relative_error_maximum_each": 0.000001,
+      "all_losses_and_gradients_finite": true,
+      "parameters_unchanged": true,
+      "driver_allocated_memory_within_local_limit": true
+    },
+    "reject_if_any": {
+      "gradient_norm_max_to_min_ratio_minimum": 1.01,
+      "minimum_pairwise_group_profile_cosine_below": 0.999,
+      "any_nonfinite_loss_or_gradient": true,
+      "any_parameter_change": true,
+      "any_out_of_memory_failure": true,
+      "driver_allocated_memory_above_local_limit": true
+    },
+    "pass_interpretation": "Authorize preregistration of max-norm pilot v3 using float16 base activations, FP32 trainable adapters, checkpointing enabled, and dropout 0.08.",
+    "failure_interpretation": "Do not train v3; redesign the microbatch/token contract or move the controlled training experiment to CPU/CUDA while preserving local inference deployment."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_max_norm_pilot_v3_with_float16_base_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_gradient_float16_repro_v1_repeat_",
+    "aggregate_json": "reports/rightbrain_gradient_float16_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_gradient_float16_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_gradient_float16_repro_v1_result_lock.json"
+  }
+}
