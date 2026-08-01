@@ -257,6 +257,10 @@ RIGHT_BRAIN_MODEL_SYSTEM_PROMPT = (
     "or reveal memory that is not explicitly allowed. Do not output analysis, labels, JSON, metadata, English, Chinese, or system "
     "text. Do not use 私. Do not explain the contract."
 )
+RIGHT_BRAIN_STRUCTURED_MODEL_SYSTEM_PROMPT = RIGHT_BRAIN_MODEL_SYSTEM_PROMPT.replace(
+    " Do not use 私.",
+    "",
+)
 RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT = (
     RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
     + " The previous draft failed the contract. Repair it once and return only the corrected reply."
@@ -8297,6 +8301,15 @@ Return ONLY valid JSON with this structure:
 # ===========================
 # 🎭 右腦：本機 V10 Persona 生成器
 # ===========================
+class StructuredSurfaceUnavailableError(RuntimeError):
+    """Raised when a structured persona condition cannot produce a gated local reply."""
+
+    def __init__(self, provider_id, reason):
+        self.provider_id = str(provider_id or "unknown")
+        self.reason = str(reason or "unknown")
+        super().__init__(f"structured surface unavailable: {self.provider_id}:{self.reason}")
+
+
 class RightBrain:
     def __init__(self, load_model=True, persona_policy_provider=None, compute_ledger=None):
         self.history = []
@@ -8312,6 +8325,8 @@ class RightBrain:
         self.model = None
         self.persona_policy_provider = persona_policy_provider
         self.compute_ledger = compute_ledger
+        self.legacy_fixed_surface_access_count = 0
+        self.legacy_fixed_surface_access_sources = Counter()
         self.surface_adapter_name = "surface"
         self.repair_adapter_name = "repair"
         self.repair_adapter_loaded = False
@@ -8572,6 +8587,30 @@ class RightBrain:
             "proactive_ping": ["静かだな。今なにしてんだよ。", "急に静かだけど、今どうしてるんだよ。", "で、今は何してんの。"],
         }
 
+        if self._structured_surface_required():
+            self.scene_fallbacks = {}
+            self.intent_reply_families = {}
+
+    def _structured_surface_required(self):
+        provider = self.persona_policy_provider
+        return bool(
+            provider is not None
+            and getattr(provider, "requires_structured_model_surface", False)
+        )
+
+    def _surface_provider_id(self):
+        provider = self.persona_policy_provider
+        return str(getattr(provider, "provider_id", "legacy_runtime"))
+
+    def _guard_legacy_fixed_surface(self, source):
+        self.legacy_fixed_surface_access_count += 1
+        self.legacy_fixed_surface_access_sources[str(source)] += 1
+        if self._structured_surface_required():
+            raise StructuredSurfaceUnavailableError(
+                self._surface_provider_id(),
+                f"legacy_fixed_surface_access:{source}",
+            )
+
     def _switch_model_adapter(self, adapter_name):
         if not adapter_name or not self.model or not hasattr(self.model, "set_adapter"):
             return False
@@ -8619,11 +8658,12 @@ class RightBrain:
         text = re.sub(r"^(Thought:|Output:|Assistant:|Uruha:)\s*", "", text, flags=re.IGNORECASE)
         text = re.sub(r"<[^>]+>", "", text)
         text = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
-        text = text.replace("うるはん", "うち")
-        text = re.sub(r"(?<!一ノ瀬)うるは、", "うち、", text)
-        text = re.sub(r"(?<!一ノ瀬)うるは\s", "うち ", text)
-        text = text.replace("うちんち", "うち")
-        text = text.replace("私", "うち")
+        if not self._structured_surface_required():
+            text = text.replace("うるはん", "うち")
+            text = re.sub(r"(?<!一ノ瀬)うるは、", "うち、", text)
+            text = re.sub(r"(?<!一ノ瀬)うるは\s", "うち ", text)
+            text = text.replace("うちんち", "うち")
+            text = text.replace("私", "うち")
         text = text.replace("わかりました", "うん")
         text = text.replace("承知しました", "うん")
         text = text.replace("かしこまりました", "うん")
@@ -8644,6 +8684,8 @@ class RightBrain:
                 text = text[:max_chars].rstrip(" 、,") + "。"
 
         if not re.search(r"[ぁ-んァ-ヶー一-龠]", text):
+            if self._structured_surface_required():
+                return ""
             text = "ちょっと何言ってるか分かんない。"
 
         if text.endswith("..."):
@@ -8688,6 +8730,8 @@ class RightBrain:
     def _finalize_surface_reply(self, reply, logic_data, user_input, max_chars):
         reply = self._sanitize_reply(reply, max_chars=max_chars)
         if not reply:
+            return reply
+        if self._structured_surface_required():
             return reply
         if logic_data.get("memory_use_expected"):
             return reply
@@ -10270,6 +10314,7 @@ class RightBrain:
         return groups, hits
 
     def _speech_plan_variants(self, reply, logic_data, user_input, memory_data=None):
+        self._guard_legacy_fixed_surface("speech_plan_variants")
         speech_plan = logic_data.get("human_speech_plan") or {}
         dialogue_act = speech_plan.get("dialogue_act", "")
         if not dialogue_act:
@@ -10576,6 +10621,7 @@ class RightBrain:
         return False
 
     def _conversation_enrichment_variants(self, reply, logic_data, user_input, memory_data=None):
+        self._guard_legacy_fixed_surface("conversation_enrichment_variants")
         memory_data = memory_data or {}
         intent = logic_data.get("intent", "")
         surface = logic_data.get("surface_act", "")
@@ -10760,6 +10806,7 @@ class RightBrain:
         return variants
 
     def _refine_conversational_reply(self, reply, logic_data, user_input, memory_data=None):
+        self._guard_legacy_fixed_surface("refine_conversational_reply")
         reply = str(reply or "").strip()
         semantic_groups = self._required_surface_semantic_groups(logic_data)
         _, initial_semantic_hits = self._surface_semantic_group_hits(reply, logic_data)
@@ -10851,6 +10898,7 @@ class RightBrain:
         return re.findall(r"[A-Za-z0-9_]+|[\u3040-\u30ff\u4e00-\u9fff]{1,4}", str(text or ""))
 
     def _build_dynamic_context_anchor(self, logic_data, memory_data, current_psyche, user_input):
+        self._guard_legacy_fixed_surface("dynamic_context_anchor")
         intent = logic_data.get("intent", "chat")
         surface = logic_data.get("surface_act", "plain_reply")
         lowered = user_input.lower()
@@ -11275,6 +11323,7 @@ class RightBrain:
             self.history = self.history[-10:]
 
     def _template_reply(self, logic_data, user_input="", current_psyche=None, memory_data=None):
+        self._guard_legacy_fixed_surface("template_reply")
         current_psyche = current_psyche or {"mood": 0, "trust": 50}
         memory_data = memory_data or {}
         intent = logic_data.get("intent", "")
@@ -11714,6 +11763,7 @@ class RightBrain:
         return score
 
     def _fallback_reply(self, logic_data, user_input="", memory_data=None):
+        self._guard_legacy_fixed_surface("fallback_reply")
         memory_data = memory_data or {}
         templated = self._template_reply(logic_data, user_input=user_input, memory_data=memory_data)
         if templated:
@@ -11899,7 +11949,7 @@ You are Ichinose Uruha.
         return [tuple(group) for group in self._required_surface_semantic_groups(logic_data) if group]
 
     def _model_surface_disabled_reason(self, logic_data):
-        if not self.model_blend_enabled:
+        if not self._structured_surface_required() and not self.model_blend_enabled:
             return "model_blend_disabled"
         if self.model is None or self.tokenizer is None:
             return "model_not_loaded"
@@ -12222,9 +12272,10 @@ You are Ichinose Uruha.
                 "natural casual Japanese",
                 "no labels or JSON",
                 "no Chinese or English",
-                "no first person 私",
             ],
         }
+        if not self._structured_surface_required():
+            payload["reply_requirements"].append("no first person 私")
         if self.explicit_length_contract_enabled:
             payload["output_budget"] = {
                 "maximum_characters": int(max_chars or 48),
@@ -12243,7 +12294,12 @@ You are Ichinose Uruha.
         return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
     def _model_surface_system_instruction(self, repair=False):
-        prompt = RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT if repair else RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
+        if self._structured_surface_required():
+            prompt = RIGHT_BRAIN_STRUCTURED_MODEL_SYSTEM_PROMPT
+            if repair:
+                prompt += " The previous draft failed the contract. Repair it once and return only the corrected reply."
+        else:
+            prompt = RIGHT_BRAIN_MODEL_REPAIR_SYSTEM_PROMPT if repair else RIGHT_BRAIN_MODEL_SYSTEM_PROMPT
         if self.explicit_length_contract_enabled:
             prompt += RIGHT_BRAIN_EXPLICIT_LENGTH_SYSTEM_RULE
         return prompt
@@ -12774,6 +12830,9 @@ You are Ichinose Uruha.
         if not direct_reasons:
             return direct_candidate, []
 
+        if self._structured_surface_required():
+            return direct_candidate, direct_reasons
+
         candidate = self._refine_conversational_reply(
             candidate,
             logic_data,
@@ -13236,13 +13295,34 @@ You are Ichinose Uruha.
         )
         return deterministic_reply
 
+    def _select_structured_model_reply(self, model_candidates, logic_data):
+        if not model_candidates:
+            raise StructuredSurfaceUnavailableError(
+                self._surface_provider_id(),
+                "all_model_candidates_rejected",
+            )
+        selected = model_candidates[0]
+        logic_data["model_surface_selection"] = {
+            "selection_mode": "first_strict_accepted_in_frozen_generation_order",
+            "model_candidate_count": len(model_candidates),
+            "selected_source": "structured_model",
+            "selected_candidate": selected,
+            "legacy_deterministic_candidate_present": False,
+        }
+        return selected
+
     def speak(self, user_input, logic_data, memory_data, current_psyche):
         original_logic_data = logic_data if isinstance(logic_data, dict) else {}
         logic_data = dict(logic_data or {})
         logic_data["user_input"] = user_input
         grounding = self._extract_grounding_terms(user_input, logic_data.get("intent", ""), logic_data.get("grounding") or {})
         logic_data["grounding"] = grounding
-        logic_data["dynamic_anchor"] = self._build_dynamic_context_anchor(logic_data, memory_data, current_psyche, user_input)
+        structured_surface = self._structured_surface_required()
+        logic_data["dynamic_anchor"] = (
+            {}
+            if structured_surface
+            else self._build_dynamic_context_anchor(logic_data, memory_data, current_psyche, user_input)
+        )
         speech_plan = logic_data.get("human_speech_plan") or self.build_human_speech_plan(logic_data, user_input, memory_data, current_psyche)
         logic_data = self._apply_human_speech_plan_to_logic(logic_data, speech_plan)
         if isinstance(original_logic_data, dict):
@@ -13265,6 +13345,8 @@ You are Ichinose Uruha.
                 "model_surface_plan_projection",
                 "model_surface_forbidden_projection",
                 "model_surface_forbidden_projection_shadow",
+                "persona_policy_provider_trace",
+                "persona_surface_runtime_trace",
             ):
                 if key in logic_data:
                     original_logic_data[key] = deepcopy(logic_data.get(key))
@@ -13272,8 +13354,54 @@ You are Ichinose Uruha.
         summary = logic_data.get("jp_summary", "ユーザーが何か話している。")
         core_message = logic_data.get("core_message_jp", "軽く返事する")
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
-        templated = self._template_reply(logic_data, user_input=user_input, current_psyche=current_psyche, memory_data=memory_data)
         intent = logic_data.get("intent", "chat")
+
+        if structured_surface:
+            runtime_trace = {
+                "schema": "uruha_persona_surface_runtime_v1",
+                "provider_id": self._surface_provider_id(),
+                "surface_mode": "structured_local_model_surface",
+                "legacy_fixed_surface_allowed": False,
+                "legacy_fixed_surface_access_count_before": self.legacy_fixed_surface_access_count,
+                "legacy_fixed_surface_used": False,
+                "status": "generating",
+            }
+            logic_data["persona_surface_runtime_trace"] = runtime_trace
+            model_candidates = self._generate_model_surface_candidates(
+                user_input=user_input,
+                logic_data=logic_data,
+                memory_data=memory_data,
+                current_psyche=current_psyche,
+                max_chars=max_chars,
+            )
+            if not model_candidates:
+                candidate_trace = logic_data.get("model_surface_candidate_trace") or {}
+                reason = candidate_trace.get("disabled_reason") or "all_model_candidates_rejected"
+                runtime_trace.update(
+                    {
+                        "status": "failed_closed",
+                        "failure_reason": reason,
+                        "legacy_fixed_surface_access_count_after": self.legacy_fixed_surface_access_count,
+                        "legacy_fixed_surface_used": self.legacy_fixed_surface_access_count
+                        > runtime_trace["legacy_fixed_surface_access_count_before"],
+                    }
+                )
+                publish_model_trace()
+                raise StructuredSurfaceUnavailableError(self._surface_provider_id(), reason)
+            reply = self._select_structured_model_reply(model_candidates, logic_data)
+            runtime_trace.update(
+                {
+                    "status": "model_reply_selected",
+                    "legacy_fixed_surface_access_count_after": self.legacy_fixed_surface_access_count,
+                    "legacy_fixed_surface_used": self.legacy_fixed_surface_access_count
+                    > runtime_trace["legacy_fixed_surface_access_count_before"],
+                }
+            )
+            self._remember_turn(summary, reply, intent)
+            publish_model_trace(reply)
+            return reply
+
+        templated = self._template_reply(logic_data, user_input=user_input, current_psyche=current_psyche, memory_data=memory_data)
 
         if templated:
             speech_variants = self._speech_plan_variants(templated, logic_data, user_input, memory_data=memory_data)

@@ -13,6 +13,8 @@ TARGET_PROVIDER = "structured_target_public_persona"
 NEUTRAL_PROVIDER = "structured_neutral_dialogue"
 NEUTRAL_TARGET_ID = "neutral_dialogue_control"
 PROVIDER_IDS = frozenset({LEGACY_PROVIDER, TARGET_PROVIDER, NEUTRAL_PROVIDER})
+LEGACY_SURFACE_MODE = "legacy_deterministic_surface"
+STRUCTURED_SURFACE_MODE = "structured_local_model_surface"
 PROTECTED_PLAN_FIELDS = (
     "core_message_jp",
     "required_marker_groups",
@@ -67,6 +69,20 @@ class PersonaPolicyProvider:
     def is_legacy(self):
         return self.provider_id == LEGACY_PROVIDER
 
+    @property
+    def surface_mode(self):
+        if self.is_legacy:
+            return LEGACY_SURFACE_MODE
+        return STRUCTURED_SURFACE_MODE
+
+    @property
+    def permits_legacy_fixed_surface(self):
+        return self.is_legacy
+
+    @property
+    def requires_structured_model_surface(self):
+        return not self.is_legacy
+
     def planner_goal_line(self):
         if self.provider_id == LEGACY_PROVIDER:
             return "- Final output should sound like Ichinose Uruha."
@@ -83,6 +99,8 @@ class PersonaPolicyProvider:
                 "provider_id": self.provider_id,
                 "status": "legacy_runtime_passthrough",
                 "target_id": public_contract.TARGET_ID,
+                "surface_mode": self.surface_mode,
+                "legacy_fixed_surface_allowed": self.permits_legacy_fixed_surface,
                 "source_observation_ids": [],
                 "planning_policy": {},
                 "expression_brief": public_contract.baseline_expression_brief(current_psyche),
@@ -135,6 +153,8 @@ class PersonaPolicyProvider:
                 if self.provider_id == TARGET_PROVIDER
                 else NEUTRAL_TARGET_ID
             ),
+            "surface_mode": self.surface_mode,
+            "legacy_fixed_surface_allowed": self.permits_legacy_fixed_surface,
             "source_observation_ids": source_ids,
             "planning_policy": planning_policy,
             "expression_brief": expression_brief,

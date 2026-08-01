@@ -1,0 +1,192 @@
+{
+  "schema": "uruha_persona_surface_provider_migration_construction_v1",
+  "experiment_id": "persona_surface_provider_migration_v1",
+  "status": "construction_passed",
+  "decision": "authorize_fresh_local_model_target_vs_neutral_surface_pilot_only",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/persona_surface_provider_migration_v1_preregistration.json",
+      "sha256": "98727117c1210f333aad711f5222e7b04956871194cf1fdaa9736f2ba2cc4a42"
+    },
+    "persona_policy_source": {
+      "path": "uruha_persona_policy.py",
+      "sha256": "743ac5f0e982cf18f7c08538b2679adb3440c29876b27e9d0dd833466ef63bb2"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "965811cc8d1a7bdbf46c8514a8fc70113167cd19dec2be7c59314cf9f90f4d7c"
+    }
+  },
+  "success_cases": [
+    {
+      "provider_id": "structured_target_public_persona",
+      "status": "model_reply_selected",
+      "selected_source": "structured_model",
+      "reply_sha256": "48304888ce45acd68f891541d89a605753a2398c8052fb9d773db2f127fc0c22",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_family_entry_count": 0,
+      "legacy_fixed_surface_used": false,
+      "contains_raw_reply": false
+    },
+    {
+      "provider_id": "structured_neutral_dialogue",
+      "status": "model_reply_selected",
+      "selected_source": "structured_model",
+      "reply_sha256": "41fa8fb709f7dfc59920d36f02ec61fb3f275d0444100a56678c65523ca39ad6",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_family_entry_count": 0,
+      "legacy_fixed_surface_used": false,
+      "contains_raw_reply": false
+    }
+  ],
+  "failed_closed_cases": [
+    {
+      "provider_id": "structured_target_public_persona",
+      "failure_mode": "model_not_loaded",
+      "typed_error_raised": true,
+      "error_reason": "model_not_loaded",
+      "expected_error_reason": "model_not_loaded",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    },
+    {
+      "provider_id": "structured_target_public_persona",
+      "failure_mode": "hard_boundary",
+      "typed_error_raised": true,
+      "error_reason": "hard_boundary_scene",
+      "expected_error_reason": "hard_boundary_scene",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    },
+    {
+      "provider_id": "structured_target_public_persona",
+      "failure_mode": "all_candidates_rejected",
+      "typed_error_raised": true,
+      "error_reason": "all_model_candidates_rejected",
+      "expected_error_reason": "all_model_candidates_rejected",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    },
+    {
+      "provider_id": "structured_neutral_dialogue",
+      "failure_mode": "model_not_loaded",
+      "typed_error_raised": true,
+      "error_reason": "model_not_loaded",
+      "expected_error_reason": "model_not_loaded",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    },
+    {
+      "provider_id": "structured_neutral_dialogue",
+      "failure_mode": "hard_boundary",
+      "typed_error_raised": true,
+      "error_reason": "hard_boundary_scene",
+      "expected_error_reason": "hard_boundary_scene",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    },
+    {
+      "provider_id": "structured_neutral_dialogue",
+      "failure_mode": "all_candidates_rejected",
+      "typed_error_raised": true,
+      "error_reason": "all_model_candidates_rejected",
+      "expected_error_reason": "all_model_candidates_rejected",
+      "status": "failed_closed",
+      "legacy_fixed_surface_access_count": 0,
+      "legacy_fixed_surface_used": false,
+      "reply_returned": false
+    }
+  ],
+  "legacy_runtime_pairs": [
+    {
+      "case_id": "legacy_runtime_pair_01",
+      "reply_equal": true,
+      "default_reply_sha256": "64dc770b60a8f68518740557e9bb5c1d7c20d0c1948fca069902e96902a3b6bd",
+      "explicit_reply_sha256": "64dc770b60a8f68518740557e9bb5c1d7c20d0c1948fca069902e96902a3b6bd"
+    },
+    {
+      "case_id": "legacy_runtime_pair_02",
+      "reply_equal": true,
+      "default_reply_sha256": "7e7958a739ff77353d9fd2a4e7981cc32c66bac987f150142e37741722390c9c",
+      "explicit_reply_sha256": "7e7958a739ff77353d9fd2a4e7981cc32c66bac987f150142e37741722390c9c"
+    },
+    {
+      "case_id": "legacy_runtime_pair_03",
+      "reply_equal": true,
+      "default_reply_sha256": "51e8d9ffafc3080ae4882d70d186ce82bd313037d7ad699b94e7a9f80b06cb41",
+      "explicit_reply_sha256": "51e8d9ffafc3080ae4882d70d186ce82bd313037d7ad699b94e7a9f80b06cb41"
+    }
+  ],
+  "direct_guard_check": {
+    "typed_error_raised": true,
+    "error_reason": "legacy_fixed_surface_access:template_reply",
+    "guard_access_count": 1
+  },
+  "compute_parity": {
+    "call_count_equal": true,
+    "model_decoding_and_tool_schedule_equal": true,
+    "prompt_tokens_available": true,
+    "prompt_token_schedule_equal": true,
+    "left_call_count": 2,
+    "right_call_count": 2,
+    "left_prompt_tokens": [
+      3,
+      3
+    ],
+    "right_prompt_tokens": [
+      3,
+      3
+    ],
+    "parity_pass": true
+  },
+  "counts": {
+    "structured_success_case_count": 2,
+    "structured_failed_closed_case_count": 6,
+    "structured_legacy_fixed_surface_access_count": 0,
+    "structured_reachable_fixed_family_entry_count": 0,
+    "legacy_runtime_pair_count": 3,
+    "legacy_runtime_mismatch_count": 0,
+    "actual_local_generation_call_count": 4,
+    "source_legacy_fixed_reply_literal_count": 367,
+    "holdout_content_review_count": 0,
+    "production_memory_write_count": 0,
+    "persona_score_count": 0
+  },
+  "checks": {
+    "structured_success_cases_selected_model": true,
+    "structured_failures_are_typed_and_closed": true,
+    "legacy_direct_access_guarded": true,
+    "compute_parity": true,
+    "compute_ledgers_contain_no_raw_text": true,
+    "success_output_hashes_differ": true,
+    "source_legacy_literals_remain_visible": true,
+    "all_preregistered_counts_match": true
+  },
+  "remaining_blockers": {
+    "source_legacy_fixed_reply_literal_count": 367,
+    "legacy_source_removed": false,
+    "full_persona_disabled_control_ready": false,
+    "fresh_actual_local_model_persona_evidence": false,
+    "reason": "The structured runtime no longer reaches legacy final-reply families, but shared speech planning, surface gates, and legacy source still contain target-shaped rules that must be audited before C2."
+  },
+  "authorizations": {
+    "fresh_local_model_target_vs_neutral_surface_pilot": true,
+    "formal_persona_similarity_evaluation": false,
+    "sealed_holdout_unsealing": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "production_default_enablement": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  }
+}
