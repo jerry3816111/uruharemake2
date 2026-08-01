@@ -5,6 +5,7 @@ from pathlib import Path
 import build_rightbrain_role_curriculum_training_pilot_v1 as construction
 import diagnose_rightbrain_adamw_clipping_effect_v1 as v1
 import diagnose_rightbrain_adamw_clipping_effect_v2 as v2
+import recover_rightbrain_adamw_clipping_effect_v2 as recovery
 
 
 ROOT = Path(__file__).resolve().parent
@@ -86,6 +87,26 @@ class RightBrainAdamWClippingEffectV2Test(unittest.TestCase):
             not v2.DEFAULT_RESULT_JSON.exists() and not v2.DEFAULT_RESULT_MD.exists(),
         )
 
+    def test_recovery_source_has_no_model_or_backward_path(self):
+        tree = ast.parse(Path(recovery.__file__).read_text(encoding="utf-8"))
+        called = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            if isinstance(node.func, ast.Name):
+                called.add(node.func.id)
+            elif isinstance(node.func, ast.Attribute):
+                called.add(node.func.attr)
+        for forbidden in (
+            "build_model",
+            "backward",
+            "AdamW",
+            "step",
+            "generate",
+            "save_pretrained",
+        ):
+            self.assertNotIn(forbidden, called)
+
     def test_result_lock_when_available(self):
         if not self.result_lock_path.exists():
             self.skipTest("AdamW v2 result has not been executed yet")
@@ -98,6 +119,10 @@ class RightBrainAdamWClippingEffectV2Test(unittest.TestCase):
         self.assertTrue(result["decision"]["valid"])
         self.assertTrue(result["decision"]["material_effect"])
         self.assertTrue(result["parameter_integrity"]["unchanged"])
+        formal = v2.load_json(recovery.FORMAL_RESULT)
+        self.assertTrue(formal["formal_decision"]["valid"])
+        self.assertTrue(formal["formal_decision"]["hypothesis_confirmed"])
+        self.assertTrue(formal["formal_decision"]["material_effect"])
         for forbidden in (
             "model_training",
             "training_parameter_change",
