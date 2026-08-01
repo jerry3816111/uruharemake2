@@ -20,7 +20,10 @@ class RightBrainMlxSingleStepReproV1Test(unittest.TestCase):
 
     def test_single_step_is_the_only_localization_change(self):
         report = construction.build_report()
-        self.assertTrue(report["decision"]["passed"], report["checks"])
+        invariant_checks = {
+            key: value for key, value in report["checks"].items() if key != "outputs_absent"
+        }
+        self.assertTrue(all(invariant_checks.values()), invariant_checks)
         self.assertTrue(report["checks"]["single_first_row_only"])
         self.assertTrue(report["checks"]["no_gradient_accumulation"])
         self.assertTrue(report["checks"]["only_localization_fields_changed"])
@@ -115,6 +118,50 @@ class RightBrainMlxSingleStepReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["model_training_in_this_experiment"])
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
+
+    def test_result_localizes_drift_to_single_backward(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("MLX single-step aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertEqual(
+            result["decision"]["outcome"], "single_step_backward_is_already_unstable"
+        )
+        self.assertEqual(
+            result["decision"]["localized_next_step"],
+            "isolate_checkpointed_backward_kernel_or_dtype",
+        )
+        self.assertFalse(result["decision"]["authorize_training_now"])
+        checks = result["checks"]
+        self.assertTrue(checks["all_three_repetitions_complete"])
+        self.assertTrue(checks["loss_vectors_exact_across_repetitions"])
+        self.assertTrue(checks["all_losses_and_gradients_finite"])
+        self.assertTrue(checks["trainable_parameters_unchanged"])
+        self.assertTrue(checks["peak_memory_within_limit"])
+        self.assertFalse(checks["gradient_norm_coefficient_of_variation"])
+        self.assertFalse(checks["gradient_norm_max_to_min_ratio"])
+        measurements = result["measurements"]
+        self.assertGreater(measurements["gradient_norm_max_to_min_ratio"], 100000)
+        self.assertEqual(measurements["gradient_hashes"][1], measurements["gradient_hashes"][2])
+        self.assertNotEqual(measurements["gradient_hashes"][0], measurements["gradient_hashes"][1])
+
+        repeats = [
+            construction.load_json(
+                ROOT / f"{self.preregistration['result_paths']['repeat_prefix']}{repeat}.json"
+            )
+            for repeat in (1, 2, 3)
+        ]
+        self.assertEqual(repeats[1]["gradient"], repeats[2]["gradient"])
+        first_profile = repeats[0]["gradient"]["profile"]
+        stable_profile = repeats[1]["gradient"]["profile"]
+        self.assertEqual(set(first_profile), set(stable_profile))
+        self.assertTrue(
+            all(
+                first_profile[name] / stable_profile[name] > 10000
+                for name in first_profile
+            )
+        )
 
 
 if __name__ == "__main__":
