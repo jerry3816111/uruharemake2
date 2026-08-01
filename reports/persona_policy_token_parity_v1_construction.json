@@ -1,0 +1,184 @@
+{
+  "schema": "uruha_persona_policy_token_parity_construction_v1",
+  "experiment_id": "persona_policy_token_parity_v1",
+  "status": "construction_passed",
+  "decision": "authorize_fresh_local_model_target_vs_neutral_surface_pilot_only",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/persona_policy_token_parity_v1_preregistration.json",
+      "sha256": "c57a3eeed2d6b239937dc6ff42b0ace0fce2e40aa5265a635237ca97d9024492"
+    },
+    "compute_ledger_source": {
+      "path": "uruha_compute_ledger.py",
+      "sha256": "bee3402c4710f9cea4aacbcb7179c1460847902dc8418a61097046690bca3395"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "a4bb54d5fd4717c8d04b6cb4c6d95e57f4e8425820ca9f411292051305244ba4"
+    },
+    "tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+    "tokenizer_local_files_only": true
+  },
+  "paired_contexts": [
+    {
+      "context": "informal_public_self_introduction",
+      "target_active_prompt_tokens": 590,
+      "neutral_active_prompt_tokens": 589,
+      "active_token_delta": 1,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    },
+    {
+      "context": "minor_delay_then_positive_promotion",
+      "target_active_prompt_tokens": 590,
+      "neutral_active_prompt_tokens": 589,
+      "active_token_delta": 1,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    },
+    {
+      "context": "fatigue_update_with_near_term_plan",
+      "target_active_prompt_tokens": 590,
+      "neutral_active_prompt_tokens": 590,
+      "active_token_delta": 0,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    },
+    {
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "target_active_prompt_tokens": 585,
+      "neutral_active_prompt_tokens": 591,
+      "active_token_delta": -6,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    },
+    {
+      "context": "functional_stream_start_notification",
+      "target_active_prompt_tokens": 576,
+      "neutral_active_prompt_tokens": 587,
+      "active_token_delta": -11,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    },
+    {
+      "context": "unsupported_synthetic_control",
+      "target_active_prompt_tokens": 462,
+      "neutral_active_prompt_tokens": 464,
+      "active_token_delta": -2,
+      "target_allocated_prompt_tokens": 640,
+      "neutral_allocated_prompt_tokens": 640,
+      "both_active_sequences_preserved": true,
+      "both_prefixes_attention_masked": true
+    }
+  ],
+  "compute_parity": {
+    "call_count_equal": true,
+    "model_decoding_and_tool_schedule_equal": true,
+    "prompt_tokens_available": true,
+    "prompt_token_schedule_equal": true,
+    "left_call_count": 6,
+    "right_call_count": 6,
+    "left_prompt_tokens": [
+      640,
+      640,
+      640,
+      640,
+      640,
+      640
+    ],
+    "right_prompt_tokens": [
+      640,
+      640,
+      640,
+      640,
+      640,
+      640
+    ],
+    "active_prompt_tokens_available": true,
+    "active_prompt_token_schedule_equal": false,
+    "left_active_prompt_tokens": [
+      590,
+      590,
+      590,
+      585,
+      576,
+      462
+    ],
+    "right_active_prompt_tokens": [
+      589,
+      589,
+      590,
+      591,
+      587,
+      464
+    ],
+    "parity_pass": true
+  },
+  "budget_exceeded": {
+    "typed_error_raised": true,
+    "error_reason": "prompt_token_budget_exceeded",
+    "allocation_status": "budget_exceeded",
+    "active_prompt_tokens": 1923,
+    "configured_budget_tokens": 640,
+    "truncation_used": false
+  },
+  "legacy_checks": [
+    {
+      "condition": "default",
+      "raw_prompt_tokens": 474,
+      "allocated_prompt_tokens": 474,
+      "mode": "unmodified",
+      "behavior_changed": false
+    },
+    {
+      "condition": "explicit_legacy",
+      "raw_prompt_tokens": 474,
+      "allocated_prompt_tokens": 474,
+      "mode": "unmodified",
+      "behavior_changed": false
+    }
+  ],
+  "counts": {
+    "context_pair_count": 6,
+    "allocated_prompt_tokens_each": 640,
+    "minimum_masked_padding_tokens": 49,
+    "legacy_prompt_token_behavior_change_count": 0,
+    "synthetic_append_generate_call_count": 12,
+    "actual_model_weight_load_count": 0,
+    "actual_model_generation_call_count": 0,
+    "holdout_content_review_count": 0,
+    "production_memory_write_count": 0,
+    "persona_score_count": 0
+  },
+  "checks": {
+    "active_prompt_tokens_preserved": true,
+    "padding_attention_mask_zero": true,
+    "allocated_prompt_token_schedule_equal": true,
+    "model_decoding_and_tool_schedule_equal": true,
+    "compute_parity": true,
+    "active_token_difference_remains_visible": true,
+    "budget_exceeded_fails_closed": true,
+    "ledger_contains_no_raw_text": true,
+    "all_preregistered_counts_match": true
+  },
+  "authorizations": {
+    "fresh_local_model_target_vs_neutral_surface_pilot": true,
+    "formal_persona_similarity_evaluation": false,
+    "sealed_holdout_unsealing": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "production_default_enablement": false,
+    "public_persona_fidelity_claim": false
+  },
+  "evidence_boundary": "Actual cached tokenizer and tensor allocation were exercised, but no language-model weights were loaded or run and no persona output was scored."
+}

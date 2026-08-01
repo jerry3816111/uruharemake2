@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_persona_policy_token_parity_result_lock_v1",
+  "experiment_id": "persona_policy_token_parity_v1",
+  "formal_git_head": "6bb90e86a208690bee5e35cd369826e81d4b511c",
+  "construction_passed": true,
+  "decision": "authorize_fresh_local_model_target_vs_neutral_surface_pilot_only",
+  "frozen_artifacts": {
+    "preregistration": {
+      "path": "configs/persona_policy_token_parity_v1_preregistration.json",
+      "sha256": "c57a3eeed2d6b239937dc6ff42b0ace0fce2e40aa5265a635237ca97d9024492"
+    },
+    "construction_harness": {
+      "path": "persona_policy_token_parity_v1.py",
+      "sha256": "09b58e6857148dfd5773a1116d0676a8b0e77a9495e3ddc43320505583c54a0a"
+    },
+    "construction_tests": {
+      "path": "test_persona_policy_token_parity_v1.py",
+      "sha256": "aad9ee2817cf7fb835ddcb1454c26108ddf6dbbb03c96cb7d07d2d755adcf358"
+    },
+    "compute_ledger_source": {
+      "path": "uruha_compute_ledger.py",
+      "sha256": "bee3402c4710f9cea4aacbcb7179c1460847902dc8418a61097046690bca3395"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "a4bb54d5fd4717c8d04b6cb4c6d95e57f4e8425820ca9f411292051305244ba4"
+    },
+    "construction_report_json": {
+      "path": "reports/persona_policy_token_parity_v1_construction.json",
+      "sha256": "f3bac2a331e812eea7fcd3c8e57ee7bb0650a110518bca55308a458aed06f3b3"
+    },
+    "construction_report_markdown": {
+      "path": "reports/persona_policy_token_parity_v1_construction.md",
+      "sha256": "b777f9e008c3c525d53acae0fb405e7ad64da71f2b9786e6d7ef1478b18e0a33"
+    }
+  },
+  "formal_result": {
+    "focused_test_count": 93,
+    "focused_test_pass_count": 93,
+    "expanded_behavior_test_count": 250,
+    "expanded_behavior_test_pass_count": 250,
+    "known_stale_historical_hash_test_count": 1,
+    "context_pair_count": 6,
+    "allocated_prompt_tokens_each": 640,
+    "minimum_masked_padding_tokens": 49,
+    "active_prompt_sequence_preserved_count": 12,
+    "attention_masked_prefix_count": 12,
+    "legacy_prompt_token_behavior_change_count": 0,
+    "synthetic_append_generate_call_count": 12,
+    "actual_model_weight_load_count": 0,
+    "actual_model_generation_call_count": 0,
+    "holdout_content_review_count": 0,
+    "production_memory_write_count": 0,
+    "persona_score_count": 0
+  },
+  "known_test_limitation": {
+    "test": "test_rightbrain_forbidden_projection_shadow_v90.RightBrainForbiddenProjectionShadowV90Tests.test_harness_lock_hashes_match",
+    "classification": "historical_source_hash_lock_bound_to_prechange_brain_source",
+    "behavioral_regression": false,
+    "replacement_evidence": "All five V90 behavioral and evidence-boundary tests passed against the changed source; the historical hash lock was not rewritten."
+  },
+  "evidence_boundary": {
+    "proves": "Structured target and neutral prompts can use one equal allocated prompt tensor length while preserving and reporting their distinct active token sequences.",
+    "does_not_prove": "Target persona output is more similar, natural, correct, or production-ready.",
+    "active_prompt_length_is_equal": false,
+    "allocated_prompt_length_is_equal": true
+  },
+  "authorizations": {
+    "merge_persona_policy_token_parity_v1": true,
+    "fresh_local_model_target_vs_neutral_surface_pilot": true,
+    "formal_persona_similarity_evaluation": false,
+    "sealed_holdout_unsealing": false,
+    "human_blind_rating": false,
+    "model_training": false,
+    "production_default_enablement": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  }
+}
