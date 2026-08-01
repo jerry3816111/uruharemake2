@@ -1,0 +1,120 @@
+{
+  "schema": "uruha_rightbrain_training_signal_telemetry_preregistration_v1",
+  "experiment_id": "rightbrain_training_signal_telemetry_v1",
+  "status": "frozen_before_any_telemetry_backward_pass",
+  "problem": {
+    "prior_result": "reject_role_curriculum_promotion",
+    "observed_treatment_maximum_preclip_gradient_norm": 942987.3125,
+    "configured_maximum_gradient_norm": 0.3,
+    "observed_treatment_relative_lora_l2_change_vs_v10": 0.00018967025560096256,
+    "uncertainty": "The prior run retained only the maximum gradient norm. It cannot show whether the first optimizer update was already severely clipped or which trainable tensors dominated the norm."
+  },
+  "falsifiable_hypothesis": {
+    "statement": "At the first exact eight-row accumulated treatment batch, the finite preclip total gradient norm is at least 100 times the configured 0.3 maximum, while all trainable weights remain byte-identical because no optimizer step occurs.",
+    "severe_clipping_ratio_minimum": 100.0,
+    "configured_maximum_gradient_norm": 0.3,
+    "confirm_if": [
+      "all eight losses and all gradients are finite",
+      "total_gradient_norm / 0.3 >= 100",
+      "theoretical_clip_coefficient <= 0.01",
+      "trainable parameter SHA-256 is identical before and after backward"
+    ],
+    "reject_if": [
+      "finite total_gradient_norm / 0.3 < 100",
+      "or the theoretical clip coefficient is greater than 0.01"
+    ],
+    "invalid_if": [
+      "any frozen input hash changes",
+      "the exact eight-row order changes",
+      "any loss or gradient is non-finite",
+      "any trainable parameter value changes",
+      "an optimizer, clipping operation, generation, or model save is invoked"
+    ]
+  },
+  "frozen_inputs": [
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_result_lock.json",
+      "sha256": "45674e44aea82693e34d0f9c39e61c026375075d6bd1d7c7223c4e37fbc98a77"
+    },
+    {
+      "path": "reports/rightbrain_role_curriculum_training_pilot_v1_result.json",
+      "sha256": "bcaf96ea88493059b51ec7a827dff0de544528b22e18d8fc582cb48217569083"
+    },
+    {
+      "path": "configs/rightbrain_role_curriculum_training_pilot_v1_preregistration.json",
+      "sha256": "96b2f42f33e07a187aef959e2b754242d648f7d4ce5407d3165f4009c6cde5eb"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "run_rightbrain_role_curriculum_training_pilot_v1.py",
+      "sha256": "e57e46997b710e303ff05db9561385321245c9d5db7fbbba342e211f6147ba97"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_config.json",
+      "sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+      "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  ],
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "condition": "policy_aligned_treatment",
+    "random_seed": 20260801,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_updates": 0,
+    "maximum_sequence_length": 800,
+    "fixed_allocated_sequence_length": 800,
+    "dtype": "torch.bfloat16 base weights with FP32 trainable PEFT parameters",
+    "row_indices": [30, 60, 39, 74, 24, 2, 76, 37],
+    "row_ids": [
+      "rb_role_specialization_v1_0031",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0040",
+      "rb_role_specialization_v1_0075",
+      "rb_role_specialization_v1_0025",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0077",
+      "rb_role_specialization_v1_0038"
+    ]
+  },
+  "telemetry": {
+    "loss_per_micro_step": true,
+    "official_unmodified_total_gradient_norm": true,
+    "theoretical_clip_coefficient": true,
+    "gradient_rms_over_all_trainable_elements": true,
+    "finite_and_missing_gradient_counts": true,
+    "top_parameter_gradient_norms": 20,
+    "gradient_norm_by_projection_and_lora_side": true,
+    "trainable_parameter_sha256_before_and_after": true,
+    "process_latency_and_peak_rss": true
+  },
+  "official_semantics": {
+    "pytorch_clip_grad_norm": "https://docs.pytorch.org/docs/2.13/generated/torch.nn.utils.clip_grad_norm_.html",
+    "pytorch_interpretation": "The returned total norm is computed as if all individual parameter gradients were concatenated; clipping mutates gradients in place.",
+    "peft_model": "https://huggingface.co/docs/peft/package_reference/peft_model",
+    "peft_interpretation": "Trainable adapter parameters are expected to use full precision for training stability."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping_call": false,
+    "model_or_adapter_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "production_memory_access": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_one_training_signal_scale_repair_pilot_only"
+  },
+  "result_paths": {
+    "json": "reports/rightbrain_training_signal_telemetry_v1_result.json",
+    "markdown": "reports/rightbrain_training_signal_telemetry_v1_result.md"
+  }
+}
