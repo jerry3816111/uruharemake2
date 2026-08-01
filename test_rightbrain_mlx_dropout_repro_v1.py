@@ -91,6 +91,41 @@ class RightBrainMlxDropoutReproV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
 
+    def test_observed_result_rejects_dropout_as_sufficient_cause(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("MLX dropout-zero aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertFalse(result["decision"]["mechanism_supported"])
+        self.assertFalse(result["decision"]["authorize_training_now"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "mlx_dropout_zero_does_not_restore_gradient_reproducibility",
+        )
+        measurements = result["measurements"]
+        checks = result["checks"]
+        self.assertTrue(checks["all_three_repetitions_complete"])
+        self.assertTrue(checks["all_losses_and_gradients_finite"])
+        self.assertTrue(checks["loss_vectors_exact_across_repetitions"])
+        self.assertFalse(checks["gradient_norm_coefficient_of_variation"])
+        self.assertFalse(checks["gradient_norm_max_to_min_ratio"])
+        self.assertFalse(checks["minimum_pairwise_group_profile_cosine"])
+        self.assertFalse(measurements["gradient_hashes_identical"])
+        thresholds = self.preregistration["falsifiable_hypothesis"]["confirm_if_all"]
+        self.assertGreater(
+            measurements["gradient_norm_coefficient_of_variation"],
+            thresholds["gradient_norm_coefficient_of_variation_maximum"],
+        )
+        self.assertGreater(
+            measurements["gradient_norm_max_to_min_ratio"],
+            thresholds["gradient_norm_max_to_min_ratio_maximum"],
+        )
+        self.assertLess(
+            measurements["minimum_pairwise_group_profile_cosine"],
+            thresholds["minimum_pairwise_group_profile_cosine"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
