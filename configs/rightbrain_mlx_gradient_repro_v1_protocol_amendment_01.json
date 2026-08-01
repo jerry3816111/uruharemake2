@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_rightbrain_mlx_gradient_repro_protocol_amendment_v1",
+  "experiment_id": "rightbrain_mlx_gradient_repro_v1",
+  "amendment_id": "tokenizer_wrapper_public_encode_fix_01",
+  "status": "frozen_before_any_mlx_backward_pass",
+  "trigger": {
+    "path": "reports/rightbrain_mlx_gradient_repro_v1_preflight_failure_01.json",
+    "sha256": "8ca622a145e9e8fe23e454e1d8f07bd6b7f2eb6655abdd19ed569c277213a106",
+    "error_type": "TypeError",
+    "message": "'TokenizerWrapper' object is not callable",
+    "stage": "exact_batch_tokenization_before_parameter_hash_checkpoint_or_backward",
+    "backward_passes_completed": 0,
+    "optimizer_steps": 0
+  },
+  "authorized_change": {
+    "scope": "tokenizer_api_compatibility_only",
+    "before": "tokenizer(text, add_special_tokens=False).input_ids",
+    "after": "tokenizer.encode(text, add_special_tokens=False)",
+    "reason": "MLX-LM 0.31.3 returns TokenizerWrapper, which forwards the public encode method but is not itself callable.",
+    "expected_token_and_label_sha256_unchanged": "8095c1cb234d713f358b389e58a85dacaec9c3a9c7bf78d960862a79195e136a"
+  },
+  "unchanged": [
+    "research_question",
+    "model_and_adapter",
+    "adapter_mapping",
+    "dataset_and_row_order",
+    "token_and_label_hash",
+    "dropout_and_random_seed",
+    "gradient_checkpointing",
+    "three_repetition_protocol",
+    "success_and_failure_thresholds",
+    "zero_update_boundaries"
+  ],
+  "authorization": {
+    "replace_prior_execution_lock": true,
+    "rerun_repeat_1_from_clean_process": true,
+    "model_training": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false
+  }
+}

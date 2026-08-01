@@ -1,0 +1,108 @@
+{
+  "schema": "uruha_rightbrain_mlx_gradient_repro_result_v1",
+  "experiment_id": "rightbrain_mlx_gradient_repro_v1",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "16aff1c990fdd0fe0a0d751e67ff6a1a5027bfda82b77e400e7a2a852c63e184"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_execution_lock.json",
+      "scope": "repository",
+      "sha256": "398bf7f8a4138cee13c6caa70a5c4e7cb4e42062afe2c9aee49b35a2e681224c"
+    },
+    "repeats": [
+      {
+        "path": "reports/rightbrain_mlx_gradient_repro_v1_repeat_1.json",
+        "scope": "repository",
+        "sha256": "bad4035dcfe376c03f2caceb62aae8e07b2540158b6f78d39f1fe3ca25b62fea"
+      },
+      {
+        "path": "reports/rightbrain_mlx_gradient_repro_v1_repeat_2.json",
+        "scope": "repository",
+        "sha256": "5a5c3c5c9946c1c72ee328a447830b645a7f6f8541c5aa2a60c993bb469c885a"
+      },
+      {
+        "path": "reports/rightbrain_mlx_gradient_repro_v1_repeat_3.json",
+        "scope": "repository",
+        "sha256": "f0ed220ad99e075047cdc8e2476060ace63f5d03c673aeb4f13977cce09dbb54"
+      }
+    ]
+  },
+  "measurements": {
+    "gradient_norms": [
+      635490.4399761545,
+      373843.35308721685,
+      755238.3011381556
+    ],
+    "mean_gradient_norm": 588190.6980671757,
+    "gradient_norm_coefficient_of_variation": 0.27075489235968603,
+    "gradient_norm_max_to_min_ratio": 2.0201998909472656,
+    "pairwise_group_profile_cosines": [
+      0.999915060824029,
+      0.9999436048280936,
+      0.9999343064420465
+    ],
+    "minimum_pairwise_group_profile_cosine": 0.999915060824029,
+    "gradient_hashes": [
+      "95f036bd865a2cb50b6ec183aa4528bc56c25b0163c3b631cfd2d6c344307465",
+      "90f41b4983ae5754208c33bcfbec616c43f7bdbb09ea27e4baf8b8f890f25d47",
+      "a95ade129f476e637ed49eed5022952abaeb9037a74a4a9c5946ef7998bbd5d8"
+    ],
+    "gradient_hashes_identical": false,
+    "losses": [
+      3.82421875,
+      0.8238636255264282,
+      2.121875047683716,
+      5.418749809265137,
+      2.8515625,
+      2.7335526943206787,
+      2.5859375,
+      3.1619317531585693
+    ],
+    "peak_memory_bytes": [
+      17736909042,
+      17736909042,
+      17736909042
+    ],
+    "duration_seconds": [
+      91.811,
+      89.691,
+      89.564
+    ]
+  },
+  "checks": {
+    "all_three_repetitions_complete": true,
+    "adapter_conversion_exact_each": true,
+    "token_and_label_hash_exact_each": true,
+    "loss_vectors_exact_across_repetitions": true,
+    "gradient_norm_coefficient_of_variation": false,
+    "gradient_norm_max_to_min_ratio": false,
+    "minimum_pairwise_group_profile_cosine": true,
+    "all_losses_and_gradients_finite": true,
+    "trainable_parameters_unchanged": true,
+    "peak_memory_within_limit": true
+  },
+  "decision": {
+    "passed": false,
+    "outcome": "mlx_does_not_provide_a_usable_reproducible_gradient_path",
+    "authorized_next_step": "isolate_mlx_conversion_objective_shape_or_memory_failure",
+    "authorize_training_now": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_one_small_matched_mlx_training_pilot_only"
+  }
+}

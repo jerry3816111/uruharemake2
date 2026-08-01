@@ -1,0 +1,165 @@
+{
+  "schema": "uruha_rightbrain_mlx_gradient_repro_preregistration_v1",
+  "experiment_id": "rightbrain_mlx_gradient_repro_v1",
+  "status": "frozen_before_any_mlx_backward_pass",
+  "research_question": "Does changing only the local training backend from PyTorch MPS to Apple MLX produce finite and reproducible checkpointed gradients for the exact v10 RightBrain adapter and exact first eight-row accumulation batch?",
+  "evidence_basis": {
+    "pytorch_bfloat16_checkpointed_reproducible": false,
+    "pytorch_float16_checkpointed_successful_repetitions": 1,
+    "pytorch_float16_checkpointed_total_repetitions": 3,
+    "pytorch_checkpointing_off_within_30_gib": false,
+    "lossless_fixed_token_reduction": 0.035,
+    "candidate_change": "PyTorch MPS backend -> Apple MLX backend only",
+    "official_sources": [
+      "https://github.com/ml-explore/mlx",
+      "https://github.com/ml-explore/mlx-lm",
+      "https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/LORA.md"
+    ]
+  },
+  "frozen_bindings": [
+    {
+      "path": "configs/rightbrain_mlx_gradient_repro_v1_environment.txt",
+      "sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+    },
+    {
+      "path": "configs/rightbrain_gradient_float16_repro_v1_result_lock.json",
+      "sha256": "1a3e4635db8e7bda101fff602b04ec1e87176af147f25178bba9f6bd358c399b"
+    },
+    {
+      "path": "reports/rightbrain_gradient_float16_repro_v1_result.json",
+      "sha256": "4686aafcbeabc69e7559156ca12c9b90471006399cad953673d66ab8c797de5f"
+    },
+    {
+      "path": "reports/rightbrain_token_contract_audit_v1_result.json",
+      "sha256": "6fe7f85a2497feebb80a46094d97663ba9dc6f71177f87928005cb391a6fd2cc"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_config.json",
+      "sha256": "5c6a2414311a7df30689731ebfa6b9db18c479b52694aa04612b0e33b4039a6a"
+    },
+    {
+      "path": "uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1/adapter_model.safetensors",
+      "sha256": "e48ec97c3e7b6c1fd3f348a1042fa238cd16e0df50345e4b17dc5dd662071937"
+    }
+  ],
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "hardware": {
+      "chip": "Apple M2 Pro",
+      "physical_memory_bytes": 34359738368,
+      "mlx_max_recommended_working_set_size_bytes": 22906503168
+    }
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "snapshot_commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+    "metadata_sha256": {
+      "config.json": "7463bb0ea78315365e6c6b74de4e73bbcc8359dfb0c5a737584e077d42c0b03c",
+      "model.safetensors.index.json": "624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583"
+    },
+    "base_parameter_count": 7615616512,
+    "base_dtype": "mlx.core.bfloat16"
+  },
+  "adapter_conversion_contract": {
+    "source_format": "peft_lora_safetensors",
+    "target_format": "mlx_lm_lora_in_memory",
+    "rank": 32,
+    "alpha": 24,
+    "scale": 0.75,
+    "dropout": 0.08,
+    "converted_layers": 28,
+    "source_tensor_count": 392,
+    "target_tensor_count": 392,
+    "trainable_parameter_count": 80740352,
+    "mapping": "PEFT lora_A.weight transpose -> MLX lora_a; PEFT lora_B.weight transpose -> MLX lora_b",
+    "canonical_mapped_sha256": "2464cdaa110cf90f919f692e8275f4a1f8935131e9b580258b44d7f081f1c953",
+    "require_exact_value_equality": true
+  },
+  "exact_probe": {
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "random_seed": 20260801,
+    "isolated_process_repetitions": 3,
+    "gradient_accumulation": 8,
+    "micro_steps": 8,
+    "optimizer_steps": 0,
+    "row_indices": [63, 50, 60, 77, 2, 59, 78, 36],
+    "row_ids": [
+      "rb_role_specialization_v1_0064",
+      "rb_role_specialization_v1_0051",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0060",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0037"
+    ],
+    "fixed_allocated_sequence_length": 800,
+    "canonical_token_and_label_sha256": "8095c1cb234d713f358b389e58a85dacaec9c3a9c7bf78d960862a79195e136a",
+    "base_activation_dtype": "mlx.core.bfloat16",
+    "trainable_adapter_dtype": "mlx.core.float32",
+    "gradient_checkpointing": true,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 22906503168
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "all_three_repetitions_complete": true,
+      "adapter_conversion_exact_each": true,
+      "token_and_label_hash_exact_each": true,
+      "loss_vectors_exact_across_repetitions": true,
+      "gradient_norm_coefficient_of_variation_maximum": 0.001,
+      "gradient_norm_max_to_min_ratio_maximum": 1.001,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "all_losses_and_gradients_finite": true,
+      "trainable_parameters_unchanged": true,
+      "peak_memory_within_limit": true
+    },
+    "reject_if_any": {
+      "any_adapter_mapping_mismatch": true,
+      "any_token_hash_mismatch": true,
+      "gradient_norm_max_to_min_ratio_minimum": 1.01,
+      "minimum_pairwise_group_profile_cosine_below": 0.999,
+      "any_nonfinite_loss_or_gradient": true,
+      "any_trainable_parameter_change": true,
+      "any_out_of_memory_failure": true
+    },
+    "pass_interpretation": "Authorize preregistration of one small matched MLX training pilot; do not authorize full training or production.",
+    "failure_interpretation": "Do not migrate training to MLX under this contract; isolate the failed conversion, objective, shape, or memory condition before another backend experiment."
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_preregistration_of_one_small_matched_mlx_training_pilot_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_mlx_gradient_repro_v1_repeat_",
+    "aggregate_json": "reports/rightbrain_mlx_gradient_repro_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_mlx_gradient_repro_v1_result.md",
+    "result_lock": "configs/rightbrain_mlx_gradient_repro_v1_result_lock.json"
+  }
+}
