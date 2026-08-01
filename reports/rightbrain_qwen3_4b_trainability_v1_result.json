@@ -1,0 +1,101 @@
+{
+  "schema": "uruha_rightbrain_qwen3_4b_trainability_result_v1",
+  "experiment_id": "rightbrain_qwen3_4b_trainability_v1",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_qwen3_4b_trainability_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "b85804b1ee68787b9abac5de564b7a846492c10a91c9c02ad410348f122f0c28"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_qwen3_4b_trainability_v1_execution_lock.json",
+      "scope": "repository",
+      "sha256": "8f3239d8e76b9ecafc719732c443fdd598296f4df9ec7c8bef757fab01d1ecfd"
+    },
+    "repeats": [
+      {
+        "path": "reports/rightbrain_qwen3_4b_trainability_v1_repeat_1.json",
+        "scope": "repository",
+        "sha256": "d00e2f28fc372c9a59f9c0a064f69de2ccc21a33e51aba502e1d9fcf4fe79693"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_4b_trainability_v1_repeat_2.json",
+        "scope": "repository",
+        "sha256": "92d431ee02c6584f96bc019efeda3880bec949f2abddd09e9b7659461d9ea755"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_4b_trainability_v1_repeat_3.json",
+        "scope": "repository",
+        "sha256": "c9b0ef1fd3c5ef898eef2b04eddb7128ff4820a435c0be0b3c9f520be9f79961"
+      }
+    ]
+  },
+  "measurements": {
+    "gradient_norms": [
+      9.310001914001282,
+      1.6758641767319769,
+      10.809105994737667
+    ],
+    "mean_gradient_norm": 7.264990695156975,
+    "gradient_norm_coefficient_of_variation": 0.5504776351360102,
+    "gradient_norm_max_to_min_ratio": 6.449869950568424,
+    "pairwise_group_profile_cosines": [
+      0.9982222384195926,
+      0.999997857004034,
+      0.998144678912849
+    ],
+    "minimum_pairwise_group_profile_cosine": 0.998144678912849,
+    "gradient_hashes": [
+      "051387c60a896dd68e312d665c538d1b4fb7103d97c182982a85186772833a21",
+      "ae1b4e87421823a7edc46bc380ced4a6e7a1bb3bfff16afe436e4071b5dde45d",
+      "d174ed6cbec4a71e175a384c8c8f8e26a700b40108bb746550f4cb740e01f1fe"
+    ],
+    "gradient_hashes_identical": false,
+    "losses": [
+      6.9609375
+    ],
+    "peak_memory_bytes": [
+      17210621038,
+      17288380014,
+      17272831598
+    ],
+    "duration_seconds": [
+      6.578,
+      6.467,
+      6.65
+    ]
+  },
+  "checks": {
+    "all_three_repetitions_complete": true,
+    "model_and_adapter_contract_exact_each": true,
+    "token_and_label_hash_exact_each": true,
+    "loss_vectors_exact_across_repetitions": true,
+    "gradient_norm_coefficient_of_variation": false,
+    "gradient_norm_max_to_min_ratio": false,
+    "minimum_pairwise_group_profile_cosine": false,
+    "all_losses_and_gradients_finite": true,
+    "trainable_parameters_unchanged": true,
+    "peak_memory_within_limit": true
+  },
+  "decision": {
+    "passed": false,
+    "outcome": "qwen3_4b_candidate_trainability_gate_failed",
+    "authorized_next_step": "reject_qwen3_4b_persona_training_without_new_evidence",
+    "authorize_training_now": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "boundaries": {
+    "optimizer_instantiation": false,
+    "optimizer_step": false,
+    "gradient_clipping": false,
+    "parameter_mutation": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "target_person_utterances": false,
+    "benchmark_items": false,
+    "maximum_positive_outcome": "authorize_one_small_matched_qwen3_4b_rightbrain_sft_pilot_preregistration_only"
+  }
+}

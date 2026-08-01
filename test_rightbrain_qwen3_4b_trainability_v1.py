@@ -114,6 +114,64 @@ class RightBrainQwen3_4BTrainabilityV1Test(unittest.TestCase):
         self.assertFalse(lock["authorization"]["production_runtime_change"])
         self.assertFalse(lock["authorization"]["persona_similarity_claim"])
 
+    def test_result_rejects_persona_training_despite_finite_local_execution(self):
+        result_path = ROOT / self.preregistration["result_paths"]["aggregate_json"]
+        if not result_path.exists():
+            self.skipTest("Qwen3-4B aggregate not available")
+        result = construction.load_json(result_path)
+        self.assertFalse(result["decision"]["passed"])
+        self.assertFalse(result["decision"]["authorize_training_now"])
+        self.assertEqual(
+            result["decision"]["outcome"],
+            "qwen3_4b_candidate_trainability_gate_failed",
+        )
+        self.assertEqual(
+            result["decision"]["authorized_next_step"],
+            "reject_qwen3_4b_persona_training_without_new_evidence",
+        )
+        checks = result["checks"]
+        for key in (
+            "all_three_repetitions_complete",
+            "model_and_adapter_contract_exact_each",
+            "token_and_label_hash_exact_each",
+            "loss_vectors_exact_across_repetitions",
+            "all_losses_and_gradients_finite",
+            "trainable_parameters_unchanged",
+            "peak_memory_within_limit",
+        ):
+            self.assertTrue(checks[key], key)
+        self.assertFalse(checks["gradient_norm_coefficient_of_variation"])
+        self.assertFalse(checks["gradient_norm_max_to_min_ratio"])
+        self.assertFalse(checks["minimum_pairwise_group_profile_cosine"])
+        measurements = result["measurements"]
+        self.assertGreater(measurements["gradient_norm_max_to_min_ratio"], 6.0)
+        self.assertFalse(measurements["gradient_hashes_identical"])
+
+        repeats = [
+            construction.load_json(
+                ROOT / f"{self.preregistration['result_paths']['repeat_prefix']}{repeat}.json"
+            )
+            for repeat in (1, 2, 3)
+        ]
+        expected_adapter_hash = self.preregistration["adapter_initialization_contract"][
+            "initial_trainable_sha256"
+        ]
+        self.assertTrue(
+            all(row["adapter_initialization"]["sha256"] == expected_adapter_hash for row in repeats)
+        )
+        profiles = [row["gradient"]["profile"] for row in repeats]
+        a_groups = [name for name in profiles[0] if name.endswith(".lora_a")]
+        b_groups = [name for name in profiles[0] if name.endswith(".lora_b")]
+        self.assertTrue(all(profile[name] == 0 for profile in profiles for name in a_groups))
+        self.assertTrue(
+            all(
+                max(profile[name] for profile in profiles)
+                / min(profile[name] for profile in profiles)
+                > 5.0
+                for name in b_groups
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
