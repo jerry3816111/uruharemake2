@@ -1,0 +1,788 @@
+{
+  "schema": "uruha_rightbrain_payload_serializer_condition_v1",
+  "experiment_id": "rightbrain_compact_japanese_payload_v1",
+  "serializer_id": "compact_japanese_v2",
+  "status": "condition_complete",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_compact_japanese_payload_v1_preregistration.json",
+      "sha256": "a736f970769e37eafb4a07abb0087c643ee2b8f92902ca32e76c5a4f9c3c2303"
+    },
+    "construction": {
+      "path": "reports/rightbrain_compact_japanese_payload_v1_construction.json",
+      "sha256": "df99db4653f39309605525ed3c13c6c3754a11dba3dc534e66e39d2ec33786fe"
+    },
+    "cases": {
+      "path": "configs/persona_policy_local_model_pilot_v1_cases.json",
+      "sha256": "7546785c6587e56ea45f3bbd36a7e855b8825353723b34137abbd1338149b27e"
+    },
+    "harness": {
+      "path": "run_rightbrain_compact_japanese_payload_v1.py",
+      "sha256": "1a388467ebdff5c58bf5923882348758b2ed994e7d1baf6a1af0d145bd513e60"
+    },
+    "brain_source": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "6becc225d3ea720538217461a210076215f5911423a49826c1f04dfe01c6ce43"
+    },
+    "serializer_source": {
+      "path": "uruha_surface_payload_v2.py",
+      "sha256": "6699ce02ffd51b4783455eaf1a17e6dd9365f9b4f447087e8d799c6e84e5904b"
+    },
+    "base_cache_commit": "a09a35458c702b33eeacc393d103063234e8bc28"
+  },
+  "runtime": {
+    "device": "mps",
+    "dtype": "torch.float16",
+    "load_seconds": 27.1711,
+    "generation_seconds": 64.0401,
+    "fresh_process_required": true
+  },
+  "model_state": {
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
+    "adapter_loaded": false,
+    "active_adapter_name": ""
+  },
+  "serializer": {
+    "id": "compact_japanese_v2",
+    "system_instruction_sha256": "fac4078ed9397d76c986b0d066785021d8de2fd4943b5f463b181a8bcaac6515"
+  },
+  "checks": {
+    "offline_local_inference": true,
+    "generation_count": true,
+    "nonempty_raw_generation_count": true,
+    "target_neutral_compute_parity": true,
+    "allocated_prompt_tokens_each": true,
+    "serializer_mode_exact": true,
+    "base_model_only": true,
+    "legacy_surface_not_accessed": true,
+    "ledger_contains_no_raw_text": true
+  },
+  "summary": {
+    "generation_count": 10,
+    "nonempty_raw_generation_count": 10,
+    "strict_valid_generation_count": 1,
+    "strict_valid_target_count": 0,
+    "strict_valid_neutral_count": 1,
+    "both_conditions_strict_valid_pair_count": 0,
+    "raw_output_difference_pair_count": 5,
+    "strict_valid_and_different_pair_count": 0,
+    "distinct_normalized_output_count": 10,
+    "rejection_families": {
+      "polite_register_drift": 5,
+      "language_or_script_pollution": 7,
+      "required_semantics_missing": 7
+    },
+    "compute_parity": {
+      "call_count_equal": true,
+      "model_decoding_and_tool_schedule_equal": true,
+      "prompt_tokens_available": true,
+      "prompt_token_schedule_equal": true,
+      "left_call_count": 5,
+      "right_call_count": 5,
+      "left_prompt_tokens": [
+        640,
+        640,
+        640,
+        640,
+        640
+      ],
+      "right_prompt_tokens": [
+        640,
+        640,
+        640,
+        640,
+        640
+      ],
+      "active_prompt_tokens_available": true,
+      "active_prompt_token_schedule_equal": false,
+      "left_active_prompt_tokens": [
+        388,
+        398,
+        369,
+        392,
+        377
+      ],
+      "right_active_prompt_tokens": [
+        398,
+        408,
+        377,
+        403,
+        390
+      ],
+      "parity_pass": true
+    },
+    "ledger_contains_raw_text": false,
+    "pairs": [
+      {
+        "case_id": "persona_local_pilot_01",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_02",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_03",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_04",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      },
+      {
+        "case_id": "persona_local_pilot_05",
+        "both_conditions_strict_valid": false,
+        "normalized_outputs_differ": true,
+        "strict_valid_and_different": false
+      }
+    ]
+  },
+  "ledger_snapshots": {
+    "structured_target_public_persona": {
+      "schema": "uruha_compute_ledger_v1",
+      "call_count": 5,
+      "contains_raw_prompt_or_reply": false,
+      "calls": [
+        {
+          "call_index": 1,
+          "item_id": "persona_local_pilot_01",
+          "condition_id": "structured_target_public_persona",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 562,
+            "prompt_sha256": "b0bc992f32f003548889dafc487f52946eee88c3b2b45331a1e64c2a461e1245",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 388,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 252
+            }
+          },
+          "response": {
+            "content_char_count": 44,
+            "content_sha256": "ac2c937c507a4d6d78eef03d0bc4d03fc57cc2c7cb3495dfeed9cd0eeb9004f7",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 388,
+            "masked_prompt_tokens": 252,
+            "completion_tokens": 27,
+            "total_tokens": 667
+          },
+          "latency_seconds": 8.839936,
+          "error_type": ""
+        },
+        {
+          "call_index": 2,
+          "item_id": "persona_local_pilot_02",
+          "condition_id": "structured_target_public_persona",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 575,
+            "prompt_sha256": "4f05ecbbec17aedc62b0d1d83f4c8a705febeaf195617f0faa4410c3fa8aa69a",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 398,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 242
+            }
+          },
+          "response": {
+            "content_char_count": 32,
+            "content_sha256": "64af0f47ab1d6a0615c5d7279f3dddb7202085a3e27c2660c51a3974f0799ce0",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 398,
+            "masked_prompt_tokens": 242,
+            "completion_tokens": 17,
+            "total_tokens": 657
+          },
+          "latency_seconds": 5.297359,
+          "error_type": ""
+        },
+        {
+          "call_index": 3,
+          "item_id": "persona_local_pilot_03",
+          "condition_id": "structured_target_public_persona",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 549,
+            "prompt_sha256": "f916bd9b156789e38d7a7a28dfc479f06e4b7683ddc072a68457c3195943f997",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 369,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 271
+            }
+          },
+          "response": {
+            "content_char_count": 21,
+            "content_sha256": "b92d6eecc31dac82ee314bd7900c4ab97b61c8f30b842689cc17628c9b023769",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 369,
+            "masked_prompt_tokens": 271,
+            "completion_tokens": 12,
+            "total_tokens": 652
+          },
+          "latency_seconds": 5.222383,
+          "error_type": ""
+        },
+        {
+          "call_index": 4,
+          "item_id": "persona_local_pilot_04",
+          "condition_id": "structured_target_public_persona",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 560,
+            "prompt_sha256": "603d9eef4933929c1c839152820fc3501cf90f3cb4b52131283a9a4f875325de",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 392,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 248
+            }
+          },
+          "response": {
+            "content_char_count": 54,
+            "content_sha256": "ae06d661315f22b73d082360926473f780e332658b00d1ab7b2cd8d2d54d7fc0",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 392,
+            "masked_prompt_tokens": 248,
+            "completion_tokens": 24,
+            "total_tokens": 664
+          },
+          "latency_seconds": 6.495682,
+          "error_type": ""
+        },
+        {
+          "call_index": 5,
+          "item_id": "persona_local_pilot_05",
+          "condition_id": "structured_target_public_persona",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 560,
+            "prompt_sha256": "4ca4aa5e3d0e0b9c434c411bd2790bb364a0da5aadbee9829ef6cf6db0b80fc8",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 377,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 263
+            }
+          },
+          "response": {
+            "content_char_count": 20,
+            "content_sha256": "21751b324ceb4ac9df8536920a1a6aa72bb73deb237527ef80d2b16a173f07c1",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 377,
+            "masked_prompt_tokens": 263,
+            "completion_tokens": 14,
+            "total_tokens": 654
+          },
+          "latency_seconds": 4.86849,
+          "error_type": ""
+        }
+      ]
+    },
+    "structured_neutral_dialogue": {
+      "schema": "uruha_compute_ledger_v1",
+      "call_count": 5,
+      "contains_raw_prompt_or_reply": false,
+      "calls": [
+        {
+          "call_index": 1,
+          "item_id": "persona_local_pilot_01",
+          "condition_id": "structured_neutral_dialogue",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 586,
+            "prompt_sha256": "dc597b82aa769736e121625170cb40c7467799961409728d0838cb9d3e312aa7",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 398,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 242
+            }
+          },
+          "response": {
+            "content_char_count": 33,
+            "content_sha256": "e3e5d7980804359b6309d914c636edc450079bf51d393fbb7d5737ea65b31ec0",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 398,
+            "masked_prompt_tokens": 242,
+            "completion_tokens": 15,
+            "total_tokens": 655
+          },
+          "latency_seconds": 8.860326,
+          "error_type": ""
+        },
+        {
+          "call_index": 2,
+          "item_id": "persona_local_pilot_02",
+          "condition_id": "structured_neutral_dialogue",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 596,
+            "prompt_sha256": "3965616391a3be01f9c1e622a10fd92f506755e89a9c4ee4c3345a57da527a33",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 408,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 232
+            }
+          },
+          "response": {
+            "content_char_count": 31,
+            "content_sha256": "72da4dc37e822c7da0cc245079e339fdc1a3b7453c2b7ab0ae92d8596823cb3b",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 408,
+            "masked_prompt_tokens": 232,
+            "completion_tokens": 16,
+            "total_tokens": 656
+          },
+          "latency_seconds": 5.080093,
+          "error_type": ""
+        },
+        {
+          "call_index": 3,
+          "item_id": "persona_local_pilot_03",
+          "condition_id": "structured_neutral_dialogue",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 573,
+            "prompt_sha256": "d11195d6fb62a19bddc9af07f46be520e7927e00e93bcb4816740a6cfb295ce5",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 377,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 263
+            }
+          },
+          "response": {
+            "content_char_count": 24,
+            "content_sha256": "6f80e7fb3d92b0bd0c9ea5829fbeb09910ae89362b5624829d172e7bc3d73fe5",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 377,
+            "masked_prompt_tokens": 263,
+            "completion_tokens": 14,
+            "total_tokens": 654
+          },
+          "latency_seconds": 7.938814,
+          "error_type": ""
+        },
+        {
+          "call_index": 4,
+          "item_id": "persona_local_pilot_04",
+          "condition_id": "structured_neutral_dialogue",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 587,
+            "prompt_sha256": "0facbc1f2b1e9f750f6536fe13d458dcb0cf052865b6e44809f30d8419c0400d",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 403,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 237
+            }
+          },
+          "response": {
+            "content_char_count": 53,
+            "content_sha256": "2e6af0ceaee45ec32f3b71e183dab65a4c10e559487c61be571c26d36db05a25",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 403,
+            "masked_prompt_tokens": 237,
+            "completion_tokens": 12,
+            "total_tokens": 652
+          },
+          "latency_seconds": 6.688088,
+          "error_type": ""
+        },
+        {
+          "call_index": 5,
+          "item_id": "persona_local_pilot_05",
+          "condition_id": "structured_neutral_dialogue",
+          "stage": "rightbrain_surface_generation",
+          "backend": "transformers_local",
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "request": {
+            "prompt_char_count": 582,
+            "prompt_sha256": "1e0db7d88d79ea08fbfa55c72df62b1a110026fef9d2c40007a8eda5ee392d52",
+            "options": {
+              "max_new_tokens": 56,
+              "no_repeat_ngram_size": 3,
+              "adapter_name": "",
+              "prompt_allocation_mode": "fixed_budget_left_attention_masked",
+              "structured_prompt_token_budget": 640,
+              "do_sample": true,
+              "temperature": 0.82,
+              "top_p": 0.92,
+              "top_k": 64,
+              "repetition_penalty": 1.2
+            },
+            "allocation": {
+              "active_prompt_tokens": 390,
+              "allocated_prompt_tokens": 640,
+              "masked_prompt_tokens": 250
+            }
+          },
+          "response": {
+            "content_char_count": 20,
+            "content_sha256": "192987ff61407ad6be5b0acca274de883b305b022ed64f5b65b48a2fe5b6c83c",
+            "prompt_tokens": 640,
+            "active_prompt_tokens": 390,
+            "masked_prompt_tokens": 250,
+            "completion_tokens": 14,
+            "total_tokens": 654
+          },
+          "latency_seconds": 4.708865,
+          "error_type": ""
+        }
+      ]
+    }
+  },
+  "legacy_fixed_surface_access_count": 0,
+  "generations": [
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41001,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "初対面の方、はじめまして。配信しているので、一緒に盛り上がりましょう！よろしかったです。",
+      "visible_reply": "",
+      "raw_generation_sha256": "ac2c937c507a4d6d78eef03d0bc4d03fc57cc2c7cb3495dfeed9cd0eeb9004f7",
+      "visible_reply_sha256": null,
+      "normalized_output": "初対面の方はじめまして配信しているので一緒に盛り上がりましょうよろしかったです",
+      "rejection_reasons": [
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.8694,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_01",
+      "context": "informal_public_self_introduction",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41001,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "はじめまして。配信 ragazzo しています。一緒に楽しもうよ！",
+      "visible_reply": "",
+      "raw_generation_sha256": "e3e5d7980804359b6309d914c636edc450079bf51d393fbb7d5737ea65b31ec0",
+      "visible_reply_sha256": null,
+      "normalized_output": "はじめまして配信ragazzoしています一緒に楽しもうよ",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 8.8615,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41002,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少々遅らせましたが、今日は協力 Games を楽しみましょう！",
+      "visible_reply": "",
+      "raw_generation_sha256": "72da4dc37e822c7da0cc245079e339fdc1a3b7453c2b7ab0ae92d8596823cb3b",
+      "visible_reply_sha256": null,
+      "normalized_output": "少々遅らせましたが今日は協力gamesを楽しみましょう",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.0809,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_02",
+      "context": "minor_delay_then_positive_promotion",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41002,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "少々遅らせましたが、今日は協力 Games でお楽しみください！",
+      "visible_reply": "",
+      "raw_generation_sha256": "64af0f47ab1d6a0615c5d7279f3dddb7202085a3e27c2660c51a3974f0799ce0",
+      "visible_reply_sha256": null,
+      "normalized_output": "少々遅らせましたが今日は協力gamesでお楽しみください",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.2982,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41003,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "ちょっと疲れてて、ゆっくりしたら起きるよ。",
+      "visible_reply": "",
+      "raw_generation_sha256": "b92d6eecc31dac82ee314bd7900c4ab97b61c8f30b842689cc17628c9b023769",
+      "visible_reply_sha256": null,
+      "normalized_output": "ちょっと疲れててゆっくりしたら起きるよ",
+      "rejection_reasons": [
+        "semantic_slots_missing:1/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 5.2233,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_03",
+      "context": "fatigue_update_with_near_term_plan",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41003,
+      "execution_position": 2,
+      "strict_valid": true,
+      "error_reason": null,
+      "raw_generation": "ちょっと疲れてて、休んでから何かゆっくりするよ。",
+      "visible_reply": "ちょっと疲れてて、休んでから何かゆっくりするよ。",
+      "raw_generation_sha256": "6f80e7fb3d92b0bd0c9ea5829fbeb09910ae89362b5624829d172e7bc3d73fe5",
+      "visible_reply_sha256": "6f80e7fb3d92b0bd0c9ea5829fbeb09910ae89362b5624829d172e7bc3d73fe5",
+      "normalized_output": "ちょっと疲れてて休んでから何かゆっくりするよ",
+      "rejection_reasons": [],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 7.9422,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41004,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat a bit unsure, tonight's plans still undecided.",
+      "visible_reply": "",
+      "raw_generation_sha256": "2e6af0ceaee45ec32f3b71e183dab65a4c10e559487c61be571c26d36db05a25",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatabitunsuretonight'splansstillundecided",
+      "rejection_reasons": [
+        "missing_japanese_surface",
+        "unexpected_ascii_leak",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.689,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_04",
+      "context": "minor_health_uncertainty_affecting_schedule",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41004,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "throat の感じがいいでもない悪いでもないし、 Tonight 的ことは今度落ち着いてみようと思います。",
+      "visible_reply": "",
+      "raw_generation_sha256": "ae06d661315f22b73d082360926473f780e332658b00d1ab7b2cd8d2d54d7fc0",
+      "visible_reply_sha256": null,
+      "normalized_output": "throatの感じがいいでもない悪いでもないしtonight的ことは今度落ち着いてみようと思います",
+      "rejection_reasons": [
+        "unexpected_ascii_leak",
+        "polite_tone_drift",
+        "semantic_slots_missing:0/2"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 6.4967,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_target_public_persona",
+      "seed": 41005,
+      "execution_position": 1,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "始まりました！协力游戏直播，快来围观吧！",
+      "visible_reply": "",
+      "raw_generation_sha256": "21751b324ceb4ac9df8536920a1a6aa72bb73deb237527ef80d2b16a173f07c1",
+      "visible_reply_sha256": null,
+      "normalized_output": "始まりました协力游戏直播快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:2/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.8694,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "context": "functional_stream_start_notification",
+      "provider_id": "structured_neutral_dialogue",
+      "seed": 41005,
+      "execution_position": 2,
+      "strict_valid": false,
+      "error_reason": "all_model_candidates_rejected",
+      "raw_generation": "始まりました！協力游戏直播，快来围观吧！",
+      "visible_reply": "",
+      "raw_generation_sha256": "192987ff61407ad6be5b0acca274de883b305b022ed64f5b65b48a2fe5b6c83c",
+      "visible_reply_sha256": null,
+      "normalized_output": "始まりました協力游戏直播快来围观吧",
+      "rejection_reasons": [
+        "nonstandard_cjk_surface",
+        "semantic_slots_missing:2/3"
+      ],
+      "legacy_fixed_surface_access_count": 0,
+      "duration_seconds": 4.7095,
+      "production_memory_write_count": 0,
+      "serializer_id": "compact_japanese_v2"
+    }
+  ],
+  "production_memory_write_count": 0,
+  "formal_persona_score_count": 0
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_rightbrain_compact_japanese_payload_final_review_v1",
+  "experiment_id": "rightbrain_compact_japanese_payload_v1",
+  "review_status": "evidence_valid_negative_result",
+  "formal_result": {
+    "status": "valid_experiment",
+    "classification": "compact_payload_regression",
+    "decision": "revert_compact_serializer_experiment",
+    "legacy_strict_valid_generation_count": 2,
+    "compact_strict_valid_generation_count": 1,
+    "strict_valid_delta_compact_minus_legacy": -1
+  },
+  "review_findings": {
+    "preregistration_preceded_implementation": true,
+    "legacy_baseline_reproduced_exactly": true,
+    "condition_processes_were_isolated": true,
+    "same_base_model_without_adapter": true,
+    "same_cases_providers_seeds_decoding_and_allocation": true,
+    "all_allocated_prompt_lengths_were_640": true,
+    "compact_active_prompt_tokens_were_lower_for_every_call": true,
+    "strict_gate_was_unchanged": true,
+    "all_cross_serializer_control_checks_passed": true,
+    "compact_prompt_had_no_ascii_words": true,
+    "compact_format_did_not_improve_required_semantics": true,
+    "compact_format_increased_language_or_script_pollution": true,
+    "compact_format_increased_polite_register_drift": true,
+    "no_benchmark_or_target_utterance_was_used": true,
+    "no_memory_write_or_persona_score_occurred": true
+  },
+  "diagnostic_observations": [
+    {
+      "case_id": "persona_local_pilot_04",
+      "observation": "English fragments such as throat and Tonight appeared under both serializers even though the compact model prompt contained no ASCII words.",
+      "supported_inference": "English-heavy legacy payload text is not a sufficient explanation for the observed English output pollution."
+    },
+    {
+      "case_id": "persona_local_pilot_05",
+      "observation": "Chinese fragments appeared under both serializers.",
+      "supported_inference": "Removing English schema labels did not remove the model's cross-script generation mode."
+    }
+  ],
+  "decision_execution": {
+    "production_default_remains": "legacy_json_v1",
+    "compact_serializer_status": "research_only_failed_candidate",
+    "compact_serializer_not_promoted": true,
+    "experimental_path_retained_for_reproducibility": true,
+    "further_compact_prompt_tuning_authorized": false
+  },
+  "authorizations": {
+    "merge_negative_experiment_evidence": true,
+    "change_production_default": false,
+    "claim_persona_similarity": false,
+    "begin_human_blind_rating": false,
+    "train_on_development_cases": false,
+    "unseal_persona_holdout": false
+  },
+  "next_research_direction": {
+    "problem": "The current local surface carrier remains unreliable even after prompt-language and prompt-length pressure were removed.",
+    "recommended_unit": "Preregister a small base-model instruction-capacity screen using the same semantic contract and matched local compute before any additional persona work.",
+    "forbidden_shortcut": "Do not patch these five replies, add their expected answers, or keep tuning the failed compact serializer without new evidence."
+  },
+  "evidence_boundary": "This negative development result rejects one serializer hypothesis. It does not compare persona similarity, authorize production, or prove that model capacity is the sole remaining cause."
+}
