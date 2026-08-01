@@ -1,0 +1,142 @@
+{
+  "schema": "uruha_public_persona_contrast_source_manifest_audit_v4",
+  "experiment_id": "public_persona_contrast_source_manifest_v4",
+  "target_id": "ichinose_uruha_public_persona",
+  "protocol_passed": true,
+  "formal_execution_ready": false,
+  "persona_score_computed": false,
+  "decision": "authorize_contrast_event_coding_preregistration_only",
+  "summary": {
+    "protocol_check_count": 14,
+    "protocol_check_pass_count": 14,
+    "formal_readiness_check_count": 19,
+    "formal_readiness_pass_count": 4,
+    "contrast_actor_count": 3,
+    "contrast_source_reservation_count": 9,
+    "topic_cell_count": 9,
+    "exact_game_match_source_count": 6,
+    "broad_family_match_source_count": 3,
+    "contrast_behavior_event_count": 0,
+    "independently_reviewed_event_count": 0,
+    "same_topic_reference_pair_count": 0,
+    "model_response_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "runtime_change_count": 0,
+    "model_call_count": 0
+  },
+  "protocol_checks": {
+    "preregistration_is_falsifiable_and_metadata_only": true,
+    "v3_dependency_and_authorization_are_hash_bound": true,
+    "manifest_and_event_schema_bindings_match": true,
+    "three_preselected_contrast_actors_match_official_channels": true,
+    "three_target_topic_anchors_match_registered_calibration_sources": true,
+    "nine_official_source_reservations_match_frozen_metadata": true,
+    "three_by_three_actor_topic_matrix_is_complete": true,
+    "source_partitions_are_unique_and_disjoint_from_target": true,
+    "six_exact_game_and_three_broad_family_matches_are_separate": true,
+    "no_titles_behavior_content_transcripts_answers_or_outputs_stored": true,
+    "all_nine_sources_have_conservative_metadata_only_rights_review": true,
+    "source_event_pair_output_score_and_holdout_counts_are_honest": true,
+    "formal_readiness_remains_four_of_nineteen": true,
+    "authorization_is_limited_to_next_contrast_coding_preregistration": true
+  },
+  "violations": {},
+  "actor_topic_matrix": [
+    {
+      "actor_id": "tachibana_hinano_public_persona",
+      "public_name": "橘ひなの",
+      "source_count": 3,
+      "topic_cells": [
+        "competitive_fps",
+        "fighting_game",
+        "simulation_game"
+      ]
+    },
+    {
+      "actor_id": "kurumi_noa_public_persona",
+      "public_name": "胡桃のあ",
+      "source_count": 3,
+      "topic_cells": [
+        "competitive_fps",
+        "fighting_game",
+        "simulation_game"
+      ]
+    },
+    {
+      "actor_id": "tosaki_mimi_public_persona",
+      "public_name": "兎咲ミミ",
+      "source_count": 3,
+      "topic_cells": [
+        "competitive_fps",
+        "fighting_game",
+        "simulation_game"
+      ]
+    }
+  ],
+  "match_strength": {
+    "exact_game": {
+      "source_count": 6,
+      "topic_cells": [
+        "competitive_fps",
+        "fighting_game"
+      ],
+      "claim_boundary": "same game family, but behavior events are not yet coded"
+    },
+    "broad_family_only": {
+      "source_count": 3,
+      "topic_cells": [
+        "simulation_game"
+      ],
+      "claim_boundary": "same simulation-game family but different games; cannot be labeled exact-topic evidence"
+    }
+  },
+  "authorizations": {
+    "contrast_event_coding_preregistration": true,
+    "contrast_behavior_content_review": false,
+    "target_calibration_behavior_coding": false,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "next_required_evidence": "先凍結 contrast-only 事件編碼預註冊，將每個來源上限固定為 10 個非重疊事件，再進行獨立覆核；目前仍不得觀看或編碼對照內容。",
+  "evidence_boundary": "通過只證明三位相近人物的九個官方來源在內容查看前已按主題格登記；來源不是事件，metadata 匹配不是人格相似證據，也不授權觀看對照內容、執行模型、招募評分者或計算人格分數。",
+  "inputs": {
+    "preregistration": {
+      "path": "configs/public_persona_contrast_source_manifest_v4_preregistration.json",
+      "sha256": "70afff1b55cc5500045db0ae798ce2cf9d0848ad4675913daacbe85b0efdf7c5"
+    },
+    "contrast_manifest": {
+      "path": "datasets/public_persona_contrast_source_manifest_v4.json",
+      "sha256": "4a05df78294d6f64e19432d541f2163fda0e1828044cbfd2f3c4e9c127c109c8"
+    },
+    "rights_review": {
+      "path": "datasets/public_persona_contrast_source_rights_review_v1.json",
+      "sha256": "ded5ba2585997a839f2cca71e27d3ccc15bacfdbe78da919b5a0df1b456816e5"
+    },
+    "v3_result_lock": {
+      "path": "configs/public_persona_precontent_governance_v3_result_lock.json",
+      "sha256": "2543e04399b19e0bfe4a928023c3967f67b366fb6f51750620d2046ae82633ab"
+    },
+    "reference_manifest": {
+      "path": "datasets/public_persona_reference_source_manifest_v2.json",
+      "sha256": "ab4aa0737f49e291825b4217b35ac570a7224d95ca7c992a44e3c56f0ebe7ac7"
+    },
+    "event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "readiness_inventory": {
+      "path": "datasets/public_persona_fidelity_eval_v2_readiness_inventory.json",
+      "sha256": "baaafff0d53a8bb96eb34fcf11705abff348c2c826593cd3bf4552642454a6ed"
+    }
+  }
+}

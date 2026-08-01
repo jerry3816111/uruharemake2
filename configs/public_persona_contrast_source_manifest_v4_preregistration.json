@@ -1,0 +1,83 @@
+{
+  "schema": "uruha_public_persona_contrast_source_manifest_preregistration_v4",
+  "experiment_id": "public_persona_contrast_source_manifest_v4",
+  "status": "preregistered_before_contrast_behavior_coding_model_execution_or_holdout_access",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "path": "configs/public_persona_precontent_governance_v3_result_lock.json",
+    "sha256": "2543e04399b19e0bfe4a928023c3967f67b366fb6f51750620d2046ae82633ab",
+    "experiment_id": "public_persona_precontent_governance_v3",
+    "required_decision": "authorize_bounded_calibration_event_coding_and_consent_usability_review_only",
+    "required_authorization": "contrast_event_source_registration"
+  },
+  "current_problem": "三位相近人物目前只有官方身份來源，沒有在查看行為內容前按同主題登記的官方直播來源。若日後看完內容才挑來源，可能選到刻意拉大或縮小人物差異的資料，無法建立可信的 target-target、other-target 與 agent-target 參考範圍。",
+  "falsifiable_hypothesis": "若每位相近人物都在行為內容、系統輸出及相似度分數不可見時，依相同三個主題格登記一個官方來源，並將 exact-game 與 broad-family 匹配分開，則稽核器應能確認 3 人 x 3 主題共 9 個來源完整且分割互斥，同時所有行為事件、模型回答、評分與 holdout 查看仍為零。",
+  "single_changed_variable": "add metadata-only matched-contrast source reservations and per-source conservative rights review; target sources, behavior labels, event records, model, runtime, prompts, memory, training data, raters, final holdout contents, and persona scores remain unchanged",
+  "actor_contract": {
+    "matched_contrast_actor_count_exact": 3,
+    "source_count_per_actor_exact": 3,
+    "topic_cell_count_per_actor_exact": 3,
+    "actors_selected_before_behavior_content_review": true,
+    "actors_selected_from_model_outputs_or_similarity_scores": false
+  },
+  "topic_match_contract": {
+    "topic_cells": [
+      "competitive_fps",
+      "fighting_game",
+      "simulation_game"
+    ],
+    "exact_game_match_cells_per_actor": 2,
+    "broad_family_match_cells_per_actor": 1,
+    "exact_and_broad_results_must_be_reported_separately": true,
+    "broad_family_result_may_not_be_labeled_exact_topic": true,
+    "same_topic_reference_pair_count_before_event_coding_exact": 0
+  },
+  "source_contract": {
+    "official_actor_channel_only": true,
+    "source_reservation_count_exact": 9,
+    "unique_source_partition_count_exact": 9,
+    "public_was_live_archive_count_exact": 9,
+    "behavior_content_reviewed_count_exact": 0,
+    "behavior_label_count_exact": 0,
+    "raw_media_record_count_exact": 0,
+    "verbatim_transcript_record_count_exact": 0,
+    "target_reply_or_reference_answer_count_exact": 0,
+    "model_output_count_exact": 0,
+    "title_storage_count_exact": 0
+  },
+  "future_event_sampling_contract": {
+    "event_cap_per_source": 10,
+    "event_cap_per_actor": 30,
+    "fixed_duration_chunking_forbidden": true,
+    "overlapping_event_timestamps_forbidden": true,
+    "independent_review_required": true,
+    "separate_contrast_coding_preregistration_required": true,
+    "current_contrast_event_coding_authorized": false
+  },
+  "expected_formal_readiness": {
+    "pass_count": 4,
+    "check_count": 19,
+    "formal_execution_ready": false,
+    "contrast_event_count_per_person": 0,
+    "same_topic_reference_pair_count": 0
+  },
+  "decision_policy": {
+    "protocol_pass": "authorize_contrast_event_coding_preregistration_only",
+    "protocol_fail": "repair_contrast_source_manifest_before_any_contrast_content_review",
+    "contrast_event_coding_preregistration": true,
+    "contrast_behavior_content_review": false,
+    "target_calibration_behavior_coding": false,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "通過只證明三位相近人物的九個官方來源在內容查看前已按主題格登記；來源不是事件，metadata 匹配不是人格相似證據，也不授權觀看對照內容、執行模型、招募評分者或計算人格分數。"
+}
