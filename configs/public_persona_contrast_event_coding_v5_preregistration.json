@@ -1,0 +1,156 @@
+{
+  "schema": "uruha_public_persona_contrast_event_coding_preregistration_v5",
+  "experiment_id": "public_persona_contrast_event_coding_v5",
+  "status": "preregistered_before_contrast_behavior_content_review_event_selection_or_model_execution",
+  "target_id": "ichinose_uruha_public_persona",
+  "depends_on": {
+    "v4_result_lock": {
+      "path": "configs/public_persona_contrast_source_manifest_v4_result_lock.json",
+      "sha256": "6ba0c80a242a4fcc562efa0f1d68b4f02b075d756a1be16341c041cdaf441cea",
+      "required_decision": "authorize_contrast_event_coding_preregistration_only"
+    },
+    "contrast_source_manifest": {
+      "path": "datasets/public_persona_contrast_source_manifest_v4.json",
+      "sha256": "4a05df78294d6f64e19432d541f2163fda0e1828044cbfd2f3c4e9c127c109c8"
+    },
+    "shared_event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "v4_rights_review": {
+      "path": "datasets/public_persona_contrast_source_rights_review_v1.json",
+      "sha256": "ded5ba2585997a839f2cca71e27d3ccc15bacfdbe78da919b5a0df1b456816e5"
+    },
+    "method_registry": {
+      "path": "configs/public_persona_contrast_event_coding_v5_method_registry.json",
+      "sha256": "ded942e7af55a557b96f68751f39473e930f2d0a3b2051328d7842ffdbf11b0b"
+    }
+  },
+  "current_problem": "V4 已在查看行為前登記九個官方對照來源，但尚未凍結長直播中事件的搜尋起點、合格條件、完整事件邊界、無事件處理、雙人覆核及資料保存方式。若研究者能自由挑片段，將可能只選最像或最不像目標人物的事件，使人物距離失去可信度。",
+  "falsifiable_hypothesis": "若每個來源先切成十個時間搜尋層，使用雜湊決定每層搜尋起點，且兩位不同角色都必須從起點後選第一個合格的完整互動事件，則稽核器應能在事件內容仍為零時重建完全相同的 90 個搜尋槽、拒絕任何方便取樣或事後替換規則，並只授權有限人工編碼。",
+  "single_changed_variable": "add a frozen contrast-event sampling, unitizing, independent-coding, reliability, and restricted-data protocol; behavior content, event records, target calibration events, final holdout, model, runtime, prompts, memory, training data, raters, outputs, and persona scores remain unchanged",
+  "sampling_contract": {
+    "source_count_exact": 9,
+    "temporal_strata_per_source_exact": 10,
+    "sampling_slot_count_exact": 90,
+    "one_search_start_per_stratum": true,
+    "stratum_boundary_algorithm": "floor(duration_seconds * boundary_index / 10)",
+    "search_start_algorithm": "stratum_start + uint64_be(sha256(experiment_id|source_partition_key|slot_index)[0:8]) mod stratum_width",
+    "global_review_order_algorithm": "ascending sha256(experiment_id|sampling_slot_id|global_review_order)",
+    "first_eligible_event_at_or_after_search_start_required": true,
+    "event_start_must_fall_inside_assigned_stratum": true,
+    "event_end_may_cross_stratum_boundary_to_preserve_complete_unit": true,
+    "overlap_with_prior_selected_event_blocks_slot_without_replacement": true,
+    "no_eligible_event_is_retained_not_replaced": true,
+    "fixed_duration_strata_are_search_regions_not_event_units": true,
+    "convenience_sampling_forbidden": true,
+    "selection_by_expected_similarity_or_difference_forbidden": true,
+    "selection_by_memorable_quote_or_language_style_forbidden": true,
+    "source_or_slot_replacement_after_content_review_forbidden": true,
+    "exact_game_and_broad_family_results_separate": true
+  },
+  "event_eligibility_contract": {
+    "shared_observation_unit_schema_required": true,
+    "focal_actor_has_publicly_observable_speech_or_action": true,
+    "observable_trigger_context_and_completed_response_required": true,
+    "enough_context_to_code_without_private_motive_inference_required": true,
+    "same_reaction_may_not_be_split_into_multiple_events": true,
+    "non_observation_is_not_negative_evidence": true,
+    "private_or_sensitive_information_event_is_policy_excluded_without_paraphrase": true,
+    "unclear_focal_speaker_is_ineligible": true,
+    "pure_waiting_screen_or_technical_interruption_is_ineligible": true,
+    "scripted_or_verbatim_reading_without_spontaneous_response_is_ineligible": true,
+    "event_can_be_rejected_only_by_frozen_eligibility_rule": true
+  },
+  "coding_contract": {
+    "construct": "public_observable_persona_fidelity",
+    "shared_dimension_count_exact": 6,
+    "shared_schema_hash_required": true,
+    "researcher_paraphrase_only": true,
+    "copied_quote_allowed": false,
+    "raw_media_audio_image_caption_comment_or_transcript_allowed": false,
+    "private_state_or_performer_identity_inference_allowed": false,
+    "actor_identity_blinding_feasible": false,
+    "actor_identity_nonblinding_must_be_reported": true,
+    "system_output_persona_score_and_target_hypothesis_visible_to_coders": false,
+    "coder_and_reviewer_pseudonyms_distinct": true,
+    "both_roles_independently_select_event_boundaries_and_codes_before_comparison": true,
+    "unfavorable_ambiguous_or_disagreeing_records_may_be_deleted_to_raise_similarity": false,
+    "adjudication_may_not_replace_pre_adjudication_reliability_data": true
+  },
+  "reliability_contract": {
+    "independent_review_fraction_required": 1.0,
+    "slot_selection_agreement_reported": true,
+    "temporal_intersection_over_union_reported": true,
+    "unitizing_reliability_reported_separately": true,
+    "nominal_code_krippendorff_alpha_primary": true,
+    "percent_agreement_secondary_only": true,
+    "nominal_alpha_reliable_min": 0.8,
+    "nominal_alpha_tentative_min": 0.667,
+    "temporal_iou_project_gate_min": 0.5,
+    "below_tentative_alpha_blocks_persona_comparison": true,
+    "failed_reliability_requires_codebook_revision_with_original_labels_preserved": true,
+    "adjudicated_labels_excluded_from_reliability_estimate": true
+  },
+  "data_handling_contract": {
+    "manual_in_service_viewing_only": true,
+    "automated_collection_or_download": false,
+    "event_level_registry_path": "analysis/local_public_persona_contrast_coding_v5/contrast_events.jsonl",
+    "event_level_registry_git_tracked": false,
+    "event_level_paraphrase_publication": false,
+    "timestamp_locator_and_codes_stored_in_restricted_local_registry": true,
+    "public_outputs": [
+      "empty_sampling_frame",
+      "protocol_and_codebook",
+      "source_level_counts",
+      "aggregate_reliability",
+      "aggregate_behavior_profile"
+    ],
+    "prompt_memory_retrieval_training_or_model_selection_use": false,
+    "raw_content_redistribution": false,
+    "rights_holder_license_claimed": false,
+    "legal_opinion_claimed": false,
+    "public_impersonation_or_official_affiliation_claimed": false
+  },
+  "expected_counts_after_protocol_pass": {
+    "sampling_slot_count": 90,
+    "content_reviewed_source_count": 0,
+    "selected_event_count": 0,
+    "coded_event_count": 0,
+    "independently_reviewed_event_count": 0,
+    "same_topic_reference_pair_count": 0,
+    "raw_or_verbatim_record_count": 0,
+    "model_output_count": 0,
+    "persona_score_count": 0,
+    "holdout_content_review_count": 0,
+    "model_call_count": 0
+  },
+  "expected_formal_readiness": {
+    "pass_count": 4,
+    "check_count": 19,
+    "formal_execution_ready": false
+  },
+  "decision_policy": {
+    "protocol_pass": "authorize_bounded_manual_contrast_event_coding_only",
+    "protocol_fail": "repair_contrast_event_coding_protocol_before_any_behavior_content_review",
+    "manual_contrast_behavior_observation": true,
+    "maximum_source_count": 9,
+    "maximum_sampling_slot_count": 90,
+    "maximum_accepted_event_count": 90,
+    "restricted_researcher_paraphrase_storage": true,
+    "public_event_level_content_storage": false,
+    "target_calibration_behavior_coding": false,
+    "rater_recruitment": false,
+    "rating_collection": false,
+    "model_execution": false,
+    "runtime_change": false,
+    "prompt_change": false,
+    "memory_change": false,
+    "model_training": false,
+    "sealed_holdout_unsealing": false,
+    "formal_persona_scoring": false,
+    "public_persona_fidelity_claim": false,
+    "private_person_copy_claim": false
+  },
+  "evidence_boundary": "V5 通過只代表事件搜尋起點、完整事件規則、雙人覆核、可靠度及受限保存方式已在觀看內容前凍結，並授權最多九個來源、九十個搜尋槽的有限人工編碼。它不表示已觀看或選出事件，不表示事件可靠度合格，不授權模型、訓練、評分者、holdout 或人格分數，也不證明代理像任何人物。"
+}
