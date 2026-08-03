@@ -1,0 +1,819 @@
+{
+  "schema": "personaeval_local_judge_model_selection_result_v1",
+  "experiment_id": "personaeval_local_judge_model_selection_v1",
+  "official_source": {
+    "paper_url": "https://arxiv.org/abs/2508.10014",
+    "dataset_url": "https://huggingface.co/datasets/lingfengzhou/PersonaEval",
+    "dataset": "lingfengzhou/PersonaEval",
+    "dataset_commit": "f65c77a992414af9de49debdc6f607b4a2e472d8",
+    "dataset_license": "CC-BY-4.0",
+    "code_url": "https://github.com/maple-zhou/PersonaEval",
+    "code_commit": "19f7568a84f52e206dccdf67146235c8376cec9c",
+    "code_license": "MIT",
+    "upstream_verified": {
+      "huggingface_commit": "f65c77a992414af9de49debdc6f607b4a2e472d8",
+      "github_commit": "19f7568a84f52e206dccdf67146235c8376cec9c",
+      "dataset_license": "cc-by-4.0",
+      "source_objects": {
+        "Drama.csv": {
+          "size": 33711931,
+          "git_oid": "f3c8356689070062817c42a1d7fe4a429c30c9be",
+          "lfs_sha256": "655de08e0df8e2780856900bcaf7e47f3baa0c4c9c421ad393d157c7752c96d0"
+        },
+        "Expertise.csv": {
+          "size": 2319938,
+          "git_oid": "2478b6b8b484bb9711457ebb9f57ede653e2ff6d",
+          "lfs_sha256": null
+        },
+        "Literary.csv": {
+          "size": 581316853,
+          "git_oid": "23a5d470963de377cf395cf2c0cc0a739ccec5ab",
+          "lfs_sha256": "04cfa3116d64694b72f921012bb60787dbd7ae6aec5114d0faaa4fe13e6accd3"
+        }
+      }
+    },
+    "model_revisions_verified": {
+      "qwen3_4b": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "qwen25_7b": "a09a35458c702b33eeacc393d103063234e8bc28"
+    }
+  },
+  "pilot_design": {
+    "tracks": {
+      "Drama": {
+        "row_count": 1658,
+        "option_count": 4
+      },
+      "Expertise": {
+        "row_count": 699,
+        "option_count": 5
+      },
+      "Literary": {
+        "row_count": 26208,
+        "option_count": 4
+      }
+    },
+    "sample_count_per_track": 10,
+    "primary_row_count": 30,
+    "selection_method": {
+      "method": "one_hash_selected_disjoint_row_per_equal_width_eligible_stratum",
+      "seed": "personaeval_local_judge_model_selection_v1",
+      "sample_count_per_track": 10,
+      "excluded_previous_primary_rows": true,
+      "excluded_transport_smoke_rows": true,
+      "content_and_labels_unread_before_index_selection": true
+    },
+    "primary_row_ids": [
+      "drama_00109",
+      "drama_00295",
+      "drama_00340",
+      "drama_00659",
+      "drama_00689",
+      "drama_00923",
+      "drama_01042",
+      "drama_01236",
+      "drama_01341",
+      "drama_01517",
+      "expertise_00021",
+      "expertise_00089",
+      "expertise_00197",
+      "expertise_00278",
+      "expertise_00344",
+      "expertise_00373",
+      "expertise_00443",
+      "expertise_00552",
+      "expertise_00612",
+      "expertise_00663",
+      "literary_01398",
+      "literary_05103",
+      "literary_06030",
+      "literary_08911",
+      "literary_12676",
+      "literary_13873",
+      "literary_17903",
+      "literary_19939",
+      "literary_21936",
+      "literary_26200"
+    ],
+    "repeat_audit_row_ids": [
+      "drama_00340",
+      "drama_00923",
+      "drama_01042",
+      "expertise_00612",
+      "expertise_00443",
+      "expertise_00278",
+      "literary_05103",
+      "literary_21936",
+      "literary_17903"
+    ],
+    "repeat_audit_repetitions": 3,
+    "generation_calls_per_model": 48,
+    "total_generation_calls": 96,
+    "disjoint_from_previous_personaeval_pilot": true
+  },
+  "measurements": {
+    "models": {
+      "qwen3_4b": {
+        "overall": {
+          "row_count": 30,
+          "parsed_count": 27,
+          "parse_success_rate": 0.9,
+          "correct_count": 11,
+          "unconditional_top1_accuracy": 0.36666666666666664,
+          "unconditional_top1_wilson_95": [
+            0.21873920806100708,
+            0.5448643634520511
+          ],
+          "conditional_top1_accuracy": 0.4074074074074074,
+          "unconditional_top2_accuracy": 0.6333333333333333,
+          "mean_ground_truth_rank_parsed": 2.037037037037037,
+          "brier_score_parsed": 0.1634189655172414,
+          "expected_calibration_error_parsed": 0.1888888888888889,
+          "random_choice_expected_accuracy": 0.23333333333333334,
+          "exact_chance_superiority_p_value": 0.06988746020436806,
+          "total_prompt_tokens": 59325,
+          "total_completion_tokens": 1851,
+          "generation_seconds": 282.826515
+        },
+        "per_track": {
+          "Drama": {
+            "row_count": 10,
+            "parsed_count": 9,
+            "parse_success_rate": 0.9,
+            "correct_count": 2,
+            "unconditional_top1_accuracy": 0.2,
+            "unconditional_top1_wilson_95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "conditional_top1_accuracy": 0.2222222222222222,
+            "unconditional_top2_accuracy": 0.8,
+            "mean_ground_truth_rank_parsed": 2.0,
+            "brier_score_parsed": 0.18234444444444445,
+            "expected_calibration_error_parsed": 0.47777777777777775,
+            "random_choice_expected_accuracy": 0.25,
+            "exact_chance_superiority_p_value": 0.7559747695922852,
+            "total_prompt_tokens": 30035,
+            "total_completion_tokens": 698,
+            "generation_seconds": 127.929482
+          },
+          "Expertise": {
+            "row_count": 10,
+            "parsed_count": 8,
+            "parse_success_rate": 0.8,
+            "correct_count": 3,
+            "unconditional_top1_accuracy": 0.3,
+            "unconditional_top1_wilson_95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "conditional_top1_accuracy": 0.375,
+            "unconditional_top2_accuracy": 0.4,
+            "mean_ground_truth_rank_parsed": 2.5,
+            "brier_score_parsed": 0.144345,
+            "expected_calibration_error_parsed": 0.29374999999999996,
+            "random_choice_expected_accuracy": 0.2,
+            "exact_chance_superiority_p_value": 0.32220047360000026,
+            "total_prompt_tokens": 6456,
+            "total_completion_tokens": 586,
+            "generation_seconds": 56.854372
+          },
+          "Literary": {
+            "row_count": 10,
+            "parsed_count": 10,
+            "parse_success_rate": 1.0,
+            "correct_count": 6,
+            "unconditional_top1_accuracy": 0.6,
+            "unconditional_top1_wilson_95": [
+              0.31267376973365824,
+              0.8318196702937638
+            ],
+            "conditional_top1_accuracy": 0.6,
+            "unconditional_top2_accuracy": 0.7,
+            "mean_ground_truth_rank_parsed": 1.7,
+            "brier_score_parsed": 0.16546,
+            "expected_calibration_error_parsed": 0.32499999999999996,
+            "random_choice_expected_accuracy": 0.25,
+            "exact_chance_superiority_p_value": 0.019727706909179688,
+            "total_prompt_tokens": 22834,
+            "total_completion_tokens": 567,
+            "generation_seconds": 98.042661
+          }
+        },
+        "repeat_audit": {
+          "row_count": 9,
+          "exact_output_agreement_count": 9,
+          "exact_output_agreement_rate": 1.0,
+          "prediction_agreement_count": 8,
+          "prediction_agreement_rate": 0.8888888888888888,
+          "details": [
+            {
+              "row_id": "drama_00340",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "c2d4fa8fb55a95fae8d115696db5165e264a908af0a6f943c35ab09a1498a947",
+                "c2d4fa8fb55a95fae8d115696db5165e264a908af0a6f943c35ab09a1498a947",
+                "c2d4fa8fb55a95fae8d115696db5165e264a908af0a6f943c35ab09a1498a947"
+              ],
+              "predictions": [
+                "长卿",
+                "长卿",
+                "长卿"
+              ]
+            },
+            {
+              "row_id": "drama_00923",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": false,
+              "prediction_agreement": false,
+              "output_sha256": [
+                "67af8cfacfd6e02e5ff5c3ed7d378f5d72eb0eadda2bcec0b64af3d9a367a91c",
+                "67af8cfacfd6e02e5ff5c3ed7d378f5d72eb0eadda2bcec0b64af3d9a367a91c",
+                "67af8cfacfd6e02e5ff5c3ed7d378f5d72eb0eadda2bcec0b64af3d9a367a91c"
+              ],
+              "predictions": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "row_id": "drama_01042",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "bf72187f9052b0c51098684ef806cfdf79f58290f4af6e24d4f5ca9062a94f15",
+                "bf72187f9052b0c51098684ef806cfdf79f58290f4af6e24d4f5ca9062a94f15",
+                "bf72187f9052b0c51098684ef806cfdf79f58290f4af6e24d4f5ca9062a94f15"
+              ],
+              "predictions": [
+                "白展堂",
+                "白展堂",
+                "白展堂"
+              ]
+            },
+            {
+              "row_id": "expertise_00612",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "0a3931b92c83ede123f53b10390644275b12a4995fa6515a7cddddf5303b4ae6",
+                "0a3931b92c83ede123f53b10390644275b12a4995fa6515a7cddddf5303b4ae6",
+                "0a3931b92c83ede123f53b10390644275b12a4995fa6515a7cddddf5303b4ae6"
+              ],
+              "predictions": [
+                "Teen",
+                "Teen",
+                "Teen"
+              ]
+            },
+            {
+              "row_id": "expertise_00443",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "350329624a7b57b5e21880f80d8e239d085e0bffe5e80ea5f3838adb7a66c28c",
+                "350329624a7b57b5e21880f80d8e239d085e0bffe5e80ea5f3838adb7a66c28c",
+                "350329624a7b57b5e21880f80d8e239d085e0bffe5e80ea5f3838adb7a66c28c"
+              ],
+              "predictions": [
+                "Expert",
+                "Expert",
+                "Expert"
+              ]
+            },
+            {
+              "row_id": "expertise_00278",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "ab6ac5e3842368571f48e5f572356d9989e3bd430a0b07a609d6830ba80b7cb3",
+                "ab6ac5e3842368571f48e5f572356d9989e3bd430a0b07a609d6830ba80b7cb3",
+                "ab6ac5e3842368571f48e5f572356d9989e3bd430a0b07a609d6830ba80b7cb3"
+              ],
+              "predictions": [
+                "Graduate Student",
+                "Graduate Student",
+                "Graduate Student"
+              ]
+            },
+            {
+              "row_id": "literary_05103",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "44d4875cafdcbbd123de7afcd86c2306023a70795fb6150551974c7defac5af4",
+                "44d4875cafdcbbd123de7afcd86c2306023a70795fb6150551974c7defac5af4",
+                "44d4875cafdcbbd123de7afcd86c2306023a70795fb6150551974c7defac5af4"
+              ],
+              "predictions": [
+                "Garzhvog",
+                "Garzhvog",
+                "Garzhvog"
+              ]
+            },
+            {
+              "row_id": "literary_21936",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "a0006c0504e7100334414b6f4346334c0cf03981d86505d417f627af4809dbc0",
+                "a0006c0504e7100334414b6f4346334c0cf03981d86505d417f627af4809dbc0",
+                "a0006c0504e7100334414b6f4346334c0cf03981d86505d417f627af4809dbc0"
+              ],
+              "predictions": [
+                "Willem",
+                "Willem",
+                "Willem"
+              ]
+            },
+            {
+              "row_id": "literary_17903",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "1c75c5ed02737cf2fc4c45a629e6e2c2c65beeb9be6b72dc9819f9dd2a32434a",
+                "1c75c5ed02737cf2fc4c45a629e6e2c2c65beeb9be6b72dc9819f9dd2a32434a",
+                "1c75c5ed02737cf2fc4c45a629e6e2c2c65beeb9be6b72dc9819f9dd2a32434a"
+              ],
+              "predictions": [
+                "Dr. Martinez",
+                "Dr. Martinez",
+                "Dr. Martinez"
+              ]
+            }
+          ]
+        },
+        "resource": {
+          "duration_seconds": 470.411,
+          "mlx_peak_memory_bytes": 9152241092,
+          "mlx_active_memory_bytes_before_unload": 8044936200,
+          "mlx_cache_memory_bytes_before_unload": 370222492
+        }
+      },
+      "qwen25_7b": {
+        "overall": {
+          "row_count": 30,
+          "parsed_count": 24,
+          "parse_success_rate": 0.8,
+          "correct_count": 11,
+          "unconditional_top1_accuracy": 0.36666666666666664,
+          "unconditional_top1_wilson_95": [
+            0.21873920806100708,
+            0.5448643634520511
+          ],
+          "conditional_top1_accuracy": 0.4583333333333333,
+          "unconditional_top2_accuracy": 0.5333333333333333,
+          "mean_ground_truth_rank_parsed": 2.0416666666666665,
+          "brier_score_parsed": 0.1980235294117647,
+          "expected_calibration_error_parsed": 0.33958333333333335,
+          "random_choice_expected_accuracy": 0.23333333333333334,
+          "exact_chance_superiority_p_value": 0.06988746020436806,
+          "total_prompt_tokens": 59325,
+          "total_completion_tokens": 1681,
+          "generation_seconds": 429.48681
+        },
+        "per_track": {
+          "Drama": {
+            "row_count": 10,
+            "parsed_count": 10,
+            "parse_success_rate": 1.0,
+            "correct_count": 4,
+            "unconditional_top1_accuracy": 0.4,
+            "unconditional_top1_wilson_95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "conditional_top1_accuracy": 0.4,
+            "unconditional_top2_accuracy": 0.7,
+            "mean_ground_truth_rank_parsed": 2.0,
+            "brier_score_parsed": 0.23399999999999999,
+            "expected_calibration_error_parsed": 0.42000000000000004,
+            "random_choice_expected_accuracy": 0.25,
+            "exact_chance_superiority_p_value": 0.22412490844726562,
+            "total_prompt_tokens": 30035,
+            "total_completion_tokens": 519,
+            "generation_seconds": 179.914047
+          },
+          "Expertise": {
+            "row_count": 10,
+            "parsed_count": 6,
+            "parse_success_rate": 0.6,
+            "correct_count": 3,
+            "unconditional_top1_accuracy": 0.3,
+            "unconditional_top1_wilson_95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "conditional_top1_accuracy": 0.5,
+            "unconditional_top2_accuracy": 0.3,
+            "mean_ground_truth_rank_parsed": 2.3333333333333335,
+            "brier_score_parsed": 0.14183333333333334,
+            "expected_calibration_error_parsed": 0.24166666666666659,
+            "random_choice_expected_accuracy": 0.2,
+            "exact_chance_superiority_p_value": 0.32220047360000026,
+            "total_prompt_tokens": 6456,
+            "total_completion_tokens": 575,
+            "generation_seconds": 93.455432
+          },
+          "Literary": {
+            "row_count": 10,
+            "parsed_count": 8,
+            "parse_success_rate": 0.8,
+            "correct_count": 4,
+            "unconditional_top1_accuracy": 0.4,
+            "unconditional_top1_wilson_95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "conditional_top1_accuracy": 0.5,
+            "unconditional_top2_accuracy": 0.6,
+            "mean_ground_truth_rank_parsed": 1.875,
+            "brier_score_parsed": 0.20573124999999998,
+            "expected_calibration_error_parsed": 0.4625,
+            "random_choice_expected_accuracy": 0.25,
+            "exact_chance_superiority_p_value": 0.22412490844726562,
+            "total_prompt_tokens": 22834,
+            "total_completion_tokens": 587,
+            "generation_seconds": 156.117331
+          }
+        },
+        "repeat_audit": {
+          "row_count": 9,
+          "exact_output_agreement_count": 9,
+          "exact_output_agreement_rate": 1.0,
+          "prediction_agreement_count": 8,
+          "prediction_agreement_rate": 0.8888888888888888,
+          "details": [
+            {
+              "row_id": "drama_00340",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "1757668cf4735e7e61a7191b7b4acf001c8066ea1180c07066f765a3b7522b11",
+                "1757668cf4735e7e61a7191b7b4acf001c8066ea1180c07066f765a3b7522b11",
+                "1757668cf4735e7e61a7191b7b4acf001c8066ea1180c07066f765a3b7522b11"
+              ],
+              "predictions": [
+                "长卿",
+                "长卿",
+                "长卿"
+              ]
+            },
+            {
+              "row_id": "drama_00923",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "ac22f77c803405e6703bb336377475730ab3c6a69a8827485003d7db55b10cd9",
+                "ac22f77c803405e6703bb336377475730ab3c6a69a8827485003d7db55b10cd9",
+                "ac22f77c803405e6703bb336377475730ab3c6a69a8827485003d7db55b10cd9"
+              ],
+              "predictions": [
+                "许红豆",
+                "许红豆",
+                "许红豆"
+              ]
+            },
+            {
+              "row_id": "drama_01042",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "a1c2e0d1e7481513ae27e8274a3d4e39c5d97b9a2a0354e1b3dcc3d63d928e13",
+                "a1c2e0d1e7481513ae27e8274a3d4e39c5d97b9a2a0354e1b3dcc3d63d928e13",
+                "a1c2e0d1e7481513ae27e8274a3d4e39c5d97b9a2a0354e1b3dcc3d63d928e13"
+              ],
+              "predictions": [
+                "白展堂",
+                "白展堂",
+                "白展堂"
+              ]
+            },
+            {
+              "row_id": "expertise_00612",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": false,
+              "prediction_agreement": false,
+              "output_sha256": [
+                "be689b14e26cb23ac702a3e65b395b3a2e2decf48818d9a411a0a213d74c745b",
+                "be689b14e26cb23ac702a3e65b395b3a2e2decf48818d9a411a0a213d74c745b",
+                "be689b14e26cb23ac702a3e65b395b3a2e2decf48818d9a411a0a213d74c745b"
+              ],
+              "predictions": [
+                null,
+                null,
+                null
+              ]
+            },
+            {
+              "row_id": "expertise_00443",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "ba036e1247494ce54ce59f9be470f5c37b8881fd90d70e8e9978ec3540d46801",
+                "ba036e1247494ce54ce59f9be470f5c37b8881fd90d70e8e9978ec3540d46801",
+                "ba036e1247494ce54ce59f9be470f5c37b8881fd90d70e8e9978ec3540d46801"
+              ],
+              "predictions": [
+                "College Student",
+                "College Student",
+                "College Student"
+              ]
+            },
+            {
+              "row_id": "expertise_00278",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "ffc43f46912d0fbbb7c155ee2818678b3bca04e11f52e762f33b4b99d04e22a7",
+                "ffc43f46912d0fbbb7c155ee2818678b3bca04e11f52e762f33b4b99d04e22a7",
+                "ffc43f46912d0fbbb7c155ee2818678b3bca04e11f52e762f33b4b99d04e22a7"
+              ],
+              "predictions": [
+                "Expert",
+                "Expert",
+                "Expert"
+              ]
+            },
+            {
+              "row_id": "literary_05103",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "120e3368e8480c7f3d64733ce21b17cb11c2aa0c90a7518b7419c348b542d034",
+                "120e3368e8480c7f3d64733ce21b17cb11c2aa0c90a7518b7419c348b542d034",
+                "120e3368e8480c7f3d64733ce21b17cb11c2aa0c90a7518b7419c348b542d034"
+              ],
+              "predictions": [
+                "Garzhvog",
+                "Garzhvog",
+                "Garzhvog"
+              ]
+            },
+            {
+              "row_id": "literary_21936",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "2292eb0c9e712df6f4b859364b540bd6d2df9a6bedd73ae32e04c1d708d2c82d",
+                "2292eb0c9e712df6f4b859364b540bd6d2df9a6bedd73ae32e04c1d708d2c82d",
+                "2292eb0c9e712df6f4b859364b540bd6d2df9a6bedd73ae32e04c1d708d2c82d"
+              ],
+              "predictions": [
+                "Willem",
+                "Willem",
+                "Willem"
+              ]
+            },
+            {
+              "row_id": "literary_17903",
+              "exact_output_agreement": true,
+              "all_repetitions_parsed": true,
+              "prediction_agreement": true,
+              "output_sha256": [
+                "5e64017b090d884f9dbfe2205cc7b0d300a4aaa93c6cffa98be86dac742447de",
+                "5e64017b090d884f9dbfe2205cc7b0d300a4aaa93c6cffa98be86dac742447de",
+                "5e64017b090d884f9dbfe2205cc7b0d300a4aaa93c6cffa98be86dac742447de"
+              ],
+              "predictions": [
+                "Dr. Martinez",
+                "Dr. Martinez",
+                "Dr. Martinez"
+              ]
+            }
+          ]
+        },
+        "resource": {
+          "duration_seconds": 678.272,
+          "mlx_peak_memory_bytes": 16107857252,
+          "mlx_active_memory_bytes_before_unload": 15231233032,
+          "mlx_cache_memory_bytes_before_unload": 146158934
+        }
+      }
+    },
+    "paired": {
+      "row_count": 30,
+      "both_correct": 5,
+      "qwen3_4b_only_correct": 6,
+      "qwen25_7b_only_correct": 6,
+      "neither_correct": 13,
+      "discordant_count": 12,
+      "exact_two_sided_mcnemar_p_value": 1.0,
+      "accuracy_delta_qwen25_7b_minus_qwen3_4b": 0.0,
+      "details": [
+        {
+          "row_id": "drama_00109",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "drama_00295",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "drama_00340",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "drama_00659",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "drama_00689",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "drama_00923",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "drama_01042",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "drama_01236",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "drama_01341",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "drama_01517",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00021",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "expertise_00089",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00197",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "expertise_00278",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00344",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00373",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00443",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00552",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "expertise_00612",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "expertise_00663",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_01398",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "literary_05103",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "literary_06030",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_08911",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "literary_12676",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_13873",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_17903",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": true
+        },
+        {
+          "row_id": "literary_19939",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_21936",
+          "qwen3_4b_correct": false,
+          "qwen25_7b_correct": false
+        },
+        {
+          "row_id": "literary_26200",
+          "qwen3_4b_correct": true,
+          "qwen25_7b_correct": false
+        }
+      ]
+    }
+  },
+  "decision": {
+    "experiment_complete": true,
+    "model_gates": {
+      "qwen3_4b": {
+        "passed": false,
+        "checks": {
+          "lock_exact": true,
+          "parse_success_gate": false,
+          "above_chance_gate": false,
+          "wilson_lower_above_random_gate": false,
+          "prediction_repeat_gate": false
+        }
+      },
+      "qwen25_7b": {
+        "passed": false,
+        "checks": {
+          "lock_exact": true,
+          "parse_success_gate": false,
+          "above_chance_gate": false,
+          "wilson_lower_above_random_gate": false,
+          "prediction_repeat_gate": false
+        }
+      }
+    },
+    "selected_model_for_larger_validation": null,
+    "selection_reason": "neither_model_passed_all_preregistered_gates",
+    "passed": false,
+    "authorize_larger_disjoint_official_evaluator_validation": false,
+    "authorize_target_person_judging": false,
+    "authorize_human_rater_replacement": false,
+    "authorize_training": false,
+    "authorize_production": false
+  },
+  "raw_result": {
+    "path": "reports/personaeval_local_judge_model_selection_v1_raw.json",
+    "scope": "repository",
+    "role": "formal_paired_outputs_and_scores",
+    "sha256": "4663019d893aa91beb45087feb1996f3ce46d3ab9cd7fdcee7016da1dc1751c2"
+  },
+  "evidence_boundary": [
+    "This pilot selects an evaluator model; it does not evaluate UruhaBrain.",
+    "The 30-row balanced pilot is not an official full-dataset leaderboard score.",
+    "The generic system transport adapter prevents direct paper-score comparison.",
+    "A pass authorizes only a larger disjoint evaluator validation.",
+    "No result authorizes target-person scoring, human-rater replacement, training, or production."
+  ]
+}
