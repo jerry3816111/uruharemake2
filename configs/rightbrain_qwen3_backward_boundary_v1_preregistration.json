@@ -1,0 +1,371 @@
+{
+  "schema": "uruha_rightbrain_qwen3_backward_boundary_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_backward_boundary_v1",
+  "research_question": "With the full Qwen3 forward graph fixed, does cross-process gradient drift arise before the final hidden-state boundary in Transformer backward, after that boundary in tied-LM-head backward, or only when both paths are composed?",
+  "causal_variable": {
+    "name": "backward_path",
+    "levels": [
+      "full_chain_control",
+      "head_boundary_vjp",
+      "transformer_boundary_vjp"
+    ],
+    "full_chain_control": "masked cross entropy through tied LM head and all Transformer layers",
+    "head_boundary_vjp": "masked cross entropy through tied LM head to detached final hidden state",
+    "transformer_boundary_vjp": "fixed source-independent cotangent through final norm and all Transformer layers",
+    "only_intended_change": true
+  },
+  "evidence_parent": {
+    "result": {
+      "path": "reports/rightbrain_qwen3_loss_decomposition_v1_result.json",
+      "scope": "repository",
+      "sha256": "6229fce89a0ea304de82c07dc5f3a353ac6dbae45bb7b6278b25d73e839ce3dc"
+    },
+    "result_lock": {
+      "path": "configs/rightbrain_qwen3_loss_decomposition_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "731ee65a18542e9a4934f0fd66d0b52e59fe7dc706e54034ef285ef2c05bc60f"
+    },
+    "outcome": "drift_precedes_loss_decomposition_or_is_in_shared_model_backward",
+    "authorized_next_step": "localize_tied_lm_head_or_shared_transformer_backward"
+  },
+  "official_upstream_evidence": {
+    "mlx_repository": "https://github.com/ml-explore/mlx",
+    "mlx_lm_repository": "https://github.com/ml-explore/mlx-lm",
+    "local_qwen3_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx_lm/models/qwen3.py",
+      "scope": "external_local",
+      "sha256": "2284df96ecb669109b281df4534470b18f285aa9a5e41735ad682f601f93c639"
+    },
+    "local_loss_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/losses.py",
+      "scope": "external_local",
+      "sha256": "c40237732c83b97cf8a9b0409564cb9d1d9d1f161d42f15b127e19f385bdc479"
+    },
+    "model_config": {
+      "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/config.json",
+      "scope": "external_local",
+      "sha256": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba"
+    },
+    "implementation_note": "The installed Qwen3 implementation applies model.embed_tokens.as_linear as its tied LM head; this exact local source is hash-bound."
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false
+  },
+  "boundary_contract": {
+    "name": "final_normalized_hidden_state",
+    "shape": [
+      1,
+      511,
+      2560
+    ],
+    "tied_lm_head": "model.model.embed_tokens.as_linear",
+    "transformer_cotangent": {
+      "source": "numpy_pcg64_normalized_source_independent",
+      "seed": 20260803,
+      "dtype": "float32",
+      "shape": [
+        1,
+        511,
+        2560
+      ],
+      "sha256": "7e0304f5a242619c928e2a14bc871be0db9c43b1189665d75f6bc138d6c6c6f8",
+      "l2_norm_target": 1.0
+    }
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "base_compute_dtype": "bfloat16",
+    "allocated_sequence_length": 512,
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "adapter_dtype": "mlx.core.float32",
+    "conditions": [
+      "full_chain_control",
+      "head_boundary_vjp",
+      "transformer_boundary_vjp"
+    ],
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "fully_counterbalanced_execution_schedule": [
+      {
+        "repeat": 1,
+        "condition_order": [
+          "full_chain_control",
+          "head_boundary_vjp",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 2,
+        "condition_order": [
+          "full_chain_control",
+          "transformer_boundary_vjp",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 3,
+        "condition_order": [
+          "head_boundary_vjp",
+          "full_chain_control",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 4,
+        "condition_order": [
+          "head_boundary_vjp",
+          "transformer_boundary_vjp",
+          "full_chain_control"
+        ]
+      },
+      {
+        "repeat": 5,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "full_chain_control",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 6,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "head_boundary_vjp",
+          "full_chain_control"
+        ]
+      },
+      {
+        "repeat": 7,
+        "condition_order": [
+          "full_chain_control",
+          "head_boundary_vjp",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 8,
+        "condition_order": [
+          "full_chain_control",
+          "transformer_boundary_vjp",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 9,
+        "condition_order": [
+          "head_boundary_vjp",
+          "full_chain_control",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 10,
+        "condition_order": [
+          "head_boundary_vjp",
+          "transformer_boundary_vjp",
+          "full_chain_control"
+        ]
+      },
+      {
+        "repeat": 11,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "full_chain_control",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 12,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "head_boundary_vjp",
+          "full_chain_control"
+        ]
+      },
+      {
+        "repeat": 13,
+        "condition_order": [
+          "full_chain_control",
+          "head_boundary_vjp",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 14,
+        "condition_order": [
+          "full_chain_control",
+          "transformer_boundary_vjp",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 15,
+        "condition_order": [
+          "head_boundary_vjp",
+          "full_chain_control",
+          "transformer_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 16,
+        "condition_order": [
+          "head_boundary_vjp",
+          "transformer_boundary_vjp",
+          "full_chain_control"
+        ]
+      },
+      {
+        "repeat": 17,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "full_chain_control",
+          "head_boundary_vjp"
+        ]
+      },
+      {
+        "repeat": 18,
+        "condition_order": [
+          "transformer_boundary_vjp",
+          "head_boundary_vjp",
+          "full_chain_control"
+        ]
+      }
+    ],
+    "position_counts_by_condition": {
+      "full_chain_control": [
+        6,
+        6,
+        6
+      ],
+      "head_boundary_vjp": [
+        6,
+        6,
+        6
+      ],
+      "transformer_boundary_vjp": [
+        6,
+        6,
+        6
+      ]
+    },
+    "micro_steps_each": 1,
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "gradient_hashes_must_be_identical": true
+    },
+    "control_requirement": "full_chain_control_must_be_unstable",
+    "classifications": {
+      "head_unstable_transformer_stable": "tied_lm_head_backward_is_sufficient_to_reproduce_drift",
+      "head_stable_transformer_unstable": "shared_transformer_backward_is_sufficient_to_reproduce_drift",
+      "head_unstable_transformer_unstable": "both_backward_regions_independently_reproduce_drift",
+      "head_stable_transformer_stable": "composed_head_transformer_backward_is_required_to_reproduce_drift",
+      "control_stable": "full_chain_parent_drift_not_reproduced",
+      "execution_failure": "backward_boundary_execution_failed"
+    }
+  },
+  "success_authorization": {
+    "maximum_positive_next_step": "localize_the_identified_backward_region_only",
+    "training": false,
+    "persona_training": false,
+    "runtime_activation": false,
+    "persona_similarity_claim": false
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "training_authorization": false,
+    "scope": "full_qwen3_backward_boundary_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_backward_boundary_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_backward_boundary_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_backward_boundary_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_backward_boundary_v1_result_lock.json"
+  }
+}

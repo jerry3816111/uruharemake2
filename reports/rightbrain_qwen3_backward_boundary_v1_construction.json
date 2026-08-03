@@ -1,0 +1,209 @@
+{
+  "schema": "uruha_rightbrain_qwen3_backward_boundary_construction_v1",
+  "experiment_id": "rightbrain_qwen3_backward_boundary_v1",
+  "preregistration": {
+    "path": "configs/rightbrain_qwen3_backward_boundary_v1_preregistration.json",
+    "scope": "repository",
+    "sha256": "e71aa4c9c4c6d25bdfba8474f72f8074fe981a2de078881ee86720dae1d567ab"
+  },
+  "conditions": [
+    "full_chain_control",
+    "head_boundary_vjp",
+    "transformer_boundary_vjp"
+  ],
+  "repetitions_each": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "execution_schedule": [
+    {
+      "repeat": 1,
+      "condition_order": [
+        "full_chain_control",
+        "head_boundary_vjp",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 2,
+      "condition_order": [
+        "full_chain_control",
+        "transformer_boundary_vjp",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 3,
+      "condition_order": [
+        "head_boundary_vjp",
+        "full_chain_control",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 4,
+      "condition_order": [
+        "head_boundary_vjp",
+        "transformer_boundary_vjp",
+        "full_chain_control"
+      ]
+    },
+    {
+      "repeat": 5,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "full_chain_control",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 6,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "head_boundary_vjp",
+        "full_chain_control"
+      ]
+    },
+    {
+      "repeat": 7,
+      "condition_order": [
+        "full_chain_control",
+        "head_boundary_vjp",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 8,
+      "condition_order": [
+        "full_chain_control",
+        "transformer_boundary_vjp",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 9,
+      "condition_order": [
+        "head_boundary_vjp",
+        "full_chain_control",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 10,
+      "condition_order": [
+        "head_boundary_vjp",
+        "transformer_boundary_vjp",
+        "full_chain_control"
+      ]
+    },
+    {
+      "repeat": 11,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "full_chain_control",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 12,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "head_boundary_vjp",
+        "full_chain_control"
+      ]
+    },
+    {
+      "repeat": 13,
+      "condition_order": [
+        "full_chain_control",
+        "head_boundary_vjp",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 14,
+      "condition_order": [
+        "full_chain_control",
+        "transformer_boundary_vjp",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 15,
+      "condition_order": [
+        "head_boundary_vjp",
+        "full_chain_control",
+        "transformer_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 16,
+      "condition_order": [
+        "head_boundary_vjp",
+        "transformer_boundary_vjp",
+        "full_chain_control"
+      ]
+    },
+    {
+      "repeat": 17,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "full_chain_control",
+        "head_boundary_vjp"
+      ]
+    },
+    {
+      "repeat": 18,
+      "condition_order": [
+        "transformer_boundary_vjp",
+        "head_boundary_vjp",
+        "full_chain_control"
+      ]
+    }
+  ],
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "boundary_contract": {
+    "name": "final_normalized_hidden_state",
+    "shape": [
+      1,
+      511,
+      2560
+    ],
+    "tied_lm_head": "model.model.embed_tokens.as_linear",
+    "transformer_cotangent": {
+      "source": "numpy_pcg64_normalized_source_independent",
+      "seed": 20260803,
+      "dtype": "float32",
+      "shape": [
+        1,
+        511,
+        2560
+      ],
+      "sha256": "7e0304f5a242619c928e2a14bc871be0db9c43b1189665d75f6bc138d6c6c6f8",
+      "l2_norm_target": 1.0
+    }
+  },
+  "ready": true
+}
