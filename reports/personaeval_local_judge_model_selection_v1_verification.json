@@ -1,0 +1,84 @@
+{
+  "schema": "personaeval_local_judge_model_selection_verification_v1",
+  "experiment_id": "personaeval_local_judge_model_selection_v1",
+  "passed": true,
+  "checks": {
+    "source_and_model_revisions_exact": true,
+    "prompt_label_hashes_exact": true,
+    "labels_absent_and_holdout_disjoint": true,
+    "generation_isolation_exact": true,
+    "row_scores_exact": true,
+    "aggregate_and_repeat_metrics_exact": true,
+    "paired_statistics_exact": true,
+    "decision_exact_and_narrow": true,
+    "raw_result_binding_exact": true
+  },
+  "recomputed": {
+    "models": {
+      "qwen3_4b": {
+        "row_count": 30,
+        "parsed_count": 27,
+        "correct_count": 11,
+        "parse_success_rate": 0.9,
+        "unconditional_top1_accuracy": 0.36666666666666664,
+        "unconditional_top1_wilson_95": [
+          0.21873920806100708,
+          0.5448643634520511
+        ],
+        "random_choice_expected_accuracy": 0.23333333333333334,
+        "exact_chance_superiority_p_value": 0.06988746020436806,
+        "repeat_prediction_agreement": 0.8888888888888888
+      },
+      "qwen25_7b": {
+        "row_count": 30,
+        "parsed_count": 24,
+        "correct_count": 11,
+        "parse_success_rate": 0.8,
+        "unconditional_top1_accuracy": 0.36666666666666664,
+        "unconditional_top1_wilson_95": [
+          0.21873920806100708,
+          0.5448643634520511
+        ],
+        "random_choice_expected_accuracy": 0.23333333333333334,
+        "exact_chance_superiority_p_value": 0.06988746020436806,
+        "repeat_prediction_agreement": 0.8888888888888888
+      }
+    },
+    "paired": {
+      "qwen3_4b_only_correct": 6,
+      "qwen25_7b_only_correct": 6,
+      "exact_two_sided_mcnemar_p_value": 1.0,
+      "accuracy_delta_qwen25_7b_minus_qwen3_4b": 0.0
+    },
+    "model_gates": {
+      "qwen3_4b": {
+        "passed": false,
+        "checks": {
+          "lock_exact": true,
+          "parse_success_gate": false,
+          "above_chance_gate": false,
+          "wilson_lower_above_random_gate": false,
+          "prediction_repeat_gate": false
+        }
+      },
+      "qwen25_7b": {
+        "passed": false,
+        "checks": {
+          "lock_exact": true,
+          "parse_success_gate": false,
+          "above_chance_gate": false,
+          "wilson_lower_above_random_gate": false,
+          "prediction_repeat_gate": false
+        }
+      }
+    },
+    "selected_model": null
+  },
+  "verified_authorization": {
+    "larger_disjoint_official_evaluator_validation": false,
+    "target_person_judging": false,
+    "human_rater_replacement": false,
+    "training": false,
+    "production": false
+  }
+}

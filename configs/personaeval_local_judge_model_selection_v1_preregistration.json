@@ -1,0 +1,348 @@
+{
+  "schema": "personaeval_local_judge_model_selection_preregistration_v1",
+  "experiment_id": "personaeval_local_judge_model_selection_v1",
+  "research_question": "With batch size fixed to one, which already-local model is a reliable PersonaEval role-identification judge on a disjoint official pilot?",
+  "official_provenance": {
+    "paper_url": "https://arxiv.org/abs/2508.10014",
+    "dataset_url": "https://huggingface.co/datasets/lingfengzhou/PersonaEval",
+    "dataset": "lingfengzhou/PersonaEval",
+    "dataset_commit": "f65c77a992414af9de49debdc6f607b4a2e472d8",
+    "dataset_license": "CC-BY-4.0",
+    "code_url": "https://github.com/maple-zhou/PersonaEval",
+    "code_commit": "19f7568a84f52e206dccdf67146235c8376cec9c",
+    "code_license": "MIT",
+    "upstream_verified": {
+      "huggingface_commit": "f65c77a992414af9de49debdc6f607b4a2e472d8",
+      "github_commit": "19f7568a84f52e206dccdf67146235c8376cec9c",
+      "dataset_license": "cc-by-4.0",
+      "source_objects": {
+        "Drama.csv": {
+          "size": 33711931,
+          "git_oid": "f3c8356689070062817c42a1d7fe4a429c30c9be",
+          "lfs_sha256": "655de08e0df8e2780856900bcaf7e47f3baa0c4c9c421ad393d157c7752c96d0"
+        },
+        "Expertise.csv": {
+          "size": 2319938,
+          "git_oid": "2478b6b8b484bb9711457ebb9f57ede653e2ff6d",
+          "lfs_sha256": null
+        },
+        "Literary.csv": {
+          "size": 581316853,
+          "git_oid": "23a5d470963de377cf395cf2c0cc0a739ccec5ab",
+          "lfs_sha256": "04cfa3116d64694b72f921012bb60787dbd7ae6aec5114d0faaa4fe13e6accd3"
+        }
+      }
+    },
+    "model_revisions_verified": {
+      "qwen3_4b": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "qwen25_7b": "a09a35458c702b33eeacc393d103063234e8bc28"
+    }
+  },
+  "official_harness_compatibility": {
+    "official_user_prompt_exact": true,
+    "generic_json_only_system_transport_adapter": "Execute the user's role-identification task. Return only the final JSON object requested by the user. Do not output analysis, explanations, markdown, or code fences. Preserve every candidate name exactly. Use a finite probability from 0 to 1 for every candidate. Before returning, recalculate the total; if needed, set the final candidate to 1 minus the sum of the others so the probabilities total exactly 1.0.",
+    "direct_official_leaderboard_comparability": false,
+    "strict_official_probability_sum_parser": true,
+    "expertise_all_five_options_scored": true,
+    "all_generation_or_parse_errors_count_wrong": true
+  },
+  "pilot_design": {
+    "tracks": {
+      "Drama": {
+        "row_count": 1658,
+        "option_count": 4
+      },
+      "Expertise": {
+        "row_count": 699,
+        "option_count": 5
+      },
+      "Literary": {
+        "row_count": 26208,
+        "option_count": 4
+      }
+    },
+    "sample_count_per_track": 10,
+    "primary_row_count": 30,
+    "selection_method": {
+      "method": "one_hash_selected_disjoint_row_per_equal_width_eligible_stratum",
+      "seed": "personaeval_local_judge_model_selection_v1",
+      "sample_count_per_track": 10,
+      "excluded_previous_primary_rows": true,
+      "excluded_transport_smoke_rows": true,
+      "content_and_labels_unread_before_index_selection": true
+    },
+    "primary_row_ids": [
+      "drama_00109",
+      "drama_00295",
+      "drama_00340",
+      "drama_00659",
+      "drama_00689",
+      "drama_00923",
+      "drama_01042",
+      "drama_01236",
+      "drama_01341",
+      "drama_01517",
+      "expertise_00021",
+      "expertise_00089",
+      "expertise_00197",
+      "expertise_00278",
+      "expertise_00344",
+      "expertise_00373",
+      "expertise_00443",
+      "expertise_00552",
+      "expertise_00612",
+      "expertise_00663",
+      "literary_01398",
+      "literary_05103",
+      "literary_06030",
+      "literary_08911",
+      "literary_12676",
+      "literary_13873",
+      "literary_17903",
+      "literary_19939",
+      "literary_21936",
+      "literary_26200"
+    ],
+    "repeat_audit_row_ids": [
+      "drama_00340",
+      "drama_00923",
+      "drama_01042",
+      "expertise_00612",
+      "expertise_00443",
+      "expertise_00278",
+      "literary_05103",
+      "literary_21936",
+      "literary_17903"
+    ],
+    "repeat_audit_repetitions": 3,
+    "generation_calls_per_model": 48,
+    "total_generation_calls": 96,
+    "disjoint_from_previous_personaeval_pilot": true
+  },
+  "independent_variable": {
+    "name": "local_judge_model_snapshot",
+    "levels": [
+      "qwen3_4b",
+      "qwen25_7b"
+    ]
+  },
+  "controlled_variables": {
+    "model_order": [
+      "qwen3_4b",
+      "qwen25_7b"
+    ],
+    "user_prompt": "official_prompt_exactly_as_released",
+    "system_message": "Execute the user's role-identification task. Return only the final JSON object requested by the user. Do not output analysis, explanations, markdown, or code fences. Preserve every candidate name exactly. Use a finite probability from 0 to 1 for every candidate. Before returning, recalculate the total; if needed, set the final candidate to 1 minus the sum of the others so the probabilities total exactly 1.0.",
+    "temperature": 0.0,
+    "sampler": "greedy",
+    "maximum_new_tokens": 256,
+    "maximum_prompt_tokens": 65536,
+    "batch_size": 1,
+    "memory": "disabled",
+    "retrieval": "disabled",
+    "persona_prompt": "disabled",
+    "adapter": "none",
+    "training_updates": 0,
+    "device": "mlx_gpu",
+    "seed": 20260803
+  },
+  "label_isolation": {
+    "prompt_dataset_contains_ground_truth": false,
+    "label_file_loaded_after_both_models_finish_all_generation": true,
+    "ground_truth_passed_to_model": false,
+    "correct_answer_used_for_retry_or_prompt_repair": false
+  },
+  "primary_metrics": [
+    "unconditional_top1_accuracy",
+    "strict_parse_success_rate",
+    "exact_poisson_binomial_chance_superiority",
+    "prediction_repeat_agreement",
+    "paired_exact_mcnemar"
+  ],
+  "decision_rule": {
+    "per_model_minimum_parse_success_rate": 0.95,
+    "per_model_maximum_chance_superiority_p_value": 0.05,
+    "per_model_require_wilson_lower_above_random": true,
+    "per_model_minimum_prediction_repeat_agreement": 1.0,
+    "if_only_one_model_passes": "select_that_model_for_larger_validation",
+    "if_both_pass_and_mcnemar_p_le_0_05": "select_more_accurate_model",
+    "if_both_pass_without_significant_accuracy_difference": "select_qwen3_4b_lower_resource_model",
+    "if_neither_passes": "reject_both_as_target_person_judges",
+    "pass_authorizes_only": "larger_disjoint_official_evaluator_validation"
+  },
+  "model_contracts": {
+    "qwen3_4b": {
+      "name": "Qwen/Qwen3-4B-Instruct-2507",
+      "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+      "snapshot_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "files": [
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/generation_config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "835fffe355c9438e7a25be099b3fccaa98350b83451f9fd2d99512e74f1ade48"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/model.safetensors.index.json",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "d6c42883a895dfef5b0080ed2116a1bcd764f558406b98923d675978a1abf29c"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/model-00001-of-00003.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "75311d91bb08cf0b882913da464a1e722a31fb44db35208663487efb7a3d8ed6"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/model-00002-of-00003.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "0b48adbb1f60e901153d91907ba11ce63bd4b8b584482e730f48808d055dfba1"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/model-00003-of-00003.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "7dd39ccca5e4de123c74c14af44c9bf2eb75df33b4614382af0134528e060d5d"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/tokenizer.json",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554/tokenizer_config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen3_4b_model",
+          "sha256": "a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3"
+        }
+      ]
+    },
+    "qwen25_7b": {
+      "name": "Qwen/Qwen2.5-7B-Instruct",
+      "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+      "snapshot_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "files": [
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "7463bb0ea78315365e6c6b74de4e73bbcc8359dfb0c5a737584e077d42c0b03c"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/generation_config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "3a8f9087e486054c8a4a08dae2e5a3ba62e23da212b5b8c08bc42cb983c3459f"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/merges.txt",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/model.safetensors.index.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/model-00001-of-00004.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "a1333e6293854747c481288ea83b348226af178dd565c49b6f9495ba1966aba7"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/model-00002-of-00004.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "f5d25a2772cb825164a2a2c0fb6d51a87e282abf21e4dd75bc5cfb3cd0ea6185"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/model-00003-of-00004.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "8efdec4c1bc12317ae1a38dc42b595ce777738a64deea3fcb8a0a91381bcdfd5"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/model-00004-of-00004.safetensors",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "1a72d403cdf0c1ec3cb7f289f17b394a01e64394c2e9b3c0f94dbce3faf879bd"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/tokenizer.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/tokenizer_config.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583"
+        },
+        {
+          "path": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28/vocab.json",
+          "scope": "external_local",
+          "role": "frozen_qwen25_7b_model",
+          "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+        }
+      ]
+    }
+  },
+  "local_environment": {
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "json_repair": {
+      "version": "0.47.8",
+      "target": "/Users/jerrychang/.cache/uruhabrain/personaeval-official-pilot-v1-deps"
+    },
+    "platform": "macOS-15.6.1-arm64-arm-64bit"
+  },
+  "dataset_contract": {
+    "prompts": {
+      "path": "datasets/personaeval_local_judge_model_selection_v1_prompts.json",
+      "scope": "repository",
+      "role": "label_free_official_prompts",
+      "sha256": "fe5b65aa421cce61083ec1042ada6337047705bef6e076dd3581e26140845258"
+    },
+    "labels": {
+      "path": "datasets/personaeval_local_judge_model_selection_v1_labels.json",
+      "scope": "repository",
+      "role": "isolated_official_labels",
+      "sha256": "0ca8ef4e191451529be0eb78dcdcd57e253ece2ef370e2eab6a2dbc99c8ce421"
+    },
+    "prompt_rows_sha256": "c609515ab952802f2d8f2618a9e672916e3ac5e892adf53166fbef551d275f0b",
+    "label_rows_sha256": "24c915f8faa20099f877e9be0c792e86cc749e1f553cc42394a9d2bec54d6c24"
+  },
+  "result_paths": {
+    "raw": "reports/personaeval_local_judge_model_selection_v1_raw.json",
+    "result": "reports/personaeval_local_judge_model_selection_v1_result.json",
+    "markdown": "reports/personaeval_local_judge_model_selection_v1_result.md"
+  },
+  "boundaries": [
+    "This pilot selects an evaluator model; it does not evaluate UruhaBrain.",
+    "The 30-row balanced pilot is not an official full-dataset leaderboard score.",
+    "The generic system transport adapter prevents direct paper-score comparison.",
+    "A pass authorizes only a larger disjoint evaluator validation.",
+    "No result authorizes target-person scoring, human-rater replacement, training, or production."
+  ]
+}
