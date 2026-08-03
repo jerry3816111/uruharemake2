@@ -1,0 +1,127 @@
+{
+  "schema": "uruha_rightbrain_qwen3_provider_signal_position_result_v1",
+  "experiment_id": "rightbrain_qwen3_provider_signal_position_v1",
+  "preregistration": {
+    "path": "configs/rightbrain_qwen3_provider_signal_position_v1_preregistration.json",
+    "scope": "repository",
+    "sha256": "6dfd3136b21e601efad6a38f14369671d2c46d985a70867cd9c7bc4839a85b94"
+  },
+  "execution_lock": {
+    "path": "configs/rightbrain_qwen3_provider_signal_position_v1_execution_lock.json",
+    "scope": "repository",
+    "sha256": "61410f673237e62048786146e6d6ec19355bd8b0882dc5c226affb9ff3d21ba4"
+  },
+  "repeat_results": [
+    {
+      "path": "reports/rightbrain_qwen3_provider_signal_position_v1_repeat_1.json",
+      "scope": "repository",
+      "sha256": "39c5acb0156d8e15874f22b8267e625f44cb16b4988df218eba20adbbd7d73fd"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_provider_signal_position_v1_repeat_2.json",
+      "scope": "repository",
+      "sha256": "57d13020b45fcd810a9e0ea4e7778a7bb4e394ea91095a9d78d7fc893bb3b008"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_provider_signal_position_v1_repeat_3.json",
+      "scope": "repository",
+      "sha256": "bcc322523fbb5d2e7bc2f6c0ad8576bdb93bb45611e93ece26b6d71041055fe4"
+    }
+  ],
+  "measurements": {
+    "nested_control": {
+      "row_count": 8,
+      "semantic_complete_rate": 1.0,
+      "marker_group_coverage_rate": 1.0,
+      "forbidden_pass_rate": 1.0,
+      "length_pass_rate": 1.0,
+      "casual_japanese_pass_rate": 1.0,
+      "memory_policy_pass_rate": 1.0,
+      "joint_contract_pass_rate": 1.0,
+      "joint_contract_pass_count": 8,
+      "provider_pair_difference_rate": 0.25,
+      "provider_pair_difference_count": 1,
+      "provider_pair_count": 4,
+      "reference_bigram_f1_mean": 0.3511044971510204,
+      "provider_alignment_margin_mean": 0.0004702194357366768,
+      "correct_provider_alignment_rate": 0.5,
+      "correct_provider_alignment_count": 4,
+      "exact_reference_copy_count": 0
+    },
+    "top_level_signal": {
+      "row_count": 8,
+      "semantic_complete_rate": 1.0,
+      "marker_group_coverage_rate": 1.0,
+      "forbidden_pass_rate": 0.875,
+      "length_pass_rate": 1.0,
+      "casual_japanese_pass_rate": 1.0,
+      "memory_policy_pass_rate": 0.75,
+      "joint_contract_pass_rate": 0.75,
+      "joint_contract_pass_count": 6,
+      "provider_pair_difference_rate": 0.75,
+      "provider_pair_difference_count": 3,
+      "provider_pair_count": 4,
+      "reference_bigram_f1_mean": 0.3735574685881399,
+      "provider_alignment_margin_mean": -0.005204174247423213,
+      "correct_provider_alignment_rate": 0.625,
+      "correct_provider_alignment_count": 5,
+      "exact_reference_copy_count": 0
+    },
+    "candidate_minus_control": {
+      "changed_output_count": 7,
+      "joint_contract_improvement_count": 0,
+      "joint_contract_regression_count": 2,
+      "provider_pair_difference_rate_delta": 0.5,
+      "provider_alignment_margin_delta": -0.00567439368315989,
+      "correct_provider_alignment_rate_delta": 0.125,
+      "joint_contract_pass_rate_delta": -0.25
+    },
+    "condition_output_hashes": {
+      "nested_control": [
+        "1dcebafd596285b1a3e3336ded2ad295377e38238d7788edb929ce84b2365bb4",
+        "1dcebafd596285b1a3e3336ded2ad295377e38238d7788edb929ce84b2365bb4",
+        "1dcebafd596285b1a3e3336ded2ad295377e38238d7788edb929ce84b2365bb4"
+      ],
+      "top_level_signal": [
+        "5b4a3023d8aff7abd60df28d1ca9ab8d2662f4ebba8c8b059620fbad39531fdd",
+        "5b4a3023d8aff7abd60df28d1ca9ab8d2662f4ebba8c8b059620fbad39531fdd",
+        "5b4a3023d8aff7abd60df28d1ca9ab8d2662f4ebba8c8b059620fbad39531fdd"
+      ]
+    },
+    "peak_memory_bytes_maximum": 8550666328,
+    "duration_seconds": [
+      49.69,
+      49.77,
+      49.92
+    ]
+  },
+  "checks": {
+    "all_repetitions_complete": true,
+    "each_condition_reproducible": true,
+    "candidate_outputs_changed": true,
+    "provider_pair_difference_improved": true,
+    "provider_alignment_margin_improved": false,
+    "correct_provider_alignment_not_regressed": true,
+    "joint_contract_noninferior": false,
+    "no_exact_reference_copy": true,
+    "resource_within_limit": true,
+    "all_contracts_exact": true
+  },
+  "decision": {
+    "experiment_complete": true,
+    "passed": false,
+    "outcome": "provider_signal_position_contract_regressed",
+    "authorized_next_step": "diagnose_provider_signal_position_failure",
+    "full_pipeline_holdout_authorized": false,
+    "authorize_persistent_training": false,
+    "authorize_persona_training": false,
+    "authorize_adapter_save": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "evidence_boundary": [
+    "A pass would show only that this local model reads the same provider signal more effectively at a top-level JSON path.",
+    "It would not prove target-person fidelity, persistent learning, full-pipeline benefit, or production readiness.",
+    "The references are synthetic acceptable outputs used after generation only."
+  ]
+}
