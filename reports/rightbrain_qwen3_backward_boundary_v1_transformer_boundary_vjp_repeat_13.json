@@ -1,0 +1,136 @@
+{
+  "schema": "uruha_rightbrain_qwen3_backward_boundary_repeat_v1",
+  "experiment_id": "rightbrain_qwen3_backward_boundary_v1",
+  "condition": "transformer_boundary_vjp",
+  "repeat": 13,
+  "execution_success": true,
+  "environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "runtime_contract": {
+    "device": "Device(gpu, 0)",
+    "base_compute_dtype": "bfloat16",
+    "full_transformer_forward_path": true,
+    "gradient_checkpointing_enabled": false,
+    "optimizer_instantiated": false,
+    "optimizer_steps": 0
+  },
+  "base_contract": {
+    "parameter_count": 4022468096,
+    "dtypes": [
+      "mlx.core.bfloat16"
+    ],
+    "exact": true
+  },
+  "adapter_contract": {
+    "tensor_count": 504,
+    "parameter_count": 66060288,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5",
+    "exact": true
+  },
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16,
+    "source": {
+      "parent_row_index": 63,
+      "parent_row_id": "rb_role_specialization_v1_0064",
+      "parent_active_tokens": 674,
+      "slice": [
+        610,
+        674
+      ],
+      "labelled_tokens": 16
+    },
+    "token_count_from_loss": 16
+  },
+  "forward_boundary": {
+    "norm": 4714.51783896777,
+    "finite_elements": 1308160,
+    "total_elements": 1308160,
+    "all_elements_finite": true,
+    "sha256": "fcb35c6e8684c3572bbe15154d4e52854af5d4fb991da89d7ca71296273d8c7f",
+    "profile": {
+      "other": 4714.51783896777
+    }
+  },
+  "cotangent_contract": {
+    "sha256": "7e0304f5a242619c928e2a14bc871be0db9c43b1189665d75f6bc138d6c6c6f8",
+    "shape": [
+      1,
+      511,
+      2560
+    ],
+    "measurement": {
+      "norm": 1.0006040252226684,
+      "finite_elements": 1308160,
+      "total_elements": 1308160,
+      "all_elements_finite": true,
+      "sha256": "13ab17b719f3ee92f24f27f9d925382bad65d830d2db031f00907592f82d2f49",
+      "profile": {
+        "other": 1.0006040252226684
+      }
+    }
+  },
+  "loss": 0.7349386215209961,
+  "gradient": {
+    "norm": 23.24990520383269,
+    "finite_elements": 66060288,
+    "total_elements": 66060288,
+    "all_elements_finite": true,
+    "sha256": "0ab02c687e4aceb90092cf6478625683a5be312512331c184e4b4abe813c75f9",
+    "profile": {
+      "down_proj.lora_a": 0.0,
+      "down_proj.lora_b": 10.019698038401394,
+      "gate_proj.lora_a": 0.0,
+      "gate_proj.lora_b": 8.218367760612058,
+      "k_proj.lora_a": 0.0,
+      "k_proj.lora_b": 7.533579667641111,
+      "o_proj.lora_a": 0.0,
+      "o_proj.lora_b": 6.2686813503327015,
+      "q_proj.lora_a": 0.0,
+      "q_proj.lora_b": 7.399014285508464,
+      "up_proj.lora_a": 0.0,
+      "up_proj.lora_b": 9.519227689247131,
+      "v_proj.lora_a": 0.0,
+      "v_proj.lora_b": 11.454688030679916
+    }
+  },
+  "parameter_integrity": {
+    "before_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5",
+    "after_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5",
+    "unchanged": true
+  },
+  "resource": {
+    "duration_seconds": 5.865,
+    "mlx_active_memory_bytes": 8581287444,
+    "mlx_cache_memory_bytes": 5364734532,
+    "mlx_peak_memory_bytes": 13565191590,
+    "process_peak_resident_memory_bytes": 8884600832
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "training_authorization": false,
+    "scope": "full_qwen3_backward_boundary_localization_only"
+  }
+}
