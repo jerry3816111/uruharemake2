@@ -1,0 +1,228 @@
+{
+  "schema": "uruha_rightbrain_qwen3_active_head_short_trajectory_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_active_head_short_trajectory_v1",
+  "research_question": "Does the stable active-head Qwen3 training path produce a finite, bounded, exactly reproducible, and measurably descending loss trajectory over 32 ephemeral updates on the same source-independent micro-batch?",
+  "causal_scope": {
+    "name": "ephemeral_short_optimizer_trajectory",
+    "predecessor": "bounded_reproducible_single_optimizer_update",
+    "only_new_operation": "increase_optimizer_updates_from_1_to_32",
+    "unchanged": [
+      "base_model",
+      "lora_initialization",
+      "source_independent_batch",
+      "active_head_objective",
+      "optimizer_hyperparameters",
+      "gradient_clipping",
+      "device_and_environment"
+    ],
+    "persistent_artifact_written": false
+  },
+  "evidence_parent": {
+    "preregistration": {
+      "path": "configs/rightbrain_qwen3_active_head_single_update_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "b875d35076a9b900a3d2c0570d61f7e5f68f87d9e0f85bc6a467bb5ada1ce0c1"
+    },
+    "result": {
+      "path": "reports/rightbrain_qwen3_active_head_single_update_v1_result.json",
+      "scope": "repository",
+      "sha256": "01b1f4759bfaacf35b30d45cf1a68843983a476becd0efaa40b472e2c7313cbe"
+    },
+    "result_lock": {
+      "path": "configs/rightbrain_qwen3_active_head_single_update_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "8f203689f710e9faedd2d94bbaa092b4f78987b0df23d8b450850ebaabac8403"
+    },
+    "outcome": "active_head_single_update_canary_passed",
+    "authorized_next_step": "preregister_short_active_head_training_trajectory_probe"
+  },
+  "official_upstream_evidence": {
+    "mlx_repository": "https://github.com/ml-explore/mlx",
+    "mlx_lm_repository": "https://github.com/ml-explore/mlx-lm",
+    "optimizer_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/optimizers/optimizers.py",
+      "scope": "external_local",
+      "sha256": "edad1d2c1bc4052e55a6e9b7558d5b2fcfa65758caeeba6017ae3a0d0081975b"
+    },
+    "implementation": "The parent MLX clip_grad_norm + AdamW path is repeated without changing optimizer hyperparameters."
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false
+  },
+  "active_position_contract": {
+    "positions": [
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62
+    ],
+    "count": 16,
+    "sha256": "9db0d6dd6cf26c66dd2ac2f26458fc7a66e4d7c2a36b25706a74a5f4ba80d0a8",
+    "dense_position_count": 511,
+    "ignored_position_count": 495
+  },
+  "optimizer_contract": {
+    "name": "mlx.optimizers.AdamW",
+    "learning_rate": 3e-07,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "epsilon": 1e-06,
+    "weight_decay": 0.02,
+    "bias_correction": false,
+    "maximum_gradient_norm": 0.3,
+    "optimizer_updates_exact": 32
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "base_compute_dtype": "bfloat16",
+    "allocated_sequence_length": 512,
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "adapter_dtype": "mlx.core.float32",
+    "active_head_position_count": 16,
+    "isolated_repetitions": [
+      1,
+      2,
+      3
+    ],
+    "micro_steps_each": 32,
+    "optimizer_updates_each": 32,
+    "loss_observations_each": 33,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "all_repetitions_successful": true,
+      "trajectory_hashes_identical": true,
+      "post_update_parameter_hashes_identical": true,
+      "optimizer_state_hashes_identical": true,
+      "parameter_hash_must_change": true,
+      "parameter_delta_l2_minimum_exclusive": 0.0,
+      "parameter_delta_l2_maximum": 0.5,
+      "parameter_relative_delta_maximum": 0.02,
+      "parameter_max_absolute_delta_maximum": 0.001,
+      "clipped_gradient_norm_maximum": 0.300001,
+      "final_loss_decrease_minimum": 0.0078125,
+      "best_loss_decrease_minimum": 0.0078125,
+      "tail_median_vs_head_median_decrease_minimum": 0.0078125,
+      "head_window_observations": 8,
+      "tail_window_observations": 8,
+      "parameter_delta_cv_maximum": 1e-12,
+      "optimizer_step_exact": 32,
+      "initial_loss_exact": 5.05078125,
+      "all_values_finite": true
+    },
+    "success_outcome": "active_head_short_trajectory_converged",
+    "failure_outcomes": [
+      "short_trajectory_execution_failed",
+      "short_trajectory_nonfinite",
+      "short_trajectory_did_not_mutate_parameters",
+      "short_trajectory_not_reproducible",
+      "short_trajectory_exceeded_mutation_bounds",
+      "short_trajectory_did_not_converge"
+    ]
+  },
+  "success_authorization": {
+    "maximum_positive_next_step": "preregister_source_independent_multibatch_active_head_learning_probe",
+    "persistent_training": false,
+    "persona_training": false,
+    "adapter_save": false,
+    "runtime_activation": false,
+    "persona_similarity_claim": false
+  },
+  "boundaries": {
+    "ephemeral_optimizer_instantiation": true,
+    "ephemeral_optimizer_updates_exact": 32,
+    "parameter_mutation_in_process": true,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "persona_training": false,
+    "benchmark_training": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "persistent_training_authorization": false,
+    "scope": "qwen3_active_head_short_micro_overfit_trajectory_only"
+  },
+  "interpretation_limits": [
+    "A pass proves local optimizer-path learnability on one frozen micro-batch only.",
+    "It does not prove multi-batch learning, holdout generalization, persona fidelity, or production readiness.",
+    "A failure is evidence to diagnose objective precision or optimizer scale before using persona data."
+  ],
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_active_head_short_trajectory_v1_repeat_",
+    "aggregate_json": "reports/rightbrain_qwen3_active_head_short_trajectory_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_active_head_short_trajectory_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_active_head_short_trajectory_v1_result_lock.json"
+  }
+}
