@@ -1,0 +1,249 @@
+{
+  "schema": "uruha_rightbrain_qwen3_active_head_vjp_execution_lock_v1",
+  "experiment_id": "rightbrain_qwen3_active_head_vjp_v1",
+  "bindings": [
+    {
+      "path": "configs/rightbrain_qwen3_active_head_vjp_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "b8ff9c99744c433451a3ca6b5bd59805856534a7e6d37d1a952bc5a1dcd08132"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_active_head_vjp_v1_construction.json",
+      "scope": "repository",
+      "sha256": "6146a80ad3f1188c73e237aa09f66c9ed6e3adacd520fd6be167050154beef13"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_active_head_vjp_v1_construction.md",
+      "scope": "repository",
+      "sha256": "8c3715e96a154a74aa60969d6caee9dd5a3490c35b567f538c9303c409f79851"
+    },
+    {
+      "path": "build_rightbrain_qwen3_active_head_vjp_v1.py",
+      "scope": "repository",
+      "sha256": "3d8387fb70b26475e45ed5ac410f59235e96a9c152bb1da6237d36d881fb4eb2"
+    },
+    {
+      "path": "run_rightbrain_qwen3_active_head_vjp_v1.py",
+      "scope": "repository",
+      "sha256": "4dbaeeb9cc8aad6e4817c079c6fc72bcac03f48094e6e1a882a1f9372544b6f9"
+    },
+    {
+      "path": "test_rightbrain_qwen3_active_head_vjp_v1.py",
+      "scope": "repository",
+      "sha256": "1ee28b20552628ab31f81e13f056ddf4b8c8a8704b1ab317825ec109b2f86f29"
+    },
+    {
+      "path": "configs/rightbrain_qwen3_backward_boundary_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "e71aa4c9c4c6d25bdfba8474f72f8074fe981a2de078881ee86720dae1d567ab"
+    },
+    {
+      "path": "reports/rightbrain_qwen3_backward_boundary_v1_result.json",
+      "scope": "repository",
+      "sha256": "f3d38e32919d301ef9503c5f267d69761d35964c8186af69497a46c4171a0676"
+    },
+    {
+      "path": "configs/rightbrain_qwen3_backward_boundary_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "07e4d655d13830cf1da1a0ae12ddf88b70959fd4cd49970ff2fb8544603aab3c"
+    },
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/embedding.py",
+      "scope": "external_local",
+      "sha256": "f77b039903294c6e880c503a953ea86b43aac36661b724cc9c38e3ed1969e3a8"
+    },
+    {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/linear.py",
+      "scope": "external_local",
+      "sha256": "54a5d91724484e64f1afd63aad5adbd52301f3d55d29e13bccfa61c051b2d624"
+    },
+    {
+      "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+      "scope": "repository",
+      "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5"
+    }
+  ],
+  "authorization": {
+    "conditions": [
+      "dense_mask_after_loss",
+      "dense_gather_before_loss",
+      "active_gather_before_head"
+    ],
+    "allocated_sequence_length": 512,
+    "active_position_count": 16,
+    "vocabulary_size": 151936,
+    "base_compute_dtype": "bfloat16",
+    "device": "gpu",
+    "repetitions_each": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "fully_counterbalanced_execution_schedule": [
+      {
+        "repeat": 1,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 2,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 3,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 4,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 5,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 6,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 7,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 8,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 9,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 10,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 11,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 12,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 13,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 14,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 15,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 16,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 17,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 18,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      }
+    ],
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false
+  }
+}

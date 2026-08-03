@@ -1,0 +1,399 @@
+{
+  "schema": "uruha_rightbrain_qwen3_active_head_vjp_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_active_head_vjp_v1",
+  "research_question": "Does moving the completion-label mask before the tied Qwen3 LM head eliminate intermittent Metal VJP drift while preserving the same 16 supervised tokens and cross-entropy objective?",
+  "causal_variable": {
+    "name": "completion_mask_placement",
+    "levels": [
+      "dense_mask_after_loss",
+      "dense_gather_before_loss",
+      "active_gather_before_head"
+    ],
+    "dense_mask_after_loss": "project all 511 hidden positions, compute all token losses, then mask",
+    "dense_gather_before_loss": "project all 511 positions, gather 16 active logits, then compute loss",
+    "active_gather_before_head": "gather 16 active hidden states, project only those, then compute loss",
+    "only_intended_change": true
+  },
+  "semantic_equivalence_contract": {
+    "same_active_position_indices": true,
+    "same_active_target_ids": true,
+    "same_tied_embedding_weight": true,
+    "same_cross_entropy_definition": true,
+    "same_mean_denominator": 16,
+    "maximum_absolute_loss_delta_across_conditions": 0.05,
+    "note": "BF16 matmul shape changes may alter rounding while preserving the same supervised-token objective."
+  },
+  "evidence_parent": {
+    "result": {
+      "path": "reports/rightbrain_qwen3_backward_boundary_v1_result.json",
+      "scope": "repository",
+      "sha256": "f3d38e32919d301ef9503c5f267d69761d35964c8186af69497a46c4171a0676"
+    },
+    "result_lock": {
+      "path": "configs/rightbrain_qwen3_backward_boundary_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "07e4d655d13830cf1da1a0ae12ddf88b70959fd4cd49970ff2fb8544603aab3c"
+    },
+    "outcome": "tied_lm_head_backward_is_sufficient_to_reproduce_drift",
+    "authorized_next_step": "localize_tied_embedding_linear_vjp_only"
+  },
+  "official_upstream_evidence": {
+    "mlx_repository": "https://github.com/ml-explore/mlx",
+    "mlx_lm_repository": "https://github.com/ml-explore/mlx-lm",
+    "embedding_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/embedding.py",
+      "scope": "external_local",
+      "sha256": "f77b039903294c6e880c503a953ea86b43aac36661b724cc9c38e3ed1969e3a8"
+    },
+    "linear_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/nn/layers/linear.py",
+      "scope": "external_local",
+      "sha256": "54a5d91724484e64f1afd63aad5adbd52301f3d55d29e13bccfa61c051b2d624"
+    },
+    "implementation": "Embedding.as_linear returns x @ self.weight.T"
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "batch_contract": {
+    "sha256": "995e8a6da3952bb4de621f86e512340e5b8cbc3a6b84d98f63bd3900bf36bd76",
+    "allocated_tokens": 512,
+    "shared_prefix_tokens": 64,
+    "ignored_suffix_tokens": 448,
+    "labelled_tokens": 16
+  },
+  "batch_source": {
+    "parent_row_index": 63,
+    "parent_row_id": "rb_role_specialization_v1_0064",
+    "parent_active_tokens": 674,
+    "slice": [
+      610,
+      674
+    ],
+    "labelled_tokens": 16,
+    "dataset": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "dataset_sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "source_independent": true,
+    "contains_target_utterance": false,
+    "contains_benchmark_item_or_answer": false
+  },
+  "active_position_contract": {
+    "positions": [
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62
+    ],
+    "count": 16,
+    "sha256": "9db0d6dd6cf26c66dd2ac2f26458fc7a66e4d7c2a36b25706a74a5f4ba80d0a8",
+    "dense_position_count": 511,
+    "ignored_position_count": 495
+  },
+  "boundary_contract": {
+    "name": "final_normalized_hidden_state",
+    "shape": [
+      1,
+      511,
+      2560
+    ],
+    "tied_lm_head": "model.model.embed_tokens.as_linear",
+    "transformer_cotangent": {
+      "source": "numpy_pcg64_normalized_source_independent",
+      "seed": 20260803,
+      "dtype": "float32",
+      "shape": [
+        1,
+        511,
+        2560
+      ],
+      "sha256": "7e0304f5a242619c928e2a14bc871be0db9c43b1189665d75f6bc138d6c6c6f8",
+      "l2_norm_target": 1.0
+    }
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "base_compute_dtype": "bfloat16",
+    "allocated_sequence_length": 512,
+    "vocabulary_size": 151936,
+    "dense_head_position_count": 511,
+    "active_head_position_count": 16,
+    "conditions": [
+      "dense_mask_after_loss",
+      "dense_gather_before_loss",
+      "active_gather_before_head"
+    ],
+    "isolated_repetitions_per_level": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "fully_counterbalanced_execution_schedule": [
+      {
+        "repeat": 1,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 2,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 3,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 4,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 5,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 6,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 7,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 8,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 9,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 10,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 11,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 12,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 13,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "dense_gather_before_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 14,
+        "condition_order": [
+          "dense_mask_after_loss",
+          "active_gather_before_head",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 15,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "dense_mask_after_loss",
+          "active_gather_before_head"
+        ]
+      },
+      {
+        "repeat": 16,
+        "condition_order": [
+          "dense_gather_before_loss",
+          "active_gather_before_head",
+          "dense_mask_after_loss"
+        ]
+      },
+      {
+        "repeat": 17,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_mask_after_loss",
+          "dense_gather_before_loss"
+        ]
+      },
+      {
+        "repeat": 18,
+        "condition_order": [
+          "active_gather_before_head",
+          "dense_gather_before_loss",
+          "dense_mask_after_loss"
+        ]
+      }
+    ],
+    "position_counts_by_condition": {
+      "dense_mask_after_loss": [
+        6,
+        6,
+        6
+      ],
+      "dense_gather_before_loss": [
+        6,
+        6,
+        6
+      ],
+      "active_gather_before_head": [
+        6,
+        6,
+        6
+      ]
+    },
+    "optimizer_steps": 0,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480
+  },
+  "falsifiable_outcomes": {
+    "within_level_reproducibility": {
+      "gradient_norm_coefficient_of_variation_maximum": 0.005,
+      "gradient_norm_max_to_min_ratio_maximum": 1.02,
+      "minimum_pairwise_group_profile_cosine": 0.9999,
+      "gradient_hashes_must_be_identical": true
+    },
+    "control_requirement": "dense_mask_after_loss_must_be_unstable",
+    "classifications": {
+      "dense_gather_stable_active_stable": "post_head_masking_path_is_sufficient_to_reproduce_drift",
+      "dense_gather_unstable_active_stable": "projecting_ignored_positions_is_sufficient_to_reproduce_drift",
+      "dense_gather_unstable_active_unstable": "active_head_projection_still_reproduces_drift",
+      "dense_gather_stable_active_unstable": "active_gather_path_introduces_drift",
+      "control_stable": "dense_parent_drift_not_reproduced",
+      "semantic_mismatch": "head_conditions_not_semantically_equivalent",
+      "execution_failure": "active_head_vjp_execution_failed"
+    }
+  },
+  "success_authorization": {
+    "maximum_positive_next_step": "preregister_zero_update_active_head_training_path_probe",
+    "training": false,
+    "persona_training": false,
+    "runtime_activation": false,
+    "persona_similarity_claim": false
+  },
+  "boundaries": {
+    "persona_training": false,
+    "optimizer_update": false,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "training_authorization": false,
+    "scope": "qwen3_tied_head_active_position_vjp_localization_only"
+  },
+  "result_paths": {
+    "repeat_prefix": "reports/rightbrain_qwen3_active_head_vjp_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_active_head_vjp_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_active_head_vjp_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_active_head_vjp_v1_result_lock.json"
+  }
+}
