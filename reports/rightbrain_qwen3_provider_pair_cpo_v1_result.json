@@ -1,0 +1,701 @@
+{
+  "schema": "uruha_rightbrain_qwen3_provider_pair_cpo_result_v1",
+  "experiment_id": "rightbrain_qwen3_provider_pair_cpo_v1",
+  "measurements": {
+    "condition_reproducible": {
+      "sft_control": true,
+      "provider_pair_cpo": true
+    },
+    "initial_parameter_hashes": [
+      "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+    ],
+    "control": {
+      "post_train": {
+        "row_count": 8,
+        "preferred_nll_mean": 2.874482750892639,
+        "rejected_nll_mean": 2.9514927715063095,
+        "provider_margin_mean": 0.07701002061367035,
+        "correct_preference_rate": 0.5,
+        "correct_preference_count": 4,
+        "provider_margin_by_provider": {
+          "structured_neutral_dialogue": 1.5918195247650146,
+          "structured_target_public_persona": -1.437799483537674
+        },
+        "provider_margin_by_memory_mode": {
+          "background_only": 0.06853067874908447,
+          "do_not_mention": -0.00468754768371582,
+          "explicit_allowed": 0.01828557252883911,
+          "no_memory": 0.22591137886047363
+        }
+      },
+      "post_holdout": {
+        "row_count": 8,
+        "preferred_nll_mean": 2.839288756251335,
+        "rejected_nll_mean": 2.9647361785173416,
+        "provider_margin_mean": 0.12544742226600647,
+        "correct_preference_rate": 0.625,
+        "correct_preference_count": 5,
+        "provider_margin_by_provider": {
+          "structured_neutral_dialogue": 1.1987663805484772,
+          "structured_target_public_persona": -0.9478715360164642
+        },
+        "provider_margin_by_memory_mode": {
+          "background_only": 0.05781257152557373,
+          "do_not_mention": 0.23090267181396484,
+          "explicit_allowed": 0.09855246543884277,
+          "no_memory": 0.11452198028564453
+        }
+      },
+      "train_change": {
+        "preferred_nll_decrease_mean": 0.026890665292739868,
+        "provider_margin_delta_mean": 0.02401699125766754,
+        "improved_margin_count": 6,
+        "regressed_margin_count": 2,
+        "pairs": [
+          {
+            "row_id": "rb_role_specialization_v1_0001",
+            "source_id": "role_curriculum_intro_no_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 5.16319465637207,
+            "post_preferred_nll": 5.086805820465088,
+            "preferred_nll_decrease": 0.07638883590698242,
+            "pre_provider_margin": -1.2296009063720703,
+            "post_provider_margin": -1.102430820465088,
+            "provider_margin_delta": 0.12717008590698242,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0003",
+            "source_id": "role_curriculum_intro_no_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 3.7265625,
+            "post_preferred_nll": 3.69921875,
+            "preferred_nll_decrease": 0.02734375,
+            "pre_provider_margin": 1.4991321563720703,
+            "post_provider_margin": 1.5542535781860352,
+            "provider_margin_delta": 0.055121421813964844,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0021",
+            "source_id": "role_curriculum_delay_explicit_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 3.0098683834075928,
+            "post_preferred_nll": 2.9901316165924072,
+            "preferred_nll_decrease": 0.019736766815185547,
+            "pre_provider_margin": -1.5686918497085571,
+            "post_provider_margin": -1.563660979270935,
+            "provider_margin_delta": 0.00503087043762207,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0023",
+            "source_id": "role_curriculum_delay_explicit_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 1.3897058963775635,
+            "post_preferred_nll": 1.3602941036224365,
+            "preferred_nll_decrease": 0.029411792755126953,
+            "pre_provider_margin": 1.590557336807251,
+            "post_provider_margin": 1.6002321243286133,
+            "provider_margin_delta": 0.009674787521362305,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0041",
+            "source_id": "role_curriculum_fatigue_background_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 3.5164473056793213,
+            "post_preferred_nll": 3.486842155456543,
+            "preferred_nll_decrease": 0.02960515022277832,
+            "pre_provider_margin": -1.7178361415863037,
+            "post_provider_margin": -1.6882309913635254,
+            "provider_margin_delta": 0.02960515022277832,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0043",
+            "source_id": "role_curriculum_fatigue_background_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 1.6458333730697632,
+            "post_preferred_nll": 1.6319444179534912,
+            "preferred_nll_decrease": 0.013888955116271973,
+            "pre_provider_margin": 1.8410087823867798,
+            "post_provider_margin": 1.8252923488616943,
+            "provider_margin_delta": -0.01571643352508545,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0061",
+            "source_id": "role_curriculum_health_private_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 3.1625001430511475,
+            "post_preferred_nll": 3.1468751430511475,
+            "preferred_nll_decrease": 0.015625,
+            "pre_provider_margin": -1.4031251668930054,
+            "post_provider_margin": -1.3968751430511475,
+            "provider_margin_delta": 0.00625002384185791,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0063",
+            "source_id": "role_curriculum_health_private_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 1.5968750715255737,
+            "post_preferred_nll": 1.59375,
+            "preferred_nll_decrease": 0.0031250715255737305,
+            "pre_provider_margin": 1.412500023841858,
+            "post_provider_margin": 1.3875000476837158,
+            "provider_margin_delta": -0.02499997615814209,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          }
+        ]
+      },
+      "holdout_change": {
+        "preferred_nll_decrease_mean": 0.0029626786708831787,
+        "provider_margin_delta_mean": -0.00016851723194122314,
+        "improved_margin_count": 4,
+        "regressed_margin_count": 4,
+        "pairs": [
+          {
+            "row_id": "rb_role_specialization_v1_0013",
+            "source_id": "role_curriculum_intro_private_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 4.597222328186035,
+            "post_preferred_nll": 4.618055820465088,
+            "preferred_nll_decrease": -0.020833492279052734,
+            "pre_provider_margin": -1.7586805820465088,
+            "post_provider_margin": -1.805555820465088,
+            "provider_margin_delta": -0.0468752384185791,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0015",
+            "source_id": "role_curriculum_intro_private_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 2.5729167461395264,
+            "post_preferred_nll": 2.5833334922790527,
+            "preferred_nll_decrease": -0.010416746139526367,
+            "pre_provider_margin": 2.2708332538604736,
+            "post_provider_margin": 2.2673611640930176,
+            "provider_margin_delta": -0.0034720897674560547,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0017",
+            "source_id": "role_curriculum_delay_no_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 3.8062500953674316,
+            "post_preferred_nll": 3.7906250953674316,
+            "preferred_nll_decrease": 0.015625,
+            "pre_provider_margin": -1.2180147171020508,
+            "post_provider_margin": -1.2023897171020508,
+            "provider_margin_delta": 0.015625,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0019",
+            "source_id": "role_curriculum_delay_no_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 2.529411792755127,
+            "post_preferred_nll": 2.5404412746429443,
+            "preferred_nll_decrease": -0.011029481887817383,
+            "pre_provider_margin": 1.439338207244873,
+            "post_provider_margin": 1.4314336776733398,
+            "provider_margin_delta": -0.007904529571533203,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0037",
+            "source_id": "role_curriculum_fatigue_explicit_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 2.482954502105713,
+            "post_preferred_nll": 2.4914772510528564,
+            "preferred_nll_decrease": -0.008522748947143555,
+            "pre_provider_margin": -0.8162877559661865,
+            "post_provider_margin": -0.8307629823684692,
+            "provider_margin_delta": -0.014475226402282715,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0039",
+            "source_id": "role_curriculum_fatigue_explicit_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 1.6607142686843872,
+            "post_preferred_nll": 1.6369048357009888,
+            "preferred_nll_decrease": 0.023809432983398438,
+            "pre_provider_margin": 1.0040584802627563,
+            "post_provider_margin": 1.0278679132461548,
+            "provider_margin_delta": 0.023809432983398438,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0057",
+            "source_id": "role_curriculum_health_background_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 2.578125,
+            "post_preferred_nll": 2.549999952316284,
+            "preferred_nll_decrease": 0.02812504768371582,
+            "pre_provider_margin": 0.019097328186035156,
+            "post_provider_margin": 0.04722237586975098,
+            "provider_margin_delta": 0.02812504768371582,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0059",
+            "source_id": "role_curriculum_health_background_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 2.5104167461395264,
+            "post_preferred_nll": 2.503472328186035,
+            "preferred_nll_decrease": 0.006944417953491211,
+            "pre_provider_margin": 0.06458330154418945,
+            "post_provider_margin": 0.06840276718139648,
+            "provider_margin_delta": 0.0038194656372070312,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          }
+        ]
+      }
+    },
+    "candidate": {
+      "post_train": {
+        "row_count": 8,
+        "preferred_nll_mean": 2.8755349814891815,
+        "rejected_nll_mean": 2.9442515075206757,
+        "provider_margin_mean": 0.06871652603149414,
+        "correct_preference_rate": 0.5,
+        "correct_preference_count": 4,
+        "provider_margin_by_provider": {
+          "structured_neutral_dialogue": 1.5781744122505188,
+          "structured_target_public_persona": -1.4407413601875305
+        },
+        "provider_margin_by_memory_mode": {
+          "background_only": 0.07821637392044067,
+          "do_not_mention": -0.028124988079071045,
+          "explicit_allowed": 0.0379256010055542,
+          "no_memory": 0.18684911727905273
+        }
+      },
+      "post_holdout": {
+        "row_count": 8,
+        "preferred_nll_mean": 2.8439715951681137,
+        "rejected_nll_mean": 2.9807742089033127,
+        "provider_margin_mean": 0.13680261373519897,
+        "correct_preference_rate": 0.625,
+        "correct_preference_count": 5,
+        "provider_margin_by_provider": {
+          "structured_neutral_dialogue": 1.2046549022197723,
+          "structured_target_public_persona": -0.9310496747493744
+        },
+        "provider_margin_by_memory_mode": {
+          "background_only": 0.07795155048370361,
+          "do_not_mention": 0.23958325386047363,
+          "explicit_allowed": 0.09557628631591797,
+          "no_memory": 0.13409936428070068
+        }
+      },
+      "train_change": {
+        "preferred_nll_decrease_mean": 0.02583843469619751,
+        "provider_margin_delta_mean": 0.015723496675491333,
+        "improved_margin_count": 5,
+        "regressed_margin_count": 3,
+        "pairs": [
+          {
+            "row_id": "rb_role_specialization_v1_0001",
+            "source_id": "role_curriculum_intro_no_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 5.16319465637207,
+            "post_preferred_nll": 5.107638835906982,
+            "preferred_nll_decrease": 0.05555582046508789,
+            "pre_provider_margin": -1.2296009063720703,
+            "post_provider_margin": -1.1545138359069824,
+            "provider_margin_delta": 0.07508707046508789,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0003",
+            "source_id": "role_curriculum_intro_no_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 3.7265625,
+            "post_preferred_nll": 3.71484375,
+            "preferred_nll_decrease": 0.01171875,
+            "pre_provider_margin": 1.4991321563720703,
+            "post_provider_margin": 1.528212070465088,
+            "provider_margin_delta": 0.029079914093017578,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0021",
+            "source_id": "role_curriculum_delay_explicit_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 3.0098683834075928,
+            "post_preferred_nll": 2.973684310913086,
+            "preferred_nll_decrease": 0.036184072494506836,
+            "pre_provider_margin": -1.5686918497085571,
+            "post_provider_margin": -1.525154948234558,
+            "provider_margin_delta": 0.04353690147399902,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0023",
+            "source_id": "role_curriculum_delay_explicit_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 1.3897058963775635,
+            "post_preferred_nll": 1.3529411554336548,
+            "preferred_nll_decrease": 0.03676474094390869,
+            "pre_provider_margin": 1.590557336807251,
+            "post_provider_margin": 1.6010061502456665,
+            "provider_margin_delta": 0.010448813438415527,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0041",
+            "source_id": "role_curriculum_fatigue_background_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 3.5164473056793213,
+            "post_preferred_nll": 3.450657844543457,
+            "preferred_nll_decrease": 0.06578946113586426,
+            "pre_provider_margin": -1.7178361415863037,
+            "post_provider_margin": -1.6520466804504395,
+            "provider_margin_delta": 0.06578946113586426,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0043",
+            "source_id": "role_curriculum_fatigue_background_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 1.6458333730697632,
+            "post_preferred_nll": 1.638888955116272,
+            "preferred_nll_decrease": 0.006944417953491211,
+            "pre_provider_margin": 1.8410087823867798,
+            "post_provider_margin": 1.8084794282913208,
+            "provider_margin_delta": -0.032529354095458984,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0061",
+            "source_id": "role_curriculum_health_private_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 3.1625001430511475,
+            "post_preferred_nll": 3.15625,
+            "preferred_nll_decrease": 0.006250143051147461,
+            "pre_provider_margin": -1.4031251668930054,
+            "post_provider_margin": -1.431249976158142,
+            "provider_margin_delta": -0.02812480926513672,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0063",
+            "source_id": "role_curriculum_health_private_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 1.5968750715255737,
+            "post_preferred_nll": 1.609375,
+            "preferred_nll_decrease": -0.01249992847442627,
+            "pre_provider_margin": 1.412500023841858,
+            "post_provider_margin": 1.375,
+            "provider_margin_delta": -0.03750002384185791,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          }
+        ]
+      },
+      "holdout_change": {
+        "preferred_nll_decrease_mean": -0.0017201602458953857,
+        "provider_margin_delta_mean": 0.011186674237251282,
+        "improved_margin_count": 4,
+        "regressed_margin_count": 4,
+        "pairs": [
+          {
+            "row_id": "rb_role_specialization_v1_0013",
+            "source_id": "role_curriculum_intro_private_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 4.597222328186035,
+            "post_preferred_nll": 4.618055820465088,
+            "preferred_nll_decrease": -0.020833492279052734,
+            "pre_provider_margin": -1.7586805820465088,
+            "post_provider_margin": -1.7847223281860352,
+            "provider_margin_delta": -0.026041746139526367,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0015",
+            "source_id": "role_curriculum_intro_private_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "do_not_mention",
+            "pre_preferred_nll": 2.5729167461395264,
+            "post_preferred_nll": 2.6145834922790527,
+            "preferred_nll_decrease": -0.04166674613952637,
+            "pre_provider_margin": 2.2708332538604736,
+            "post_provider_margin": 2.2638888359069824,
+            "provider_margin_delta": -0.006944417953491211,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0017",
+            "source_id": "role_curriculum_delay_no_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 3.8062500953674316,
+            "post_preferred_nll": 3.78125,
+            "preferred_nll_decrease": 0.02500009536743164,
+            "pre_provider_margin": -1.2180147171020508,
+            "post_provider_margin": -1.159926414489746,
+            "provider_margin_delta": 0.05808830261230469,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0019",
+            "source_id": "role_curriculum_delay_no_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "no_memory",
+            "pre_preferred_nll": 2.529411792755127,
+            "post_preferred_nll": 2.5625,
+            "preferred_nll_decrease": -0.03308820724487305,
+            "pre_provider_margin": 1.439338207244873,
+            "post_provider_margin": 1.4281251430511475,
+            "provider_margin_delta": -0.011213064193725586,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0037",
+            "source_id": "role_curriculum_fatigue_explicit_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 2.482954502105713,
+            "post_preferred_nll": 2.497159242630005,
+            "preferred_nll_decrease": -0.014204740524291992,
+            "pre_provider_margin": -0.8162877559661865,
+            "post_provider_margin": -0.8423973321914673,
+            "provider_margin_delta": -0.02610957622528076,
+            "pre_correct_preference": false,
+            "post_correct_preference": false
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0039",
+            "source_id": "role_curriculum_fatigue_explicit_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "explicit_allowed",
+            "pre_preferred_nll": 1.6607142686843872,
+            "post_preferred_nll": 1.6369048357009888,
+            "preferred_nll_decrease": 0.023809432983398438,
+            "pre_provider_margin": 1.0040584802627563,
+            "post_provider_margin": 1.0335499048233032,
+            "provider_margin_delta": 0.029491424560546875,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0057",
+            "source_id": "role_curriculum_health_background_memory_01",
+            "provider_id": "structured_target_public_persona",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 2.578125,
+            "post_preferred_nll": 2.534374952316284,
+            "preferred_nll_decrease": 0.04375004768371582,
+            "pre_provider_margin": 0.019097328186035156,
+            "post_provider_margin": 0.06284737586975098,
+            "provider_margin_delta": 0.04375004768371582,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          },
+          {
+            "row_id": "rb_role_specialization_v1_0059",
+            "source_id": "role_curriculum_health_background_memory_01",
+            "provider_id": "structured_neutral_dialogue",
+            "memory_mode": "background_only",
+            "pre_preferred_nll": 2.5104167461395264,
+            "post_preferred_nll": 2.506944417953491,
+            "preferred_nll_decrease": 0.0034723281860351562,
+            "pre_provider_margin": 0.06458330154418945,
+            "post_provider_margin": 0.09305572509765625,
+            "provider_margin_delta": 0.028472423553466797,
+            "pre_correct_preference": true,
+            "post_correct_preference": true
+          }
+        ]
+      }
+    },
+    "candidate_minus_control": {
+      "post_holdout_margin": 0.011355191469192505,
+      "holdout_margin_delta": 0.011355191469192505,
+      "post_holdout_correct_preference_rate": 0.0,
+      "post_holdout_preferred_nll": 0.0046828389167785645,
+      "post_train_margin": -0.008293494582176208
+    },
+    "parameter_delta_l2_norms": {
+      "sft_control": [
+        0.04338053968492966,
+        0.04338053968492966,
+        0.04338053968492966
+      ],
+      "provider_pair_cpo": [
+        0.03564993699337163,
+        0.03564993699337163,
+        0.03564993699337163
+      ]
+    },
+    "peak_memory_bytes": {
+      "sft_control": [
+        14846551024,
+        14846551024,
+        14846551024
+      ],
+      "provider_pair_cpo": [
+        14846551024,
+        14846551024,
+        14846551024
+      ]
+    },
+    "durations_seconds": {
+      "sft_control": [
+        189.864,
+        191.077,
+        191.385
+      ],
+      "provider_pair_cpo": [
+        190.19,
+        193.374,
+        190.768
+      ]
+    }
+  },
+  "checks": {
+    "all_six_runs_complete": true,
+    "all_values_finite_and_update_count_exact": true,
+    "initial_parameter_hash_equal_between_conditions": true,
+    "pre_holdout_metrics_equal_between_conditions": true,
+    "control_and_candidate_each_reproducible": true,
+    "candidate_holdout_margin_delta_positive": true,
+    "candidate_holdout_margin_delta_exceeds_control": true,
+    "candidate_post_holdout_margin_exceeds_control": true,
+    "candidate_post_correct_preference_rate_not_below_control": true,
+    "candidate_post_preferred_nll_within_control_bound": true,
+    "candidate_train_final_margin_exceeds_control": false,
+    "mutation_within_bounds": true,
+    "all_contracts_exact": true
+  },
+  "decision": {
+    "experiment_complete": true,
+    "passed": false,
+    "outcome": "provider_pair_cpo_holdout_margin_not_improved",
+    "fresh_generation_probe_authorized": false,
+    "authorized_next_step": "diagnose_provider_pair_cpo_objective_failure",
+    "authorize_persistent_training": false,
+    "authorize_persona_training": false,
+    "authorize_adapter_save": false,
+    "authorize_production": false,
+    "authorize_persona_similarity_claim": false
+  },
+  "inputs": {
+    "preregistration": {
+      "path": "configs/rightbrain_qwen3_provider_pair_cpo_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "ed26318827f6d3559727193628c100f441452b61101311a66135fe8ea34c5315"
+    },
+    "execution_lock": {
+      "path": "configs/rightbrain_qwen3_provider_pair_cpo_v1_execution_lock.json",
+      "scope": "repository",
+      "sha256": "75b55dacbb9b88f7acb3369199ad2aa83253109ed582724d5a18465f7f76170c"
+    },
+    "condition_results": [
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_sft_control_repeat_1.json",
+        "scope": "repository",
+        "sha256": "7eb4a459bfc3ce2e12d0e43e22eee4f7e8e819f7ef58c9386d3b2e5b6dcd8f7d"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_sft_control_repeat_2.json",
+        "scope": "repository",
+        "sha256": "b5104d67d9bbed204798b8f527d27f45310619873c4a6c5b0fa9e247bc87ca16"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_sft_control_repeat_3.json",
+        "scope": "repository",
+        "sha256": "cf63002ee2793bcc85b7bba03fc74139f1fc99ccacc234551d2af85b681d134e"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_provider_pair_cpo_repeat_1.json",
+        "scope": "repository",
+        "sha256": "67b98aad3251df66889fd01f8b0ae17872e529158d2749d2840d71e81f9e1f59"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_provider_pair_cpo_repeat_2.json",
+        "scope": "repository",
+        "sha256": "1b9467667e4f0165fffd1f7d61bd1bb5e57f82b552cc5443832aa3550062849d"
+      },
+      {
+        "path": "reports/rightbrain_qwen3_provider_pair_cpo_v1_provider_pair_cpo_repeat_3.json",
+        "scope": "repository",
+        "sha256": "36fd7a1c20df3d3ac919687ad3260b2cc0cc77dae7e225419c92dab78c12d962"
+      }
+    ]
+  },
+  "boundaries": {
+    "ephemeral_optimizer_instantiation": true,
+    "ephemeral_optimizer_updates_exact": 16,
+    "parameter_mutation_in_process": true,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "target_person_utterance_training": false,
+    "benchmark_training": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "persistent_training_authorization": false,
+    "scope": "qwen3_provider_pair_cpo_16update_likelihood_probe_only"
+  },
+  "interpretation_limits": [
+    "A pass shows only that the pairwise objective improves source-disjoint provider-conditioned likelihood margins after 16 updates.",
+    "It does not prove generation quality, target-person fidelity, persistent save/reload equivalence, or production readiness.",
+    "All preferred and rejected answers are synthetic source-independent curriculum data, not target-person utterances or benchmark items."
+  ]
+}
