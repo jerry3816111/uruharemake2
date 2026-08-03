@@ -1,0 +1,2288 @@
+{
+  "schema": "uruha_rightbrain_qwen3_provider_pair_cpo_preregistration_v1",
+  "experiment_id": "rightbrain_qwen3_provider_pair_cpo_v1",
+  "research_question": "Does adding only a condition-matched opposite-provider preference term improve provider-specific likelihood margins on four never-used sources relative to a compute-matched SFT control?",
+  "causal_scope": {
+    "name": "provider_pairwise_objective_weight",
+    "control_value": 0.0,
+    "candidate_value": 1.0,
+    "only_changed_variable": "pairwise_weight",
+    "unchanged": [
+      "base_model_and_snapshot",
+      "fresh_lora_initialization",
+      "preferred_and_rejected_pair_batches",
+      "train_rows_and_order",
+      "optimizer_and_gradient_clipping",
+      "update_count",
+      "sequence_length",
+      "device_and_environment",
+      "holdout_rows_and_scoring"
+    ],
+    "persistent_artifact_written": false
+  },
+  "evidence_parent": {
+    "result": {
+      "path": "reports/rightbrain_qwen3_fresh_generation_v1_result.json",
+      "scope": "repository",
+      "sha256": "8814648bce79299be66080ae93c7b9791547208c12e1d10ecf572286c048c6aa"
+    },
+    "result_lock": {
+      "path": "configs/rightbrain_qwen3_fresh_generation_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "c7297e50a68bd7c3c07ebdd538beae59ffdaa735bbaad79fb731d38f6cf3f5be"
+    },
+    "diagnosis": {
+      "path": "reports/rightbrain_qwen3_fresh_generation_v1_diagnosis.md",
+      "scope": "repository",
+      "sha256": "a0c502c661d0c2f57e8d80ba746bb2201be90a941a6c931d58b981bfa35f8162"
+    },
+    "outcome": "fresh_generation_contract_not_improved",
+    "observed_provider_pair_difference_delta": -0.25
+  },
+  "upstream_evidence": {
+    "mlx_repository": "https://github.com/ml-explore/mlx",
+    "mlx_lm_repository": "https://github.com/ml-explore/mlx-lm",
+    "optimizer_source": {
+      "path": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/lib/python3.12/site-packages/mlx/optimizers/optimizers.py",
+      "scope": "external_local",
+      "sha256": "edad1d2c1bc4052e55a6e9b7558d5b2fcfa65758caeeba6017ae3a0d0081975b"
+    },
+    "curriculum_result_lock": {
+      "path": "configs/rightbrain_role_specialization_curriculum_v1_result_lock.json",
+      "scope": "repository",
+      "sha256": "201dc51c7165addfd58cc47fdba7e11f54900a81767657e5526acd74984ef978"
+    },
+    "model_source_preregistration": {
+      "path": "configs/rightbrain_qwen3_4b_trainability_v1_preregistration.json",
+      "scope": "repository",
+      "sha256": "b85804b1ee68787b9abac5de564b7a846492c10a91c9c02ad410348f122f0c28"
+    }
+  },
+  "local_environment": {
+    "python_executable": "/Users/jerrychang/.cache/uruhabrain/mlx-lm-0.31.3-venv/bin/python",
+    "python_version": "3.12.10",
+    "packages": {
+      "mlx": "0.32.0",
+      "mlx-lm": "0.31.3",
+      "mlx-metal": "0.32.0",
+      "numpy": "2.5.1",
+      "safetensors": "0.8.0",
+      "transformers": "5.14.1"
+    },
+    "pip_freeze_sha256": "ed65d3fdfc84b74a70b007a8b32bb702da44e90b3fdcdce80a5018b28f4185f5"
+  },
+  "local_model_contract": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "snapshot_root": "/Users/jerrychang/.cache/huggingface/hub/models--Qwen--Qwen3-4B-Instruct-2507/snapshots/cdbee75f17c01a7cc42f958dc650907174af0554",
+    "snapshot_commit": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "license": "apache-2.0",
+    "architecture": "Qwen3ForCausalLM",
+    "model_type": "qwen3",
+    "base_parameter_count": 4022468096,
+    "base_dtype": "mlx.core.bfloat16",
+    "num_hidden_layers": 36
+  },
+  "adapter_initialization_contract": {
+    "rank": 32,
+    "scale": 0.75,
+    "dropout": 0.0,
+    "converted_layers": 36,
+    "initialization_seed": 20260802,
+    "trainable_tensor_count": 504,
+    "trainable_parameter_count": 66060288,
+    "trainable_dtype": "mlx.core.float32",
+    "initial_trainable_sha256": "ea58e46f9f0d4976b057172c77854ba92bdbc126dd61fceec955993b8e6dffb5"
+  },
+  "dataset_contract": {
+    "path": "datasets/rightbrain_role_specialization_curriculum_v1.json",
+    "sha256": "754a4050443ee2a445660d0b0288a93e71f0e494e4b059cd802094ca016c81c5",
+    "row_count": 80,
+    "synthetic_source_independent": true,
+    "contains_target_utterances": false,
+    "contains_benchmark_items_or_answers": false,
+    "persistent_training_authorized_by_dataset": false
+  },
+  "source_split_contract": {
+    "train_row_indices": [
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63
+    ],
+    "holdout_row_indices": [
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "train_row_ids": [
+      "rb_role_specialization_v1_0001",
+      "rb_role_specialization_v1_0003",
+      "rb_role_specialization_v1_0021",
+      "rb_role_specialization_v1_0023",
+      "rb_role_specialization_v1_0041",
+      "rb_role_specialization_v1_0043",
+      "rb_role_specialization_v1_0061",
+      "rb_role_specialization_v1_0063",
+      "rb_role_specialization_v1_0002",
+      "rb_role_specialization_v1_0004",
+      "rb_role_specialization_v1_0022",
+      "rb_role_specialization_v1_0024",
+      "rb_role_specialization_v1_0042",
+      "rb_role_specialization_v1_0044",
+      "rb_role_specialization_v1_0062",
+      "rb_role_specialization_v1_0064"
+    ],
+    "holdout_row_ids": [
+      "rb_role_specialization_v1_0065",
+      "rb_role_specialization_v1_0066",
+      "rb_role_specialization_v1_0067",
+      "rb_role_specialization_v1_0068",
+      "rb_role_specialization_v1_0069",
+      "rb_role_specialization_v1_0070",
+      "rb_role_specialization_v1_0071",
+      "rb_role_specialization_v1_0072",
+      "rb_role_specialization_v1_0073",
+      "rb_role_specialization_v1_0074",
+      "rb_role_specialization_v1_0075",
+      "rb_role_specialization_v1_0076",
+      "rb_role_specialization_v1_0077",
+      "rb_role_specialization_v1_0078",
+      "rb_role_specialization_v1_0079",
+      "rb_role_specialization_v1_0080"
+    ],
+    "train_source_ids": [
+      "role_curriculum_delay_explicit_memory_01",
+      "role_curriculum_fatigue_background_memory_01",
+      "role_curriculum_health_private_memory_01",
+      "role_curriculum_intro_no_memory_01"
+    ],
+    "holdout_source_ids": [
+      "role_curriculum_notice_background_memory_01",
+      "role_curriculum_notice_explicit_memory_01",
+      "role_curriculum_notice_no_memory_01",
+      "role_curriculum_notice_private_memory_01"
+    ],
+    "source_id_overlap_count": 0,
+    "exact_target_overlap_count": 0,
+    "train_provider_counts": {
+      "structured_neutral_dialogue": 8,
+      "structured_target_public_persona": 8
+    },
+    "holdout_provider_counts": {
+      "structured_neutral_dialogue": 8,
+      "structured_target_public_persona": 8
+    },
+    "train_memory_mode_counts": {
+      "background_only": 4,
+      "do_not_mention": 4,
+      "explicit_allowed": 4,
+      "no_memory": 4
+    },
+    "holdout_memory_mode_counts": {
+      "background_only": 4,
+      "do_not_mention": 4,
+      "explicit_allowed": 4,
+      "no_memory": 4
+    },
+    "train_schedule": [
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63,
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63,
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63,
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63
+    ],
+    "epochs_exact": 4
+  },
+  "token_contract": {
+    "allocated_tokens": 512,
+    "sha256": "ef2cb27aef952d309678cbc6509f1e1437fc097366e75039e99182cf44973adf",
+    "details": [
+      {
+        "row_index": 0,
+        "row_id": "rb_role_specialization_v1_0001",
+        "source_id": "role_curriculum_intro_no_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "no_memory",
+        "variant_index": 1,
+        "rejected_row_index": 2,
+        "rejected_row_id": "rb_role_specialization_v1_0003",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 680,
+          "left_truncated_tokens": 168,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "rejected": {
+          "full_tokens": 678,
+          "left_truncated_tokens": 166,
+          "retained_prompt_tokens": 496,
+          "answer_tokens": 16,
+          "positions": {
+            "positions": [
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 16,
+            "sha256": "6b7bc8411fc9d827e53e812cc02adf88b24d947eebc4d9a2da45f727ae2fb0eb"
+          }
+        },
+        "sha256": "25216f0fa5967b39018e698ebb6928d4776c928bc27155788d1fe696cd2e7e4f"
+      },
+      {
+        "row_index": 2,
+        "row_id": "rb_role_specialization_v1_0003",
+        "source_id": "role_curriculum_intro_no_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "no_memory",
+        "variant_index": 1,
+        "rejected_row_index": 0,
+        "rejected_row_id": "rb_role_specialization_v1_0001",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 677,
+          "left_truncated_tokens": 165,
+          "retained_prompt_tokens": 496,
+          "answer_tokens": 16,
+          "positions": {
+            "positions": [
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 16,
+            "sha256": "6b7bc8411fc9d827e53e812cc02adf88b24d947eebc4d9a2da45f727ae2fb0eb"
+          }
+        },
+        "rejected": {
+          "full_tokens": 679,
+          "left_truncated_tokens": 167,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "sha256": "113ef3ca6c47ee8336b690c4c6c038fb11598b2b3e73fd83deceb128049a2709"
+      },
+      {
+        "row_index": 20,
+        "row_id": "rb_role_specialization_v1_0021",
+        "source_id": "role_curriculum_delay_explicit_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 1,
+        "rejected_row_index": 22,
+        "rejected_row_id": "rb_role_specialization_v1_0023",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 761,
+          "left_truncated_tokens": 249,
+          "retained_prompt_tokens": 493,
+          "answer_tokens": 19,
+          "positions": {
+            "positions": [
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 19,
+            "sha256": "666b9885f85dfac654879e3c18df96c424258f7921d3c293ad482a4a1b0ca97e"
+          }
+        },
+        "rejected": {
+          "full_tokens": 759,
+          "left_truncated_tokens": 247,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "sha256": "9e06d9a6490d1aa78c3e570d690f260f472219d4cbd5635b4fe68a9c63cacdec"
+      },
+      {
+        "row_index": 22,
+        "row_id": "rb_role_specialization_v1_0023",
+        "source_id": "role_curriculum_delay_explicit_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 1,
+        "rejected_row_index": 20,
+        "rejected_row_id": "rb_role_specialization_v1_0021",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 758,
+          "left_truncated_tokens": 246,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "rejected": {
+          "full_tokens": 760,
+          "left_truncated_tokens": 248,
+          "retained_prompt_tokens": 493,
+          "answer_tokens": 19,
+          "positions": {
+            "positions": [
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 19,
+            "sha256": "666b9885f85dfac654879e3c18df96c424258f7921d3c293ad482a4a1b0ca97e"
+          }
+        },
+        "sha256": "eb030f6b0453670566c7fb8c8cdb60a5c29a162bea9d4738c3b530842f232698"
+      },
+      {
+        "row_index": 40,
+        "row_id": "rb_role_specialization_v1_0041",
+        "source_id": "role_curriculum_fatigue_background_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "background_only",
+        "variant_index": 1,
+        "rejected_row_index": 42,
+        "rejected_row_id": "rb_role_specialization_v1_0043",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 717,
+          "left_truncated_tokens": 205,
+          "retained_prompt_tokens": 493,
+          "answer_tokens": 19,
+          "positions": {
+            "positions": [
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 19,
+            "sha256": "666b9885f85dfac654879e3c18df96c424258f7921d3c293ad482a4a1b0ca97e"
+          }
+        },
+        "rejected": {
+          "full_tokens": 716,
+          "left_truncated_tokens": 204,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "sha256": "83f6323b00b6611789a1b56083cbf821f30bf619b50f0024409ad9792f7b2dc9"
+      },
+      {
+        "row_index": 42,
+        "row_id": "rb_role_specialization_v1_0043",
+        "source_id": "role_curriculum_fatigue_background_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "background_only",
+        "variant_index": 1,
+        "rejected_row_index": 40,
+        "rejected_row_id": "rb_role_specialization_v1_0041",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 716,
+          "left_truncated_tokens": 204,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "rejected": {
+          "full_tokens": 717,
+          "left_truncated_tokens": 205,
+          "retained_prompt_tokens": 493,
+          "answer_tokens": 19,
+          "positions": {
+            "positions": [
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 19,
+            "sha256": "666b9885f85dfac654879e3c18df96c424258f7921d3c293ad482a4a1b0ca97e"
+          }
+        },
+        "sha256": "cd61267f7829c9773173065df7ec0bcd21ee6e91db0d784bbcd508975002602f"
+      },
+      {
+        "row_index": 60,
+        "row_id": "rb_role_specialization_v1_0061",
+        "source_id": "role_curriculum_health_private_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "do_not_mention",
+        "variant_index": 1,
+        "rejected_row_index": 62,
+        "rejected_row_id": "rb_role_specialization_v1_0063",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 672,
+          "left_truncated_tokens": 160,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "rejected": {
+          "full_tokens": 672,
+          "left_truncated_tokens": 160,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "sha256": "3ba78465a262a9c0c78a3b520f49e3c01dd1e36df4d146383e285082bd9431a3"
+      },
+      {
+        "row_index": 62,
+        "row_id": "rb_role_specialization_v1_0063",
+        "source_id": "role_curriculum_health_private_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "do_not_mention",
+        "variant_index": 1,
+        "rejected_row_index": 60,
+        "rejected_row_id": "rb_role_specialization_v1_0061",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 678,
+          "left_truncated_tokens": 166,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "rejected": {
+          "full_tokens": 678,
+          "left_truncated_tokens": 166,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "sha256": "883144f2c2ef0ba4ac24e6c48d555446a37497b101b5fb0a886cab076f375902"
+      },
+      {
+        "row_index": 1,
+        "row_id": "rb_role_specialization_v1_0002",
+        "source_id": "role_curriculum_intro_no_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "no_memory",
+        "variant_index": 2,
+        "rejected_row_index": 3,
+        "rejected_row_id": "rb_role_specialization_v1_0004",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 684,
+          "left_truncated_tokens": 172,
+          "retained_prompt_tokens": 490,
+          "answer_tokens": 22,
+          "positions": {
+            "positions": [
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 22,
+            "sha256": "2cc9097b4ec1f8afb7a330a731e924a44105e544a8d00acf33ae16bf288dddfd"
+          }
+        },
+        "rejected": {
+          "full_tokens": 676,
+          "left_truncated_tokens": 164,
+          "retained_prompt_tokens": 498,
+          "answer_tokens": 14,
+          "positions": {
+            "positions": [
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 14,
+            "sha256": "5b4b97fe202d2cd0703d0006170e543ac63d2a323cbe4ff55a08b1fe6b5b735c"
+          }
+        },
+        "sha256": "8a97c8080e58623d600820f45b749128bc18195eeed285aa14cfdf8504adc596"
+      },
+      {
+        "row_index": 3,
+        "row_id": "rb_role_specialization_v1_0004",
+        "source_id": "role_curriculum_intro_no_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "no_memory",
+        "variant_index": 2,
+        "rejected_row_index": 1,
+        "rejected_row_id": "rb_role_specialization_v1_0002",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 675,
+          "left_truncated_tokens": 163,
+          "retained_prompt_tokens": 498,
+          "answer_tokens": 14,
+          "positions": {
+            "positions": [
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 14,
+            "sha256": "5b4b97fe202d2cd0703d0006170e543ac63d2a323cbe4ff55a08b1fe6b5b735c"
+          }
+        },
+        "rejected": {
+          "full_tokens": 683,
+          "left_truncated_tokens": 171,
+          "retained_prompt_tokens": 490,
+          "answer_tokens": 22,
+          "positions": {
+            "positions": [
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 22,
+            "sha256": "2cc9097b4ec1f8afb7a330a731e924a44105e544a8d00acf33ae16bf288dddfd"
+          }
+        },
+        "sha256": "b2b5416bee6d297873fb3c53a8ad0bd3a80205ebeb8670ea7b60182aefc5299b"
+      },
+      {
+        "row_index": 21,
+        "row_id": "rb_role_specialization_v1_0022",
+        "source_id": "role_curriculum_delay_explicit_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 2,
+        "rejected_row_index": 23,
+        "rejected_row_id": "rb_role_specialization_v1_0024",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 767,
+          "left_truncated_tokens": 255,
+          "retained_prompt_tokens": 487,
+          "answer_tokens": 25,
+          "positions": {
+            "positions": [
+              486,
+              487,
+              488,
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 25,
+            "sha256": "783cfa9eb9b82b4c05a6e132753f6bec8660b1c83e66ec84bce1eb021c218c06"
+          }
+        },
+        "rejected": {
+          "full_tokens": 763,
+          "left_truncated_tokens": 251,
+          "retained_prompt_tokens": 491,
+          "answer_tokens": 21,
+          "positions": {
+            "positions": [
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 21,
+            "sha256": "2026998b49eb385f070e233cd9ed47461298e6210e8b58d905c321805edab772"
+          }
+        },
+        "sha256": "d4b17b90cbd58a980d87b5afad1a88259af019bef74dc16840fc3ba8fbd68448"
+      },
+      {
+        "row_index": 23,
+        "row_id": "rb_role_specialization_v1_0024",
+        "source_id": "role_curriculum_delay_explicit_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 2,
+        "rejected_row_index": 21,
+        "rejected_row_id": "rb_role_specialization_v1_0022",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 762,
+          "left_truncated_tokens": 250,
+          "retained_prompt_tokens": 491,
+          "answer_tokens": 21,
+          "positions": {
+            "positions": [
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 21,
+            "sha256": "2026998b49eb385f070e233cd9ed47461298e6210e8b58d905c321805edab772"
+          }
+        },
+        "rejected": {
+          "full_tokens": 766,
+          "left_truncated_tokens": 254,
+          "retained_prompt_tokens": 487,
+          "answer_tokens": 25,
+          "positions": {
+            "positions": [
+              486,
+              487,
+              488,
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 25,
+            "sha256": "783cfa9eb9b82b4c05a6e132753f6bec8660b1c83e66ec84bce1eb021c218c06"
+          }
+        },
+        "sha256": "4b75f544ca0be761a21a6474d2cc7d0432268d54c8cffb0214e7b98e9379dac3"
+      },
+      {
+        "row_index": 41,
+        "row_id": "rb_role_specialization_v1_0042",
+        "source_id": "role_curriculum_fatigue_background_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "background_only",
+        "variant_index": 2,
+        "rejected_row_index": 43,
+        "rejected_row_id": "rb_role_specialization_v1_0044",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 715,
+          "left_truncated_tokens": 203,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "rejected": {
+          "full_tokens": 713,
+          "left_truncated_tokens": 201,
+          "retained_prompt_tokens": 497,
+          "answer_tokens": 15,
+          "positions": {
+            "positions": [
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 15,
+            "sha256": "928682d726ec29b85ba1bbe7960cc4ed63679edf167a0bf9300018c7b9a721f6"
+          }
+        },
+        "sha256": "f10cc07d179698fc81cb2935079e31f19ad030928330c3fd5ceed014d3198949"
+      },
+      {
+        "row_index": 43,
+        "row_id": "rb_role_specialization_v1_0044",
+        "source_id": "role_curriculum_fatigue_background_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "background_only",
+        "variant_index": 2,
+        "rejected_row_index": 41,
+        "rejected_row_id": "rb_role_specialization_v1_0042",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 713,
+          "left_truncated_tokens": 201,
+          "retained_prompt_tokens": 497,
+          "answer_tokens": 15,
+          "positions": {
+            "positions": [
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 15,
+            "sha256": "928682d726ec29b85ba1bbe7960cc4ed63679edf167a0bf9300018c7b9a721f6"
+          }
+        },
+        "rejected": {
+          "full_tokens": 715,
+          "left_truncated_tokens": 203,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "sha256": "c6b71a2178567862d0c3d04ac7d9042a5526b8010c02232cca536a2a4d3e1d04"
+      },
+      {
+        "row_index": 61,
+        "row_id": "rb_role_specialization_v1_0062",
+        "source_id": "role_curriculum_health_private_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "do_not_mention",
+        "variant_index": 2,
+        "rejected_row_index": 63,
+        "rejected_row_id": "rb_role_specialization_v1_0064",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 669,
+          "left_truncated_tokens": 157,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "rejected": {
+          "full_tokens": 668,
+          "left_truncated_tokens": 156,
+          "retained_prompt_tokens": 496,
+          "answer_tokens": 16,
+          "positions": {
+            "positions": [
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 16,
+            "sha256": "6b7bc8411fc9d827e53e812cc02adf88b24d947eebc4d9a2da45f727ae2fb0eb"
+          }
+        },
+        "sha256": "b0b7acf475cad34fe10fc29a0606780fc5e800ae2b289dac84e1dedc5332a61f"
+      },
+      {
+        "row_index": 63,
+        "row_id": "rb_role_specialization_v1_0064",
+        "source_id": "role_curriculum_health_private_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "do_not_mention",
+        "variant_index": 2,
+        "rejected_row_index": 61,
+        "rejected_row_id": "rb_role_specialization_v1_0062",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 674,
+          "left_truncated_tokens": 162,
+          "retained_prompt_tokens": 496,
+          "answer_tokens": 16,
+          "positions": {
+            "positions": [
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 16,
+            "sha256": "6b7bc8411fc9d827e53e812cc02adf88b24d947eebc4d9a2da45f727ae2fb0eb"
+          }
+        },
+        "rejected": {
+          "full_tokens": 675,
+          "left_truncated_tokens": 163,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "sha256": "77bf8079d724ecab8b98cd25d62d3d62c82f22f1243431eee2bc8774fe5541d1"
+      },
+      {
+        "row_index": 12,
+        "row_id": "rb_role_specialization_v1_0013",
+        "source_id": "role_curriculum_intro_private_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "do_not_mention",
+        "variant_index": 1,
+        "rejected_row_index": 14,
+        "rejected_row_id": "rb_role_specialization_v1_0015",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 664,
+          "left_truncated_tokens": 152,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "rejected": {
+          "full_tokens": 658,
+          "left_truncated_tokens": 146,
+          "retained_prompt_tokens": 500,
+          "answer_tokens": 12,
+          "positions": {
+            "positions": [
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 12,
+            "sha256": "6222c775d4be9e43c225eda60a6026442f5a562b6d459bb82fecdece57edc220"
+          }
+        },
+        "sha256": "875b5fa6438991639c9b54b848ff6c3e8a398fd24293bb3a3142be8da2055c26"
+      },
+      {
+        "row_index": 14,
+        "row_id": "rb_role_specialization_v1_0015",
+        "source_id": "role_curriculum_intro_private_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "do_not_mention",
+        "variant_index": 1,
+        "rejected_row_index": 12,
+        "rejected_row_id": "rb_role_specialization_v1_0013",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 657,
+          "left_truncated_tokens": 145,
+          "retained_prompt_tokens": 500,
+          "answer_tokens": 12,
+          "positions": {
+            "positions": [
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 12,
+            "sha256": "6222c775d4be9e43c225eda60a6026442f5a562b6d459bb82fecdece57edc220"
+          }
+        },
+        "rejected": {
+          "full_tokens": 663,
+          "left_truncated_tokens": 151,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "sha256": "0aa1aa1e36584142d4fd8e7f6ecb8cbbeb043f5e6473d2130575920d3e2b0f73"
+      },
+      {
+        "row_index": 16,
+        "row_id": "rb_role_specialization_v1_0017",
+        "source_id": "role_curriculum_delay_no_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "no_memory",
+        "variant_index": 1,
+        "rejected_row_index": 18,
+        "rejected_row_id": "rb_role_specialization_v1_0019",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 683,
+          "left_truncated_tokens": 171,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "rejected": {
+          "full_tokens": 680,
+          "left_truncated_tokens": 168,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "sha256": "da48122411e1b0c0f85380d4085fd2207fc430857b8c2f2aa961d9a9a336ef03"
+      },
+      {
+        "row_index": 18,
+        "row_id": "rb_role_specialization_v1_0019",
+        "source_id": "role_curriculum_delay_no_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "no_memory",
+        "variant_index": 1,
+        "rejected_row_index": 16,
+        "rejected_row_id": "rb_role_specialization_v1_0017",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 679,
+          "left_truncated_tokens": 167,
+          "retained_prompt_tokens": 495,
+          "answer_tokens": 17,
+          "positions": {
+            "positions": [
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 17,
+            "sha256": "ba88026649d7d6d25b69f6db2c2eb192f53e3a5e401a91d9bc3f65172a3e9e4a"
+          }
+        },
+        "rejected": {
+          "full_tokens": 682,
+          "left_truncated_tokens": 170,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "sha256": "585cd1524845519f4d3a0261461098faf39b1f5bc1c1c2d3ce745015b226501e"
+      },
+      {
+        "row_index": 36,
+        "row_id": "rb_role_specialization_v1_0037",
+        "source_id": "role_curriculum_fatigue_explicit_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 1,
+        "rejected_row_index": 38,
+        "rejected_row_id": "rb_role_specialization_v1_0039",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 771,
+          "left_truncated_tokens": 259,
+          "retained_prompt_tokens": 490,
+          "answer_tokens": 22,
+          "positions": {
+            "positions": [
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 22,
+            "sha256": "2cc9097b4ec1f8afb7a330a731e924a44105e544a8d00acf33ae16bf288dddfd"
+          }
+        },
+        "rejected": {
+          "full_tokens": 770,
+          "left_truncated_tokens": 258,
+          "retained_prompt_tokens": 491,
+          "answer_tokens": 21,
+          "positions": {
+            "positions": [
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 21,
+            "sha256": "2026998b49eb385f070e233cd9ed47461298e6210e8b58d905c321805edab772"
+          }
+        },
+        "sha256": "7b375d1af7c5510b8e79c26ce00589f06ae472c4a796bee9c19d7196100ce7fb"
+      },
+      {
+        "row_index": 38,
+        "row_id": "rb_role_specialization_v1_0039",
+        "source_id": "role_curriculum_fatigue_explicit_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "explicit_allowed",
+        "variant_index": 1,
+        "rejected_row_index": 36,
+        "rejected_row_id": "rb_role_specialization_v1_0037",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 770,
+          "left_truncated_tokens": 258,
+          "retained_prompt_tokens": 491,
+          "answer_tokens": 21,
+          "positions": {
+            "positions": [
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 21,
+            "sha256": "2026998b49eb385f070e233cd9ed47461298e6210e8b58d905c321805edab772"
+          }
+        },
+        "rejected": {
+          "full_tokens": 771,
+          "left_truncated_tokens": 259,
+          "retained_prompt_tokens": 490,
+          "answer_tokens": 22,
+          "positions": {
+            "positions": [
+              489,
+              490,
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 22,
+            "sha256": "2cc9097b4ec1f8afb7a330a731e924a44105e544a8d00acf33ae16bf288dddfd"
+          }
+        },
+        "sha256": "f00425cad624aa424e22f1a8ac981d523ad89576fc7d94a06520d96370a91055"
+      },
+      {
+        "row_index": 56,
+        "row_id": "rb_role_specialization_v1_0057",
+        "source_id": "role_curriculum_health_background_memory_01",
+        "provider_id": "structured_target_public_persona",
+        "memory_mode": "background_only",
+        "variant_index": 1,
+        "rejected_row_index": 58,
+        "rejected_row_id": "rb_role_specialization_v1_0059",
+        "rejected_provider_id": "structured_neutral_dialogue",
+        "preferred": {
+          "full_tokens": 719,
+          "left_truncated_tokens": 207,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "rejected": {
+          "full_tokens": 717,
+          "left_truncated_tokens": 205,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "sha256": "0ae2447b11fed2adbe8c0490a0b0d26113aa4645f6bea52845c5b01597386f12"
+      },
+      {
+        "row_index": 58,
+        "row_id": "rb_role_specialization_v1_0059",
+        "source_id": "role_curriculum_health_background_memory_01",
+        "provider_id": "structured_neutral_dialogue",
+        "memory_mode": "background_only",
+        "variant_index": 1,
+        "rejected_row_index": 56,
+        "rejected_row_id": "rb_role_specialization_v1_0057",
+        "rejected_provider_id": "structured_target_public_persona",
+        "preferred": {
+          "full_tokens": 723,
+          "left_truncated_tokens": 211,
+          "retained_prompt_tokens": 494,
+          "answer_tokens": 18,
+          "positions": {
+            "positions": [
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 18,
+            "sha256": "512be05d5a2ae22c00d80950d942e9f33960c916aa42834cea05d826cdc51d4b"
+          }
+        },
+        "rejected": {
+          "full_tokens": 725,
+          "left_truncated_tokens": 213,
+          "retained_prompt_tokens": 492,
+          "answer_tokens": 20,
+          "positions": {
+            "positions": [
+              491,
+              492,
+              493,
+              494,
+              495,
+              496,
+              497,
+              498,
+              499,
+              500,
+              501,
+              502,
+              503,
+              504,
+              505,
+              506,
+              507,
+              508,
+              509,
+              510
+            ],
+            "count": 20,
+            "sha256": "3f6cdef3e7b229b04309fd4b8a2476ceeaaa6e91fd7387ef523c1c0038c4c556"
+          }
+        },
+        "sha256": "1c43167f86b85414d769caff48079bee207d162556fc6ecbdecff9b1b2c8f106"
+      }
+    ]
+  },
+  "optimizer_contract": {
+    "name": "mlx.optimizers.AdamW",
+    "learning_rate": 3e-07,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "epsilon": 1e-06,
+    "weight_decay": 0.02,
+    "bias_correction": false,
+    "maximum_gradient_norm": 0.3,
+    "optimizer_updates_exact": 16
+  },
+  "exact_probe": {
+    "device": "gpu_metal",
+    "base_compute_dtype": "bfloat16",
+    "allocated_sequence_length": 512,
+    "full_transformer_layers": 36,
+    "lora_enabled_layers": 36,
+    "adapter_dtype": "mlx.core.float32",
+    "isolated_repetitions": [
+      1,
+      2,
+      3
+    ],
+    "train_rows": 16,
+    "holdout_rows": 8,
+    "epochs": 1,
+    "micro_steps_each": 16,
+    "optimizer_updates_each": 16,
+    "pre_and_post_evaluation_rows_each": 8,
+    "gradient_checkpointing": false,
+    "random_seed": 20260802,
+    "memory_limit_bytes": 32212254720,
+    "wired_limit_bytes": 21474836480,
+    "conditions": [
+      "sft_control",
+      "provider_pair_cpo"
+    ],
+    "execution_schedule": [
+      [
+        "sft_control",
+        1
+      ],
+      [
+        "provider_pair_cpo",
+        1
+      ],
+      [
+        "provider_pair_cpo",
+        2
+      ],
+      [
+        "sft_control",
+        2
+      ],
+      [
+        "sft_control",
+        3
+      ],
+      [
+        "provider_pair_cpo",
+        3
+      ]
+    ],
+    "preferred_and_rejected_backward_each_update": true
+  },
+  "falsifiable_hypothesis": {
+    "confirm_if_all": {
+      "all_six_runs_successful": true,
+      "all_values_finite": true,
+      "initial_parameter_hash_equal_between_conditions": true,
+      "pre_holdout_metrics_equal_between_conditions": true,
+      "control_and_candidate_each_reproducible": true,
+      "optimizer_step_exact": 16,
+      "candidate_holdout_margin_delta_positive": true,
+      "candidate_holdout_margin_delta_exceeds_control": true,
+      "candidate_post_holdout_margin_exceeds_control": true,
+      "candidate_post_correct_preference_rate_not_below_control": true,
+      "candidate_post_preferred_nll_regression_vs_control_maximum": 0.02,
+      "candidate_train_final_margin_exceeds_control": true,
+      "parameter_delta_l2_maximum": 0.5,
+      "parameter_relative_delta_maximum": 0.02,
+      "parameter_max_absolute_delta_maximum": 0.001,
+      "clipped_gradient_norm_maximum": 0.300001,
+      "peak_memory_bytes_maximum": 32212254720
+    },
+    "success_outcome": "provider_pair_cpo_holdout_margin_confirmed",
+    "failure_outcomes": [
+      "provider_pair_cpo_execution_failed",
+      "provider_pair_cpo_not_reproducible",
+      "provider_pair_cpo_holdout_margin_not_improved",
+      "provider_pair_cpo_preferred_likelihood_regressed",
+      "provider_pair_cpo_mutation_out_of_bounds"
+    ]
+  },
+  "success_authorization": {
+    "maximum_positive_next_step": "preregister_provider_pair_cpo_64step_fresh_generation_probe",
+    "persistent_training": false,
+    "persona_training": false,
+    "adapter_save": false,
+    "runtime_activation": false,
+    "persona_similarity_claim": false
+  },
+  "boundaries": {
+    "ephemeral_optimizer_instantiation": true,
+    "ephemeral_optimizer_updates_exact": 16,
+    "parameter_mutation_in_process": true,
+    "adapter_or_model_save": false,
+    "text_generation": false,
+    "target_person_utterance_training": false,
+    "benchmark_training": false,
+    "production_runtime_change": false,
+    "persona_similarity_claim": false,
+    "persistent_training_authorization": false,
+    "scope": "qwen3_provider_pair_cpo_16update_likelihood_probe_only"
+  },
+  "interpretation_limits": [
+    "A pass shows only that the pairwise objective improves source-disjoint provider-conditioned likelihood margins after 16 updates.",
+    "It does not prove generation quality, target-person fidelity, persistent save/reload equivalence, or production readiness.",
+    "All preferred and rejected answers are synthetic source-independent curriculum data, not target-person utterances or benchmark items."
+  ],
+  "result_paths": {
+    "condition_prefix": "reports/rightbrain_qwen3_provider_pair_cpo_v1_",
+    "aggregate_json": "reports/rightbrain_qwen3_provider_pair_cpo_v1_result.json",
+    "aggregate_markdown": "reports/rightbrain_qwen3_provider_pair_cpo_v1_result.md",
+    "result_lock": "configs/rightbrain_qwen3_provider_pair_cpo_v1_result_lock.json"
+  },
+  "conditions": {
+    "sft_control": {
+      "preferred_sft_weight": 1.0,
+      "pairwise_weight": 0.0,
+      "pairwise_beta": 1.0
+    },
+    "provider_pair_cpo": {
+      "preferred_sft_weight": 1.0,
+      "pairwise_weight": 1.0,
+      "pairwise_beta": 1.0
+    }
+  },
+  "pair_contract": {
+    "train_row_indices": [
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63
+    ],
+    "train_schedule": [
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62,
+      1,
+      3,
+      21,
+      23,
+      41,
+      43,
+      61,
+      63
+    ],
+    "train_eval_row_indices": [
+      0,
+      2,
+      20,
+      22,
+      40,
+      42,
+      60,
+      62
+    ],
+    "train_pair_map": {
+      "0": 2,
+      "1": 3,
+      "2": 0,
+      "3": 1,
+      "20": 22,
+      "21": 23,
+      "22": 20,
+      "23": 21,
+      "40": 42,
+      "41": 43,
+      "42": 40,
+      "43": 41,
+      "60": 62,
+      "61": 63,
+      "62": 60,
+      "63": 61
+    },
+    "holdout_row_indices": [
+      12,
+      14,
+      16,
+      18,
+      36,
+      38,
+      56,
+      58
+    ],
+    "holdout_pair_map": {
+      "12": 14,
+      "14": 12,
+      "16": 18,
+      "18": 16,
+      "36": 38,
+      "38": 36,
+      "56": 58,
+      "58": 56
+    },
+    "train_source_counts": {
+      "role_curriculum_delay_explicit_memory_01": 4,
+      "role_curriculum_fatigue_background_memory_01": 4,
+      "role_curriculum_health_private_memory_01": 4,
+      "role_curriculum_intro_no_memory_01": 4
+    },
+    "holdout_source_counts": {
+      "role_curriculum_delay_no_memory_01": 2,
+      "role_curriculum_fatigue_explicit_memory_01": 2,
+      "role_curriculum_health_background_memory_01": 2,
+      "role_curriculum_intro_private_memory_01": 2
+    },
+    "train_holdout_source_overlap": 0,
+    "train_holdout_exact_answer_overlap": 0,
+    "holdout_prior_experiment_source_overlap": 0,
+    "holdout_provider_counts": {
+      "structured_neutral_dialogue": 4,
+      "structured_target_public_persona": 4
+    },
+    "holdout_memory_mode_counts": {
+      "background_only": 2,
+      "do_not_mention": 2,
+      "explicit_allowed": 2,
+      "no_memory": 2
+    },
+    "prompt_differences_outside_persona": 0,
+    "target_person_utterances": 0,
+    "benchmark_items": 0
+  }
+}
