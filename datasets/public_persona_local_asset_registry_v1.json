@@ -1,0 +1,114 @@
+{
+  "schema": "uruha_public_persona_local_asset_registry_v1",
+  "target_id": "ichinose_uruha_public_persona",
+  "reviewed_at": "2026-08-05",
+  "scope": "Register local persona-related assets without committing raw media, model weights, or private conversation data.",
+  "owner_attestations": [
+    {
+      "asset_id": "uruha_local_voice_corpus_v1",
+      "claim": "The speaker in Style-Bert-VITS2/Data/uruha is Ichinose Uruha.",
+      "attested_by": "project_owner",
+      "attested_at": "2026-08-05",
+      "identity_status": "confirmed",
+      "does_not_establish": [
+        "original publication URL",
+        "recording date",
+        "clip timestamps",
+        "license or reuse permission"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "uruha_local_voice_corpus_v1",
+      "classification": "target_observation_local_only",
+      "paths": {
+        "transcript_index": "Style-Bert-VITS2/Data/uruha/esd.list",
+        "raw_audio_directory": "Style-Bert-VITS2/Data/uruha/raw/uruha",
+        "processed_audio_directory": "Style-Bert-VITS2/Data/uruha/wavs/uruha"
+      },
+      "registered_fingerprint": {
+        "transcript_index_sha256": "aa936369f85f326b99567df61d51494e467d3fcd897612df7bd961b394a1b876",
+        "transcript_count": 874,
+        "raw_audio_count": 874,
+        "processed_audio_count": 874,
+        "duration_seconds": 5261.403,
+        "duration_minutes": 87.69
+      },
+      "source_traceability": "speaker_confirmed_original_url_unknown",
+      "rights_review_status": "not_completed",
+      "historical_use": "Style-Bert-VITS2 voice training",
+      "runtime_use": "raw clips are not loaded during chat; trained TTS model assets are used by the separate TTS server",
+      "formal_persona_evaluation_authorized": false,
+      "new_training_authorized": false
+    },
+    {
+      "asset_id": "uruha_v10_manual_patch_v1",
+      "classification": "project_authored_text",
+      "path": "uruha_v10_patch_train.json",
+      "registered_fingerprint": {
+        "sha256": "2662564ea952fe3982eb8bb02fe402b2f1bef944bbddfd969d2a9bc70ce4461a",
+        "row_count": 36
+      },
+      "historical_use": "included by train_uruha_all_linear.py in the legacy V10 rightbrain recipe",
+      "target_behavior_evidence": false
+    },
+    {
+      "asset_id": "uruha_legacy_main_text_dataset",
+      "classification": "missing_lineage_text",
+      "path": "uruha_perfect_train.json",
+      "exists_in_reviewed_workspace": false,
+      "historical_use": "referenced by train_uruha_all_linear.py",
+      "source_traceability": "unavailable",
+      "target_behavior_evidence": "cannot_be_audited"
+    },
+    {
+      "asset_id": "uruha_v10_active_rightbrain_adapter_local",
+      "classification": "runtime_model_artifact",
+      "path": "uruha_v10_all_linear_lora",
+      "base_model": "Qwen/Qwen2.5-7B-Instruct",
+      "registered_fingerprint": {
+        "adapter_config_sha256": "f80ed09a70ffa29d0f1aa9aaa29883057e82d43dbf017dd8984d63fd0462c8cc",
+        "adapter_model_sha256": "2c2cfef224db18111d4f82ebaa20c5060afd8ca3c84ab80f1b8efbbc1fe9dfc1"
+      },
+      "selection_observation": "preferred uruha_rightbrain_plan_sft_lora_v10_expanded_rejection_v1 was absent, so current runtime priority falls back to this adapter",
+      "target_behavior_evidence": false
+    },
+    {
+      "asset_id": "uruha_local_rightbrain_generated_corpora",
+      "classification": "project_generated_training_and_evaluation_data",
+      "path": "eval_suite/datasets/rightbrain",
+      "registered_counts": {
+        "meaning_realization_source_cases": 828,
+        "plan_sft_v2_accepted_rows": 773,
+        "preference_pairs": 1632,
+        "slot_curriculum_message_rows": 3232,
+        "slot_curriculum_pair_rows": 1616
+      },
+      "use": "rightbrain engineering, candidate training, holdout, and regression evaluation",
+      "target_behavior_evidence": false,
+      "note": "These records are project-authored or project-generated and must not be reported as Ichinose Uruha observations."
+    },
+    {
+      "asset_id": "uruha_local_tts_model_assets",
+      "classification": "runtime_model_artifact",
+      "path": "Style-Bert-VITS2/model_assets/uruha",
+      "registered_fingerprint": {
+        "checkpoint_count": 21,
+        "config_sha256": "9e6c73ea1085128f369e573a2c42ae8afcb1b3fd833aab3552d1db6d35f1df55",
+        "style_vectors_sha256": "57aaf04f421b6b034189ce87b361e8ca936ad107d14966e12e0a2e3e357230a4"
+      },
+      "runtime_use": "available to the separate Style-Bert-VITS2 TTS server",
+      "exact_runtime_checkpoint": "not pinned by the UruhaBrain main application",
+      "target_behavior_evidence": false
+    }
+  ],
+  "boundaries": {
+    "local_voice_identity_confirmed": true,
+    "local_voice_original_source_provenance_complete": false,
+    "project_generated_text_is_target_ground_truth": false,
+    "public_source_metadata_is_runtime_persona_memory": false,
+    "sealed_holdout_content_access_authorized": false,
+    "public_impersonation_authorized": false
+  }
+}
