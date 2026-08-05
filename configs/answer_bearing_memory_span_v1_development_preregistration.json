@@ -1,0 +1,137 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_development_preregistration_v1",
+  "experiment_id": "answer_bearing_memory_span_v1_development",
+  "frozen_at": "2026-08-05T00:00:00+09:00",
+  "research_question": "Can a local question-conditioned verbatim evidence-span gate distinguish answer-bearing memories from topically related non-answers before the experimental recall shortcut is authorized?",
+  "falsifiable_hypothesis": {
+    "primary": "Replacing lexical-overlap authorization with a validated verbatim answer-bearing span will reduce wrong-trace selection and prevent selection after exact target removal on the consumed V1 holdout cases.",
+    "paraphrase": "The span gate will retain more faithful replacement memories than the lexical gate because it evaluates whether the record contains an answer rather than whether it repeats query words.",
+    "failure": "The hypothesis fails if target-removed selection is nonzero, wrong-trace selection is not lower than V1, or exact span grounding is below 100%."
+  },
+  "single_changed_variable": {
+    "name": "recall_authorization_gate",
+    "control": "lexical query-focus overlap from semantic_memory_recall_support_v1",
+    "treatment": "question-conditioned local model returns a shortest verbatim answer-bearing span, then deterministic validation accepts only exact source-grounded spans",
+    "unchanged": [
+      "memory candidates and scores",
+      "four intervention conditions",
+      "top-score and margin thresholds",
+      "full-record speakability policy",
+      "selection ordering",
+      "expected trace IDs",
+      "no RightBrain, persona, production writes, or VRM actions"
+    ]
+  },
+  "development_data": {
+    "status": "consumed_exposed_development_only",
+    "cases_path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+    "cases_sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0",
+    "baseline_raw_path": "analysis/local_semantic_memory_recall_support_v1_holdout/raw.jsonl",
+    "baseline_raw_sha256": "ac318f1617b1a25ddeec7cae96c7dba3939bee6160a500354390baf685ed97cb",
+    "question_count": 8,
+    "decision_count": 32,
+    "languages": {
+      "English": 4,
+      "Japanese": 2,
+      "Traditional Chinese": 2
+    },
+    "promotion_evidence_allowed": false,
+    "note": "These official-derived items were already exposed by V1. They may diagnose and develop V2, but cannot establish generalization or authorize runtime integration."
+  },
+  "conditions": [
+    {
+      "id": "c0_intact_target_and_hard_negative",
+      "visible_candidates": ["target", "hard_negative"],
+      "expected_selection": "target"
+    },
+    {
+      "id": "t1_remove_exact_target",
+      "visible_candidates": ["hard_negative"],
+      "expected_selection": null
+    },
+    {
+      "id": "t2_replace_exact_target",
+      "visible_candidates": ["replacement", "hard_negative"],
+      "expected_selection": "replacement"
+    },
+    {
+      "id": "n1_remove_exact_hard_negative",
+      "visible_candidates": ["target"],
+      "expected_selection": "target"
+    }
+  ],
+  "inference": {
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "temperature": 0,
+    "seed": 20260805,
+    "num_ctx": 4096,
+    "max_tokens": 320,
+    "format": "frozen JSON schema",
+    "model_choice_basis": "Already installed local model used by existing narrow structured-classification experiments; no model screen is performed in this causal round."
+  },
+  "span_contract": {
+    "output_per_visible_candidate": [
+      "source_index",
+      "supports_answer",
+      "answer_span"
+    ],
+    "support_definition": "The candidate explicitly contains the value, state, event, time, location, quantity, relation, or negation requested by the question. Topic overlap alone is insufficient.",
+    "grounding_rule": "Every accepted answer_span must be a non-empty verbatim substring of its own candidate text after whitespace normalization only.",
+    "fail_closed_rules": [
+      "invalid JSON rejects all candidates in that call",
+      "missing or duplicate source indices reject all candidates in that call",
+      "supported=true with an ungrounded or empty span is rejected",
+      "supported=false must carry an empty answer_span",
+      "the model never receives official answers or expected trace IDs"
+    ]
+  },
+  "fixed_selection_policy": {
+    "minimum_top_score": 0.55,
+    "minimum_margin": 0.15,
+    "margin_is_computed_only_among_span_supported_candidates": true,
+    "speakability_scope": "unchanged_full_memory_record",
+    "selected_meaning_scope": "unchanged_full_memory_record"
+  },
+  "primary_metrics": [
+    "wrong_trace_selection_count",
+    "target_removed_selection_count",
+    "intact_safe_outcome_rate",
+    "replacement_safe_outcome_rate",
+    "irrelevant_removed_target_selection_rate",
+    "structured_parse_rate",
+    "exact_span_grounding_rate",
+    "mean_and_p95_latency_seconds"
+  ],
+  "baseline_locked_values": {
+    "wrong_trace_selection_count": 9,
+    "target_removed_selection_count": 6,
+    "intact_safe_outcome_rate": 0.875,
+    "replacement_safe_outcome_rate": 0.375,
+    "irrelevant_removed_target_selection_rate": 0.75
+  },
+  "decision_gates": {
+    "all_inputs_and_baseline_hashes_match": true,
+    "model_digest_matches": true,
+    "structured_parse_rate_equals_one": true,
+    "exact_span_grounding_rate_equals_one": true,
+    "wrong_trace_selection_count_strictly_lower_than_baseline": true,
+    "target_removed_selection_count_equals_zero": true,
+    "intact_safe_outcome_rate_not_lower_than_baseline": true,
+    "replacement_safe_outcome_rate_strictly_higher_than_baseline": true,
+    "irrelevant_removed_target_selection_rate_not_lower_than_baseline": true,
+    "transport_error_count_equals_zero": true,
+    "production_memory_write_count_equals_zero": true,
+    "physical_vrm_action_count_equals_zero": true
+  },
+  "evidence_boundary": {
+    "runtime_change_authorized": false,
+    "production_enablement_authorized": false,
+    "persona_similarity_claim_allowed": false,
+    "benchmark_score_claim_allowed": false,
+    "human_memory_equivalence_claim_allowed": false,
+    "passing_action": "Preregister and run one new disjoint full-pipeline holdout.",
+    "failure_action": "Lock the negative result and localize whether the failure is model capacity, span contract, full-record speakability, or score ordering."
+  }
+}
