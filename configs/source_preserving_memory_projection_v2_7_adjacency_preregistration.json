@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_adjacency_preregistration_v2_7",
+  "experiment_id": "source_preserving_memory_projection_v2_7_two_anchor_adjacency_development",
+  "status": "frozen_before_adjacency_evaluation",
+  "evidence_scope": "exposed_locomo_development_deterministic_projection_only",
+  "research_question": "Does preserving the local dialogue neighborhood around lexical retrieval anchors retain substantially more answer-bearing source text than three isolated turns, without exceeding half of the complete-session character budget?",
+  "hypothesis": "Two lexical anchors plus each anchor's immediate predecessor and successor will retain answer-bearing turns in at least eight of ten fixed cases, improving by at least four cases over the frozen 4/10 isolated-turn control while keeping mean character ratios at or below 0.5.",
+  "frozen_control": {
+    "cases_path": "configs/source_preserving_memory_projection_v2_6_1_population_cases.json",
+    "cases_sha256": "dc1f526d9c57a9b8b6deb208446c9ab48ef558cf847d254d6eae599b8ba4198d",
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_6_1_population_result_lock.json",
+    "result_lock_sha256": "c8a7553ff71cc661d84006d11a0579a21ed11bed0ce87fad55b7662e52c8ca91",
+    "report_path": "reports/source_preserving_memory_projection_v2_6_1_population_baseline.json",
+    "report_sha256": "385f5731242d5d1a9925b9e6ce9b5e9ea680608ea4b6046b40078a13fb49b8a7",
+    "question_count": 10,
+    "target_answer_retention_count": 4,
+    "target_answer_omission_count": 6,
+    "mean_target_projection_character_ratio": 0.173731,
+    "model_calls": 0
+  },
+  "independent_variable": {
+    "name": "source_projection_turn_selection",
+    "control": "the three highest lexical-overlap non-empty turns, serialized as isolated source turns in original order",
+    "intervention": "the two highest lexical-overlap non-empty anchor turns plus each anchor's immediate original predecessor and successor when non-empty, deduplicated and serialized in original order"
+  },
+  "adjacency_algorithm": {
+    "query": "official question reconstructed locally from the pinned dataset; not committed",
+    "anchor_score": "unchanged V2.6 normalized lexical overlap between question tokens and one original turn",
+    "anchor_count": 2,
+    "tie_break": "lower original turn index first",
+    "window_offsets": [-1, 0, 1],
+    "maximum_selected_turns": 6,
+    "deduplication": "original turn index",
+    "serialization": "unchanged timestamp and original speaker-labelled source text in ascending original turn order",
+    "forbidden_operations": [
+      "answer-aware selection",
+      "paraphrase",
+      "summary",
+      "translation",
+      "generated memory",
+      "model reranking"
+    ]
+  },
+  "controlled_variables": {
+    "official_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "same_ten_case_ids_and_order": true,
+    "same_target_and_hard_negative_sessions": true,
+    "same_corrected_turn_text_membership_oracle": true,
+    "same_complete_session_serialization": true,
+    "same_question_tokenizer_and_lexical_overlap": true,
+    "same_source_turn_bytes": true,
+    "reserve_sample_access_count": 0,
+    "model_calls": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "success_gates": {
+    "case_count_equals": 10,
+    "adjacency_target_answer_retention_count_at_least": 8,
+    "retention_delta_vs_control_at_least": 4,
+    "adjacency_target_answer_omission_count_at_most": 2,
+    "mean_target_projection_character_ratio_at_most": 0.5,
+    "mean_all_record_projection_character_ratio_at_most": 0.5,
+    "all_selected_turns_are_exact_original_sources": true,
+    "all_case_and_session_ids_match_control": true,
+    "reserve_sample_access_count_equals": 0,
+    "model_calls_equal": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "cost_reporting": [
+    "selected turn count by record",
+    "character ratio by record",
+    "deterministic execution duration",
+    "model calls"
+  ],
+  "authorization": {
+    "run_deterministic_adjacency_evaluation_once_after_merge": true,
+    "preregister_reserve_fresh_holdout_after_pass": false,
+    "model_generation": false,
+    "use_reserve_conversations": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.7 compares one deterministic projection change on ten exposed LoCoMo single-hop development cases. A pass can authorize only a new preregistration on untouched reserve conversations; it cannot authorize model generation, runtime use, or production."
+}
