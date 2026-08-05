@@ -36,7 +36,7 @@
     "replacement": "faithful local-model paraphrase of the target that preserves its facts and topic",
     "translation": "for Japanese and Traditional Chinese strata, translate question, target, hard negative, and replacement together before evaluation",
     "construction_model": "qwen2.5:7b",
-    "construction_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e7047ca97d631a0b697e",
+    "construction_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
     "construction_seed": 2026080502,
     "temperature": 0.0,
     "runtime_support_function_forbidden_during_selection": true,
@@ -91,5 +91,10 @@
     "persona_similarity_claim": false,
     "human_memory_equivalence_claim": false
   },
-  "evidence_boundary": "This holdout tests only whether lexical query support safely authorizes or rejects an explicit-memory planner bypass on official-derived unseen conversations."
+  "evidence_boundary": "This holdout tests only whether lexical query support safely authorizes or rejects an explicit-memory planner bypass on official-derived unseen conversations.",
+  "pre_exposure_amendment": {
+    "field": "frozen_construction.construction_model_digest",
+    "reason": "Corrected a 63-character transcription typo to the already-fixed 64-character qwen2.5:7b digest after model preflight stopped, before the builder loaded or selected official rows.",
+    "behavioral_or_gate_change": false
+  }
 }

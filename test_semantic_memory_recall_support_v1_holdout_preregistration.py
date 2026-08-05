@@ -31,6 +31,7 @@ class SemanticMemoryRecallSupportV1HoldoutPreregistrationTests(unittest.TestCase
 
     def test_hard_negative_selection_cannot_call_runtime_support(self):
         construction = self.payload["frozen_construction"]
+        self.assertEqual(len(construction["construction_model_digest"]), 64)
         self.assertTrue(construction["runtime_support_function_forbidden_during_selection"])
         self.assertTrue(construction["manual_case_selection_or_editing_forbidden"])
 
