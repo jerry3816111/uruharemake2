@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_single_record_failure_v2_3",
+  "experiment_id": "source_preserving_memory_projection_v2_3_single_record_carrier_development",
+  "decision": "development_reject_or_inconclusive",
+  "carrier_effect": {
+    "indexed_9b_complete_target_support_count": 0,
+    "single_record_complete_target_support_count": 6,
+    "indexed_9b_projected_target_support_count": 7,
+    "single_record_projected_target_support_count": 7,
+    "projected_false_support_count": 0,
+    "indexed_control_nonexistent_source_index_errors": 6,
+    "single_record_nonexistent_source_index_errors": 0,
+    "indexed_control_valid_rows": 26,
+    "single_record_valid_rows": 31
+  },
+  "remaining_failure": {
+    "classification": "noncanonical_quoted_empty_placeholder",
+    "invalid_row_count": 1,
+    "rows": [
+      {
+        "case_id": "source-v2-577d4d32",
+        "condition": "remove_exact_target",
+        "representation": "source_projection",
+        "model_output": "{\"answer_span\": \"\\\"\\\"\", \"supports_answer\": false}",
+        "errors": [
+          "source_0:unsupported_verdict_has_span"
+        ]
+      }
+    ]
+  },
+  "integrity": {
+    "all_frozen_artifact_hashes_match": true,
+    "raw_hash_match": true,
+    "official_source_hash_match": true,
+    "metadata_experiment_id_match": true,
+    "metadata_row_count_match": true,
+    "exact_expected_row_key_set": true,
+    "no_duplicate_row_keys": true,
+    "model_digest_match": true,
+    "endpoint_match": true
+  },
+  "next_hypothesis_boundary": "A separately preregistered deterministic replay may normalize only quote-only empty placeholders to an empty string when supports_answer is false. The replay cannot establish fresh generation and may authorize only a disjoint external holdout.",
+  "evidence_boundary": "This exposed development experiment tests a general one-record evidence carrier. A pass authorizes only an external disjoint memory holdout, not runtime activation."
+}
