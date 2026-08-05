@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_population_revision_preregistration_v2_6_1",
+  "experiment_id": "source_preserving_memory_projection_v2_6_1_exposed_population_baseline",
+  "status": "frozen_before_case_construction",
+  "evidence_scope": "exposed_locomo_development_baseline_only",
+  "hypothesis": "Using all ten eligible questions from the four exposed conversations will produce a valid corrected-oracle development manifest without changing the projection algorithm or accessing reserve conversations.",
+  "failed_control": {
+    "preregistration_path": "configs/source_preserving_memory_projection_v2_6_corrected_oracle_preregistration.json",
+    "preregistration_sha256": "8b4be775cbf643e3a5b49b94897171ecf6836fba1e21b4abf5bd15185c329d9d",
+    "feasibility_lock_path": "configs/source_preserving_memory_projection_v2_6_corrected_oracle_feasibility_lock.json",
+    "feasibility_lock_sha256": "4b3b0338113d8d36ec5b5233a466f658fcdc95ded1f200b49fb33ab8fdb4cc5d",
+    "feasibility_report_path": "reports/source_preserving_memory_projection_v2_6_corrected_oracle_feasibility.json",
+    "feasibility_report_sha256": "f03d865499c76996cc4da13be827e10747a1cd7d3f5aa3b795eae7969dd6fb69",
+    "decision": "construction_infeasible_do_not_build_cases",
+    "eligible_question_count": 10,
+    "model_calls": 0
+  },
+  "independent_variable": {
+    "name": "exposed_development_population_allocation",
+    "control": "three cases per exposed conversation and twelve total",
+    "intervention": "all corrected-oracle eligible cases from each exposed conversation: conv-50=3, conv-48=2, conv-30=1, conv-49=4; ten total"
+  },
+  "controlled_variables": {
+    "official_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "exposed_sample_ids": [
+      "conv-50",
+      "conv-48",
+      "conv-30",
+      "conv-49"
+    ],
+    "expected_case_count_by_sample": {
+      "conv-50": 3,
+      "conv-48": 2,
+      "conv-30": 1,
+      "conv-49": 4
+    },
+    "question_count": 10,
+    "official_category": 2,
+    "source_membership_oracle": "original non-empty dialogue-turn text only",
+    "selection_salt_and_order": "unchanged V2.6",
+    "hard_negative_selection": "unchanged V2.6",
+    "complete_representation": "unchanged V2.6",
+    "projection_representation": "unchanged top-three isolated turns by lexical overlap",
+    "maximum_session_characters": 32000,
+    "reserve_sample_access_count": 0,
+    "model_calls": 0
+  },
+  "construction_gates": {
+    "question_count_equals": 10,
+    "case_count_by_sample_equals_frozen_map": true,
+    "all_target_answers_exist_in_original_turn_text": true,
+    "all_hard_negative_answers_absent_from_original_turn_text": true,
+    "all_official_evidence_ids_exist": true,
+    "all_official_evidence_belongs_to_one_session": true,
+    "manifest_contains_official_text": false,
+    "manifest_contains_official_answers": false,
+    "reserve_sample_access_count_equals": 0,
+    "model_calls_equal": 0
+  },
+  "baseline_reporting": [
+    "top-three projection answer retention count",
+    "target and all-record projection character ratio",
+    "case IDs and hashes without official text"
+  ],
+  "authorization": {
+    "build_exposed_population_manifest_once_after_merge": true,
+    "preregister_adjacency_projection_after_baseline_lock": false,
+    "model_generation": false,
+    "use_reserve_conversations": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.6.1 establishes a corrected-oracle development baseline on all ten already exposed eligible cases. It does not test a new projection, fresh data, any LLM, or runtime behavior."
+}
