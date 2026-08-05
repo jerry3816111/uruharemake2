@@ -1,0 +1,272 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_locomo_construction_report_v2_5",
+  "experiment_id": "source_preserving_memory_projection_v2_5_locomo_fresh_holdout",
+  "decision": "construction_invalid_oracle_do_not_run_model",
+  "evidence_scope": "fresh_external_single_hop_projection_construction_only",
+  "integrity": {
+    "dataset_sha256_match": true,
+    "case_manifest_sha256": "fc03e801c13ee0364d8fde24bb0468bc054b672d72336e544e1287ed5b20bcdc",
+    "case_count": 12,
+    "construction_model_calls": 0,
+    "all_construction_gates_passed": true,
+    "corrected_source_turn_oracle_valid": false
+  },
+  "metrics": {
+    "manifest_serialized_projection_answer_retention_count": 7,
+    "source_turn_valid_case_count": 9,
+    "source_turn_invalid_case_count": 3,
+    "source_turn_projection_answer_retention_count": 4,
+    "source_turn_projection_answer_retention_rate_all_cases": 0.3333333333333333,
+    "source_turn_projection_answer_retention_rate_valid_cases": 0.4444444444444444,
+    "preregistered_minimum_retention_count": 10,
+    "answer_omission_count": 8,
+    "omitted_with_zero_question_overlap_count": 3,
+    "mean_target_projection_character_ratio": 0.182366,
+    "mean_all_record_projection_character_ratio": 0.193804,
+    "planned_model_calls": 48,
+    "executed_model_calls": 0
+  },
+  "gate": {
+    "name": "projection_answer_retention_count_at_least",
+    "required": 10,
+    "observed": 4,
+    "passed": false,
+    "evaluable": false
+  },
+  "root_cause": "The frozen builder checked answer membership against a serialization that also contained timestamps and speaker labels. Three of twelve cases therefore passed construction even though no dialogue turn contained the official answer. Among the nine source-valid cases, the fixed top-three lexical projection retained an answer-bearing turn in only four. Model inference cannot repair either a mislabeled source or omitted source text.",
+  "case_diagnostics": [
+    {
+      "case_id": "locomo-v2-5-conv-50-57",
+      "sample_id": "conv-50",
+      "qa_index": 57,
+      "answer_turn_indices": [
+        1,
+        7,
+        8,
+        9
+      ],
+      "projection_turn_indices": [
+        0,
+        6,
+        10
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.06537204504606134,
+      "complete_character_count": 2048,
+      "projection_character_count": 650,
+      "projection_character_ratio": 0.317383
+    },
+    {
+      "case_id": "locomo-v2-5-conv-50-27",
+      "sample_id": "conv-50",
+      "qa_index": 27,
+      "answer_turn_indices": [
+        7,
+        8,
+        9
+      ],
+      "projection_turn_indices": [
+        0,
+        2,
+        8
+      ],
+      "answer_turn_selected": true,
+      "maximum_answer_turn_question_overlap": 0.1889822365046136,
+      "complete_character_count": 3035,
+      "projection_character_count": 280,
+      "projection_character_ratio": 0.092257
+    },
+    {
+      "case_id": "locomo-v2-5-conv-50-43",
+      "sample_id": "conv-50",
+      "qa_index": 43,
+      "answer_turn_indices": [
+        0
+      ],
+      "projection_turn_indices": [
+        0,
+        2,
+        3
+      ],
+      "answer_turn_selected": true,
+      "maximum_answer_turn_question_overlap": 0.1095993248702382,
+      "complete_character_count": 3066,
+      "projection_character_count": 781,
+      "projection_character_ratio": 0.254729
+    },
+    {
+      "case_id": "locomo-v2-5-conv-48-44",
+      "sample_id": "conv-48",
+      "qa_index": 44,
+      "answer_turn_indices": [],
+      "projection_turn_indices": [
+        0,
+        1,
+        2
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.0,
+      "complete_character_count": 2075,
+      "projection_character_count": 656,
+      "projection_character_ratio": 0.316145
+    },
+    {
+      "case_id": "locomo-v2-5-conv-48-4",
+      "sample_id": "conv-48",
+      "qa_index": 4,
+      "answer_turn_indices": [
+        7
+      ],
+      "projection_turn_indices": [
+        6,
+        7,
+        8
+      ],
+      "answer_turn_selected": true,
+      "maximum_answer_turn_question_overlap": 0.1386750490563073,
+      "complete_character_count": 1845,
+      "projection_character_count": 495,
+      "projection_character_ratio": 0.268293
+    },
+    {
+      "case_id": "locomo-v2-5-conv-48-10",
+      "sample_id": "conv-48",
+      "qa_index": 10,
+      "answer_turn_indices": [
+        2
+      ],
+      "projection_turn_indices": [
+        2,
+        14,
+        18
+      ],
+      "answer_turn_selected": true,
+      "maximum_answer_turn_question_overlap": 0.16064386578049977,
+      "complete_character_count": 3028,
+      "projection_character_count": 364,
+      "projection_character_ratio": 0.120211
+    },
+    {
+      "case_id": "locomo-v2-5-conv-30-11",
+      "sample_id": "conv-30",
+      "qa_index": 11,
+      "answer_turn_indices": [
+        14
+      ],
+      "projection_turn_indices": [
+        11,
+        13,
+        15
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.08006407690254357,
+      "complete_character_count": 4047,
+      "projection_character_count": 299,
+      "projection_character_ratio": 0.073882
+    },
+    {
+      "case_id": "locomo-v2-5-conv-30-20",
+      "sample_id": "conv-30",
+      "qa_index": 20,
+      "answer_turn_indices": [],
+      "projection_turn_indices": [
+        0,
+        1,
+        3
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.0,
+      "complete_character_count": 2074,
+      "projection_character_count": 355,
+      "projection_character_ratio": 0.171167
+    },
+    {
+      "case_id": "locomo-v2-5-conv-30-35",
+      "sample_id": "conv-30",
+      "qa_index": 35,
+      "answer_turn_indices": [],
+      "projection_turn_indices": [
+        3,
+        4,
+        14
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.0,
+      "complete_character_count": 2408,
+      "projection_character_count": 501,
+      "projection_character_ratio": 0.208056
+    },
+    {
+      "case_id": "locomo-v2-5-conv-49-41",
+      "sample_id": "conv-49",
+      "qa_index": 41,
+      "answer_turn_indices": [
+        11,
+        17
+      ],
+      "projection_turn_indices": [
+        14,
+        16,
+        30
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.12830005981991682,
+      "complete_character_count": 3726,
+      "projection_character_count": 234,
+      "projection_character_ratio": 0.062802
+    },
+    {
+      "case_id": "locomo-v2-5-conv-49-52",
+      "sample_id": "conv-49",
+      "qa_index": 52,
+      "answer_turn_indices": [
+        6,
+        7,
+        8,
+        10,
+        11
+      ],
+      "projection_turn_indices": [
+        0,
+        12,
+        13
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.12403473458920847,
+      "complete_character_count": 2204,
+      "projection_character_count": 333,
+      "projection_character_ratio": 0.151089
+    },
+    {
+      "case_id": "locomo-v2-5-conv-49-4",
+      "sample_id": "conv-49",
+      "qa_index": 4,
+      "answer_turn_indices": [
+        10,
+        14,
+        16
+      ],
+      "projection_turn_indices": [
+        1,
+        7,
+        19
+      ],
+      "answer_turn_selected": false,
+      "maximum_answer_turn_question_overlap": 0.10540925533894598,
+      "complete_character_count": 1890,
+      "projection_character_count": 288,
+      "projection_character_ratio": 0.152381
+    }
+  ],
+  "authorization": {
+    "model_generation": false,
+    "reuse_four_holdout_conversations_for_claims": false,
+    "new_preregistration_using_only_six_reserve_conversations": true,
+    "correct_source_membership_oracle": true,
+    "change_projection_algorithm": true,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "This result invalidates the V2.5 case construction oracle and shows a secondary top-three lexical omission on four of nine source-valid cases. It does not evaluate qwen3.5:9b, full LoCoMo QA, or the production memory pipeline."
+}
