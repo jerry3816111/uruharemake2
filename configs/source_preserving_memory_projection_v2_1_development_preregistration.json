@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_development_preregistration_v2_1",
+  "experiment_id": "source_preserving_memory_projection_v2_1_development",
+  "frozen_at": "2026-08-05T14:14:15+09:00",
+  "base_preregistration": {
+    "path": "configs/source_preserving_memory_projection_v2_development_preregistration.json",
+    "sha256": "10db793820f13496e0f49844e06118772f88fdce7ca4d0bd5179b8fd2ce77cdc"
+  },
+  "failed_construction_evidence": {
+    "lock_path": "configs/source_preserving_memory_projection_v2_construction_feasibility_lock.json",
+    "lock_sha256": "9a1bc510104173963aecab9b6c5f219962c0ecafa898150201ed73c4dd3f6e61",
+    "report_path": "reports/source_preserving_memory_projection_v2_construction_feasibility.json",
+    "report_sha256": "6e8cda09c286c72d286e5939d572cdb03326fb1d52430c3be50467d5410180b8",
+    "required_case_count": 8,
+    "eligible_case_count": 1,
+    "target_over_character_limit_count": 39,
+    "model_calls": 0
+  },
+  "single_changed_construction_variable": {
+    "name": "source_character_limits",
+    "reason": "The locked V2 construction showed that the guessed 7,000-character target ceiling excluded 39 otherwise preceding candidates and left only 1/8 eligible cases.",
+    "control": {
+      "maximum_target_characters": 7000,
+      "maximum_hard_negative_characters": 7000,
+      "maximum_combined_visible_characters": 14000
+    },
+    "treatment": {
+      "maximum_target_characters": 14000,
+      "maximum_hard_negative_characters": 10000,
+      "maximum_combined_visible_characters": 22000
+    },
+    "selection_basis": "Choose the smallest inspected limit tuple that leaves at least 8 eligible development cases while keeping the maximum combined source text below 22,000 characters for the frozen 8,192-token context.",
+    "held_constant": [
+      "LongMemEval source hash and existing test split",
+      "V1 question-ID exclusion set",
+      "question type and exact-answer eligibility",
+      "selection salt and hash ordering",
+      "hard-negative lexical-overlap algorithm",
+      "top-three user-utterance projection algorithm",
+      "source exactness and provenance contract",
+      "qwen3.5:4b model and digest",
+      "8,192-token context and 320-token output budget",
+      "prompt, tool carrier, grounding rules, metrics, success gates, and authorization boundary"
+    ]
+  },
+  "effective_overrides": {
+    "case_selection.source_size_rules.maximum_target_characters": 14000,
+    "case_selection.source_size_rules.maximum_hard_negative_characters": 10000,
+    "case_selection.source_size_rules.maximum_combined_visible_characters": 22000
+  },
+  "inherited_without_change": [
+    "why_this_is_not_a_holdout",
+    "prior_invalidity_evidence",
+    "falsifiable_hypothesis",
+    "single_changed_variable candidate_evidence_representation",
+    "official_source",
+    "all case-selection rules except the three source-size values",
+    "source_preservation_contract",
+    "matched_conditions",
+    "span_gate",
+    "staged_execution",
+    "primary_metrics",
+    "success_gates",
+    "analysis",
+    "decision_and_authorization"
+  ],
+  "feasibility_gate_before_case_freeze": {
+    "eligible_case_count_at_least": 8,
+    "selected_case_count_equals": 8,
+    "selected_ids_disjoint_from_v1": true,
+    "all_source_preflight_checks_pass": true,
+    "model_calls_equal": 0,
+    "failure_action": "Lock V2.1 construction infeasibility and do not change another value without a new preregistration."
+  },
+  "authorization": {
+    "build_source_preserving_cases": true,
+    "run_model_evaluation": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout_claim": false,
+    "official_benchmark_score_claim": false
+  },
+  "evidence_boundary": "This revision authorizes only deterministic source-case construction. It does not authorize model calls, runtime integration, production use, or a fresh-data claim."
+}
