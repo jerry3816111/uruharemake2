@@ -1,0 +1,97 @@
+{
+  "schema": "uruha_memory_item_causal_analysis_v1",
+  "experiment_id": "memory_item_causal_intervention_v1",
+  "decision": "exact_memory_record_causality_not_supported_or_inconclusive",
+  "integrity": {
+    "expected_row_count": true,
+    "all_cases_have_all_conditions": true,
+    "retrieval_schema_present": true,
+    "target_selected_and_passed": true,
+    "irrelevant_selected_and_passed": true,
+    "decision_view_intervention_clean": false,
+    "no_production_writes": true,
+    "no_vrm_actions": true,
+    "no_transport_errors": true,
+    "condition_deadline_respected": false
+  },
+  "gate_checks": {
+    "integrity": false,
+    "intact_target_anchor": true,
+    "removed_target_anchor": true,
+    "replacement_anchor": true,
+    "irrelevant_removed_target_anchor": true,
+    "intact_target_plan": true,
+    "removed_target_plan": true,
+    "replacement_plan": true,
+    "irrelevant_removed_target_plan": true,
+    "paired_target_removal": true,
+    "irrelevant_removal_preservation": true
+  },
+  "condition_summaries": {
+    "c0_intact_target_and_irrelevant": {
+      "row_count": 8,
+      "target_anchor_rate": 0.875,
+      "replacement_anchor_rate": 0.0,
+      "target_marker_in_plan_rate": 0.875,
+      "replacement_marker_in_plan_rate": 0.0,
+      "target_marker_in_reply_rate": 0.75,
+      "replacement_marker_in_reply_rate": 0.0,
+      "mean_latency_seconds": 46.678365875,
+      "leftbrain_call_count": 6,
+      "transport_error_count": 0
+    },
+    "t1_remove_exact_target": {
+      "row_count": 8,
+      "target_anchor_rate": 0.0,
+      "replacement_anchor_rate": 0.0,
+      "target_marker_in_plan_rate": 0.0,
+      "replacement_marker_in_plan_rate": 0.0,
+      "target_marker_in_reply_rate": 0.0,
+      "replacement_marker_in_reply_rate": 0.0,
+      "mean_latency_seconds": 45.19602075,
+      "leftbrain_call_count": 6,
+      "transport_error_count": 0
+    },
+    "t2_replace_exact_target": {
+      "row_count": 8,
+      "target_anchor_rate": 0.0,
+      "replacement_anchor_rate": 0.875,
+      "target_marker_in_plan_rate": 0.0,
+      "replacement_marker_in_plan_rate": 0.875,
+      "target_marker_in_reply_rate": 0.0,
+      "replacement_marker_in_reply_rate": 0.75,
+      "mean_latency_seconds": 44.599187125,
+      "leftbrain_call_count": 6,
+      "transport_error_count": 0
+    },
+    "n1_remove_exact_irrelevant": {
+      "row_count": 8,
+      "target_anchor_rate": 0.875,
+      "replacement_anchor_rate": 0.0,
+      "target_marker_in_plan_rate": 0.875,
+      "replacement_marker_in_plan_rate": 0.0,
+      "target_marker_in_reply_rate": 0.75,
+      "replacement_marker_in_reply_rate": 0.0,
+      "mean_latency_seconds": 45.597699375,
+      "leftbrain_call_count": 6,
+      "transport_error_count": 0
+    }
+  },
+  "paired_effects": {
+    "target_removal_plan_marker": {
+      "pair_count": 8,
+      "mean_delta": 0.875,
+      "bootstrap_95_ci": [
+        0.625,
+        1.0
+      ]
+    },
+    "irrelevant_removal_target_preservation_delta": 0.0
+  },
+  "resource_summary": {
+    "total_leftbrain_calls": 24,
+    "transport_error_count": 0,
+    "maximum_condition_seconds": 64.914117
+  },
+  "evidence_boundary": "A pass supports only that an identified record causally participates in the current planner decision on these eight local mechanism fixtures."
+}
