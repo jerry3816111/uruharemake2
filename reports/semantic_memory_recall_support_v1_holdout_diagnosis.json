@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_diagnosis_v1",
+  "holdout_decision": "holdout_reject_or_inconclusive",
+  "observed": {
+    "question_count": 8,
+    "wrong_trace_selection_count": 9,
+    "target_removed_selection_count": 6,
+    "target_lexically_supported_count": 7,
+    "replacement_lexically_supported_count": 3,
+    "hard_negative_lexically_supported_count": 6,
+    "target_shared_count_range": [
+      0,
+      4
+    ],
+    "hard_negative_shared_count_range": [
+      0,
+      4
+    ],
+    "target_lexical_miss_count": 1,
+    "replacement_paraphrase_support_loss_count": 4,
+    "whole_record_sensitive_suppression_count": 1
+  },
+  "root_causes": [
+    {
+      "id": "topic_overlap_is_not_answer_support",
+      "evidence": "Six of eight target-removed hard negatives shared at least one focus unit and were selected."
+    },
+    {
+      "id": "lexical_support_is_not_paraphrase_invariant",
+      "evidence": "Only three of eight faithful replacement paraphrases retained lexical support."
+    },
+    {
+      "id": "record_level_sensitivity_is_too_coarse",
+      "evidence": "One supported target was suppressed because another excerpt in the same memory record triggered the sensitive-memory gate."
+    }
+  ],
+  "threshold_conclusion": {
+    "shared_count_threshold_can_separate_targets_and_negatives": false,
+    "reason": "Both target and hard-negative shared-count ranges are 0 to 4; raising the threshold removes valid targets while retaining some hard negatives."
+  },
+  "next_falsifiable_hypothesis": "A bypass must require a question-conditioned answer-bearing evidence span, not topic overlap. Span-level speakability must inspect only the proposed evidence span.",
+  "forbidden_next_step": "Do not tune token stoplists, shared-unit thresholds, or case-specific terms against this exposed holdout.",
+  "rows": [
+    {
+      "case_id": "official-01-4100d0a0",
+      "language": "English",
+      "target_shared_count": 1,
+      "replacement_shared_count": 0,
+      "hard_negative_shared_count": 1,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-02-bc8a6e93",
+      "language": "English",
+      "target_shared_count": 3,
+      "replacement_shared_count": 0,
+      "hard_negative_shared_count": 1,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-03-c8c3f81d",
+      "language": "English",
+      "target_shared_count": 4,
+      "replacement_shared_count": 2,
+      "hard_negative_shared_count": 3,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-04-ad7109d1",
+      "language": "English",
+      "target_shared_count": 2,
+      "replacement_shared_count": 1,
+      "hard_negative_shared_count": 2,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-05-95bcc1c8",
+      "language": "Japanese",
+      "target_shared_count": 0,
+      "replacement_shared_count": 0,
+      "hard_negative_shared_count": 0,
+      "target_only_status": "unsupported",
+      "target_only_suppression_reason": null
+    },
+    {
+      "case_id": "official-06-3f1e9474",
+      "language": "Japanese",
+      "target_shared_count": 3,
+      "replacement_shared_count": 0,
+      "hard_negative_shared_count": 0,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-07-8550ddae",
+      "language": "Traditional Chinese",
+      "target_shared_count": 1,
+      "replacement_shared_count": 0,
+      "hard_negative_shared_count": 1,
+      "target_only_status": "selected",
+      "target_only_suppression_reason": "directly_relevant_or_requested"
+    },
+    {
+      "case_id": "official-08-c5e8278d",
+      "language": "Traditional Chinese",
+      "target_shared_count": 4,
+      "replacement_shared_count": 4,
+      "hard_negative_shared_count": 4,
+      "target_only_status": "suppressed",
+      "target_only_suppression_reason": "sensitive_memory"
+    }
+  ]
+}
