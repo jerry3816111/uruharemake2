@@ -66,6 +66,48 @@ MEMORY_CONTENT_STOPWORDS = frozenset(
 
 MEMORY_PROVENANCE_SCHEMA = "uruha_memory_provenance_trace_v1"
 
+EXPLICIT_MEMORY_QUERY_TERMS = (
+    "記得",
+    "记得",
+    "覚えて",
+    "remember",
+    "還記得",
+    "还记得",
+    "叫什么",
+    "叫什麼",
+    "剛剛說",
+    "刚刚说",
+    "我剛剛",
+    "我刚刚",
+    "what did i",
+    "what was i",
+    "what were we",
+    "さっき",
+    "何だったっけ",
+    "何だっけ",
+    "どこだっけ",
+    "いつだっけ",
+    "誰だっけ",
+    "っけ？",
+    "っけ?",
+)
+
+BROAD_MEMORY_PRESENCE_TERMS = (
+    "覚えてる",
+    "覚えてるの",
+    "うちのこと覚えてる",
+    "私のこと覚えてる",
+    "還記得我嗎",
+    "还记得我吗",
+    "remember me",
+    "do you remember me",
+    "still remember me",
+)
+
+RECALLABLE_MEMORY_SOURCES = frozenset(
+    {"episode", "recent_turn", "short_term", "profile"}
+)
+
 
 def memory_trace_id(candidate):
     """Return a stable local identifier without changing memory ranking."""
@@ -184,6 +226,92 @@ def clean_fact_value(value):
 def _contains_any_text(text, terms):
     lowered = str(text or "").lower()
     return any(str(term).lower() in lowered for term in terms)
+
+
+def is_explicit_memory_query(user_input):
+    return _contains_any_text(user_input, EXPLICIT_MEMORY_QUERY_TERMS)
+
+
+def is_broad_memory_presence_query(user_input):
+    compact = re.sub(r"[\s\u3000。．，,、！？?!…~～ー\-_/\"'`]+", "", str(user_input or "").lower())
+    return compact in {
+        re.sub(r"[\s\u3000。．，,、！？?!…~～ー\-_/\"'`]+", "", term.lower())
+        for term in BROAD_MEMORY_PRESENCE_TERMS
+    }
+
+
+def select_high_confidence_recall_item(
+    user_input,
+    memory_data,
+    minimum_top_score=0.55,
+    minimum_margin=0.15,
+    trust=50,
+):
+    """Select one already-ranked memory only when explicit recall is unambiguous."""
+    if not is_explicit_memory_query(user_input):
+        return {"status": "not_requested", "selected": False}
+    if is_broad_memory_presence_query(user_input):
+        return {"status": "presence_only", "selected": False}
+
+    ranked = []
+    for row in (memory_data or {}).get("working_memory_items") or []:
+        if str(row.get("source") or "") not in RECALLABLE_MEMORY_SOURCES:
+            continue
+        text = str(row.get("text") or "").strip()
+        if not text:
+            continue
+        try:
+            score = float(row.get("score") or 0.0)
+        except (TypeError, ValueError):
+            score = 0.0
+        ranked.append((score, row))
+    ranked.sort(key=lambda pair: pair[0], reverse=True)
+    if not ranked:
+        return {"status": "unavailable", "selected": False}
+
+    top_score, top = ranked[0]
+    runner_up_score = ranked[1][0] if len(ranked) > 1 else None
+    margin = top_score - runner_up_score if runner_up_score is not None else top_score
+    common = {
+        "top_score": round(top_score, 4),
+        "runner_up_score": round(runner_up_score, 4) if runner_up_score is not None else None,
+        "margin": round(margin, 4),
+        "minimum_top_score": float(minimum_top_score),
+        "minimum_margin": float(minimum_margin),
+        "trace_id": top.get("trace_id"),
+        "memory_id": top.get("memory_id"),
+        "source": top.get("source"),
+    }
+    if top_score < float(minimum_top_score):
+        return {**common, "status": "below_threshold", "selected": False}
+    if runner_up_score is not None and margin < float(minimum_margin):
+        return {**common, "status": "ambiguous", "selected": False}
+
+    speakability = assess_memory_speakability(
+        {
+            "source_text": top.get("text"),
+            "value": top.get("text"),
+            "jp_anchor": top.get("text"),
+            "expected": True,
+            "relevance": min(1.0, max(0.0, top_score)),
+        },
+        user_input=user_input,
+        trust=trust,
+    )
+    if not speakability.get("should_use_explicitly"):
+        return {
+            **common,
+            "status": "suppressed",
+            "selected": False,
+            "speakability": speakability,
+        }
+    return {
+        **common,
+        "status": "selected",
+        "selected": True,
+        "item": dict(top),
+        "speakability": speakability,
+    }
 
 def assess_memory_speakability(anchor, user_input="", trust=50):
     """
