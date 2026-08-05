@@ -1,0 +1,395 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_development_report_v1",
+  "experiment_id": "answer_bearing_memory_span_v1_development",
+  "decision": "development_reject_or_inconclusive",
+  "evidence_scope": "consumed_exposed_development_only",
+  "integrity": {
+    "row_count": 32,
+    "expected_row_count": 32,
+    "row_key_set_exact": true,
+    "duplicate_row_count": 0,
+    "cases_hash_match": true,
+    "baseline_hash_match": true,
+    "model_digest_match": true
+  },
+  "baseline": {
+    "wrong_trace_selection_count": 9,
+    "target_removed_selection_count": 6,
+    "intact_safe_outcome_rate": 0.875,
+    "replacement_safe_outcome_rate": 0.375,
+    "irrelevant_removed_target_selection_rate": 0.75
+  },
+  "metrics": {
+    "wrong_trace_selection_count": 0,
+    "wrong_trace_selection_delta_vs_baseline": -9,
+    "target_removed_selection_count": 0,
+    "target_removed_selection_delta_vs_baseline": -6,
+    "intact_safe_outcome_rate": 0.0,
+    "replacement_safe_outcome_rate": 0.0,
+    "irrelevant_removed_target_selection_rate": 0.0,
+    "structured_parse_rate": 0.0,
+    "supported_claim_count": 0,
+    "grounded_supported_claim_count": 0,
+    "exact_span_grounding_rate": 0.0,
+    "mean_latency_seconds": 13.137187,
+    "p95_latency_seconds": 17.026628,
+    "transport_error_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "all_inputs_and_baseline_hashes_match": true,
+    "model_digest_matches": true,
+    "structured_parse_rate_equals_one": false,
+    "exact_span_grounding_rate_equals_one": false,
+    "wrong_trace_selection_count_strictly_lower_than_baseline": true,
+    "target_removed_selection_count_equals_zero": true,
+    "intact_safe_outcome_rate_not_lower_than_baseline": false,
+    "replacement_safe_outcome_rate_strictly_higher_than_baseline": false,
+    "irrelevant_removed_target_selection_rate_not_lower_than_baseline": false,
+    "transport_error_count_equals_zero": true,
+    "production_memory_write_count_equals_zero": true,
+    "physical_vrm_action_count_equals_zero": true
+  },
+  "by_condition": {
+    "c0_intact_target_and_hard_negative": {
+      "count": 8,
+      "safe_count": 0,
+      "safe_rate": 0.0,
+      "selected_count": 0,
+      "wrong_trace_selection_count": 0,
+      "status_counts": {
+        "invalid_evidence_contract": 8
+      }
+    },
+    "t1_remove_exact_target": {
+      "count": 8,
+      "safe_count": 8,
+      "safe_rate": 1.0,
+      "selected_count": 0,
+      "wrong_trace_selection_count": 0,
+      "status_counts": {
+        "invalid_evidence_contract": 8
+      }
+    },
+    "t2_replace_exact_target": {
+      "count": 8,
+      "safe_count": 0,
+      "safe_rate": 0.0,
+      "selected_count": 0,
+      "wrong_trace_selection_count": 0,
+      "status_counts": {
+        "invalid_evidence_contract": 8
+      }
+    },
+    "n1_remove_exact_hard_negative": {
+      "count": 8,
+      "safe_count": 0,
+      "safe_rate": 0.0,
+      "selected_count": 0,
+      "wrong_trace_selection_count": 0,
+      "status_counts": {
+        "invalid_evidence_contract": 8
+      }
+    }
+  },
+  "by_language": {
+    "English": {
+      "decision_count": 16,
+      "safe_rate": 0.25,
+      "wrong_trace_selection_count": 0,
+      "contract_valid_rate": 0.0
+    },
+    "Japanese": {
+      "decision_count": 8,
+      "safe_rate": 0.25,
+      "wrong_trace_selection_count": 0,
+      "contract_valid_rate": 0.0
+    },
+    "Traditional Chinese": {
+      "decision_count": 8,
+      "safe_rate": 0.25,
+      "wrong_trace_selection_count": 0,
+      "contract_valid_rate": 0.0
+    }
+  },
+  "failure_count": 24,
+  "failures": [
+    {
+      "case_id": "official-01-4100d0a0",
+      "language": "English",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:4100d0a0:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-01-4100d0a0",
+      "language": "English",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:4100d0a0:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-01-4100d0a0",
+      "language": "English",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:4100d0a0:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-02-bc8a6e93",
+      "language": "English",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:bc8a6e93:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-02-bc8a6e93",
+      "language": "English",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:bc8a6e93:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-02-bc8a6e93",
+      "language": "English",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:bc8a6e93:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-03-c8c3f81d",
+      "language": "English",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:c8c3f81d:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-03-c8c3f81d",
+      "language": "English",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:c8c3f81d:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-03-c8c3f81d",
+      "language": "English",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:c8c3f81d:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-04-ad7109d1",
+      "language": "English",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:ad7109d1:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-04-ad7109d1",
+      "language": "English",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:ad7109d1:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-04-ad7109d1",
+      "language": "English",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:ad7109d1:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-05-95bcc1c8",
+      "language": "Japanese",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:95bcc1c8:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-05-95bcc1c8",
+      "language": "Japanese",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:95bcc1c8:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-05-95bcc1c8",
+      "language": "Japanese",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:95bcc1c8:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-06-3f1e9474",
+      "language": "Japanese",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:3f1e9474:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-06-3f1e9474",
+      "language": "Japanese",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:3f1e9474:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-06-3f1e9474",
+      "language": "Japanese",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:3f1e9474:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-07-8550ddae",
+      "language": "Traditional Chinese",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:8550ddae:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-07-8550ddae",
+      "language": "Traditional Chinese",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:8550ddae:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-07-8550ddae",
+      "language": "Traditional Chinese",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:8550ddae:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-08-c5e8278d",
+      "language": "Traditional Chinese",
+      "condition": "c0_intact_target_and_hard_negative",
+      "expected_trace_id": "holdout:c5e8278d:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-08-c5e8278d",
+      "language": "Traditional Chinese",
+      "condition": "t2_replace_exact_target",
+      "expected_trace_id": "holdout:c5e8278d:replacement",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    },
+    {
+      "case_id": "official-08-c5e8278d",
+      "language": "Traditional Chinese",
+      "condition": "n1_remove_exact_hard_negative",
+      "expected_trace_id": "holdout:c5e8278d:target",
+      "selected_trace_id": null,
+      "status": "invalid_evidence_contract",
+      "errors": [
+        "invalid_json_contract"
+      ]
+    }
+  ],
+  "status_counts": {
+    "invalid_evidence_contract": 32
+  },
+  "evidence_boundary": {
+    "runtime_change_authorized": false,
+    "production_enablement_authorized": false,
+    "persona_similarity_claim_allowed": false,
+    "benchmark_score_claim_allowed": false,
+    "human_memory_equivalence_claim_allowed": false,
+    "passing_action": "Preregister and run one new disjoint full-pipeline holdout.",
+    "failure_action": "Lock the negative result and localize whether the failure is model capacity, span contract, full-record speakability, or score ordering."
+  }
+}

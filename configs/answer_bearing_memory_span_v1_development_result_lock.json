@@ -1,0 +1,72 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_development_result_lock_v1",
+  "experiment_id": "answer_bearing_memory_span_v1_development",
+  "status": "development_rejected_locked",
+  "decision": "development_reject_or_inconclusive",
+  "evaluated_commit": "9f3e55d656b69071f6e58e31530eb417c9a30b10",
+  "observed": {
+    "question_count": 8,
+    "decision_count": 32,
+    "wrong_trace_selection_count": 0,
+    "wrong_trace_selection_delta_vs_lexical_v1": -9,
+    "target_removed_selection_count": 0,
+    "target_removed_selection_delta_vs_lexical_v1": -6,
+    "intact_safe_outcome_rate": 0.125,
+    "replacement_safe_outcome_rate": 0.125,
+    "irrelevant_removed_target_selection_rate": 0.125,
+    "structured_parse_rate": 1.0,
+    "exact_span_grounding_rate": 1.0,
+    "supported_claim_count": 6,
+    "mean_latency_seconds": 5.338873,
+    "p95_latency_seconds": 9.430745,
+    "transport_error_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "artifacts": {
+    "raw": {
+      "path": "analysis/local_answer_bearing_memory_span_v1_development/raw.jsonl",
+      "sha256": "4d8fb739f2b2bfdd7ffb0b63db8d4f8539cad182371d03d7afff44ec38445b85"
+    },
+    "metadata": {
+      "path": "analysis/local_answer_bearing_memory_span_v1_development/run_metadata.json",
+      "sha256": "1219983dddca98b1169e2cd9ff581b526e034bf6214758e59cbd20b884ae6e36"
+    },
+    "report_json": {
+      "path": "reports/answer_bearing_memory_span_v1_development.json",
+      "sha256": "0c44e37089894ea2c9e64e94b5b8852c9e224161839ef9693fb27081dcfc2bd1"
+    },
+    "report_markdown": {
+      "path": "reports/answer_bearing_memory_span_v1_development.md",
+      "sha256": "5f406a4b6187c854376644073e14870fc69ef6ec61aa01be1580e20cbf194c87"
+    }
+  },
+  "interpretation": {
+    "supported": "A strict answer-span gate can eliminate the lexical gate's observed wrong-trace and target-removal selections on this consumed slice while retaining fully grounded, parseable evidence.",
+    "rejected": "qwen3.5:4b with this contract is not usable as the recall authorization gate because it preserves only one of eight answer-bearing targets in each positive intervention condition.",
+    "not_supported": [
+      "runtime integration",
+      "production enablement",
+      "fresh-data generalization",
+      "persona similarity improvement",
+      "benchmark improvement",
+      "human-memory equivalence"
+    ]
+  },
+  "root_cause": "The carrier and source grounding are reliable, but the selected local 4B model is over-conservative on long multilingual memory records. Its zero wrong selections are achieved by rejecting most true answer-bearing records.",
+  "next_falsifiable_hypothesis": "With the exact prompt, native tool carrier, grounding validator, interventions, and gates fixed, a local model capacity screen can determine whether the false-negative problem is model capacity rather than the answer-span contract itself.",
+  "next_experiment_constraints": [
+    "Do not alter the semantic prompt or verdict schema.",
+    "Do not tune on case-specific words, official answers, or expected trace IDs.",
+    "Keep the same exposed cases development-only.",
+    "Compare locally installed models under the same generation and selection controls.",
+    "Do not build a fresh holdout unless one model passes every frozen development gate.",
+    "Do not integrate runtime until a later disjoint holdout passes."
+  ],
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout": false,
+    "local_model_capacity_screen_on_consumed_data": true
+  }
+}
