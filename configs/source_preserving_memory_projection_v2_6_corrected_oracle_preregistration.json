@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_corrected_oracle_preregistration_v2_6",
+  "experiment_id": "source_preserving_memory_projection_v2_6_corrected_source_turn_oracle",
+  "status": "frozen_before_corrected_case_construction",
+  "evidence_scope": "exposed_locomo_development_construction_only",
+  "hypothesis": "Changing only answer-membership checks from serialized session text to original dialogue-turn text will remove metadata-only false eligibility while still produce three deterministic single-hop cases from each of the four already exposed V2.5 conversations.",
+  "failed_control": {
+    "preregistration_path": "configs/source_preserving_memory_projection_v2_5_locomo_fresh_holdout_preregistration.json",
+    "preregistration_sha256": "7eee2834b3768f33df968f8de80bef30ac59cb8b73f234310ecebd4bf0c62374",
+    "cases_path": "configs/source_preserving_memory_projection_v2_5_locomo_cases.json",
+    "cases_sha256": "fc03e801c13ee0364d8fde24bb0468bc054b672d72336e544e1287ed5b20bcdc",
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_5_locomo_construction_result_lock.json",
+    "result_lock_sha256": "4f85142e06ba02032cc058d1102ec589d6985e007ee06483b6b9d022d8c29a16",
+    "report_path": "reports/source_preserving_memory_projection_v2_5_locomo_construction.json",
+    "report_sha256": "ee68449a26d2537bfb6596127bcf5b576f8731c1ead832f8a218088e6cb05954",
+    "decision": "construction_invalid_oracle_do_not_run_model",
+    "source_turn_valid_case_count": 9,
+    "source_turn_invalid_case_count": 3,
+    "model_calls": 0
+  },
+  "independent_variable": {
+    "name": "answer_membership_oracle_scope",
+    "control": "case-insensitive answer substring search over timestamp plus speaker labels plus dialogue text",
+    "intervention": "case-insensitive answer substring search over original non-empty dialogue-turn text only"
+  },
+  "controlled_variables": {
+    "official_dataset_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+    "official_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "exposed_sample_ids": [
+      "conv-50",
+      "conv-48",
+      "conv-30",
+      "conv-49"
+    ],
+    "reserve_sample_ids_remain_unused": true,
+    "official_category": 2,
+    "cases_per_conversation": 3,
+    "question_count": 12,
+    "selection_salt": "uruha-locomo-v2-5-single-hop-evidence-cases",
+    "selection_order": "unchanged V2.5 question digest order",
+    "hard_negative_ranking": "unchanged maximum normalized lexical overlap with unchanged digest tie-break",
+    "complete_representation": "unchanged V2.5 serialization",
+    "projection_representation": "unchanged V2.5 top-three isolated turns by lexical overlap",
+    "maximum_session_characters": 32000,
+    "model_calls": 0
+  },
+  "construction_gates": {
+    "question_count_equals": 12,
+    "cases_per_exposed_conversation_equals": 3,
+    "all_target_answers_exist_in_original_turn_text": true,
+    "all_hard_negative_answers_absent_from_original_turn_text": true,
+    "all_official_evidence_ids_exist": true,
+    "all_official_evidence_for_case_belongs_to_one_session": true,
+    "manifest_contains_official_text": false,
+    "manifest_contains_official_answers": false,
+    "reserve_sample_access_count_equals": 0,
+    "model_calls_equal": 0
+  },
+  "reported_not_gated": [
+    "top-three projection answer retention count",
+    "projection character ratio",
+    "case replacement count versus invalid V2.5 manifest"
+  ],
+  "authorization": {
+    "build_corrected_exposed_development_cases_once_after_merge": true,
+    "evaluate_new_projection_algorithm": false,
+    "model_generation": false,
+    "use_reserve_conversations": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.6 only repairs and verifies the construction oracle on the four already exposed conversations. It cannot restore freshness, evaluate a new projection algorithm, authorize model generation, or support runtime claims."
+}
