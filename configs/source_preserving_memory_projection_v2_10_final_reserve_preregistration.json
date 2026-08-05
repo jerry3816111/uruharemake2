@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_final_reserve_preregistration_v2_10",
+  "experiment_id": "source_preserving_memory_projection_v2_10_final_reserve_evidence_id",
+  "status": "frozen_before_final_reserve_payload_evaluation",
+  "evidence_scope": "independent_final_reserve_official_evidence_turn_retention",
+  "research_question": "Does the V2.9 adjacency evidence-ID recall advantage replicate on the final two untouched LoCoMo reserve conversations?",
+  "hypothesis": "Without changing either projection, adjacency will retain at least 0.60 of official evidence IDs and exceed isolated Top-3 micro recall by at least 0.10 on the final reserve.",
+  "development_authorization": {
+    "v2_9_result_lock_path": "configs/source_preserving_memory_projection_v2_9_evidence_id_result_lock.json",
+    "v2_9_result_lock_sha256": "fe015696f429006fa834f95a91fac9b86b2421cb1f46aa512317ba9e66fec8ab",
+    "v2_9_report_path": "reports/source_preserving_memory_projection_v2_9_evidence_id_development.json",
+    "v2_9_report_sha256": "36940862f1306b3039f40e0e8b61bb79ad287b037f3f3444ccbeb356798bf819",
+    "decision": "development_pass_authorize_final_reserve_preregistration_only",
+    "development_case_count": 115,
+    "development_isolated_micro_recall": 0.532787,
+    "development_adjacency_micro_recall": 0.688525,
+    "development_delta": 0.155738
+  },
+  "frozen_implementation": {
+    "v2_9_analyzer_path": "build_source_preserving_memory_projection_v2_9_evidence_id_development.py",
+    "v2_9_analyzer_sha256": "35ca03791f00e9d5da8583beb41c78e9e31756940f8c00bd38dcfd3658f5dbdf",
+    "v2_9_preregistration_path": "configs/source_preserving_memory_projection_v2_9_evidence_id_preregistration.json",
+    "v2_9_preregistration_sha256": "b7e97c9e3d5f97e9b6cdd7e56866f4d0841c0bd42e43d7711de9a965e74de909",
+    "v2_8_partition_path": "build_source_preserving_memory_projection_v2_8_reserve_cases.py",
+    "v2_8_partition_sha256": "1df07536d6d40e62dbccfcbb5f4a0abcce869872a46a9859020d8dcaffcc450e",
+    "v2_8_preregistration_path": "configs/source_preserving_memory_projection_v2_8_reserve_holdout_preregistration.json",
+    "v2_8_preregistration_sha256": "4da4637565198453445b09f326ff59fed65b5c0ee152c13ee2181c907b2e50e2"
+  },
+  "official_source": {
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "dataset_bytes": 2805274,
+    "conversation_count": 10,
+    "official_category": 2,
+    "official_category_name": "single-hop retrieval",
+    "evidence_semantics": "Official dialogue IDs that contain the answer, when available."
+  },
+  "frozen_partition": {
+    "excluded_exposed_sample_ids": [
+      "conv-50",
+      "conv-48",
+      "conv-30",
+      "conv-49"
+    ],
+    "partition_salt": "uruha-locomo-v2-8-reserve-to-fresh-and-final",
+    "fresh_holdout_conversation_count": 4,
+    "final_reserve_conversation_count": 2,
+    "final_reserve_sample_ids_sha256": "c82c21590a128403755ef1b29c613377c1914663a955b0c56bcdf1c9cf0fb675",
+    "committed_output_uses_aliases_not_raw_final_sample_ids": true
+  },
+  "independent_variable": {
+    "name": "source_projection_representation",
+    "control": "unchanged lexical-overlap Top-3 isolated turns",
+    "intervention": "unchanged two lexical anchors plus each immediate predecessor and successor",
+    "evaluation_oracle": "official evidence dialogue ID membership",
+    "use_all_eligible_category_2_cases": true,
+    "answer_text_used_for_eligibility_or_scoring": false
+  },
+  "controlled_variables": [
+    "same final two reserve conversations",
+    "same official category 2 questions",
+    "same question text as retrieval query",
+    "same source session and serialization",
+    "same V2.9 eligibility rules",
+    "same success thresholds as V2.9 except reserve population count",
+    "same local hardware",
+    "zero model calls"
+  ],
+  "success_gates": {
+    "dataset_hash_matches": true,
+    "dataset_bytes_match": true,
+    "final_reserve_sample_ids_hash_matches": true,
+    "eligible_case_count_at_least": 30,
+    "represented_conversation_count_equals": 2,
+    "all_official_evidence_ids_exist_exactly_once": true,
+    "all_official_evidence_ids_belong_to_one_session": true,
+    "adjacency_micro_evidence_recall_at_least": 0.6,
+    "adjacency_micro_recall_delta_vs_isolated_at_least": 0.1,
+    "adjacency_full_evidence_case_rate_at_least": 0.6,
+    "mean_adjacency_character_ratio_at_most": 0.5,
+    "all_selected_turns_are_exact_original_sources": true,
+    "final_reserve_evaluation_payload_access_count_equals": 2,
+    "model_calls_equal": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "authorization": {
+    "evaluate_final_reserve_payload_once_after_merge": true,
+    "preregister_independent_model_evaluation": false,
+    "run_model_generation": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.10 is an independent deterministic evidence-turn retention test on the final two LoCoMo reserve conversations. Even a pass cannot establish model answer quality, causal use of memory, full-pipeline quality, persona similarity, or production readiness."
+}
