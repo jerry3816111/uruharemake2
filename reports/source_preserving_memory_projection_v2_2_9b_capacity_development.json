@@ -1,0 +1,129 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_capacity_report_v2_2",
+  "experiment_id": "source_preserving_memory_projection_v2_2_9b_capacity_development",
+  "decision": "development_reject_or_inconclusive",
+  "evidence_scope": "exposed_official_dataset_development_only",
+  "integrity": {
+    "all_frozen_artifact_hashes_match": true,
+    "raw_hash_match": true,
+    "official_source_hash_match": true,
+    "metadata_experiment_id_match": true,
+    "metadata_row_count_match": true,
+    "exact_expected_row_key_set": true,
+    "no_duplicate_row_keys": true,
+    "model_digest_match": true,
+    "endpoint_match": true
+  },
+  "metrics": {
+    "frozen_4b_projected_target_support_count": 5,
+    "intervention_9b_complete_target_support_count": 0,
+    "intervention_9b_projected_target_support_count": 7,
+    "projected_9b_minus_frozen_4b_support_count": 2,
+    "intervention_9b_complete_false_support_count": 0,
+    "intervention_9b_projected_false_support_count": 0,
+    "structured_contract_rate": 0.8125,
+    "exact_span_grounding_rate": 0.8125,
+    "source_projection_exactness_rate": 1.0,
+    "transport_error_count": 0,
+    "mean_latency_seconds_by_representation": {
+      "complete_session": 14.293386,
+      "source_projection": 5.647655
+    },
+    "p95_latency_seconds_by_representation": {
+      "complete_session": 20.823755,
+      "source_projection": 8.260969
+    },
+    "total_visible_characters_by_representation": {
+      "complete_session": 132948,
+      "source_projection": 12936
+    },
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "integrity_all_frozen_artifact_hashes_match": true,
+    "integrity_raw_hash_match": true,
+    "integrity_official_source_hash_match": true,
+    "integrity_metadata_experiment_id_match": true,
+    "integrity_metadata_row_count_match": true,
+    "integrity_exact_expected_row_key_set": true,
+    "integrity_no_duplicate_row_keys": true,
+    "integrity_model_digest_match": true,
+    "integrity_endpoint_match": true,
+    "all_32_decisions_present": true,
+    "projected_target_support_count_at_least": true,
+    "projected_minus_frozen_4b_target_support_count_at_least": true,
+    "projected_hard_negative_false_support_count_equals_zero": true,
+    "structured_contract_rate_equals_one": false,
+    "exact_span_grounding_rate_equals_one": false,
+    "transport_error_count_equals_zero": true,
+    "source_projection_exactness_rate_equals_one": true,
+    "production_memory_write_count_equals_zero": true,
+    "physical_vrm_action_count_equals_zero": true
+  },
+  "invalid_rows": [
+    {
+      "case_id": "source-v2-58bf7951",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded",
+        "source_2:supported_span_not_grounded"
+      ]
+    },
+    {
+      "case_id": "source-v2-af8d2e46",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded"
+      ]
+    },
+    {
+      "case_id": "source-v2-f4f1d8a4",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded"
+      ]
+    },
+    {
+      "case_id": "source-v2-1e043500",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded"
+      ]
+    },
+    {
+      "case_id": "source-v2-76d63226",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded",
+        "source_2:supported_span_not_grounded"
+      ]
+    },
+    {
+      "case_id": "source-v2-60d45044",
+      "condition": "remove_exact_hard_negative",
+      "representation": "complete_session",
+      "errors": [
+        "source_indices_not_complete_and_unique",
+        "source_1:supported_span_not_grounded",
+        "source_2:supported_span_not_grounded"
+      ]
+    }
+  ],
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_external_holdout": false
+  },
+  "evidence_boundary": "This is a paired exposed-development model-capacity screen. A pass supports testing the same mechanism on a different unobserved formal source; it does not establish generalization or authorize runtime use."
+}
