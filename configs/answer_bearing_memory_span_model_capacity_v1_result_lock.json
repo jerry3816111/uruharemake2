@@ -1,0 +1,82 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_model_capacity_result_lock_v1",
+  "experiment_id": "answer_bearing_memory_span_model_capacity_v1",
+  "status": "completed_no_model_selected_locked",
+  "decision": "model_capacity_not_sufficient",
+  "evaluated_commit": "5b17eb1d64ebbb5dbee6fd67596ec2309f8bb328",
+  "selected_model": null,
+  "observed": {
+    "new_model_call_count": 48,
+    "qwen3.5:0.8b": {
+      "phase_1_target_only_safe": "2_of_8",
+      "target_removed_selection_count": 2,
+      "structured_parse_rate": 0.3125,
+      "exact_span_grounding_rate": 0.5625,
+      "mean_latency_seconds": 2.084692,
+      "phase_1_passed": false
+    },
+    "qwen3.5:2b": {
+      "phase_1_target_only_safe": "1_of_8",
+      "target_removed_selection_count": 0,
+      "structured_parse_rate": 0.25,
+      "exact_span_grounding_rate": 0.714286,
+      "mean_latency_seconds": 2.771995,
+      "phase_1_passed": false
+    },
+    "qwen3.5:4b": {
+      "phase_1_target_only_safe": "1_of_8",
+      "target_removed_selection_count": 0,
+      "structured_parse_rate": 1.0,
+      "exact_span_grounding_rate": 1.0,
+      "mean_latency_seconds": 5.338873,
+      "phase_1_passed": false,
+      "result_reused": true
+    },
+    "qwen3.5:9b": {
+      "phase_1_target_only_safe": "4_of_8",
+      "target_removed_selection_count": 0,
+      "structured_parse_rate": 1.0,
+      "exact_span_grounding_rate": 1.0,
+      "mean_latency_seconds": 7.896305,
+      "phase_1_passed": false
+    }
+  },
+  "artifacts": {
+    "raw": {
+      "path": "analysis/local_answer_bearing_memory_span_model_capacity_v1/raw.jsonl",
+      "sha256": "69b9b15e3a7ecb57899d2156f04263e36929d7bb5d51af079203259e664726c4"
+    },
+    "metadata": {
+      "path": "analysis/local_answer_bearing_memory_span_model_capacity_v1/run_metadata.json",
+      "sha256": "360ef929c6f08df0bfdbde8f4ff6e96905e9df5629e2b5796000e363b27ca48b"
+    },
+    "report_json": {
+      "path": "reports/answer_bearing_memory_span_model_capacity_v1.json",
+      "sha256": "a4fc414d4e1460af90eb5b210844ec40f2087ea2628800cab1eafeb024bff0b1"
+    },
+    "report_markdown": {
+      "path": "reports/answer_bearing_memory_span_model_capacity_v1.md",
+      "sha256": "cc8a256e86f3c6f2bcb5e8ddb98a8b68f12411743b954e841466de4a95f4aba8"
+    }
+  },
+  "interpretation": {
+    "supported": "Within the frozen Qwen3.5 family, increasing size improves true-target recall and tool-contract reliability, but no installed size satisfies the joint safety and recall gate.",
+    "rejected": "Model capacity alone is not a sufficient repair for answer-bearing span authorization over long multilingual session records.",
+    "remaining_signal": "The 9B model reaches 4/8 target-only recall with zero target-removed selections, while two additional records are suppressed by unchanged full-record speakability. This points to evidence representation and safety scope as separate next variables."
+  },
+  "next_falsifiable_hypothesis": "Projecting each long candidate session into a small source-preserving set of question-aligned user utterances will improve answer-bearing recall for the fixed 4B gate without reintroducing target-removed false selections.",
+  "next_experiment_constraints": [
+    "Use exact source utterances with source offsets; do not summarize or rewrite them.",
+    "Keep qwen3.5:4b, the tool carrier, semantic prompt, grounding validator, scores, and selection thresholds fixed.",
+    "Change only the evidence representation presented to the span gate.",
+    "Do not tune utterance terms on official answers or expected trace IDs.",
+    "Keep whole-record speakability fixed in the first representation experiment so safety scope remains a later variable.",
+    "Use consumed data for development only and require a new disjoint holdout before runtime."
+  ],
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout": false,
+    "source_preserving_evidence_representation_experiment": true
+  }
+}
