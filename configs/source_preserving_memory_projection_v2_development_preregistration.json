@@ -1,0 +1,225 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_development_preregistration_v2",
+  "experiment_id": "source_preserving_memory_projection_v2_development",
+  "frozen_at": "2026-08-05T14:00:56+09:00",
+  "purpose": "Test whether a question-conditioned working-memory projection made only of exact source utterances improves answer-bearing span detection over the complete source session without increasing false support after target removal.",
+  "why_this_is_not_a_holdout": {
+    "status": "exposed_official_dataset_development_only",
+    "reason": "The repository's earlier LongMemEval retrieval baseline evaluated all 500 source rows. The selected IDs will be disjoint from V1, but no row from this dataset can honestly be described as untouched by this research program.",
+    "retrieval_baseline_report": {
+      "path": "reports/longmemeval_retrieval_baseline_report.json",
+      "sha256": "60e4c680b5a8e2dcc5b1e39eb6084f2d8eb7facd0ea27d9a06e0879c040b70cf",
+      "selected_question_count": 500
+    },
+    "generalization_claim_allowed": false,
+    "official_benchmark_score_claim_allowed": false
+  },
+  "prior_invalidity_evidence": {
+    "audit_lock": {
+      "path": "configs/semantic_memory_recall_support_v1_evidence_contract_audit_result_lock.json",
+      "sha256": "76c05f32df68e020785420c77701ea5de9805eed8489e7a7c8b0e433221f07fa"
+    },
+    "v1_cases": {
+      "path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+      "sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0"
+    },
+    "locked_observation": "V1 had 0/8 strict-valid cases, 7/8 answer-bearing targets, 4/8 answer-bearing replacements, and 4/8 complete language-contract passes.",
+    "comparison_rule": "V2 must not report a causal improvement over V1. Its paired control and treatment are rebuilt from the same valid source records and form a new development baseline."
+  },
+  "falsifiable_hypothesis": {
+    "primary": "Selecting the three most question-aligned user utterances from each source session, without rewriting or truncating them, will increase true target support by at least two of eight cases relative to the complete-session control.",
+    "safety": "The projection must not create answer support for a hard negative after the exact target session is removed.",
+    "failure": "The hypothesis fails if projected target support improves by fewer than two cases, projected target support is below 6/8, any projected hard negative is supported, or source grounding and structured-contract rates are below 100%."
+  },
+  "single_changed_variable": {
+    "name": "candidate_evidence_representation",
+    "control": "complete official session serialized in original turn order with untruncated source text",
+    "treatment": "top three question-aligned user utterances copied verbatim from that same session with original turn indices and hashes",
+    "held_constant": [
+      "official question and source sessions",
+      "target and hard-negative session IDs",
+      "visible facts and source wording",
+      "candidate scores and ordering",
+      "model and model digest",
+      "semantic prompt and native tool schema",
+      "temperature, thinking mode, seed, context budget, and output budget",
+      "span grounding validator",
+      "hardware and Ollama endpoint"
+    ],
+    "not_tested_here": [
+      "paraphrase invariance",
+      "cross-language recall",
+      "full-pipeline answer quality",
+      "persona similarity",
+      "human-memory equivalence"
+    ]
+  },
+  "official_source": {
+    "dataset": "LongMemEval-S cleaned",
+    "dataset_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "dataset_path": "external_data/longmemeval/longmemeval_s_cleaned.json",
+    "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "repository": "https://github.com/xiaowu0162/LongMemEval",
+    "repository_commit": "9e0b455f4ef0e2ab8f2e582289761153549043fc"
+  },
+  "case_selection": {
+    "question_count": 8,
+    "question_type": "single-session-user",
+    "abstention_rows_allowed": false,
+    "required_answer_session_count": 1,
+    "answer_type": "nonempty_string",
+    "required_existing_split": "test",
+    "existing_split_method": "sha256_salted_modulo_5 from the frozen LongMemEval retrieval baseline",
+    "exclude_question_ids_path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+    "exclude_all_eight_v1_question_ids": true,
+    "selection_salt": "uruha-source-preserving-memory-projection-v2-development",
+    "selection_method": "Filter by the frozen eligibility and source-size rules, sort by SHA256(selection_salt:question_id), then take the first 8.",
+    "answer_use_boundary": "The gold answer may be used only by the offline builder to require an exact case-insensitive occurrence in the complete target source and absence from the complete hard negative. The projection algorithm and inference prompt must never receive it.",
+    "source_size_rules": {
+      "serialization": "Time line followed by every source turn in original order, with exact role and untruncated content",
+      "maximum_target_characters": 7000,
+      "maximum_hard_negative_characters": 7000,
+      "maximum_combined_visible_characters": 14000
+    },
+    "hard_negative_selection": "Among non-answer sessions that do not contain the exact official answer and satisfy the size limit, choose maximum question-to-session lexical overlap; break ties by SHA256(selection_salt:question_id:session_id)."
+  },
+  "source_preservation_contract": {
+    "construction_model_calls": 0,
+    "translation_calls": 0,
+    "paraphrase_calls": 0,
+    "summarization_calls": 0,
+    "complete_session": "Exact official source timestamp and all turns in original order. No turn or content truncation is allowed.",
+    "projection": {
+      "eligible_roles": ["user"],
+      "top_k": 3,
+      "score": "Count the intersection of frozen non-stopword lowercase ASCII question tokens and source-turn tokens.",
+      "tie_break": "Original source turn index ascending.",
+      "zero_overlap_behavior": "Select the first three eligible user turns by original index; do not use the answer to rescue the projection.",
+      "output_order": "Original source turn index ascending.",
+      "text_rule": "Copy each selected turn's complete content exactly; retain role and source_turn_index.",
+      "gold_answer_used": false,
+      "expected_trace_id_used": false
+    },
+    "required_provenance_per_record": [
+      "official_question_id",
+      "official_session_id",
+      "source_turn_count",
+      "source_text_sha256",
+      "source_turn_sha256_list",
+      "projection_turn_indices",
+      "projection_text_sha256"
+    ],
+    "preflight_must_prove": [
+      "all selected question IDs are disjoint from V1",
+      "all official source and frozen artifact hashes match",
+      "target session ID equals the sole official answer session ID",
+      "complete target source contains the exact official answer",
+      "complete hard-negative source does not contain the exact official answer",
+      "complete-session hashes reconstruct from official rows",
+      "every projected utterance is an exact untruncated source turn with the recorded index and hash",
+      "projection selection can be recomputed from question tokens without the official answer",
+      "no question or candidate text was model-generated",
+      "all complete-session inputs fit the frozen character and model-context budgets"
+    ]
+  },
+  "matched_conditions": [
+    {
+      "id": "intact_target_and_hard_negative",
+      "visible_candidates": ["target", "hard_negative"],
+      "expected_answer_bearing_candidate": "target",
+      "run_for_representations": ["complete_session", "source_projection"]
+    },
+    {
+      "id": "remove_exact_target",
+      "visible_candidates": ["hard_negative"],
+      "expected_answer_bearing_candidate": null,
+      "run_for_representations": ["complete_session", "source_projection"]
+    },
+    {
+      "id": "remove_exact_hard_negative",
+      "visible_candidates": ["target"],
+      "expected_answer_bearing_candidate": "target",
+      "run_for_representations": ["complete_session", "source_projection"]
+    }
+  ],
+  "span_gate": {
+    "implementation": {
+      "path": "answer_bearing_memory_span.py",
+      "sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49"
+    },
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "carrier": "native_ollama_tool_call",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "gold_answer_in_prompt": false,
+    "expected_trace_id_in_prompt": false,
+    "accepted_span_rule": "A supported answer_span must be a non-empty verbatim substring of its own visible source after whitespace normalization only."
+  },
+  "staged_execution": {
+    "phase_1_conditions": ["remove_exact_hard_negative", "remove_exact_target"],
+    "phase_1_representations": ["complete_session", "source_projection"],
+    "phase_1_call_count": 32,
+    "phase_1_continue_only_if": {
+      "projected_target_only_supported_count_at_least": 6,
+      "projected_hard_negative_supported_count_equals": 0,
+      "structured_contract_rate_equals": 1.0,
+      "exact_grounding_rate_equals": 1.0,
+      "transport_error_count_equals": 0
+    },
+    "phase_2_conditions": ["intact_target_and_hard_negative"],
+    "phase_2_representations": ["complete_session", "source_projection"],
+    "phase_2_call_count": 16,
+    "maximum_total_model_calls": 48
+  },
+  "primary_metrics": [
+    "complete_target_only_answer_support_count",
+    "projected_target_only_answer_support_count",
+    "paired_target_only_support_gain_count",
+    "complete_target_removed_false_support_count",
+    "projected_target_removed_false_support_count",
+    "complete_intact_target_support_count",
+    "projected_intact_target_support_count",
+    "paired_intact_support_gain_count",
+    "source_projection_exactness_rate",
+    "structured_contract_rate",
+    "exact_span_grounding_rate",
+    "mean_prompt_character_reduction_rate",
+    "mean_and_p95_latency_seconds_by_representation"
+  ],
+  "success_gates": {
+    "all_source_preflight_checks_pass": true,
+    "all_48_decisions_present": true,
+    "projected_target_only_answer_support_count_at_least": 6,
+    "projected_minus_complete_target_only_support_count_at_least": 2,
+    "projected_target_removed_false_support_count_equals": 0,
+    "projected_intact_target_support_count_at_least": 6,
+    "projected_intact_target_support_not_lower_than_complete": true,
+    "source_projection_exactness_rate_equals": 1.0,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "transport_error_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "analysis": {
+    "paired_design": true,
+    "primary_effect": "Within-case difference between complete-session and source-projection support outcomes.",
+    "statistical_boundary": "Eight exposed development cases are too small for a broad efficacy claim. Report paired counts and exact outcomes; do not use a nonsignificant test to claim equivalence.",
+    "cost_reporting": ["prompt characters", "latency", "model calls", "context overflow count"]
+  },
+  "decision_and_authorization": {
+    "pass": "Lock the source-projection mechanism as development evidence and locate a different, previously unobserved formal memory source for a preregistered holdout. Do not change runtime.",
+    "fail": "Lock the failure and distinguish projection miss, model false negative, carrier failure, and context overflow before changing another variable.",
+    "runtime_change_authorized": false,
+    "production_enablement_authorized": false,
+    "fresh_holdout_authorized": false,
+    "model_selection_authorized": false,
+    "persona_similarity_claim_authorized": false,
+    "benchmark_score_claim_authorized": false
+  }
+}
