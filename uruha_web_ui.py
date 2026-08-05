@@ -1250,6 +1250,7 @@ def _extract_trace_payload(result):
         "bayes_candidates": logic.get("bayes_candidates"),
         "working_memory_summary": mems.get("working_memory_summary"),
         "working_memory_items": mems.get("working_memory_items"),
+        "memory_provenance": mems.get("memory_provenance"),
         "reflection": result.get("reflection"),
         "memory_runtime": result.get("memory_runtime"),
         "runtime_trace": result.get("runtime_trace"),
@@ -1271,6 +1272,7 @@ def _extract_memory_payload(result):
         "procedural": mems.get("procedural"),
         "working_memory_summary": mems.get("working_memory_summary"),
         "working_memory_items": mems.get("working_memory_items"),
+        "memory_provenance": mems.get("memory_provenance"),
     }
 
 
@@ -1396,10 +1398,17 @@ def _render_state_diff_html(result):
     autonomous_goal = (autonomous.get("goal") or {}).get("label") if isinstance(autonomous.get("goal"), dict) else None
     proactive_line = pending_proactive.get("line") or "none"
     working_memory_items = memory_data.get("working_memory_items") or []
+    memory_provenance = memory_data.get("memory_provenance") or {}
     working_memory_lines = "".join(
-        f"<li>{escape(str(item.get('text', '')))} | s={_float_or_zero(item.get('score', item.get('salience', 0.0))):.2f}</li>"
+        f"<li>{escape(str(item.get('text', '')))} | s={_float_or_zero(item.get('score', item.get('salience', 0.0))):.2f} | id={escape(str(item.get('trace_id') or '-'))}</li>"
         for item in working_memory_items[:5]
     ) or "<li>none</li>"
+    provenance_lines = [
+        f"retrieved_count={memory_provenance.get('retrieved_candidate_count', 0)}",
+        f"ranked_count={memory_provenance.get('candidate_count', 0)}",
+        f"selected_count={len(memory_provenance.get('selected_working_memory_trace_ids') or [])}",
+        f"passed_count={len(memory_provenance.get('passed_to_leftbrain_trace_ids') or [])}",
+    ]
     autonomous_history_lines = "".join(
         f"<li>{escape(str(((item.get('goal') or {}).get('label')) or 'none'))} | writes={len(item.get('memory_writes') or [])}</li>"
         for item in recent_autonomous[-3:]
@@ -1459,6 +1468,10 @@ def _render_state_diff_html(result):
         "<h4>Working Memory</h4>"
         f'<div class="muted">summary={escape(str(memory_data.get("working_memory_summary") or "-"))}</div>'
         f'<ul class="state-list">{working_memory_lines}</ul>'
+        "</div>"
+        '<div class="state-card">'
+        "<h4>Memory Provenance</h4>"
+        f'<ul class="state-list">{"".join(f"<li>{escape(line)}</li>" for line in provenance_lines)}</ul>'
         "</div>"
         '<div class="state-card">'
         "<h4>Autonomous Runtime</h4>"

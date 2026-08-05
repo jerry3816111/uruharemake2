@@ -1,0 +1,26 @@
+{
+  "schema": "uruha_memory_provenance_trace_contract_v1",
+  "status": "runtime_observability_contract",
+  "purpose": "Distinguish memory candidates, selected working memory, memory actually passed into the cognitive pipeline, and the source selected as the reply memory anchor.",
+  "stages": {
+    "retrieved_candidates": "All nonempty candidates returned by memory channels, including rows later deduplicated.",
+    "candidate_pool": "Unique memory candidates that entered salience ranking after deduplication.",
+    "selected_working_memory_trace_ids": "Top-k candidate identifiers selected by the unchanged working-memory ranking.",
+    "passed_to_leftbrain": "Identified memory records that were serialized into a memory_data channel visible to LeftBrain.",
+    "memory_anchor_trace_id": "The passed memory record selected as the explicit reply anchor.",
+    "causally_supported": "Reserved for a later paired intervention where removing or replacing this exact trace_id changes a preregistered downstream outcome."
+  },
+  "interpretation_limits": [
+    "Candidate presence does not prove model use.",
+    "Passing a record to LeftBrain does not prove causal influence.",
+    "Selecting a memory anchor is a system decision and is not evidence of a human using the same memory.",
+    "Causal language is forbidden until an exact trace_id intervention passes its preregistered gate."
+  ],
+  "behavior_invariants": [
+    "No salience formula changes.",
+    "No working-memory order changes.",
+    "No prompt, reply policy, memory write, or runtime activation changes.",
+    "Stored records retain their database memory_id; transient records receive a deterministic derived trace_id."
+  ],
+  "next_authorized_experiment": "A frozen paired intervention that removes or replaces one passed trace_id while keeping every other input fixed."
+}

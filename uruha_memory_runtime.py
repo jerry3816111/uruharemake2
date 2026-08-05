@@ -1,5 +1,6 @@
-import re
 import datetime
+import hashlib
+import re
 
 MEMORY_SCORING_PROFILES = frozenset({"legacy", "v2"})
 MEMORY_CONTENT_STOPWORDS = frozenset(
@@ -62,6 +63,51 @@ MEMORY_CONTENT_STOPWORDS = frozenset(
         "time",
     }
 )
+
+MEMORY_PROVENANCE_SCHEMA = "uruha_memory_provenance_trace_v1"
+
+
+def memory_trace_id(candidate):
+    """Return a stable local identifier without changing memory ranking."""
+    candidate = candidate or {}
+    existing = str(candidate.get("trace_id") or "").strip()
+    if existing:
+        return existing
+    source = str(candidate.get("source") or "unknown").strip() or "unknown"
+    memory_id = str(candidate.get("memory_id") or "").strip()
+    if memory_id:
+        collection = str(candidate.get("collection_name") or source).strip() or source
+        return f"stored:{collection}:{memory_id}"
+    metadata = candidate.get("metadata") or {}
+    identity_parts = [
+        source,
+        re.sub(r"\s+", " ", str(candidate.get("text") or "")).strip(),
+        str(metadata.get("timestamp") or ""),
+        str(metadata.get("field") or ""),
+    ]
+    digest = hashlib.sha256("\x1f".join(identity_parts).encode("utf-8")).hexdigest()[:20]
+    return f"derived:{source}:{digest}"
+
+
+def memory_trace_row(candidate, *, rank=None, selected=None, channel=None):
+    """Build the auditable representation used by runtime traces and experiments."""
+    candidate = candidate or {}
+    row = {
+        "trace_id": memory_trace_id(candidate),
+        "memory_id": candidate.get("memory_id"),
+        "source": candidate.get("source") or "unknown",
+        "collection_name": candidate.get("collection_name"),
+        "text": str(candidate.get("text") or ""),
+        "score": candidate.get("score"),
+        "attention_factors": dict(candidate.get("attention_factors") or {}),
+    }
+    if rank is not None:
+        row["rank"] = int(rank)
+    if selected is not None:
+        row["selected"] = bool(selected)
+    if channel is not None:
+        row["channel"] = str(channel)
+    return row
 
 
 def memory_tokens(text):
@@ -471,6 +517,7 @@ def build_working_memory(
     *,
     reference_time=None,
     scoring_profile="v2",
+    trace_sink=None,
 ):
     """從候選記憶中挑選最顯著的放入 Working Memory."""
     query_tokens = memory_tokens(text)
@@ -478,17 +525,32 @@ def build_working_memory(
 
     scored = []
     seen = set()
+    seen_trace_ids = {}
+    retrieved_candidates = []
+    empty_candidate_count = 0
     for candidate in candidates:
         normalized = re.sub(r"\s+", " ", candidate["text"]).strip()
         if not normalized:
+            empty_candidate_count += 1
             continue
         # 使用 (來源, 前120字) 作為去重 key
         key = (candidate["source"], normalized[:120])
+        trace_id = memory_trace_id(candidate)
         if key in seen:
+            duplicate = memory_trace_row(
+                candidate,
+                selected=False,
+                channel="retrieved_candidate",
+            )
+            duplicate["ranking_status"] = "deduplicated"
+            duplicate["duplicate_of_trace_id"] = seen_trace_ids[key]
+            retrieved_candidates.append(duplicate)
             continue
         seen.add(key)
+        seen_trace_ids[key] = trace_id
 
         item = dict(candidate)
+        item["trace_id"] = trace_id
         factor_values = attention_factor_values(
             item,
             query_tokens,
@@ -505,9 +567,48 @@ def build_working_memory(
             else factor_values["score"]
         )
         scored.append((ranking_score, item))
+        retrieved = memory_trace_row(
+            item,
+            selected=False,
+            channel="retrieved_candidate",
+        )
+        retrieved["ranking_status"] = "ranked"
+        retrieved_candidates.append(retrieved)
 
     scored.sort(key=lambda pair: pair[0], reverse=True)
-    return [item for _, item in scored[:working_memory_limit]]
+    selected_items = [item for _, item in scored[:working_memory_limit]]
+    if trace_sink is not None:
+        selected_ids = {item["trace_id"] for item in selected_items}
+        for row in retrieved_candidates:
+            row["selected"] = bool(
+                row.get("ranking_status") == "ranked"
+                and row["trace_id"] in selected_ids
+            )
+        trace_sink.clear()
+        trace_sink.update(
+            {
+                "schema": MEMORY_PROVENANCE_SCHEMA,
+                "scoring_profile": scoring_profile,
+                "working_memory_limit": int(working_memory_limit),
+                "retrieved_candidate_count": len(retrieved_candidates),
+                "empty_candidate_count": empty_candidate_count,
+                "retrieved_candidates": retrieved_candidates,
+                "candidate_count": len(scored),
+                "candidate_pool": [
+                    memory_trace_row(
+                        item,
+                        rank=index,
+                        selected=item["trace_id"] in selected_ids,
+                        channel="working_memory_candidate",
+                    )
+                    for index, (_, item) in enumerate(scored, start=1)
+                ],
+                "selected_working_memory_trace_ids": [
+                    item["trace_id"] for item in selected_items
+                ],
+            }
+        )
+    return selected_items
 
 def working_memory_summary(items, working_memory_limit=5):
     """產生 Working Memory 的文字摘要."""
