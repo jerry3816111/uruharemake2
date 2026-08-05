@@ -1,0 +1,126 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_model_capacity_preregistration_v1",
+  "experiment_id": "answer_bearing_memory_span_model_capacity_v1",
+  "frozen_at": "2026-08-05T13:45:00+09:00",
+  "research_question": "Is the V1 answer-span false-negative failure caused by qwen3.5:4b capacity, or does the same frozen contract fail across locally runnable sizes of the same model family?",
+  "single_changed_variable": {
+    "name": "local_model_parameter_size",
+    "levels": ["qwen3.5:0.8b", "qwen3.5:2b", "qwen3.5:4b", "qwen3.5:9b"],
+    "unchanged": [
+      "eight consumed development cases and candidate records",
+      "four memory interventions",
+      "semantic prompt bytes",
+      "native tool name and verdict schema",
+      "thinking disabled",
+      "temperature, seed, context, and output budget",
+      "deterministic source grounding",
+      "selection scores, ordering, and thresholds",
+      "full-record speakability",
+      "metrics and decision gates"
+    ]
+  },
+  "frozen_artifacts": {
+    "v1_preregistration": {
+      "path": "configs/answer_bearing_memory_span_v1_development_preregistration.json",
+      "sha256": "f7f45ca207d8c899bd4d6320d625fa6911574e240b7309a8ff3d1863aa358923"
+    },
+    "v1_result_lock": {
+      "path": "configs/answer_bearing_memory_span_v1_development_result_lock.json",
+      "sha256": "ade9825314d4e9210acaa785f672251c82e5e2355b0639dc863111bc98ecd4e5"
+    },
+    "span_contract": {
+      "path": "answer_bearing_memory_span.py",
+      "sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49"
+    },
+    "v1_runner": {
+      "path": "run_answer_bearing_memory_span_v1_development.py",
+      "sha256": "8a91633ac6325976af980f91e98404622d6acc4e49db5d4774005f60090490b3"
+    },
+    "v1_analyzer": {
+      "path": "analyze_answer_bearing_memory_span_v1_development.py",
+      "sha256": "4b088643f75a03e35251f7bb3a4cb7ecb38ea206b2e7b95bee6716d2c7b8ec77"
+    }
+  },
+  "models": [
+    {
+      "tag": "qwen3.5:0.8b",
+      "digest": "f3817196d142eaf72ce79dfebe53dcb20bd21da87ce13e138a8f8e10a866b3a4",
+      "size_bytes": 1036046583,
+      "reuse_prior_result": false
+    },
+    {
+      "tag": "qwen3.5:2b",
+      "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df",
+      "size_bytes": 2741192820,
+      "reuse_prior_result": false
+    },
+    {
+      "tag": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "size_bytes": 3389983735,
+      "reuse_prior_result": true,
+      "prior_raw_path": "analysis/local_answer_bearing_memory_span_v1_development/raw.jsonl"
+    },
+    {
+      "tag": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "size_bytes": 6594474711,
+      "reuse_prior_result": false
+    }
+  ],
+  "generation": {
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 4096,
+    "max_tokens": 320,
+    "carrier": "native_ollama_tool_call"
+  },
+  "staged_execution": {
+    "phase_1_conditions": [
+      "n1_remove_exact_hard_negative",
+      "t1_remove_exact_target"
+    ],
+    "phase_1_decisions_per_new_model": 16,
+    "phase_1_pass_gates": {
+      "structured_contract_valid_rate_equals_one": true,
+      "exact_span_grounding_rate_equals_one": true,
+      "target_removed_selection_count_equals_zero": true,
+      "target_only_safe_outcome_rate_at_least": 0.75,
+      "transport_error_count_equals_zero": true
+    },
+    "phase_2_conditions_for_survivors": [
+      "c0_intact_target_and_hard_negative",
+      "t2_replace_exact_target"
+    ],
+    "early_elimination_reason": "A model that cannot preserve true targets when alone or abstain when removed cannot satisfy the final recall authorization contract; skipping its remaining calls saves local compute without changing selection."
+  },
+  "final_model_gates": {
+    "all_32_decisions_present": true,
+    "structured_parse_rate_equals_one": true,
+    "exact_span_grounding_rate_equals_one": true,
+    "wrong_trace_selection_count_strictly_lower_than_lexical_v1_9": true,
+    "target_removed_selection_count_equals_zero": true,
+    "intact_safe_outcome_rate_at_least": 0.875,
+    "replacement_safe_outcome_rate_strictly_higher_than": 0.375,
+    "target_only_safe_outcome_rate_at_least": 0.75,
+    "transport_error_count_equals_zero": true,
+    "production_memory_write_count_equals_zero": true,
+    "physical_vrm_action_count_equals_zero": true
+  },
+  "selection_rule": {
+    "eligible": "A model must pass every final gate.",
+    "primary": "Choose the smallest eligible model by size_bytes.",
+    "tie_break": "Choose lower mean latency, then lexical model tag order.",
+    "none_pass": "Reject model capacity as a sufficient repair and do not construct a fresh holdout."
+  },
+  "evidence_boundary": {
+    "data_status": "consumed_exposed_development_only",
+    "same_data_generalization_claim": false,
+    "runtime_integration": false,
+    "production_enablement": false,
+    "passing_action": "Freeze the selected model and construct a new disjoint holdout without prompt tuning.",
+    "failure_action": "Lock the model-screen result and revise the contract or evidence representation rather than tuning case terms."
+  }
+}
