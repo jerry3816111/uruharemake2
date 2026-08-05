@@ -101,6 +101,12 @@ TRANSLATION_SCHEMA = {
     ],
 }
 
+REPLACEMENT_SCHEMA = {
+    "type": "object",
+    "properties": {"replacement_text": {"type": "string"}},
+    "required": ["replacement_text"],
+}
+
 
 def content_tokens(text):
     return {
@@ -221,24 +227,44 @@ def generation_prompt(language, question, target_text, hard_negative_text):
 
 
 def generate_language_row(language, question, target_text, hard_negative_text):
-    response = ollama_chat(
-        generation_prompt(language, question, target_text, hard_negative_text),
-        model=MODEL,
-        seed=SEED,
-        max_tokens=2400,
-        format_schema=TRANSLATION_SCHEMA,
-    )
-    payload = json.loads(response["text"])
+    if language == "English":
+        prompt = (
+            "Faithfully paraphrase the following English memory transcript. Preserve every "
+            "fact, name, number, role, and uncertainty. Do not answer a question or add facts.\n\n"
+            f"target_text:\n{target_text}"
+        )
+        response = ollama_chat(
+            prompt,
+            model=MODEL,
+            seed=SEED,
+            max_tokens=1600,
+            format_schema=REPLACEMENT_SCHEMA,
+        )
+        generated = json.loads(response["text"])
+        payload = {
+            "question": question,
+            "target_text": target_text,
+            "hard_negative_text": hard_negative_text,
+            "replacement_text": str(generated.get("replacement_text") or "").strip(),
+        }
+    else:
+        response = ollama_chat(
+            generation_prompt(language, question, target_text, hard_negative_text),
+            model=MODEL,
+            seed=SEED,
+            max_tokens=2400,
+            format_schema=TRANSLATION_SCHEMA,
+        )
+        payload = json.loads(response["text"])
     for field in TRANSLATION_SCHEMA["required"]:
         if not str(payload.get(field) or "").strip():
             raise ValueError(f"Construction model returned empty {field}")
-    if language == "English":
-        if payload["question"] != question:
-            raise ValueError("English construction changed the official question")
-        if payload["target_text"] != target_text:
-            raise ValueError("English construction changed the official target")
-        if payload["hard_negative_text"] != hard_negative_text:
-            raise ValueError("English construction changed the hard negative")
+    if language == "English" and (
+        payload["question"] != question
+        or payload["target_text"] != target_text
+        or payload["hard_negative_text"] != hard_negative_text
+    ):
+        raise ValueError("English construction did not preserve official-derived text")
     if payload["replacement_text"].strip() == payload["target_text"].strip():
         raise ValueError("Replacement is not a paraphrase")
     return payload, {

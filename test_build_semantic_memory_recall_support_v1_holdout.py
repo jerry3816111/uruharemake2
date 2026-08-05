@@ -50,6 +50,12 @@ class BuildSemanticMemoryRecallSupportV1HoldoutTests(unittest.TestCase):
         self.assertNotIn("memory_query_support", source)
         self.assertNotIn("memory_recall_focus_units", source)
 
+    def test_english_generation_schema_only_allows_replacement(self):
+        self.assertEqual(
+            set(builder.REPLACEMENT_SCHEMA["properties"]),
+            {"replacement_text"},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

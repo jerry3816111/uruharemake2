@@ -96,5 +96,10 @@
     "field": "frozen_construction.construction_model_digest",
     "reason": "Corrected a 63-character transcription typo to the already-fixed 64-character qwen2.5:7b digest after model preflight stopped, before the builder loaded or selected official rows.",
     "behavioral_or_gate_change": false
+  },
+  "pre_freeze_builder_amendment": {
+    "stage": "first English construction call, before any holdout file was written",
+    "reason": "The local model paraphrased fields that had to remain exact. English official question, target, and hard negative are now copied directly by code while the model generates replacement_text only.",
+    "selection_runtime_or_gate_change": false
   }
 }
