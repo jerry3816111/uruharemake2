@@ -107,6 +107,18 @@ def build_report(baseline_rows, candidate_rows, prereg, preflight=None, run_meta
     }
     call_reduction = baseline["leftbrain_model_call_count"] - candidate["leftbrain_model_call_count"]
     total_reduction = baseline["latency_seconds"]["total"] - candidate["latency_seconds"]["total"]
+    removed_rows = [row for row in candidate_rows if row.get("condition") == mici.T1]
+    removed_fast_rows = [
+        row
+        for row in removed_rows
+        if row.get("planner_path") == "high_confidence_memory_recall_v1"
+    ]
+    valid_fast_rows = [
+        row
+        for row in candidate_rows
+        if row.get("condition") in {mici.C0, mici.T2, mici.N1}
+        and row.get("planner_path") == "high_confidence_memory_recall_v1"
+    ]
     return {
         "schema": "uruha_high_confidence_memory_recall_development_result_v1",
         "decision": "development_pass_requires_fresh_holdout" if all(gates.values()) else "development_reject_or_inconclusive",
@@ -120,6 +132,21 @@ def build_report(baseline_rows, candidate_rows, prereg, preflight=None, run_meta
             "total_latency_reduction_rate": round(total_reduction / baseline["latency_seconds"]["total"], 6) if baseline["latency_seconds"]["total"] else 0.0,
         },
         "gates": gates,
+        "posthoc_diagnostics_not_preregistered_gates": {
+            "target_removed_fast_path_activation_count": len(removed_fast_rows),
+            "target_removed_fast_path_activation_rate": rate(
+                removed_rows,
+                lambda row: row.get("planner_path") == "high_confidence_memory_recall_v1",
+            ),
+            "target_removed_irrelevant_reply_count": sum(
+                bool(row.get("reply"))
+                and not row.get("target_marker_in_reply")
+                and not row.get("replacement_marker_in_reply")
+                for row in removed_fast_rows
+            ),
+            "valid_condition_fast_path_count": len(valid_fast_rows),
+            "diagnosis": "Ranking confidence and top-runner-up margin do not prove query-memory semantic support; after exact-target removal the sole irrelevant record can still appear high-confidence.",
+        },
         "preflight": preflight or {},
         "run_metadata": run_metadata or {},
         "authorization": {
@@ -143,6 +170,7 @@ def markdown(report):
         f"- Zero-model-call rate: {base['zero_model_call_rate']:.1%} -> {cand['zero_model_call_rate']:.1%}",
         f"- Median latency: {base['latency_seconds']['median']:.3f}s -> {cand['latency_seconds']['median']:.3f}s",
         f"- Total latency: {base['latency_seconds']['total']:.3f}s -> {cand['latency_seconds']['total']:.3f}s",
+        f"- Post-hoc target-removed false fast paths: {report['posthoc_diagnostics_not_preregistered_gates']['target_removed_fast_path_activation_count']}/8",
         "",
         "## Causal conditions",
         "",

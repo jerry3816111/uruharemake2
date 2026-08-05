@@ -340,9 +340,26 @@ def assess_memory_speakability(anchor, user_input="", trust=50):
     except Exception:
         trust_value = 50.0
 
-    direct_memory_query = is_explicit_memory_query(user_input) or _contains_any_text(
+    direct_memory_query = _contains_any_text(
         user_input,
-        ("名前", "呼んで"),
+        [
+            "記得",
+            "记得",
+            "覚えて",
+            "remember",
+            "還記得",
+            "还记得",
+            "叫什么",
+            "叫什麼",
+            "剛剛說",
+            "刚刚说",
+            "我剛剛",
+            "我刚刚",
+            "名前",
+            "呼んで",
+            "what did i",
+            "さっき",
+        ],
     )
     sensitive = _contains_any_text(
         combined,

@@ -12,6 +12,7 @@ PREREG = json.loads(
         encoding="utf-8"
     )
 )
+RESULT_LOCK = ROOT / "configs/high_confidence_memory_recall_v1_result_lock.json"
 
 
 def row(case_id, condition, *, call_count=0, planner_path=None):
@@ -56,6 +57,12 @@ class HighConfidenceMemoryRecallV1DevelopmentTests(unittest.TestCase):
         )
         self.assertEqual(report["decision"], "development_reject_or_inconclusive")
         self.assertFalse(report["authorization"]["production_default_enablement"])
+        self.assertEqual(
+            report["posthoc_diagnostics_not_preregistered_gates"][
+                "target_removed_fast_path_activation_count"
+            ],
+            0,
+        )
 
         candidate = self.rows(candidate=True)
         for row_value in candidate:
@@ -85,6 +92,34 @@ class HighConfidenceMemoryRecallV1DevelopmentTests(unittest.TestCase):
         )
         self.assertEqual(report["decision"], "development_reject_or_inconclusive")
         self.assertFalse(report["gates"]["removed_target_does_not_leak"])
+
+    def test_target_removed_false_fast_paths_are_counted_as_diagnostic(self):
+        candidate = self.rows(candidate=True)
+        for row_value in candidate:
+            row_value["leftbrain_call_count"] = 0
+            if row_value["condition"] == mici.T1:
+                row_value["planner_path"] = "high_confidence_memory_recall_v1"
+                row_value["reply"] = "unrelated memory"
+        report = analyzer.build_report(
+            self.rows(candidate=False),
+            candidate,
+            PREREG,
+            preflight={"passed": True},
+        )
+        diagnostic = report["posthoc_diagnostics_not_preregistered_gates"]
+        self.assertEqual(diagnostic["target_removed_fast_path_activation_count"], 8)
+        self.assertEqual(diagnostic["target_removed_irrelevant_reply_count"], 8)
+
+    def test_rejected_result_artifacts_are_locked(self):
+        lock = json.loads(RESULT_LOCK.read_text(encoding="utf-8"))
+        self.assertEqual(lock["status"], "development_rejected_locked")
+        self.assertFalse(lock["authorization"]["fresh_holdout"])
+        self.assertFalse(lock["authorization"]["production_default_enablement"])
+        for artifact in lock["artifacts"].values():
+            self.assertEqual(
+                mici.file_sha256(ROOT / artifact["path"]),
+                artifact["sha256"],
+            )
 
 
 if __name__ == "__main__":

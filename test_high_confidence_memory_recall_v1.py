@@ -15,8 +15,8 @@ def memory_item(text, score=0.9, trace_id="stored:episode:example-1", source="ep
     }
 
 
-def memory_data(*items):
-    return {
+def memory_data(*items, experimental=False):
+    payload = {
         "working_memory_items": list(items),
         "profile_structured": {},
         "recent_turns": [],
@@ -27,6 +27,9 @@ def memory_data(*items):
             ]
         },
     }
+    if experimental:
+        payload["experimental_high_confidence_recall_v1_enabled"] = True
+    return payload
 
 
 class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
@@ -44,7 +47,7 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
 
         decision = umr.select_high_confidence_recall_item(
             "前に話した観葉植物の呼び名、覚えてる？",
-            memory_data(selected, irrelevant),
+            memory_data(selected, irrelevant, experimental=True),
         )
 
         self.assertTrue(decision["selected"])
@@ -108,7 +111,7 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
         plan = self.left._rule_based_plan(
             "前に話した陶器の鳥の呼び名、覚えてる？",
             self.psyche,
-            memory_data(selected, irrelevant),
+            memory_data(selected, irrelevant, experimental=True),
         )
 
         self.assertEqual(plan["planner_path"], "high_confidence_memory_recall_v1")
@@ -125,7 +128,7 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
 
         anchor = brain._extract_actionable_memory_anchor(
             "前に話した陶器の鳥の名前、覚えてる？",
-            memory_data(selected),
+            memory_data(selected, experimental=True),
         )
 
         self.assertEqual(anchor["kind"], "context")
@@ -137,7 +140,7 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
         raw = self.left._rule_based_plan(
             "前に話した陶器の鳥の呼び名、覚えてる？",
             self.psyche,
-            memory_data(selected),
+            memory_data(selected, experimental=True),
         )
 
         normalized = self.left._normalize_plan(raw)
@@ -153,12 +156,23 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
 
         plan = self.left.think(
             "前に話した陶器の鳥の呼び名、覚えてる？",
-            memory_data(selected),
+            memory_data(selected, experimental=True),
             self.psyche,
         )
 
         self.assertEqual(plan["planner_path"], "high_confidence_memory_recall_v1")
         self.assertEqual(plan["memory_recall_contract"]["trace_id"], selected["trace_id"])
+
+    def test_experimental_path_is_disabled_by_default(self):
+        selected = memory_item("前に白い陶器の鳥をシロと呼ぶと決めた。", 0.92)
+
+        plan = self.left._rule_based_plan(
+            "前に話した陶器の鳥の呼び名、覚えてる？",
+            self.psyche,
+            memory_data(selected),
+        )
+
+        self.assertNotEqual(plan.get("planner_path"), "high_confidence_memory_recall_v1")
 
 
 if __name__ == "__main__":

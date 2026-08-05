@@ -76,6 +76,7 @@ def run_condition(bot, case, condition, call_log):
         call_start = len(call_log)
         started = time.monotonic()
         experiment.apply_condition(bot, event, case, condition)
+        event["memory_data"]["experimental_high_confidence_recall_v1_enabled"] = True
         with contextlib.redirect_stdout(io.StringIO()):
             tick = bot.cognitive_tick(event)
             logic = tick["logic"]

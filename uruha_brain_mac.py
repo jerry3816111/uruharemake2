@@ -2549,12 +2549,19 @@ Rules:
                 surface_act="memory_abstention",
                 payload_level="medium",
             )
-        recall_selection = umr.select_high_confidence_recall_item(
-            user_input,
-            memory_data,
-            minimum_top_score=0.55,
-            minimum_margin=0.15,
-            trust=current_psyche.get("trust", 50),
+        recall_v1_enabled = bool(
+            memory_data.get("experimental_high_confidence_recall_v1_enabled")
+        )
+        recall_selection = (
+            umr.select_high_confidence_recall_item(
+                user_input,
+                memory_data,
+                minimum_top_score=0.55,
+                minimum_margin=0.15,
+                trust=current_psyche.get("trust", 50),
+            )
+            if recall_v1_enabled
+            else {"status": "disabled", "selected": False}
         )
 
         def high_confidence_recall_plan():
@@ -14668,7 +14675,13 @@ class UruhaBrainV4_Mac:
             flags.get(key)
             for key in ("name", "favorite_drink", "dislike", "spicy", "horror", "natto")
         )
-        if not candidates and (flags["recall"] or not specialized_query_without_match):
+        generic_recall_anchor_enabled = bool(
+            memory_data.get("experimental_high_confidence_recall_v1_enabled")
+        )
+        if not candidates and (
+            (flags["recall"] and generic_recall_anchor_enabled)
+            or not specialized_query_without_match
+        ):
             items = memory_data.get("working_memory_items") or []
             if items:
                 item = items[0]

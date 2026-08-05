@@ -1,0 +1,129 @@
+{
+  "schema": "uruha_high_confidence_memory_recall_development_result_v1",
+  "decision": "development_reject_or_inconclusive",
+  "evidence_scope": "known eight-case mechanism fixture only",
+  "baseline": {
+    "row_count": 32,
+    "leftbrain_model_call_count": 24,
+    "leftbrain_model_path_rate": 0.75,
+    "zero_model_call_rate": 0.25,
+    "fast_path_count": 0,
+    "latency_seconds": {
+      "median": 60.009153,
+      "p95": 63.934803,
+      "maximum": 64.914117,
+      "total": 1456.570185
+    },
+    "conditions": {
+      "c0_intact_target_and_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.75
+      },
+      "t1_remove_exact_target": {
+        "target_anchor_rate": 0.0,
+        "target_plan_marker_rate": 0.0,
+        "target_reply_marker_rate": 0.0
+      },
+      "t2_replace_exact_target": {
+        "replacement_anchor_rate": 0.875,
+        "replacement_plan_marker_rate": 0.875,
+        "replacement_reply_marker_rate": 0.75
+      },
+      "n1_remove_exact_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.75
+      }
+    }
+  },
+  "candidate": {
+    "row_count": 32,
+    "leftbrain_model_call_count": 8,
+    "leftbrain_model_path_rate": 0.25,
+    "zero_model_call_rate": 0.75,
+    "fast_path_count": 19,
+    "latency_seconds": {
+      "median": 0.008656,
+      "p95": 61.982002,
+      "maximum": 63.852876,
+      "total": 487.871807
+    },
+    "conditions": {
+      "c0_intact_target_and_irrelevant": {
+        "target_anchor_rate": 1.0,
+        "target_plan_marker_rate": 1.0,
+        "target_reply_marker_rate": 0.875
+      },
+      "t1_remove_exact_target": {
+        "target_anchor_rate": 0.0,
+        "target_plan_marker_rate": 0.0,
+        "target_reply_marker_rate": 0.0
+      },
+      "t2_replace_exact_target": {
+        "replacement_anchor_rate": 1.0,
+        "replacement_plan_marker_rate": 1.0,
+        "replacement_reply_marker_rate": 0.875
+      },
+      "n1_remove_exact_irrelevant": {
+        "target_anchor_rate": 1.0,
+        "target_plan_marker_rate": 1.0,
+        "target_reply_marker_rate": 0.875
+      }
+    }
+  },
+  "delta": {
+    "leftbrain_model_calls": -16,
+    "leftbrain_model_call_reduction_rate": 0.666667,
+    "total_latency_seconds": -968.698378,
+    "total_latency_reduction_rate": 0.665054
+  },
+  "gates": {
+    "complete_32_rows": true,
+    "intact_target_plan_preserved": true,
+    "removed_target_does_not_leak": true,
+    "replacement_steers_plan": true,
+    "irrelevant_removal_preserves_target": true,
+    "model_call_budget": false,
+    "boundary_preflight": true,
+    "no_transport_errors": true,
+    "no_production_writes": true,
+    "no_vrm_actions": true
+  },
+  "posthoc_diagnostics_not_preregistered_gates": {
+    "target_removed_fast_path_activation_count": 8,
+    "target_removed_fast_path_activation_rate": 1.0,
+    "target_removed_irrelevant_reply_count": 8,
+    "valid_condition_fast_path_count": 11,
+    "diagnosis": "Ranking confidence and top-runner-up margin do not prove query-memory semantic support; after exact-target removal the sole irrelevant record can still appear high-confidence."
+  },
+  "preflight": {
+    "passed": true,
+    "observed_test_count": 13,
+    "returncode": 0
+  },
+  "run_metadata": {
+    "schema": "uruha_high_confidence_memory_recall_development_run_v1",
+    "row_count": 32,
+    "branch": "codex/high-confidence-memory-recall-v1",
+    "commit": "a45529b5eea0b10ef1e4fcdf651ce1f108f812d5",
+    "preflight": {
+      "passed": true,
+      "observed_test_count": 13,
+      "returncode": 0
+    },
+    "isolation": {
+      "production_database_path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/uruha_memory_mac_db",
+      "startup_temporary_database_path": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha_v61_startup_2c5db5h8",
+      "production_database_opened": false,
+      "production_database_writes": 0
+    },
+    "raw_path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/analysis/local_high_confidence_memory_recall_v1_development/raw.jsonl"
+  },
+  "authorization": {
+    "fresh_holdout": false,
+    "production_default_enablement": false,
+    "benchmark_claim": false,
+    "persona_similarity_claim": false
+  }
+}
