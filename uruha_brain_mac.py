@@ -428,6 +428,11 @@ class MemoryManager:
         self._last_maintenance_result = None
         self._last_saved_episode_id = None
         self._last_reflection_result = None
+        self._last_working_memory_provenance = {
+            "schema": umr.MEMORY_PROVENANCE_SCHEMA,
+            "candidate_pool": [],
+            "selected_working_memory_trace_ids": [],
+        }
         self._last_profile_state_shadow = {
             "status": "not_refreshed",
             "shadow_only": True,
@@ -451,12 +456,49 @@ class MemoryManager:
         self._last_maintenance_result = None
         self._last_saved_episode_id = None
         self._last_reflection_result = None
+        self._last_working_memory_provenance = {
+            "schema": umr.MEMORY_PROVENANCE_SCHEMA,
+            "candidate_pool": [],
+            "selected_working_memory_trace_ids": [],
+        }
         self._refresh_profile_state_shadow()
 
     def query_all_layers(self, text):
         self._decay_short_term_memory()
         working_memory = self._build_working_memory(text)
         self._mark_working_memory_access(working_memory)
+        direct_query_items = {}
+        knowledge = self._safe_query(
+            self.kb_col,
+            text,
+            "無特殊知識",
+            source="knowledge",
+            trace_items=direct_query_items,
+        )
+        episodes = self._safe_query(
+            self.episode_col,
+            text,
+            "無相關經歷",
+            source="episode",
+            trace_items=direct_query_items,
+        )
+        wisdom = self._safe_query(
+            self.wisdom_col,
+            text,
+            "無相關經驗",
+            source="wisdom",
+            trace_items=direct_query_items,
+        )
+        procedural = self._safe_query(
+            self.procedural_col,
+            text,
+            "無相關程序記憶",
+            source="procedural",
+            trace_items=direct_query_items,
+        )
+        profile_structured = self._profile_snapshot()
+        recent_turns = list(self.session_turns[-8:])
+        short_term_items = list(self.short_term_buffer[-8:])
         procedural_items = [
             item for item in working_memory if item.get("source") == "procedural"
         ]
@@ -465,20 +507,45 @@ class MemoryManager:
             if procedural_items
             else "無程序記憶"
         )
+        passed_rows = []
+        for source, rows in direct_query_items.items():
+            passed_rows.extend(
+                umr.memory_trace_row(row, channel=f"direct_{source}")
+                for row in rows
+            )
+        for channel, candidates in (
+            ("profile_structured", umr.profile_candidates(profile_structured)),
+            ("recent_turns", umr.recent_turn_candidates(recent_turns)),
+            ("short_term_summary", umr.short_term_candidates(short_term_items)),
+        ):
+            passed_rows.extend(
+                umr.memory_trace_row(candidate, channel=channel)
+                for candidate in candidates
+            )
+        passed_rows.extend(
+            umr.memory_trace_row(item, channel="selected_working_memory")
+            for item in working_memory
+        )
+        provenance = deepcopy(self._last_working_memory_provenance)
+        provenance["passed_to_leftbrain"] = passed_rows
+        provenance["passed_to_leftbrain_trace_ids"] = list(
+            dict.fromkeys(row["trace_id"] for row in passed_rows)
+        )
         return {
-            "knowledge": self._safe_query(self.kb_col, text, "無特殊知識"),
-            "episodes": self._safe_query(self.episode_col, text, "無相關經歷"),
-            "wisdom": self._safe_query(self.wisdom_col, text, "無相關經驗"),
-            "procedural": self._safe_query(self.procedural_col, text, "無相關程序記憶"),
+            "knowledge": knowledge,
+            "episodes": episodes,
+            "wisdom": wisdom,
+            "procedural": procedural,
             "procedural_summary": procedural_summary,
             "profile": self._profile_summary(),
-            "profile_structured": self._profile_snapshot(),
+            "profile_structured": profile_structured,
             "recent_dialogue": self._recent_dialogue_summary(),
-            "recent_turns": list(self.session_turns[-8:]),
+            "recent_turns": recent_turns,
             "short_term_summary": self._short_term_summary(),
             "working_memory_scoring_profile": WORKING_MEMORY_SCORING_PROFILE,
             "working_memory_items": working_memory,
             "working_memory_summary": self._working_memory_summary(working_memory),
+            "memory_provenance": provenance,
         }
 
     def get_runtime_snapshot(self):
@@ -511,11 +578,34 @@ class MemoryManager:
             ),
         }
 
-    def _safe_query(self, collection, text, default_val):
+    def _safe_query(self, collection, text, default_val, *, source=None, trace_items=None):
         res = collection.query(query_texts=[text], n_results=3)
         if res["documents"] and res["documents"][0]:
-            docs = [doc.strip() for doc in res["documents"][0] if isinstance(doc, str) and doc.strip()]
+            raw_docs = res["documents"][0]
+            indexed_docs = [
+                (index, doc.strip())
+                for index, doc in enumerate(raw_docs)
+                if isinstance(doc, str) and doc.strip()
+            ]
+            docs = [doc for _, doc in indexed_docs]
             if docs:
+                if trace_items is not None and source:
+                    ids = (res.get("ids") or [[]])[0]
+                    metadatas = (res.get("metadatas") or [[]])[0]
+                    distances = (res.get("distances") or [[]])[0]
+                    rows = []
+                    for index, doc in indexed_docs[:2]:
+                        row = {
+                            "source": source,
+                            "collection_name": source,
+                            "text": doc,
+                            "memory_id": ids[index] if index < len(ids) else None,
+                            "metadata": metadatas[index] if index < len(metadatas) else {},
+                            "distance": distances[index] if index < len(distances) else None,
+                        }
+                        row["trace_id"] = umr.memory_trace_id(row)
+                        rows.append(row)
+                    trace_items[source] = rows
                 return " || ".join(docs[:2])
         return default_val
 
@@ -558,12 +648,16 @@ class MemoryManager:
         candidates.extend(self._query_collection_candidates(self.procedural_col, text, "procedural", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
         candidates.extend(self._query_collection_candidates(self.kb_col, text, "knowledge", limit=WORKING_MEMORY_RETRIEVAL_LIMIT))
 
-        return umr.build_working_memory(
+        provenance = {}
+        working_memory = umr.build_working_memory(
             text,
             candidates,
             working_memory_limit=WORKING_MEMORY_LIMIT,
             scoring_profile=WORKING_MEMORY_SCORING_PROFILE,
+            trace_sink=provenance,
         )
+        self._last_working_memory_provenance = provenance
+        return working_memory
 
     def _collection_for_name(self, name):
         return {
@@ -13720,6 +13814,8 @@ class UruhaBrainV4_Mac:
         for item in items:
             top_items.append(
                 {
+                    "trace_id": item.get("trace_id"),
+                    "memory_id": item.get("memory_id"),
                     "source": item.get("source"),
                     "score": round(self._safe_float(item.get("score"), 0.0), 4),
                     "text": self._trim_text(item.get("text", ""), 90),
@@ -13735,6 +13831,9 @@ class UruhaBrainV4_Mac:
             "focus_terms": focus_terms,
             "source_mix": source_mix,
             "top_items": top_items,
+            "selected_memory_trace_ids": [
+                str(item.get("trace_id")) for item in items if item.get("trace_id")
+            ],
             "attention_span": len(items),
             "emotional_load": round(min(1.0, emotional_load), 4),
             "dominant_source": max(source_mix, key=source_mix.get) if source_mix else "",
@@ -14293,12 +14392,55 @@ class UruhaBrainV4_Mac:
         flags = self._memory_query_flags(user_input)
         profile = memory_data.get("profile_structured") or {}
         candidates = []
+        passed_memories = (
+            (memory_data.get("memory_provenance") or {}).get("passed_to_leftbrain")
+            or []
+        )
 
-        def add(kind, value, jp_anchor, terms, source_text="", source="working_memory", score=0.0, expected=False):
+        def provenance_for(source, source_text, value):
+            source = str(source or "")
+            probes = [
+                re.sub(r"\s+", " ", str(source_text or "")).strip().lower(),
+                re.sub(r"\s+", " ", str(value or "")).strip().lower(),
+            ]
+            probes = [probe for probe in probes if probe]
+            matches = []
+            for row in passed_memories:
+                if source and str(row.get("source") or "") != source:
+                    continue
+                row_text = re.sub(r"\s+", " ", str(row.get("text") or "")).strip().lower()
+                exact = int(bool(probes and row_text == probes[0]))
+                contains = int(any(probe in row_text or row_text in probe for probe in probes))
+                if exact or contains:
+                    matches.append((exact, contains, row))
+            if not matches:
+                return {}
+            matches.sort(key=lambda entry: (entry[0], entry[1]), reverse=True)
+            row = matches[0][2]
+            return {
+                "trace_id": row.get("trace_id"),
+                "memory_id": row.get("memory_id"),
+                "provenance_channel": row.get("channel"),
+            }
+
+        def add(
+            kind,
+            value,
+            jp_anchor,
+            terms,
+            source_text="",
+            source="working_memory",
+            score=0.0,
+            expected=False,
+            trace_id=None,
+            memory_id=None,
+            provenance_channel=None,
+        ):
             value = str(value or "").strip()
             jp_anchor = str(jp_anchor or value).strip()
             if not jp_anchor:
                 return
+            provenance = provenance_for(source, source_text, value)
             norm_terms = []
             for term in [jp_anchor, value, *(terms or [])]:
                 term = str(term or "").strip()
@@ -14312,9 +14454,28 @@ class UruhaBrainV4_Mac:
                     "terms": norm_terms[:8],
                     "source_text": self._trim_text(source_text or jp_anchor, 120),
                     "source": source,
+                    "trace_id": trace_id or provenance.get("trace_id"),
+                    "memory_id": memory_id or provenance.get("memory_id"),
+                    "provenance_channel": provenance_channel
+                    or provenance.get("provenance_channel"),
                     "score": float(score or 0.0),
                     "expected": bool(expected),
                 }
+            )
+
+        def add_from_item(item, kind, value, jp_anchor, terms, *, score, expected):
+            add(
+                kind,
+                value,
+                jp_anchor,
+                terms,
+                source_text=item.get("text"),
+                source=item.get("source", "working_memory"),
+                score=score,
+                expected=expected,
+                trace_id=item.get("trace_id"),
+                memory_id=item.get("memory_id"),
+                provenance_channel="selected_working_memory",
             )
 
         if flags["name"] and profile.get("name"):
@@ -14390,7 +14551,15 @@ class UruhaBrainV4_Mac:
                 )
                 if name_match:
                     name = self._clean_memory_value(name_match.group(1))
-                    add("name", name, name, [name], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 1.0, expected=True)
+                    add_from_item(
+                        item,
+                        "name",
+                        name,
+                        name,
+                        [name],
+                        score=source_score + 1.0,
+                        expected=True,
+                    )
 
             if flags["favorite_drink"]:
                 fav_match = (
@@ -14401,26 +14570,34 @@ class UruhaBrainV4_Mac:
                 if fav_match:
                     value = self._clean_memory_value(fav_match.group(1))
                     jp_value = self._jp_memory_value(value)
-                    add("favorite_drink", value, jp_value, [jp_value, value], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.8, expected=True)
+                    add_from_item(
+                        item,
+                        "favorite_drink",
+                        value,
+                        jp_value,
+                        [jp_value, value],
+                        score=source_score + 0.8,
+                        expected=True,
+                    )
 
             if flags["spicy"] and _contains_dialogue_keyword(source_text, ["討厭吃辣", "讨厌吃辣", "吃辣", "辛い", "spicy"]):
                 if _contains_dialogue_keyword(source_text, ["討厭", "讨厌", "嫌い", "苦手", "hate", "無理"]):
-                    add("spicy_dislike", "spicy", "辛いもの嫌い", ["辛", "辣", "麻辣"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.9, expected=True)
+                    add_from_item(item, "spicy_dislike", "spicy", "辛いもの嫌い", ["辛", "辣", "麻辣"], score=source_score + 0.9, expected=True)
 
             if flags["horror"] and _contains_dialogue_keyword(source_text, ["horror", "ホラー", "恐怖"]):
                 if _contains_dialogue_keyword(source_text, ["hate", "嫌い", "苦手", "討厭", "讨厌", "無理"]):
-                    add("horror_dislike", "horror", "ホラー嫌い", ["horror", "ホラー", "嫌"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.9, expected=True)
+                    add_from_item(item, "horror_dislike", "horror", "ホラー嫌い", ["horror", "ホラー", "嫌"], score=source_score + 0.9, expected=True)
 
             if flags["natto"] and _contains_dialogue_keyword(source_text, ["納豆", "natto"]):
                 if _contains_dialogue_keyword(source_text, ["苦手", "嫌い", "hate", "討厭", "讨厌", "無理"]):
-                    add("natto_dislike", "納豆", "納豆苦手", ["納豆", "苦手", "嫌"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.9, expected=True)
+                    add_from_item(item, "natto_dislike", "納豆", "納豆苦手", ["納豆", "苦手", "嫌"], score=source_score + 0.9, expected=True)
 
             if flags["ramen"] and _contains_dialogue_keyword(source_text, ["拉麵", "拉面", "ラーメン", "ramen"]):
                 if _contains_dialogue_keyword(source_text, ["肚子痛", "腹", "胃", "stomach", "痛"]):
-                    add("ramen_bad_consequence", "ramen", "ラーメンで腹痛", ["ラーメン", "拉麵", "腹", "肚"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.9, expected=True)
+                    add_from_item(item, "ramen_bad_consequence", "ramen", "ラーメンで腹痛", ["ラーメン", "拉麵", "腹", "肚"], score=source_score + 0.9, expected=True)
 
             if flags["recent_action"] and _contains_dialogue_keyword(source_text, ["コンビニ", "便利商店", "convenience store"]):
-                add("recent_action", "コンビニ", "コンビニ", ["コンビニ"], source_text=source_text, source=item.get("source", "working_memory"), score=source_score + 0.7, expected=True)
+                add_from_item(item, "recent_action", "コンビニ", "コンビニ", ["コンビニ"], score=source_score + 0.7, expected=True)
 
         if not candidates and not any(flags.get(key) for key in ("name", "favorite_drink", "dislike", "spicy", "horror", "natto")):
             items = memory_data.get("working_memory_items") or []
@@ -14429,13 +14606,12 @@ class UruhaBrainV4_Mac:
                 source_text = str(item.get("text") or "").strip()
                 score = self._safe_float(item.get("score"), 0.0)
                 expected = bool(flags["recall"] and score >= 0.55)
-                add(
+                add_from_item(
+                    item,
                     "context",
                     source_text[:32],
                     source_text[:24],
                     self._focus_terms(source_text),
-                    source_text=source_text,
-                    source=item.get("source", "working_memory"),
                     score=score,
                     expected=expected,
                 )
@@ -14576,6 +14752,9 @@ class UruhaBrainV4_Mac:
             "memory_use_expected": memory_expected,
             "did_reply_use_memory_explicitly": bool(memory_expected and memory_used),
             "memory_anchor_kind": anchor.get("kind"),
+            "memory_anchor_trace_id": anchor.get("trace_id"),
+            "memory_anchor_id": anchor.get("memory_id"),
+            "memory_anchor_provenance_channel": anchor.get("provenance_channel"),
             "memory_anchor_terms": (anchor.get("terms") or [])[:6],
         }
         logic["post_check"] = post_check
@@ -14885,6 +15064,19 @@ class UruhaBrainV4_Mac:
                 "episodes": mems.get("episodes"),
                 "wisdom": mems.get("wisdom"),
                 "profile": mems.get("profile"),
+                "provenance": {
+                    "schema": (mems.get("memory_provenance") or {}).get("schema"),
+                    "retrieved_candidate_count": (mems.get("memory_provenance") or {}).get(
+                        "retrieved_candidate_count", 0
+                    ),
+                    "candidate_count": (mems.get("memory_provenance") or {}).get("candidate_count", 0),
+                    "selected_trace_ids": (mems.get("memory_provenance") or {}).get(
+                        "selected_working_memory_trace_ids", []
+                    ),
+                    "passed_trace_ids": (mems.get("memory_provenance") or {}).get(
+                        "passed_to_leftbrain_trace_ids", []
+                    ),
+                },
             },
             salience=0.76,
         )
