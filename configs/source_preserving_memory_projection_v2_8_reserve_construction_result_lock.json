@@ -1,0 +1,35 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_reserve_construction_result_lock_v2_8",
+  "experiment_id": "source_preserving_memory_projection_v2_8_locomo_reserve_fresh_holdout",
+  "decision": "construction_failed_do_not_freeze_model_evaluation_contract",
+  "model_calls": 0,
+  "artifacts": {
+    "configs/source_preserving_memory_projection_v2_8_reserve_holdout_preregistration.json": "4da4637565198453445b09f326ff59fed65b5c0ee152c13ee2181c907b2e50e2",
+    "build_source_preserving_memory_projection_v2_8_reserve_cases.py": "1df07536d6d40e62dbccfcbb5f4a0abcce869872a46a9859020d8dcaffcc450e",
+    "configs/source_preserving_memory_projection_v2_8_reserve_cases.json": "2ad708b6d03eed8f59efb5f96b62e4a75002dd695aa6a067f67bc47a68897941",
+    "reports/source_preserving_memory_projection_v2_8_reserve_construction.json": "974af5153ea57294d3be41a88a1a39cf70cd8372dd33ab5cfc16355dcc888dc4",
+    "reports/source_preserving_memory_projection_v2_8_reserve_construction.md": "6483317459571a60b06fe52dadabb52a505aba9ec9d610cbd043e8ee55176250"
+  },
+  "metrics": {
+    "planned_question_count": 8,
+    "constructed_question_count": 5,
+    "isolated_target_answer_retention_count": 2,
+    "adjacency_target_answer_retention_count": 3,
+    "retention_delta_vs_isolated": 1
+  },
+  "failed_gates": [
+    "question_count_equals",
+    "adjacency_answer_retention_count_at_least",
+    "adjacency_retention_delta_vs_isolated_at_least"
+  ],
+  "authorization": {
+    "freeze_model_evaluation_contract": false,
+    "run_model_generation": false,
+    "access_final_reserve_case_selection_payload": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false,
+    "analyze_failure_using_exposed_conversations_only": true
+  },
+  "evidence_boundary": "This lock preserves a failed fresh construction result. It authorizes analysis on the now-exposed four conversations only and leaves the final two reserve conversations excluded from case selection."
+}

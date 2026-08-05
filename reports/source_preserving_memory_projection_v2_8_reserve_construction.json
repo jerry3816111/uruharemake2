@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_reserve_construction_report_v2_8",
+  "experiment_id": "source_preserving_memory_projection_v2_8_locomo_reserve_fresh_holdout",
+  "decision": "construction_failed_do_not_freeze_model_evaluation_contract",
+  "evidence_scope": "fresh_external_locomo_single_hop_source_support_construction",
+  "integrity": {
+    "official_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "fresh_sample_ids_sha256": "973dae26e8d0d161ac4055a80b0a6c319604754c4a22b211f7b1238d617cd887",
+    "final_reserve_sample_ids_sha256": "c82c21590a128403755ef1b29c613377c1914663a955b0c56bcdf1c9cf0fb675",
+    "case_ids_sha256": "cee5ce2cda0346dd848ef2dd294103169d0e6ee482e15e204fd6cd667fc4bcbc",
+    "contains_official_text": false,
+    "contains_official_answers": false,
+    "final_reserve_case_selection_payload_access_count": 0
+  },
+  "selection": {
+    "eligible_case_count_before_per_conversation_cap": 6,
+    "selected_case_count_after_per_conversation_cap": 5,
+    "eligible_count_by_fresh_sample": {
+      "conv-47": 1,
+      "conv-41": 0,
+      "conv-42": 4,
+      "conv-44": 1
+    },
+    "selected_count_by_fresh_sample": {
+      "conv-47": 1,
+      "conv-41": 0,
+      "conv-42": 3,
+      "conv-44": 1
+    }
+  },
+  "metrics": {
+    "planned_question_count": 8,
+    "constructed_question_count": 5,
+    "isolated_target_answer_retention_count": 2,
+    "adjacency_target_answer_retention_count": 3,
+    "retention_delta_vs_isolated": 1,
+    "mean_target_adjacency_character_ratio": 0.25465,
+    "mean_all_record_adjacency_character_ratio": 0.281585,
+    "model_calls": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "failed_gates": [
+    "question_count_equals",
+    "adjacency_answer_retention_count_at_least",
+    "adjacency_retention_delta_vs_isolated_at_least"
+  ],
+  "interpretation": {
+    "construction_feasibility": "The frozen corrected exact-string oracle did not produce enough balanced cases on the four fresh conversations.",
+    "projection_generalization": "On the five constructed cases, adjacency retained one more answer-bearing source than isolated Top-3, below the preregistered two-case minimum.",
+    "causal_boundary": "No model was called, so this result evaluates deterministic case construction and source retention only, not answer quality or full-pipeline memory behavior."
+  },
+  "authorization": {
+    "freeze_model_evaluation_contract": false,
+    "run_model_generation": false,
+    "access_final_reserve_case_selection_payload": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false,
+    "analyze_failure_using_exposed_conversations_only": true
+  },
+  "evidence_boundary": "V2.8 is a failed fresh construction result. It rejects the planned 32-call model evaluation and does not establish that adjacency projection improves local-model memory decisions. The final two reserve conversations remain excluded from case selection."
+}
