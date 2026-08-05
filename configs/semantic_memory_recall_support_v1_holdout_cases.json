@@ -1,0 +1,324 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_cases_v1",
+  "status": "frozen_before_evaluation",
+  "source": {
+    "path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/external_data/longmemeval/longmemeval_s_cleaned.json",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "bytes": 277383467,
+    "row_count": 500
+  },
+  "official_sources": {
+    "dataset": "LongMemEval-S cleaned",
+    "dataset_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "dataset_bytes": 277383467,
+    "dataset_rows": 500,
+    "repository": "https://github.com/xiaowu0162/LongMemEval",
+    "repository_commit": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "paper": "https://arxiv.org/abs/2410.10813"
+  },
+  "selection": {
+    "split": "existing preregistered LongMemEval test split",
+    "question_type": "single-session-user",
+    "abstention_rows_allowed": false,
+    "exact_answer_session_count": 1,
+    "selection_salt": "uruha-semantic-memory-recall-support-v1-holdout",
+    "selection_method": "sort eligible question IDs by SHA256(selection_salt:question_id), then take first 8",
+    "selected_question_count": 8,
+    "language_assignment_after_hash_sort": {
+      "English": 4,
+      "Japanese": 2,
+      "Traditional Chinese": 2
+    }
+  },
+  "construction": {
+    "model": {
+      "name": "qwen2.5:7b",
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "size": 4683087332,
+      "modified_at": "2026-02-19T00:24:36.022568616+09:00"
+    },
+    "seed": 2026080502,
+    "temperature": 0.0,
+    "preflight": {
+      "passed": true,
+      "tests": [
+        "test_semantic_memory_recall_support_v1_holdout_preregistration.py",
+        "test_build_semantic_memory_recall_support_v1_holdout.py"
+      ]
+    },
+    "builder_commit": "a0dc5554781dffaad37bf06bc91d1cdbd8d5e85b",
+    "builder_sha256": "511a87dc5af30df8cf9258183fe1c7cc9c5db5d9e829da421fcc5bcb6212fe94",
+    "preregistration_sha256": "470018ac2980a9c1ce45a7bfe4b2cd04a302da23f519bbe84cba6ce0f21d6c99",
+    "generation_diagnostics": [
+      {
+        "case_id": "official-01-4100d0a0",
+        "latency_seconds": 8.156,
+        "prompt_tokens": 1009,
+        "completion_tokens": 193,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-02-bc8a6e93",
+        "latency_seconds": 9.637,
+        "prompt_tokens": 1169,
+        "completion_tokens": 230,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-03-c8c3f81d",
+        "latency_seconds": 8.554,
+        "prompt_tokens": 1369,
+        "completion_tokens": 204,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-04-ad7109d1",
+        "latency_seconds": 12.881,
+        "prompt_tokens": 1053,
+        "completion_tokens": 309,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-05-95bcc1c8",
+        "latency_seconds": 12.999,
+        "prompt_tokens": 2299,
+        "completion_tokens": 306,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-06-3f1e9474",
+        "latency_seconds": 19.424,
+        "prompt_tokens": 2514,
+        "completion_tokens": 442,
+        "paraphrase_retry_used": true
+      },
+      {
+        "case_id": "official-07-8550ddae",
+        "latency_seconds": 19.791,
+        "prompt_tokens": 2695,
+        "completion_tokens": 216,
+        "paraphrase_retry_used": false
+      },
+      {
+        "case_id": "official-08-c5e8278d",
+        "latency_seconds": 32.884,
+        "prompt_tokens": 2119,
+        "completion_tokens": 594,
+        "paraphrase_retry_used": true
+      }
+    ]
+  },
+  "case_count": 8,
+  "case_ids_sha256": "04b4d7bb250d8d82308927f4bcf74eca48877af59ffe148a993824ffeda110c6",
+  "cases": [
+    {
+      "case_id": "official-01-4100d0a0",
+      "official_question_id": "4100d0a0",
+      "official_question_type": "single-session-user",
+      "language": "English",
+      "question": "What is my ethnicity?",
+      "official_answer": "A mix of Irish and Italian",
+      "target": {
+        "trace_id": "holdout:4100d0a0:target",
+        "official_session_id": "answer_83c13ff9",
+        "text": "Time: 2023/05/30 (Tue) 15:59\nUser: I'm considering getting a passport, but I'm unsure which nationality to apply for. Can you tell me more about the benefits of having an Italian passport vs a US passport?\nAssistant: What a wonderful dilemma! Having a choice between two prestigious passports is a great problem to have! Both Italian and US passports are highly valued, but they come with different benefits and requirements. Let's break down the advantages of each: **Italian Passport:** Benefits: 1. **Visa-free travel**: Italian citizens enjoy visa-free travel to 186 countries, including the EU, US, Canada, and many others. 2. **EU citizenship**: As an Italian citizen, you'll be a part of the European Union, allowing you to live, work, and study in any EU country without restrictions. 3. **Cultural heritage**: Italy is rich in history, art, and culture. As an Italian citizen, you'll have a deeper connection to the country's heritage and be able to pass it down to future generations. 4. **Language**: Italian is a beautiful language, and speaking it will open doors to new experiences and connections. 5. *\nUser: That helps! I didn't know Italian citizenship would allow me to live and work in any EU country. That's really appealing. By the way, I've been thinking about my family tree and cultural heritage a lot lately, and it's interesting to consider how my mixed ethnicity - Irish and Italian - has shaped my upbringing.\nAssistant: That's fascinating! Exploring your family tree and cultural heritage can be a rewarding and enriching experience. Your mixed ethnicity is a unique aspect of your identity, and it's great that you're embracing it. It's wonderful that you're considering the cultural aspects of your heritage, particularly the Irish and Italian influences. Both cultures are rich in history, traditions, and values that have shaped the world in many ways. As someone with Irish and Italian roots, you may have inherited a strong sense of community, family values, and a love for storytelling. The Irish are known for their warm hospitality, love of music and literature, and resilience in the face of adversity. Meanwhile, the Italians are famous for their passion for life, love of food, and rich artistic heritage. Embracing your mixed ethnicity can also broaden your perspective and help you connect with people from\nUser: I'm actually considering learning more about my Irish heritage, especially the music and dance. Do you know any good resources for learning traditional Irish music, such as online tutorials or classes in my area?\nAssistant: That's a great idea! Exploring your Irish heritage through music and dance is a wonderful way to connect with your roots. There are plenty of resources available to learn traditional Irish music and dance. Here are a few suggestions: **Online Resources:** 1. **The Irish Music School**: Offers online lessons and tutorials on various traditional Irish instruments, including the fiddle, flute, and tin whistle. 2. **Comhaltas Ceoltóirí Éireann**: A global organization dedicated to promoting Irish music and culture. They offer online lessons, tutorials, and resources for learning traditional Irish music. 3. **Irish Dance Lesson Online**: Provides video lessons and tutorials on traditional Irish step dancing, including beginner lessons and more advanced techniques. **Local Resources:** 1. **Irish Cultural Centers**: Look for Irish cultural centers or organizations in your area, which often off\nUser: I think I'll try to find an Irish cultural center in my area to see if they offer classes or workshops on traditional Irish music and dance. Do you know if they usually have classes for beginners, or would I need to have some prior experience?\nAssistant: That's a great idea! Irish cultural centers are a fantastic resource for learning about Irish heritage, and they usually cater to people of all skill levels, including beginners. Most Irish cultural centers offer classes or workshops specifically designed for beginners, so you don't need to have any prior experience. These classes are usually taught by experienced instructors who are passionate about sharing their knowledge of Irish music and dance. In fact, many Irish cultural centers offer introductory classes or workshops that cover the basics of traditional Irish music and dance, such as: * Learning to play a traditional Irish instrument, like the tin whistle or bodhran * Mastering basic Irish dance steps, like the jig or reel * Exploring Irish music and dance history and culture These classes are usually designed to be fun and engaging, and they're a great way to meet like-minded pe",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:4100d0a0:hard-negative",
+        "official_session_id": "8d068598",
+        "text": "Time: 2023/05/28 (Sun) 12:07\nUser: I'm looking for some resources on inclusive language and gender-neutral terminology. Can you point me in the right direction?\nAssistant: Using inclusive language and gender-neutral terminology is an important step in creating a welcoming and respectful environment for everyone. Here are some valuable resources to help you get started: **Guides and Style Guides:** 1. **GLAAD Media Reference Guide**: A comprehensive guide to inclusive language and terminology, with a focus on LGBTQ+ issues. 2. **The Inclusive Language Guide** by The New York Times: A detailed guide to using inclusive language, covering topics like gender, race, and disability. 3. **APA Style Guide**: The American Psychological Association's guide to inclusive language, including guidelines for writing about gender, sexual orientation, and disability. 4. **Chicago Manual of Style**: The Chicago Manual of Style's guidance on inclusive language, including gender-neutral pronouns and language around race and ethnicity. **Online Resources:** 1. **Gender Neutral \nUser: I'm also curious about the current state of diversity in the tech industry, specifically in my company's industry. Do you have any info on the percentage of women in the workforce?\nAssistant: The tech industry has made progress in recent years, but there's still much work to be done to achieve true diversity and inclusion. I can provide you with some general statistics and resources on the current state of diversity in the tech industry. **General Tech Industry Statistics:** 1. **Women in Tech:** According to a 2020 report by the National Center for Women & Information Technology (NCWIT), women hold only 26% of professional computing occupations in the United States. 2. **Underrepresented Groups:** A 2020 report by the Kapor Center found that underrepresented groups (Black, Latinx, Native American, Pacific Islander, and Southeast Asian) make up only 18% of the tech workforce. 3. **LGBTQ+ in Tech:** A 2019 survey by GLAAD found that 1 in 5 LGBTQ+ people in tech reported experiencing discrimination or harassment at work. **Industry-Specific Statistics:** Since you're interested\nUser: That's really interesting. I didn't know that only 26% of professional computing occupations in the US are held by women. I'm curious, do you have any information on the percentage of women in the workforce in my company's industry specifically?\nAssistant: I'm glad you're interested in learning more! I can try to provide some information on the percentage of women in the workforce in your company's industry, but I'll need a bit more information from you. Could you please tell me what industry your company operates in? For example, is it: 1. Software development (e.g., gaming, productivity, enterprise software)? 2. Data science and analytics (e.g., machine learning, artificial intelligence, business intelligence)? 3. Cybersecurity (e.g., threat detection, incident response, penetration testing)? 4. E-commerce or retail technology? 5. Healthcare technology (e.g., medical devices, health informatics, telemedicine)? 6. Financial technology (e.g., banking, payments, investment)? 7. Another industry (please specify)? Once I have a better understanding of your company's industry, I can try to provide more specific statistics on the percentage of \nUser: My company operates in the software development industry, specifically in the area of enterprise software.\nAssistant: The software development industry, particularly in enterprise software, is a fascinating space. According to various sources, including the National Center for Women & Information Technology (NCWIT) and the Anita Borg Institute, here are some statistics on the representation of women in the software development industry: 1. **Women in software development:** Women hold around 21.1% of software developer positions in the United States (BLS, 2020). 2. **Enterprise software:** A 2020 report by Gartner found that women make up around 23% of the workforce in enterprise software development. 3. **Technical leadership:** Women hold only 12% of technical leadership positions in software development, including roles like CTO, VP of Engineering, and Engineering Director (NCWIT, 2020). 4. **Women in engineering:** A 2020 report by the Society of Women Engineers found that women make up around 13% o",
+        "score": 0.82,
+        "independent_overlap": 0.041559
+      },
+      "replacement": {
+        "trace_id": "holdout:4100d0a0:replacement",
+        "text": "That's a great idea! Irish cultural centers are a fantastic resource for learning about Irish heritage, and they usually cater to people of all skill levels, including beginners. Most Irish cultural centers offer classes or workshops specifically designed for beginners, so you don't need to have any prior experience. These classes are usually taught by experienced instructors who are passionate about sharing their knowledge of Irish music and dance. In fact, many Irish cultural centers offer introductory classes or workshops that cover the basics of traditional Irish music and dance, such as: 1. Learning to play a traditional Irish instrument, like the tin whistle or bodhran 2. Mastering basic Irish dance steps, like the jig or reel 3. Exploring Irish music and dance history and culture These classes are usually designed to be fun and engaging, and they're a great way to meet like-minded people who share your interest in Irish heritage.",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-02-bc8a6e93",
+      "official_question_id": "bc8a6e93",
+      "official_question_type": "single-session-user",
+      "language": "English",
+      "question": "What did I bake for my niece's birthday party?",
+      "official_answer": "a lemon blueberry cake",
+      "target": {
+        "trace_id": "holdout:bc8a6e93:target",
+        "official_session_id": "answer_e6143162",
+        "text": "Time: 2023/05/26 (Fri) 23:59\nUser: I'm thinking of making some lemon-based desserts for an upcoming dinner party. Do you have any recommendations for a good lemon curd recipe or any tips on using it as a filling for cakes and tarts?\nAssistant: Lemon curd is a fantastic choice for a dinner party dessert! It's a classic, tangy, and sweet condiment that pairs beautifully with a variety of cakes and tarts. Here's a simple and reliable lemon curd recipe, along with some tips on using it as a filling: **Lemon Curd Recipe** Ingredients: * 1 cup (200g) granulated sugar * 1/2 cup (120ml) freshly squeezed lemon juice * 1/4 cup (60g) unsalted butter, softened * 2 large egg yolks * 1 tsp (5g) grated lemon zest * Salt (optional, but recommended to balance the sweetness) Instructions: 1. In a medium saucepan, whisk together the sugar, lemon juice, and salt (if using) until the sugar dissolves. 2. Add the softened butter and whisk until it's fully incorporated. 3. In a separate bowl, whisk together the egg yolks. Temper the egg yolks by slowly pouring the warm lemon mixture into the eggs, whisking constantly. 4. Return the mixture to the sau\nUser: That's really helpful, thanks! I've actually had a lot of success with lemon-based desserts in the past - I recently made a lemon blueberry cake for my niece's birthday party and it was a huge hit. I was a bit nervous about how it would turn out, but the combination of the tangy lemon and sweet blueberries was perfect. Do you have any tips on how to get the perfect balance of flavors in a lemon dessert?\nAssistant: The lemon-blueberry combination is a match made in heaven! Getting the perfect balance of flavors in a lemon dessert can be a delicate process, but here are some tips to help you achieve harmony: 1. **Start with high-quality ingredients:** Fresh, ripe lemons and good-quality citrus extracts will make a huge difference in the flavor profile of your dessert. 2. **Balance sweet and sour:** Lemon desserts often walk the fine line between sweet and sour. Aim for a balance of 2:1 or 3:1 sugar to lemon juice. This will ensure your dessert is sweet enough to be enjoyable but still retains a nice tartness. 3. **Consider the type of lemons:** Eureka lemons are the most commonly available variety and work well for most desserts. However, if you want a more intense, complex flavor, try using Meyer lemons or a combination of lemon and lime juice. 4. **Don't over-lemon:** It's easy to get carried away\nUser: What are some good ways to incorporate lemon zest into my baking? I've heard it can add a lot of depth to desserts, but I'm not sure how to use it effectively.\nAssistant: Lemon zest is a fantastic addition to many desserts, and it's wonderful that you're eager to explore its uses! Incorporating lemon zest into your baking can add brightness, depth, and a lovely citrus flavor to your creations. Here are some tips on how to use lemon zest effectively: 1. **Grate it fresh:** Use a microplane or a fine grater to grate the zest directly over your mixing bowl or onto your ingredients. This ensures the oils and flavors are released immediately, and you'll get the best flavor. 2. **Use the right amount:** Start with a small amount, about 1-2 teaspoons of grated zest per recipe, and adjust to taste. Lemon zest can be potent, so it's better to err on the side of caution. 3. **Pair it with lemon juice:** Combine lemon zest with lemon juice to create a harmonious balance of flavors. This is especially important when using a strong flavor like lemon. 4. **Add it to dr\nUser: That's really helpful, thanks! I've been experimenting with different types of flour lately, and I've been wondering if there's a particular type of flour that's best suited for lemon-based desserts. Would bread flour or all-purpose flour work better for a lemon cake or tart crust?\nAssistant: The type of flour you choose can indeed impact the texture and flavor of your lemon-based desserts. When it comes to lemon cakes and tart crusts, you'll want to use a flour that provides the right balance of structure, texture, and flavor. Here's a brief rundown on the differences between bread flour and all-purpose flour: **Bread Flour:** * Higher protein content (12-14%): This means bread flour will produce more gluten, resulting in a chewier, denser texture. * Coarser texture: Bread flour has a slightly coarser texture than all-purpose flour, which can affect the final texture of your dessert. * Better for yeast-based recipes: Bread flour is ideal for yeast-based recipes, like bread, pizza dough, and some sweet breads. **All-Purpose Flour:** * Lower protein content (10-12%): All-purpose flour produces less gluten, resulting in a tender, delicate texture. * Finer texture: All-purpose f",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:bc8a6e93:hard-negative",
+        "official_session_id": "f62bfe2b_1",
+        "text": "Time: 2023/05/22 (Mon) 20:07\nUser: I'm looking for some book recommendations. I just finished reading \"The Seven Husbands of Evelyn Hugo\" on February 10th and loved it, so I'm in the mood for more contemporary fiction. Do you have any suggestions?\nAssistant: I'm so glad you loved \"The Seven Husbands of Evelyn Hugo\"! Taylor Jenkins Reid has a way of writing stories that stick with you, doesn't she? Based on your interest in contemporary fiction, I'd be happy to recommend some books that might scratch that same itch. Here are a few suggestions: 1. **The Devil Wears Prada** by Lauren Weisberger: A classic contemporary novel about the fashion industry, with a strong female lead and a dash of humor. 2. **The Honey-Don't List** by Christina Lauren: A romantic comedy that explores the world of home renovation TV shows, with a focus on relationships, family, and finding oneself. 3. **The Royal We** by Heather Cocks and Jessica Morgan: A juicy, addictive novel about an American college student who falls for a British prince, with a healthy dose of drama and romance. 4. **The Last Romantics** by Tara Conklin: A sweeping family saga that spans decades,\nUser: These recommendations sound amazing! I'll definitely check them out. I'm particularly interested in \"The Devil Wears Prada\" and \"The Last Romantics\". I've heard great things about those books. Have you got any recommendations for audiobooks as well? I've been listening to audiobooks during my daily commute, and I just finished \"The Hitchhiker's Guide to the Galaxy\" on February 15th, which was a lot of fun.\nAssistant: Great choices! \"The Devil Wears Prada\" and \"The Last Romantics\" are both fantastic reads. I'm thrilled to hear you're an audiobook fan! Commutes are the perfect time to get lost in a good story. Since you enjoyed \"The Hitchhiker's Guide to the Galaxy,\" I'll suggest some engaging and entertaining audiobooks that might appeal to you: 1. **Where'd You Go, Bernadette** by Maria Semple, narrated by Kathleen Wilhoite: A humorous, heartwarming novel about a dysfunctional family, their adventures, and the power of love. 2. **Eleanor Oliphant is Completely Fine** by Gail Honeyman, narrated by Joanne Froggatt: A beautifully written, uplifting story about a socially awkward woman who finds love, friendship, and a new lease on life. 3. **The Rosie Project** by Graeme Simsion, narrated by Dan O'Grady: A charming, humorous tale about a socially awkward professor who sets out to find love using a scien\nUser: I've been trying to get into historical fiction more, but it's just not grabbing me like I thought it would. Do you have any historical fiction recommendations that might change my mind?\nAssistant: I'm happy to help! Historical fiction can be a wonderful genre, but it can be challenging to find the right fit. Here are some recommendations that might change your mind: 1. **The Nightingale** by Kristin Hannah: A powerful and emotional novel set in France during World War II, exploring the lives of two sisters and their struggles during the war. 2. **The Alice Network** by Kate Quinn: A historical fiction novel that weaves together the stories of a socialite and a female spy from the Alice Network, a real-life espionage ring, during World War I. 3. **The Song of Achilles** by Madeline Miller: A beautifully written novel that reimagines the Trojan War from the perspective of Achilles' lover, Patroclus. It's a stunning exploration of love, war, and mythology. 4. **The Red Tent** by Anita Diamant: A captivating novel that tells the story of Dinah, a biblical figure, and her experiences a\nUser: I actually started listening to \"The Nightingale\" on February 1st, but I had to put it on hold because it didn't grab me as much as I thought it would. I'm not sure if I'll go back to it or not, but for now, it's on pause. Do you have any other historical fiction recommendations that might be more to my taste?\nAssistant: What a wonderful connection! I'm thrilled to hear that you think these recommendations might resonate with me because of my love for \"The Seven Husbands of Evelyn Hugo\". I'm always up for a good romance, and historical fiction can add an extra layer of depth and complexity to the story. Please go ahead and share the recommendations! I'm excited to hear about these light-hearted historical fiction novels that focus on romance and relationships. Are they set in a specific time period or location that you think I might enjoy? Let's get this book party started!",
+        "score": 0.82,
+        "independent_overlap": 0.039653
+      },
+      "replacement": {
+        "trace_id": "holdout:bc8a6e93:replacement",
+        "text": "The type of flour you choose can indeed impact the texture and flavor of your lemon-based desserts. When it comes to lemon cakes and tart crusts, you'll want to use a flour that provides the right balance of structure, texture, and flavor. Here's a brief rundown on the differences between bread flour and all-purpose flour: **Bread Flour:** * Higher protein content (12-14%): This means bread flour will produce more gluten, resulting in a chewier, denser texture. * Coarser texture: Bread flour has a slightly coarser texture than all-purpose flour, which can affect the final texture of your dessert. * Better for yeast-based recipes: Bread flour is ideal for yeast-based recipes, like bread, pizza dough, and some sweet breads. **All-Purpose Flour:** * Lower protein content (10-12%): All-purpose flour produces less gluten, resulting in a tender, delicate texture. * Finer texture: All-purpose flour has a finer texture compared to bread flour, which can contribute to a smoother final product.",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-03-c8c3f81d",
+      "official_question_id": "c8c3f81d",
+      "official_question_type": "single-session-user",
+      "language": "English",
+      "question": "What brand are my favorite running shoes?",
+      "official_answer": "Nike",
+      "target": {
+        "trace_id": "holdout:c8c3f81d:target",
+        "official_session_id": "answer_761acef8",
+        "text": "Time: 2023/05/29 (Mon) 19:47\nAssistant: There are many great brands out there that offer high-quality athletic wear. Here are some popular ones across various categories: **Running and Fitness:** 1. Nike: Known for their innovative technology and stylish designs. 2. Under Armour: Offers high-performance gear with a focus on moisture-wicking and breathability. 3. ASICS: Specializes in running shoes and apparel, with a focus on comfort and support. 4. Lululemon: Famous for their yoga pants, but also offers a wide range of running and fitness gear. 5. Brooks: A popular choice among runners, offering high-quality shoes and apparel. **Yoga and Studio:** 1. Lululemon: As mentioned earlier, they're a leader in yoga pants and tops. 2. Athleta: Offers high-end, stylish yoga and studio wear with a focus on comfort and performance. 3. Beyond Yoga: Known for their comfortable, high-quality yoga pants and tops. 4. Prana: A sustainable and \nUser: I'm actually looking for something specific, like a new pair of running shoes. Do you know if they have any good deals on running shoes right now?\nAssistant: I'd be happy to help you with that! Deals on running shoes can vary depending on the retailer, brand, and model. However, I can give you an overview of some current offers and sales from popular online retailers. Keep in mind that deals can change quickly, so it's always a good idea to double-check prices and availability before making a purchase. Here are some current deals on running shoes from popular brands: **Nike:** * Nike Air Zoom Pegasus 38: $80 (was $100) at Nike.com * Nike Vaporfly Next% 2: $150 (was $200) at Dick's Sporting Goods * Nike Air Max Invigor 2: $60 (was $80) at Amazon **Under Armour:** * Under Armour Slingshot 2: $60 (was $80) at UnderArmour.com * Under Armour HOVR Phantom 2: $70 (was $100) at Academy Sports + Outdoors * Under Armour Micro G Pursuit: $50 (was $70) at 6pm **ASICS:** * ASICS Gel-Kayano 27: $100 (was $130) at ASICS.com * ASICS Gel-Nimbus 23: $80 (was $\nUser: I'm actually looking for a new pair of Nike running shoes, I've been using them for my daily 5K runs and they've been holding up pretty well. Do you know if they have any new models or sales on Nike shoes?\nAssistant: Nike is a great choice for running shoes! They have a wide range of models to suit different running styles and preferences. **New Nike Running Shoe Models:** 1. **Nike Air Zoom Pegasus 39**: The latest iteration of the popular Pegasus series, offering improved cushioning and responsiveness. 2. **Nike Vaporfly Next% 2**: An updated version of the Vaporfly, designed for speed and efficiency, with a full-length carbon plate and a more responsive midsole. 3. **Nike Air Max Invigor 3**: A new addition to the Air Max family, featuring a full-length Air unit for maximum cushioning and impact protection. 4. **Nike React Miler**: A new shoe designed for long-distance running, with a React midsole for superior cushioning and energy return. **Current Sales and Discounts on Nike Running Shoes:** 1. **Nike Air Zoom Pegasus 38**: $80 (was $100) at Nike.com 2. **Nike Vaporfly Next%**: $150 (was $200) \nUser: Nike has been my favourite brand so far for running shoes. I'm looking for a new pair running shoes, specifically the same model as my current ones. Do you know where I can find them or if they have any similar models that might be a good fit?\nAssistant: I'd be happy to help you find a new pair of Nike running shoes that match your current ones or suggest similar models. To help me better assist you, could you please provide me with the following information: 1. **What is the exact model of your current Nike running shoes?** (e.g., Nike Air Zoom Pegasus 37, Nike Vaporfly Next%, etc.) 2. **What is the colorway of your current shoes?** (e.g., black/white, blue/orange, etc.) 3. **What is your foot type?** (e.g., neutral, pronated, supinated) 4. **What is your running style?** (e.g., heel striker, midfoot striker, forefoot striker) 5. **Do you have any specific features in mind for your new shoes?** (e.g., more cushioning, better support, lighter weight, etc.) Once I have this information, I can: 1. **Check availability**: I can search online retailers and Nike's website to see if your exact model is still available for purchase. 2. **Sugges\nAssistant: You're a savvy shopper, and you're thinking like a pro! Since you bought your current shoes at the outlet mall in April, it's possible that you might be able to find a similar deal again. Outlet malls often carry previous seasons' models or discontinued styles at discounted prices. To increase your chances of finding a similar deal, I recommend checking the following: 1. **Nike Outlet website**: The Nike Outlet website often features a wide selection of discounted shoes, including previous seasons' models. You can filter by style, price, and size to find a similar shoe to your current one. 2. **Nike Outlet stores**: Visit a physical Nike Outlet store near you to see what they have in stock. You can try on shoes and get a feel for the fit and style. 3. **Other outlet malls**: If you have other outlet malls in your area, check their Nike stores to see if they carry similar models or styles",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:c8c3f81d:hard-negative",
+        "official_session_id": "66e94928",
+        "text": "Time: 2023/05/25 (Thu) 04:38\nUser: I'm thinking of going for a hike this weekend and was wondering if you could give me the weather forecast for the state park I usually go to?\nAssistant: Hiking socks are a crucial part of a comfortable and enjoyable hike. I'm happy to provide some recommendations! As a digital AI assistant, I don't have personal preferences, but I can give you some popular options to consider: 1. **Darn Tough**: Known for their durability and comfort, Darn Tough socks are a favorite among hikers. They offer a lifetime guarantee, and their socks are made with moisture-wicking materials to keep your feet dry. 2. **Smartwool**: Smartwool socks are a popular choice among outdoor enthusiasts. They offer a range of hiking socks with features like arch support, breathable mesh panels, and moisture-wicking merino wool. 3. **ExOfficio**: ExOfficio socks are designed for high-performance hiking and backpacking. They feature moisture-wicking materials, arch support, and a comfortable fit. 4. **Injinji**: If you're looking for a more unique option, Injinji socks fea\nAssistant: I think there might be some confusion! Adidas Superstars are a type of casual sneaker, not hiking boots. They're great for everyday wear, but not suitable for hiking. If you've recently gotten a new pair of Merrell boots, that's a great investment for hiking! Merrell is a well-known brand in the outdoor industry, and their boots are popular among hikers. When you're trying on hiking socks, make sure to wear your Merrell boots to ensure a comfortable fit. You might also want to consider the terrain, weather, and length of your hike when choosing the right socks. If you have any more questions or need further recommendations, feel free to ask!\nUser: I was just cleaning out my closet and realized I need to get some new casual shoes too, maybe something like those Adidas Superstars I got rid of. Do you know any good brands that make similar shoes?\nAssistant: Adidas Superstars are a classic choice for casual wear. If you're looking for similar shoes, here are some brands and styles you might want to consider: 1. **Converse Chuck Taylor All Star**: A classic, iconic choice for casual wear. They're comfortable, versatile, and come in a wide range of colors and designs. 2. **Vans Old Skool**: Vans is a popular brand for casual, laid-back shoes. The Old Skool style is similar to the Superstar, with a low-top design and comfortable fit. 3. **New Balance 574**: New Balance is known for their comfortable, supportive shoes. The 574 style is a classic, versatile option that's great for casual wear. 4. **Puma Suede**: Puma's Suede shoes are a stylish, comfortable option that's similar to the Superstar. They're available in a range of colors and designs. 5. **Reebok Classic Leather**: Reebok's Classic Leather shoes are a retro-inspired option that's sim\nUser: I'll definitely check those out. I've been meaning to get some new casual shoes for a while now, and it's a good excuse to treat myself after getting rid of those old Superstars.\nAssistant: Treating yourself to new shoes is always a great way to celebrate a good decluttering session! It's amazing how getting rid of old items can make way for new ones and give you a fresh start. Remember to consider your personal style, comfort preferences, and the activities you'll be using the shoes for when choosing your new casual shoes. And don't hesitate to try on different styles and brands until you find the one that feels just right. Also, since you mentioned getting rid of your old Superstars, I have to ask: did you donate them or recycle them? It's great that you're thinking about sustainability and making space in your closet!\nAssistant: It can be hard to part with old favorites, but sometimes it's necessary to let them go when they've reached the end of their lifespan. If you're concerned about the environmental impact of throwing away old shoes, you might consider exploring recycling options or repurposing them in the future. Many shoe companies and organizations have programs in place to recycle or repurpose old shoes, so it's worth looking into those options. However, it's also important to acknowledge that sometimes, shoes are simply worn out and need to be disposed of. In that case, it's great that you're taking the opportunity to treat yourself to a new pair that will meet your needs and make you happy! Let me know if you have any other questions or if there's anything else I can help you with.",
+        "score": 0.82,
+        "independent_overlap": 0.074906
+      },
+      "replacement": {
+        "trace_id": "holdout:c8c3f81d:replacement",
+        "text": "You're a savvy shopper, and you're thinking like a pro! Since you bought your current shoes at the outlet mall in April, it's possible that you might be able to find a similar deal again. Outlet malls often carry previous seasons' models or discontinued styles at discounted prices. To increase your chances of finding a similar deal, I recommend checking the following: 1. **Nike Outlet website**: The Nike Outlet website often features a wide selection of discounted shoes, including previous seasons' models. You can filter by style, price, and size to find a similar shoe to your current one. 2. **Nike Outlet stores**: Visit a physical Nike Outlet store near you to see what they have in stock. You can try on shoes and get a feel for the fit and style. 3. **Other outlet malls**: If you have other outlet malls in your area, check their Nike stores to see if they carry similar models or styles.",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-04-ad7109d1",
+      "official_question_id": "ad7109d1",
+      "official_question_type": "single-session-user",
+      "language": "English",
+      "question": "What speed is my new internet plan?",
+      "official_answer": "500 Mbps",
+      "target": {
+        "trace_id": "holdout:ad7109d1:target",
+        "official_session_id": "answer_679840f8",
+        "text": "Time: 2023/05/24 (Wed) 03:21\nUser: I'm having some issues with my laptop's battery life. Can you give me some tips on how to extend it?\nAssistant: I'm happy to help! Extending your laptop's battery life can be achieved through a combination of good habits, software tweaks, and hardware adjustments. Here are some tips to help you get the most out of your laptop's battery: **Software Tweaks:** 1. **Adjust your screen brightness**: Lowering the screen brightness can significantly extend battery life. You can do this by adjusting the brightness settings in your laptop's display settings or by using the keyboard shortcuts (usually Fn + Up/Down arrow keys). 2. **Turn off unnecessary features**: Disable Bluetooth, Wi-Fi, and location services when not in use to conserve battery life. 3. **Use Power Saver or Low Power Mode**: Enable your laptop's built-in Power Saver or Low Power Mode to limit CPU performance, reduce screen brightness, and turn off unnecessary features. 4. **Update your operating system**: Ensure your OS is up-to-date, as \nUser: I've already tried some of those tips, but it's still not ideal. What's the best way to check if my laptop's battery is still in good condition?\nAssistant: If you've already tried the tips I mentioned earlier, it's possible that your laptop's battery might be the culprit. Checking the battery's health can help you determine if it's time to replace it. Here are some ways to check your laptop's battery health: **Built-in Tools:** 1. **Windows Battery Report**: On Windows 10, search for \"battery report\" in the Start menu, and Windows will generate a detailed report on your battery's health, including its capacity, usage patterns, and estimated battery life. 2. **Mac Battery Health**: On MacBooks, click the Apple logo in the top-left corner and select \"About This Mac.\" Then, click the \"System Report\" button and navigate to \"Power\" > \"Battery\" to view the battery's health and cycle count. **Third-Party Tools:** 1. **Coconut Battery** (Mac): A free app that provides detailed information on your MacBook's battery, including its capacity, cycle cou\nUser: I did notice that my internet speed has been really good lately, especially when I'm streaming movies on Netflix. I upgraded to 500 Mbps about three weeks ago, and it's made a huge difference. Anyway, back to my battery issue... do you think it's possible that my laptop's battery is just old and needs to be replaced?\nAssistant: It's great to hear that your internet speed upgrade has made a positive impact on your streaming experience! Now, about your laptop's battery, it's definitely possible that it's simply old and needs to be replaced. Laptop batteries have a limited lifespan, and their capacity to hold a charge will degrade over time. The lifespan of a laptop battery can vary depending on several factors, including: 1. **Age**: Most laptop batteries have a shelf life of around 2-3 years, depending on usage and storage conditions. 2. **Usage patterns**: If you use your laptop frequently, especially for resource-intensive tasks, the battery will degrade faster. 3. **Charging habits**: Frequent deep discharges (letting the battery drain to 0%) can reduce its lifespan. 4. **Environmental factors**: Extreme temperatures, humidity, and physical stress can affect battery health. If your laptop is more than 2-3 yea\nUser: That's really helpful, thanks. I think I'll look into replacing the battery then. Do you have any tips on how to properly dispose of the old battery?\nAssistant: Organizing your computer files and backing up your important data is a great idea! External hard drives are an excellent way to store and protect your files, and I'd be happy to help you with some recommendations. **Types of External Hard Drives:** 1. **Traditional Hard Disk Drives (HDD)**: These are the most common type of external hard drive. They're affordable and offer large storage capacities, but they can be bulky and prone to mechanical failure. 2. **Solid-State Drives (SSD)**: SSDs are faster, more durable, and resistant to physical shock than HDDs. They're ideal for storing frequently accessed files, but they're generally more expensive than HDDs. 3. **Hybrid Drives (HHDD)**: HHDDs combine a small SSD with a larger HDD. They offer a balance between speed and capacity, making them a good option for those who need both. **Factors to Consider:** 1. **Storage Capacity**: Determine h",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:ad7109d1:hard-negative",
+        "official_session_id": "sharegpt_Ck9R9HX_0",
+        "text": "Time: 2023/05/23 (Tue) 10:14\nUser: Is sarcoidosis treatable in adult males?\nAssistant: Yes, sarcoidosis can be treated in adult males. The treatment for sarcoidosis depends on the severity of the disease and the organs that are affected. Some people with sarcoidosis do not have any symptoms and do not need treatment. Others may need treatment to help manage their symptoms and prevent complications. Mild cases of sarcoidosis may be treated with medications that help reduce inflammation, such as corticosteroids. More severe cases may require stronger medications or a combination of medications. In some cases, people with sarcoidosis may need to be hospitalized for treatment. It is important for people with sarcoidosis to work closely with their healthcare team to develop a treatment plan that is right for them. With proper treatment, most people with sarcoidosis are able to manage their symptoms and lead active, normal lives.\nUser: Under what circumstances would you need a pacemaker for sarcoidosis?\nAssistant: A pacemaker may be recommended for people with sarcoidosis who have abnormal heart rhythms or arrhythmias that are not well-controlled with medication. A pacemaker is a small device that is implanted in the chest and helps regulate the heart's rhythm. It uses electrical signals to prompt the heart to beat at a normal rate. Pacemakers are usually recommended for people with arrhythmias that are causing symptoms, such as palpitations, dizziness, or fainting. They may also be recommended for people with arrhythmias that are putting them at risk of serious complications, such as heart failure or stroke. Pacemakers are generally safe and effective, but they do carry some risks, such as infection, bleeding, and damage to blood vessels or nerves. Before deciding whether a pacemaker is appropriate, a healthcare provider will consider a number of factors, including the severity of the arrhythmia,\nUser: How do steroids help in this case?\nAssistant: Steroids are a type of medication that can be used to reduce inflammation in people with sarcoidosis. Sarcoidosis is a disease that occurs when the body's immune system becomes overactive and produces too many granulomas, or clumps of immune cells. These granulomas can cause inflammation and scarring in different organs of the body. Steroids work by reducing the activity of the immune system. This can help reduce inflammation and prevent the formation of new granulomas. Steroids are usually taken by mouth in the form of tablets, but they can also be given as injections or inhalers. Steroids are generally effective at reducing inflammation and improving symptoms in people with sarcoidosis. However, they can have side effects, such as weight gain, acne, and mood changes. They may also weaken the immune system, making a person more susceptible to infections. Steroids are usually used to tre\nUser: Are steroids the best solution here? Or what else would you recommend?\nAssistant: Steroids are a common treatment for sarcoidosis, but they may not be the best option for everyone. The best treatment for sarcoidosis depends on the severity of the disease and the organs that are affected. Some people with sarcoidosis may not have any symptoms and may not need treatment. Others may need medications to help manage their symptoms and prevent complications. In addition to steroids, other medications that may be used to treat sarcoidosis include: * Immunosuppressants: These medications help reduce the activity of the immune system and can be used to treat severe cases of sarcoidosis that do not respond to steroids. * Biologics: These are medications that are made from living cells and are used to treat severe cases of sarcoidosis that do not respond to other treatments. * Nonsteroidal anti-inflammatory drugs (NSAIDs): These medications can help reduce inflammation and pain,",
+        "score": 0.82,
+        "independent_overlap": 0.071247
+      },
+      "replacement": {
+        "trace_id": "holdout:ad7109d1:replacement",
+        "text": "Time: 2023/05/24 (Wed) 03:21\nUser: I'm having some issues with my laptop's battery life. Can you give me some tips on how to extend it?\nAssistant: Sure! To help extend your laptop's battery life, consider these software and hardware adjustments: **Software Tweaks:** 1. **Adjust your screen brightness**: Lowering the screen brightness can significantly improve battery efficiency. You can change this setting in your display settings or use keyboard shortcuts (usually Fn + Up/Down arrow keys). 2. **Turn off unnecessary features**: Disable Bluetooth, Wi-Fi, and location services when not needed to save power. 3. **Use Power Saver or Low Power Mode**: Enable the built-in Power Saver or Low Power Mode to reduce CPU performance, decrease screen brightness, and disable non-essential functions. 4. **Update your operating system**: Ensure your OS is up-to-date for better battery management.\nUser: I've already tried some of those tips, but it's still not ideal. What's the best way to check if my laptop's battery is in good condition?\nAssistant: If you've applied the previous suggestions and are still experiencing issues, it might be time to assess your battery's health. Here’s how to do so: **Built-in Tools:** 1. **Windows Battery Report**: On Windows 10, search for",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-05-95bcc1c8",
+      "official_question_id": "95bcc1c8",
+      "official_question_type": "single-session-user",
+      "language": "Japanese",
+      "question": "How many amateur comedians did I watch perform at the open mic night?",
+      "official_answer": "10",
+      "target": {
+        "trace_id": "holdout:95bcc1c8:target",
+        "official_session_id": "answer_cb742a61",
+        "text": "時間：2023/05/22（月）14:59\nユーザー：私はコメディの執筆アドバイスを探しています。立ち-Up コメディのクラスに参加し、新しいマテリアルを考えています。あなたには良いジョークを書くためのアドバイスはありますか？それにしても、最近オープンマイクで10人の素人コメディアンがパフォーマンスを見ました—それは新しいことを試す人々を見るのが本当にインスピレーションになりました！",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:95bcc1c8:hard-negative",
+        "official_session_id": "c9763bff",
+        "text": "時間：2023/05/23（火）12:12\nユーザー：月曜日に-presentedしたレポートについて思い出せません。そのレポートのトピックは何だったか教えていただけますか？",
+        "score": 0.82,
+        "independent_overlap": 0.060241
+      },
+      "replacement": {
+        "trace_id": "holdout:95bcc1c8:replacement",
+        "text": "時間：2023/05/22（月）14:59\nユーザー：立ち-Up コメディのクラスに参加し、新しいマテリアルを考えています。良いジョークを書くためのアドバイスはありますか？それにしても、最近オープンマイクで10人の素人コメディアンがパフォーマンスを見ました—それは新しいことを試す人々を見るのが本当にインスピレーションになりました！",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-06-3f1e9474",
+      "official_question_id": "3f1e9474",
+      "official_question_type": "single-session-user",
+      "language": "Japanese",
+      "question": "誰と運命について話しましたか？",
+      "official_answer": "Sarah",
+      "target": {
+        "trace_id": "holdout:3f1e9474:target",
+        "official_session_id": "answer_57fc1954",
+        "text": "時間：2023/05/22 (月) 05:54\nユーザー：人生のポジティブな側面に焦点を当てるよう努力していますが、モチベーションを保つのが難しいです。ポジティブな心構えを維持するためのアドバイスはいただけますか？それにしても、先日友人サラと話していて、彼女は全てには意味があると言っていたので、自分の運命に関する信念について考え始めました。",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:3f1e9474:hard-negative",
+        "official_session_id": "3aac691d_2",
+        "text": "時間：2023/05/23 (火) 10:57\nユーザー：新しい家に移る隣人へのギフトアイデアを探しています。何かご提案いただけますか？それにしても、先週同じことを友人にしたばかりで、友人たちと一緒にベッドバッハンド&ビヨンドの50ドル分のギフトカードを購入しました。",
+        "score": 0.82,
+        "independent_overlap": 0.035444
+      },
+      "replacement": {
+        "trace_id": "holdout:3f1e9474:replacement",
+        "text": "日時：2023年5月22日（月）凌晨5点54分\n用户：我正努力将注意力集中在生活中的积极方面，但保持动力却有些困难。您能否给我一些建议来维持积极的心态？另外，最近与朋友萨拉交谈时，她提到一切都有其意义，这让我开始思考关于自己命运的信念。",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-07-8550ddae",
+      "official_question_id": "8550ddae",
+      "official_question_type": "single-session-user",
+      "language": "Traditional Chinese",
+      "question": "我上個周末尝试了哪种鸡尾酒配方？",
+      "official_answer": "lavender gin fizz",
+      "target": {
+        "trace_id": "holdout:8550ddae:target",
+        "official_session_id": "answer_c8354ae9",
+        "text": "时间：2023/05/29 (一) 01:56\n用户：这个周末我要举办一个晚宴，需要一些菜单规划的帮助。你能推荐一些与自制意大利面和手工面包搭配的食谱吗？",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:8550ddae:hard-negative",
+        "official_session_id": "a7189b75",
+        "text": "时间：2023/05/22 (一) 08:41\n用户：我计划在本周末举办一个晚宴，并且需要一些菜单规划的帮助。你能推荐一些与自制意大利面和手工面包搭配的食谱吗？",
+        "score": 0.82,
+        "independent_overlap": 0.082044
+      },
+      "replacement": {
+        "trace_id": "holdout:8550ddae:replacement",
+        "text": "时间：2023/05/29 (一) 01:56\n用户：這個週末我要舉辦一個晚宴，需要一些菜單規劃的幫助。你能推薦一些與自家製義大利面和手工麵包搭配的食譜嗎？",
+        "score": 0.9
+      }
+    },
+    {
+      "case_id": "official-08-c5e8278d",
+      "official_question_id": "c5e8278d",
+      "official_question_type": "single-session-user",
+      "language": "Traditional Chinese",
+      "question": "我更改名字之前的名字是什么？",
+      "official_answer": "Johnson",
+      "target": {
+        "trace_id": "holdout:c5e8278d:target",
+        "official_session_id": "answer_f6168136",
+        "text": "2023/05/28 (日) 20:27\n用戶：我需要更新我的地址給健康保險公司。你能帶我走過過程或給我一個可以打電話的電話號碼嗎？另外，我最近剛更改了我的名字，還在適應中——有趣的是，我的舊名字是Johnson，現在改成了Winters。",
+        "score": 0.9
+      },
+      "hard_negative": {
+        "trace_id": "holdout:c5e8278d:hard-negative",
+        "official_session_id": "sharegpt_WPGrlAK_0",
+        "text": "2023/05/21 (日) 13:20\n用戶：這是我從前的海盜歌曲「Wellerman」的歌詞 [第一章] 曾經有一艘船出海航行 船的名字是Billy O' Tea 風吹著，她的船首下沉了 O blow, 我的夥伴們，吹吧 (哈) [合唱] 後來Wellerman會來帶我們 帶給我們糖、茶和朗姆酒 有一天，當我們的工作結束時 我們將離開這裡 [第二章] 船出海不到兩個星期 就被一頭鯨魚撞上了 船長召集所有船員並發誓 他會把那頭鯨魚拖走 (哈) [合唱] 後來Wellerman會來帶給我們 糖、茶和朗姆酒 有一天，當我們的工作結束時 我們將離開這裡 [後合唱] Da-da, da-da-da-da Da-da-da-da, da-da-da-da-da Da-da, da-da-da-da Da-da-da-da-da-da [第三章] 船出海前還沒有碰到水 那頭鯨魚的尾巴就上來撞了 所有船員到甲板，用魚叉戰鬥 這頭鯨魚潛下去了",
+        "score": 0.82,
+        "independent_overlap": 0.070186
+      },
+      "replacement": {
+        "trace_id": "holdout:c5e8278d:replacement",
+        "text": "2023年5月28日（星期日）晚上8:27\n用戶：我打算更新我的地址到健康保險公司。能否為我詳細說明一下流程，或者提供一個可以聯繫的電話號碼？此外，最近我剛更改了我的名字，目前還在適應這個新名稱——有趣的是，我之前的姓名是Johnson，現在改成了Winters。",
+        "score": 0.9
+      }
+    }
+  ]
+}
