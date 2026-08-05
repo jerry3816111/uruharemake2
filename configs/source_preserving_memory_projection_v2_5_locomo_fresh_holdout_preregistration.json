@@ -1,0 +1,143 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_locomo_fresh_holdout_preregistration_v2_5",
+  "experiment_id": "source_preserving_memory_projection_v2_5_locomo_fresh_holdout",
+  "status": "frozen_before_dataset_parse_and_model_generation",
+  "research_question": "Does the source-preserving three-turn projection retain and expose answer-bearing evidence on a formally released conversation dataset that was not used by V1-V2.4, while reducing visible context and preserving a zero-false-support boundary?",
+  "evidence_scope": "fresh_external_single_hop_evidence_support_only",
+  "official_source": {
+    "name": "LoCoMo",
+    "paper_title": "Evaluating Very Long-Term Conversational Memory of LLM Agents",
+    "paper_url": "https://aclanthology.org/2024.acl-long.747/",
+    "repository": "https://github.com/snap-research/locomo",
+    "repository_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+    "dataset_url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json",
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "dataset_bytes": 2805274,
+    "expected_conversation_count": 10,
+    "paper_reported_qa_count": 1986,
+    "license": "CC BY-NC 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "license_file_url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/LICENSE.txt",
+    "license_file_sha256": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0",
+    "official_evaluator_url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/task_eval/evaluation.py",
+    "official_evaluator_sha256": "8e3be5d57ff2ff9ec5cd05939592f468c5f3f1fd95d13e431932bdf6bf0fd6fd"
+  },
+  "freshness_audit": {
+    "audited_repository_commit": "1a32252",
+    "workspace_dataset_present_before_preregistration": false,
+    "tracked_locomo_reference_present_at_audited_commit": false,
+    "locomo_reference_present_in_history_through_audited_commit": false,
+    "model_calls_on_locomo_before_preregistration": 0,
+    "longmemeval_is_disallowed_as_fresh_data": true,
+    "reason": "The formal LongMemEval baseline indexed all 500 rows and subsequent development and held-out analyses exposed its full distribution. LoCoMo was absent from the repository and local evaluation data before this preregistration."
+  },
+  "independent_variable": {
+    "name": "visible_memory_representation",
+    "control": "complete official conversation session",
+    "intervention": "source-preserving projection of at most three original turns selected by question-token overlap and restored to original order"
+  },
+  "dataset_partition": {
+    "unit": "whole_conversation",
+    "split_salt": "uruha-locomo-v2-5-fresh-conversation-split",
+    "algorithm": "sort conversations by sha256(split_salt + ':' + sample_id); first four are the one-use holdout and the remaining six stay unopened reserve",
+    "holdout_conversation_count": 4,
+    "reserve_conversation_count": 6,
+    "cross_split_conversation_overlap": 0
+  },
+  "case_selection": {
+    "selection_salt": "uruha-locomo-v2-5-single-hop-evidence-cases",
+    "official_category": 2,
+    "official_category_name": "single-hop retrieval",
+    "cases_per_holdout_conversation": 3,
+    "question_count": 12,
+    "eligibility": [
+      "question and answer are non-empty strings",
+      "official evidence is non-empty and all evidence turns belong to one session",
+      "the official answer occurs verbatim, case-insensitively, in the complete target session",
+      "target and hard-negative sessions are each at most 32000 characters",
+      "hard negative is a non-evidence session in the same conversation and does not contain the official answer"
+    ],
+    "ordering": "within each holdout conversation sort eligible questions by sha256(selection_salt + ':' + sample_id + ':' + qa_index + ':' + question), then take the first three",
+    "hard_negative": "choose the eligible non-evidence session with maximum normalized lexical overlap with the question; break ties by sha256(selection_salt + ':' + sample_id + ':' + qa_index + ':' + session_key)",
+    "copyright_boundary": "Committed case manifests contain identifiers, source indices, and hashes only. Official conversation text, questions, and answers remain in the ignored external dataset and are reconstructed locally."
+  },
+  "representation_contract": {
+    "complete": "timestamp followed by every original speaker-labelled turn in the target or hard-negative session",
+    "projection": "timestamp plus at most the top three non-empty original turns by normalized question-token overlap; ties use source order; selected turns are serialized in source order",
+    "source_preservation": "no paraphrase, summary, translation, answer insertion, or generated memory is allowed",
+    "answer_retention_is_not_an_eligibility_filter": true
+  },
+  "controlled_variables": {
+    "records_per_question": 2,
+    "record_roles": [
+      "target",
+      "hard_negative"
+    ],
+    "representations": [
+      "complete_session",
+      "source_projection"
+    ],
+    "model": "qwen3.5:9b",
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "planned_model_call_count": 48,
+    "single_record_carrier": "answer_bearing_memory_single_record.py",
+    "boundary_normalizer": "answer_bearing_memory_single_record_normalization.py",
+    "prompt_excludes": [
+      "official answer",
+      "official evidence IDs",
+      "target or hard-negative role",
+      "expected support verdict",
+      "benchmark category"
+    ]
+  },
+  "construction_gates_before_model_calls": {
+    "dataset_integrity_matches": true,
+    "conversation_count_equals": 10,
+    "holdout_conversation_count_equals": 4,
+    "reserve_conversation_count_equals": 6,
+    "holdout_reserve_overlap_equals": 0,
+    "question_count_equals": 12,
+    "cases_per_holdout_conversation_equals": 3,
+    "all_case_text_and_answer_fields_absent_from_committed_manifest": true,
+    "all_complete_target_sessions_contain_official_answer": true,
+    "all_hard_negative_sessions_exclude_official_answer": true,
+    "model_calls_equal": 0
+  },
+  "evaluation_gates": {
+    "all_48_decisions_present": true,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "complete_target_support_count_at_least": 9,
+    "projected_target_support_count_at_least": 9,
+    "projected_target_support_drop_vs_complete_at_most": 1,
+    "projected_hard_negative_false_support_count_equals": 0,
+    "projection_answer_retention_count_at_least": 10,
+    "mean_projected_character_ratio_at_most": 0.5,
+    "transport_error_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "cost_reporting": [
+    "mean and p95 latency by representation",
+    "visible and prompt characters",
+    "prompt and generation token counts",
+    "model call count"
+  ],
+  "authorization": {
+    "download_and_hash_pinned_dataset_after_merge": true,
+    "build_frozen_case_manifest_once_after_merge": true,
+    "run_fresh_generation_once_after_case_contract_freeze": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false,
+    "official_full_locomo_score_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "This preregistration covers one narrow source-preserving evidence-support mechanism on twelve fresh LoCoMo single-hop questions. Even a pass cannot establish full LoCoMo QA ability, full-pipeline memory quality, persona similarity, or production readiness."
+}
