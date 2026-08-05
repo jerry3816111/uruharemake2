@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_memory_item_causal_intervention_preregistration_v1",
+  "experiment_id": "memory_item_causal_intervention_v1",
+  "status": "preregistered_before_inference",
+  "research_question": "When one identified memory record is held, removed, or replaced between retrieval and LeftBrain transmission, does that exact record causally change the selected memory anchor and reply plan?",
+  "falsifiable_hypothesis": "The intact target record and the matched replacement record will steer the planner toward their own content, removing only the target will remove that content, and removing only an irrelevant passed record will preserve the target decision.",
+  "scope": {
+    "case_count": 8,
+    "condition_count": 4,
+    "replicate_count": 1,
+    "expected_decision_run_count": 32,
+    "case_source": "research-authored non-benchmark mechanism fixtures",
+    "generalization_forbidden": [
+      "human memory equivalence",
+      "public persona similarity",
+      "broad long-term memory quality",
+      "benchmark improvement",
+      "production readiness"
+    ]
+  },
+  "conditions": {
+    "c0_intact_target_and_irrelevant": "Pass the retrieved target and irrelevant records unchanged.",
+    "t1_remove_exact_target": "Remove only the exact target trace_id after retrieval and before LeftBrain transmission.",
+    "t2_replace_exact_target": "Replace only the target slot with one matched contradictory record while retaining every other field and rank position.",
+    "n1_remove_exact_irrelevant": "Remove only the exact irrelevant trace_id as a negative intervention control."
+  },
+  "controls": [
+    "same case and user input",
+    "same temporary memory database contents before intervention",
+    "same retrieval and salience ranking",
+    "same qwen2.5:7b LeftBrain model and digest",
+    "same deterministic seed and temperature zero",
+    "same psyche and runtime initial state",
+    "same planner, route, and deterministic RightBrain code",
+    "same token and hardware environment",
+    "balanced condition order",
+    "no benchmark data, answers, persona examples, production memory writes, or VRM actions"
+  ],
+  "model": {
+    "ollama_tag": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "role": "current local LeftBrain planner"
+  },
+  "generation": {
+    "seed": 2026080501,
+    "temperature": 0.0,
+    "maximum_condition_seconds": 60
+  },
+  "primary_outcomes": [
+    "memory_anchor_trace_id",
+    "target_marker_in_plan",
+    "replacement_marker_in_plan",
+    "paired plan-content steering"
+  ],
+  "secondary_outcomes": [
+    "target and replacement markers in deterministic final surface",
+    "semantic plan fingerprint",
+    "latency and LeftBrain call count",
+    "retrieved, selected, and passed trace integrity"
+  ],
+  "advance_gates": {
+    "preintervention_target_selected_and_passed_rate_min": 1.0,
+    "preintervention_irrelevant_selected_and_passed_rate_min": 1.0,
+    "intact_target_anchor_rate_min": 0.75,
+    "remove_target_anchor_rate_max": 0.25,
+    "replacement_anchor_rate_min": 0.75,
+    "irrelevant_removed_target_anchor_rate_min": 0.75,
+    "intact_target_plan_marker_rate_min": 0.75,
+    "remove_target_plan_marker_rate_max": 0.25,
+    "replacement_plan_marker_rate_min": 0.75,
+    "irrelevant_removed_target_plan_marker_rate_min": 0.75,
+    "target_removal_paired_plan_delta_min": 0.5,
+    "irrelevant_removal_target_preservation_delta_max_abs": 0.125,
+    "transport_error_count_max": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "failure_rule": "If the intact target does not reliably anchor the plan, or target removal does not reduce target-plan realization, the exact-record causal hypothesis is not supported for this pipeline.",
+  "inconclusive_rule": "Any source, model, harness, condition-count, provenance, or decision-view integrity failure makes the experiment inconclusive.",
+  "authorization": {
+    "production_runtime_change": false,
+    "training_data": false,
+    "benchmark_claim": false,
+    "human_rating_required": false
+  },
+  "evidence_boundary": "A pass supports only that an identified record causally participates in the current planner decision on these eight local mechanism fixtures."
+}
