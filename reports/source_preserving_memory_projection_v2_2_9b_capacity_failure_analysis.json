@@ -1,0 +1,113 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_capacity_failure_v2_2",
+  "experiment_id": "source_preserving_memory_projection_v2_2_9b_capacity_development",
+  "decision": "development_reject_or_inconclusive",
+  "hypothesis_result": {
+    "capacity_improves_projected_semantic_extraction": true,
+    "capacity_alone_satisfies_operational_contract": false,
+    "frozen_4b_projected_target_support_count": 5,
+    "intervention_9b_projected_target_support_count": 7,
+    "support_gain_count": 2,
+    "projected_false_support_count": 0
+  },
+  "blocking_failure": {
+    "classification": "single_long_record_is_split_into_nonexistent_source_indices",
+    "invalid_row_count": 6,
+    "invalid_rows_all_complete_session": true,
+    "error_counts": {
+      "source_1:supported_span_not_grounded": 6,
+      "source_2:supported_span_not_grounded": 3,
+      "source_indices_not_complete_and_unique": 6
+    },
+    "rows": [
+      {
+        "case_id": "source-v2-58bf7951",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 10342,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded",
+          "source_2:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-af8d2e46",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 12357,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-f4f1d8a4",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 10968,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-1e043500",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 13366,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-76d63226",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 13308,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded",
+          "source_2:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-60d45044",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 13371,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded",
+          "source_2:supported_span_not_grounded"
+        ]
+      }
+    ]
+  },
+  "cost": {
+    "frozen_4b_mean_latency_seconds": {
+      "complete_session": 8.069089,
+      "source_projection": 3.4339
+    },
+    "intervention_9b_mean_latency_seconds": {
+      "complete_session": 14.293386,
+      "source_projection": 5.647655
+    },
+    "complete_latency_multiplier": 1.771375,
+    "projection_latency_multiplier": 1.644677
+  },
+  "integrity": {
+    "all_frozen_artifact_hashes_match": true,
+    "raw_hash_match": true,
+    "official_source_hash_match": true,
+    "metadata_experiment_id_match": true,
+    "metadata_row_count_match": true,
+    "exact_expected_row_key_set": true,
+    "no_duplicate_row_keys": true,
+    "model_digest_match": true,
+    "endpoint_match": true
+  },
+  "next_hypothesis_boundary": "Keep the 9B model, exact source texts, cases, inference parameters, and semantic decision rule fixed. Change only the one-record output carrier so a single memory record cannot emit nonexistent source indices.",
+  "evidence_boundary": "This is a paired exposed-development model-capacity screen. A pass supports testing the same mechanism on a different unobserved formal source; it does not establish generalization or authorize runtime use."
+}
