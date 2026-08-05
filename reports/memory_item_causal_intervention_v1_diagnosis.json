@@ -1,0 +1,133 @@
+{
+  "schema": "uruha_memory_item_causal_diagnosis_v1",
+  "formal_decision_preserved": "exact_memory_record_causality_not_supported_or_inconclusive",
+  "decision_override_authorized": false,
+  "causal_behavior_observation": {
+    "intact_target_plan_rate": 0.875,
+    "removed_target_plan_rate": 0.0,
+    "replacement_plan_rate": 0.875,
+    "irrelevant_removed_target_plan_rate": 0.875,
+    "paired_target_removal_delta": 0.875,
+    "paired_bootstrap_95_ci": [
+      0.625,
+      1.0
+    ]
+  },
+  "cleanliness_failure_diagnosis": {
+    "failed_row_count": 8,
+    "all_failed_rows_are_replacement_condition": true,
+    "target_semantic_marker_reappeared_in_plan_count": 0,
+    "target_semantic_marker_reappeared_in_reply_count": 0,
+    "replacement_marker_present_in_plan_count": 7,
+    "implementation_source": "replacement rows retain intervention_origin_trace_id for audit; the frozen cleanliness predicate also forbids that nonsemantic pointer",
+    "classification": "audit_pointer_false_positive_requires_new_locked_harness"
+  },
+  "latency_diagnosis": {
+    "model_path_row_count": 24,
+    "rule_path_row_count": 8,
+    "model_path_median_seconds": 60.621736999999996,
+    "model_path_p95_seconds": 64.334558,
+    "model_path_over_60_seconds_count": 16,
+    "maximum_seconds": 64.914117,
+    "classification": "causal_signal_observed_but_current_local_planner_latency_gate_failed"
+  },
+  "coverage_diagnosis": {
+    "covered_case_count": 7,
+    "total_case_count": 8,
+    "uncovered_case_ids": [
+      "plant_name"
+    ],
+    "plant_name_observation": "The plant-name prompt entered the name-query path, but the current anchor extractor did not bind the non-person pattern 名前はミモザ/ルナ."
+  },
+  "case_summaries": [
+    {
+      "case_id": "call_day",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 0,
+      "maximum_elapsed_seconds": 0.005381
+    },
+    {
+      "case_id": "dinner_recipe",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 62.686077
+    },
+    {
+      "case_id": "gift_choice",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 61.936938
+    },
+    {
+      "case_id": "holiday_routine",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 64.334558
+    },
+    {
+      "case_id": "next_book",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 64.914117
+    },
+    {
+      "case_id": "plant_name",
+      "intact_target_anchor": false,
+      "intact_target_plan": false,
+      "removed_target_plan": false,
+      "replacement_anchor": false,
+      "replacement_plan": false,
+      "irrelevant_removed_target_plan": false,
+      "leftbrain_model_call_count": 0,
+      "maximum_elapsed_seconds": 0.013414
+    },
+    {
+      "case_id": "study_place",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 60.701155
+    },
+    {
+      "case_id": "travel_destination",
+      "intact_target_anchor": true,
+      "intact_target_plan": true,
+      "removed_target_plan": false,
+      "replacement_anchor": true,
+      "replacement_plan": true,
+      "irrelevant_removed_target_plan": true,
+      "leftbrain_model_call_count": 4,
+      "maximum_elapsed_seconds": 62.223342
+    }
+  ],
+  "next_evidence_requirement": "建立新的鎖定實驗，把審計用的原始指標移出決策視野，並將因果有效性與部署延遲分開判定；不得把 V1 重新解釋成正式通過。"
+}
