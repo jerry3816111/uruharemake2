@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_failure_analysis_v2_1",
+  "experiment_id": "source_preserving_memory_projection_v2_1_development",
+  "decision": "development_reject_or_inconclusive",
+  "phase_1_passed": false,
+  "executed_model_calls": 32,
+  "phase_2_model_calls": 0,
+  "primary_failure": {
+    "classification": "local_model_false_negatives_on_exact_source_projection",
+    "projected_target_support_count": 5,
+    "required_count": 6,
+    "miss_count": 3,
+    "misses": [
+      {
+        "case_id": "source-v2-6ade9755",
+        "official_question_id": "6ade9755",
+        "question": "Where do I take yoga classes?",
+        "official_answer": "Serenity Yoga",
+        "answer_preserved_in_projection": true
+      },
+      {
+        "case_id": "source-v2-af8d2e46",
+        "official_question_id": "af8d2e46",
+        "question": "How many shirts did I pack for my 5-day trip to Costa Rica?",
+        "official_answer": "7",
+        "answer_preserved_in_projection": true
+      },
+      {
+        "case_id": "source-v2-60d45044",
+        "official_question_id": "60d45044",
+        "question": "What type of rice is my favorite?",
+        "official_answer": "Japanese short-grain rice",
+        "answer_preserved_in_projection": true
+      }
+    ]
+  },
+  "secondary_failure": {
+    "classification": "long_context_tool_contract_index_drift",
+    "invalid_row_count": 4,
+    "invalid_error_counts": {
+      "source_1:supported_span_not_grounded": 3,
+      "source_indices_not_complete_and_unique": 4
+    },
+    "invalid_rows": [
+      {
+        "case_id": "source-v2-58bf7951",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 10342,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-f4f1d8a4",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 10968,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-1e043500",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 13366,
+        "errors": [
+          "source_indices_not_complete_and_unique",
+          "source_1:supported_span_not_grounded"
+        ]
+      },
+      {
+        "case_id": "source-v2-60d45044",
+        "condition": "remove_exact_hard_negative",
+        "representation": "complete_session",
+        "visible_character_count": 13371,
+        "errors": [
+          "source_indices_not_complete_and_unique"
+        ]
+      }
+    ]
+  },
+  "positive_observation": {
+    "complete_target_support_count": 0,
+    "projected_target_support_count": 5,
+    "paired_gain_count": 5,
+    "paired_loss_count": 0,
+    "mean_prompt_character_reduction_rate": 0.902699,
+    "mean_complete_latency_seconds": 8.069089,
+    "mean_projection_latency_seconds": 3.4339
+  },
+  "ruled_out_by_integrity_evidence": {
+    "source_projection_corruption": true,
+    "transport_failure": true,
+    "row_loss_or_duplication": true,
+    "model_version_drift": true
+  },
+  "evidence_boundary": "The exposed development run localizes an operational evidence-extraction failure. It does not measure fresh generalization, persona similarity, official LongMemEval accuracy, or human-memory equivalence."
+}
