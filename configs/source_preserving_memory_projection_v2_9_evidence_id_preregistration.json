@@ -1,0 +1,100 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_evidence_id_preregistration_v2_9",
+  "experiment_id": "source_preserving_memory_projection_v2_9_evidence_id_development",
+  "status": "frozen_before_exposed_development_analysis",
+  "evidence_scope": "official_locomo_evidence_turn_retention_on_exposed_conversations",
+  "research_question": "Does the unchanged two-anchor adjacency projection retain more official LoCoMo evidence dialog IDs than the unchanged isolated Top-3 projection?",
+  "hypothesis": "Replacing the exact-answer-string membership oracle with LoCoMo's official evidence dialog IDs will produce a feasible development population and show at least a 0.10 absolute micro-recall gain for adjacency over isolated Top-3.",
+  "official_evidence_contract": {
+    "repository": "https://github.com/snap-research/locomo",
+    "repository_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+    "readme_url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/README.MD",
+    "readme_sha256": "9f8e6fd00a3400aa687109f40ed53715f0a2c028ee3f8c465bdfa96475640e8a",
+    "readme_bytes": 7109,
+    "semantics": "Each QA evidence field is the official list of dialogue IDs that contain the answer, when available."
+  },
+  "frozen_sources": {
+    "v2_8_result_lock_path": "configs/source_preserving_memory_projection_v2_8_reserve_construction_result_lock.json",
+    "v2_8_result_lock_sha256": "6a78f287d894f7efb2e1d85924e78481a9e16fc8285b27fc8c413b7796519813",
+    "v2_8_cases_path": "configs/source_preserving_memory_projection_v2_8_reserve_cases.json",
+    "v2_8_cases_sha256": "2ad708b6d03eed8f59efb5f96b62e4a75002dd695aa6a067f67bc47a68897941",
+    "v2_8_report_path": "reports/source_preserving_memory_projection_v2_8_reserve_construction.json",
+    "v2_8_report_sha256": "974af5153ea57294d3be41a88a1a39cf70cd8372dd33ab5cfc16355dcc888dc4",
+    "isolated_projection_path": "build_source_preserving_memory_projection_v2_5_locomo_cases.py",
+    "isolated_projection_sha256": "4c43c4a13bb1c8928b4c83f2b67377d512082c12dce99c8f0148054664734bce",
+    "adjacency_projection_path": "evaluate_source_preserving_memory_projection_v2_7_adjacency.py",
+    "adjacency_projection_sha256": "e5ac24bc145085527156c1b39fdaf67072e1071d494155d2dcdafa0dc96c4db2"
+  },
+  "official_source": {
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "dataset_bytes": 2805274,
+    "conversation_count": 10,
+    "official_category": 2,
+    "official_category_name": "single-hop retrieval"
+  },
+  "development_scope": {
+    "exposed_sample_ids": [
+      "conv-47",
+      "conv-41",
+      "conv-42",
+      "conv-44"
+    ],
+    "exposed_sample_ids_sha256": "973dae26e8d0d161ac4055a80b0a6c319604754c4a22b211f7b1238d617cd887",
+    "final_reserve_sample_ids_sha256": "c82c21590a128403755ef1b29c613377c1914663a955b0c56bcdf1c9cf0fb675",
+    "final_reserve_case_selection_payload_access_count": 0,
+    "maximum_session_characters": 32000
+  },
+  "independent_variable": {
+    "name": "source_projection_representation",
+    "control": "unchanged lexical-overlap Top-3 isolated turns",
+    "intervention": "unchanged two lexical anchors plus each immediate predecessor and successor",
+    "evaluation_oracle": "official evidence dialog ID membership",
+    "answer_text_used_for_eligibility_or_scoring": false
+  },
+  "controlled_variables": [
+    "same four exposed conversations",
+    "same official category 2 questions",
+    "same question text as retrieval query",
+    "same original target session",
+    "same complete-session character denominator",
+    "same source turn serialization",
+    "same local hardware",
+    "zero model calls"
+  ],
+  "eligibility": {
+    "question_nonempty": true,
+    "official_evidence_nonempty": true,
+    "all_official_evidence_ids_exist_exactly_once": true,
+    "all_official_evidence_ids_belong_to_one_session": true,
+    "target_session_character_count_at_most": 32000,
+    "use_all_eligible_cases_without_answer_based_filter_or_resampling": true
+  },
+  "success_gates": {
+    "dataset_hash_matches": true,
+    "dataset_bytes_match": true,
+    "exposed_sample_ids_hash_matches": true,
+    "eligible_case_count_at_least": 20,
+    "represented_conversation_count_equals": 4,
+    "all_official_evidence_ids_exist_exactly_once": true,
+    "all_official_evidence_ids_belong_to_one_session": true,
+    "adjacency_micro_evidence_recall_at_least": 0.6,
+    "adjacency_micro_recall_delta_vs_isolated_at_least": 0.1,
+    "adjacency_full_evidence_case_rate_at_least": 0.6,
+    "mean_adjacency_character_ratio_at_most": 0.5,
+    "all_selected_turns_are_exact_original_sources": true,
+    "final_reserve_case_selection_payload_access_count_equals": 0,
+    "model_calls_equal": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "authorization": {
+    "run_exposed_development_analysis_once_after_merge": true,
+    "preregister_final_reserve_validation": false,
+    "access_final_reserve_case_selection_payload": false,
+    "run_model_generation": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.9 is an exposed-data deterministic development analysis of official evidence-turn retention. A pass may authorize only a separate preregistration on the final reserve. It cannot establish model answer quality, causal memory use, full-pipeline quality, persona similarity, or production readiness."
+}
