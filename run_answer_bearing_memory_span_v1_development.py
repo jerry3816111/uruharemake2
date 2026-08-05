@@ -110,7 +110,16 @@ def call_evidence_model(question, candidates, prereg, endpoint):
         "messages": [{"role": "user", "content": prompt}],
         "stream": False,
         "think": bool(inference["think"]),
-        "format": build_answer_evidence_json_schema(len(candidates)),
+        "tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "submit_answer_evidence",
+                    "description": "Submit exactly one complete evidence verdict for every visible source index.",
+                    "parameters": build_answer_evidence_json_schema(len(candidates)),
+                },
+            }
+        ],
         "options": {
             "temperature": inference["temperature"],
             "seed": inference["seed"],
@@ -121,9 +130,31 @@ def call_evidence_model(question, candidates, prereg, endpoint):
     started = time.perf_counter()
     response = post_ollama(endpoint, body)
     latency = time.perf_counter() - started
-    content = ((response.get("message") or {}).get("content") or "").strip()
+    message = response.get("message") or {}
+    tool_calls = message.get("tool_calls") or []
+    carrier_error = None
+    arguments = None
+    if len(tool_calls) != 1:
+        carrier_error = "tool_call_count"
+    else:
+        function = tool_calls[0].get("function") or {}
+        if function.get("name") != "submit_answer_evidence":
+            carrier_error = "tool_name"
+        elif not isinstance(function.get("arguments"), dict):
+            carrier_error = "tool_arguments_type"
+        else:
+            arguments = function["arguments"]
+    content = (
+        json.dumps(arguments, ensure_ascii=False, sort_keys=True)
+        if arguments is not None
+        else ""
+    )
     return {
         "content": content,
+        "carrier_valid": carrier_error is None,
+        "carrier_error": carrier_error,
+        "raw_content": str(message.get("content") or ""),
+        "raw_tool_calls": tool_calls,
         "latency_seconds": latency,
         "prompt_sha256": text_sha256(prompt),
         "prompt_eval_count": response.get("prompt_eval_count"),
@@ -210,6 +241,10 @@ def run_one(case, condition, prereg, endpoint, model_call=call_evidence_model):
             "prompt_eval_count": None,
             "eval_count": None,
             "total_duration_ns": None,
+            "carrier_valid": False,
+            "carrier_error": "transport_error",
+            "raw_content": "",
+            "raw_tool_calls": [],
         }
         validation = validate_answer_evidence(None, candidates)
 
@@ -245,6 +280,10 @@ def run_one(case, condition, prereg, endpoint, model_call=call_evidence_model):
             if key in selection
         },
         "model_output": generation["content"],
+        "carrier_valid": generation["carrier_valid"],
+        "carrier_error": generation["carrier_error"],
+        "raw_content": generation["raw_content"],
+        "raw_tool_calls": generation["raw_tool_calls"],
         "latency_seconds": round(float(generation["latency_seconds"]), 6),
         "prompt_sha256": generation["prompt_sha256"],
         "prompt_eval_count": generation["prompt_eval_count"],
@@ -288,6 +327,7 @@ def write_outputs(rows, prereg, raw_path, metadata_path, endpoint):
         "model": prereg["inference"]["model"],
         "model_digest": prereg["inference"]["model_digest"],
         "think": prereg["inference"]["think"],
+        "carrier": "native_ollama_tool_call",
         "row_count": len(rows),
         "raw_path": str(raw_path.relative_to(ROOT)),
         "raw_sha256": file_sha256(raw_path),

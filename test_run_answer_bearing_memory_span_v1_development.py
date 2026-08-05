@@ -50,6 +50,10 @@ class AnswerBearingMemorySpanV1RunnerTests(unittest.TestCase):
                 "prompt_eval_count": 1,
                 "eval_count": 1,
                 "total_duration_ns": 1,
+                "carrier_valid": True,
+                "carrier_error": None,
+                "raw_content": "",
+                "raw_tool_calls": [],
             }
 
         row = runner.run_one(
@@ -90,6 +94,10 @@ class AnswerBearingMemorySpanV1RunnerTests(unittest.TestCase):
                 "prompt_eval_count": 1,
                 "eval_count": 1,
                 "total_duration_ns": 1,
+                "carrier_valid": True,
+                "carrier_error": None,
+                "raw_content": "",
+                "raw_tool_calls": [],
             }
 
         row = runner.run_one(
@@ -112,6 +120,10 @@ class AnswerBearingMemorySpanV1RunnerTests(unittest.TestCase):
                 "prompt_eval_count": 1,
                 "eval_count": 1,
                 "total_duration_ns": 1,
+                "carrier_valid": False,
+                "carrier_error": "tool_arguments_type",
+                "raw_content": "",
+                "raw_tool_calls": [],
             }
 
         row = runner.run_one(

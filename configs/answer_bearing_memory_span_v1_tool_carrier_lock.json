@@ -1,0 +1,54 @@
+{
+  "schema": "uruha_answer_bearing_memory_span_tool_carrier_lock_v1",
+  "experiment_id": "answer_bearing_memory_span_v1_development",
+  "locked_at": "2026-08-05T13:35:00+09:00",
+  "observed_direct_schema_failure": {
+    "decision_count": 32,
+    "transport_error_count": 0,
+    "top_level_array_count": 31,
+    "invalid_json_count": 1,
+    "strict_root_contract_success_count": 0,
+    "diagnosis": "qwen3.5:4b returned arrays instead of the required root object and sometimes omitted required verdict fields."
+  },
+  "replacement_carrier": {
+    "type": "native_ollama_tool_call",
+    "tool_name": "submit_answer_evidence",
+    "tool_call_count": 1,
+    "arguments_contract": "unchanged build_answer_evidence_json_schema output",
+    "thinking": false,
+    "fail_closed": [
+      "missing or multiple tool calls",
+      "wrong tool name",
+      "non-object arguments",
+      "arguments failing the existing strict verdict validator"
+    ]
+  },
+  "unchanged": [
+    "question and candidate text",
+    "semantic instructions in the prompt",
+    "all cases and interventions",
+    "model and generation parameters",
+    "verdict fields and source grounding rules",
+    "selection policy and speakability scope",
+    "metrics and gates"
+  ],
+  "schema_failure_artifacts": {
+    "raw": {
+      "path": "analysis/local_answer_bearing_memory_span_v1_development/schema_failure_raw.jsonl",
+      "sha256": "a6702ea5b90c3bb0a5c4026f825c13a4778a085f21a54c984083763c5deb70d6"
+    },
+    "metadata": {
+      "path": "analysis/local_answer_bearing_memory_span_v1_development/schema_failure_run_metadata.json",
+      "sha256": "c223707ea8f53ebfd8e60e0694d2fa3b5af114f38f29c76bb64ff33a6a9e8203"
+    },
+    "report_json": {
+      "path": "reports/answer_bearing_memory_span_v1_development_schema_failure.json",
+      "sha256": "4cf949b0511dce4937dc9222a30e12821f38f0446401256e4950410f6c380511"
+    },
+    "report_markdown": {
+      "path": "reports/answer_bearing_memory_span_v1_development_schema_failure.md",
+      "sha256": "bc2e48ecd2ab339d7e9c2873c76c68e41fc948493e5382fecdc1e1669a9383ce"
+    }
+  },
+  "evidence_boundary": "The third execution is still same-data development. Only a pass may authorize construction of a new disjoint holdout."
+}
