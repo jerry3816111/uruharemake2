@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_single_record_report_v2_3",
+  "experiment_id": "source_preserving_memory_projection_v2_3_single_record_carrier_development",
+  "decision": "development_reject_or_inconclusive",
+  "evidence_scope": "exposed_official_dataset_development_only",
+  "integrity": {
+    "all_frozen_artifact_hashes_match": true,
+    "raw_hash_match": true,
+    "official_source_hash_match": true,
+    "metadata_experiment_id_match": true,
+    "metadata_row_count_match": true,
+    "exact_expected_row_key_set": true,
+    "no_duplicate_row_keys": true,
+    "model_digest_match": true,
+    "endpoint_match": true
+  },
+  "metrics": {
+    "frozen_9b_indexed_complete_target_support_count": 0,
+    "single_record_complete_target_support_count": 6,
+    "frozen_9b_indexed_projected_target_support_count": 7,
+    "single_record_projected_target_support_count": 7,
+    "single_record_projected_false_support_count": 0,
+    "structured_contract_rate": 0.96875,
+    "exact_span_grounding_rate": 0.96875,
+    "nonexistent_source_index_error_count": 0,
+    "source_projection_exactness_rate": 1.0,
+    "transport_error_count": 0,
+    "mean_latency_seconds_by_representation": {
+      "complete_session": 13.085178,
+      "source_projection": 5.241622
+    },
+    "p95_latency_seconds_by_representation": {
+      "complete_session": 18.060961,
+      "source_projection": 7.689073
+    },
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "integrity_all_frozen_artifact_hashes_match": true,
+    "integrity_raw_hash_match": true,
+    "integrity_official_source_hash_match": true,
+    "integrity_metadata_experiment_id_match": true,
+    "integrity_metadata_row_count_match": true,
+    "integrity_exact_expected_row_key_set": true,
+    "integrity_no_duplicate_row_keys": true,
+    "integrity_model_digest_match": true,
+    "integrity_endpoint_match": true,
+    "all_32_decisions_present": true,
+    "complete_target_support_count_at_least": true,
+    "projected_target_support_count_at_least": true,
+    "projected_target_support_not_lower_than_frozen_9b": true,
+    "projected_hard_negative_false_support_count_equals_zero": true,
+    "structured_contract_rate_equals_one": false,
+    "exact_span_grounding_rate_equals_one": false,
+    "nonexistent_source_index_error_count_equals_zero": true,
+    "transport_error_count_equals_zero": true,
+    "source_projection_exactness_rate_equals_one": true,
+    "production_memory_write_count_equals_zero": true,
+    "physical_vrm_action_count_equals_zero": true
+  },
+  "invalid_rows": [
+    {
+      "case_id": "source-v2-577d4d32",
+      "condition": "remove_exact_target",
+      "representation": "source_projection",
+      "errors": [
+        "source_0:unsupported_verdict_has_span"
+      ]
+    }
+  ],
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_external_holdout": false
+  },
+  "evidence_boundary": "This exposed development experiment tests a general one-record evidence carrier. A pass authorizes only an external disjoint memory holdout, not runtime activation."
+}
