@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_capacity_preregistration_v2_2",
+  "experiment_id": "source_preserving_memory_projection_v2_2_9b_capacity_development",
+  "status": "frozen_before_model_evaluation",
+  "hypothesis": "If V2.1 failed primarily because the 4B local evidence extractor lacked capacity, changing only that extractor to the installed 9B model will raise exact projected-source support from 5/8 to at least 6/8 while preserving zero projected hard-negative support and a fully valid grounded tool contract.",
+  "frozen_control": {
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_1_result_lock.json",
+    "result_lock_sha256": "a281ab1ff841a18f89d610fc957fe8e50e82f9a89d5cb80194cfc88084f746b6",
+    "report_path": "reports/source_preserving_memory_projection_v2_1_development.json",
+    "report_sha256": "a9250ed11e269bf45f8ac17519cfa17d2766109cefa4430d7c718131131f7cad",
+    "projected_target_support_count": 5,
+    "complete_target_support_count": 0,
+    "structured_contract_rate": 0.875,
+    "exact_span_grounding_rate": 0.875
+  },
+  "independent_variable": {
+    "name": "local_evidence_extractor_model",
+    "control": {
+      "model": "qwen3.5:4b",
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
+    },
+    "intervention": {
+      "model": "qwen3.5:9b",
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+    }
+  },
+  "controlled_variables": {
+    "cases_path": "configs/source_preserving_memory_projection_v2_1_development_cases.json",
+    "cases_sha256": "7c05f63eeaf8047c5e76114babef7ff4ae3a84f20819bf57142318ed4a280358",
+    "question_count": 8,
+    "conditions": [
+      "remove_exact_hard_negative",
+      "remove_exact_target"
+    ],
+    "representations": [
+      "complete_session",
+      "source_projection"
+    ],
+    "prompt_and_span_contract_path": "answer_bearing_memory_span.py",
+    "prompt_and_span_contract_sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "carrier": "native_ollama_tool_call",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "call_count": 32,
+    "source_projection_algorithm": "unchanged exact top-3 question-aligned user turns",
+    "scoring": "unchanged exact source-index completeness and verbatim span grounding"
+  },
+  "success_gates": {
+    "all_32_decisions_present": true,
+    "projected_target_support_count_at_least": 6,
+    "projected_minus_frozen_4b_target_support_count_at_least": 1,
+    "projected_hard_negative_false_support_count_equals": 0,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "transport_error_count_equals": 0,
+    "source_projection_exactness_rate_equals": 1.0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "cost_reporting": [
+    "model_size_bytes",
+    "mean_latency_seconds_by_representation",
+    "p95_latency_seconds_by_representation",
+    "prompt_character_count"
+  ],
+  "failure_interpretation": {
+    "support_or_contract_gate_fails": "The 4B failure cannot be attributed to model size alone under this local 9B intervention.",
+    "passes_but_cost_is_high": "Capacity helps exposed evidence extraction, but deployment value remains unproven until a disjoint external holdout and local resource comparison pass."
+  },
+  "authorization": {
+    "run_frozen_9b_development_evaluation_once": true,
+    "rerun_frozen_4b_control": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout_claim": false,
+    "official_benchmark_score_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "This is a paired exposed-development model-capacity screen. A pass supports testing the same mechanism on a different unobserved formal source; it does not establish generalization or authorize runtime use."
+}
