@@ -28,6 +28,7 @@ OUTPUT = ROOT / "configs/semantic_memory_recall_support_v1_holdout_cases.json"
 SELECTION_SALT = "uruha-semantic-memory-recall-support-v1-holdout"
 MODEL = "qwen2.5:7b"
 SEED = 2026080502
+OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"
 
 STOPWORDS = frozenset(
     {
@@ -273,7 +274,7 @@ def main():
         raise SystemExit("Frozen holdout already exists; refusing to overwrite")
     prereg = json.loads(PREREG.read_text(encoding="utf-8"))
     preflight = run_preflight()
-    model_evidence = ollama_model_evidence(MODEL)
+    model_evidence = ollama_model_evidence(MODEL, OLLAMA_ENDPOINT)
     if model_evidence["digest"] != prereg["frozen_construction"]["construction_model_digest"]:
         raise SystemExit("construction model digest drift")
     data, data_evidence = load_and_validate_dataset(LONGMEMEVAL_S_CLEANED_DATASET_PATH)
