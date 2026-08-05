@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_high_confidence_memory_recall_preregistration_v1",
+  "experiment_id": "high_confidence_memory_recall_v1",
+  "status": "preregistered_before_runtime_change",
+  "problem_evidence": {
+    "source": "reports/memory_item_causal_intervention_v1_diagnosis.json",
+    "development_case_count": 8,
+    "decision_run_count": 32,
+    "leftbrain_model_path_run_count": 24,
+    "leftbrain_rule_path_run_count": 8,
+    "model_path_median_seconds": 60.621737,
+    "exact_target_binding_case_count": 7,
+    "observed_gap": "Clear explicit recall usually reaches qwen2.5:7b even when one selected working-memory record is already high-confidence; non-person named-entity recall also lacks a generic binding path."
+  },
+  "falsifiable_hypothesis": "A query-independent high-confidence recall seam can use one already-selected, speakable working-memory record without a LeftBrain model call while preserving exact-record removal, replacement, and irrelevant-removal behavior.",
+  "single_runtime_variable": "Before the model planner, enable a generic explicit-recall rule only when the selected working-memory evidence passes all frozen confidence, separation, and speakability gates.",
+  "frozen_selection_contract": {
+    "explicit_recall_required": true,
+    "minimum_top_score": 0.55,
+    "minimum_top_runner_up_margin": 0.15,
+    "speakability_should_use_explicitly_required": true,
+    "sensitive_memory_allowed": false,
+    "third_party_suppression_preserved": true,
+    "case_ids_or_expected_answers_in_runtime_forbidden": true
+  },
+  "controls": [
+    "same working-memory retrieval and ranking",
+    "same qwen2.5:7b model for all cases that do not pass the fast-path gate",
+    "same psyche, routing, Bayesian rerank, RightBrain, and post-check pipeline",
+    "same model generation parameters and local hardware",
+    "no benchmark, persona, or expected-answer content in runtime logic",
+    "no production memory writes or VRM actions during evaluation"
+  ],
+  "development_checks": {
+    "known_mechanism_fixture": "memory_item_causal_intervention_v1",
+    "purpose": "Regression and latency diagnosis only; not fresh generalization evidence.",
+    "expected_decision_run_count": 32,
+    "target_or_replacement_plan_marker_rate_min": 0.875,
+    "remove_target_plan_marker_rate_max": 0.0,
+    "irrelevant_removal_target_plan_marker_rate_min": 0.875,
+    "leftbrain_model_call_count_max": 6,
+    "fast_path_sensitive_exposure_count_max": 0,
+    "fast_path_non_recall_activation_count_max": 0,
+    "fast_path_ambiguous_activation_count_max": 0
+  },
+  "fresh_holdout_requirement": {
+    "required_before_production_authorization": true,
+    "must_be_disjoint_from": [
+      "memory_item_causal_intervention_v1 cases",
+      "runtime markers",
+      "implementation tests"
+    ],
+    "required_controls": [
+      "current main behavior",
+      "candidate fast path",
+      "exact target removal",
+      "matched replacement",
+      "irrelevant removal",
+      "non-recall and ambiguous negatives"
+    ]
+  },
+  "failure_rule": "Reject the mechanism if it exposes sensitive or ambiguous memory, activates on non-recall input, leaks removed content, or fails to reduce model calls without preserving causal plan behavior.",
+  "authorization": {
+    "development_runtime_change": true,
+    "production_default_enablement": false,
+    "benchmark_claim": false,
+    "human_memory_equivalence_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "A development pass supports only that an already-selected high-confidence record can bypass the current LeftBrain model planner on explicit recall while retaining bounded causal behavior."
+}
