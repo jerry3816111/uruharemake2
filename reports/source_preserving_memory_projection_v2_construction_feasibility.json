@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_construction_feasibility_v2",
+  "experiment_id": "source_preserving_memory_projection_v2_development",
+  "status": "construction_infeasible_locked",
+  "decision": "do_not_build_or_run_model",
+  "source": {
+    "path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/external_data/longmemeval/longmemeval_s_cleaned.json",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "bytes": 277383467,
+    "row_count": 500
+  },
+  "frozen_limits": {
+    "serialization": "Time line followed by every source turn in original order, with exact role and untruncated content",
+    "maximum_target_characters": 7000,
+    "maximum_hard_negative_characters": 7000,
+    "maximum_combined_visible_characters": 14000
+  },
+  "required_case_count": 8,
+  "eligible_case_count": 1,
+  "eligible_question_ids": [
+    "66f24dbb"
+  ],
+  "sequential_exclusion_counts": {
+    "target_over_character_limit": 39,
+    "development_split": 11,
+    "excluded_v1": 8,
+    "answer_not_exact_in_user_turn": 5,
+    "eligible": 1,
+    "abstention": 6,
+    "wrong_question_type": 430
+  },
+  "root_cause": "The preregistered 7,000-character target-session ceiling is incompatible with this LongMemEval task population; 39 otherwise preceding candidates exceed that target limit and only one case remains eligible.",
+  "model_calls": 0,
+  "case_file_written": false,
+  "preflight": {
+    "passed": true,
+    "tests": [
+      "test_source_preserving_memory_projection_v2_development_preregistration.py",
+      "test_build_source_preserving_memory_projection_v2_development.py"
+    ]
+  },
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "model_evaluation": false,
+    "reuse_as_holdout": false,
+    "new_preregistration_changing_only_context_limits": true
+  },
+  "evidence_boundary": "This result tests construction feasibility only. It says nothing about memory projection quality or model capability."
+}
