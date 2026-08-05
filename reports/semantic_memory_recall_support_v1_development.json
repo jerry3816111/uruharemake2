@@ -1,0 +1,177 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_development_result_v1",
+  "decision": "development_pass_requires_fresh_holdout",
+  "evidence_scope": "known eight-case mechanism fixture only",
+  "baseline": {
+    "row_count": 32,
+    "leftbrain_model_call_count": 24,
+    "leftbrain_model_path_rate": 0.75,
+    "zero_model_call_rate": 0.25,
+    "fast_path_count": 0,
+    "latency_seconds": {
+      "median": 60.009153,
+      "p95": 63.934803,
+      "maximum": 64.914117,
+      "total": 1456.570185
+    },
+    "conditions": {
+      "c0_intact_target_and_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.75
+      },
+      "t1_remove_exact_target": {
+        "target_anchor_rate": 0.0,
+        "target_plan_marker_rate": 0.0,
+        "target_reply_marker_rate": 0.0
+      },
+      "t2_replace_exact_target": {
+        "replacement_anchor_rate": 0.875,
+        "replacement_plan_marker_rate": 0.875,
+        "replacement_reply_marker_rate": 0.75
+      },
+      "n1_remove_exact_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.75
+      }
+    }
+  },
+  "rejected_score_only_v1": {
+    "row_count": 32,
+    "leftbrain_model_call_count": 8,
+    "leftbrain_model_path_rate": 0.25,
+    "zero_model_call_rate": 0.75,
+    "fast_path_count": 19,
+    "latency_seconds": {
+      "median": 0.008656,
+      "p95": 61.982002,
+      "maximum": 63.852876,
+      "total": 487.871807
+    },
+    "conditions": {
+      "c0_intact_target_and_irrelevant": {
+        "target_anchor_rate": 1.0,
+        "target_plan_marker_rate": 1.0,
+        "target_reply_marker_rate": 0.875
+      },
+      "t1_remove_exact_target": {
+        "target_anchor_rate": 0.0,
+        "target_plan_marker_rate": 0.0,
+        "target_reply_marker_rate": 0.0
+      },
+      "t2_replace_exact_target": {
+        "replacement_anchor_rate": 1.0,
+        "replacement_plan_marker_rate": 1.0,
+        "replacement_reply_marker_rate": 0.875
+      },
+      "n1_remove_exact_irrelevant": {
+        "target_anchor_rate": 1.0,
+        "target_plan_marker_rate": 1.0,
+        "target_reply_marker_rate": 0.875
+      }
+    }
+  },
+  "candidate": {
+    "row_count": 32,
+    "leftbrain_model_call_count": 6,
+    "leftbrain_model_path_rate": 0.1875,
+    "zero_model_call_rate": 0.8125,
+    "fast_path_count": 21,
+    "latency_seconds": {
+      "median": 0.008761,
+      "p95": 62.055336,
+      "maximum": 63.386901,
+      "total": 364.293113
+    },
+    "conditions": {
+      "c0_intact_target_and_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.875
+      },
+      "t1_remove_exact_target": {
+        "target_anchor_rate": 0.0,
+        "target_plan_marker_rate": 0.0,
+        "target_reply_marker_rate": 0.0
+      },
+      "t2_replace_exact_target": {
+        "replacement_anchor_rate": 0.875,
+        "replacement_plan_marker_rate": 0.875,
+        "replacement_reply_marker_rate": 0.875
+      },
+      "n1_remove_exact_irrelevant": {
+        "target_anchor_rate": 0.875,
+        "target_plan_marker_rate": 0.875,
+        "target_reply_marker_rate": 0.875
+      }
+    }
+  },
+  "causal_diagnostics": {
+    "target_removed_fast_path_activation_count": 0,
+    "valid_condition_fast_path_count": 21,
+    "fast_path_support_evidence_rate": 1.0
+  },
+  "gates": {
+    "complete_32_rows": true,
+    "intact_target_plan_preserved": true,
+    "removed_target_does_not_leak": true,
+    "replacement_steers_plan": true,
+    "irrelevant_removal_preserves_target": true,
+    "no_target_removed_fast_path": true,
+    "valid_fast_path_coverage": true,
+    "model_call_budget": true,
+    "all_fast_paths_have_support": true,
+    "no_sensitive_fast_path": true,
+    "no_non_recall_fast_path": true,
+    "no_ambiguous_fast_path": true,
+    "boundary_preflight": true,
+    "no_transport_errors": true,
+    "no_production_writes": true,
+    "no_vrm_actions": true
+  },
+  "run_metadata": {
+    "schema": "uruha_semantic_memory_recall_support_development_run_v1",
+    "row_count": 32,
+    "branch": "codex/semantic-memory-recall-support-v1",
+    "commit": "fa414b6ed03b0eaa27164c765f8a3d379ed84119",
+    "preflight": {
+      "passed": true,
+      "observed_test_count": 24,
+      "returncode": 0,
+      "tests": [
+        "test_semantic_memory_recall_support_v1.py",
+        "test_semantic_memory_recall_support_v1_preregistration.py",
+        "test_high_confidence_memory_recall_v1.py"
+      ]
+    },
+    "boundary_probes": {
+      "sensitive": {
+        "status": "suppressed",
+        "selected": false
+      },
+      "non_recall": {
+        "status": "not_requested",
+        "selected": false
+      },
+      "ambiguous": {
+        "status": "ambiguous",
+        "selected": false
+      }
+    },
+    "isolation": {
+      "production_database_path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/uruha_memory_mac_db",
+      "startup_temporary_database_path": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha_v61_startup_h38bl6sd",
+      "production_database_opened": false,
+      "production_database_writes": 0
+    },
+    "raw_path": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/analysis/local_semantic_memory_recall_support_v1_development/raw.jsonl"
+  },
+  "authorization": {
+    "fresh_holdout": true,
+    "production_default_enablement": false,
+    "benchmark_claim": false,
+    "persona_similarity_claim": false,
+    "human_memory_equivalence_claim": false
+  }
+}

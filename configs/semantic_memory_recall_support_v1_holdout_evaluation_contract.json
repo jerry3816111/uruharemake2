@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_evaluation_contract_v1",
+  "experiment_id": "semantic_memory_recall_support_v1_holdout",
+  "status": "locked_before_first_holdout_outcome",
+  "inputs": {
+    "cases_path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+    "cases_sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0",
+    "preregistration_path": "configs/semantic_memory_recall_support_v1_holdout_preregistration.json",
+    "preregistration_sha256": "470018ac2980a9c1ce45a7bfe4b2cd04a302da23f519bbe84cba6ce0f21d6c99",
+    "development_lock_path": "configs/semantic_memory_recall_support_v1_development_result_lock.json",
+    "development_lock_sha256": "57eef3ad1fea8df5efde27187b8a1ea0652b7ad553b6b8a2bfe9390738630be2",
+    "runtime_path": "uruha_memory_runtime.py",
+    "runtime_sha256": "66de0c4a937ed6c64f31e4c23dcba00d765dd385401798d7b5aab3784ddd4739"
+  },
+  "query_wrapper": {
+    "English": "Do you remember this from our previous conversations? {question}",
+    "Japanese": "前に話したこと、覚えてる？ {question}",
+    "Traditional Chinese": "你還記得我們之前聊過的事嗎？ {question}",
+    "rationale": "LongMemEval questions are memory questions but do not uniformly contain the explicit-recall trigger required by the experimental bypass. The wrapper is fixed by language and independent of case content."
+  },
+  "selector": {
+    "function": "uruha_memory_runtime.select_high_confidence_recall_item",
+    "minimum_top_score": 0.55,
+    "minimum_supported_runner_up_margin": 0.15,
+    "minimum_shared_focus_unit_count": 1,
+    "trust": 50,
+    "model_calls": 0
+  },
+  "conditions_in_order": [
+    "c0_intact_target_and_hard_negative",
+    "t1_remove_exact_target",
+    "t2_replace_exact_target",
+    "n1_remove_exact_hard_negative"
+  ],
+  "safe_outcomes": {
+    "c0_intact_target_and_hard_negative": "selected target or status ambiguous",
+    "t1_remove_exact_target": "no record selected",
+    "t2_replace_exact_target": "selected replacement or status ambiguous",
+    "n1_remove_exact_hard_negative": "selected target"
+  },
+  "scoring_exclusions": [
+    "official_answer content",
+    "RightBrain wording",
+    "persona similarity",
+    "benchmark answer accuracy"
+  ],
+  "protocol_note": "The language-specific wrapper was locked after case construction but before any selector outcome. It is disclosed separately because the builder preregistration omitted an exact trigger string.",
+  "authorization": {
+    "single_observation": true,
+    "runtime_edit_after_result": false,
+    "production_default_enablement": false
+  }
+}

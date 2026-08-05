@@ -1,0 +1,110 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_preregistration_v1",
+  "experiment_id": "semantic_memory_recall_support_v1_holdout",
+  "status": "preregistered_before_official_dataset_download_or_inspection",
+  "development_gate": {
+    "result_lock": "configs/semantic_memory_recall_support_v1_development_result_lock.json",
+    "required_status": "development_pass_locked"
+  },
+  "official_source": {
+    "dataset": "LongMemEval-S cleaned",
+    "dataset_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "dataset_bytes": 277383467,
+    "dataset_rows": 500,
+    "repository": "https://github.com/xiaowu0162/LongMemEval",
+    "repository_commit": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "paper": "https://arxiv.org/abs/2410.10813"
+  },
+  "frozen_selection": {
+    "split": "existing preregistered LongMemEval test split",
+    "question_type": "single-session-user",
+    "abstention_rows_allowed": false,
+    "exact_answer_session_count": 1,
+    "selection_salt": "uruha-semantic-memory-recall-support-v1-holdout",
+    "selection_method": "sort eligible question IDs by SHA256(selection_salt:question_id), then take first 8",
+    "selected_question_count": 8,
+    "language_assignment_after_hash_sort": {
+      "English": 4,
+      "Japanese": 2,
+      "Traditional Chinese": 2
+    }
+  },
+  "frozen_construction": {
+    "target": "official answer session rendered with the repository timestamped session document function",
+    "hard_negative": "non-answer session with maximum independent query-token overlap; hash breaks ties",
+    "replacement": "faithful local-model paraphrase of the target that preserves its facts and topic",
+    "translation": "for Japanese and Traditional Chinese strata, translate question, target, hard negative, and replacement together before evaluation",
+    "construction_model": "qwen2.5:7b",
+    "construction_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "construction_seed": 2026080502,
+    "temperature": 0.0,
+    "runtime_support_function_forbidden_during_selection": true,
+    "manual_case_selection_or_editing_forbidden": true
+  },
+  "conditions": {
+    "c0_intact_target_and_hard_negative": {
+      "items": ["target", "hard_negative"],
+      "safe_outcome": "select target or conservatively report ambiguous; never select hard negative"
+    },
+    "t1_remove_exact_target": {
+      "items": ["hard_negative"],
+      "safe_outcome": "do not select"
+    },
+    "t2_replace_exact_target": {
+      "items": ["replacement", "hard_negative"],
+      "safe_outcome": "select replacement or conservatively report ambiguous; never select hard negative"
+    },
+    "n1_remove_exact_hard_negative": {
+      "items": ["target"],
+      "safe_outcome": "select target"
+    }
+  },
+  "fixed_scores": {
+    "target": 0.9,
+    "replacement": 0.9,
+    "hard_negative": 0.82,
+    "reason": "Hold candidate score constant across all rows so only semantic support and intervention condition vary."
+  },
+  "holdout_gates": {
+    "row_count_exact": 32,
+    "question_count_exact": 8,
+    "wrong_trace_selection_count_max": 0,
+    "target_removed_selection_count_max": 0,
+    "intact_safe_outcome_rate_min": 1.0,
+    "replacement_safe_outcome_rate_min": 1.0,
+    "irrelevant_removed_target_selection_rate_min": 1.0,
+    "fast_path_sensitive_exposure_count_max": 0,
+    "fast_path_non_recall_activation_count_max": 0,
+    "fast_path_broad_presence_activation_count_max": 0,
+    "transport_error_count_max": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "failure_rule": "Reject if any hard negative is selected, if target removal selects any record, or if a required single-target condition cannot select its target.",
+  "inconclusive_rule": "Any official-data hash, split, selection, construction-model, generation, language-count, implementation, or run-count drift makes the holdout inconclusive.",
+  "authorization": {
+    "single_holdout_observation": true,
+    "runtime_change_after_holdout_exposure": false,
+    "production_default_enablement": false,
+    "benchmark_score_claim": false,
+    "persona_similarity_claim": false,
+    "human_memory_equivalence_claim": false
+  },
+  "evidence_boundary": "This holdout tests only whether lexical query support safely authorizes or rejects an explicit-memory planner bypass on official-derived unseen conversations.",
+  "pre_exposure_amendment": {
+    "field": "frozen_construction.construction_model_digest",
+    "reason": "Corrected a 63-character transcription typo to the already-fixed 64-character qwen2.5:7b digest after model preflight stopped, before the builder loaded or selected official rows.",
+    "behavioral_or_gate_change": false
+  },
+  "pre_freeze_builder_amendment": {
+    "stage": "first English construction call, before any holdout file was written",
+    "reason": "The local model paraphrased fields that had to remain exact. English official question, target, and hard negative are now copied directly by code while the model generates replacement_text only.",
+    "selection_runtime_or_gate_change": false
+  },
+  "pre_freeze_paraphrase_amendment": {
+    "stage": "sixth construction row, before any holdout file was written",
+    "reason": "A translated replacement was identical to its target. A deterministic second paraphrase call using the same model, temperature, and seed is now required only for identical first-pass output.",
+    "selection_runtime_or_gate_change": false
+  }
+}

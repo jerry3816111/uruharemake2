@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_preregistration_v1",
+  "experiment_id": "semantic_memory_recall_support_v1",
+  "status": "preregistered_before_runtime_change",
+  "parent_result": {
+    "experiment_id": "high_confidence_memory_recall_v1",
+    "result_lock": "configs/high_confidence_memory_recall_v1_result_lock.json",
+    "decision": "development_reject_or_inconclusive",
+    "observed_failure": "8 of 8 target-removed rows activated the fast path and surfaced the sole irrelevant memory."
+  },
+  "falsifiable_hypothesis": "Replacing score-only candidate separation with observable query-focus support will reject irrelevant target-removed records while allowing relevant intact and replacement records to bypass the model planner.",
+  "single_runtime_variable": "A candidate must contain at least one non-boilerplate query-focus unit, and ambiguity is calculated only among candidates that satisfy that same support condition.",
+  "frozen_support_contract": {
+    "explicit_recall_required": true,
+    "minimum_top_score": 0.55,
+    "minimum_shared_focus_unit_count": 1,
+    "minimum_supported_runner_up_margin": 0.15,
+    "cjk_focus_unit": "character_bigram",
+    "english_focus_unit": "non_stopword_token",
+    "recall_frame_removal_is_query_independent": true,
+    "unsupported_candidates_do_not_create_ambiguity": true,
+    "speakability_should_use_explicitly_required": true,
+    "sensitive_memory_allowed": false,
+    "case_ids_expected_answers_or_entity_lists_in_runtime_forbidden": true
+  },
+  "controls": [
+    "same eight known mechanism cases and four exact-record interventions",
+    "same retrieval, memory scores, psyche, route, planner, RightBrain, and post-check pipeline",
+    "same qwen2.5:7b digest, deterministic seed, temperature, token budget, and local hardware",
+    "same experimental feature seam; only query-memory support selection changes",
+    "no benchmark, persona, case ID, expected answer, or entity-specific runtime rule",
+    "no production memory writes or VRM actions"
+  ],
+  "development_gates": {
+    "expected_decision_run_count": 32,
+    "intact_target_plan_marker_rate_min": 0.875,
+    "remove_target_plan_marker_rate_max": 0.0,
+    "replacement_plan_marker_rate_min": 0.875,
+    "irrelevant_removed_target_plan_marker_rate_min": 0.875,
+    "target_removed_fast_path_activation_count_max": 0,
+    "valid_condition_fast_path_count_min": 21,
+    "leftbrain_model_call_count_max": 6,
+    "fast_path_sensitive_exposure_count_max": 0,
+    "fast_path_non_recall_activation_count_max": 0,
+    "fast_path_ambiguous_activation_count_max": 0,
+    "transport_error_count_max": 0,
+    "production_memory_write_count_exact": 0,
+    "physical_vrm_action_count_exact": 0
+  },
+  "fresh_holdout_requirement": {
+    "required_after_development_pass": true,
+    "must_be_disjoint_from": [
+      "memory_item_causal_intervention_v1 cases",
+      "semantic support implementation tests",
+      "runtime constants and comments"
+    ],
+    "must_include": [
+      "Japanese paraphrased explicit recall",
+      "Chinese explicit recall",
+      "English explicit recall",
+      "target removal",
+      "matched replacement",
+      "irrelevant removal",
+      "two supported conflicting candidates",
+      "sensitive, broad-presence, and non-recall negatives"
+    ]
+  },
+  "failure_rule": "Reject if any target-removed irrelevant record enters the fast path, if supported target behavior regresses, or if the model-call budget is not met.",
+  "inconclusive_rule": "Any dataset, model, implementation, run-count, provenance, or isolation drift makes the result inconclusive.",
+  "authorization": {
+    "development_runtime_change": true,
+    "fresh_holdout_only_after_all_development_gates": true,
+    "production_default_enablement": false,
+    "benchmark_claim": false,
+    "human_memory_equivalence_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "A development pass supports only that explicit lexical focus evidence can safely narrow a local planner bypass on known mechanism fixtures."
+}

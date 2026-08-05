@@ -1,0 +1,72 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_result_lock_v1",
+  "experiment_id": "semantic_memory_recall_support_v1_holdout",
+  "status": "holdout_rejected_locked",
+  "decision": "holdout_reject_or_inconclusive",
+  "evaluated_commit": "0456c07578852ac8515d0da877822a007f6fadc2",
+  "observed": {
+    "question_count": 8,
+    "decision_count": 32,
+    "wrong_trace_selection_count": 9,
+    "target_removed_selection_count": 6,
+    "intact_safe_outcome_rate": 0.875,
+    "replacement_safe_outcome_rate": 0.375,
+    "irrelevant_removed_target_selection_rate": 0.75,
+    "target_lexically_supported_count": 7,
+    "replacement_lexically_supported_count": 3,
+    "hard_negative_lexically_supported_count": 6,
+    "whole_record_sensitive_suppression_count": 1
+  },
+  "artifacts": {
+    "evaluation_contract": {
+      "path": "configs/semantic_memory_recall_support_v1_holdout_evaluation_contract.json",
+      "sha256": "97f128a51c307e76a060c8dd7e3261ca030df269e648f2975c73807e5f8a675d"
+    },
+    "cases": {
+      "path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+      "sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0"
+    },
+    "raw": {
+      "path": "analysis/local_semantic_memory_recall_support_v1_holdout/raw.jsonl",
+      "sha256": "ac318f1617b1a25ddeec7cae96c7dba3939bee6160a500354390baf685ed97cb"
+    },
+    "run_metadata": {
+      "path": "analysis/local_semantic_memory_recall_support_v1_holdout/run_metadata.json",
+      "sha256": "4cc500b25fdbfc937c5dc15218c5ea8d2191144377783cbd042eaac7b76fb5f5"
+    },
+    "report_json": {
+      "path": "reports/semantic_memory_recall_support_v1_holdout.json",
+      "sha256": "457eff18ac17adffc0a7d131f76e68f64e072303a6193d5ddf64c8366702906e"
+    },
+    "report_markdown": {
+      "path": "reports/semantic_memory_recall_support_v1_holdout.md",
+      "sha256": "fa049574da584950a303dccc2849dbaa1fb0ebaa089cf10e7037bd5606a83d78"
+    },
+    "diagnosis_json": {
+      "path": "reports/semantic_memory_recall_support_v1_holdout_diagnosis.json",
+      "sha256": "0d047762c16a4149568745fad98085780f40d0a0f222e5485ecdedd2ccb78881"
+    },
+    "diagnosis_markdown": {
+      "path": "reports/semantic_memory_recall_support_v1_holdout_diagnosis.md",
+      "sha256": "14dd3dfb9aa9a030b0fbc70a356b765aa4365df71ad560261b9565d86baf02e3"
+    }
+  },
+  "root_cause": "Lexical topic overlap is neither answer-bearing support nor paraphrase invariant, and record-level sensitivity can suppress a valid span because of unrelated content in the same record.",
+  "rejected_repairs": [
+    "shared-focus threshold tuning",
+    "case-specific stopwords",
+    "official question or answer rules",
+    "reusing the exposed holdout for the next version"
+  ],
+  "next_hypothesis": "Require a question-conditioned answer-bearing evidence span and apply speakability to that span before authorizing any planner bypass.",
+  "authorization": {
+    "production_default_enablement": false,
+    "runtime_enablement": false,
+    "benchmark_score_claim": false,
+    "persona_similarity_claim": false,
+    "human_memory_equivalence_claim": false,
+    "new_version_on_new_branch": true,
+    "new_disjoint_holdout_required": true
+  },
+  "evidence_boundary": "The result rejects lexical query support as sufficient authorization for planner bypass. It does not reject retrieval, memory use, or the full cognitive architecture."
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_holdout_result_v1",
+  "decision": "holdout_reject_or_inconclusive",
+  "evidence_scope": [
+    "official_answer content",
+    "RightBrain wording",
+    "persona similarity",
+    "benchmark answer accuracy"
+  ],
+  "row_count": 32,
+  "question_count": 8,
+  "wrong_trace_selection_count": 9,
+  "target_removed_selection_count": 6,
+  "conditions": {
+    "c0_intact_target_and_hard_negative": {
+      "safe_outcome_rate": 0.875,
+      "selection_rate": 0.125,
+      "ambiguous_rate": 0.75,
+      "unsupported_rate": 0.125
+    },
+    "t1_remove_exact_target": {
+      "safe_outcome_rate": 0.25,
+      "selection_rate": 0.75,
+      "ambiguous_rate": 0.0,
+      "unsupported_rate": 0.25
+    },
+    "t2_replace_exact_target": {
+      "safe_outcome_rate": 0.375,
+      "selection_rate": 0.375,
+      "ambiguous_rate": 0.375,
+      "unsupported_rate": 0.25
+    },
+    "n1_remove_exact_hard_negative": {
+      "safe_outcome_rate": 0.75,
+      "selection_rate": 0.75,
+      "ambiguous_rate": 0.0,
+      "unsupported_rate": 0.125
+    }
+  },
+  "languages": {
+    "English": {
+      "row_count": 16,
+      "safe_outcome_rate": 0.625,
+      "wrong_trace_selection_count": 6
+    },
+    "Japanese": {
+      "row_count": 8,
+      "safe_outcome_rate": 0.5,
+      "wrong_trace_selection_count": 0
+    },
+    "Traditional Chinese": {
+      "row_count": 8,
+      "safe_outcome_rate": 0.5,
+      "wrong_trace_selection_count": 3
+    }
+  },
+  "gates": {
+    "row_count_exact": true,
+    "question_count_exact": true,
+    "no_wrong_trace_selection": false,
+    "target_removal_never_selects": false,
+    "intact_safe": false,
+    "replacement_safe": false,
+    "irrelevant_removed_selects_target": false,
+    "no_sensitive_fast_path": true,
+    "no_non_recall_fast_path": true,
+    "no_broad_presence_fast_path": true,
+    "no_transport_errors": true,
+    "no_production_writes": true,
+    "no_vrm_actions": true
+  },
+  "run_metadata": {
+    "schema": "uruha_semantic_memory_recall_support_holdout_run_v1",
+    "commit": "0456c07578852ac8515d0da877822a007f6fadc2",
+    "contract_sha256": "97f128a51c307e76a060c8dd7e3261ca030df269e648f2975c73807e5f8a675d",
+    "cases_sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0",
+    "runtime_sha256": "66de0c4a937ed6c64f31e4c23dcba00d765dd385401798d7b5aab3784ddd4739",
+    "boundary_probes": {
+      "sensitive": {
+        "status": "suppressed",
+        "selected": false
+      },
+      "non_recall": {
+        "status": "not_requested",
+        "selected": false
+      },
+      "broad_presence": {
+        "status": "presence_only",
+        "selected": false
+      }
+    },
+    "production_database_opened": false,
+    "production_memory_writes": 0,
+    "physical_vrm_actions": 0
+  },
+  "authorization": {
+    "production_default_enablement": false,
+    "benchmark_score_claim": false,
+    "persona_similarity_claim": false,
+    "human_memory_equivalence_claim": false
+  }
+}
