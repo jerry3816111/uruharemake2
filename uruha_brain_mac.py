@@ -2549,6 +2549,65 @@ Rules:
                 surface_act="memory_abstention",
                 payload_level="medium",
             )
+        recall_selection = umr.select_high_confidence_recall_item(
+            user_input,
+            memory_data,
+            minimum_top_score=0.55,
+            minimum_margin=0.15,
+            trust=current_psyche.get("trust", 50),
+        )
+
+        def high_confidence_recall_plan():
+            if not recall_selection.get("selected"):
+                return None
+            item = recall_selection.get("item") or {}
+            source_text = str(item.get("text") or "").strip()
+            if not source_text:
+                return None
+            plan = base_plan(
+                intent="recall_context",
+                scene="casual",
+                listener_state="前に話した具体的な内容を覚えているか確かめている",
+                reply_goal="選ばれた記憶だけを使って具体的に返す",
+                summary="ユーザーが以前に話した具体的な内容を確認している。",
+                meaning=source_text,
+                stance={"warmth": 0.28, "tease": 0.04, "blunt": 0.08, "jealousy": 0.0, "distance": 0.05},
+                max_chars=36,
+                avoid=["私", "わかりました", "知らない", "たぶん"],
+                cognitive_mode="direct",
+                uncertainty=0.06,
+                premise_check="accept",
+                self_check=True,
+                subjective_note="選択された一件以外の記憶を混ぜない",
+                response_mode="direct_answer",
+                surface_act="plain_reply",
+                payload_level="medium",
+                grounding={
+                    "memory_source": item.get("source", "working_memory"),
+                    "memory_text": source_text,
+                },
+            )
+            plan["hidden_intent"] = "memory_probe"
+            plan["planner_path"] = "high_confidence_memory_recall_v1"
+            plan["memory_recall_contract"] = {
+                key: recall_selection.get(key)
+                for key in (
+                    "status",
+                    "trace_id",
+                    "memory_id",
+                    "source",
+                    "top_score",
+                    "runner_up_score",
+                    "margin",
+                    "minimum_top_score",
+                    "minimum_margin",
+                )
+            }
+            return plan
+
+        generic_recall_plan = high_confidence_recall_plan()
+        if generic_recall_plan:
+            return generic_recall_plan
         if extracted_plan:
             return extracted_plan
 
@@ -7943,6 +8002,12 @@ Rules:
         plan["payload_level"] = str(data.get("payload_level", plan.get("payload_level", self._fallback_plan()["payload_level"]))).strip()[:12]
         if plan["payload_level"] not in {"low", "medium", "high"}:
             plan["payload_level"] = self._fallback_plan()["payload_level"]
+        planner_path = str(data.get("planner_path", "")).strip()[:48]
+        if planner_path:
+            plan["planner_path"] = planner_path
+        recall_contract = data.get("memory_recall_contract")
+        if isinstance(recall_contract, dict):
+            plan["memory_recall_contract"] = deepcopy(recall_contract)
         plan["uncertainty"] = self._clamp_value(data.get("uncertainty", plan["uncertainty"]))
         plan["response_mode"] = str(data.get("response_mode", plan.get("response_mode", self._fallback_plan()["response_mode"]))).strip()[:28]
         if plan["response_mode"] not in {
@@ -14599,7 +14664,11 @@ class UruhaBrainV4_Mac:
             if flags["recent_action"] and _contains_dialogue_keyword(source_text, ["コンビニ", "便利商店", "convenience store"]):
                 add_from_item(item, "recent_action", "コンビニ", "コンビニ", ["コンビニ"], score=source_score + 0.7, expected=True)
 
-        if not candidates and not any(flags.get(key) for key in ("name", "favorite_drink", "dislike", "spicy", "horror", "natto")):
+        specialized_query_without_match = any(
+            flags.get(key)
+            for key in ("name", "favorite_drink", "dislike", "spicy", "horror", "natto")
+        )
+        if not candidates and (flags["recall"] or not specialized_query_without_match):
             items = memory_data.get("working_memory_items") or []
             if items:
                 item = items[0]
