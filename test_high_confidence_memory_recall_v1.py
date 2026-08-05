@@ -52,7 +52,8 @@ class HighConfidenceMemoryRecallV1Tests(unittest.TestCase):
 
         self.assertTrue(decision["selected"])
         self.assertEqual(decision["trace_id"], selected["trace_id"])
-        self.assertAlmostEqual(decision["margin"], 0.52)
+        self.assertAlmostEqual(decision["margin"], 0.91)
+        self.assertEqual(decision["supported_candidate_count"], 1)
 
     def test_non_recall_input_never_activates(self):
         decision = umr.select_high_confidence_recall_item(

@@ -64,6 +64,51 @@ MEMORY_CONTENT_STOPWORDS = frozenset(
     }
 )
 
+RECALL_FOCUS_ENGLISH_STOPWORDS = MEMORY_CONTENT_STOPWORDS | frozenset(
+    {
+        "again",
+        "before",
+        "decide",
+        "decided",
+        "remember",
+        "remembered",
+        "said",
+        "say",
+        "talked",
+        "tell",
+        "told",
+        "we",
+    }
+)
+
+# These are language-level recall frames, not case entities or expected answers.
+RECALL_FRAME_PATTERNS = (
+    r"前に(?:話した|話していた|話してた|決めた|言った|教えた)",
+    r"以前に(?:話した|話していた|話してた|決めた|言った|教えた)",
+    r"覚えて(?:いる|る|います|ます|いた|た)",
+    r"何(?:だった|だ|をする|にする|を作る)?って?(?:話していた|話してた|決めた)?っけ",
+    r"どこだっけ|いつだっけ|誰だっけ",
+    r"之前(?:說過|说过|提過|提过|決定|决定)(?:的)?",
+    r"你(?:還|还)?記得|還記得|还记得",
+    r"do\s+you\s+remember|what\s+did\s+(?:i|we)|what\s+was\s+(?:i|we)",
+)
+
+RECALL_FOCUS_CJK_STOP_UNITS = frozenset(
+    {
+        "之前",
+        "你還",
+        "你还",
+        "記得",
+        "记得",
+        "我們",
+        "我们",
+        "何だ",
+        "何を",
+        "前に",
+        "以前",
+    }
+)
+
 MEMORY_PROVENANCE_SCHEMA = "uruha_memory_provenance_trace_v1"
 
 EXPLICIT_MEMORY_QUERY_TERMS = (
@@ -171,6 +216,50 @@ def memory_content_tokens(value):
     }
 
 
+def strip_memory_recall_frames(text):
+    """Remove recall boilerplate without using case-specific entities."""
+    normalized = str(text or "").lower()
+    for pattern in RECALL_FRAME_PATTERNS:
+        normalized = re.sub(pattern, " ", normalized, flags=re.IGNORECASE)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def memory_recall_focus_units(text):
+    """Return conservative multilingual lexical units for recall support."""
+    normalized = strip_memory_recall_frames(text)
+    units = set()
+    for token in re.findall(r"[a-z0-9][a-z0-9_-]*", normalized):
+        if token not in RECALL_FOCUS_ENGLISH_STOPWORDS and (len(token) > 1 or token.isdigit()):
+            units.add(token)
+    for segment in re.findall(r"[\u3040-\u30ff\u3400-\u9fff]+", normalized):
+        for index in range(len(segment) - 1):
+            unit = segment[index : index + 2]
+            # Hiragana-only pairs are mostly particles and recall framing.
+            if not re.search(r"[\u30a0-\u30ff\u3400-\u9fff]", unit):
+                continue
+            if unit not in RECALL_FOCUS_CJK_STOP_UNITS:
+                units.add(unit)
+    return units
+
+
+def memory_query_support(user_input, memory_text):
+    """Expose lexical evidence that a memory addresses the current recall focus."""
+    query_units = memory_recall_focus_units(user_input)
+    memory_units = memory_recall_focus_units(memory_text)
+    shared_units = query_units & memory_units
+    return {
+        "schema": "uruha_memory_query_support_v1",
+        "query_focus_units": sorted(query_units),
+        "shared_focus_units": sorted(shared_units),
+        "query_focus_unit_count": len(query_units),
+        "memory_focus_unit_count": len(memory_units),
+        "shared_focus_unit_count": len(shared_units),
+        "query_focus_coverage": round(len(shared_units) / len(query_units), 4)
+        if query_units
+        else 0.0,
+    }
+
+
 def distance_similarity(distance, scoring_profile="v2"):
     """Convert Chroma distance to a bounded monotonic similarity."""
     if scoring_profile not in MEMORY_SCORING_PROFILES:
@@ -245,9 +334,10 @@ def select_high_confidence_recall_item(
     memory_data,
     minimum_top_score=0.55,
     minimum_margin=0.15,
+    minimum_shared_focus_unit_count=1,
     trust=50,
 ):
-    """Select one already-ranked memory only when explicit recall is unambiguous."""
+    """Select one ranked memory only with explicit, auditable query support."""
     if not is_explicit_memory_query(user_input):
         return {"status": "not_requested", "selected": False}
     if is_broad_memory_presence_query(user_input):
@@ -264,21 +354,48 @@ def select_high_confidence_recall_item(
             score = float(row.get("score") or 0.0)
         except (TypeError, ValueError):
             score = 0.0
-        ranked.append((score, row))
+        support = memory_query_support(user_input, text)
+        ranked.append((score, row, support))
     ranked.sort(key=lambda pair: pair[0], reverse=True)
     if not ranked:
         return {"status": "unavailable", "selected": False}
 
-    top_score, top = ranked[0]
-    runner_up_score = ranked[1][0] if len(ranked) > 1 else None
+    supported = [
+        row
+        for row in ranked
+        if row[2]["shared_focus_unit_count"] >= int(minimum_shared_focus_unit_count)
+    ]
+    if not supported:
+        return {
+            "status": "unsupported",
+            "selected": False,
+            "candidate_count": len(ranked),
+            "supported_candidate_count": 0,
+            "minimum_shared_focus_unit_count": int(minimum_shared_focus_unit_count),
+            "query_focus_units": ranked[0][2]["query_focus_units"],
+            "query_focus_unit_count": ranked[0][2]["query_focus_unit_count"],
+        }
+
+    top_score, top, top_support = supported[0]
+    runner_up_score = supported[1][0] if len(supported) > 1 else None
     margin = top_score - runner_up_score if runner_up_score is not None else top_score
     common = {
+        "support_schema": top_support["schema"],
         "top_score": round(top_score, 4),
         "runner_up_score": round(runner_up_score, 4) if runner_up_score is not None else None,
         "margin": round(margin, 4),
         "minimum_top_score": float(minimum_top_score),
         "minimum_margin": float(minimum_margin),
-        "trace_id": top.get("trace_id"),
+        "minimum_shared_focus_unit_count": int(minimum_shared_focus_unit_count),
+        "candidate_count": len(ranked),
+        "supported_candidate_count": len(supported),
+        "query_focus_units": top_support["query_focus_units"],
+        "shared_focus_units": top_support["shared_focus_units"],
+        "query_focus_unit_count": top_support["query_focus_unit_count"],
+        "memory_focus_unit_count": top_support["memory_focus_unit_count"],
+        "shared_focus_unit_count": top_support["shared_focus_unit_count"],
+        "query_focus_coverage": top_support["query_focus_coverage"],
+        "trace_id": memory_trace_id(top),
         "memory_id": top.get("memory_id"),
         "source": top.get("source"),
     }

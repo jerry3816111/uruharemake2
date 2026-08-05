@@ -2563,6 +2563,12 @@ Rules:
             if recall_v1_enabled
             else {"status": "disabled", "selected": False}
         )
+        if recall_v1_enabled:
+            memory_data["experimental_memory_recall_selection_trace_v1"] = {
+                key: deepcopy(value)
+                for key, value in recall_selection.items()
+                if key not in {"item", "speakability"}
+            }
 
         def high_confidence_recall_plan():
             if not recall_selection.get("selected"):
@@ -2608,6 +2614,16 @@ Rules:
                     "margin",
                     "minimum_top_score",
                     "minimum_margin",
+                    "minimum_shared_focus_unit_count",
+                    "candidate_count",
+                    "supported_candidate_count",
+                    "support_schema",
+                    "query_focus_units",
+                    "shared_focus_units",
+                    "query_focus_unit_count",
+                    "memory_focus_unit_count",
+                    "shared_focus_unit_count",
+                    "query_focus_coverage",
                 )
             }
             return plan
@@ -14678,16 +14694,42 @@ class UruhaBrainV4_Mac:
         generic_recall_anchor_enabled = bool(
             memory_data.get("experimental_high_confidence_recall_v1_enabled")
         )
-        if not candidates and (
-            (flags["recall"] and generic_recall_anchor_enabled)
-            or not specialized_query_without_match
+        if not candidates and flags["recall"] and generic_recall_anchor_enabled:
+            psyche = getattr(self, "psyche", None)
+            psyche_state = (
+                psyche.get_state() if psyche and hasattr(psyche, "get_state") else {}
+            )
+            recall_selection = umr.select_high_confidence_recall_item(
+                user_input,
+                memory_data,
+                minimum_top_score=0.55,
+                minimum_margin=0.15,
+                trust=(psyche_state or {}).get("trust", 50),
+            )
+            item = recall_selection.get("item") if recall_selection.get("selected") else None
+            if item:
+                source_text = str(item.get("text") or "").strip()
+                score = self._safe_float(item.get("score"), 0.0)
+                add_from_item(
+                    item,
+                    "context",
+                    source_text[:32],
+                    source_text[:24],
+                    recall_selection.get("shared_focus_units") or self._focus_terms(source_text),
+                    score=score,
+                    expected=True,
+                )
+
+        if (
+            not candidates
+            and not specialized_query_without_match
+            and not (flags["recall"] and generic_recall_anchor_enabled)
         ):
             items = memory_data.get("working_memory_items") or []
             if items:
                 item = items[0]
                 source_text = str(item.get("text") or "").strip()
                 score = self._safe_float(item.get("score"), 0.0)
-                expected = bool(flags["recall"] and score >= 0.55)
                 add_from_item(
                     item,
                     "context",
@@ -14695,7 +14737,7 @@ class UruhaBrainV4_Mac:
                     source_text[:24],
                     self._focus_terms(source_text),
                     score=score,
-                    expected=expected,
+                    expected=bool(flags["recall"] and score >= 0.55),
                 )
 
         if not candidates:
