@@ -1,0 +1,76 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_single_record_carrier_preregistration_v2_3",
+  "experiment_id": "source_preserving_memory_projection_v2_3_single_record_carrier_development",
+  "status": "frozen_before_model_evaluation",
+  "hypothesis": "The V2.2 long-context failures are caused by asking one visible memory record to return an indexed verdict list. Replacing only that carrier with one unindexed verdict will remove nonexistent-source-index errors without reducing the frozen 9B projected target support or increasing projected hard-negative false support.",
+  "frozen_control": {
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_2_model_capacity_result_lock.json",
+    "result_lock_sha256": "d1c9cb2d00339240cc848e23fa7c1c0a7154fc52e8b07a15229a56007c374daa",
+    "report_path": "reports/source_preserving_memory_projection_v2_2_9b_capacity_development.json",
+    "report_sha256": "b292daba51dd815d3c1747a986d5b98880f6a1458f10c4b42ef1b41a2553ac12",
+    "projected_target_support_count": 7,
+    "complete_target_support_count": 0,
+    "projected_false_support_count": 0,
+    "structured_contract_rate": 0.8125,
+    "exact_span_grounding_rate": 0.8125,
+    "invalid_long_record_count": 6
+  },
+  "independent_variable": {
+    "name": "one_visible_memory_output_carrier",
+    "control": "verdicts array containing source_index, supports_answer, answer_span",
+    "intervention": "one object containing supports_answer and answer_span; source_index is assigned deterministically as zero after validation"
+  },
+  "controlled_variables": {
+    "cases_path": "configs/source_preserving_memory_projection_v2_1_development_cases.json",
+    "cases_sha256": "7c05f63eeaf8047c5e76114babef7ff4ae3a84f20819bf57142318ed4a280358",
+    "question_count": 8,
+    "conditions": [
+      "remove_exact_hard_negative",
+      "remove_exact_target"
+    ],
+    "representations": [
+      "complete_session",
+      "source_projection"
+    ],
+    "model": "qwen3.5:9b",
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "call_count": 32,
+    "source_texts_and_projection_algorithm": "byte-identical to V2.2",
+    "semantic_support_rule": "explicit requested value only; shortest grounded verbatim span; no general-knowledge inference"
+  },
+  "success_gates": {
+    "all_32_decisions_present": true,
+    "complete_target_support_count_at_least": 5,
+    "projected_target_support_count_at_least": 7,
+    "projected_target_support_not_lower_than_frozen_9b": true,
+    "projected_hard_negative_false_support_count_equals": 0,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "nonexistent_source_index_error_count_equals": 0,
+    "transport_error_count_equals": 0,
+    "source_projection_exactness_rate_equals": 1.0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "cost_reporting": [
+    "latency",
+    "prompt characters",
+    "model calls"
+  ],
+  "authorization": {
+    "run_frozen_single_record_carrier_evaluation_once": true,
+    "rerun_frozen_controls": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout_claim": false,
+    "official_benchmark_score_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "This exposed development experiment tests a general one-record evidence carrier. A pass authorizes only an external disjoint memory holdout, not runtime activation."
+}
