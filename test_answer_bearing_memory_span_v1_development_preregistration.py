@@ -62,6 +62,7 @@ class AnswerBearingMemorySpanV1PreregistrationTests(unittest.TestCase):
         inference = self.payload["inference"]
         self.assertEqual(inference["model"], "qwen3.5:4b")
         self.assertEqual(inference["temperature"], 0)
+        self.assertFalse(inference["think"])
         self.assertEqual(len(inference["model_digest"]), 64)
         rules = self.payload["span_contract"]["fail_closed_rules"]
         self.assertTrue(any("official answers" in rule for rule in rules))

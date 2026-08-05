@@ -109,6 +109,7 @@ def call_evidence_model(question, candidates, prereg, endpoint):
         "model": inference["model"],
         "messages": [{"role": "user", "content": prompt}],
         "stream": False,
+        "think": bool(inference["think"]),
         "format": build_answer_evidence_json_schema(len(candidates)),
         "options": {
             "temperature": inference["temperature"],
@@ -286,6 +287,7 @@ def write_outputs(rows, prereg, raw_path, metadata_path, endpoint):
         "endpoint": endpoint,
         "model": prereg["inference"]["model"],
         "model_digest": prereg["inference"]["model_digest"],
+        "think": prereg["inference"]["think"],
         "row_count": len(rows),
         "raw_path": str(raw_path.relative_to(ROOT)),
         "raw_sha256": file_sha256(raw_path),
