@@ -1,0 +1,45 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_evidence_contract_audit_result_lock_v1",
+  "audit_id": "semantic_memory_recall_support_v1_evidence_contract_audit",
+  "status": "evaluation_artifact_invalid_locked",
+  "decision": "invalidate_v1_cases_for_architecture_or_capacity_claims",
+  "observed": {
+    "case_count": 8,
+    "strict_contract_valid_count": 0,
+    "strict_contract_valid_rate": 0.0,
+    "check_pass_counts": {
+      "target_session_id_alignment": 8,
+      "hard_negative_session_id_alignment": 8,
+      "target_timestamp_alignment": 7,
+      "hard_negative_timestamp_alignment": 7,
+      "source_excerpt_answer_bearing": 8,
+      "target_answer_bearing": 7,
+      "hard_negative_answer_absent": 8,
+      "replacement_answer_bearing": 4,
+      "all_fields_match_requested_language": 4,
+      "target_source_fidelity": 7,
+      "hard_negative_source_fidelity": 7,
+      "replacement_preserves_material_facts": 4
+    },
+    "target_source_contradiction_case_ids": [
+      "official-07-8550ddae"
+    ]
+  },
+  "artifacts": {
+    "audit_semantic_memory_recall_support_v1_evidence_contract.py": "2f942f0d8d6731557e2508f9b8479dd45043bcd94545109ccaed683013d3a9ac",
+    "configs/semantic_memory_recall_support_v1_holdout_cases.json": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0",
+    "configs/semantic_memory_recall_support_v1_evidence_contract_audit_rubric.json": "95589340ac0ee18b55f04f3d5d0545e3d26b2f0f8bcee7b94ffb2b7f109a8e07",
+    "reports/semantic_memory_recall_support_v1_evidence_contract_audit.json": "026d3d9b1794c7c7bd5456121dd5ab639f7b200341136e3e01034b3e7aa5e505",
+    "reports/semantic_memory_recall_support_v1_evidence_contract_audit.md": "55af316251276df5e21bba84207c3453de5808a2ba238568525493879f5c868b"
+  },
+  "authorization": {
+    "runtime_change": false,
+    "production_enablement": false,
+    "benchmark_claim": false,
+    "model_selection": false,
+    "reuse_v1_cases_as_holdout": false,
+    "build_source_preserving_v2_on_disjoint_rows": true
+  },
+  "next_required_step": "Preregister a source-preserving V2 builder and select disjoint official rows before any new model call.",
+  "evidence_boundary": "The audit invalidates the V1 case artifact for causal architecture and model-capacity claims. It does not establish that the runtime memory architecture is good or bad."
+}

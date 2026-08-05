@@ -1,0 +1,82 @@
+{
+  "schema": "uruha_semantic_memory_recall_support_evidence_contract_audit_rubric_v1",
+  "audit_id": "semantic_memory_recall_support_v1_evidence_contract_audit",
+  "status": "posthoc_data_quality_audit_rubric",
+  "scope": {
+    "cases_path": "configs/semantic_memory_recall_support_v1_holdout_cases.json",
+    "cases_sha256": "801e11c31aa0039a4fe8c1a1ffc2cbfe9cb936284b5cedb18cea019fb963ccf0",
+    "source_dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "affected_pull_requests": [396, 397, 398],
+    "runtime_in_scope": false
+  },
+  "contract": {
+    "target_session_id_must_equal_official_answer_session_id": true,
+    "record_timestamp_must_equal_source_session_timestamp": true,
+    "source_excerpt_must_contain_all_answer_witness_groups": true,
+    "target_must_contain_all_answer_witness_groups": true,
+    "hard_negative_must_not_contain_all_answer_witness_groups": true,
+    "replacement_must_contain_all_answer_witness_groups": true,
+    "generated_fields_must_match_requested_language": true,
+    "translated_source_fidelity_requires_manual_audit_in_v1": true,
+    "replacement_must_preserve_all_material_facts": true
+  },
+  "case_rubric": {
+    "4100d0a0": {
+      "answer_witness_groups": [["Irish"], ["Italian"]],
+      "manual_target_source_fidelity": null,
+      "manual_hard_negative_source_fidelity": null,
+      "manual_replacement_fact_preservation": false,
+      "manual_note": "The English replacement keeps only the final Irish-class exchange and drops the mixed Irish-and-Italian ethnicity fact."
+    },
+    "bc8a6e93": {
+      "answer_witness_groups": [["lemon"], ["blueberry"], ["cake"]],
+      "manual_target_source_fidelity": null,
+      "manual_hard_negative_source_fidelity": null,
+      "manual_replacement_fact_preservation": false,
+      "manual_note": "The English replacement keeps only the flour discussion and drops the niece, birthday, blueberry, and baked-cake facts."
+    },
+    "c8c3f81d": {
+      "answer_witness_groups": [["Nike"]],
+      "manual_target_source_fidelity": null,
+      "manual_hard_negative_source_fidelity": null,
+      "manual_replacement_fact_preservation": false,
+      "manual_note": "The English replacement keeps only the final outlet-shopping advice and drops most turns from the target transcript."
+    },
+    "ad7109d1": {
+      "answer_witness_groups": [["500"], ["Mbps"]],
+      "manual_target_source_fidelity": null,
+      "manual_hard_negative_source_fidelity": null,
+      "manual_replacement_fact_preservation": false,
+      "manual_note": "The English replacement stops during battery advice and drops the 500 Mbps internet-plan fact."
+    },
+    "95bcc1c8": {
+      "answer_witness_groups": [["10"]],
+      "manual_target_source_fidelity": true,
+      "manual_hard_negative_source_fidelity": true,
+      "manual_replacement_fact_preservation": true,
+      "manual_note": "The target and replacement preserve the ten-comedian fact, but the question was not translated into Japanese."
+    },
+    "3f1e9474": {
+      "answer_witness_groups": [["Sarah", "サラ", "萨拉", "莎拉"]],
+      "manual_target_source_fidelity": true,
+      "manual_hard_negative_source_fidelity": true,
+      "manual_replacement_fact_preservation": true,
+      "manual_note": "The target preserves Sarah as サラ, but the requested Japanese replacement was emitted in Chinese."
+    },
+    "8550ddae": {
+      "answer_witness_groups": [["lavender", "薰衣草"], ["gin", "琴酒", "杜松子酒"], ["fizz", "菲士", "气泡", "氣泡"]],
+      "manual_target_source_fidelity": false,
+      "manual_hard_negative_source_fidelity": false,
+      "manual_replacement_fact_preservation": true,
+      "manual_note": "The generated target contains the non-answer dinner-menu session, while the generated hard negative contains content derived from the answer-session opening. Source identities were crossed during translation."
+    },
+    "c5e8278d": {
+      "answer_witness_groups": [["Johnson"]],
+      "manual_target_source_fidelity": true,
+      "manual_hard_negative_source_fidelity": true,
+      "manual_replacement_fact_preservation": true,
+      "manual_note": "The memory records preserve the old-name fact, but the generated question contains simplified-Chinese forms despite the Traditional Chinese contract."
+    }
+  },
+  "research_boundary": "This rubric audits exposed evaluation artifacts after construction. Official answers and localized witnesses are used only for data-quality inspection and must never enter runtime prompts, memories, model training, or capability decisions."
+}
