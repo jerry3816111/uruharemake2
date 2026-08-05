@@ -1,0 +1,59 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_corrected_oracle_feasibility_v2_6",
+  "experiment_id": "source_preserving_memory_projection_v2_6_corrected_source_turn_oracle",
+  "decision": "construction_infeasible_do_not_build_cases",
+  "evidence_scope": "exposed_locomo_development_construction_only",
+  "metrics": {
+    "required_question_count": 12,
+    "eligible_question_count": 10,
+    "required_cases_per_conversation": 3,
+    "eligible_count_by_conversation": {
+      "conv-50": 3,
+      "conv-48": 2,
+      "conv-30": 1,
+      "conv-49": 4
+    },
+    "eligible_qa_indices_by_conversation": {
+      "conv-50": [
+        57,
+        27,
+        43
+      ],
+      "conv-48": [
+        4,
+        10
+      ],
+      "conv-30": [
+        11
+      ],
+      "conv-49": [
+        41,
+        52,
+        4,
+        60
+      ]
+    },
+    "case_manifest_written": false,
+    "model_calls": 0,
+    "reserve_sample_access_count": 0
+  },
+  "gates": {
+    "total_question_count_reachable": false,
+    "per_conversation_allocation_reachable": false,
+    "case_manifest_absent_after_failure": true,
+    "model_calls_equal_zero": true,
+    "reserve_sample_access_count_equals_zero": true
+  },
+  "root_cause": "The corrected turn-text-only oracle leaves ten eligible questions across the four exposed conversations. conv-48 has two and conv-30 has one, so the frozen requirement of three per conversation and twelve total is unreachable.",
+  "authorization": {
+    "build_v2_6_cases": false,
+    "new_preregistration_changing_only_development_count_and_allocation": true,
+    "change_projection_algorithm": false,
+    "model_generation": false,
+    "use_reserve_conversations": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "This result tests corrected case-construction feasibility only. It does not evaluate the projection algorithm or any LLM."
+}
