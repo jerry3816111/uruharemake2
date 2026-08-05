@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_capacity_evaluation_contract_v2_2",
+  "experiment_id": "source_preserving_memory_projection_v2_2_9b_capacity_development",
+  "status": "frozen_before_model_evaluation",
+  "artifacts": {
+    "preregistration": {
+      "path": "configs/source_preserving_memory_projection_v2_2_model_capacity_preregistration.json",
+      "sha256": "824b6b8c615e9a1747e4eb53b8e77f66429c9a23e0159bf26164fef17f0121dc"
+    },
+    "cases": {
+      "path": "configs/source_preserving_memory_projection_v2_1_development_cases.json",
+      "sha256": "7c05f63eeaf8047c5e76114babef7ff4ae3a84f20819bf57142318ed4a280358"
+    },
+    "frozen_4b_result_lock": {
+      "path": "configs/source_preserving_memory_projection_v2_1_result_lock.json",
+      "sha256": "a281ab1ff841a18f89d610fc957fe8e50e82f9a89d5cb80194cfc88084f746b6"
+    },
+    "frozen_4b_report": {
+      "path": "reports/source_preserving_memory_projection_v2_1_development.json",
+      "sha256": "a9250ed11e269bf45f8ac17519cfa17d2766109cefa4430d7c718131131f7cad"
+    },
+    "span_contract": {
+      "path": "answer_bearing_memory_span.py",
+      "sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49"
+    },
+    "v2_1_runner_library": {
+      "path": "run_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "5bb4d016a21f1e83c1d5b3da2bec225d01052f100137d987b97fe9b2dee7eee5"
+    },
+    "v2_1_source_audit_library": {
+      "path": "analyze_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "538796d59c36ac2dc41105b09af7be8e767655245ba172f9d00885a1dcf4b6e1"
+    },
+    "runner": {
+      "path": "run_source_preserving_memory_projection_v2_2_model_capacity_development.py",
+      "sha256": "4adc6090f6b7e81dbfe092d3294fc332d6863e91cb3376b3dcad252e6688a9d0"
+    },
+    "analyzer": {
+      "path": "analyze_source_preserving_memory_projection_v2_2_model_capacity_development.py",
+      "sha256": "e055fcebacdb3436d71b10790ad0a4bfeedc1f4960a57e252b376b0714b63a56"
+    }
+  },
+  "one_variable_audit": {
+    "changed": [
+      "model name qwen3.5:4b to qwen3.5:9b",
+      "model digest and model size"
+    ],
+    "unchanged": [
+      "eight exposed cases",
+      "source projection algorithm and exact source texts",
+      "complete-session texts",
+      "two phase-1 conditions and two representations",
+      "prompt and tool schema",
+      "temperature, think mode, seed, num_ctx, and max_tokens",
+      "row validation, span grounding, and success thresholds except the explicit improvement comparison"
+    ]
+  },
+  "frozen_execution": {
+    "model": "qwen3.5:9b",
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "call_count": 32,
+    "rerun_policy": "The runner refuses to overwrite raw or metadata outputs."
+  },
+  "outputs": {
+    "raw": "analysis/local_source_preserving_memory_projection_v2_2_9b_capacity/raw.jsonl",
+    "metadata": "analysis/local_source_preserving_memory_projection_v2_2_9b_capacity/run_metadata.json",
+    "report_json": "reports/source_preserving_memory_projection_v2_2_9b_capacity_development.json",
+    "report_markdown": "reports/source_preserving_memory_projection_v2_2_9b_capacity_development.md"
+  },
+  "authorization": {
+    "run_frozen_9b_development_evaluation_once": true,
+    "rerun_frozen_4b_control": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout_claim": false
+  },
+  "evidence_boundary": "Only local extractor model capacity changes. Neither a pass nor a failure directly changes the cognitive runtime."
+}
