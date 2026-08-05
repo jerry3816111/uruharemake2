@@ -56,6 +56,11 @@ class BuildSemanticMemoryRecallSupportV1HoldoutTests(unittest.TestCase):
             {"replacement_text"},
         )
 
+    def test_paraphrase_retry_keeps_same_fixed_seed(self):
+        source = inspect.getsource(builder.generate_language_row)
+        self.assertIn("seed=SEED", source)
+        self.assertIn("paraphrase_retry_used", source)
+
 
 if __name__ == "__main__":
     unittest.main()

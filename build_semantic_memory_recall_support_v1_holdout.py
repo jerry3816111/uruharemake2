@@ -227,6 +227,7 @@ def generation_prompt(language, question, target_text, hard_negative_text):
 
 
 def generate_language_row(language, question, target_text, hard_negative_text):
+    retry_response = None
     if language == "English":
         prompt = (
             "Faithfully paraphrase the following English memory transcript. Preserve every "
@@ -266,10 +267,37 @@ def generate_language_row(language, question, target_text, hard_negative_text):
     ):
         raise ValueError("English construction did not preserve official-derived text")
     if payload["replacement_text"].strip() == payload["target_text"].strip():
-        raise ValueError("Replacement is not a paraphrase")
+        retry_response = ollama_chat(
+            (
+                f"Rewrite the following {language} memory transcript using different wording "
+                "and sentence structure. Preserve every fact, name, number, role, and "
+                "uncertainty. The output must not be identical to the input.\n\n"
+                f"target_text:\n{payload['target_text']}"
+            ),
+            model=MODEL,
+            seed=SEED,
+            max_tokens=1600,
+            format_schema=REPLACEMENT_SCHEMA,
+        )
+        replacement = json.loads(retry_response["text"])
+        payload["replacement_text"] = str(
+            replacement.get("replacement_text") or ""
+        ).strip()
+    if not payload["replacement_text"] or (
+        payload["replacement_text"].strip() == payload["target_text"].strip()
+    ):
+        raise ValueError("Replacement is not a distinct paraphrase after retry")
     return payload, {
-        key: response.get(key)
-        for key in ("latency_seconds", "prompt_tokens", "completion_tokens")
+        "latency_seconds": round(
+            float(response.get("latency_seconds") or 0.0)
+            + float((retry_response or {}).get("latency_seconds") or 0.0),
+            3,
+        ),
+        "prompt_tokens": int(response.get("prompt_tokens") or 0)
+        + int((retry_response or {}).get("prompt_tokens") or 0),
+        "completion_tokens": int(response.get("completion_tokens") or 0)
+        + int((retry_response or {}).get("completion_tokens") or 0),
+        "paraphrase_retry_used": retry_response is not None,
     }
 
 
