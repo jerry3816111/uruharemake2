@@ -1,0 +1,70 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_empty_normalization_replay_preregistration_v2_4",
+  "experiment_id": "source_preserving_memory_projection_v2_4_empty_normalization_replay",
+  "status": "frozen_before_replay",
+  "evidence_type": "known_output_deterministic_replay",
+  "hypothesis": "The only V2.3 contract failure is a representational boundary mismatch: supports_answer=false with a quote-only empty placeholder. A conservative deterministic normalization can restore the intended empty value without changing any semantic support verdict or previously valid row.",
+  "frozen_source": {
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_3_single_record_carrier_result_lock.json",
+    "result_lock_sha256": "3baf68cc1bc48cf26421c69b632b9d764cddaf95de97c572f1c288aad40a07f7",
+    "raw_path": "analysis/local_source_preserving_memory_projection_v2_3_single_record_carrier/raw.jsonl",
+    "raw_sha256": "60092be25c105c00d2de9a02c27358aa60161ab09568cccad55b6eaf2ae392ec",
+    "row_count": 32,
+    "valid_row_count": 31,
+    "invalid_row_count": 1,
+    "complete_target_support_count": 6,
+    "projected_target_support_count": 7,
+    "projected_false_support_count": 0
+  },
+  "independent_variable": {
+    "name": "unsupported_answer_span_boundary_normalization",
+    "control": "strictly require answer_span to be the empty string when supports_answer=false",
+    "intervention": "strip surrounding whitespace and map only exact quote-only empty pairs to the empty string when supports_answer=false",
+    "allowed_placeholders": [
+      "\"\"",
+      "''",
+      "“”",
+      "‘’"
+    ]
+  },
+  "controlled_variables": {
+    "model_calls": 0,
+    "model_output_bytes": "unchanged",
+    "cases": "unchanged V2.1 eight-case artifact",
+    "source_texts": "unchanged",
+    "questions": "unchanged",
+    "semantic_support_rule": "unchanged",
+    "verbatim_grounding_rule": "unchanged",
+    "target_and_negative_labels": "unchanged",
+    "scoring_thresholds": "unchanged"
+  },
+  "success_gates": {
+    "all_32_rows_present_once": true,
+    "model_call_count_equals": 0,
+    "model_output_sha_unchanged_count_equals": 32,
+    "normalized_row_count_equals": 1,
+    "previously_valid_regression_count_equals": 0,
+    "semantic_support_change_count_equals": 0,
+    "replay_valid_row_count_equals": 32,
+    "replay_grounded_row_count_equals": 32,
+    "complete_target_support_count_equals": 6,
+    "projected_target_support_count_equals": 7,
+    "projected_false_support_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "decision_boundary": {
+    "pass": "Authorize only preregistration of a disjoint external fresh-generation memory holdout using the normalized carrier.",
+    "fail": "Reject this normalization or localize unintended semantic changes before any new model generation."
+  },
+  "authorization": {
+    "run_deterministic_replay_once": true,
+    "model_calls": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "training_use": false,
+    "fresh_generation_claim": false,
+    "external_holdout_preregistration_if_pass": true
+  },
+  "evidence_boundary": "A passing replay proves only that a deterministic boundary normalization repairs the frozen known output without semantic drift. It does not prove fresh model-generation quality or authorize runtime use."
+}

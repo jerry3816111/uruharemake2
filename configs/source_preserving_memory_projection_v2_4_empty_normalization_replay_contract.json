@@ -1,0 +1,72 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_empty_normalization_replay_contract_v2_4",
+  "experiment_id": "source_preserving_memory_projection_v2_4_empty_normalization_replay",
+  "status": "frozen_before_replay",
+  "artifacts": {
+    "preregistration": {
+      "path": "configs/source_preserving_memory_projection_v2_4_empty_normalization_replay_preregistration.json",
+      "sha256": "f081e94f9c8e41a71c5a153415ab88e0e40c23acd4f87caa9778044a08c6d0f0"
+    },
+    "frozen_v2_3_result_lock": {
+      "path": "configs/source_preserving_memory_projection_v2_3_single_record_carrier_result_lock.json",
+      "sha256": "3baf68cc1bc48cf26421c69b632b9d764cddaf95de97c572f1c288aad40a07f7"
+    },
+    "frozen_v2_3_raw": {
+      "path": "analysis/local_source_preserving_memory_projection_v2_3_single_record_carrier/raw.jsonl",
+      "sha256": "60092be25c105c00d2de9a02c27358aa60161ab09568cccad55b6eaf2ae392ec"
+    },
+    "cases": {
+      "path": "configs/source_preserving_memory_projection_v2_1_development_cases.json",
+      "sha256": "7c05f63eeaf8047c5e76114babef7ff4ae3a84f20819bf57142318ed4a280358"
+    },
+    "base_condition_contract": {
+      "path": "configs/source_preserving_memory_projection_v2_development_preregistration.json",
+      "sha256": "10db793820f13496e0f49844e06118772f88fdce7ca4d0bd5179b8fd2ce77cdc"
+    },
+    "span_contract": {
+      "path": "answer_bearing_memory_span.py",
+      "sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49"
+    },
+    "single_record_contract": {
+      "path": "answer_bearing_memory_single_record.py",
+      "sha256": "2e21a480c56db3fa881dbb7dae272dd020b6eb87fadd46b332f804d8824be569"
+    },
+    "normalization": {
+      "path": "answer_bearing_memory_single_record_normalization.py",
+      "sha256": "4e8ec44ebf24735b3e79a6cf287a0a14aa5a179599ffa5d8c766e628b2337307"
+    },
+    "condition_candidate_library": {
+      "path": "run_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "5bb4d016a21f1e83c1d5b3da2bec225d01052f100137d987b97fe9b2dee7eee5"
+    },
+    "replay": {
+      "path": "replay_source_preserving_memory_projection_v2_4_empty_normalization.py",
+      "sha256": "4490a1d044b4851b124c2e66baeefef41576eff99cf2c022dc676970fe0b9946"
+    }
+  },
+  "one_variable_audit": {
+    "changed": [
+      "unsupported quote-only empty placeholders are normalized to an empty string"
+    ],
+    "unchanged": [
+      "all 32 frozen model outputs",
+      "all source records, cases, conditions, and representations",
+      "semantic support decisions and verbatim span grounding",
+      "model call count remains zero"
+    ]
+  },
+  "outputs": {
+    "replay_rows": "analysis/local_source_preserving_memory_projection_v2_4_empty_normalization/replay.jsonl",
+    "report_json": "reports/source_preserving_memory_projection_v2_4_empty_normalization_replay.json",
+    "report_markdown": "reports/source_preserving_memory_projection_v2_4_empty_normalization_replay.md",
+    "result_lock": "configs/source_preserving_memory_projection_v2_4_empty_normalization_replay_result_lock.json"
+  },
+  "authorization": {
+    "run_deterministic_replay_once": true,
+    "model_calls": false,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_generation_claim": false
+  },
+  "evidence_boundary": "A pass is replay-specific and may authorize only preregistration of a disjoint external fresh-generation holdout."
+}
