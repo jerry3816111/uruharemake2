@@ -1,0 +1,114 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_evaluation_contract_v2_1",
+  "experiment_id": "source_preserving_memory_projection_v2_1_development",
+  "status": "frozen_before_model_evaluation",
+  "artifacts": {
+    "base_preregistration": {
+      "path": "configs/source_preserving_memory_projection_v2_development_preregistration.json",
+      "sha256": "10db793820f13496e0f49844e06118772f88fdce7ca4d0bd5179b8fd2ce77cdc"
+    },
+    "revision_preregistration": {
+      "path": "configs/source_preserving_memory_projection_v2_1_development_preregistration.json",
+      "sha256": "ff05b5d169dd26bf12a2793a3d720409467d08a00b5728ec6800b4c0f6713b74"
+    },
+    "cases": {
+      "path": "configs/source_preserving_memory_projection_v2_1_development_cases.json",
+      "sha256": "7c05f63eeaf8047c5e76114babef7ff4ae3a84f20819bf57142318ed4a280358"
+    },
+    "case_builder": {
+      "path": "build_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "4acbddafa3c17f5af6685b59a5730341e0b2b9cf7476c3de245bd85221c051f0"
+    },
+    "span_contract": {
+      "path": "answer_bearing_memory_span.py",
+      "sha256": "bbb55e0ee848349c458e5686740c80581a551bc941cfcc2da2f3e88ad4a6ce49"
+    },
+    "runner": {
+      "path": "run_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "5bb4d016a21f1e83c1d5b3da2bec225d01052f100137d987b97fe9b2dee7eee5"
+    },
+    "analyzer": {
+      "path": "analyze_source_preserving_memory_projection_v2_1_development.py",
+      "sha256": "538796d59c36ac2dc41105b09af7be8e767655245ba172f9d00885a1dcf4b6e1"
+    }
+  },
+  "frozen_execution": {
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "carrier": "native_ollama_tool_call",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "phase_1_call_count": 32,
+    "phase_2_call_count_if_phase_1_passes": 16,
+    "maximum_total_model_calls": 48,
+    "rerun_policy": "The runner refuses to overwrite raw or metadata outputs."
+  },
+  "input_boundary": {
+    "model_visible": [
+      "official question text",
+      "source_index",
+      "complete-session or source-projection candidate text"
+    ],
+    "model_hidden": [
+      "official answer field as a separate label",
+      "expected supported role",
+      "expected trace ID",
+      "case pass/fail label",
+      "V1 outcome"
+    ],
+    "clarification": "The answer naturally appears inside a valid source memory. The prohibition concerns passing the gold answer as a separate hint or label."
+  },
+  "integrity_gate": {
+    "all_frozen_artifact_hashes_match": true,
+    "raw_hash_match": true,
+    "official_source_hash_match": true,
+    "metadata_experiment_id_match": true,
+    "metadata_row_count_match": true,
+    "exact_expected_row_key_set": true,
+    "no_duplicate_row_keys": true,
+    "model_digest_match": true,
+    "endpoint_match": true,
+    "phase_1_metadata_match": true
+  },
+  "phase_1_gate": {
+    "projected_target_only_supported_count_at_least": 6,
+    "projected_hard_negative_supported_count_equals": 0,
+    "structured_contract_rate_equals": 1.0,
+    "exact_grounding_rate_equals": 1.0,
+    "transport_error_count_equals": 0,
+    "failure_action": "Stop after 32 calls, analyze, and lock a rejected result."
+  },
+  "full_success_gate": {
+    "all_48_decisions_present": true,
+    "projected_target_only_answer_support_count_at_least": 6,
+    "projected_minus_complete_target_only_support_count_at_least": 2,
+    "projected_target_removed_false_support_count_equals": 0,
+    "projected_intact_target_support_count_at_least": 6,
+    "projected_intact_target_support_not_lower_than_complete": true,
+    "source_projection_exactness_rate_equals": 1.0,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "transport_error_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "outputs": {
+    "raw": "analysis/local_source_preserving_memory_projection_v2_1/raw.jsonl",
+    "metadata": "analysis/local_source_preserving_memory_projection_v2_1/run_metadata.json",
+    "report_json": "reports/source_preserving_memory_projection_v2_1_development.json",
+    "report_markdown": "reports/source_preserving_memory_projection_v2_1_development.md"
+  },
+  "authorization": {
+    "run_frozen_model_evaluation_once": true,
+    "runtime_change": false,
+    "production_enablement": false,
+    "fresh_holdout_claim": false,
+    "official_benchmark_score_claim": false,
+    "persona_similarity_claim": false
+  },
+  "evidence_boundary": "A pass is development evidence for source projection only and permits searching for a different unobserved formal memory dataset. A failure rejects or localizes this projection version. Neither outcome directly changes runtime."
+}
