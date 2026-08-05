@@ -1,0 +1,129 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_reserve_holdout_preregistration_v2_8",
+  "experiment_id": "source_preserving_memory_projection_v2_8_locomo_reserve_fresh_holdout",
+  "status": "frozen_before_reserve_content_access_and_case_construction",
+  "evidence_scope": "fresh_external_locomo_single_hop_source_support",
+  "research_question": "Does the two-anchor adjacency projection retain answer-bearing source turns and support grounded local-model evidence decisions on previously unused LoCoMo conversations?",
+  "development_authorization": {
+    "preregistration_path": "configs/source_preserving_memory_projection_v2_7_adjacency_preregistration.json",
+    "preregistration_sha256": "1377d1354b3a8f5e317c3c4ac4492462be0ecc194608f9fe6a1a6153b7fb136c",
+    "result_lock_path": "configs/source_preserving_memory_projection_v2_7_adjacency_result_lock.json",
+    "result_lock_sha256": "ee756291d4a647e95f786642364067b25fafb33a6d1b84b4f21745ec810312b7",
+    "report_path": "reports/source_preserving_memory_projection_v2_7_adjacency.json",
+    "report_sha256": "8bfd3b102953e687f3c0b7ab68b50bba4ad4f746e48fb66098e61ff8c45a9284",
+    "decision": "development_pass_authorize_reserve_holdout_preregistration_only",
+    "answer_retention": 9,
+    "question_count": 10,
+    "model_calls": 0
+  },
+  "official_source": {
+    "dataset_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "dataset_bytes": 2805274,
+    "conversation_count": 10,
+    "license": "CC BY-NC 4.0"
+  },
+  "reserve_partition": {
+    "original_split_preregistration_path": "configs/source_preserving_memory_projection_v2_5_locomo_fresh_holdout_preregistration.json",
+    "original_split_preregistration_sha256": "7eee2834b3768f33df968f8de80bef30ac59cb8b73f234310ecebd4bf0c62374",
+    "original_manifest_path": "configs/source_preserving_memory_projection_v2_5_locomo_cases.json",
+    "original_manifest_sha256": "fc03e801c13ee0364d8fde24bb0468bc054b672d72336e544e1287ed5b20bcdc",
+    "excluded_exposed_sample_ids": [
+      "conv-50",
+      "conv-48",
+      "conv-30",
+      "conv-49"
+    ],
+    "reserve_pool_count": 6,
+    "partition_salt": "uruha-locomo-v2-8-reserve-to-fresh-and-final",
+    "algorithm": "remove the four frozen exposed sample IDs; sort the remaining six by sha256(partition_salt + ':' + sample_id); first four are fresh holdout and final two remain sealed",
+    "fresh_holdout_conversation_count": 4,
+    "final_reserve_conversation_count": 2,
+    "cross_partition_overlap": 0
+  },
+  "case_selection": {
+    "official_category": 2,
+    "official_category_name": "single-hop retrieval",
+    "selection_salt": "uruha-locomo-v2-8-balanced-single-hop-cases",
+    "eligibility": "unchanged V2.6 corrected turn-text oracle, one evidence session, exact answer in a source turn, valid hard negative, 32000-character session ceiling",
+    "ordering": "sort eligible cases within each fresh conversation by selection digest",
+    "balancing": "iterate fresh conversations in partition-digest order and take at most one case per conversation per round until eight cases are selected",
+    "maximum_cases_per_conversation": 3,
+    "minimum_represented_conversations": 3,
+    "question_count": 8,
+    "adjacency_answer_retention_is_not_an_eligibility_filter": true,
+    "committed_manifest_excludes_official_text_and_answers": true
+  },
+  "representations": {
+    "complete_session": "unchanged complete original session",
+    "isolated_control": "unchanged three isolated lexical-overlap turns",
+    "adjacency_intervention": "unchanged V2.7 two lexical anchors plus immediate predecessor and successor, deduplicated in source order"
+  },
+  "construction_gates_before_model_calls": {
+    "dataset_hash_matches": true,
+    "dataset_bytes_match": true,
+    "reserve_pool_count_equals": 6,
+    "fresh_holdout_conversation_count_equals": 4,
+    "final_reserve_conversation_count_equals": 2,
+    "partition_overlap_equals": 0,
+    "question_count_equals": 8,
+    "represented_conversation_count_at_least": 3,
+    "maximum_cases_per_conversation_at_most": 3,
+    "all_corrected_source_oracles_valid": true,
+    "adjacency_answer_retention_count_at_least": 7,
+    "adjacency_retention_delta_vs_isolated_at_least": 2,
+    "mean_target_adjacency_character_ratio_at_most": 0.5,
+    "mean_all_record_adjacency_character_ratio_at_most": 0.5,
+    "all_adjacency_turns_are_exact_sources": true,
+    "final_reserve_case_selection_payload_access_count_equals": 0,
+    "model_calls_equal": 0
+  },
+  "model_evaluation_contract_to_freeze_after_construction_pass": {
+    "model": "qwen3.5:9b",
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "max_tokens": 320,
+    "records_per_question": 2,
+    "record_roles": ["target", "hard_negative"],
+    "representations": ["complete_session", "adjacency_projection"],
+    "planned_model_calls": 32,
+    "single_record_carrier_path": "answer_bearing_memory_single_record.py",
+    "single_record_carrier_sha256": "2e21a480c56db3fa881dbb7dae272dd020b6eb87fadd46b332f804d8824be569",
+    "boundary_normalizer_path": "answer_bearing_memory_single_record_normalization.py",
+    "boundary_normalizer_sha256": "4e8ec44ebf24735b3e79a6cf287a0a14aa5a179599ffa5d8c766e628b2337307",
+    "prompt_excludes": [
+      "official answer",
+      "official evidence IDs",
+      "record role",
+      "expected support label",
+      "benchmark category"
+    ]
+  },
+  "model_success_gates": {
+    "all_32_decisions_present": true,
+    "structured_contract_rate_equals": 1.0,
+    "exact_span_grounding_rate_equals": 1.0,
+    "complete_target_support_count_at_least": 6,
+    "adjacency_target_support_count_at_least": 6,
+    "adjacency_target_support_drop_vs_complete_at_most": 1,
+    "complete_hard_negative_false_support_count_equals": 0,
+    "adjacency_hard_negative_false_support_count_equals": 0,
+    "transport_error_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "authorization": {
+    "build_fresh_case_manifest_once_after_merge": true,
+    "freeze_model_evaluation_contract_after_construction_pass": false,
+    "run_model_generation": false,
+    "use_final_reserve_conversations_for_case_selection": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.8 parses the single official dataset file to partition by sample ID, but uses no dialogue or QA payload from the final two reserve conversations for case selection. It covers eight fresh LoCoMo single-hop source-support cases from four previously unused conversations. Construction must pass before a separate model contract can be frozen. Even a later model pass can authorize only full-pipeline runtime-shadow preregistration, not runtime activation or production."
+}
