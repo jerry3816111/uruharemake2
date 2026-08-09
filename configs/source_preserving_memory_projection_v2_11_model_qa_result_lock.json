@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_qa_result_lock_v2_11",
+  "experiment_id": "source_preserving_memory_projection_v2_11_final_reserve_model_qa",
+  "decision": "model_qa_reject_adjacency_answer_quality_gain",
+  "contract_pull_request": 426,
+  "contract_merge_commit": "2b30634b03e7e5ab908971ec3dddb3529632df5f",
+  "model_calls": 114,
+  "artifacts": {
+    "configs/source_preserving_memory_projection_v2_11_model_qa_preregistration.json": "fe40c3511c4ac61759b067724dc7c8e6084b6ba9608edf46ff5bd9af74df293c",
+    "run_source_preserving_memory_projection_v2_11_model_qa.py": "da90cd45aa0fdab1593eef46be8c4a57977a09c4c3739fed2a8a27bbcbd8ed93",
+    "locomo_official_qa_f1.py": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5",
+    "reports/source_preserving_memory_projection_v2_11_model_qa.json": "0dba8d31da4e4325bad2e9b5a87917b429f578213e53166eaceb2b6f98c16cd8",
+    "reports/source_preserving_memory_projection_v2_11_model_qa.md": "d82c1e3b9be271656e8555d4f1125d58d771dd908106030d4898abd8710fbeb2"
+  },
+  "local_execution_provenance": {
+    "run_at": "2026-08-09T22:50:22.112643+00:00",
+    "raw_checkpoint_path": "analysis/local_source_preserving_memory_projection_v2_11_model_qa/raw.jsonl",
+    "raw_checkpoint_sha256": "001e9d784ca8f321edc50d218f349be7fbfb3f77fa09d21aed5736cdbbba1563",
+    "run_metadata_path": "analysis/local_source_preserving_memory_projection_v2_11_model_qa/run_metadata.json",
+    "run_metadata_sha256": "cf327b57bfc8af68d8066f63f438acffbc8670099bf9333d06a0420ae4570601",
+    "raw_checkpoint_committed": false,
+    "report_contains_all_raw_rows": true
+  },
+  "metrics": {
+    "model_call_count": 114,
+    "complete_pair_count": 57,
+    "row_count_by_condition": {
+      "isolated": 57,
+      "adjacency": 57
+    },
+    "transport_error_count": 0,
+    "nonempty_prediction_rate": 1.0,
+    "isolated_mean_official_f1": 0.15337,
+    "adjacency_mean_official_f1": 0.178873,
+    "adjacency_mean_f1_delta_vs_isolated": 0.025503,
+    "paired_bootstrap_95_ci": [
+      -0.040729,
+      0.096714
+    ],
+    "adjacency_only_evidence_gain_subgroup_count": 12,
+    "adjacency_only_evidence_gain_subgroup_f1_delta": 0.21829,
+    "mean_model_output_tokens": 9.114035,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "model_call_count_equals": true,
+    "row_count_per_condition_equals": true,
+    "complete_pair_count_equals": true,
+    "transport_error_count_equals": true,
+    "nonempty_prediction_rate_equals": true,
+    "adjacency_mean_official_f1_at_least": false,
+    "adjacency_mean_f1_delta_vs_isolated_at_least": false,
+    "paired_bootstrap_95_ci_lower_greater_than": false,
+    "adjacency_only_evidence_gain_subgroup_count_equals": true,
+    "adjacency_only_evidence_gain_subgroup_f1_delta_at_least": true,
+    "mean_model_output_tokens_at_most": true,
+    "production_memory_write_count_equals": true,
+    "physical_vrm_action_count_equals": true
+  },
+  "failed_gates": [
+    "adjacency_mean_official_f1_at_least",
+    "adjacency_mean_f1_delta_vs_isolated_at_least",
+    "paired_bootstrap_95_ci_lower_greater_than"
+  ],
+  "authorization": {
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.11 found a preregistered answer-F1 improvement in the 12 adjacency-only evidence-gain cases, but the full 57-case population failed the absolute F1, minimum mean-delta, and positive-confidence-bound gates. This result does not authorize a full-pipeline memory intervention, runtime change, shadow mode, or production enablement."
+}
