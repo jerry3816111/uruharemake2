@@ -1,0 +1,153 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_complete_session_ceiling_preregistration_v2_12",
+  "experiment_id": "source_preserving_memory_projection_v2_12_complete_session_ceiling",
+  "status": "frozen_before_model_generation",
+  "evidence_scope": "fresh_local_model_generation_on_fully_exposed_diagnostic_cases",
+  "research_question": "On the 57 now-exposed V2.11 cases, can the same local model answer from the complete oracle-selected target session well enough to localize the V2.11 failure to source projection rather than the model-prompt ceiling?",
+  "hypothesis": "With model, questions, prompt, decoding, hardware and cases fixed, the complete target session will reach mean official category-2 F1 of at least 0.45, exceed a freshly rerun adjacency control by at least 0.10, and have a positive paired-bootstrap 95% confidence lower bound.",
+  "development_authorization": {
+    "v2_11_result_lock_path": "configs/source_preserving_memory_projection_v2_11_model_qa_result_lock.json",
+    "v2_11_result_lock_sha256": "8bbcef6375ae6df273c569d8568d38e49899bdaaff0bce9b03cd099d9ca0ded3",
+    "v2_11_report_path": "reports/source_preserving_memory_projection_v2_11_model_qa.json",
+    "v2_11_report_sha256": "0dba8d31da4e4325bad2e9b5a87917b429f578213e53166eaceb2b6f98c16cd8",
+    "decision": "model_qa_reject_adjacency_answer_quality_gain",
+    "v2_11_case_count": 57,
+    "v2_11_isolated_mean_f1": 0.15337,
+    "v2_11_adjacency_mean_f1": 0.178873,
+    "v2_11_adjacency_delta": 0.025503,
+    "v2_11_paired_ci": [-0.040729, 0.096714],
+    "posthoc_zero_call_stratification": {
+      "both_evidence_case_count": 35,
+      "both_evidence_mean_f1_delta": -0.014898,
+      "adjacency_only_case_count": 12,
+      "adjacency_only_mean_f1_delta": 0.21829,
+      "isolated_only_case_count": 2,
+      "isolated_only_mean_f1_delta": -0.142857,
+      "neither_evidence_case_count": 8,
+      "neither_evidence_mean_f1_delta": -0.044833
+    }
+  },
+  "frozen_case_reconstruction": {
+    "v2_10_report_path": "reports/source_preserving_memory_projection_v2_10_final_reserve.json",
+    "v2_10_report_sha256": "b97bf9553d2374a56b3be7da6ee54c75fb26c58a4df67498ba797ab290032ecf",
+    "v2_10_builder_path": "build_source_preserving_memory_projection_v2_10_final_reserve.py",
+    "v2_10_builder_sha256": "9306bf28348e87ebbc1cd4b2639db1b0e3a2e08c56582c67b2d44e4ce394793e",
+    "v2_10_preregistration_path": "configs/source_preserving_memory_projection_v2_10_final_reserve_preregistration.json",
+    "v2_10_preregistration_sha256": "1957467e5820638d2cb5728d011a20fa7ee3fb1fb61787f35c5ff14c10f9e18e",
+    "v2_11_runner_path": "run_source_preserving_memory_projection_v2_11_model_qa.py",
+    "v2_11_runner_sha256": "da90cd45aa0fdab1593eef46be8c4a57977a09c4c3739fed2a8a27bbcbd8ed93"
+  },
+  "frozen_local_implementation": {
+    "runner_path": "run_source_preserving_memory_projection_v2_12_complete_session_ceiling.py",
+    "runner_sha256": "500836085591a21afeeebd594838fe80c4376dbff487dd4d52200bb805516154",
+    "scorer_path": "locomo_official_qa_f1.py",
+    "scorer_sha256": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5"
+  },
+  "data_boundary": {
+    "locomo_conversation_count": 10,
+    "locomo_all_conversations_exposed_before_v2_12": true,
+    "longmemeval_all_rows_exposed_before_v2_12": true,
+    "v2_12_cases_are_development_only": true,
+    "fresh_holdout_claim": false,
+    "generalization_claim": false,
+    "complete_session_is_oracle_selected_target_session": true,
+    "complete_session_is_not_a_production_retrieval_baseline": true
+  },
+  "official_source": {
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "dataset_bytes": 2805274,
+    "repository_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+    "evaluator_url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/task_eval/evaluation.py",
+    "evaluator_sha256": "8e3be5d57ff2ff9ec5cd05939592f468c5f3f1fd95d13e431932bdf6bf0fd6fd",
+    "scoring_function": "f1_score for category 2"
+  },
+  "independent_variable": {
+    "name": "visible_context_representation",
+    "control": "freshly_rerun_adjacency_source_span",
+    "intervention": "complete_oracle_selected_target_session",
+    "same_57_questions_in_both_conditions": true,
+    "planned_calls_per_condition": 57,
+    "planned_total_model_calls": 114
+  },
+  "controlled_variables": [
+    "same 57 exposed V2.11 questions",
+    "same oracle-selected target session",
+    "same qwen3.5:9b manifest",
+    "same prompt and official category-2 scorer",
+    "same decoding parameters and local hardware",
+    "same call count and counterbalanced condition order",
+    "gold answers and official evidence IDs excluded from model prompts"
+  ],
+  "prompt": {
+    "context_header": "Below is a conversation between two people: {} and {}. The conversation takes place over multiple days and the date of each conversation is wriiten at the beginning of the conversation.\n\n",
+    "qa_template": "\nBased on the above conversations, write a short answer for the following question in a few words. Do not write complete and lengthy sentences. Answer with exact words from the conversations whenever possible.\n\nQuestion: {}\n",
+    "excludes": [
+      "official answer",
+      "official evidence IDs",
+      "condition name",
+      "expected F1",
+      "V2.11 prediction or score"
+    ]
+  },
+  "local_model": {
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "model": "qwen3.5:9b",
+    "ollama_manifest_sha256": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "model_layer_sha256": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "quantization": "Q4_K_M",
+    "temperature": 0,
+    "think": false,
+    "seed": 20260805,
+    "num_ctx": 8192,
+    "num_predict": 64,
+    "timeout_seconds": 300
+  },
+  "official_scorer_runtime": {
+    "python": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "regex_version": "2026.2.19",
+    "nltk_version": "3.8.1",
+    "numpy_version": "1.26.4",
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 2026080512
+  },
+  "execution": {
+    "raw_checkpoint_path": "analysis/local_source_preserving_memory_projection_v2_12_complete_session_ceiling/raw.jsonl",
+    "metadata_path": "analysis/local_source_preserving_memory_projection_v2_12_complete_session_ceiling/run_metadata.json",
+    "report_json_path": "reports/source_preserving_memory_projection_v2_12_complete_session_ceiling.json",
+    "report_markdown_path": "reports/source_preserving_memory_projection_v2_12_complete_session_ceiling.md",
+    "counterbalance_condition_order_by_case_index": true,
+    "resume_only_missing_call_ids": true,
+    "never_repeat_completed_call_id": true
+  },
+  "success_gates": {
+    "model_call_count_equals": 114,
+    "row_count_per_condition_equals": 57,
+    "complete_pair_count_equals": 57,
+    "transport_error_count_equals": 0,
+    "nonempty_prediction_rate_equals": 1.0,
+    "adjacency_rerun_mean_f1_absolute_drift_vs_v2_11_at_most": 0.02,
+    "complete_session_mean_official_f1_at_least": 0.45,
+    "complete_session_mean_f1_delta_vs_adjacency_at_least": 0.1,
+    "paired_bootstrap_95_ci_lower_greater_than": 0.0,
+    "max_prompt_eval_count_less_than": 8192,
+    "mean_model_output_tokens_at_most": 32,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0
+  },
+  "decision_rules": {
+    "all_gates_pass": "complete_session_ceiling_pass_localize_projection_loss_development_only",
+    "integrity_pass_but_complete_f1_below_0_45": "complete_session_ceiling_below_prior_quality_gate",
+    "integrity_and_complete_f1_pass_but_paired_gain_fails": "complete_session_not_decisively_better_than_adjacency",
+    "any_integrity_gate_fails": "complete_session_ceiling_diagnostic_invalid"
+  },
+  "authorization": {
+    "run_exposed_development_diagnostic_once_after_merge": true,
+    "preregister_projection_coherence_development": false,
+    "preregister_model_prompt_capacity_diagnostic": false,
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.12 is a paired fresh-generation diagnostic on 57 fully exposed LoCoMo cases using an oracle-selected target session. It can distinguish a complete-session capability ceiling from the frozen adjacency projection only on this consumed development scope. It cannot establish generalization, realistic retrieval, full-pipeline memory use, persona similarity, runtime safety, or production readiness."
+}
