@@ -1,0 +1,107 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_model_capacity_result_lock_v2_13",
+  "experiment_id": "source_preserving_memory_projection_v2_13_27b_capacity",
+  "decision": "27b_capacity_diagnostic_invalid_or_resource_rejected",
+  "decision_resolution": {
+    "integrity": "passed",
+    "quality": "failed",
+    "resource": "rejected",
+    "selected_reason": "resource_rejected_not_integrity_invalid"
+  },
+  "contract_pull_request": 430,
+  "contract_merge_commit": "902e3653b013cd1cdbc8460350a20b6230f9d2ee",
+  "new_candidate_model_calls": 57,
+  "historical_control_model_calls_reused": 57,
+  "combined_paired_rows": 114,
+  "artifacts": {
+    "configs/source_preserving_memory_projection_v2_13_27b_capacity_preregistration.json": "1fe3c02ac13239f65e697d43abcc982bd903041fbf653754e1d96774c8d0af30",
+    "run_source_preserving_memory_projection_v2_13_27b_capacity.py": "678abcf409e18cd77a0398d80fff17db84b5e47d262411ce5552f6d183903bf1",
+    "locomo_official_qa_f1.py": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5",
+    "reports/source_preserving_memory_projection_v2_13_27b_capacity.json": "403affddc7d75ceb655582a70271c7de7a56a6c4b5968b7591ef02755fe8076f",
+    "reports/source_preserving_memory_projection_v2_13_27b_capacity.md": "d314f979a553880aac1537fc9d0e80d2c685156d84ebe91c2d358cf1ee42710d"
+  },
+  "local_execution_provenance": {
+    "run_at": "2026-08-09T23:53:25.281866+00:00",
+    "raw_checkpoint_path": "analysis/local_source_preserving_memory_projection_v2_13_27b_capacity/raw.jsonl",
+    "raw_checkpoint_sha256": "e1a7c6b9f2d076a5cf2914f59d3ac081ad5cd34ff7bb28c9da077522aff4338e",
+    "run_metadata_path": "analysis/local_source_preserving_memory_projection_v2_13_27b_capacity/run_metadata.json",
+    "run_metadata_sha256": "39e9996dfe5bf0e30d935b1df0523166d63de2cffc7468ac3eb4ef5f9b9511fc",
+    "raw_checkpoint_committed": false,
+    "report_contains_all_raw_candidate_rows": true
+  },
+  "metrics": {
+    "new_candidate_model_call_count": 57,
+    "historical_control_row_count": 57,
+    "combined_row_count": 114,
+    "complete_pair_count": 57,
+    "candidate_transport_error_count": 0,
+    "candidate_nonempty_prediction_rate": 1.0,
+    "locked_9b_mean_official_f1": 0.213176,
+    "candidate_27b_mean_official_f1": 0.227764,
+    "candidate_mean_f1_delta_vs_locked_9b": 0.014588,
+    "paired_bootstrap_95_ci": [-0.047649, 0.079094],
+    "candidate_max_prompt_eval_count": 1306,
+    "candidate_mean_output_tokens": 3.877193,
+    "candidate_mean_latency_seconds": 14.571096,
+    "candidate_p95_latency_seconds": 20.928983,
+    "candidate_max_latency_seconds": 27.590019,
+    "candidate_model_size_bytes": 17420432728,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "new_candidate_model_call_count_equals": true,
+    "historical_control_row_count_equals": true,
+    "combined_row_count_equals": true,
+    "complete_pair_count_equals": true,
+    "candidate_transport_error_count_equals": true,
+    "candidate_nonempty_prediction_rate_equals": true,
+    "candidate_mean_official_f1_at_least": false,
+    "candidate_mean_f1_delta_vs_locked_9b_at_least": false,
+    "paired_bootstrap_95_ci_lower_greater_than": false,
+    "candidate_max_prompt_eval_count_less_than": true,
+    "candidate_mean_output_tokens_at_most": true,
+    "candidate_mean_latency_seconds_at_most": false,
+    "candidate_p95_latency_seconds_at_most": false,
+    "candidate_max_latency_seconds_at_most": true,
+    "production_memory_write_count_equals": true,
+    "physical_vrm_action_count_equals": true
+  },
+  "failed_gates": [
+    "candidate_mean_official_f1_at_least",
+    "candidate_mean_f1_delta_vs_locked_9b_at_least",
+    "paired_bootstrap_95_ci_lower_greater_than",
+    "candidate_mean_latency_seconds_at_most",
+    "candidate_p95_latency_seconds_at_most"
+  ],
+  "reproducibility_audit": {
+    "candidate_raw_row_count": 57,
+    "candidate_unique_call_id_count": 57,
+    "candidate_unique_case_id_count": 57,
+    "historical_control_prompt_and_answer_hash_match_count": 57,
+    "independent_official_f1_recalculation_match_count": 57,
+    "independent_aggregate_recalculation_match": true
+  },
+  "posthoc_zero_call_diagnostics": {
+    "candidate_better_pair_count": 6,
+    "identical_f1_pair_count": 46,
+    "candidate_worse_pair_count": 5,
+    "exact_prediction_match_pair_count": 16,
+    "cold_first_call_id": "locomo-v2-10-final-reserve-1-6:qwen3.5:27b",
+    "cold_first_latency_seconds": 27.590019,
+    "cold_first_load_seconds": 8.199749,
+    "warm_only_call_count": 56,
+    "warm_only_mean_latency_seconds": 14.338615,
+    "warm_only_p95_latency_seconds": 20.669977,
+    "warm_calls_over_15_seconds": 22
+  },
+  "authorization": {
+    "preregister_new_external_dataset_capacity_validation": false,
+    "preregister_prompt_carrier_diagnostic": false,
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "On 57 fully exposed oracle-target-session cases, Qwen3.5:27b improved mean official F1 over locked Qwen3.5:9b controls by only 0.014588, with a paired confidence interval crossing zero, and remained far below the 0.45 absolute-quality gate. It also failed the local-computer mean and p95 latency gates even after excluding the cold-start call. V2.13 therefore rejects this 27B capacity intervention under the frozen quality and resource contract and authorizes no external validation, prompt-carrier experiment, full-pipeline work, runtime change, shadow mode, or production enablement."
+}
