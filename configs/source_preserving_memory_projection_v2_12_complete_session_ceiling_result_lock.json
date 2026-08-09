@@ -1,0 +1,98 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_complete_session_ceiling_result_lock_v2_12",
+  "experiment_id": "source_preserving_memory_projection_v2_12_complete_session_ceiling",
+  "decision": "complete_session_ceiling_below_prior_quality_gate",
+  "contract_pull_request": 428,
+  "contract_merge_commit": "50d4c660540d130e9f166b67960e22c177aac89a",
+  "model_calls": 114,
+  "artifacts": {
+    "configs/source_preserving_memory_projection_v2_12_complete_session_ceiling_preregistration.json": "f4e3bb1e813b62a542d6c5af532560f9302738dc04eba393b420c18e4c0d3cd5",
+    "run_source_preserving_memory_projection_v2_12_complete_session_ceiling.py": "500836085591a21afeeebd594838fe80c4376dbff487dd4d52200bb805516154",
+    "locomo_official_qa_f1.py": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5",
+    "reports/source_preserving_memory_projection_v2_12_complete_session_ceiling.json": "4418041b27a5e1de86c4f51245c8e9e03b3a1ed35a528af9f6387f688be32a80",
+    "reports/source_preserving_memory_projection_v2_12_complete_session_ceiling.md": "f97be4d73d6717320ebc9f7c4c178c889a077ace07e2ee0b5dbe2b2cfc176224"
+  },
+  "local_execution_provenance": {
+    "run_at": "2026-08-09T23:16:18.875393+00:00",
+    "raw_checkpoint_path": "analysis/local_source_preserving_memory_projection_v2_12_complete_session_ceiling/raw.jsonl",
+    "raw_checkpoint_sha256": "8baf5ed4ef2207546086a4da01b14a71cd4af91998554b1c3fdec31844310c91",
+    "run_metadata_path": "analysis/local_source_preserving_memory_projection_v2_12_complete_session_ceiling/run_metadata.json",
+    "run_metadata_sha256": "3b899e89c52d53323cbbb88c6300e15f9bcd1b748d87fd1f024d6cb5127e5aba",
+    "raw_checkpoint_committed": false,
+    "report_contains_all_raw_rows": true
+  },
+  "metrics": {
+    "model_call_count": 114,
+    "complete_pair_count": 57,
+    "row_count_by_condition": {
+      "adjacency": 57,
+      "complete_session": 57
+    },
+    "transport_error_count": 0,
+    "nonempty_prediction_rate": 1.0,
+    "adjacency_rerun_mean_official_f1": 0.178873,
+    "v2_11_adjacency_mean_official_f1": 0.178873,
+    "adjacency_rerun_mean_f1_absolute_drift_vs_v2_11": 0.0,
+    "complete_session_mean_official_f1": 0.213176,
+    "complete_session_mean_f1_delta_vs_adjacency": 0.034302,
+    "paired_bootstrap_95_ci": [0.003759, 0.073172],
+    "identical_prediction_pair_rate": 0.701754,
+    "mean_prompt_eval_count_by_condition": {
+      "adjacency": 304.614035,
+      "complete_session": 879.22807
+    },
+    "mean_output_tokens_by_condition": {
+      "adjacency": 7.438596,
+      "complete_session": 6.052632
+    },
+    "mean_latency_seconds_by_condition": {
+      "adjacency": 2.081614,
+      "complete_session": 4.452892
+    },
+    "p95_latency_seconds_by_condition": {
+      "adjacency": 2.996883,
+      "complete_session": 6.137476
+    },
+    "max_prompt_eval_count": 1306,
+    "mean_model_output_tokens": 6.745614,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "gates": {
+    "model_call_count_equals": true,
+    "row_count_per_condition_equals": true,
+    "complete_pair_count_equals": true,
+    "transport_error_count_equals": true,
+    "nonempty_prediction_rate_equals": true,
+    "adjacency_rerun_mean_f1_absolute_drift_vs_v2_11_at_most": true,
+    "complete_session_mean_official_f1_at_least": false,
+    "complete_session_mean_f1_delta_vs_adjacency_at_least": false,
+    "paired_bootstrap_95_ci_lower_greater_than": true,
+    "max_prompt_eval_count_less_than": true,
+    "mean_model_output_tokens_at_most": true,
+    "production_memory_write_count_equals": true,
+    "physical_vrm_action_count_equals": true
+  },
+  "failed_gates": [
+    "complete_session_mean_official_f1_at_least",
+    "complete_session_mean_f1_delta_vs_adjacency_at_least"
+  ],
+  "reproducibility_audit": {
+    "adjacency_prediction_count": 57,
+    "adjacency_predictions_exactly_reproduced_vs_v2_11": 57
+  },
+  "posthoc_zero_call_diagnostics": {
+    "complete_better_pair_count": 6,
+    "identical_f1_pair_count": 48,
+    "complete_worse_pair_count": 3
+  },
+  "authorization": {
+    "preregister_projection_coherence_development": false,
+    "preregister_model_prompt_capacity_diagnostic": true,
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "On 57 fully exposed oracle-target-session cases, complete context produced a statistically positive but small mean F1 gain over exactly reproduced adjacency controls. Complete-session mean F1 remained far below the preregistered 0.45 quality gate and the paired gain remained below 0.10. This authorizes only a separate exposed-development model-prompt capacity diagnostic, not projection redesign, generalization, full-pipeline work, runtime change, shadow mode, or production enablement."
+}
