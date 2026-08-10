@@ -1,0 +1,168 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_lexical_oracle_attribution_result_lock_v2_14",
+  "experiment_id": "source_preserving_memory_projection_v2_14_lexical_oracle_attribution",
+  "decision": "lexical_answer_available_but_selection_or_expression_failure_dominates",
+  "decision_resolution": {
+    "integrity": "passed",
+    "metric_localization": "40 candidate rows remained below the 0.45 case threshold despite a single source-line span reaching that same threshold",
+    "semantic_answer_sufficiency": "unproven because 42 of 48 oracle passes were nonexact partial-F1 spans",
+    "next_scope": "source-disjoint deterministic temporal-anchor selection and composition contract only"
+  },
+  "contract_pull_request": 432,
+  "contract_merge_commit": "4a64450d868b57bf851d3d887929047b70494e21",
+  "new_model_calls": 0,
+  "network_calls": 0,
+  "artifacts": {
+    "configs/source_preserving_memory_projection_v2_14_lexical_oracle_attribution_preregistration.json": "8a040f947cb15c112382a008845d5a0cf9135435ab565ed856ab7ddf5ce73e7b",
+    "analyze_source_preserving_memory_projection_v2_14_lexical_oracle_attribution.py": "973795aad434ba7ea875fdea57e0b94981dcc19d009a9d37a467b30a8976de2a",
+    "locomo_official_qa_f1.py": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5",
+    "reports/source_preserving_memory_projection_v2_13_27b_capacity.json": "403affddc7d75ceb655582a70271c7de7a56a6c4b5968b7591ef02755fe8076f",
+    "reports/source_preserving_memory_projection_v2_14_lexical_oracle_attribution.json": "cb40a9f761d03a25ad06ce2e56ab554db078a5ebcecad6577fc93d62a125f848",
+    "reports/source_preserving_memory_projection_v2_14_lexical_oracle_attribution.md": "bcd55038d22840ccf1da85308cb31d7989fe4ecbf3eb14c74d79d99ca24dc6aa"
+  },
+  "metrics": {
+    "case_count": 57,
+    "historical_control_row_count": 57,
+    "candidate_row_count": 57,
+    "complete_pair_count": 57,
+    "prompt_hash_match_count": 57,
+    "answer_hash_match_count": 57,
+    "official_f1_recalculation_match_count": 114,
+    "mean_lexical_oracle_f1": 0.636132,
+    "mean_whole_context_answer_token_recall": 0.608187,
+    "lexical_quality_available_case_count": 48,
+    "availability_counts": {
+      "exact_lexical_span": 6,
+      "no_lexical_overlap": 9,
+      "quality_gate_lexical_span": 42
+    },
+    "conditions": {
+      "qwen3.5:9b": {
+        "mean_official_f1": 0.213176,
+        "quality_pass_case_count": 9,
+        "mean_model_minus_lexical_oracle_f1": -0.422956,
+        "attribution_counts": {
+          "lexical_answer_available_model_miss": 39,
+          "model_quality_pass": 9,
+          "no_lexical_answer_evidence_in_target_session": 9
+        }
+      },
+      "qwen3.5:27b": {
+        "mean_official_f1": 0.227764,
+        "quality_pass_case_count": 10,
+        "mean_model_minus_lexical_oracle_f1": -0.408368,
+        "attribution_counts": {
+          "lexical_answer_available_model_miss": 40,
+          "model_quality_pass": 10,
+          "no_lexical_answer_evidence_in_target_session": 7
+        }
+      }
+    },
+    "candidate_better_pair_count": 6,
+    "identical_f1_pair_count": 46,
+    "candidate_worse_pair_count": 5,
+    "question_operator_breakdown": {
+      "temporal": {
+        "case_count": 51,
+        "mean_lexical_oracle_f1": 0.647479,
+        "mean_9b_f1": 0.189872,
+        "mean_27b_f1": 0.185232,
+        "candidate_lexical_available_miss_count": 38
+      },
+      "location": {
+        "case_count": 1,
+        "mean_lexical_oracle_f1": 1.0,
+        "mean_9b_f1": 1.0,
+        "mean_27b_f1": 1.0,
+        "candidate_lexical_available_miss_count": 0
+      },
+      "boolean": {
+        "case_count": 1,
+        "mean_lexical_oracle_f1": 0.0,
+        "mean_9b_f1": 0.181818,
+        "mean_27b_f1": 0.333333,
+        "candidate_lexical_available_miss_count": 0
+      },
+      "entity_or_attribute": {
+        "case_count": 3,
+        "mean_lexical_oracle_f1": 0.52381,
+        "mean_9b_f1": 0.428571,
+        "mean_27b_f1": 0.650794,
+        "candidate_lexical_available_miss_count": 1
+      },
+      "other": {
+        "case_count": 1,
+        "mean_lexical_oracle_f1": 0.666667,
+        "mean_9b_f1": 0.0,
+        "mean_27b_f1": 0.25,
+        "candidate_lexical_available_miss_count": 1
+      }
+    },
+    "new_model_call_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0,
+    "report_raw_question_count": 0,
+    "report_raw_answer_count": 0,
+    "report_raw_source_text_count": 0,
+    "report_raw_prediction_count": 0
+  },
+  "gates": {
+    "case_count_equals": true,
+    "historical_control_row_count_equals": true,
+    "candidate_row_count_equals": true,
+    "complete_pair_count_equals": true,
+    "prompt_hash_match_count_equals": true,
+    "answer_hash_match_count_equals": true,
+    "official_f1_recalculation_match_count_equals": true,
+    "new_model_call_count_equals": true,
+    "production_memory_write_count_equals": true,
+    "physical_vrm_action_count_equals": true,
+    "report_raw_question_count_equals": true,
+    "report_raw_answer_count_equals": true,
+    "report_raw_source_text_count_equals": true,
+    "report_raw_prediction_count_equals": true,
+    "attribution_count_per_condition_equals": true
+  },
+  "failed_gates": [],
+  "reproducibility_audit": {
+    "report_row_count": 57,
+    "unique_case_id_count": 57,
+    "prompt_hash_match_count": 57,
+    "answer_hash_match_count": 57,
+    "official_f1_recalculation_match_count": 114,
+    "independent_oracle_recalculation_match_count": 57,
+    "independent_aggregate_recalculation_match": true
+  },
+  "posthoc_zero_call_source_unit_diagnostics": {
+    "lexical_quality_available_best_source_unit": {
+      "time_line": 42,
+      "utterance_line": 6
+    },
+    "candidate_lexical_available_miss_best_source_unit": {
+      "time_line": 39,
+      "utterance_line": 1
+    },
+    "candidate_lexical_available_miss_question_operator": {
+      "entity_or_attribute": 1,
+      "other": 1,
+      "temporal": 38
+    },
+    "candidate_lexical_available_miss_evidence_transition": {
+      "adjacency_only": 6,
+      "both": 26,
+      "isolated_only": 2,
+      "neither": 6
+    },
+    "no_lexical_case_count": 9,
+    "no_lexical_but_candidate_quality_pass_count": 2
+  },
+  "authorization": {
+    "preregister_source_disjoint_deterministic_span_selection_mechanism": true,
+    "preregister_fresh_model_generation": false,
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "On 57 fully exposed development cases, a gold-aware offline lexical oracle found a single source-line span reaching official F1 0.45 in 48 cases, while Qwen3.5:27b still missed that threshold in 40 of those cases. Thirty-nine of the 40 misses were carried by the session Time line and 38 were temporal questions. Only 6 of 48 oracle passes had F1 1.0; the other 42 were partial-F1 spans, so semantic answer sufficiency and a selector fix remain unproven. This localizes the observed metric gap to temporal source-anchor use, composition, or answer expression and authorizes only a separately preregistered source-disjoint deterministic temporal/span mechanism; gold-aware runtime use, fresh generation, full-pipeline work, runtime change, shadow mode, and production remain unauthorized."
+}
