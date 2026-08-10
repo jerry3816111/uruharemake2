@@ -66,6 +66,7 @@ from human_feedback_validation import (
     normalize_failure_types,
 )
 from uruha_brain_mac import UruhaBrainV4_Mac
+from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS, render_memory_observatory
 from uruha_senses import UruhaEars, UruhaMouth
 
 init(autoreset=True)
@@ -91,7 +92,7 @@ WEB_CSS = """
 .state-list {margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.5;}
 .trace-chip {display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: #e5e7eb; color: #111827; margin: 0 6px 6px 0;}
 .muted {color: #6b7280;}
-"""
+""" + MEMORY_OBSERVATORY_CSS
 ARCH_DATASET_SCRIPT = os.path.join(BASE_DIR, "build_cognitive_architecture_eval_dataset.py")
 ARCH_EVAL_SCRIPT = os.path.join(BASE_DIR, "cognitive_architecture_eval.py")
 ANNOTATION_QUEUE_SCRIPT = os.path.join(BASE_DIR, "build_annotation_candidate_queue.py")
@@ -1297,11 +1298,16 @@ def _empty_html(title, body):
     )
 
 
+def _empty_flow_html(body):
+    return render_memory_observatory({}) + _empty_html("Cognitive Flow", body)
+
+
 def _render_flow_html(result):
     runtime_trace = (result or {}).get("runtime_trace") or {}
     blackboard = runtime_trace.get("blackboard") or []
+    memory_observatory = render_memory_observatory(result)
     if not blackboard:
-        return _empty_html("Cognitive Flow", "尚無本輪知識流。")
+        return memory_observatory + _empty_html("Cognitive Flow", "尚無本輪知識流。")
 
     cards = []
     for index, item in enumerate(blackboard):
@@ -1322,6 +1328,8 @@ def _render_flow_html(result):
     header = runtime_trace.get("focus") or "current_turn"
     goal = runtime_trace.get("goal") or "reply"
     return (
+        memory_observatory
+        +
         f'<div class="muted" style="margin-bottom:8px;">focus={escape(str(header))} / goal={escape(str(goal))}</div>'
         f'<div class="trace-board">{"".join(cards)}</div>'
     )
@@ -2281,16 +2289,16 @@ def _cleanup_input_audio(audio_path):
 def submit_text(message, history, auto_tts):
     user_text = (message or "").strip()
     if not user_text:
-        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
+        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
 
     pending_history = _append_history(history, "user", user_text)
     pending_history = _append_history(pending_history, "assistant", "...")
-    yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
+    yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
 
     result = _run_turn(user_text, auto_tts)
     if result is None:
-        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
+        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
     log_record = _append_conversation_log("text", result)
     annotation_context = _annotation_context_markdown(log_record)
@@ -2314,22 +2322,22 @@ def submit_text(message, history, auto_tts):
 
 def submit_audio(audio_path, history, auto_tts):
     if not audio_path:
-        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
+        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         return
     text = RUNTIME.get_ears().transcribe_audio_file(audio_path)
     if not text:
         _cleanup_input_audio(audio_path)
-        yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "沒有辨識到語音內容。"), _empty_html("State Diff", "沒有辨識到語音內容。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+        yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("沒有辨識到語音內容。"), _empty_html("State Diff", "沒有辨識到語音內容。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
         return
 
     pending_history = _append_history(history, "user", text)
     pending_history = _append_history(pending_history, "assistant", "...")
-    yield pending_history, pending_history, text, None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip(), gr.skip()
+    yield pending_history, pending_history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip(), gr.skip()
 
     result = _run_turn(text, auto_tts)
     if result is None:
         _cleanup_input_audio(audio_path)
-        yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+        yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
         return
     log_record = _append_conversation_log("audio", result)
     annotation_context = _annotation_context_markdown(log_record)
@@ -2354,7 +2362,7 @@ def submit_audio(audio_path, history, auto_tts):
 
 def handle_audio_stop(audio_path, history, auto_tts, voice_chat_mode):
     if not audio_path:
-        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
+        yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         return
     if voice_chat_mode:
         yield from submit_audio(audio_path, history, auto_tts)
@@ -2362,7 +2370,7 @@ def handle_audio_stop(audio_path, history, auto_tts, voice_chat_mode):
 
     transcript = transcribe_audio_only(audio_path)
     _cleanup_input_audio(audio_path)
-    yield history, history, transcript, None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "只完成轉錄，尚未送入大腦。"), _empty_html("State Diff", "只完成轉錄，尚未送入大腦。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+    yield history, history, transcript, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("只完成轉錄，尚未送入大腦。"), _empty_html("State Diff", "只完成轉錄，尚未送入大腦。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
 
 
 def transcribe_audio_only(audio_path):
@@ -2373,20 +2381,20 @@ def transcribe_audio_only(audio_path):
 
 def reset_session():
     RUNTIME.reset_brain_session()
-    return [], [], None, gr.update(value={}), gr.update(value={}), _empty_html("Cognitive Flow", "新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), ""
+    return [], [], None, gr.update(value={}), gr.update(value={}), _empty_flow_html("新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), ""
 
 
 def build_demo():
-    with gr.Blocks(title="Uruha V2 Web") as demo:
+    with gr.Blocks(title="Uruha Memory Observatory") as demo:
         history_state = gr.State([])
         latest_turn_state = gr.State({})
         architecture_payload = _architecture_alignment_payload()
         unified_eval_payload = _unified_eval_json()
 
         gr.Markdown(
-            "# Uruha V2 Web\n"
-            "V2 brain + Whisper large-v3 + TTS server.\n\n"
-            "直接對著麥克風說話，停下來後會自動送出並等待下一輪。"
+            "# Uruha Memory Observatory\n"
+            "本機認知型對話系統：直接看見記憶如何被檢索、選入、傳給決策並寫回。\n\n"
+            "可直接輸入文字，或對著麥克風說話；每輪結束後，下方記憶星圖會同步更新。"
         )
 
         with gr.Tabs():
@@ -2394,7 +2402,7 @@ def build_demo():
                 proactive_poll_timer = gr.Timer(value=2.0, active=True)
                 with gr.Row(elem_classes=["wrap"]):
                     with gr.Column(scale=3):
-                        chatbot = gr.Chatbot(label="Uruha", height=560)
+                        chatbot = gr.Chatbot(label="Uruha", height=430)
                         audio_out = gr.Audio(label="TTS Output", type="filepath", autoplay=True, elem_id="uruha-tts")
                     with gr.Column(scale=2):
                         status = gr.Markdown(_status_markdown())
@@ -2410,10 +2418,7 @@ def build_demo():
                         auto_tts = gr.Checkbox(value=True, label="Auto TTS")
                         voice_chat_mode = gr.Checkbox(value=True, label="Voice Chat Mode (auto-send after recording)", elem_id="voice-chat-mode")
 
-                        with gr.Accordion("Cognitive Inspector", open=True):
-                            flow_html = gr.HTML(value=_empty_html("Cognitive Flow", "尚無本輪知識流。"))
-                            state_html = gr.HTML(value=_empty_html("State Diff", "尚無本輪狀態變化。"))
-                        with gr.Accordion("Planner / Reply Debug", open=True):
+                        with gr.Accordion("Planner / Reply Debug", open=False):
                             debug_json = gr.JSON(label="Planner Debug")
                         with gr.Accordion("Cognitive Trace", open=False):
                             cognition_json = gr.JSON(label="Internal Loop Trace")
@@ -2493,6 +2498,11 @@ def build_demo():
                                 label="Recent Annotation Records",
                                 value=_annotation_history_payload(20),
                             )
+
+                gr.Markdown("## Live Memory Flow")
+                flow_html = gr.HTML(value=_empty_flow_html("尚無本輪知識流。"))
+                with gr.Accordion("Cognitive State & Decision Details", open=False):
+                    state_html = gr.HTML(value=_empty_html("State Diff", "尚無本輪狀態變化。"))
 
             with gr.Tab("Architecture"):
                 architecture_md = gr.Markdown(_architecture_markdown())
