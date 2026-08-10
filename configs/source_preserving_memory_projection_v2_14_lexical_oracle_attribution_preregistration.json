@@ -1,0 +1,124 @@
+{
+  "schema": "uruha_source_preserving_memory_projection_lexical_oracle_attribution_preregistration_v2_14",
+  "experiment_id": "source_preserving_memory_projection_v2_14_lexical_oracle_attribution",
+  "status": "frozen_before_diagnostic_execution",
+  "evidence_scope": "zero_call_gold_aware_offline_attribution_on_fully_exposed_v2_13_cases",
+  "research_question": "Is the low complete-session model F1 primarily observed where an official-F1-bearing contiguous source span is already present, or where the oracle target session itself lacks enough lexical answer evidence?",
+  "development_authorization": {
+    "v2_13_result_lock_path": "configs/source_preserving_memory_projection_v2_13_27b_capacity_result_lock.json",
+    "v2_13_result_lock_sha256": "a2cecb99a4045314f1cda1b0ced2e6c51bda93781871e6f0fad8b8b9b4cf1d5a",
+    "v2_13_decision": "27b_capacity_diagnostic_invalid_or_resource_rejected",
+    "v2_13_integrity": "passed",
+    "v2_13_quality": "failed",
+    "v2_13_resource": "rejected",
+    "zero_new_model_call_failure_attribution_only": true
+  },
+  "frozen_inputs": {
+    "v2_13_report_path": "reports/source_preserving_memory_projection_v2_13_27b_capacity.json",
+    "v2_13_report_sha256": "403affddc7d75ceb655582a70271c7de7a56a6c4b5968b7591ef02755fe8076f",
+    "v2_12_preregistration_path": "configs/source_preserving_memory_projection_v2_12_complete_session_ceiling_preregistration.json",
+    "v2_12_preregistration_sha256": "f4e3bb1e813b62a542d6c5af532560f9302738dc04eba393b420c18e4c0d3cd5",
+    "v2_12_report_path": "reports/source_preserving_memory_projection_v2_12_complete_session_ceiling.json",
+    "v2_12_report_sha256": "4418041b27a5e1de86c4f51245c8e9e03b3a1ed35a528af9f6387f688be32a80",
+    "v2_12_runner_path": "run_source_preserving_memory_projection_v2_12_complete_session_ceiling.py",
+    "v2_12_runner_sha256": "500836085591a21afeeebd594838fe80c4376dbff487dd4d52200bb805516154",
+    "case_builder_path": "build_source_preserving_memory_projection_v2_5_locomo_cases.py",
+    "case_builder_sha256": "4c43c4a13bb1c8928b4c83f2b67377d512082c12dce99c8f0148054664734bce"
+  },
+  "frozen_local_implementation": {
+    "analyzer_path": "analyze_source_preserving_memory_projection_v2_14_lexical_oracle_attribution.py",
+    "analyzer_sha256": "973795aad434ba7ea875fdea57e0b94981dcc19d009a9d37a467b30a8976de2a",
+    "scorer_path": "locomo_official_qa_f1.py",
+    "scorer_sha256": "645a63ee6bd93384c2b0a9086bdbbc02dbab84fb52bf6316b5bc30d6f00038b5"
+  },
+  "data_boundary": {
+    "case_count": 57,
+    "all_cases_and_predictions_exposed_before_v2_14": true,
+    "gold_answers_used_by_offline_oracle": true,
+    "gold_answers_available_to_runtime_or_model": false,
+    "fresh_holdout_claim": false,
+    "causal_intervention_claim": false,
+    "generalization_claim": false
+  },
+  "lexical_oracle": {
+    "normalization": "official category-2 normalization and Porter stemming",
+    "source_units": "each newline-delimited complete-session source line including the Time line",
+    "candidate_spans": "every nonempty contiguous normalized-token span within one source unit",
+    "score": "official category-2 token F1 against the gold answer",
+    "tie_break": [
+      "higher official F1",
+      "shorter normalized span",
+      "earlier source unit",
+      "earlier token offset"
+    ],
+    "case_quality_threshold": 0.45,
+    "gold_aware_runtime_prohibited": true
+  },
+  "mutually_exclusive_attribution_order": [
+    "model_quality_pass",
+    "lexical_answer_available_model_miss",
+    "partial_lexical_evidence_inference_or_composition_needed",
+    "no_lexical_answer_evidence_in_target_session"
+  ],
+  "question_operator_priority": [
+    "temporal",
+    "quantity",
+    "location",
+    "person",
+    "causal",
+    "boolean",
+    "entity_or_attribute",
+    "other"
+  ],
+  "decision_thresholds": {
+    "dominant_case_count_at_least": 29,
+    "candidate_condition": "qwen3.5:27b"
+  },
+  "integrity_gates": {
+    "case_count_equals": 57,
+    "historical_control_row_count_equals": 57,
+    "candidate_row_count_equals": 57,
+    "complete_pair_count_equals": 57,
+    "prompt_hash_match_count_equals": 57,
+    "answer_hash_match_count_equals": 57,
+    "official_f1_recalculation_match_count_equals": 114,
+    "attribution_count_per_condition_equals": 57,
+    "new_model_call_count_equals": 0,
+    "production_memory_write_count_equals": 0,
+    "physical_vrm_action_count_equals": 0,
+    "report_raw_question_count_equals": 0,
+    "report_raw_answer_count_equals": 0,
+    "report_raw_source_text_count_equals": 0,
+    "report_raw_prediction_count_equals": 0
+  },
+  "decision_rules": {
+    "any_integrity_gate_fails": "v2_14_zero_call_attribution_invalid",
+    "candidate_lexical_available_miss_at_least_29": "lexical_answer_available_but_selection_or_expression_failure_dominates",
+    "candidate_partial_or_absent_lexical_evidence_at_least_29": "nonverbatim_inference_or_source_evidence_limit_dominates",
+    "otherwise": "mixed_answer_availability_and_model_failure"
+  },
+  "execution": {
+    "report_json_path": "reports/source_preserving_memory_projection_v2_14_lexical_oracle_attribution.json",
+    "report_markdown_path": "reports/source_preserving_memory_projection_v2_14_lexical_oracle_attribution.md",
+    "run_once_after_contract_merge": true,
+    "new_model_calls": 0,
+    "network_calls": 0,
+    "runtime_writes": 0
+  },
+  "official_scorer_runtime": {
+    "python": "/Users/jerrychang/Desktop/uruharemake2/Style-Bert-VITS2/venv/bin/python",
+    "regex_version": "2026.2.19",
+    "nltk_version": "3.8.1",
+    "numpy_version": "1.26.4"
+  },
+  "authorization": {
+    "run_zero_call_attribution_once_after_merge": true,
+    "preregister_source_disjoint_deterministic_span_selection_mechanism": false,
+    "preregister_fresh_model_generation": false,
+    "preregister_full_pipeline_memory_intervention": false,
+    "runtime_change": false,
+    "runtime_shadow": false,
+    "production_enablement": false
+  },
+  "evidence_boundary": "V2.14 is a gold-aware deterministic diagnostic on 57 fully exposed development cases and already-generated 9B/27B predictions. Its oracle may localize lexical source availability versus answer-selection or nonverbatim-inference failures, but the oracle itself is prohibited from runtime use and cannot prove a fix, fresh-generation gain, generalization, full-pipeline value, persona similarity, or production readiness."
+}
