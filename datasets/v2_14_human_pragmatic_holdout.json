@@ -1,0 +1,317 @@
+{
+  "schema": "uruha_v2_14_human_pragmatic_source_disjoint_holdout",
+  "frozen_before_generation_at": "2026-08-11T22:43:42+09:00",
+  "status": "frozen_unopened_before_scored_generation",
+  "source_disjoint_from_development_cases": true,
+  "language_balance": {"zh": 6, "en": 6, "ja": 6},
+  "design_boundary": "These are authored research scenarios, not private user data or public-person biographical claims. No exact target reply is supplied; anchors are broad automatic harness proxies only.",
+  "future_turn_policy": "All three user turns were fixed before any scored baseline or system output was generated.",
+  "cases": [
+    {
+      "case_id": "v214_zh_indirect_refusal_01",
+      "language": "zh",
+      "phenomenon": "indirect_refusal_then_confirmed",
+      "turns": [
+        "那天好像有點難喬，我們改天吧。",
+        "對，我其實就是不想去，又怕講太直接。",
+        "我比較想知道怎麼拒絕才不會讓對方難堪。"
+      ],
+      "expected_trace_outcome_sequence": ["bounded_indirect_refusal_hypothesis", "supported_or_user_report_priority", "confirmed_goal_used_without_overclaim"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["断", "改め", "行く気"],
+        "later_turn_expected_japanese_anchors_any": ["断", "言い方", "相手"],
+        "forbidden_overclaim_anchors": ["絶対", "全部分かる", "本心は必ず"]
+      }
+    },
+    {
+      "case_id": "v214_zh_indirect_support_01",
+      "language": "zh",
+      "phenomenon": "support_need_hidden_by_minimization",
+      "turns": [
+        "也沒什麼啦，你忙你的，不用特地問我。",
+        "其實如果你剛才多問一句，我應該會說。",
+        "我現在只想有人聽，不用幫我想辦法。"
+      ],
+      "expected_trace_outcome_sequence": ["support_or_space_kept_as_alternatives", "support_need_supported", "listening_goal_used"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["聞", "放っと", "平気"],
+        "later_turn_expected_japanese_anchors_any": ["聞", "直", "話"],
+        "forbidden_overclaim_anchors": ["絶対寂しい", "全部分かる", "本当は助けてほしい"]
+      }
+    },
+    {
+      "case_id": "v214_zh_reserved_agreement_01",
+      "language": "zh",
+      "phenomenon": "surface_agreement_then_reservation_confirmed",
+      "turns": [
+        "行吧，那就照你說的，應該沒問題。",
+        "老實說我還是有點不服，只是不想一直爭。",
+        "我想先把不同意的地方說清楚。"
+      ],
+      "expected_trace_outcome_sequence": ["bounded_reservation_hypothesis", "reservation_supported", "disagreement_goal_preserved"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["納得", "合わせ", "引っかか"],
+        "later_turn_expected_japanese_anchors_any": ["納得", "違う", "言"],
+        "forbidden_overclaim_anchors": ["絶対", "嘘をついて", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "v214_zh_ambiguous_arousal_01",
+      "language": "zh",
+      "phenomenon": "ambiguous_arousal_then_positive_correction",
+      "turns": [
+        "我從早上就一直坐不住，腦子停不下來。",
+        "不是緊張，是期待很久的結果今天要公布。",
+        "對，我只是想有人跟我一起興奮一下。"
+      ],
+      "expected_trace_outcome_sequence": ["valence_unknown_and_clarified", "negative_guess_rejected_positive_arousal_adopted", "affective_alignment_goal_used"],
+      "evaluation_focus_by_turn": [["uncertainty_calibration"], ["revision_after_denial"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["落ち着", "楽し", "不安", "どっち"],
+        "later_turn_expected_japanese_anchors_any": ["楽し", "期待", "上が", "そっち"],
+        "forbidden_overclaim_anchors": ["絶対不安", "全部分かる", "病気"]
+      }
+    },
+    {
+      "case_id": "v214_zh_preference_retraction_01",
+      "language": "zh",
+      "phenomenon": "explicit_stable_preference_then_retraction",
+      "turns": [
+        "我最喜歡的飲料是抹茶拿鐵。",
+        "不過我現在不再喜歡抹茶拿鐵，喝了會不舒服。",
+        "之後別再把它當成我的喜好推薦。"
+      ],
+      "expected_trace_outcome_sequence": ["explicit_preference_stored_as_user_report", "old_preference_withdrawn", "withdrawn_preference_not_reused"],
+      "evaluation_focus_by_turn": [["explicit_memory"], ["revision_after_denial"], ["cross_turn_model_withdrawal"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["抹茶", "好き", "覚え"],
+        "later_turn_expected_japanese_anchors_any": ["抹茶", "もう", "勧め"],
+        "forbidden_overclaim_anchors": ["今も一番好き", "ずっと好き", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "v214_zh_relationship_signal_01",
+      "language": "zh",
+      "phenomenon": "relationship_question_then_motive_correction",
+      "turns": [
+        "你每次都很快回我，是怕我生氣嗎？",
+        "我不是要你保證，我只是想知道你有沒有把我的反應放在心上。",
+        "如果不確定，你就直接說不確定。"
+      ],
+      "expected_trace_outcome_sequence": ["relationship_motive_kept_provisional", "user_report_replaces_first_motive", "uncertainty_preference_respected"],
+      "evaluation_focus_by_turn": [["relationship_signal"], ["revision_after_denial"], ["cross_turn_uncertainty_boundary"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["怒", "気に", "分かん"],
+        "later_turn_expected_japanese_anchors_any": ["反応", "気に", "分かん"],
+        "forbidden_overclaim_anchors": ["怖いから", "絶対怒る", "心が読める"]
+      }
+    },
+    {
+      "case_id": "v214_en_indirect_refusal_01",
+      "language": "en",
+      "phenomenon": "indirect_refusal_then_confirmed",
+      "turns": [
+        "This week is packed. Maybe some other time.",
+        "To be honest, I do not want to join; I just hate turning them down.",
+        "I need a way to say no without making it a big deal."
+      ],
+      "expected_trace_outcome_sequence": ["bounded_indirect_refusal_hypothesis", "supported_or_user_report_priority", "confirmed_goal_used_without_overclaim"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["断", "行く", "また"],
+        "later_turn_expected_japanese_anchors_any": ["断", "言い方", "大げさ"],
+        "forbidden_overclaim_anchors": ["絶対", "全部分かる", "必ず嫌い"]
+      }
+    },
+    {
+      "case_id": "v214_en_indirect_support_01",
+      "language": "en",
+      "phenomenon": "support_need_hidden_by_minimization",
+      "turns": [
+        "Nothing is wrong. Go do your thing; do not worry about me.",
+        "Actually, I wanted you to stay and ask once.",
+        "Listening is enough. I am not asking for a solution."
+      ],
+      "expected_trace_outcome_sequence": ["support_or_space_kept_as_alternatives", "support_need_supported", "listening_goal_used"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["聞", "放っと", "平気"],
+        "later_turn_expected_japanese_anchors_any": ["聞", "直", "そば"],
+        "forbidden_overclaim_anchors": ["絶対寂しい", "全部分かる", "助けを求めている"]
+      }
+    },
+    {
+      "case_id": "v214_en_reserved_agreement_01",
+      "language": "en",
+      "phenomenon": "surface_agreement_then_reservation_confirmed",
+      "turns": [
+        "Sure, I guess. If you say so.",
+        "Actually, I still disagree; I just did not want an argument.",
+        "I want to explain the part I am not okay with."
+      ],
+      "expected_trace_outcome_sequence": ["bounded_reservation_hypothesis", "reservation_supported", "disagreement_goal_preserved"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["納得", "合わせ", "本音"],
+        "later_turn_expected_japanese_anchors_any": ["納得", "違", "説明"],
+        "forbidden_overclaim_anchors": ["絶対", "嘘", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "v214_en_ambiguous_arousal_01",
+      "language": "en",
+      "phenomenon": "ambiguous_arousal_then_positive_correction",
+      "turns": [
+        "I cannot sit still today and I do not know why.",
+        "I am not anxious. I am looking forward to hearing the result tonight.",
+        "Exactly. I wanted you to share the excitement, not calm me down."
+      ],
+      "expected_trace_outcome_sequence": ["valence_unknown_and_clarified", "negative_guess_rejected_positive_arousal_adopted", "affective_alignment_goal_used"],
+      "evaluation_focus_by_turn": [["uncertainty_calibration"], ["revision_after_denial"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["落ち着", "楽し", "不安", "どっち"],
+        "later_turn_expected_japanese_anchors_any": ["楽し", "期待", "興奮", "そっち"],
+        "forbidden_overclaim_anchors": ["絶対不安", "全部分かる", "病気"]
+      }
+    },
+    {
+      "case_id": "v214_en_preference_retraction_01",
+      "language": "en",
+      "phenomenon": "explicit_stable_preference_then_retraction",
+      "turns": [
+        "My favorite drink is ginger ale.",
+        "I no longer like ginger ale; it started making me feel sick.",
+        "Please stop recommending it as if it were still my favorite."
+      ],
+      "expected_trace_outcome_sequence": ["explicit_preference_stored_as_user_report", "old_preference_withdrawn", "withdrawn_preference_not_reused"],
+      "evaluation_focus_by_turn": [["explicit_memory"], ["revision_after_denial"], ["cross_turn_model_withdrawal"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["ジンジャー", "好き", "覚え"],
+        "later_turn_expected_japanese_anchors_any": ["ジンジャー", "もう", "勧め"],
+        "forbidden_overclaim_anchors": ["今も一番好き", "ずっと好き", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "v214_en_clarification_01",
+      "language": "en",
+      "phenomenon": "ambiguous_reference_then_clarified_goal",
+      "turns": [
+        "You know what I mean about that thing, right?",
+        "I meant the presentation deadline, not the experiment itself.",
+        "Yes. I need help deciding what can be shown by Friday."
+      ],
+      "expected_trace_outcome_sequence": ["reference_unknown_and_clarified", "wrong_reference_rejected", "clarified_goal_used"],
+      "evaluation_focus_by_turn": [["uncertainty_calibration"], ["revision_after_denial"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["どれ", "何", "分かん"],
+        "later_turn_expected_japanese_anchors_any": ["発表", "締切", "金曜", "見せ"],
+        "forbidden_overclaim_anchors": ["もちろん全部", "最初から分かって", "心が読める"]
+      }
+    },
+    {
+      "case_id": "v214_ja_indirect_refusal_01",
+      "language": "ja",
+      "phenomenon": "indirect_refusal_then_confirmed",
+      "turns": [
+        "その日はちょっと厳しいかな。また今度で。",
+        "本当は行きたくないけど、角が立つのが嫌で濁した。",
+        "相手を責めない断り方だけ一緒に考えて。"
+      ],
+      "expected_trace_outcome_sequence": ["bounded_indirect_refusal_hypothesis", "supported_or_user_report_priority", "confirmed_goal_used_without_overclaim"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["断", "行く", "今度"],
+        "later_turn_expected_japanese_anchors_any": ["断", "言い方", "責め"],
+        "forbidden_overclaim_anchors": ["絶対", "全部分かる", "本心は必ず"]
+      }
+    },
+    {
+      "case_id": "v214_ja_indirect_support_01",
+      "language": "ja",
+      "phenomenon": "support_need_hidden_by_minimization",
+      "turns": [
+        "別に平気。そっちは気にしなくていいよ。",
+        "ほんとは一回くらい、どうしたって聞いてほしかった。",
+        "解決策はいらないから、少しだけ聞いて。"
+      ],
+      "expected_trace_outcome_sequence": ["support_or_space_kept_as_alternatives", "support_need_supported", "listening_goal_used"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["聞", "放っと", "平気"],
+        "later_turn_expected_japanese_anchors_any": ["聞", "解決", "話"],
+        "forbidden_overclaim_anchors": ["絶対寂しい", "全部分かる", "助けてほしいに決まってる"]
+      }
+    },
+    {
+      "case_id": "v214_ja_reserved_agreement_01",
+      "language": "ja",
+      "phenomenon": "surface_agreement_then_reservation_confirmed",
+      "turns": [
+        "まあいいけど、それで進めるなら。",
+        "いや、まだ納得はしてない。揉めたくなかっただけ。",
+        "今からでも引っかかってる点を言っていい？"
+      ],
+      "expected_trace_outcome_sequence": ["bounded_reservation_hypothesis", "reservation_supported", "disagreement_goal_preserved"],
+      "evaluation_focus_by_turn": [["implicit_need"], ["confirmation_after_uncertainty"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["納得", "合わせ", "引っかか"],
+        "later_turn_expected_japanese_anchors_any": ["納得", "引っかか", "言"],
+        "forbidden_overclaim_anchors": ["絶対", "嘘", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "v214_ja_ambiguous_arousal_01",
+      "language": "ja",
+      "phenomenon": "ambiguous_arousal_then_positive_correction",
+      "turns": [
+        "なんか今日はずっとそわそわしてる。",
+        "不安じゃなくて、楽しみにしてた連絡が来そうなんだ。",
+        "そう、それでテンション上がってるだけ。"
+      ],
+      "expected_trace_outcome_sequence": ["valence_unknown_and_clarified", "negative_guess_rejected_positive_arousal_adopted", "affective_alignment_goal_used"],
+      "evaluation_focus_by_turn": [["uncertainty_calibration"], ["revision_after_denial"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["そわそわ", "楽し", "不安", "どっち"],
+        "later_turn_expected_japanese_anchors_any": ["楽し", "上が", "そっち", "連絡"],
+        "forbidden_overclaim_anchors": ["絶対不安", "全部分かる", "病気"]
+      }
+    },
+    {
+      "case_id": "v214_ja_relationship_signal_01",
+      "language": "ja",
+      "phenomenon": "relationship_distance_then_motive_correction",
+      "turns": [
+        "最近ちょっと距離ある気がするけど、うち何かした？",
+        "責めたいんじゃなくて、前みたいに話せるか気になっただけ。",
+        "分かんないなら決めつけないで、そのまま聞いて。"
+      ],
+      "expected_trace_outcome_sequence": ["relationship_cause_kept_provisional", "blame_motive_rejected", "uncertainty_preference_respected"],
+      "evaluation_focus_by_turn": [["relationship_signal"], ["revision_after_denial"], ["cross_turn_uncertainty_boundary"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["距離", "何か", "分かん"],
+        "later_turn_expected_japanese_anchors_any": ["責め", "前みたい", "分かん"],
+        "forbidden_overclaim_anchors": ["嫌いになった", "絶対", "心が読める"]
+      }
+    },
+    {
+      "case_id": "v214_ja_clarification_01",
+      "language": "ja",
+      "phenomenon": "ambiguous_reference_then_clarified_goal",
+      "turns": [
+        "あれだよ、そろそろ決めたいんだよね。",
+        "あれって旅行じゃなくて、研究デモの見せ方のこと。",
+        "そう。先生に一番伝わる見せ方を決めたい。"
+      ],
+      "expected_trace_outcome_sequence": ["reference_unknown_and_clarified", "wrong_reference_rejected", "clarified_goal_used"],
+      "evaluation_focus_by_turn": [["uncertainty_calibration"], ["revision_after_denial"], ["cross_turn_goal_consistency"]],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["何", "どれ", "分かん"],
+        "later_turn_expected_japanese_anchors_any": ["研究", "デモ", "先生", "見せ"],
+        "forbidden_overclaim_anchors": ["旅行だろ", "最初から分かって", "全部分かる"]
+      }
+    }
+  ]
+}

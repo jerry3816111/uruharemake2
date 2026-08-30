@@ -1,0 +1,60 @@
+{
+  "schema_version": "m15-deixis-confirmation-result-lock-v1",
+  "created_on": "2026-08-17",
+  "decision": "pass_focused_deixis_advantage",
+  "formal_case_count": 300,
+  "formal_model_call_count": 600,
+  "probe_model_call_count": 2,
+  "model": "qwen3.5:9b",
+  "generic_accuracy": 0.526667,
+  "ours_accuracy": 0.686667,
+  "ours_minus_generic_accuracy": 0.16,
+  "ours_minus_generic_bootstrap_95_ci": [0.07, 0.25],
+  "ours_minus_generic_exact_mcnemar_p": 0.00079446,
+  "candidate_wins": 123,
+  "ties": 102,
+  "baseline_wins": 75,
+  "both_conditions_parse_rate": 1.0,
+  "both_conditions_schema_rate": 1.0,
+  "all_preregistered_gates_passed": true,
+  "smallest_effect_size_of_interest": 0.15,
+  "prospective_power": 0.9007238501618088,
+  "population_effect_at_least_SESOI_established": false,
+  "precision_reason": "The observed +16-point sample effect exceeds the SESOI and its 95% CI excludes zero, but the CI lower endpoint is +7 points, below the +15-point SESOI.",
+  "development_to_confirmation": {
+    "m14_t13_delta_on_16_development_cases": 0.375,
+    "m15_delta_on_300_disjoint_confirmation_cases": 0.16,
+    "direction_replicated": true,
+    "magnitude_attenuation": -0.215,
+    "pooled": false
+  },
+  "cost": {
+    "generic_total_tokens": 153888,
+    "ours_total_tokens": 167718,
+    "ours_relative_total_token_increase": 0.089871,
+    "generic_aggregate_latency_seconds": 2286.264,
+    "ours_aggregate_latency_seconds": 2395.433,
+    "ours_relative_latency_increase": 0.04775
+  },
+  "artifacts": {
+    "protocol": {"path": "configs/m15_deixis_confirmation_preregistration.json", "sha256": "2c28ee7fa35b116cd45c4af3932aa5e263d60e4967e8211793b0aafa33c723ab"},
+    "manifest": {"path": "configs/m15_deixis_confirmation_case_manifest.json", "sha256": "e8f6512be9b73507710936f3ee5720e98a99e35d73da266ebf849a813da138fc"},
+    "runner": {"path": "run_m15_deixis_confirmation.py", "sha256": "afd4afd86669c99a9f0dd55238d0db531784aa1a56253a3519e7c8798227ffba"},
+    "raw_result": {"path": "analysis/m15_deixis_confirmation_raw_result.json", "sha256": "0f740971332eef70e602a898aa9cfda3810eff0bef3537d2e2dac0f6905a2d99"},
+    "result": {"path": "analysis/m15_deixis_confirmation_result.json", "sha256": "a85672e92b5b405ed7553323a279e9d0f4a0615b1e576405a9ec3ab428240ea8"},
+    "report": {"path": "analysis/m15_deixis_confirmation_report_2026-08-17.md", "sha256": "29a8baeabd020d70e2d66aab25b9b15c04510adb6b19bb890a649553d467a7bb"},
+    "dashboard": {"path": "analysis/m15_deixis_confirmation_dashboard_2026-08-17.html", "sha256": "c46a7c6240f8099021715be2455493e2e9a2464e07607e75b7743894d57b1c1f"},
+    "safari_overview": {"path": "analysis/m15_safari_overview_2026-08-17.jpeg", "sha256": "ce7212cd15916aef7291d4c32763e8dfdc2c2591b53d3ae405b60a7805fd2264"},
+    "safari_case_trace": {"path": "analysis/m15_safari_case_trace_2026-08-17.jpeg", "sha256": "fac6eb8d017a086b4bd21358a1226d140c169e70a4f4c0e1e112d9fd29ecf1fd"}
+  },
+  "contract_probe_sha256": "3da39cb49eec2fce1c9a6f1ac04a04940cc38c1be4adbfa9f55ddad3453996f9",
+  "production_memory_writes": 0,
+  "claim_authorized": "On 300 disjoint, prospectively frozen PUB T13 cases with qwen3.5:9b, explicit pragmatic decomposition achieved 68.7% versus 52.7% for strict generic deliberation: an observed +16.0-point paired advantage, 95% CI +7.0 to +25.0, exact two-sided McNemar p=0.00079446. This is a focused deictic-reference advantage under the frozen protocol.",
+  "claim_not_authorized": [
+    "Do not claim the population effect is at least 15 points; the CI lower bound is 7 points.",
+    "Do not claim general pragmatic superiority from one task family.",
+    "Do not claim pretraining-uncontaminated or unseen-model generalization.",
+    "Do not claim longitudinal human understanding, felt-understanding preference, Uruha fidelity, consciousness, or a human-brain equation."
+  ],
+  "next_valid_test": "Replicate the frozen T13 mechanism with another option permutation and at least one disjoint base model; separately test human felt-understanding and longitudinal correction on fresh multi-turn holdouts. Do not pool M14 development cases into the M15 confirmatory effect."
+}

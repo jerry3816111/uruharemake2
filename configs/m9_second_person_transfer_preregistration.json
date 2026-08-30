@@ -1,0 +1,20 @@
+{
+  "schema":"ilhdt_m9_second_person_transfer_preregistration_v1",
+  "milestone":"M9",
+  "registered_before_first_model_call":true,
+  "claim_level":"fresh_synthetic_second_person_transfer_diagnostic",
+  "formal_target_claim":false,
+  "second_person_dataset":{"path":"datasets/m9_second_person_mira_synthetic_fixture_v1.json","sha256":"b5af35207fb1157737bc67a07bbcde48d2af91ea3d7c8ded7954fd5ecef71e11"},
+  "source_person_dataset":{"path":"datasets/m8_rolling_semantic_synthetic_fixture_v1.json","sha256":"e5cbab8842587b00f4c8e24698000e03fcf2b93a92bdd6d56bf33e0f1bb62c84"},
+  "source_person_result":{"path":"analysis/m8_1_rolling_scaling_parser_remediation_result.json","sha256":"afcc425ef550444204d219c300a256d4f59d4a5eeccbe580ab15c3766d899726"},
+  "m5_dataset":{"path":"datasets/m5_state_transition_synthetic_fixture_v1.json","sha256":"efd5fc8c251870f00b77c5a849694b26c94ff8262f3ab8c96505153050076f21"},
+  "m5_result":{"path":"analysis/m5_state_transition_synthetic_first_generation_raw.json","sha256":"61abb11677eedcd9c3824a9a14767b346396bc5b7770d3841a7fdbf5933f1a0c"},
+  "m6_overlay":{"path":"datasets/m6_behavior_prediction_synthetic_overlay_v1.json","sha256":"e5b504711b6b1a18e6c324fc317a1591a0a6811e447ade23e6f9d258c37bb68e"},
+  "model":"qwen3.5:9b","provider_timeout_seconds":180,"provider_options":{"temperature":0,"seed":20260815,"num_ctx":16384,"num_predict":768,"think":false},"retry_policy":"no_retry_no_condition_fallback",
+  "rolling_cutoffs":["E1","E2","E3","E4"],"bootstrap_seed":20260815,"predictor":{"l2_alpha":0.0,"learning_rate":0.2,"epochs":2500,"temperature":0.5},"metrics":{"top_k":3,"ece_bins":5},
+  "transfer_conditions":["REN_ZERO_SHOT","MIRA_PARAMETER_SWAP","MIRA_FULL_ADAPTATION"],
+  "core_logic_files":["longitudinal_human_model/rolling.py","longitudinal_human_model/rolling_parser_v1_1.py","longitudinal_human_model/component_features.py","longitudinal_human_model/predictor.py","longitudinal_human_model/transitions.py","longitudinal_human_model/memory.py","longitudinal_human_model/state.py","run_m8_rolling_scaling.py"],
+  "engineering_contract":{"event_count":24,"rolling_test_row_count":16,"transfer_condition_count":3,"transfer_prediction_rows":48,"baseline_prediction_rows":96,"feature_extractor_calls":24,"baseline_model_calls":84,"total_model_calls":108,"future_leakage_violations":0,"person_specific_core_changes":0,"language_realization_performed":false},
+  "falsifiable_hypotheses":{"full_adaptation_top1_at_least_zero_shot":true,"full_adaptation_brier_below_zero_shot":true,"parameter_swap_top1_at_least_zero_shot":true,"full_adaptation_top1_at_least_parameter_swap":true,"full_adaptation_top1_at_least_best_b0_b5":true,"full_adaptation_brier_below_best_b0_b5":true,"full_adaptation_rolling_top1_range_at_most":0.50},
+  "non_claims":["Synthetic Mira is not a real person or Uruha evidence.","Running unchanged code on a second fixture is engineering transfer evidence, not proof of universal human modeling.","Target-specific data and fitted coefficients may change; core logic may not.","Failed transfer or baseline comparisons must be retained without tuning on the sixteen test outcomes."]
+}

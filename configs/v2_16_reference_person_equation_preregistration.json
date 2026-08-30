@@ -1,0 +1,66 @@
+{
+  "schema": "uruha_v2_16_reference_person_equation_preregistration",
+  "status": "design_frozen_before_first_fresh_generation",
+  "research_question": "Under the same observable current input, can an explicit replaceable human-state equation plus a public-evidence-grounded Uruha reference-person parameterization select the desired response policy more accurately than direct same-model generation?",
+  "core_claim_if_successful": "A bounded operational desired-response equation can preserve and intervene on human-state variables, choose different response policies for the same utterance under different evidence, and improve a frozen narrow proxy under matched generation conditions.",
+  "null_hypothesis": "The explicit state equation does not change policy selection in the intended counterfactual direction or does not improve the frozen narrow proxy over direct generation.",
+  "reference_person_position": {
+    "id": "ichinose_uruha_public_reference_person_v1",
+    "role": "primary public-evidence-grounded system-identification target and behavioral instantiation",
+    "not_merely": "surface style prompt",
+    "not_claimed": ["real person identity", "private mental state", "complete human model", "consciousness"],
+    "replaceability_required": true,
+    "persona_evidence_role": "development only; not independent persona holdout"
+  },
+  "one_week_law_acceptance": {
+    "core_research_not_peripheral": true,
+    "same_input_counterfactuals": 6,
+    "interactive_visual_equation_lab_required": true,
+    "outsider_can_see_state_to_candidate_to_choice_to_feedback": true,
+    "same_model_baseline_required": true,
+    "safari_acceptance_required": true,
+    "production_memory_writes": 0
+  },
+  "invariants": {
+    "same_current_input_across_cases": true,
+    "same_base_model": true,
+    "same_shared_persona_expression_prompt": true,
+    "same_temperature": true,
+    "same_seed": true,
+    "same_output_token_budget": true,
+    "paired_prompt_eval_token_delta_max": 2,
+    "training_or_prompt_tuning_after_fresh_output": false,
+    "all_failures_retained": true
+  },
+  "model": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260812,
+    "num_ctx": 8192,
+    "num_predict": 96,
+    "input_token_budget": 2048,
+    "think": false
+  },
+  "deterministic_success_criteria": {
+    "all_six_gold_policies_selected": true,
+    "same_input_distinct_selected_policy_count_min": 5,
+    "single_variable_intervention_changes_intended_policy": true,
+    "explicit_feedback_updates_named_variable_not_global_confidence": true,
+    "unknown_case_does_not_tease_or_diagnose": true
+  },
+  "fresh_generation_success_criteria": {
+    "transport_error_count": 0,
+    "all_pairs_token_gate_pass": true,
+    "system_desired_policy_proxy_minus_baseline_min": 2,
+    "system_forbidden_policy_violation_count_max": 0,
+    "system_visible_japanese_contract_not_below_baseline": true
+  },
+  "human_evidence_gate": {
+    "minimum_independent_blind_raters": 3,
+    "target_user_precommit_required_for_personal_understanding_claim": true,
+    "automatic_proxy_is_human_preference_evidence": false,
+    "system_better_than_llm_claim_before_gate": false
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "schema": "uruha_v2_16_reference_person_equation_cases",
+  "status": "development_cases_frozen_before_fresh_generation",
+  "research_subject": "human desired-response inference",
+  "reference_person": {
+    "id": "ichinose_uruha_public_reference_person_v1",
+    "role": "primary public-evidence-grounded human instantiation of a replaceable general equation",
+    "not_claimed": [
+      "the real person",
+      "private mental state",
+      "complete life history",
+      "human consciousness"
+    ]
+  },
+  "shared_current_input": "我從早上就一直坐不住，腦子停不下來。",
+  "construction": {
+    "same_current_input_required": true,
+    "context_changes_only_before_current_input": true,
+    "contains_exact_gold_reply": false,
+    "gold_is_desired_response_policy_not_wording": true,
+    "human_preference_evidence": false,
+    "training_authorized": false
+  },
+  "cases": [
+    {
+      "case_id": "v216_sleep_debt_care",
+      "label": "昨晚沒睡｜先照顧身體",
+      "context_history": [
+        "我昨晚幾乎沒有睡，早上又喝了兩杯咖啡。",
+        "我現在不是想開玩笑，身體也有點不舒服。"
+      ],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.98, "confidence": 0.98, "status": "user_report", "evidence": "昨晚幾乎沒有睡"},
+        "physical_strain": {"value": 0.83, "confidence": 0.92, "status": "user_report", "evidence": "身體也有點不舒服"},
+        "solution_request": {"value": 0.46, "confidence": 0.46, "status": "unknown", "evidence": "未明示是否要方法"},
+        "listening_request": {"value": 0.28, "confidence": 0.42, "status": "unknown", "evidence": "未明示只想被聽"},
+        "positive_arousal": {"value": 0.05, "confidence": 0.88, "status": "bounded_inference", "evidence": "身體不適且否定玩笑"},
+        "humor_invitation": {"value": 0.02, "confidence": 0.98, "status": "user_report", "evidence": "不是想開玩笑"},
+        "relationship_familiarity": {"value": 0.72, "confidence": 0.70, "status": "session_context", "evidence": "既有熟悉對話關係"},
+        "companionship_request": {"value": 0.30, "confidence": 0.40, "status": "unknown", "evidence": "未明示"},
+        "task_pressure": {"value": 0.35, "confidence": 0.35, "status": "unknown", "evidence": "未明示任務"},
+        "uncertainty": {"value": 0.25, "confidence": 0.78, "status": "derived", "evidence": "身體線索強但回覆形式未明示"}
+      },
+      "gold_policy": "care_physiology",
+      "acceptable_policies": ["care_physiology", "solve_regulation"],
+      "forbidden_policies": ["playful_tease"],
+      "expected_japanese_anchors_any": ["寝", "水", "休", "カフェイン"],
+      "forbidden_reply_anchors": ["多動症", "病気に決まって", "絶対"]
+    },
+    {
+      "case_id": "v216_explicit_solution",
+      "label": "真的要方法｜現在怎麼停",
+      "context_history": [
+        "我不是只想抱怨，我需要一個現在能讓思緒慢下來的方法。",
+        "今晚還要完成工作，所以先給我一個能做的步驟。"
+      ],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.30, "confidence": 0.35, "status": "unknown", "evidence": "沒有可靠睡眠資訊"},
+        "physical_strain": {"value": 0.42, "confidence": 0.50, "status": "bounded_inference", "evidence": "長時間無法平靜"},
+        "solution_request": {"value": 0.99, "confidence": 0.99, "status": "user_report", "evidence": "需要現在能做的方法"},
+        "listening_request": {"value": 0.08, "confidence": 0.96, "status": "user_report", "evidence": "不是只想抱怨"},
+        "positive_arousal": {"value": 0.08, "confidence": 0.76, "status": "bounded_inference", "evidence": "任務壓力而非期待"},
+        "humor_invitation": {"value": 0.08, "confidence": 0.65, "status": "bounded_inference", "evidence": "要求具體步驟"},
+        "relationship_familiarity": {"value": 0.72, "confidence": 0.70, "status": "session_context", "evidence": "既有熟悉對話關係"},
+        "companionship_request": {"value": 0.12, "confidence": 0.72, "status": "bounded_inference", "evidence": "需求明確指向方法"},
+        "task_pressure": {"value": 0.94, "confidence": 0.98, "status": "user_report", "evidence": "今晚還要完成工作"},
+        "uncertainty": {"value": 0.07, "confidence": 0.92, "status": "derived", "evidence": "回覆需求明確"}
+      },
+      "gold_policy": "solve_regulation",
+      "acceptable_policies": ["solve_regulation", "care_physiology"],
+      "forbidden_policies": ["playful_tease", "listen_presence"],
+      "expected_japanese_anchors_any": ["書", "メモ", "呼吸", "一つ", "五分"],
+      "forbidden_reply_anchors": ["聞くだけ", "多動症", "絶対"]
+    },
+    {
+      "case_id": "v216_listen_only",
+      "label": "不要解法｜只想有人聽",
+      "context_history": [
+        "先不要教我怎麼做，我不是來找解決方案的。",
+        "我只是想把現在腦袋裡的東西講出來，有人聽就好。"
+      ],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.30, "confidence": 0.32, "status": "unknown", "evidence": "沒有可靠睡眠資訊"},
+        "physical_strain": {"value": 0.40, "confidence": 0.45, "status": "bounded_inference", "evidence": "持續坐立不安"},
+        "solution_request": {"value": 0.01, "confidence": 0.99, "status": "user_report", "evidence": "不要教我怎麼做"},
+        "listening_request": {"value": 0.99, "confidence": 0.99, "status": "user_report", "evidence": "有人聽就好"},
+        "positive_arousal": {"value": 0.18, "confidence": 0.52, "status": "unknown", "evidence": "沒有說明正負方向"},
+        "humor_invitation": {"value": 0.08, "confidence": 0.62, "status": "bounded_inference", "evidence": "要求傾聽而非玩笑"},
+        "relationship_familiarity": {"value": 0.78, "confidence": 0.72, "status": "session_context", "evidence": "願意直接提出傾聽需求"},
+        "companionship_request": {"value": 0.92, "confidence": 0.96, "status": "user_report", "evidence": "有人聽就好"},
+        "task_pressure": {"value": 0.22, "confidence": 0.30, "status": "unknown", "evidence": "沒有任務線索"},
+        "uncertainty": {"value": 0.06, "confidence": 0.94, "status": "derived", "evidence": "回覆需求明確"}
+      },
+      "gold_policy": "listen_presence",
+      "acceptable_policies": ["listen_presence"],
+      "forbidden_policies": ["solve_regulation", "playful_tease"],
+      "expected_japanese_anchors_any": ["聞", "話", "そのまま"],
+      "forbidden_reply_anchors": ["方法", "呼吸法", "多動症", "絶対"]
+    },
+    {
+      "case_id": "v216_positive_share",
+      "label": "不是焦慮｜一起興奮",
+      "context_history": [
+        "今天會公布我期待很久的研究結果，我不是緊張。",
+        "我只是想有人跟我一起興奮，不要叫我冷靜。"
+      ],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.18, "confidence": 0.30, "status": "unknown", "evidence": "沒有可靠睡眠資訊"},
+        "physical_strain": {"value": 0.16, "confidence": 0.58, "status": "bounded_inference", "evidence": "明確說是期待"},
+        "solution_request": {"value": 0.02, "confidence": 0.97, "status": "user_report", "evidence": "不要叫我冷靜"},
+        "listening_request": {"value": 0.32, "confidence": 0.55, "status": "bounded_inference", "evidence": "主要需求是共鳴"},
+        "positive_arousal": {"value": 0.99, "confidence": 0.99, "status": "user_report", "evidence": "期待很久且不是緊張"},
+        "humor_invitation": {"value": 0.42, "confidence": 0.50, "status": "unknown", "evidence": "未直接要求吐槽"},
+        "relationship_familiarity": {"value": 0.80, "confidence": 0.74, "status": "session_context", "evidence": "要求共享情緒"},
+        "companionship_request": {"value": 0.98, "confidence": 0.98, "status": "user_report", "evidence": "想有人一起興奮"},
+        "task_pressure": {"value": 0.20, "confidence": 0.42, "status": "bounded_inference", "evidence": "等待結果而非執行任務"},
+        "uncertainty": {"value": 0.04, "confidence": 0.96, "status": "derived", "evidence": "正向情緒與需求明確"}
+      },
+      "gold_policy": "share_arousal",
+      "acceptable_policies": ["share_arousal", "playful_tease"],
+      "forbidden_policies": ["solve_regulation", "care_physiology"],
+      "expected_japanese_anchors_any": ["一緒", "楽し", "そわそわ", "上が"],
+      "forbidden_reply_anchors": ["落ち着け", "不安だ", "病気", "絶対"]
+    },
+    {
+      "case_id": "v216_playful_tease",
+      "label": "熟人訊號｜正在等吐槽",
+      "context_history": [
+        "我們平常就會互相吐槽，這次也不用太認真。",
+        "我現在沒有不舒服，也不是在求方法；吐槽我一下。"
+      ],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.18, "confidence": 0.30, "status": "unknown", "evidence": "沒有可靠睡眠資訊"},
+        "physical_strain": {"value": 0.03, "confidence": 0.98, "status": "user_report", "evidence": "沒有不舒服"},
+        "solution_request": {"value": 0.01, "confidence": 0.99, "status": "user_report", "evidence": "不是在求方法"},
+        "listening_request": {"value": 0.12, "confidence": 0.76, "status": "bounded_inference", "evidence": "明確要求吐槽"},
+        "positive_arousal": {"value": 0.74, "confidence": 0.72, "status": "bounded_inference", "evidence": "輕鬆互相吐槽的情境"},
+        "humor_invitation": {"value": 0.99, "confidence": 0.99, "status": "user_report", "evidence": "吐槽我一下"},
+        "relationship_familiarity": {"value": 0.96, "confidence": 0.96, "status": "user_report", "evidence": "平常就會互相吐槽"},
+        "companionship_request": {"value": 0.68, "confidence": 0.70, "status": "bounded_inference", "evidence": "要求一起進入玩笑節奏"},
+        "task_pressure": {"value": 0.08, "confidence": 0.60, "status": "bounded_inference", "evidence": "未提出任務"},
+        "uncertainty": {"value": 0.02, "confidence": 0.98, "status": "derived", "evidence": "回覆形式直接明示"}
+      },
+      "gold_policy": "playful_tease",
+      "acceptable_policies": ["playful_tease", "share_arousal"],
+      "forbidden_policies": ["solve_regulation", "care_physiology"],
+      "expected_japanese_anchors_any": ["脳内", "朝から", "営業", "走", "止ま"],
+      "forbidden_reply_anchors": ["多動症", "病気", "診断", "絶対"]
+    },
+    {
+      "case_id": "v216_unknown_calibrate",
+      "label": "沒有上下文｜不能假裝知道",
+      "context_history": [],
+      "state_atoms": {
+        "sleep_debt": {"value": 0.30, "confidence": 0.12, "status": "unknown", "evidence": "沒有睡眠資訊"},
+        "physical_strain": {"value": 0.40, "confidence": 0.28, "status": "unknown", "evidence": "只有坐立不安的字面"},
+        "solution_request": {"value": 0.38, "confidence": 0.20, "status": "unknown", "evidence": "沒有問題句或請求"},
+        "listening_request": {"value": 0.38, "confidence": 0.20, "status": "unknown", "evidence": "沒有明示"},
+        "positive_arousal": {"value": 0.44, "confidence": 0.18, "status": "unknown", "evidence": "正負方向都可能"},
+        "humor_invitation": {"value": 0.28, "confidence": 0.14, "status": "unknown", "evidence": "沒有關係或玩笑訊號"},
+        "relationship_familiarity": {"value": 0.50, "confidence": 0.18, "status": "unknown", "evidence": "沒有關係資訊"},
+        "companionship_request": {"value": 0.40, "confidence": 0.18, "status": "unknown", "evidence": "沒有明示"},
+        "task_pressure": {"value": 0.30, "confidence": 0.12, "status": "unknown", "evidence": "沒有任務資訊"},
+        "uncertainty": {"value": 0.96, "confidence": 0.96, "status": "derived", "evidence": "多個互斥回覆需求皆合理"}
+      },
+      "gold_policy": "calibrate_need",
+      "acceptable_policies": ["calibrate_need", "listen_presence"],
+      "forbidden_policies": ["playful_tease", "solve_regulation"],
+      "expected_japanese_anchors_any": ["寝", "考え", "どっち", "止ま"],
+      "forbidden_reply_anchors": ["絶対", "不安に決まって", "多動症", "病気"]
+    }
+  ]
+}

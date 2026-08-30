@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_counterfactual_pragmatic_branch_reserve_protocol_m34_v1",
+  "frozen_at": "2026-08-25",
+  "status": "sealed_before_m34_implementation",
+  "research_question": "With the current utterance held exactly constant, does valid verified interaction history produce a traceable change in the selected desired-response branch and an observable next-turn prediction that can later be supported, contradicted, or left unknown?",
+  "independent_variable": "verified prior desired-response context condition",
+  "controlled_variables": [
+    "exact current utterance within each pair",
+    "language within each pair",
+    "reference persona parameters",
+    "runtime implementation and decision thresholds",
+    "visible Japanese language guard"
+  ],
+  "dependent_variables": [
+    "selected desired-response policy and mode",
+    "counterfactual pair divergence",
+    "traceable context evidence",
+    "observable next-turn prediction",
+    "next-turn support/contradiction/uncertain verification",
+    "contradiction replacement policy",
+    "visible Japanese surface contract",
+    "latency and persistence safety"
+  ],
+  "reserve": {
+    "path": "datasets/m34_counterfactual_pragmatic_branch_reserve_v1.json",
+    "sha256": "e5b8bc9a8e219639d751fa78009ad6db201735b951c81053ac028fc2cbbc6d26",
+    "case_count": 8,
+    "pair_count": 4,
+    "languages": [
+      "zh",
+      "en",
+      "ja"
+    ],
+    "source_disjoint_from": [
+      "M18-M27 development dialogue fixtures",
+      "datasets/m33_source_anchored_semantic_atom_reserve_v1.json"
+    ]
+  },
+  "execution_contract": {
+    "case_isolation": "fresh isolated runtime and temporary adaptive store per case",
+    "sequence": "seed explicit response-form request -> decisive support -> fixed ambiguous current utterance -> feedback verification turn",
+    "pair_intervention": "only seed desired-response condition changes within a pair; current utterance remains byte-identical",
+    "no_answer_leakage": "reserve labels are read only by the evaluator and are not available to runtime inference",
+    "raw_memory_boundary": "no raw dialogue, raw model response, or unverified mental-state claim may enter factual long-term memory or the adaptive persisted ledger"
+  },
+  "frozen_success_gates": {
+    "selected_policy_accuracy_min": 1.0,
+    "selected_mode_accuracy_min": 1.0,
+    "counterfactual_pair_divergence_rate_min": 1.0,
+    "current_literal_invariance_rate_min": 1.0,
+    "verified_context_evidence_trace_coverage_min": 1.0,
+    "candidate_alternative_trace_coverage_min": 1.0,
+    "observable_prediction_trace_coverage_min": 1.0,
+    "previous_outcome_verification_accuracy_min": 1.0,
+    "contradiction_replacement_accuracy_min": 1.0,
+    "selected_branch_surface_match_rate_min": 1.0,
+    "visible_japanese_rate_min": 1.0,
+    "unverified_mental_fact_write_count_max": 0,
+    "raw_dialogue_persisted_count_max": 0,
+    "model_response_raw_persisted_count_max": 0,
+    "median_case_seconds_max": 1.5,
+    "p95_case_seconds_max": 3.0
+  },
+  "required_branch_contract": {
+    "literal_observation": "current-turn visible signal ids and M33 source-atom availability are recorded separately from pragmatic hypotheses",
+    "candidate_branches": "at least selected and runner-up communicative-goal/desired-response branches with operational utility or probability",
+    "evidence": "current explicit, verified reversible context, relationship, and unavailable acoustic evidence remain typed and distinguishable",
+    "selection": "selected policy/mode, authority basis, uncertainty, and bounded alternative are explicit",
+    "prediction": "next-turn prediction refers only to observable feedback behavior, never to private mental-state truth",
+    "verification": "the next actual turn records supported, contradicted, uncertain, or not-available against the previous branch id",
+    "revision": "contradiction may select a new explicit response policy but may not rewrite the original branch evidence"
+  },
+  "claim_boundary": "controlled context-sensitivity and correction mechanism, not ground-truth access to private intent, not human felt-understanding preference evidence, not same-model superiority, and not a general human-brain equation",
+  "post_result_rule": "do_not_modify_m34_from_m34_reserve_outcomes; failures move to a new milestone and a new reserve"
+}

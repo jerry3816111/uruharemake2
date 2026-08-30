@@ -1,0 +1,51 @@
+{
+  "schema": "ilhdt_m6_behavior_preregistration_v1",
+  "milestone": "M6",
+  "registered_before_baseline_model_calls": true,
+  "claim_level": "nonfresh_synthetic_behavior_prediction_hypothesis",
+  "formal_target_claim": false,
+  "overlay": "datasets/m6_behavior_prediction_synthetic_overlay_v1.json",
+  "baselines": ["B0_PRIOR", "B1_BASE_LLM", "B2_PERSONA_PROMPT", "B3_RAG", "B4_FULL_HISTORY_SUMMARY", "B5_STRUCTURED_HISTORY"],
+  "ours": "T3_transitioned_state_plus_event_memory_person_softmax",
+  "model": "qwen3.5:9b",
+  "provider_options": {"temperature": 0, "seed": 260815, "num_ctx": 8192, "num_predict": 256},
+  "provider_timeout_seconds": 180,
+  "retry_policy": "no_retry_no_condition_fallback",
+  "predictor": {
+    "l2_alpha_grid": [0.0, 0.001, 0.01, 0.1],
+    "learning_rate": 0.2,
+    "epochs": 2500,
+    "model_selection": "lowest_dev_nll_then_smallest_alpha",
+    "temperature_grid": [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0],
+    "calibration_selection": "lowest_dev_nll_then_lowest_temperature"
+  },
+  "metrics": {"top_k": 3, "ece_bins": 5},
+  "engineering_contract": {
+    "history_count": 32,
+    "holdout_count": 8,
+    "condition_count": 7,
+    "prediction_row_count": 56,
+    "future_leakage_violations": 0,
+    "ours_probabilities_normalized": true,
+    "ours_explanations_are_direct_contributions": true,
+    "language_realization_performed": false,
+    "calibrated_dev_nll_not_worse_than_uncalibrated": true
+  },
+  "predictive_lift_hypothesis": {
+    "ours_top1_at_least_best_b0_b5": true,
+    "ours_brier_below_best_b0_b5": true,
+    "ours_nll_below_best_b0_b5": true,
+    "interpretation": "All three must pass to support a narrow synthetic predictive-lift claim. A failed lift gate remains a completed negative hypothesis test."
+  },
+  "resource_accounting": {
+    "ours_includes_inherited_m5_feature_extraction": true,
+    "baseline_summary_cost_is_included": true,
+    "same_foundation_model_for_llm_conditions": true
+  },
+  "non_claims": [
+    "The overlay, state targets, and observable outcomes are author-designed synthetic fixtures.",
+    "The M5 texts and labels are not a fresh scientific holdout and were visible during fixture construction.",
+    "Passing a predictive-lift gate does not establish Uruha, real-person, private-state, human-level, or production validity.",
+    "Temperature scaling on eight synthetic dev rows is a calibration mechanism check, not general calibration evidence."
+  ]
+}

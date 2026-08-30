@@ -1,0 +1,104 @@
+{
+  "schema": "ilhdt_m10_behavior_authoritative_language_preregistration_v1",
+  "milestone": "M10",
+  "registered_before_first_model_call": true,
+  "claim_level": "nonfresh_synthetic_downstream_language_diagnostic",
+  "formal_target_claim": false,
+  "inputs": {
+    "m9_result": {
+      "path": "analysis/m9_1_second_person_transfer_summary_alias_result.json",
+      "sha256": "e3c35e1236d7c99d3707fbac75fc6469dc46585f432ff0918a942ead028f8aba"
+    },
+    "m9_result_lock": {
+      "path": "configs/m9_1_second_person_transfer_result_lock.json",
+      "sha256": "e59b8583d58943a4c9faf51f7325b383f2c3168a0dc638996942bee80def555d"
+    },
+    "second_person_dataset": {
+      "path": "datasets/m9_second_person_mira_synthetic_fixture_v1.json",
+      "sha256": "b5af35207fb1157737bc67a07bbcde48d2af91ea3d7c8ded7954fd5ecef71e11"
+    },
+    "persona_evidence": {
+      "path": "datasets/public_persona_evidence_v1.json",
+      "sha256": "ee5fc95ffa15203a4aa605c4ecdc67c0269de392831847cebbb44ee6b3891f07"
+    },
+    "persona_evidence_result_lock": {
+      "path": "configs/public_persona_evidence_v1_result_lock.json",
+      "sha256": "37bcf823c2cc6e7252e5b5390da633c802dacc9708ff9cdde672e1a39aed366d"
+    }
+  },
+  "conditions": [
+    "L0_DIRECT",
+    "L1_PREDICTED_BEHAVIOR",
+    "L2_ORACLE_BEHAVIOR"
+  ],
+  "case_contract": {
+    "source_condition": "MIRA_FULL_ADAPTATION",
+    "case_count": 16,
+    "cutoff_counts": {
+      "E1": 4,
+      "E2": 4,
+      "E3": 4,
+      "E4": 4
+    },
+    "language_realization_new_for_every_case": true,
+    "behavior_outputs_already_exposed": true
+  },
+  "model": "qwen3.5:9b",
+  "provider_timeout_seconds": 240,
+  "generation_options": {
+    "temperature": 0,
+    "seed": 20260815,
+    "num_ctx": 8192,
+    "num_predict": 96,
+    "think": false
+  },
+  "classifier_options": {
+    "temperature": 0,
+    "seed": 20260815,
+    "num_ctx": 8192,
+    "num_predict": 256,
+    "think": false
+  },
+  "prompt_balance": {
+    "one_preflight_call_per_condition_per_case": true,
+    "preflight_num_predict": 1,
+    "scored_prompt_token_range_at_most": 2,
+    "no_scored_retry": true
+  },
+  "falsifiable_hypotheses": {
+    "all_scored_prompt_token_ranges_at_most": 2,
+    "predicted_authority_alignment_at_least": 0.75,
+    "oracle_authority_alignment_at_least": 0.75,
+    "predicted_visible_contract_at_least": 0.9,
+    "oracle_visible_contract_at_least": 0.9,
+    "oracle_outcome_alignment_at_least_predicted": true,
+    "oracle_outcome_alignment_strictly_above_direct": true,
+    "predicted_outcome_alignment_at_least_direct": true,
+    "private_or_mindreading_claim_count": 0
+  },
+  "human_evaluation": {
+    "blind_three_way_packet_required": true,
+    "condition_labels_hidden": true,
+    "minimum_independent_complete_raters_for_preference_claim": 3,
+    "dimensions": [
+      "behavior_fit",
+      "natural_japanese",
+      "non_overclaiming",
+      "development_surface_naturalness"
+    ]
+  },
+  "persona_boundary": {
+    "authorization": "development_hypothesis_only",
+    "runtime_persona_activation": false,
+    "persona_fidelity_claim": false,
+    "private_person_copy_claim": false,
+    "style_may_not_override_behavior": true
+  },
+  "non_claims": [
+    "The classifier proxy is not human preference or persona-fidelity evidence.",
+    "The oracle condition uses future information and is never a deployable system condition.",
+    "Synthetic Mira behavior plus an Uruha development surface carrier is a layer-separation diagnostic, not a validated coherent target person.",
+    "This run cannot repair the exposed M9 predictor or authorize Uruha runtime persona activation.",
+    "Voice and VRM are not scientific evidence of predictive validity."
+  ]
+}

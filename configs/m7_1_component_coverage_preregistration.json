@@ -1,0 +1,45 @@
+{
+  "schema": "ilhdt_m7_1_component_coverage_preregistration_v1",
+  "milestone": "M7.1",
+  "registered_before_first_result_write": true,
+  "claim_level": "nonfresh_synthetic_component_coverage_remediation",
+  "formal_target_claim": false,
+  "m6_result": {"path": "analysis/m6_behavior_predictor_synthetic_first_generation_raw.json", "sha256": "b042011646c16b7fd565f39ed8acab621cbd16fb2a9e910a0e776e5829ea20b4"},
+  "m7_first_result": {"path": "analysis/m7_ablation_intervention_diagnostic_first_result.json", "sha256": "563bd366dfe930f4afca7b5773e8d7b1cce7aa0872a781a2dddf6fbc552caf23"},
+  "m5_dataset": {"path": "datasets/m5_state_transition_synthetic_fixture_v1.json", "sha256": "efd5fc8c251870f00b77c5a849694b26c94ff8262f3ab8c96505153050076f21"},
+  "m5_result": {"path": "analysis/m5_state_transition_synthetic_first_generation_raw.json", "sha256": "61abb11677eedcd9c3824a9a14767b346396bc5b7770d3841a7fdbf5933f1a0c"},
+  "overlay": {"path": "datasets/m6_behavior_prediction_synthetic_overlay_v1.json", "sha256": "e5b504711b6b1a18e6c324fc317a1591a0a6811e447ade23e6f9d258c37bb68e"},
+  "preference_semantics": "five explicit context-sensitive value alignments computed only from frozen observable event, state, and person parameters",
+  "habit_semantics": "six behavior-specific cosine similarities to centroids fitted only from 24 pre-cutoff training event features and labels",
+  "predictor": {
+    "l2_alpha_grid": [0.0, 0.001, 0.01, 0.1],
+    "learning_rate": 0.2,
+    "epochs": 2500,
+    "temperature_grid": [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0]
+  },
+  "engineering_contract": {
+    "train_count": 24,
+    "dev_count": 8,
+    "holdout_count": 8,
+    "base_feature_count": 17,
+    "preference_feature_count": 5,
+    "habit_feature_count": 6,
+    "augmented_feature_count": 28,
+    "evaluated_ablation_count": 10,
+    "not_identifiable_count": 0,
+    "model_calls": 0,
+    "language_realization_performed": false,
+    "calibrated_dev_nll_not_worse_than_uncalibrated": true
+  },
+  "diagnostic_hypotheses": {
+    "preference_ablation_changes_probability_metrics": true,
+    "habit_ablation_changes_probability_metrics": true,
+    "at_least_eight_of_ten_ablation_metrics_change": true
+  },
+  "predictive_lift_claim_authorized": false,
+  "non_claims": [
+    "This is post-exposure engineering remediation on the same synthetic holdout; its predictive score cannot replace or improve the frozen M6 claim.",
+    "Preference activations and habit similarities are computational variables, not private-state ground truth.",
+    "Full component ablation coverage does not prove every component is beneficial or psychologically valid."
+  ]
+}

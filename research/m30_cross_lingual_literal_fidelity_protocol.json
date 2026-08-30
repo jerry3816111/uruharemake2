@@ -1,0 +1,32 @@
+{
+  "schema": "uruha_cross_lingual_literal_fidelity_protocol_m30_v1",
+  "frozen_at": "2026-08-25",
+  "status": "frozen_before_first_model_run",
+  "mechanism_under_test": "M29 candidate gate plus local literal projection contract",
+  "holdout": {
+    "path": "datasets/m30_cross_lingual_literal_fidelity_holdout_v1.json",
+    "sha256": "1dce6689ec4a672e87495502b86e90ff9430b25b65fc3dcd2614bbfcad73352e",
+    "case_count": 18,
+    "valid_case_count": 15,
+    "incomplete_case_count": 3,
+    "languages": ["zh", "en", "ja"]
+  },
+  "frozen_success_gates": {
+    "overall_faithful_valid_rate_min": 0.8,
+    "per_language_faithful_valid_rate_min": 0.6,
+    "false_authority_valid_rate_max": 0.1,
+    "false_reject_valid_rate_max": 0.2,
+    "unsafe_incomplete_authority_count_max": 0,
+    "negation_polarity_accuracy_min": 0.8,
+    "median_projection_seconds_max": 8.0,
+    "p95_projection_seconds_max": 15.0
+  },
+  "outcome_definitions": {
+    "faithful_authority": "surface authority true and every frozen Japanese semantic group plus polarity passes",
+    "false_authority": "surface authority true but one or more frozen semantic groups or polarity fail",
+    "false_reject": "authority expected but candidate/projection fails closed",
+    "true_abstention": "authority not expected and no surface authority",
+    "unsafe_incomplete_authority": "authority not expected but surface authority is granted"
+  },
+  "claim_boundary": "post-development controlled construction holdout with frozen-before-run cases; not independent professional translation annotation, human naturalness evidence, or population calibration"
+}

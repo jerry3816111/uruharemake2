@@ -1,0 +1,97 @@
+{
+  "schema_version": "m13-pub-pragmatics-preregistration-v1",
+  "status": "preregistered_before_selected_case_content_review_or_model_generation",
+  "created_on": "2026-08-17",
+  "research_question": "On a published pragmatics benchmark and the same local base model, does an explicit pragmatic decomposition improve exact answer accuracy beyond both direct answering and generic deliberation?",
+  "dataset": {
+    "name": "PUB: Pragmatics Understanding Benchmark",
+    "paper": "Sravanthi et al. (2024), Findings of ACL, DOI 10.18653/v1/2024.findings-acl.719",
+    "dataset_url": "https://huggingface.co/datasets/cfilt/PUB",
+    "license": "MIT as declared by the official dataset card",
+    "download_url_template": "https://huggingface.co/datasets/cfilt/PUB/resolve/main/data/task_{task_id}.zip?download=true",
+    "tasks": [
+      {
+        "task_id": 2,
+        "phenomenon": "implicature",
+        "task_name": "indirect-answer interpretation",
+        "expected_row_count": 2506,
+        "zip_sha256": "b6909eed064c2bf97eea837136fa4490909a1894102e14f5c37d4f6d95e5299e"
+      },
+      {
+        "task_id": 6,
+        "phenomenon": "implicature",
+        "task_name": "sarcasm versus agreement",
+        "expected_row_count": 2000,
+        "zip_sha256": "1f8be8c5a60daee2b2bb52ef7f9939c9bb770fc87716e5b54a14018651602b26"
+      },
+      {
+        "task_id": 12,
+        "phenomenon": "presupposition",
+        "task_name": "dialogue assumption validity",
+        "expected_row_count": 2563,
+        "zip_sha256": "a137740dd0887f95818cfd36c187c60e77a02a16b2833edd2deb749f5e0dc188"
+      },
+      {
+        "task_id": 13,
+        "phenomenon": "deixis",
+        "task_name": "deictic reference resolution",
+        "expected_row_count": 1000,
+        "zip_sha256": "f74cc9e5cbf81ff05d807069240c845593ad1a081bb46683107e00f49ad7a805"
+      }
+    ],
+    "release_discrepancy_note": "The current official archives contain 2,563 task-12 rows and 1,000 task-13 rows, while the paper text reports 2,500 and 2,000. Archive hashes and observed counts are frozen; no rows are silently fabricated or dropped."
+  },
+  "sampling": {
+    "seed": "m13-pub-2026-08-17-v1",
+    "items_per_task": 16,
+    "task_count": 4,
+    "total_case_count": 64,
+    "method": "lowest SHA-256 ranks of task_id and public item_id",
+    "excluded_ids": ["0", "1"],
+    "exclusion_reason": "Only source rows 0 and 1 were viewed while auditing archive schemas before preregistration.",
+    "option_order": "one deterministic SHA-seeded permutation per item, shared by all conditions"
+  },
+  "case_manifest": {
+    "path": "configs/m13_pub_pragmatics_case_manifest.json",
+    "sha256": "8a86ce624fa452d289468c5a0b62f35a254a0148fd8eb5228665fac638e4f6ee",
+    "contains_item_text_or_answer_keys": false
+  },
+  "conditions": {
+    "B0_DIRECT": "same item and model; immediate JSON answer only",
+    "B1_GENERIC_DELIBERATION": "same item and model; generic observations, two reasoning steps, counterargument, uncertainty, then answer",
+    "OURS_PRAGMATIC_LOOP": "same item and model; literal content, pragmatic target, context evidence, alternative interpretation, uncertainty, then answer"
+  },
+  "model": "qwen3.5:9b",
+  "generation": {
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "think": false,
+    "stream": false,
+    "format": "json",
+    "options": {
+      "temperature": 0,
+      "seed": 20260817,
+      "num_predict": 220
+    },
+    "retries": 0
+  },
+  "metrics": {
+    "primary": "paired exact-answer accuracy, OURS_PRAGMATIC_LOOP versus B1_GENERIC_DELIBERATION",
+    "secondary": "OURS_PRAGMATIC_LOOP versus B0_DIRECT and task-stratified accuracy",
+    "uncertainty": "20,000 item-paired bootstrap repetitions and exact two-sided McNemar test",
+    "cost": "prompt tokens, completion tokens, and wall latency per condition",
+    "not_scored": [
+      "self-reported confidence as calibrated probability",
+      "Japanese surface naturalness",
+      "felt understanding",
+      "Uruha persona fidelity"
+    ]
+  },
+  "success_gate": {
+    "all_conditions_parse_rate": 1.0,
+    "primary_accuracy_delta_minimum": 0.05,
+    "primary_exact_mcnemar_p_maximum": 0.05,
+    "maximum_allowed_per_task_accuracy_regression": 0.125,
+    "interpretation": "All gates are required. Failure is retained as a result, not tuned away."
+  },
+  "evidence_boundary": "This is a project-specific, same-model prompt intervention on public PUB items. It can test a narrow operational pragmatic decomposition. It is not guaranteed uncontaminated from base-model pretraining, is not the paper's exact published prompting score, has one frozen option permutation rather than full PPA, and cannot establish longitudinal person modeling, felt understanding, human preference, or Uruha fidelity."
+}

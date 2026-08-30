@@ -1,0 +1,72 @@
+{
+  "schema": "ilhdt_m10_2_behavior_preserving_register_preregistration_v1",
+  "milestone": "M10.2",
+  "registered_before_first_model_call": true,
+  "claim_level": "fresh_source_disjoint_synthetic_language_register_remediation",
+  "formal_target_claim": false,
+  "inputs": {
+    "fixture": {
+      "path": "datasets/m10_2_behavior_preserving_register_synthetic_fixture_v1.json",
+      "sha256": "c1e69c038f92491acf8a744c49ec0924fac8ad0d5618d583521a8792c9ac6435"
+    },
+    "m10_result_lock": {
+      "path": "configs/m10_1_behavior_authoritative_language_result_lock.json",
+      "sha256": "94e00d27154516bc74972cb8e07991214b6387203db1cfc01e392c2ba27589eb"
+    },
+    "persona_evidence": {
+      "path": "datasets/public_persona_evidence_v1.json",
+      "sha256": "ee5fc95ffa15203a4aa605c4ecdc67c0269de392831847cebbb44ee6b3891f07"
+    },
+    "persona_evidence_result_lock": {
+      "path": "configs/public_persona_evidence_v1_result_lock.json",
+      "sha256": "37bcf823c2cc6e7252e5b5390da633c802dacc9708ff9cdde672e1a39aed366d"
+    }
+  },
+  "conditions": ["S0_ONE_PASS", "S1_REGISTER_REPAIR"],
+  "model": "qwen3.5:9b",
+  "provider_timeout_seconds": 240,
+  "generation_options": {
+    "temperature": 0,
+    "seed": 20260815,
+    "num_ctx": 8192,
+    "num_predict": 96,
+    "think": false
+  },
+  "classifier_options": {
+    "temperature": 0,
+    "seed": 20260815,
+    "num_ctx": 8192,
+    "num_predict": 256,
+    "think": false
+  },
+  "engineering_contract": {
+    "case_count": 18,
+    "initial_generation_calls": 18,
+    "register_repair_calls": 18,
+    "classifier_calls": 36,
+    "total_model_calls": 72,
+    "scored_retries": 0,
+    "production_memory_writes": 0
+  },
+  "falsifiable_hypotheses": {
+    "repair_visible_contract_at_least": 0.85,
+    "repair_authority_alignment_at_least": 0.9,
+    "repair_authority_alignment_at_least_one_pass": true,
+    "aligned_to_misaligned_regression_count": 0,
+    "changed_reply_count_at_least": 1,
+    "private_or_mindreading_claim_count": 0,
+    "all_calls_complete": true
+  },
+  "human_evaluation": {
+    "blind_paired_packet_required": true,
+    "minimum_complete_independent_raters_for_claim": 3,
+    "dimensions": ["semantic_preservation", "behavior_fit", "natural_casual_japanese", "non_overclaiming"]
+  },
+  "non_claims": [
+    "This synthetic language remediation does not improve or reevaluate M9 prediction accuracy.",
+    "The same-model classifier is a proxy, not human naturalness or preference evidence.",
+    "The public Uruha style brief remains development-only and cannot support persona fidelity or runtime activation.",
+    "The fixture was created after polite-register failure was known; it is source-disjoint remediation evidence, not an untouched global holdout.",
+    "Voice, VRM, consciousness, mind-reading, and private-person-copy claims remain outside scope."
+  ]
+}

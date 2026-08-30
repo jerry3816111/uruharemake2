@@ -1,0 +1,157 @@
+{
+  "schema": "uruha_semantic_authorization_reserve_m31_v1",
+  "created_at": "2026-08-25",
+  "construction_status": "sealed_before_m31_semantic_authorizer_implementation_but_not_independently_authored",
+  "claim_boundary": "controlled reserve proxy; not professional translation annotation or human naturalness evidence",
+  "cases": [
+    {
+      "case_id": "m31r_zh_entity_time_01",
+      "language": "zh",
+      "category": "entity_time",
+      "input": "林老師明天下午四點打電話。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["林先生", "林老師", "林老师"]},
+        {"label": "time", "any_of": ["明日午後四時", "明日の午後四時", "明日午後4時", "明日の午後4時", "明日16時"]},
+        {"label": "predicate", "any_of": ["電話する", "電話をする", "電話をかける"]}
+      ]
+    },
+    {
+      "case_id": "m31r_zh_negation_quantity_02",
+      "language": "zh",
+      "category": "negation_quantity",
+      "input": "我沒有兩把鑰匙。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "object", "any_of": ["鍵"]},
+        {"label": "quantity", "any_of": ["二本", "2本", "二つ", "2つ"]},
+        {"label": "negation", "any_of": ["持っていない", "持ってない", "ない"]}
+      ]
+    },
+    {
+      "case_id": "m31r_zh_change_time_03",
+      "language": "zh",
+      "category": "change_time",
+      "input": "火車票改成下個月五號。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "object", "any_of": ["列車の切符", "電車の切符", "乗車券", "切符"]},
+        {"label": "time", "any_of": ["来月五日", "来月5日", "来月の五日", "来月の5日"]},
+        {"label": "change", "any_of": ["変更", "変え", "変わった"]}
+      ]
+    },
+    {
+      "case_id": "m31r_zh_incomplete_04",
+      "language": "zh",
+      "category": "incomplete",
+      "input": "那邊的……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m31r_en_entity_quantity_time_05",
+      "language": "en",
+      "category": "entity_quantity_time",
+      "input": "Daniel gave Mei four red pens on Tuesday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "giver", "any_of": ["Daniel", "ダニエル"]},
+        {"label": "recipient", "any_of": ["Mei", "メイ"]},
+        {"label": "quantity", "any_of": ["四本", "4本"]},
+        {"label": "object", "any_of": ["赤いペン", "赤ペン"]},
+        {"label": "time", "any_of": ["火曜", "火曜日"]},
+        {"label": "predicate", "any_of": ["渡した", "あげた", "与えた"]}
+      ]
+    },
+    {
+      "case_id": "m31r_en_negation_06",
+      "language": "en",
+      "category": "negation",
+      "input": "The museum is not open today.",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "subject", "any_of": ["博物館", "美術館"]},
+        {"label": "time", "any_of": ["今日"]},
+        {"label": "negation", "any_of": ["開いていない", "開いてない", "休館", "閉まっている", "閉まってる"]}
+      ]
+    },
+    {
+      "case_id": "m31r_en_change_time_07",
+      "language": "en",
+      "category": "change_time",
+      "input": "Our appointment moved to next Friday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["約束", "予定", "予約", "アポイント"]},
+        {"label": "time", "any_of": ["来週金曜", "来週の金曜", "来週金曜日", "来週の金曜日"]},
+        {"label": "change", "any_of": ["変更", "移った", "変わった"]}
+      ]
+    },
+    {
+      "case_id": "m31r_en_incomplete_08",
+      "language": "en",
+      "category": "incomplete",
+      "input": "Possibly later...",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m31r_ja_entity_time_09",
+      "language": "ja",
+      "category": "entity_time",
+      "input": "佐藤さんは来月二十日に東京へ行く。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["佐藤"]},
+        {"label": "time", "any_of": ["来月二十日", "来月20日", "来月の二十日", "来月の20日"]},
+        {"label": "place", "any_of": ["東京"]},
+        {"label": "predicate", "any_of": ["行く"]}
+      ]
+    },
+    {
+      "case_id": "m31r_ja_negation_quantity_10",
+      "language": "ja",
+      "category": "negation_quantity",
+      "input": "この箱にはりんごが二個しかない。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["箱"]},
+        {"label": "object", "any_of": ["りんご", "リンゴ"]},
+        {"label": "quantity", "any_of": ["二個", "2個"]},
+        {"label": "negation", "any_of": ["しかない"]}
+      ]
+    },
+    {
+      "case_id": "m31r_ja_relation_time_11",
+      "language": "ja",
+      "category": "relation_time",
+      "input": "授業は十時から十一時までだ。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["授業"]},
+        {"label": "start", "any_of": ["十時から", "10時から"]},
+        {"label": "end", "any_of": ["十一時まで", "11時まで"]}
+      ]
+    },
+    {
+      "case_id": "m31r_ja_incomplete_12",
+      "language": "ja",
+      "category": "incomplete",
+      "input": "あの人のことは……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "uruha.m12.literature_grounded_evaluation_protocol.v1",
+  "experiment_id": "M12_LITERATURE_GROUNDED_EVIDENCE_AUDIT",
+  "status": "posthoc_protocol_on_frozen_results_not_preregistration",
+  "date": "2026-08-17",
+  "research_question": "Across already frozen synthetic temporal experiments, does Ours show replicated paired probabilistic forecasting lift over the prespecified strong B5 structured-history LLM baseline?",
+  "baseline_selection": {
+    "primary": "B5_STRUCTURED_HISTORY",
+    "reason": "B5 is the master-spec strong structured-prompt baseline with the closest history-conditioning role; it is fixed by design rather than selected from test performance.",
+    "prohibited": "Do not replace B5 with whichever baseline makes Ours look strongest after inspecting a test set."
+  },
+  "tracks": [
+    {
+      "id": "M6_DEVELOPMENT_SYNTHETIC",
+      "path": "analysis/m6_behavior_predictor_synthetic_first_generation_raw.json",
+      "sha256": "b042011646c16b7fd565f39ed8acab621cbd16fb2a9e910a0e776e5829ea20b4",
+      "candidate": "OURS_HYBRID",
+      "baseline": "B5_STRUCTURED_HISTORY",
+      "evidence_boundary": "eight author-designed synthetic holdouts; exposed development-family evidence"
+    },
+    {
+      "id": "M8_FRESH_SYNTHETIC_ROLLING",
+      "path": "analysis/m8_1_rolling_scaling_parser_remediation_result.json",
+      "sha256": "afcc425ef550444204d219c300a256d4f59d4a5eeccbe580ab15c3766d899726",
+      "candidate": "OURS_HYBRID",
+      "baseline": "B5_STRUCTURED_HISTORY",
+      "evidence_boundary": "sixteen source-disjoint fictional events over four rolling cutoffs"
+    },
+    {
+      "id": "M9_SECOND_PERSON_SYNTHETIC",
+      "path": "analysis/m9_1_second_person_transfer_summary_alias_result.json",
+      "sha256": "e3c35e1236d7c99d3707fbac75fc6469dc46585f432ff0918a942ead028f8aba",
+      "candidate": "MIRA_FULL_ADAPTATION",
+      "baseline": "B5_STRUCTURED_HISTORY",
+      "evidence_boundary": "sixteen fictional second-person events; same core, new data and parameters"
+    }
+  ],
+  "auxiliary_artifacts": {
+    "m7_ablation": {
+      "path": "analysis/m7_ablation_intervention_diagnostic_first_result.json",
+      "sha256": "563bd366dfe930f4afca7b5773e8d7b1cce7aa0872a781a2dddf6fbc552caf23"
+    },
+    "m7_component_coverage": {
+      "path": "analysis/m7_1_component_coverage_remediation_result.json",
+      "sha256": "24a0f0cfadf946d7a8ae55d27abe50fc3160c1ea6f8882fe621bc7b63cb0f45a"
+    },
+    "v2_22_long_memory": {
+      "path": "analysis/v2_22_stable_relational_source_replay_raw.json",
+      "sha256": "c8c7fea14570cdbdfae9fda8e4852509fb635b01a00aabf9347b10adfe62699c"
+    }
+  },
+  "primary_metrics": [
+    "multiclass Brier score",
+    "negative log likelihood"
+  ],
+  "secondary_metrics": [
+    "Top-1 paired correctness",
+    "Top-3 paired correctness",
+    "rolling-cutoff range",
+    "ECE as descriptive only because each track is small"
+  ],
+  "statistical_analysis": {
+    "unit": "the exact same held-out event under candidate and baseline",
+    "paired_bootstrap_repetitions": 20000,
+    "paired_bootstrap_seed": 20260817,
+    "interval": "two-sided percentile 95% CI",
+    "proper_score_test": "two-sided exact paired sign-flip randomization",
+    "accuracy_test": "two-sided exact McNemar test",
+    "multiplicity_boundary": "p-values are diagnostics in a retrospective audit; no new confirmatory superiority claim is authorized"
+  },
+  "replication_rule": {
+    "central_superiority_supported": "false unless the direction favors Ours on M6, M8, and M9, both proper scores are favorable, and a formal real-person temporal dataset independently replicates the result",
+    "negative_results": "must remain visible"
+  },
+  "literature": [
+    {
+      "method": "strictly proper probabilistic scoring",
+      "citation": "Gneiting and Raftery (2007), JASA, doi:10.1198/016214506000001437",
+      "url": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+    },
+    {
+      "method": "confidence calibration and reliability diagrams",
+      "citation": "Guo et al. (2017), ICML",
+      "url": "https://proceedings.mlr.press/v70/guo17a.html"
+    },
+    {
+      "method": "paired instance-level NLP evaluation",
+      "citation": "Peyrard et al. (2021), ACL-IJCNLP, doi:10.18653/v1/2021.acl-long.179",
+      "url": "https://aclanthology.org/2021.acl-long.179/"
+    },
+    {
+      "method": "bootstrap significance analysis in NLP",
+      "citation": "Berg-Kirkpatrick et al. (2012), EMNLP-CoNLL",
+      "url": "https://aclanthology.org/D12-1091/"
+    },
+    {
+      "method": "long-term conversational memory task decomposition",
+      "citation": "Maharana et al. (2024), ACL, doi:10.18653/v1/2024.acl-long.747",
+      "url": "https://aclanthology.org/2024.acl-long.747/"
+    },
+    {
+      "method": "automatic dialogue metrics limitation",
+      "citation": "Liu et al. (2016), EMNLP, doi:10.18653/v1/D16-1230",
+      "url": "https://aclanthology.org/D16-1230/"
+    }
+  ],
+  "claim_boundary": "This audit can evaluate frozen probabilistic predictions, long-memory task outcomes, and intervention responsiveness. It cannot manufacture formal Uruha ground truth, human naturalness, felt understanding, or population-level validity."
+}
