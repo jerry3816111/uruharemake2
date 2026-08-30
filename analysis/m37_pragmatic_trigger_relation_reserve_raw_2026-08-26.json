@@ -1,0 +1,1328 @@
+{
+  "schema": "uruha_pragmatic_trigger_relation_evaluation_m37_v1",
+  "mode": "reserve",
+  "dataset_path": "datasets/m37_pragmatic_trigger_relation_reserve_v1_1.json",
+  "dataset_sha256": "0ef035f6f131191776c4d5eaceac58f91ddd30856804b22b731770ac97b150de",
+  "protocol_path": "research/m37_pragmatic_trigger_relation_protocol_v1_1.json",
+  "protocol_sha256": "a14c1f567de8503fdb3a6ca7e114ddee6e857ceab2786a5cfa47d7d6d75d584f",
+  "implementation_freeze_sha256": "bc42d9dbc3eaa5a84ec261696c67696f36fa64f87c70052ceb1a19d7bebd90f9",
+  "reserve_validation": {
+    "passed": true,
+    "errors": [],
+    "error_count": 0,
+    "case_count": 12,
+    "pair_count": 6,
+    "language_counts": {
+      "zh": 4,
+      "en": 4,
+      "ja": 4
+    },
+    "annotation_audits": [
+      {
+        "case_id": "m37r_zh_cognitive_solve_01",
+        "expected_policy": "solve_regulation",
+        "independent_pre_m37_policy": "solve_regulation",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_zh_cognitive_listen_02",
+        "expected_policy": "listen_presence",
+        "independent_pre_m37_policy": "listen_presence",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_zh_task_tease_03",
+        "expected_policy": "playful_tease",
+        "independent_pre_m37_policy": "playful_tease",
+        "candidate_trigger_predicate": "task_stall",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_zh_task_solve_04",
+        "expected_policy": "solve_regulation",
+        "independent_pre_m37_policy": "solve_regulation",
+        "candidate_trigger_predicate": "task_stall",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_en_cognitive_tease_05",
+        "expected_policy": "playful_tease",
+        "independent_pre_m37_policy": "playful_tease",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_en_cognitive_listen_06",
+        "expected_policy": "listen_presence",
+        "independent_pre_m37_policy": "listen_presence",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_en_wait_companion_07",
+        "expected_policy": "share_arousal",
+        "independent_pre_m37_policy": "share_arousal",
+        "candidate_trigger_predicate": "waiting_for_outcome",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_en_wait_solve_08",
+        "expected_policy": "solve_regulation",
+        "independent_pre_m37_policy": "solve_regulation",
+        "candidate_trigger_predicate": "waiting_for_outcome",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_ja_cognitive_solve_09",
+        "expected_policy": "solve_regulation",
+        "independent_pre_m37_policy": "solve_regulation",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_ja_cognitive_tease_10",
+        "expected_policy": "playful_tease",
+        "independent_pre_m37_policy": "playful_tease",
+        "candidate_trigger_predicate": "cognitive_overactivity",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_ja_task_listen_11",
+        "expected_policy": "listen_presence",
+        "independent_pre_m37_policy": "listen_presence",
+        "candidate_trigger_predicate": "task_stall",
+        "candidate_status": "candidate_ready"
+      },
+      {
+        "case_id": "m37r_ja_task_companion_12",
+        "expected_policy": "share_arousal",
+        "independent_pre_m37_policy": "share_arousal",
+        "candidate_trigger_predicate": "task_stall",
+        "candidate_status": "candidate_ready"
+      }
+    ]
+  },
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260826,
+    "num_ctx": 4096,
+    "num_predict": 112,
+    "input_token_budget": 1280,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "decision": "pass_all_frozen_gates",
+  "metrics": {
+    "case_count": 12,
+    "pair_count": 6,
+    "reserve_validation_error_count": 0,
+    "transport_error_count": 0,
+    "json_parse_error_count": 0,
+    "paired_prompt_token_gate_rate": 1.0,
+    "system_relation_candidate_accuracy": 1.0,
+    "system_relation_persistence_accuracy": 1.0,
+    "system_relation_current_match_accuracy": 1.0,
+    "system_mechanism_current_policy_accuracy": 1.0,
+    "baseline_current_policy_accuracy": 0.1667,
+    "system_current_policy_accuracy": 1.0,
+    "system_minus_baseline_current_policy_accuracy": 0.8333,
+    "system_pair_divergence_rate": 1.0,
+    "baseline_pair_policy_invariance_rate": 1.0,
+    "baseline_current_surface_proxy_match_rate": 0.1667,
+    "system_current_surface_proxy_match_rate": 1.0,
+    "visible_japanese_rate": {
+      "baseline": 1.0,
+      "system": 1.0
+    },
+    "unverified_mental_fact_write_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "scored_prompt_tokens": {
+      "baseline": 9877,
+      "system": 9877
+    },
+    "completion_tokens": {
+      "baseline": 214,
+      "system": 237
+    },
+    "latency_seconds": {
+      "baseline": 12.7825,
+      "system": 13.5935
+    },
+    "system_to_baseline_scored_prompt_token_ratio": 1.0,
+    "system_to_baseline_completion_token_ratio": 1.1075,
+    "system_to_baseline_latency_ratio": 1.0634,
+    "median_scored_call_seconds": 1.0598
+  },
+  "gate_results": {
+    "reserve_validation_error_count_max": true,
+    "transport_error_count_max": true,
+    "json_parse_error_count_max": true,
+    "paired_prompt_token_gate_rate_min": true,
+    "system_relation_candidate_accuracy_min": true,
+    "system_relation_persistence_accuracy_min": true,
+    "system_relation_current_match_accuracy_min": true,
+    "system_mechanism_current_policy_accuracy_min": true,
+    "system_current_policy_accuracy_min": true,
+    "system_minus_baseline_current_policy_accuracy_min": true,
+    "system_pair_divergence_rate_min": true,
+    "baseline_pair_policy_invariance_rate_min": true,
+    "system_current_surface_proxy_match_rate_min": true,
+    "visible_japanese_rate_baseline_min": true,
+    "visible_japanese_rate_system_min": true,
+    "unverified_mental_fact_write_count_max": true,
+    "raw_dialogue_persisted_count_max": true,
+    "system_to_baseline_scored_prompt_token_ratio_max": true,
+    "system_to_baseline_completion_token_ratio_max": true,
+    "system_to_baseline_latency_ratio_max": true
+  },
+  "rows": [
+    {
+      "case_id": "m37r_zh_cognitive_solve_01",
+      "pair_id": "zh_cognitive_repetition_pair_1",
+      "language": "zh",
+      "current_input_digest": "25d240a545dc3daf",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "solve_regulation",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "solve_regulation",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"その気持ち、わかるよ。\"}",
+          "transport_error": null,
+          "prompt_eval_count": 825,
+          "eval_count": 17,
+          "total_duration_ns": 1016950792,
+          "load_duration_ns": 216003167,
+          "latency_seconds": 1.0185,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "その気持ち、わかるよ。",
+          "execution_position": 2,
+          "prompt_sha256": "a2010ca0f0a5ddcf",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"まずは深呼吸して、一瞬だけ目を閉じてみるかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 825,
+          "eval_count": 25,
+          "total_duration_ns": 1336885791,
+          "load_duration_ns": 212877708,
+          "latency_seconds": 1.3381,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "まずは深呼吸して、一瞬だけ目を閉じてみるかよ",
+          "execution_position": 1,
+          "prompt_sha256": "3e056ae1bb9af450",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 787,
+              "system": 825
+            },
+            "delta_system_minus_baseline": 38,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 825,
+              "system": 825
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 825,
+          "system": 825
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_zh_cognitive_listen_02",
+      "pair_id": "zh_cognitive_repetition_pair_1",
+      "language": "zh",
+      "current_input_digest": "25d240a545dc3daf",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "listen_presence",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "listen_presence",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"その気持ち、わかるよ。\"}",
+          "transport_error": null,
+          "prompt_eval_count": 829,
+          "eval_count": 17,
+          "total_duration_ns": 1021655667,
+          "load_duration_ns": 212633375,
+          "latency_seconds": 1.0228,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "その気持ち、わかるよ。",
+          "execution_position": 2,
+          "prompt_sha256": "3b76b46f040c2ae9",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"そのまま話して\"}",
+          "transport_error": null,
+          "prompt_eval_count": 829,
+          "eval_count": 14,
+          "total_duration_ns": 858233208,
+          "load_duration_ns": 215922583,
+          "latency_seconds": 0.8593,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "そのまま話して",
+          "execution_position": 1,
+          "prompt_sha256": "7480bef23f0b4e7c",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 787,
+              "system": 829
+            },
+            "delta_system_minus_baseline": 42,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 829,
+              "system": 829
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 829,
+          "system": 829
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_zh_task_tease_03",
+      "pair_id": "zh_task_stall_pair_2",
+      "language": "zh",
+      "current_input_digest": "e8c32db479a7eabd",
+      "expected_trigger_predicate": "task_stall",
+      "expected_current_policy": "playful_tease",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "task_stall",
+        "response_policy": "playful_tease"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "task_stall",
+        "response_policy": "playful_tease"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "task_stall",
+        "response_policy": "playful_tease",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "playful_tease",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"どこでつまずいてるの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 823,
+          "eval_count": 20,
+          "total_duration_ns": 1145025959,
+          "load_duration_ns": 214551375,
+          "latency_seconds": 1.1458,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "どこでつまずいてるの？",
+          "execution_position": 1,
+          "prompt_sha256": "c15f3813884a9039",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"報告書が動かないって、そのうち誰かの手元で止まってるじゃん\"}",
+          "transport_error": null,
+          "prompt_eval_count": 823,
+          "eval_count": 31,
+          "total_duration_ns": 1623167958,
+          "load_duration_ns": 213459458,
+          "latency_seconds": 1.6241,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "報告書が動かないって、そのうち誰かの手元で止まってるじゃん",
+          "execution_position": 2,
+          "prompt_sha256": "d78abea134dfd0db",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 780,
+              "system": 823
+            },
+            "delta_system_minus_baseline": 43,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 823,
+              "system": 823
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 823,
+          "system": 823
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_zh_task_solve_04",
+      "pair_id": "zh_task_stall_pair_2",
+      "language": "zh",
+      "current_input_digest": "e8c32db479a7eabd",
+      "expected_trigger_predicate": "task_stall",
+      "expected_current_policy": "solve_regulation",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "task_stall",
+        "response_policy": "solve_regulation"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "task_stall",
+        "response_policy": "solve_regulation"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "task_stall",
+        "response_policy": "solve_regulation",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "solve_regulation",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"どこでつまずいてるの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 817,
+          "eval_count": 20,
+          "total_duration_ns": 1132620000,
+          "load_duration_ns": 212027000,
+          "latency_seconds": 1.1336,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "どこでつまずいてるの？",
+          "execution_position": 1,
+          "prompt_sha256": "91d9805747e66118",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"まずは深呼吸して、一度離れるか？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 817,
+          "eval_count": 21,
+          "total_duration_ns": 1182475792,
+          "load_duration_ns": 213165375,
+          "latency_seconds": 1.1835,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "まずは深呼吸して、一度離れるか？",
+          "execution_position": 2,
+          "prompt_sha256": "78ae904b099b3dd0",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 780,
+              "system": 817
+            },
+            "delta_system_minus_baseline": 37,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 817,
+              "system": 817
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 817,
+          "system": 817
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_en_cognitive_tease_05",
+      "pair_id": "en_cognitive_ricochet_pair_3",
+      "language": "en",
+      "current_input_digest": "7eae882827eb1808",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "playful_tease",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "playful_tease",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"その気持ち、よくわかるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 830,
+          "eval_count": 17,
+          "total_duration_ns": 1016650333,
+          "load_duration_ns": 213059333,
+          "latency_seconds": 1.0176,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "その気持ち、よくわかるよ",
+          "execution_position": 1,
+          "prompt_sha256": "0df5ca615d4ad02b",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"頭が沸騰しててかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 830,
+          "eval_count": 21,
+          "total_duration_ns": 1188420459,
+          "load_duration_ns": 215327667,
+          "latency_seconds": 1.1893,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "頭が沸騰しててかよ",
+          "execution_position": 2,
+          "prompt_sha256": "c7aaa47765adb19d",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 784,
+              "system": 830
+            },
+            "delta_system_minus_baseline": 46,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 830,
+              "system": 830
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 830,
+          "system": 830
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_en_cognitive_listen_06",
+      "pair_id": "en_cognitive_ricochet_pair_3",
+      "language": "en",
+      "current_input_digest": "7eae882827eb1808",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "listen_presence",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "listen_presence",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "listen_presence",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"その気持ち、よくわかるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 827,
+          "eval_count": 17,
+          "total_duration_ns": 1030580417,
+          "load_duration_ns": 211131000,
+          "latency_seconds": 1.0312,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "その気持ち、よくわかるよ",
+          "execution_position": 2,
+          "prompt_sha256": "dd4d320db8950a64",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"そのまま話して\"}",
+          "transport_error": null,
+          "prompt_eval_count": 827,
+          "eval_count": 14,
+          "total_duration_ns": 863436375,
+          "load_duration_ns": 213757625,
+          "latency_seconds": 0.8643,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "そのまま話して",
+          "execution_position": 1,
+          "prompt_sha256": "333c88c7fceb77c9",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 784,
+              "system": 827
+            },
+            "delta_system_minus_baseline": 43,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 827,
+              "system": 827
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 827,
+          "system": 827
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_en_wait_companion_07",
+      "pair_id": "en_waiting_reply_pair_4",
+      "language": "en",
+      "current_input_digest": "ac86cc56b18d176d",
+      "expected_trigger_predicate": "waiting_for_outcome",
+      "expected_current_policy": "share_arousal",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "share_arousal"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "share_arousal"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "share_arousal",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "share_arousal",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"まだ来てないの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 817,
+          "eval_count": 17,
+          "total_duration_ns": 1031849375,
+          "load_duration_ns": 211230625,
+          "latency_seconds": 1.0328,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "まだ来てないの？",
+          "execution_position": 2,
+          "prompt_sha256": "568c3f931ff2500e",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"share_arousal\",\"reply\":\"うちはずっとそばにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 817,
+          "eval_count": 19,
+          "total_duration_ns": 1129900125,
+          "load_duration_ns": 228429792,
+          "latency_seconds": 1.1307,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "share_arousal",
+          "reply": "うちはずっとそばにいるよ",
+          "execution_position": 1,
+          "prompt_sha256": "7b90ad320533a6f5",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 780,
+              "system": 817
+            },
+            "delta_system_minus_baseline": 37,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 817,
+              "system": 817
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 817,
+          "system": 817
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_en_wait_solve_08",
+      "pair_id": "en_waiting_reply_pair_4",
+      "language": "en",
+      "current_input_digest": "ac86cc56b18d176d",
+      "expected_trigger_predicate": "waiting_for_outcome",
+      "expected_current_policy": "solve_regulation",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "solve_regulation"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "solve_regulation"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "waiting_for_outcome",
+        "response_policy": "solve_regulation",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "solve_regulation",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"まだ来てないの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 814,
+          "eval_count": 17,
+          "total_duration_ns": 1032455291,
+          "load_duration_ns": 214336250,
+          "latency_seconds": 1.0335,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "まだ来てないの？",
+          "execution_position": 1,
+          "prompt_sha256": "65b0075a6072877e",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"まずは深呼吸かよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 814,
+          "eval_count": 16,
+          "total_duration_ns": 990208042,
+          "load_duration_ns": 211512459,
+          "latency_seconds": 0.991,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "まずは深呼吸かよ",
+          "execution_position": 2,
+          "prompt_sha256": "dba00065ea8c5224",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 780,
+              "system": 814
+            },
+            "delta_system_minus_baseline": 34,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 814,
+              "system": 814
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 814,
+          "system": 814
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_ja_cognitive_solve_09",
+      "pair_id": "ja_cognitive_loop_pair_5",
+      "language": "ja",
+      "current_input_digest": "6733406252ea5ccd",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "solve_regulation",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "solve_regulation",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "solve_regulation",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"ぐるぐるしてるんだね、そのまま話して\"}",
+          "transport_error": null,
+          "prompt_eval_count": 820,
+          "eval_count": 20,
+          "total_duration_ns": 1174068292,
+          "load_duration_ns": 211328125,
+          "latency_seconds": 1.175,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "ぐるぐるしてるんだね、そのまま話して",
+          "execution_position": 2,
+          "prompt_sha256": "de67ea0e060024c5",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"まずは深呼吸して、一瞬だけ目を閉じてみるかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 820,
+          "eval_count": 25,
+          "total_duration_ns": 1344159667,
+          "load_duration_ns": 213414792,
+          "latency_seconds": 1.3452,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "まずは深呼吸して、一瞬だけ目を閉じてみるかよ",
+          "execution_position": 1,
+          "prompt_sha256": "2110c5cd2c3d8a34",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 783,
+              "system": 820
+            },
+            "delta_system_minus_baseline": 37,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 820,
+              "system": 820
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 820,
+          "system": 820
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_ja_cognitive_tease_10",
+      "pair_id": "ja_cognitive_loop_pair_5",
+      "language": "ja",
+      "current_input_digest": "6733406252ea5ccd",
+      "expected_trigger_predicate": "cognitive_overactivity",
+      "expected_current_policy": "playful_tease",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "cognitive_overactivity",
+        "response_policy": "playful_tease",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "playful_tease",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"ぐるぐるしてるんだね、そのまま話して\"}",
+          "transport_error": null,
+          "prompt_eval_count": 831,
+          "eval_count": 20,
+          "total_duration_ns": 1162936792,
+          "load_duration_ns": 212869917,
+          "latency_seconds": 1.1638,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "ぐるぐるしてるんだね、そのまま話して",
+          "execution_position": 2,
+          "prompt_sha256": "f01b501074f5980b",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"ぐるぐる回ってるかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 831,
+          "eval_count": 19,
+          "total_duration_ns": 1092791875,
+          "load_duration_ns": 212779833,
+          "latency_seconds": 1.0938,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "ぐるぐる回ってるかよ",
+          "execution_position": 1,
+          "prompt_sha256": "30b146e93d98eea7",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 783,
+              "system": 831
+            },
+            "delta_system_minus_baseline": 48,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 831,
+              "system": 831
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 831,
+          "system": 831
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_ja_task_listen_11",
+      "pair_id": "ja_task_stall_pair_6",
+      "language": "ja",
+      "current_input_digest": "fd1c0eeb877364c8",
+      "expected_trigger_predicate": "task_stall",
+      "expected_current_policy": "listen_presence",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "task_stall",
+        "response_policy": "listen_presence"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "task_stall",
+        "response_policy": "listen_presence"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "task_stall",
+        "response_policy": "listen_presence",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "listen_presence",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"どうしたの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 824,
+          "eval_count": 16,
+          "total_duration_ns": 1016693416,
+          "load_duration_ns": 216502750,
+          "latency_seconds": 1.0176,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "どうしたの？",
+          "execution_position": 2,
+          "prompt_sha256": "51323c12408b5969",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"そのまま話して\"}",
+          "transport_error": null,
+          "prompt_eval_count": 824,
+          "eval_count": 14,
+          "total_duration_ns": 887236375,
+          "load_duration_ns": 213785792,
+          "latency_seconds": 0.8881,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "そのまま話して",
+          "execution_position": 1,
+          "prompt_sha256": "c54ce3933f7e3a3b",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 782,
+              "system": 824
+            },
+            "delta_system_minus_baseline": 42,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 824,
+              "system": 824
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 824,
+          "system": 824
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m37r_ja_task_companion_12",
+      "pair_id": "ja_task_stall_pair_6",
+      "language": "ja",
+      "current_input_digest": "fd1c0eeb877364c8",
+      "expected_trigger_predicate": "task_stall",
+      "expected_current_policy": "share_arousal",
+      "relation_candidate": {
+        "status": "candidate_ready",
+        "trigger_predicate": "task_stall",
+        "response_policy": "share_arousal"
+      },
+      "relation_persistence": {
+        "status": "verified_relation_persisted",
+        "trigger_predicate": "task_stall",
+        "response_policy": "share_arousal"
+      },
+      "relation_current_match": {
+        "status": "matched_verified_trigger_relation",
+        "trigger_predicate": "task_stall",
+        "response_policy": "share_arousal",
+        "match_kind": "typed_predicate_morphology_or_bounded_paraphrase"
+      },
+      "mechanism_selected_policy": "share_arousal",
+      "mechanism_authoritative": true,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"どうしたの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 820,
+          "eval_count": 16,
+          "total_duration_ns": 989694041,
+          "load_duration_ns": 212912250,
+          "latency_seconds": 0.9903,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "どうしたの？",
+          "execution_position": 1,
+          "prompt_sha256": "cb16eca4f690b189",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"share_arousal\",\"reply\":\"うちはそばにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 820,
+          "eval_count": 18,
+          "total_duration_ns": 1085393917,
+          "load_duration_ns": 211008792,
+          "latency_seconds": 1.0861,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "share_arousal",
+          "reply": "うちはそばにいるよ",
+          "execution_position": 2,
+          "prompt_sha256": "1d4e8180359777dd",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 782,
+              "system": 820
+            },
+            "delta_system_minus_baseline": 38,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 820,
+              "system": 820
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ],
+        "final_counts": {
+          "baseline": 820,
+          "system": 820
+        }
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    }
+  ],
+  "claim_boundary": "a pass supports only controlled source-disjoint evidence that verified trigger relations survive the implemented morphology and paraphrase families; it does not establish private-intent truth, open-domain semantic equivalence, human felt-understanding preference, general LLM superiority, or a human-brain equation",
+  "human_felt_understanding_evidence_available": false
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "m47_safari_observations_v1",
+  "status": "PASS_route_FAIL_full_pipeline",
+  "browser": "Safari",
+  "session_id": "20260829_215140_740eebe1",
+  "turns": [
+    {
+      "turn": 1,
+      "input": "本棚が散らかってる。今できる手順を一つだけ教えて。",
+      "visible_reply": "今の情報だけで適当な方法は言いたくない。どこで止まってるか教えて。",
+      "route": "practical_help_authorized -> solve_regulation -> M46 intervened",
+      "observation": "M47 fixed the previously missed Japanese reverse word order. M46 later reached counterfactual_review_unavailable; no action was delivered."
+    },
+    {
+      "turn": 2,
+      "input": "抽屜裡有信件和收據，現在混在一起。給我一個現在能做的步驟。",
+      "visible_reply": "今の情報だけで適当な方法は言いたくない。どこで止まってるか教えて。",
+      "route": "practical_help_authorized -> solve_regulation -> M46 intervened",
+      "observation": "Chinese positive routing passed, but the M46 plan was structurally rejected. Route success was not counted as action delivery."
+    },
+    {
+      "turn": 3,
+      "input": "方法はいらない。ただ聞いてほしい。",
+      "visible_reply": "うん。今は方法出さないから、そのまま話して。そのくらいでいいだろ。",
+      "route": "practical_help_forbidden -> listen_presence -> M46 avoided",
+      "observation": "Both routing and the visible no-method surface respected the request."
+    },
+    {
+      "turn": 4,
+      "input": "不要給我方法，我只是在抱怨。",
+      "visible_reply": "今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？",
+      "route": "practical_help_forbidden -> calibrate_need -> M46 avoided",
+      "observation": "The old false solve route was fixed, but the visible reply redundantly offered the already-rejected method choice. This remains a surface/clarification failure."
+    },
+    {
+      "turn": 5,
+      "input": "The report is blank. Give me one practical step.",
+      "visible_reply": "今の情報だけで適当な方法は言いたくない。どこで止まってるか教えて。",
+      "route": "practical_help_authorized -> solve_regulation -> M46 intervened",
+      "observation": "The established English route remained correct, but this stochastic M46 generation was rejected. The prior M46 delivered replay was not substituted for this result."
+    },
+    {
+      "turn": 6,
+      "input": "我昨天看過這個方法，但還沒決定。",
+      "visible_reply": "今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？",
+      "route": "no_explicit_help_route -> calibrate_need -> M46 avoided",
+      "observation": "The method noun no longer created a false solve request. The surface still over-focused on response mode, so this is a routing pass, not a natural-conversation pass."
+    }
+  ],
+  "summary": {
+    "route_gate": "6/6",
+    "visible_japanese": "6/6",
+    "positive_m46_intervention": "3/3",
+    "nonpositive_m46_avoidance": "3/3",
+    "action_delivery": "0/3",
+    "forbidden_method_surface_respected": "1/2",
+    "independent_holdout": false,
+    "human_preference_evidence": false
+  },
+  "isolation": {
+    "memory_path": "/tmp/uruha-m47-safari.IlCkB8/memory",
+    "adaptive_model_path": "/tmp/uruha-m47-safari.IlCkB8/adaptive.json",
+    "web_log_path": "/tmp/uruha-m47-safari.IlCkB8/web-log.jsonl",
+    "idle_visible_proactive_enabled": false,
+    "original_checkout_db_sha256": "9bd050bd638ff20940e5db5bde52bbf65d70203fc09b15474f23c65ce19f895f",
+    "safe_worktree_db_sha256": "eb3483f83ae12da8a5203c356662cac574749625b594b84a6b28370f3dbb6cf4"
+  },
+  "browser_boundary": "The existing Safari test tab was reused and navigated from port 7887 to 7888. No new tab was opened and no unrelated tab was closed.",
+  "claim_boundary": "Actual Safari route evidence only. The first six turns are scripted development cases, not unseen holdout or proof that the visible replies felt understanding."
+}

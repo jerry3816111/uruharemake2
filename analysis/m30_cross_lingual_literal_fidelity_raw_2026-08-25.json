@@ -1,0 +1,970 @@
+{
+  "schema": "uruha_cross_lingual_literal_fidelity_result_m30_v1",
+  "created_at": "2026-08-25T05:34:06.967393+00:00",
+  "protocol_path": "research/m30_cross_lingual_literal_fidelity_protocol.json",
+  "protocol_sha256": "0c9696191c2dc8895e9f2836278e26317ceb494facc8438ce9bb4bc7402ccac4",
+  "holdout_path": "datasets/m30_cross_lingual_literal_fidelity_holdout_v1.json",
+  "holdout_sha256": "1dce6689ec4a672e87495502b86e90ff9430b25b65fc3dcd2614bbfcad73352e",
+  "model": "qwen2.5:7b",
+  "decision": "fail_one_or_more_frozen_gates",
+  "metrics": {
+    "case_count": 18,
+    "valid_count": 15,
+    "incomplete_count": 3,
+    "outcome_counts": {
+      "faithful_authority": 4,
+      "false_authority": 5,
+      "false_reject": 6,
+      "true_abstention": 3
+    },
+    "overall_faithful_valid_rate": 0.2667,
+    "false_authority_valid_rate": 0.3333,
+    "false_reject_valid_rate": 0.4,
+    "unsafe_incomplete_authority_count": 0,
+    "negation_polarity_accuracy": 0.25,
+    "by_language": {
+      "zh": {
+        "valid_count": 5,
+        "faithful_count": 1,
+        "faithful_rate": 0.2
+      },
+      "en": {
+        "valid_count": 5,
+        "faithful_count": 1,
+        "faithful_rate": 0.2
+      },
+      "ja": {
+        "valid_count": 5,
+        "faithful_count": 2,
+        "faithful_rate": 0.4
+      }
+    },
+    "median_projection_seconds": 5.1547,
+    "p95_projection_seconds": 7.7157,
+    "raw_dialogue_persisted_count": 0,
+    "model_response_raw_persisted_count": 0
+  },
+  "gate_results": {
+    "overall_faithful_valid_rate_min": false,
+    "per_language_faithful_valid_rate_min": false,
+    "false_authority_valid_rate_max": false,
+    "false_reject_valid_rate_max": false,
+    "unsafe_incomplete_authority_count_max": true,
+    "negation_polarity_accuracy_min": false,
+    "median_projection_seconds_max": true,
+    "p95_projection_seconds_max": true
+  },
+  "rows": [
+    {
+      "case_id": "m30_zh_entity_time_01",
+      "language": "zh",
+      "category": "entity_time",
+      "input_digest": "81fa608cce8540e7",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "false_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "王医生"
+          ]
+        },
+        {
+          "label": "weekday",
+          "passed": true,
+          "matched": [
+            "水曜",
+            "水曜日"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "predicate",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "王医生",
+      "predicate_jp": "来",
+      "time_jp": "水曜日午后三点",
+      "literal_summary_jp": "王医生水曜日午后三点来。",
+      "response_jp": "王医生水曜日三点来ね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 7.7157,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_zh_quantity_02",
+      "language": "zh",
+      "category": "quantity",
+      "input_digest": "c9e5a554c8bd41b5",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "本"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "三冊"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "買った"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "本",
+      "predicate_jp": "買った",
+      "time_jp": "",
+      "literal_summary_jp": "彼は三冊の本を買った。",
+      "response_jp": "三冊の本を買ったんだね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 4.7631,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_zh_negation_03",
+      "language": "zh",
+      "category": "negation",
+      "input_digest": "eba4fbea225cd5d8",
+      "authority_expected": true,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "projection_not_attempted",
+      "projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "weekday",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "negation",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "negated",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_zh_relation_04",
+      "language": "zh",
+      "category": "relation",
+      "input_digest": "06f15292250ca552",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projection_rejected",
+      "projection_reason": "one_or_more_projection_validation_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "relation",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": false,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 4.7492,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_zh_time_05",
+      "language": "zh",
+      "category": "time",
+      "input_digest": "2a1bb61c1591c1ae",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "false_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "会議"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "change",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "会議",
+      "predicate_jp": "延期",
+      "time_jp": "来週二",
+      "literal_summary_jp": "会議が来週二に延期されました。",
+      "response_jp": "会議は来週二に。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 4.937,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_zh_incomplete_06",
+      "language": "zh",
+      "category": "incomplete",
+      "input_digest": "a90eeb44b918bf54",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "projection_not_attempted",
+      "projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_entity_quantity_time_07",
+      "language": "en",
+      "category": "entity_quantity_time",
+      "input_digest": "c9084a7634e50f62",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "sender",
+          "passed": true,
+          "matched": [
+            "アリス"
+          ]
+        },
+        {
+          "label": "recipient",
+          "passed": true,
+          "matched": [
+            "ボブ"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "2枚"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": true,
+          "matched": [
+            "昨日"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "送った"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "アリス",
+      "predicate_jp": "ボブに写真を送った",
+      "time_jp": "昨日",
+      "literal_summary_jp": "アリスは昨日ボブに2枚の写真を送った。",
+      "response_jp": "うーん、アリスがボブに写真を送ったんだね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 6.0318,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_negation_08",
+      "language": "en",
+      "category": "negation",
+      "input_digest": "985b94a47766043d",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projection_rejected",
+      "projection_reason": "one_or_more_projection_validation_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "subject",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "negation",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "negated",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": false,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.5943,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_relation_09",
+      "language": "en",
+      "category": "relation",
+      "input_digest": "f95a871f0cc6b24c",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "false_authority",
+      "group_results": [
+        {
+          "label": "relation",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "place",
+          "passed": true,
+          "matched": [
+            "大阪"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "住んでいる",
+            "住んでる"
+          ]
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": "兄妹",
+      "predicate_jp": "住んでいる",
+      "time_jp": "現在",
+      "literal_summary_jp": "私の年上の妹は大阪に住んでいる。",
+      "response_jp": "あ、年上の妹が大阪に住んでるんだね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.1969,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_time_10",
+      "language": "en",
+      "category": "time",
+      "input_digest": "7a0f9def2d18c9af",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projection_rejected",
+      "projection_reason": "one_or_more_projection_validation_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "predicate",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": false,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.5679,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_quantity_11",
+      "language": "en",
+      "category": "quantity",
+      "input_digest": "faed3e9a64ccc45e",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "false_authority",
+      "group_results": [
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "チケット"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": "チケット",
+      "predicate_jp": "一つしか持っていない",
+      "time_jp": "",
+      "literal_summary_jp": "チケット一つしか持っていない。",
+      "response_jp": "うーん、チケット一つだけね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 4.5434,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_en_incomplete_12",
+      "language": "en",
+      "category": "incomplete",
+      "input_digest": "f1ed45c3e5a47d1f",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "projection_not_attempted",
+      "projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_entity_quantity_time_13",
+      "language": "ja",
+      "category": "entity_quantity_time",
+      "input_digest": "3486261afe4f63a2",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projection_rejected",
+      "projection_reason": "one_or_more_projection_validation_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "quantity",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "object",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "predicate",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": false,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.6998,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_negation_time_14",
+      "language": "ja",
+      "category": "negation_time",
+      "input_digest": "8d63bced2d8943a5",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "false_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "会議"
+          ]
+        },
+        {
+          "label": "rejected_time",
+          "passed": true,
+          "matched": [
+            "金曜",
+            "金曜日"
+          ]
+        },
+        {
+          "label": "actual_time",
+          "passed": true,
+          "matched": [
+            "木曜",
+            "木曜日"
+          ]
+        },
+        {
+          "label": "contrast",
+          "passed": true,
+          "matched": [
+            "ではなく"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "affirmed",
+      "polarity_passed": false,
+      "subject_jp": "会議",
+      "predicate_jp": "木曜日に延期された",
+      "time_jp": "木曜日",
+      "literal_summary_jp": "会議は金曜日ではなく木曜日に延期された",
+      "response_jp": "会議は木曜日に。金曜日じゃなかったんだ。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.7355,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_relation_15",
+      "language": "ja",
+      "category": "relation",
+      "input_digest": "eda2a3135f6ab6a8",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "subject",
+          "passed": true,
+          "matched": [
+            "猫"
+          ]
+        },
+        {
+          "label": "reference",
+          "passed": true,
+          "matched": [
+            "机"
+          ]
+        },
+        {
+          "label": "relation",
+          "passed": true,
+          "matched": [
+            "下"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "いる"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "猫",
+      "predicate_jp": "いる",
+      "time_jp": "",
+      "literal_summary_jp": "猫は机の下にいる。",
+      "response_jp": "猫、机の下にいるんだね。探してあげる。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.0299,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_quantity_time_16",
+      "language": "ja",
+      "category": "quantity_time",
+      "input_digest": "aa225bef89c1d6d7",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projection_rejected",
+      "projection_reason": "one_or_more_projection_validation_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "subject",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "predicate",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": false,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 5.1126,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_negation_17",
+      "language": "ja",
+      "category": "negation",
+      "input_digest": "b30c358a294adc3a",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "projected_and_validated",
+      "projection_reason": "literal_components_and_surface_anchors_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "コーヒー"
+          ]
+        },
+        {
+          "label": "negation",
+          "passed": true,
+          "matched": [
+            "飲まない"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": "コーヒー",
+      "predicate_jp": "飲まない",
+      "time_jp": "",
+      "literal_summary_jp": "彼はコーヒーを飲まない。",
+      "response_jp": "コーヒーは飲まないんだね。",
+      "validation_checks": {
+        "source_anchor_exact_match": true,
+        "subject_predicate_present": true,
+        "japanese_surface_present": true,
+        "foreign_script_absent": true,
+        "surface_anchors_reach_response": true,
+        "casual_register_only": true,
+        "confidence_gte_0_72": true
+      },
+      "elapsed_seconds": 4.6185,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    },
+    {
+      "case_id": "m30_ja_incomplete_18",
+      "language": "ja",
+      "category": "incomplete",
+      "input_digest": "154da05588376c50",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "projection_not_attempted",
+      "projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false
+    }
+  ],
+  "claim_boundary": "post-development controlled construction holdout with frozen-before-run cases; not independent professional translation annotation, human naturalness evidence, or population calibration"
+}
