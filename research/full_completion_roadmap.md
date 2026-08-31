@@ -25,7 +25,10 @@ The dependency order is fixed:
 9. **M62** — replicate the decisive result on a second base model and close the graphical evidence audit.
 
 M54 passed its contract gate on 2026-09-01; see
-`analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`. The active dependency is now M55.
+`analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`. M55 pre-content readiness also
+passes, but its real-person pilot is blocked at the frozen two-human V7 reliability gate: both ledgers
+are 0/18, so Uruha target events and coders remain zero and M56 is not authorized. See
+`analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`.
 
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
@@ -101,7 +104,7 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M37 | typed observable-trigger → response-policy relation with morphology/paraphrase normalization | complete bounded milestone |
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
-| M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | active current milestone |
+| M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content ready; blocked on two-human reliability and target coding |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 

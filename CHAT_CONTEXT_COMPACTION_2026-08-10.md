@@ -1155,17 +1155,35 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 - Desktop Goal API不能改寫仍未完成的paused objective；舊Goal未被假標完成。專案交接與roadmap已
   將M54–M75設為最高優先；若要讓桌面Goal排程顯示新文字，仍需使用者在UI replace/resume。
 
+### 7.69 2026-09-01 M55 readiness：前內容與時間隔離已通過，真人資料pilot被可靠度gate阻擋
+
+- 新增 `audit_m55_real_person_longitudinal_readiness.py`，把M54 Equation V1接到既有V7 codebook
+  reliability與V9 Uruha target-calibration資料線；它只讀hash／count／gate，不讀或上傳私人標註內容。
+- pre-content gates全通過：M54契約有效、V7/V9凍結binding有效、3個官方Uruha來源有publication date、
+  30個內容無關target slots平衡、final sealed future在frame中為0。
+- 真正M55仍 **BLOCKED**：兩份V7 private ledger目前0/18與0/18、reliability lock不存在；因此V9仍是
+  target event 0/30、independent review 0/30、human coder 0，M56明確不授權。Codex不得假造第二真人
+  或用synthetic/model labels補過此gate。
+- 聚焦 **8/8**；含M54與V7/V9凍結result tests的相容組 **34/34**。圖像renderer顯示
+  `M54 → V7 → V9 → M55 → M56`，並驗證不洩漏token、URL或私人paraphrase。報告
+  `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`。
+- 兩個本機隔離V7服務已啟動在ports 7901/7902；Safari現開coder-01的0/18頁。session token不寫進Git，
+  重啟會改。coder-02必須由不同真人在同一台Mac獨立完成；任一人都不能看另一份ledger。
+- 只有兩份18-slot ledger完成且既有analyzer達成mean temporal IoU≥0.5、所有primary nominal
+  Krippendorff alpha≥0.667後，才可啟動V9兩人30-slot Uruha calibration；否則保留舊ledger、修codebook、
+  用新preregistered pilot重試。這是第9節允許停下的真人主觀判斷硬gate，不是程式等待確認。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
 
 1. `CHAT_CONTEXT_COMPACTION_2026-08-10.md`
 2. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
-3. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-4. `research/full_completion_roadmap.md`
-5. `configs/m54_human_response_equation_v1.json`
-6. `uruha_human_response_equation_m54.py`
-7. `uruha_brain_mac.py`
+3. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
+4. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+5. `research/full_completion_roadmap.md`
+6. `configs/m54_human_response_equation_v1.json`
+7. `audit_m55_real_person_longitudinal_readiness.py`
 8. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：

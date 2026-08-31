@@ -11,6 +11,12 @@
 > `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`；下一個單一里程碑是M55，
 > 不要重跑或結果後修改M54。M55只建立timestamped real-person longitudinal pilot、codebook與
 > reliability／missingness證據，不能先做M56模型勝負，也不能用sealed future調Equation V1。
+>
+> **M55最新狀態：pre-content PASS，real-person pilot BLOCKED。** 先讀
+> `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`。3個Uruha來源、30個凍結slots與
+> future排除已有效；但V7兩份ledger仍0/18、無reliability lock，故V9 target event/coder仍為0，
+> M56不得啟動。除非兩位不同真人完成V7並通過凍結可靠度，不能用Codex、模型或synthetic labels
+> 替代。可持續做不消耗holdout且不假造真人證據的工程，但不得把它改稱M55真人結果。
 
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。
