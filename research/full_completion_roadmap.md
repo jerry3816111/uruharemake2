@@ -1,8 +1,38 @@
 # Development-first roadmap
 
-Status date: 2026-08-25  
+Status date: 2026-09-01
 Historical research source: `/Users/jerrychang/Downloads/RESEARCH_SPEC_FOR_CODEX.md`  
 Execution mode: build the working system first; research is retained only as validation and claim control.
+
+## 2026-09-01 human-response-equation validation override
+
+The active objective is no longer another local reply patch. M1–M53 remain immutable engineering and
+research evidence, including their failures, while M54 starts a bounded attempt to validate an
+interpretable person-specific human-response equation. The equation predicts an observable behavior
+distribution from only pre-cutoff evidence; inferred emotion, need, relationship, and persona states
+remain model variables rather than private mental facts.
+
+The dependency order is fixed:
+
+1. **M54** — freeze Equation V1, measurement, provenance, intervention, update, and claim contracts;
+2. **M55** — build a timestamped real-person longitudinal pilot with independent coding reliability;
+3. **M56** — run strict unseen-future B0–B5/Ours comparison under matched model and resource controls;
+4. **M57** — localize perception, retrieval, state, decision, and realization error with oracle substitution;
+5. **M58** — change one falsified variable and use a new sealed holdout;
+6. **M59** — run memory/state/relationship/person-parameter ablation and counterfactual intervention;
+7. **M60** — prospectively test target-user desired-response match and correction retention;
+8. **M61** — transfer the unchanged core equation to a second real person;
+9. **M62** — replicate the decisive result on a second base model and close the graphical evidence audit.
+
+M54 passed its contract gate on 2026-09-01; see
+`analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`. The active dependency is now M55.
+
+M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
+M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
+research must conclude either with bounded positive evidence or rejection of the current equation. A
+negative result is completion; endlessly adding milestones is not. Product maintenance continues only
+where needed for valid measurement, safety, natural Japanese, latency, Web traceability, or later
+voice/VRM/Function Calling integration.
 
 ## 2026-08-24 development-first override
 
@@ -41,7 +71,7 @@ M24 completed these bounded browser requirements:
 
 M25 closes the retained M24 cross-language defect for the implemented explicit cues. M26 closes the narrower operational defect in which the highest implicit utility could be treated as sufficient authority: it now normalizes alternatives, uses scoped outcome reliability, and abstains when evidence is insufficient. It does not establish population calibration, paraphrase-complete semantics, or private-state inference.
 
-M30–M32 are complete negative diagnostic/remediation milestones and retain their frozen failures. M33 is complete as a bounded positive milestone: its exact-source atom ledger passed its first sealed reserve at 12/12 faithful authorities and 3/3 safe incomplete abstentions. M34 is also complete as a bounded positive milestone: 4/4 byte-identical-current counterfactual pairs diverged under verified reversible context, and all support／contradiction／unknown outcomes were traced correctly. M35 is complete as a frozen failed comparison: current desired-response accuracy was 25% for the current-turn-only baseline and 75% for the longitudinal system at exact scored prompt-token parity, but seven gates failed and the feedback-policy metric was invalidated by a frozen annotation audit defect. M36 is now complete as a second frozen failed comparison: annotation integrity passed, while the same-model current-policy observation was 16.67% versus 83.33% at exact token parity; seven mechanism/revision/surface gates still failed. The current product milestone is **M37 Pragmatic Trigger-Relation Normalization**: represent verified future response preferences as typed trigger→policy relations that survive morphology and bounded paraphrase without reserve-sentence templates.
+M30–M32 are complete negative diagnostic/remediation milestones and retain their frozen failures. M33 is complete as a bounded positive milestone: its exact-source atom ledger passed its first sealed reserve at 12/12 faithful authorities and 3/3 safe incomplete abstentions. M34 is also complete as a bounded positive milestone: 4/4 byte-identical-current counterfactual pairs diverged under verified reversible context, and all support／contradiction／unknown outcomes were traced correctly. M35 is complete as a frozen failed comparison: current desired-response accuracy was 25% for the current-turn-only baseline and 75% for the longitudinal system at exact scored prompt-token parity, but seven gates failed and the feedback-policy metric was invalidated by a frozen annotation audit defect. M36 is complete as a second frozen failed comparison: annotation integrity passed, while the same-model current-policy observation was 16.67% versus 83.33% at exact token parity; seven mechanism/revision/surface gates still failed. M37–M53 continued the source-bounded runtime, correction, surface, and actionable-help line; their bounded passes and retained failures remain historical evidence in the handoff. The active equation-validation dependency is now **M55 Timestamped Real-Person Longitudinal Pilot** after M54 passed its contract gate.
 
 ## Active product milestones
 
@@ -68,7 +98,10 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M34 | counterfactual pragmatic branch ledger with context intervention and next-turn verification | complete bounded positive milestone |
 | M35 | same-model current-turn baseline vs longitudinal pragmatic system with cost and correction audit | complete frozen failed milestone; +50pp current proxy observation, seven gates failed |
 | M36 | annotation-integrity validator plus compositional multilingual arousal/response-form/correction linkage | complete frozen failed milestone; +66.66pp current proxy observation, seven gates failed |
-| M37 | typed observable-trigger → response-policy relation with morphology/paraphrase normalization | active current milestone |
+| M37 | typed observable-trigger → response-policy relation with morphology/paraphrase normalization | complete bounded milestone |
+| M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
+| M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
+| M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | active current milestone |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 

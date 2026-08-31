@@ -1,5 +1,17 @@
 # 新任務啟動提示
 
+> **2026-09-01 最高優先續接：** 舊文所有 M32–M53「下一步」只保留為歷史。使用者已把
+> 長期目標改為候選人類反應方程式的前瞻驗證：M54 Equation V1 契約 → M55 真實人物縱向
+> pilot → M56 B0–B5/Ours 未見未來比較 → M57 Oracle 錯誤定位 → M58 單一變因與新 holdout
+> → M59 因果消融／反事實 → M60 desired-response 前瞻驗證 → M61 第二人物 transfer → M62
+> 第二模型重現。允許誠實重試到 M75，之後無論正負停止並總結。先讀
+> `research/m54_human_response_equation_v1_plan_2026-09-01.md`，不得再等待逐 M 確認。
+>
+> **M54已於2026-09-01通過契約gate。** 先讀
+> `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`；下一個單一里程碑是M55，
+> 不要重跑或結果後修改M54。M55只建立timestamped real-person longitudinal pilot、codebook與
+> reliability／missingness證據，不能先做M56模型勝負，也不能用sealed future調Equation V1。
+
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。
 

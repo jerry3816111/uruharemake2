@@ -1,7 +1,16 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-08-25 M30 診斷完成）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M54 啟動）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
+
+> **2026-09-01 最高優先目標覆蓋：** M1–M53 全部結果、失敗與產品能力保留，但不再把
+> 增加局部對話規則當作核心研究完成度。從 M54 起，把現有記憶、狀態、關係、需求、人物
+> 參數、不確定性、預測、結果驗證與誤差更新整理成可觀察、可干預、可否證的候選人類反應
+> 方程式；以一ノ瀬うるは公開可觀察行為作第一人物案例，依 strict temporal holdout 驗證
+> 未見未來預測，而不是宣稱私人心理或生物人腦真值。最樂觀完成線 M62，允許保留失敗並以
+> 全新 sealed data 重試至 M75；M75 是本輪硬停止點，無論正負都必須形成完整結論。詳細順序
+> 見 `research/full_completion_roadmap.md` 的 2026-09-01 override 與
+> `research/m54_human_response_equation_v1_plan_2026-09-01.md`。本覆蓋優先於所有舊「下一步」。
 
 > 最新續接（2026-08-30）：先讀第 7.66 節及 M52 acceptance。
 > M52 已用 deterministic shared-substring object、casual clause ending、explicit existing stop 對齊
@@ -19,7 +28,7 @@
 3. 用 `git status --short --branch` 確認目前分支；2026-08-12 的安全分支是：
    `codex/v2-15-pragmatic-research-showcase`
 4. 讀取本檔與當前里程碑報告，不要先讀 45 萬字的 evolution log。
-5. 先保留既有未提交研究與產品修改，再依第 0.1 節的 development-first 順序執行下一個產品里程碑。
+5. 先保留既有研究與產品結果，再依 2026-09-01 最高優先覆蓋從 M54 持續執行，不等待逐 M 確認。
 
 原始工作樹 `/Users/jerrychang/Desktop/uruharemake2` 有大量歷史 dirty files，不能清除、還原或混入目前研究修改。真正的連續研究工作在上述獨立 worktree。
 
@@ -1115,17 +1124,48 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   category label不能交付；可保留空槽位或結構占位。不得固定寫report答案、不得取代M46整體review。
   英文長句自然化另列。未commit／PR／merge／部署，正式DB未使用，長期Goal未完成。
 
+### 7.67 2026-08-30 M53：來源外具體標籤已阻擋，完整實用建議管線仍未通過
+
+- M53 在 M52/M46 前加入 source-neutral scaffold authorization：來源未明列的具體題目、分類或
+  scaffold label 不得靠 reviewer 猜測後交付；有來源明列時才授權，空白任務則維持安全拒絕。
+- 聚焦測試 **33/33**；選定相容回歸 **319/319**。正式隔離 Safari 五輪中，空白報告的自創標籤
+  被 `unsupported_concrete_scaffold_label_m53` 阻擋；來源明列標籤的案例通過 M53，但 M46 review
+  timeout，沒有冒算交付；顏色分組案例可交付；missing-task 與 no-method 皆安全。
+- 五輪共4個完成模型呼叫、2900 prompt＋1253 completion tokens；M46路徑時間合計約88.17153秒。
+  這證明 bounded source authorization，而不是完整 practical-help、自然度、人評或人腦方程式。
+- M53 原始Web證據在 `analysis/m53_safari_formal_five_turn_raw_2026-08-30.jsonl.gz`；正式DB未使用。
+
+### 7.68 2026-09-01 M54：候選人類反應方程式 V1 契約與runtime圖像接入完成
+
+- 使用者已把主線改為可觀察、可干預、可否證的候選人類反應方程式；M1–M53保留為既有器官與
+  失敗史，不再以局部回覆修補充當最終目標。M54–M62為樂觀完成線，可誠實重試至M75硬停止。
+- M54凍結九個變數 `X/H/M/S/R/N/C/theta/U`、primary observable behavior、secondary desired
+  response policy、downstream utterance、outcome/update、provenance、intervention與claim boundary。
+  read-only adapter不改回覆／決策、不加模型呼叫、不寫長期記憶；未知變數必須保持未知。
+- JSON與compile通過；聚焦 **10/10**；M1–M53選定相容回歸＋M54 **329/329**（46.43秒，3個既有
+  警告）。這不是全歷史suite。
+- 隔離Safari session `20260901_050820_8ba6d32e`：輸入「方法はいらない。ただ聞いてほしい。」
+  得到自然日文「うん。今は方法出さないから、そのまま話して。そのくらいでいいだろ。」；
+  M47阻擋方法生成，M54來源覆蓋由1/9升至7/9，`S/C`保持unknown，primary真人行為分布明確顯示
+  尚未形成，secondary policy已正規化，圖上有唯一M54 node。測試DB與log都在`/tmp`。
+- 驗收報告：`analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`。M54只證明方程式
+  契約可測、可接runtime，不證明真實人物預測、人類等價或LLM優勢。
+- 下一個單一里程碑是 **M55 Timestamped Real-Person Longitudinal Pilot**：先做有時間截止、來源與
+  獨立編碼規則的小型真實人物資料pilot；不能用未來資料回填變數，也不能在sealed future上調式。
+- Desktop Goal API不能改寫仍未完成的paused objective；舊Goal未被假標完成。專案交接與roadmap已
+  將M54–M75設為最高優先；若要讓桌面Goal排程顯示新文字，仍需使用者在UI replace/resume。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
 
 1. `CHAT_CONTEXT_COMPACTION_2026-08-10.md`
-2. `analysis/m33_source_anchored_semantic_atom_acceptance_2026-08-25.md`
-3. `research/full_completion_roadmap.md`
-4. `uruha_adaptive_person_model.py`
-5. `test_cross_lingual_literal_fidelity_m30.py`
-6. `uruha_brain_mac.py`
-7. `uruha_memory_observatory.py`
+2. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
+3. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+4. `research/full_completion_roadmap.md`
+5. `configs/m54_human_response_equation_v1.json`
+6. `uruha_human_response_equation_m54.py`
+7. `uruha_brain_mac.py`
 8. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
