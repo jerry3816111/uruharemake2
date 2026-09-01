@@ -40,6 +40,14 @@
 > Safari的outsider與private圖已通過，未送出表單。現在V7仍0/18＋0/18、V9與real rows仍0/30；
 > 不可用Codex/LLM/synthetic補過。所有pre-target M55工具已齊，下一個真依賴就是兩位不同真人V7。
 
+> **M56 blinded same-model fair-comparison preflight已凍結，但正式執行仍禁止。** 先讀
+> `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`。七組B0–B5/Ours、固定B5 vs
+> Ours primary contrast、prediction packet/outcome key隔離、SHA commitment順序、同模型／硬體／
+> decoding／token規則與Brier＋NLL gate都已在看結果前凍結。focused 17/17，選定相容116/116，
+> Safari圖像頁通過；但model calls與target outcome access都是0，formal result不存在。V7仍0/18＋
+> 0/18、V9與real rows仍0/30，故不可啟動M56 generation。下一個合法動作仍是兩位不同真人完成V7，
+> 通過後依V9→boundary→adjudication→temporal compile順序產生M55 real rows，再重驗preflight後執行。
+
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。
 

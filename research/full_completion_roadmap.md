@@ -51,6 +51,13 @@ retains four source-entry hashes, and rejects automatic averaging, label choice,
 complete synthetic ledger exports a 22-field temporal pack with zero claimed humans and cannot
 authorize M55 or M56. Real use remains V7-gated; real adjudicated rows remain 0/30.
 
+The M56 blinded same-model fair-comparison preflight is now also frozen before any real outcome or model
+generation; see `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`. It fixes all seven
+B0–B5/Ours conditions, the B5 versus Ours primary contrast, answer-key isolation, SHA commitment order,
+same-model/hardware/decoding controls, declared token budgets, and joint Brier/NLL success gates. Contract
+engineering and Safari visualization pass, but this is not an M56 run: model calls and target-outcome
+access are both zero, M55 remains incomplete, and M56 execution remains forbidden.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A
@@ -126,6 +133,7 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
 | M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content, temporal, boundary, and adjudication tools ready; real rows 0/30; blocked on two-human reliability and target coding |
+| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol preflight frozen; execution blocked; 0 model calls and no formal result |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 

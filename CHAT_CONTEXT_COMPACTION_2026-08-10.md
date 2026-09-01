@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M55 雙人切點工具）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M56 公平比較預檢）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1239,6 +1239,29 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 - 目前所有不消耗target content的M55資料工具鏈已齊。下一個不可由Codex替代的依賴是兩位不同真人
   完成V7；通過後才按V9→boundary→adjudication→temporal compile順序使用，不可跳步。
 
+### 7.73 2026-09-01 M56 blinded fair-comparison preflight：規則已先凍結，正式執行仍禁止
+
+- 在任何真人M55 outcome或M56 generation存在前，先凍結七組條件：B0 prior、B1 current X、B2
+  static persona、B3 RAG、B4 full-history summary、B5 structured full history、Ours explicit state
+  transition。固定primary contrast為B5 vs Ours；結果出來後不得換較弱baseline。
+- B1–B5/Ours綁定相同`qwen3.5:9b` artifact、hardware、decoding與每筆input 8192/output 384預算；
+  B0是明列的deterministic exception。B4 summary與Ours upstream成本都需計入；若B5/Ours actual
+  prompt tokens差超過5%，必做exact-token sensitivity。
+- generation只收cutoff前prediction packet；private outcome key完全分離。七組prediction需先SHA
+  commit，之後獨立scorer才可看outcome。condition order按sample hash與seed 560901輪替。
+- success需Brier與NLL paired bootstrap 20,000次的95% CI上界都低於0，且Ours top-1不得比B5低超過
+  5pp；所有gate都要通過，ECE僅描述。失敗保留，M57才診斷，M58才可單一變因＋新sealed data重試。
+- fail-closed validator以synthetic fixture攻擊outcome leak、packet/order/hash、model/hardware/options、
+  token、retry/fallback與sample drift；final focused 17/17，選定M1/M2/M6/M54/V7/V9/M55/M56相容
+  116/116，compile與diff check通過。contract hash
+  `aba95b4c0879cf9b8d70362606e6bf80055f9f34fa3475a8270a6007aa78abec`，implementation freeze已建立。
+- Safari沿用既有local tab並維持28 tabs；圖像頁可見七組輸入、answer isolation、same-model/token規則、
+  Brier/NLL gate、V7 0/18＋0/18、V9 0/30、real rows 0/30與M56禁止；無水平溢出、無表單送出。
+- 正式狀態仍是M55 incomplete、M56 execution blocked、model calls 0、target outcome access 0、formal
+  result false；blocker仍為`complete_two_independent_v7_18_slot_ledgers`。報告：
+  `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`。這只證明protocol已可被公平執行，
+  不證明Equation V1、Uruha預測或任何LLM優勢。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
@@ -1249,20 +1272,24 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
 5. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
 6. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
-7. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
-8. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
-9. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-10. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-11. `research/full_completion_roadmap.md`
-12. `configs/m55_boundary_adjudication_tool_v1.json`
-13. `configs/m55_boundary_extension_tool_v1.json`
-14. `configs/m55_temporal_row_contract_v1.json`
-15. `configs/m54_human_response_equation_v1.json`
-16. `m55_boundary_adjudication_tool.py`
-17. `m55_boundary_extension_tool.py`
-18. `m55_temporal_row_contract.py`
-19. `audit_m55_real_person_longitudinal_readiness.py`
-20. `NEXT_THREAD_PROMPT_2026-08-10.md`
+7. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
+8. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
+9. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
+10. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+11. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+12. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+13. `research/full_completion_roadmap.md`
+14. `configs/m56_fair_comparison_preflight_v1.json`
+15. `configs/m55_boundary_adjudication_tool_v1.json`
+16. `configs/m55_boundary_extension_tool_v1.json`
+17. `configs/m55_temporal_row_contract_v1.json`
+18. `configs/m54_human_response_equation_v1.json`
+19. `m56_fair_comparison_preflight.py`
+20. `m55_boundary_adjudication_tool.py`
+21. `m55_boundary_extension_tool.py`
+22. `m55_temporal_row_contract.py`
+23. `audit_m55_real_person_longitudinal_readiness.py`
+24. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 

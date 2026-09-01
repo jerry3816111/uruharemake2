@@ -1,0 +1,216 @@
+{
+  "schema": "uruha_m56_fair_comparison_preflight_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_m55_real_rows_or_any_m56_model_generation",
+  "single_changed_variable": "freeze the blinded same-model B0-B5 versus Ours execution, resource, scoring, and stop rules without reading target outcomes or running a model",
+  "bindings": {
+    "equation_v1": {
+      "path": "configs/m54_human_response_equation_v1.json",
+      "sha256": "0b3c98853c20511bb3224b6ecaded5e99c01e3697c2b62cc8a8ee54cedf9fb0a"
+    },
+    "m55_temporal_row_contract": {
+      "path": "configs/m55_temporal_row_contract_v1.json",
+      "sha256": "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"
+    },
+    "m55_adjudication_implementation_freeze": {
+      "path": "research/m55_boundary_adjudication_tool_implementation_freeze_2026-09-01.json",
+      "sha256": "b92baa82bc6a3459f9fa8cda9aa764f9f6a0536b86cefc0ecc12ce8f24b94a1b"
+    },
+    "m55_readiness_audit": {
+      "path": "audit_m55_real_person_longitudinal_readiness.py",
+      "sha256": "7c1e27f233c6fd0a15fd0183a62ac79cc44c2194b87366c57ced60eef5d566b2"
+    },
+    "temporal_model_input": {
+      "path": "longitudinal_human_model/temporal.py",
+      "sha256": "d0f3bceb250a4c8c7970bd0519fcc894e543ec053a67e3f4bdd2042fc7b2faf6"
+    },
+    "b0_b3_baselines": {
+      "path": "longitudinal_human_model/baselines.py",
+      "sha256": "8e5cff0491814061c0678554998464948153704f6762bc9460f37b69a68178cc"
+    },
+    "b0_b3_parser_adapter": {
+      "path": "longitudinal_human_model/baselines_v1_1.py",
+      "sha256": "7f277c5fc3d7001a6fcfb84e2dc03ec692e6602422ef97ee6350d7ea7b6c24fd"
+    },
+    "b4_b5_baselines": {
+      "path": "longitudinal_human_model/strong_baselines.py",
+      "sha256": "deabfdf3c01ccb541e853eb7931933e0871b71dec35dee30c509b302229a48c2"
+    },
+    "probability_metrics": {
+      "path": "longitudinal_human_model/metrics.py",
+      "sha256": "d0f198714fa71df661869a8f20150c7b7a57c87913bac4b1f25fc0b6fadfc789"
+    },
+    "prior_ours_predictor_runner": {
+      "path": "run_m6_behavior_predictor.py",
+      "sha256": "9c4ad39e817712b93f7e906c2d0c453e7e58bab58eba55560b9f741037d42ebb"
+    },
+    "runtime_environment_snapshot": {
+      "path": "public_persona_runtime_manifest_v1.py",
+      "sha256": "09d5d8b967e43cfb5aad5d54063fc3db98aa7fbab6f03023a400b23087273ce2"
+    }
+  },
+  "conditions": [
+    {
+      "condition_id": "B0_PRIOR",
+      "role": "deterministic_frequency_floor",
+      "foundation_model_used": false,
+      "allowed_information": ["candidate_behavior_labels", "pre_cutoff_historical_behavior_counts"],
+      "forbidden_information": ["current_or_future_outcome", "private_state_truth"]
+    },
+    {
+      "condition_id": "B1_BASE_LLM",
+      "role": "current_event_only_llm_floor",
+      "foundation_model_used": true,
+      "allowed_information": ["current_pre_cutoff_event", "candidate_behavior_labels", "minimal_target_identity"],
+      "forbidden_information": ["persona_summary", "history", "explicit_equation_state", "current_or_future_outcome"]
+    },
+    {
+      "condition_id": "B2_PERSONA_PROMPT",
+      "role": "static_persona_prompt_floor",
+      "foundation_model_used": true,
+      "allowed_information": ["B1_information", "frozen_pre_target_persona_summary"],
+      "forbidden_information": ["dynamic_history", "explicit_equation_state", "current_or_future_outcome"]
+    },
+    {
+      "condition_id": "B3_RAG",
+      "role": "ordinary_pre_cutoff_rag_floor",
+      "foundation_model_used": true,
+      "allowed_information": ["B2_information", "retrieved_pre_cutoff_history"],
+      "forbidden_information": ["unretrieved_history", "explicit_equation_transition", "current_or_future_outcome"]
+    },
+    {
+      "condition_id": "B4_FULL_HISTORY_SUMMARY",
+      "role": "model_condensed_full_history_floor",
+      "foundation_model_used": true,
+      "allowed_information": ["current_pre_cutoff_event", "all_pre_cutoff_history_via_frozen_summary"],
+      "forbidden_information": ["manual_persona_summary", "explicit_equation_transition", "current_or_future_outcome"]
+    },
+    {
+      "condition_id": "B5_STRUCTURED_HISTORY",
+      "role": "primary_strong_llm_control",
+      "foundation_model_used": true,
+      "allowed_information": ["current_pre_cutoff_event", "frozen_pre_target_persona_summary", "all_pre_cutoff_history"],
+      "forbidden_information": ["explicit_equation_state_or_transition", "current_or_future_outcome"]
+    },
+    {
+      "condition_id": "OURS_HYBRID",
+      "role": "candidate_equation_system",
+      "foundation_model_used": true,
+      "allowed_information": ["same_source_pre_cutoff_information_as_B5", "explicit_memory", "state", "relationship", "need", "person_parameters", "uncertainty", "transition"],
+      "forbidden_information": ["current_or_future_outcome", "private_state_truth", "post_cutoff_evidence"]
+    }
+  ],
+  "primary_contrast": {
+    "control": "B5_STRUCTURED_HISTORY",
+    "system": "OURS_HYBRID",
+    "control_selected_before_results": true,
+    "weaker_baseline_may_replace_control_after_results": false,
+    "same_pre_cutoff_source_information": true,
+    "only_intended_difference": "direct structured-history LLM prediction versus explicit Equation V1 memory-state-transition decision after a matched semantic model call"
+  },
+  "blinding": {
+    "prediction_packet_schema": "uruha_m56_blinded_prediction_packet_v1",
+    "outcome_key_schema": "uruha_m56_private_outcome_key_v1",
+    "generation_process_receives_outcome_key": false,
+    "prediction_packet_forbidden_keys": [
+      "actual_observed_behavior",
+      "acceptable_behavior_labels",
+      "actual_observed_at",
+      "source_timestamp",
+      "annotation_confidence",
+      "completed_event_summary",
+      "outcome_key",
+      "reference_answer",
+      "answer_key"
+    ],
+    "all_condition_predictions_committed_before_scoring": true,
+    "commitment_hash_algorithm": "sha256_canonical_json",
+    "condition_order": "sample_hash_rotated_latin_cycle",
+    "condition_order_seed": 560901,
+    "outcome_join_only_in_separate_scorer": true
+  },
+  "model_and_resource_controls": {
+    "provider": "local_ollama",
+    "model_name": "qwen3.5:9b",
+    "model_artifact_digest_recorded_at_execution": true,
+    "same_physical_machine": true,
+    "same_hardware_snapshot": true,
+    "same_model_artifact_for_B1_through_B5_and_Ours": true,
+    "provider_options": {
+      "temperature": 0,
+      "seed": 560901,
+      "num_ctx": 16384,
+      "num_predict": 384
+    },
+    "retry_policy": "no_retry_no_condition_fallback",
+    "per_sample_input_token_budget": 8192,
+    "per_sample_output_token_budget": 384,
+    "B5_and_Ours_semantic_model_call_cap_per_sample": 1,
+    "B4_summary_build_cost_included": true,
+    "all_upstream_Ours_model_cost_included": true,
+    "warmup_calls_excluded_from_predictions_but_reported": true,
+    "actual_prompt_completion_tokens_latency_and_peak_memory_reported_by_condition": true,
+    "primary_actual_prompt_token_difference_fraction_max_without_sensitivity": 0.05,
+    "exact_token_matched_sensitivity_required_if_primary_difference_exceeds_max": true,
+    "unused_budget_may_not_add_semantically_informative_content": true
+  },
+  "dataset_gate": {
+    "required_data_kind": "real_public_observation",
+    "required_record_count": 30,
+    "m55_readiness_must_report_complete": true,
+    "m55_readiness_must_authorize_m56": true,
+    "temporal_contract_validation_must_pass": true,
+    "future_leakage_violations_required": 0,
+    "prediction_packet_sample_count": 30,
+    "current_outcomes_may_fit_or_tune_any_condition": false,
+    "earlier_completed_rows_may_enter_later_history_only_after_available": true,
+    "formal_dataset_hash_bound_at_execution_preflight": true,
+    "sealed_final_holdout_access": false
+  },
+  "metrics": {
+    "co_primary": ["paired_brier_delta_ours_minus_b5", "paired_nll_delta_ours_minus_b5"],
+    "secondary": [
+      "top1_accuracy",
+      "top3_accuracy",
+      "macro_f1",
+      "weighted_f1",
+      "mean_reciprocal_rank",
+      "mean_ndcg",
+      "source_correctness",
+      "irrelevant_memory_intrusion",
+      "future_leakage_violations"
+    ],
+    "descriptive_small_sample_only": ["expected_calibration_error"],
+    "paired_bootstrap_iterations": 20000,
+    "paired_bootstrap_seed": 560901,
+    "paired_sign_flip_test": true,
+    "top1_exact_mcnemar": true,
+    "all_conditions_reported": true,
+    "all_failures_and_costs_reported": true
+  },
+  "success_and_failure": {
+    "primary_success_requires": [
+      "both co-primary deltas favor Ours",
+      "both paired 95 percent bootstrap upper bounds are below zero",
+      "Ours top1 accuracy is not more than 0.05 below B5",
+      "data, blinding, resource, parser, and leakage gates all pass",
+      "token sensitivity requirement passes when triggered"
+    ],
+    "co_primary_rule": "intersection_union_both_required_no_posthoc_metric_selection",
+    "failure_if_any_prediction_row_missing": true,
+    "failure_if_any_condition_retry_or_fallback": true,
+    "failure_if_outcome_key_visible_to_generation": true,
+    "failure_if_primary_control_changed_after_results": true,
+    "negative_result_retained": true,
+    "remediation_route": "M57 diagnoses; M58 changes one falsified variable on new sealed data rather than rerunning M56"
+  },
+  "authorization": {
+    "current_model_execution": false,
+    "current_target_outcome_access": false,
+    "current_m56_result_claim": false,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "protocol_pass_alone_authorizes_m56": false
+  },
+  "claim_boundary": "A pass proves only that M56 has a frozen, blinded, same-model and resource-audited execution contract before real outcomes are available. It is not M55 human evidence, an M56 result, Equation V1 predictive validity, population generalization, persona equivalence, private-state truth, or a solved human-brain equation."
+}
