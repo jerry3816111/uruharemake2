@@ -24,6 +24,13 @@
 > 並把九個Equation變數的unknown/missingness明列。2-row synthetic compiler證據為0 leakage，
 > 但真人rows仍0/30且M56不授權。下一個安全工程單元是private two-coder boundary-extension
 > collection instrument；V7通過前只能用synthetic fixtures測工具，不能看或編Uruha target內容。
+>
+> **M55 two-coder boundary tool工程gate也已通過，真人證據仍為0。** 先讀
+> `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`。工具把每位coder自己的V9 entry
+> 與獨立boundary ledger以digest綁定；真實init/serve仍需V7 reliability pass，stale source、非finite
+> 時間、synthetic/real混用全部fail closed。兩份完整ledger只輸出hash與時間差，不顯示文字、不自動
+> 合併，每列必須明確真人裁決。Safari合成圖通過，但V7仍0/18＋0/18、V9與真人temporal rows仍0/30、
+> M56禁止。下一個不可替代依賴是兩位不同真人完成V7；通過後才可開兩人的V9＋boundary實際站。
 
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。

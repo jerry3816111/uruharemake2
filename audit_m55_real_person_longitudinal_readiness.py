@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 
 import uruha_human_response_equation_m54 as m54
+import m55_boundary_extension_tool as boundary_m55
 import m55_temporal_row_contract as temporal_m55
 import public_persona_target_calibration_coding_v9 as v9
 
@@ -160,6 +161,10 @@ def build_readiness_m55(
     sources = deepcopy(sources or load_json(V9_SOURCES))
     contract_validation = m54.validate_contract_m54(contract)
     temporal_contract_validation = temporal_m55.validate_contract_m55()
+    boundary_tool_validation = boundary_m55.validate_contract()
+    boundary_real_use_authorized, boundary_authorization_reason = v9.human_use_authorized(
+        v9.DEFAULT_FUTURE_V7_RELIABILITY_LOCK
+    )
     temporal_boundary_gap = temporal_m55.audit_current_v9_boundary_gap()
     compiled_temporal = _compiled_temporal_status(compiled_temporal_result)
     source_rows = sources.get("sources") or []
@@ -176,6 +181,7 @@ def build_readiness_m55(
     gates = {
         "equation_contract_valid": contract_validation["valid"],
         "temporal_row_contract_valid": temporal_contract_validation["valid"],
+        "boundary_extension_tool_contract_valid": boundary_tool_validation["valid"],
         "v7_construction_frozen_and_bound": bool(v7_result.get("construction_passed"))
         and bool(v7_bindings)
         and all(_binding_valid(value) for value in v7_bindings.values()),
@@ -198,6 +204,7 @@ def build_readiness_m55(
     precontent_gate_names = (
         "equation_contract_valid",
         "temporal_row_contract_valid",
+        "boundary_extension_tool_contract_valid",
         "v7_construction_frozen_and_bound",
         "v9_sampling_frame_frozen_and_bound",
         "three_authorized_target_sources",
@@ -255,6 +262,14 @@ def build_readiness_m55(
             "private_dataset_hash": compiled_temporal["dataset_hash"],
             "private_audit_hash": compiled_temporal["audit_hash"],
         },
+        "boundary_extension_tool": {
+            "contract_valid": boundary_tool_validation["valid"],
+            "contract_hash": boundary_tool_validation["contract_hash"],
+            "real_collection_authorized_now": boundary_real_use_authorized,
+            "real_collection_authorization_reason": boundary_authorization_reason,
+            "synthetic_demo_counts_as_human_evidence": False,
+            "automatic_cross_coder_merge_allowed": False,
+        },
         "privacy": {
             "private_ledger_contents_in_report": False,
             "private_temporal_row_contents_in_report": False,
@@ -267,6 +282,7 @@ def build_readiness_m55(
             "freeze V7 reliability only if temporal IoU and every nominal alpha meet the preregistered thresholds",
             "only after that, the same two-coder method may code the frozen 30 Uruha target-calibration slots",
             "the M55 boundary extension must separately mark observable input, prediction cutoff, and future behavior",
+            "each coder writes a separate private boundary ledger; software comparison never averages or replaces human adjudication",
             "M56 remains forbidden until 30 independently coded events also compile into 30 leakage-free temporal rows under a separate M56 protocol",
         ],
         "claim_boundary": "precontent readiness and live human-work progress only; no real-person behavior, equation validity, persona similarity, or model advantage",
@@ -280,6 +296,7 @@ def render_readiness_m55(report):
     stages = [
         ("M54 方程式契約", report["gates"]["equation_contract_valid"], "9個變數與claim boundary"),
         ("M55 時間切點契約", report["gates"]["temporal_row_contract_valid"], "輸入→cutoff→未見行為"),
+        ("M55 雙人切點工具", report["gates"]["boundary_extension_tool_contract_valid"], "兩份私人ledger；禁止自動合併"),
         ("V7 分類可靠度", report["gates"]["v7_reliability_passed"], f"{counts['v7_completed_ledgers']}/2 位真人完成"),
         ("V9 Uruha 校準", report["gates"]["target_events_independently_coded"], f"{counts['v9_independently_reviewed_event_count']}/30 事件雙人編碼"),
         ("M55 時間列編譯", report["gates"]["thirty_temporally_valid_prediction_rows"], f"{counts['temporally_valid_prediction_row_count']}/30 cutoff→future rows"),

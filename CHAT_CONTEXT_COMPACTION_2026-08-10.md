@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M55 時序契約）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M55 雙人切點工具）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1192,6 +1192,30 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   two-coder boundary-extension collection instrument；只可用synthetic fixture測工具，V7可靠度通過前
   不得消耗Uruha target內容或把它稱為真人結果。
 
+### 7.71 2026-09-01 M55 two-coder boundary tool：工程工具通過，真人證據仍為0
+
+- 新增獨立、gitignored、atomic-write 的 M55 boundary ledger；每位 coder 只載入自己的 V9 entry
+  與自己的 boundary ledger，另一人的資料在收集時不可見。每筆以 V9 entry digest 綁定，不修改
+  frozen V7/V9 schema、slot、ledger、codebook、threshold 或 result。
+- contract 綁定7個 frozen dependency、要求17個欄位；四個時間必須符合
+  `event start <= input start < cutoff < behavior start < behavior end <= event end`。pre-cutoff input
+  必須重新改寫，不得複製 whole-event context；raw/verbatim/model/private-state key與假attestation拒絕。
+- 真實 init／serve 仍需 genuine V7 reliability lock；synthetic ledger 不可啟動真人server，real與
+  synthetic ledger不可混比，非finite時間拒絕。server每次GET重新驗證來源；V9 entry若在啟動後
+  改變，HTTP 409 fail closed，不讓coder在stale source上繼續。
+- 兩份完整、不同真人、相同data kind的ledger才可比較。輸出只有slot digest、input/behavior IoU、
+  cutoff差與文字digest是否相同；不顯示paraphrase，不自動平均，不挑文字，不產生formal record pack。
+  每列都保留為explicit human adjudication required。
+- 聚焦32/32、M54/V7/V9/M55相容67/67、compile與diff check通過。contract hash
+  `52426afc62060eaf46c84eec9834c3f7ef78841f63c027b0c70043fd91a41e2e`；implementation freeze已建立。
+- Safari實際核對`http://127.0.0.1:7904/dashboard`：兩條私人lane、X/cutoff/Y、IoU、分歧、禁止自動
+  合併與V7→V9→M55→裁決→30 rows同頁清楚可見。27 tabs不增不減，沒有填真人表單。
+- readiness仍是V7 0/18與0/18、V9 0/30、real temporal rows 0/30、M55 incomplete、M56 forbidden；
+  synthetic graph與tests不是human evidence。報告：
+  `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`。
+- 下一個不能由Codex假造的依賴仍是兩位不同真人完成V7。V7通過後才可初始化兩人的V9＋boundary
+  工具；30 slots完成後必須先做明確真人裁決與M55 temporal compile，再另凍結M56 protocol。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
@@ -1200,14 +1224,18 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 2. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
 3. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
 4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
-5. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-6. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-7. `research/full_completion_roadmap.md`
-8. `configs/m55_temporal_row_contract_v1.json`
-9. `configs/m54_human_response_equation_v1.json`
-10. `m55_temporal_row_contract.py`
-11. `audit_m55_real_person_longitudinal_readiness.py`
-12. `NEXT_THREAD_PROMPT_2026-08-10.md`
+5. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
+6. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+7. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+8. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+9. `research/full_completion_roadmap.md`
+10. `configs/m55_boundary_extension_tool_v1.json`
+11. `configs/m55_temporal_row_contract_v1.json`
+12. `configs/m54_human_response_equation_v1.json`
+13. `m55_boundary_extension_tool.py`
+14. `m55_temporal_row_contract.py`
+15. `audit_m55_real_person_longitudinal_readiness.py`
+16. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 

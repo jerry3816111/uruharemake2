@@ -37,6 +37,13 @@ separate input/cutoff/behavior boundaries are now required. The compiler and gra
 synthetic engineering rows, but real temporal rows remain 0/30. This does not change M55 or M56
 authorization.
 
+The private two-coder boundary-extension instrument now also passes its engineering gate; see
+`analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`. Each coder's separate ledger is bound
+to that coder's V9 entry, real use remains V7-gated, stale sources and synthetic/real confusion fail
+closed, and cross-coder comparison reveals only hashes and temporal differences. Software never
+averages the two answers or creates an adjudicated row. The graphical demo is synthetic; human V7
+progress remains 0/18 and 0/18, Uruha temporal rows remain 0/30, and M56 remains forbidden.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A

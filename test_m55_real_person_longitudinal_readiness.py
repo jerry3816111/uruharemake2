@@ -27,6 +27,7 @@ def test_target_frame_has_three_dated_sources_thirty_slots_and_no_sealed_future(
 def test_temporal_contract_passes_but_existing_v9_rows_require_a_boundary_extension():
     report = m55.build_readiness_m55()
     assert report["gates"]["temporal_row_contract_valid"] is True
+    assert report["gates"]["boundary_extension_tool_contract_valid"] is True
     assert report["gates"]["thirty_temporally_valid_prediction_rows"] is False
     assert report["counts"]["temporally_valid_prediction_row_count"] == 0
     assert report["temporal_rows"]["current_v9_alone_compilable"] is False
@@ -34,6 +35,10 @@ def test_temporal_contract_passes_but_existing_v9_rows_require_a_boundary_extens
     assert report["temporal_rows"]["missing_boundary_fields"] == list(
         temporal_m55.BOUNDARY_EXTENSION_FIELDS
     )
+    assert report["boundary_extension_tool"]["contract_valid"] is True
+    assert report["boundary_extension_tool"]["real_collection_authorized_now"] is False
+    assert report["boundary_extension_tool"]["synthetic_demo_counts_as_human_evidence"] is False
+    assert report["boundary_extension_tool"]["automatic_cross_coder_merge_allowed"] is False
 
 
 def test_local_ledgers_are_counted_without_copying_private_entries():
@@ -86,7 +91,7 @@ def test_target_counts_cannot_be_promoted_by_changing_only_local_progress(tmp_pa
 def test_graphical_gate_is_outsider_readable_and_does_not_expose_tokens_or_urls():
     report = m55.build_readiness_m55()
     html = m55.render_readiness_m55(report)
-    for phrase in ("M54 方程式契約", "M55 時間切點契約", "V7 分類可靠度", "V9 Uruha 校準", "M55 時間列編譯", "M55 真實縱向 pilot", "M56 公平模型比較", "0/2 位真人完成", "0/30 事件雙人編碼", "0/30 cutoff→future rows"):
+    for phrase in ("M54 方程式契約", "M55 時間切點契約", "M55 雙人切點工具", "V7 分類可靠度", "V9 Uruha 校準", "M55 時間列編譯", "M55 真實縱向 pilot", "M56 公平模型比較", "0/2 位真人完成", "0/30 事件雙人編碼", "0/30 cutoff→future rows", "禁止自動合併"):
         assert phrase in html
     assert "token=" not in html
     assert "youtube.com" not in html
