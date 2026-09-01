@@ -1,0 +1,122 @@
+{
+  "schema": "uruha_m56_real_data_activation_envelope_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_real_m56_model_generation_or_target_outcome_access",
+  "single_changed_variable": "require a live, content-bound, short-lived and single-use authorization envelope before any formal real-data M56 model call",
+  "bindings": {
+    "equation_v1_contract": {
+      "path": "configs/m54_human_response_equation_v1.json",
+      "sha256": "0b3c98853c20511bb3224b6ecaded5e99c01e3697c2b62cc8a8ee54cedf9fb0a"
+    },
+    "m55_temporal_contract": {
+      "path": "configs/m55_temporal_row_contract_v1.json",
+      "sha256": "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"
+    },
+    "m55_live_readiness_audit": {
+      "path": "audit_m55_real_person_longitudinal_readiness.py",
+      "sha256": "7c1e27f233c6fd0a15fd0183a62ac79cc44c2194b87366c57ced60eef5d566b2"
+    },
+    "m55_adjudication_freeze": {
+      "path": "research/m55_boundary_adjudication_tool_implementation_freeze_2026-09-01.json",
+      "sha256": "b92baa82bc6a3459f9fa8cda9aa764f9f6a0536b86cefc0ecc12ce8f24b94a1b"
+    },
+    "m56_preflight_freeze": {
+      "path": "research/m56_fair_comparison_preflight_implementation_freeze_2026-09-01.json",
+      "sha256": "b9098f784e2da2ff683820a466b8f8979b0917a3faec4c60a5541d94f8e8445d"
+    },
+    "m56_capsule_freeze": {
+      "path": "research/m56_blinded_execution_capsule_implementation_freeze_2026-09-01.json",
+      "sha256": "0214c10bf232c3f657371dfe9cfae10e9c6563485876894eaf22035f2a66e979"
+    },
+    "m56_equation_artifact_freeze": {
+      "path": "research/m56_pre_outcome_equation_artifacts_implementation_freeze_2026-09-02.json",
+      "sha256": "a9c6824aca42eace4a821b5dc035db4bed205a32ef9e1c539ca05e1bc5fde4d2"
+    },
+    "m56_preflight_contract": {
+      "path": "configs/m56_fair_comparison_preflight_v1.json",
+      "sha256": "184493d9c466d02625edddbfb0be19838c791fb3c4e011f8905e9da0fc3980b2"
+    },
+    "m56_capsule_contract": {
+      "path": "configs/m56_blinded_execution_capsule_v1.json",
+      "sha256": "32dd61ebcb1ad5b5bddd397f2d20077ffcfa481039d6b8b27b6374ac068c4970"
+    },
+    "m56_equation_artifact_contract": {
+      "path": "configs/m56_pre_outcome_equation_artifacts_v1.json",
+      "sha256": "40d966463ee7969d550abd7b5bffbdc700c5e9c58f879b7979fe8bf6fb99fb57"
+    }
+  },
+  "schemas": {
+    "activation_audit": "uruha_m56_real_data_activation_audit_v1",
+    "activation_request": "uruha_m56_real_data_activation_request_v1",
+    "activation_receipt": "uruha_m56_real_data_activation_receipt_v1",
+    "execution_lease": "uruha_m56_real_data_execution_lease_v1",
+    "synthetic_rehearsal": "uruha_m56_synthetic_activation_rehearsal_v1"
+  },
+  "live_gate": {
+    "required_data_kind": "real_public_observation",
+    "required_prediction_rows": 30,
+    "required_v7_human_ledgers": 2,
+    "required_v7_slots_per_ledger": 18,
+    "required_v9_independently_reviewed_events": 30,
+    "required_v9_human_coders": 2,
+    "future_leakage_violations": 0,
+    "caller_supplied_readiness_allowed": false,
+    "synthetic_or_model_labels_count_as_human": false
+  },
+  "private_layout": {
+    "root": "analysis/local_m56_formal_execution_v1",
+    "required_gitignored": true,
+    "required_directories": ["generation", "commitments", "scoring", "telemetry"],
+    "outcome_key_directory": "scoring",
+    "outcome_key_in_generation_allowed": false,
+    "formal_artifacts_git_tracked": false
+  },
+  "runtime_snapshot": {
+    "provider": "local_ollama",
+    "model_name": "qwen3.5:9b",
+    "model_manifest_path": "/Users/jerrychang/.ollama/models/manifests/registry.ollama.ai/library/qwen3.5/9b",
+    "model_manifest_sha256_required": true,
+    "hardware_fingerprint_required": true,
+    "ollama_version_required": true,
+    "same_snapshot_for_all_model_conditions": true,
+    "model_calls_during_activation": 0
+  },
+  "binding": {
+    "prediction_packet_hash_required": true,
+    "outcome_key_hash_required_but_content_forbidden_in_receipt": true,
+    "run_manifest_hash_required": true,
+    "capsule_hash_required": true,
+    "equation_artifact_bundle_hash_required": true,
+    "dependency_set_hash_required": true,
+    "private_layout_hash_required": true,
+    "runtime_snapshot_hash_required": true,
+    "target_outcome_access_before_prediction_commitment": 0
+  },
+  "receipt": {
+    "ttl_seconds": 1800,
+    "single_use": true,
+    "atomic_consumption_required": true,
+    "retry_or_fallback_allowed": false,
+    "authorizes": "one_complete_formal_generation_run_only",
+    "does_not_authorize": ["scoring_before_prediction_commitment", "formal_result_claim", "production_memory_write", "external_deployment"]
+  },
+  "resource_accounting": {
+    "artifact_cpu_seconds_required": true,
+    "prompt_completion_tokens_latency_peak_memory_required": true,
+    "B4_summary_cost_included": true,
+    "all_upstream_Ours_cost_included": true,
+    "B5_Ours_actual_prompt_difference_fraction_threshold": 0.05,
+    "exact_token_sensitivity_required_above_threshold": true
+  },
+  "authorization": {
+    "current_real_activation": false,
+    "current_formal_model_execution": false,
+    "current_target_outcome_access": false,
+    "current_formal_scoring": false,
+    "current_formal_result_claim": false,
+    "synthetic_rehearsal_authorizes_formal_execution": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "This contract can establish a fail-closed, live-gated activation boundary for one future M56 real-data run. A blocked audit is the only valid current result. It cannot establish human evidence, model performance, Equation V1 validity, private mental truth, a solved human-brain equation, full-pipeline readiness, or production readiness."
+}

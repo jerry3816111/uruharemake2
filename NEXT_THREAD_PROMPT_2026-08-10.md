@@ -67,7 +67,17 @@
 > formal calls 0、formal result不存在。真人gate通過後還需另凍結real-data execution authorization，
 > 重驗全部dependency hash並記錄actual CPU/prompt token cost；不能把這次bundle說成真人預測結果。
 
-> 最新入口是上方的「M56.1 pre-outcome Equation artifact overlay」覆蓋段；前文各 M 的
+> **M56.2 formal real-data activation envelope已凍結，但目前live activation明確DENIED。** 先讀
+> `analysis/m56_2_real_data_activation_envelope_acceptance_2026-09-02.md`。新入口沒有caller-supplied
+> readiness：它只讀標準V7/V9/M55 live evidence，並綁定十個凍結依賴、本機`qwen3.5:9b` manifest、
+> Ollama、CPU/RAM與run rules。未來真人gate通過後才可在gitignored四個private compartments建立
+> 30-row packet、獨立outcome key、210 tasks與90個Equation artifacts，並以30分鐘single-use receipt
+> 換取一次no-retry generation lease。synthetic rehearsal與偽造real-shaped packet都不能取得receipt；
+> focused 13/13、M54–M56.2 direct 123/123、選定相容188/188，Safari圖像頁通過。現在仍是V7
+> 0/18＋0/18、V9 0/30、real rows 0/30、formal calls 0、formal result absent；下一個不可替代依賴仍是
+> 兩位不同真人完成V7，不能用Codex、LLM、synthetic labels或同一人重複作答替代。
+
+> 最新入口是上方的「M56.2 formal real-data activation envelope」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

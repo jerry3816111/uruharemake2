@@ -76,6 +76,16 @@ artifact model calls, zero target-outcome access, and zero private-state fabrica
 complete the M55 human gate, authorize a real M56 run, or create an M56 result; the current overlay remains
 synthetic-only until a separately frozen real-data execution authorization can reuse the same semantics.
 
+The M56.2 formal real-data activation envelope now supplies that separately frozen authorization boundary;
+see `analysis/m56_2_real_data_activation_envelope_acceptance_2026-09-02.md`. It obtains readiness only from
+the standard live V7/V9/M55 evidence chain, binds frozen dependencies plus the local model and hardware,
+separates generation, commitments, scoring, and telemetry under a Git-ignored private run root, and permits
+at most one no-retry generation lease through a short-lived single-use receipt. A structurally valid or
+synthetic packet cannot create authority. The controller is intentionally denied now: V7 remains 0/18 and
+0/18, V9 and real temporal rows remain 0/30, and formal calls/results remain zero/absent. This is activation-
+control engineering evidence, not real-person predictive validity, Equation V1 validity, an M56 comparison,
+full-pipeline readiness, production readiness, or a solved human-response equation.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A
