@@ -57,7 +57,17 @@
 > 不是M56結果。V7仍0/18＋0/18；不可用synthetic fixture或同一人替代。真人gate通過並完成30列後，
 > 還必須materialize真正pre-outcome Equation V1 fit/state/transition artifact，不能用fixture hash冒充Ours。
 
-> 最新入口是上方的「M56 capability-separated execution capsule」覆蓋段；前文各 M 的
+> **M56.1 pre-outcome Equation artifact overlay已凍結，正式執行仍禁止。** 先讀
+> `analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`。新overlay不改M54–M56凍結檔，
+> 而是把B5/Ours同一source object真正轉成content-addressed fit、九變數state與跨cutoff transition；
+> `S/R/N`無來源時保持null。只有Ours request可取得完整產物，submission、wrapper receipt與wrapper
+> scorer會重驗內容hash；placeholder、late/non-monotonic history、B5 artifact exposure與事後竄改均
+> fail closed。focused 14/14、M54–M56 direct 110/110、選定相容170/170，Safari沿用原tab且28 tabs
+> 不變。這仍只是在synthetic outcome-free packet上的工程證據：V7 0/18＋0/18、V9/real rows 0/30、
+> formal calls 0、formal result不存在。真人gate通過後還需另凍結real-data execution authorization，
+> 重驗全部dependency hash並記錄actual CPU/prompt token cost；不能把這次bundle說成真人預測結果。
+
+> 最新入口是上方的「M56.1 pre-outcome Equation artifact overlay」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

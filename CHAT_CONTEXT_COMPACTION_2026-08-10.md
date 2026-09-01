@@ -1285,38 +1285,71 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   V7 gate阻擋。報告`analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`。未來真人gate通過後
   還需產生真正pre-outcome Equation V1 fit/state/transition artifact才可執行Ours，不能用fixture hash冒充。
 
+### 7.75 2026-09-02 M56.1 pre-outcome Equation artifacts：真實內容綁定通過，正式實驗仍禁止
+
+- 不修改M54–M56任何凍結檔，新增獨立overlay，把B5/Ours byte-identical source object轉成真正
+  content-addressed fit、九變數state與跨cutoff transition；原M56 fixture的`aaaa/bbbb/cccc`只能作
+  舊shape測試，不能再通過新的bound submission validator。
+- fit只使用`available_at <= cutoff`的已完成observable history，產生13類Laplace prior與sparse
+  observable transition counts；第一cutoff history n=0，第二cutoff才使用第一筆已完成history n=1。
+  same-target history若倒退、晚於cutoff、含current outcome或改內容後hash不符都fail closed。
+- state按M54固定順序materialize九變數；X/H/M/C/theta/U有pre-cutoff typed/digest來源，無可靠證據的
+  `S/R/N`保持`unavailable_not_inferred + null + no evidence`，private-state fabrication為0。artifact
+  不保存current event或history summary raw text。
+- transition只記newly available history、behavior-count delta、fit n變化與各variable status/value-digest
+  變化；不聲稱心理轉移、不做behavior prediction或language generation。artifact materialization為
+  0 model calls、0 target outcome access、0 production memory writes。
+- 只有Ours可取得完整artifact payload；B5或其他條件出現artifact hash即拒絕。Ours submission必須引用
+  exact三個content hash與request hash；wrapper receipt同時綁frozen M56 receipt與bundle hash，wrapper
+  scorer在讀answer前重驗bundle。synthetic separate scoring仍固定非正式。
+- final focused **14/14**；M54–M56 direct **110/110**；選定M1/M2/M54/V7/V9/M55/M56相容
+  **170/170**；compile與diff check通過。contract hash
+  `32eac97730eddabc8eb11fea23223de37a0db28b739d6d3d6999e9f420c8495f`；2-cutoff bundle hash
+  `1bd2353b2ef77ec8c4908ca6d8dae857dac36618474e8d113126d4c36406bf7d`；implementation freeze已建立。
+- Safari沿用既有M56 tab導向`http://127.0.0.1:7909/dashboard`且維持28 tabs；頁面顯示
+  `same source→Fit→State→Transition→Ours→SHA`、0→1 history、三個unknown、五種拒絕路徑與真人gate，
+  無水平溢出、未送出表單。報告`analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`。
+- 正式狀態不變：V7 0/18＋0/18、V9 0/30、real rows 0/30、formal calls 0、formal result absent。
+  現overlay刻意只允許synthetic packet。真人gate通過並完成30列後，還需另凍結real-data execution
+  authorization、重驗所有dependency hashes、計入actual CPU與Ours prompt tokens，才可執行正式M56。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
 
 1. `CHAT_CONTEXT_COMPACTION_2026-08-10.md`
-2. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
-3. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
-4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
-5. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
-6. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
-7. `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`
-8. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
-9. `research/m56_blinded_execution_capsule_plan_2026-09-01.md`
-10. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
-11. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
-12. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
-13. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-14. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-15. `research/full_completion_roadmap.md`
-16. `configs/m56_blinded_execution_capsule_v1.json`
-17. `configs/m56_fair_comparison_preflight_v1.json`
-18. `configs/m55_boundary_adjudication_tool_v1.json`
-19. `configs/m55_boundary_extension_tool_v1.json`
-20. `configs/m55_temporal_row_contract_v1.json`
-21. `configs/m54_human_response_equation_v1.json`
-22. `m56_blinded_execution_capsule.py`
-23. `m56_fair_comparison_preflight.py`
-24. `m55_boundary_adjudication_tool.py`
-25. `m55_boundary_extension_tool.py`
-26. `m55_temporal_row_contract.py`
-27. `audit_m55_real_person_longitudinal_readiness.py`
-28. `NEXT_THREAD_PROMPT_2026-08-10.md`
+2. `analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`
+3. `research/m56_pre_outcome_equation_artifacts_plan_2026-09-01.md`
+4. `configs/m56_pre_outcome_equation_artifacts_v1.json`
+5. `research/m56_pre_outcome_equation_artifacts_implementation_freeze_2026-09-02.json`
+6. `m56_pre_outcome_equation_artifacts.py`
+7. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
+8. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
+9. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
+10. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
+11. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
+12. `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`
+13. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
+14. `research/m56_blinded_execution_capsule_plan_2026-09-01.md`
+15. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
+16. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
+17. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+18. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+19. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+20. `research/full_completion_roadmap.md`
+21. `configs/m56_blinded_execution_capsule_v1.json`
+22. `configs/m56_fair_comparison_preflight_v1.json`
+23. `configs/m55_boundary_adjudication_tool_v1.json`
+24. `configs/m55_boundary_extension_tool_v1.json`
+25. `configs/m55_temporal_row_contract_v1.json`
+26. `configs/m54_human_response_equation_v1.json`
+27. `m56_blinded_execution_capsule.py`
+28. `m56_fair_comparison_preflight.py`
+29. `m55_boundary_adjudication_tool.py`
+30. `m55_boundary_extension_tool.py`
+31. `m55_temporal_row_contract.py`
+32. `audit_m55_real_person_longitudinal_readiness.py`
+33. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 

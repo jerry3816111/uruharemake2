@@ -1,6 +1,6 @@
 # Development-first roadmap
 
-Status date: 2026-09-01
+Status date: 2026-09-02
 Historical research source: `/Users/jerrychang/Downloads/RESEARCH_SPEC_FOR_CODEX.md`  
 Execution mode: build the working system first; research is retained only as validation and claim control.
 
@@ -63,8 +63,18 @@ The M56 capability-separated execution capsule and separate scorer now pass thei
 authorized view, B5/Ours source objects must hash identically, B4 summary and Ours semantic costs are
 counted, all rows are committed before a separately validated outcome join, and token imbalance can block
 a formal pass. Synthetic adversarial and Safari evidence pass, but formal model calls and target-outcome
-access remain zero. This completes the no-target M56 execution machinery, not the M55 human gate, the
-missing real Equation V1 fit/state-transition artifacts, or the M56 result.
+access remain zero. This completed the capability-separated execution/scoring shell, but its fixture still
+used arbitrary 64-character Ours provenance placeholders.
+
+The M56.1 pre-outcome Equation artifact overlay now closes that engineering gap; see
+`analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`. From the exact B5/Ours source
+object it deterministically materializes content-addressed observable-history fit, nine-variable state,
+and cross-cutoff transition artifacts; unavailable `S/R/N` remain null, only Ours receives the payload,
+and a wrapper receipt/scorer binds and revalidates the full content before answer joining. The frozen
+M54–M56 files were not modified. Synthetic adversarial tests and Safari visualization pass with zero
+artifact model calls, zero target-outcome access, and zero private-state fabrication. This still does not
+complete the M55 human gate, authorize a real M56 run, or create an M56 result; the current overlay remains
+synthetic-only until a separately frozen real-data execution authorization can reuse the same semantics.
 
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
@@ -141,7 +151,7 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
 | M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content, temporal, boundary, and adjudication tools ready; real rows 0/30; blocked on two-human reliability and target coding |
-| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol and capability-separated execution/scorer frozen; execution blocked; 0 formal model calls and no formal result |
+| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol, capability-separated execution/scorer, and real content-addressed pre-outcome Equation artifact overlay frozen; real execution blocked; 0 formal model calls and no formal result |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 
