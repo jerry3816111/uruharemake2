@@ -30,6 +30,13 @@ passes, but its real-person pilot is blocked at the frozen two-human V7 reliabil
 are 0/18, so Uruha target events and coders remain zero and M56 is not authorized. See
 `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`.
 
+The M55 temporal-row engineering contract also passes; see
+`analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`. It discovered that V9 whole-event
+start/end cannot establish a prospective cutoff without possible target-behavior leakage, so four
+separate input/cutoff/behavior boundaries are now required. The compiler and graphical audit pass on
+synthetic engineering rows, but real temporal rows remain 0/30. This does not change M55 or M56
+authorization.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A
@@ -104,7 +111,7 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M37 | typed observable-trigger → response-policy relation with morphology/paraphrase normalization | complete bounded milestone |
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
-| M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content ready; blocked on two-human reliability and target coding |
+| M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content and temporal-row contract ready; real rows 0/30; blocked on two-human reliability, target coding, and boundary extension |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 
@@ -156,7 +163,7 @@ Formal Uruha model execution remains blocked until:
 1. two distinct consenting humans independently code the frozen 18-slot V7 pilot;
 2. preregistered inter-rater reliability passes;
 3. V9 target calibration coding is separately authorized and completed;
-4. temporal target records contain prediction time, cutoff, and observable future behavior;
+4. temporal target records separately contain observable-input start, prediction cutoff, and observable-future behavior start/end; whole-event boundaries may not substitute;
 5. the final holdout remains sealed until its preregistered use.
 
 Codex may continue M2–M7 interfaces and synthetic/mechanism tests while this gate is pending, but none of those runs may be presented as Uruha predictive evidence.

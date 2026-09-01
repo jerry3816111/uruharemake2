@@ -17,6 +17,13 @@
 > future排除已有效；但V7兩份ledger仍0/18、無reliability lock，故V9 target event/coder仍為0，
 > M56不得啟動。除非兩位不同真人完成V7並通過凍結可靠度，不能用Codex、模型或synthetic labels
 > 替代。可持續做不消耗holdout且不假造真人證據的工程，但不得把它改稱M55真人結果。
+>
+> **M55 temporal-row工程gate已通過，但不是M55真人結果。** 先讀
+> `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`。稽核發現V9 whole-event start/end
+> 不能安全替代prediction cutoff；新契約另要求input start／cutoff／behavior start／behavior end，
+> 並把九個Equation變數的unknown/missingness明列。2-row synthetic compiler證據為0 leakage，
+> 但真人rows仍0/30且M56不授權。下一個安全工程單元是private two-coder boundary-extension
+> collection instrument；V7通過前只能用synthetic fixtures測工具，不能看或編Uruha target內容。
 
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。

@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M54 啟動）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-01 M55 時序契約）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1173,6 +1173,25 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   Krippendorff alpha≥0.667後，才可啟動V9兩人30-slot Uruha calibration；否則保留舊ledger、修codebook、
   用新preregistered pilot重試。這是第9節允許停下的真人主觀判斷硬gate，不是程式等待確認。
 
+### 7.70 2026-09-01 M55 temporal-row contract：預測切點已可檢查，真人pilot仍未完成
+
+- 只讀稽核發現V9只有整段event start/end，不能證明context在目標行為開始前停止；若把event start
+  偷當prediction cutoff會洩漏答案。新增獨立M55 temporal-row contract，要求input start、cutoff、
+  behavior start、behavior end四個界線，且不改V7/V9凍結schema、slot、ledger或結果。
+- 新契約綁定M54 Equation V1、event schema、V6 codebook、V9 frame/source/result lock共6個SHA；九個
+  Equation變數各有observed／pre-cutoff derived／unavailable狀態，`S/N`不從公開行為硬猜。
+- fail-closed compiler只接受明確傳入的private record pack；禁止raw/verbatim/model/private-state欄位、
+  時間重疊、假真人review與current outcome回填。2-row synthetic工程fixture為0 leakage、1個合法歷史
+  reference，且model execution/formal claim固定false。
+- readiness新增`30/30 cutoff→future rows` gate；目前contract PASS、V9 alone不可編譯、真人rows 0/30、
+  V7仍0/18與0/18、V9 target 0/30，故M55真人pilot仍BLOCKED、M56仍NOT AUTHORIZED。
+- 聚焦＋相容組 **46/46**，compile與diff check通過。Safari在既有空白tab實測read-only圖像頁，顯示
+  `可觀察輸入X → locked cutoff → 未見行為Y`、九變數missingness與誠實的0-row/M56禁止狀態；沒有
+  新增或關閉分頁、沒有讀取私人ledger內容。
+- 驗收：`analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`。下一個可獨立工程單元是private
+  two-coder boundary-extension collection instrument；只可用synthetic fixture測工具，V7可靠度通過前
+  不得消耗Uruha target內容或把它稱為真人結果。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
@@ -1180,11 +1199,15 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 1. `CHAT_CONTEXT_COMPACTION_2026-08-10.md`
 2. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
 3. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
-4. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-5. `research/full_completion_roadmap.md`
-6. `configs/m54_human_response_equation_v1.json`
-7. `audit_m55_real_person_longitudinal_readiness.py`
-8. `NEXT_THREAD_PROMPT_2026-08-10.md`
+4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
+5. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+6. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+7. `research/full_completion_roadmap.md`
+8. `configs/m55_temporal_row_contract_v1.json`
+9. `configs/m54_human_response_equation_v1.json`
+10. `m55_temporal_row_contract.py`
+11. `audit_m55_real_person_longitudinal_readiness.py`
+12. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 
