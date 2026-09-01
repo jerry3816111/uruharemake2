@@ -1262,6 +1262,29 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`。這只證明protocol已可被公平執行，
   不證明Equation V1、Uruha預測或任何LLM優勢。
 
+### 7.74 2026-09-01 M56 capability-separated execution capsule：執行／計分工程通過，正式實驗仍禁止
+
+- preflight packet雖無future outcome，仍含完整安全歷史；若把整包交給所有條件，B1/B2可偷看到
+  history。新增執行艙把每個sample-condition實體化成獨立view；model request一次只輸出一個view，
+  不把七組capsule交給模型。
+- B0只看label與pre-cutoff count並驗證Laplace prior；B1/B2無history；B3固定top-4；B4 raw history
+  只進獨立summary task，prediction只看已封存summary，所有summary cost另計；B5與Ours使用byte-identical
+  source object/hash，B5不得看equation artifact，Ours必須有pre-outcome fit/state/transition三個hash。
+- submission嚴格要求sample順序＋每題凍結condition rotation、七組完整且唯一、exact labels、sum-to-one、
+  frozen argmax、authorized evidence、同model/hardware/options、0 retry/fallback與完整token/latency/memory。
+  全部有效後才建立SHA-256 receipt；任何事後改動都使separate scorer拒絕。
+- scorer重驗packet/capsule/receipt/split/outcome key後才join；proper score只用primary observed label，
+  acceptable alternatives只影響rank。bootstrap 20,000；<=20 pair用exact sign-flip，正式30 pair用預先固定
+  deterministic Monte Carlo 20,000。B5/Ours token差>5%時exact-token sensitivity未過不得formal pass。
+- synthetic反作弊final focused **28/28**；選定M1/M2/M54/V7/V9/M55/M56相容 **161/161**；compile與
+  diff check通過。contract hash `b30a9ff4a99c68bc28b3c67ad8d68bff13c911d410b7578553c0c7d1e470d84a`；
+  implementation freeze已建立。
+- Safari沿用既有M56 tab並維持28 tabs，圖像頁顯示七組權限、safe packet→generation compartment→
+  SHA commitment→separate scorer、四種作弊阻擋與目前0/18＋0/18／0 real rows；無水平溢出、未提交表單。
+- 正式狀態不變：formal model calls 0、target outcome access 0、formal result false；M55仍被兩位不同真人
+  V7 gate阻擋。報告`analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`。未來真人gate通過後
+  還需產生真正pre-outcome Equation V1 fit/state/transition artifact才可執行Ours，不能用fixture hash冒充。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
@@ -1272,24 +1295,28 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
 5. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
 6. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
-7. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
-8. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
-9. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
-10. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
-11. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-12. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-13. `research/full_completion_roadmap.md`
-14. `configs/m56_fair_comparison_preflight_v1.json`
-15. `configs/m55_boundary_adjudication_tool_v1.json`
-16. `configs/m55_boundary_extension_tool_v1.json`
-17. `configs/m55_temporal_row_contract_v1.json`
-18. `configs/m54_human_response_equation_v1.json`
-19. `m56_fair_comparison_preflight.py`
-20. `m55_boundary_adjudication_tool.py`
-21. `m55_boundary_extension_tool.py`
-22. `m55_temporal_row_contract.py`
-23. `audit_m55_real_person_longitudinal_readiness.py`
-24. `NEXT_THREAD_PROMPT_2026-08-10.md`
+7. `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`
+8. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
+9. `research/m56_blinded_execution_capsule_plan_2026-09-01.md`
+10. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
+11. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
+12. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+13. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+14. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+15. `research/full_completion_roadmap.md`
+16. `configs/m56_blinded_execution_capsule_v1.json`
+17. `configs/m56_fair_comparison_preflight_v1.json`
+18. `configs/m55_boundary_adjudication_tool_v1.json`
+19. `configs/m55_boundary_extension_tool_v1.json`
+20. `configs/m55_temporal_row_contract_v1.json`
+21. `configs/m54_human_response_equation_v1.json`
+22. `m56_blinded_execution_capsule.py`
+23. `m56_fair_comparison_preflight.py`
+24. `m55_boundary_adjudication_tool.py`
+25. `m55_boundary_extension_tool.py`
+26. `m55_temporal_row_contract.py`
+27. `audit_m55_real_person_longitudinal_readiness.py`
+28. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 

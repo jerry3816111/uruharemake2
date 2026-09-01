@@ -48,8 +48,18 @@
 > 0/18、V9與real rows仍0/30，故不可啟動M56 generation。下一個合法動作仍是兩位不同真人完成V7，
 > 通過後依V9→boundary→adjudication→temporal compile順序產生M55 real rows，再重驗preflight後執行。
 
-> 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
-> 下一步均為歷史，不要重跑或回寫既有封存結果。
+> **M56 capability-separated execution capsule與separate scorer也已凍結，正式執行仍禁止。** 先讀
+> `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`。七組不再共用含完整history的packet：
+> 每次model request只得到該condition的authorized view；B1/B2沒有history，B4 summary與cost分離，
+> B5/Ours source object/hash相同。完整七組submission需先SHA-256 commitment，獨立scorer才可驗證並
+> 讀outcome key；事後改動、漏列、重排、作弊evidence、retry/fallback或resource drift均fail closed。
+> focused 28/28、選定相容161/161、Safari圖通過，但formal model calls／target outcome access仍為0，
+> 不是M56結果。V7仍0/18＋0/18；不可用synthetic fixture或同一人替代。真人gate通過並完成30列後，
+> 還必須materialize真正pre-outcome Equation V1 fit/state/transition artifact，不能用fixture hash冒充Ours。
+
+> 最新入口是上方的「M56 capability-separated execution capsule」覆蓋段；前文各 M 的
+> 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
+> 但不得把工程fixture改稱正式結果。
 
 在以下工作目錄繼續：
 

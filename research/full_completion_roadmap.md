@@ -58,6 +58,14 @@ same-model/hardware/decoding controls, declared token budgets, and joint Brier/N
 engineering and Safari visualization pass, but this is not an M56 run: model calls and target-outcome
 access are both zero, M55 remains incomplete, and M56 execution remains forbidden.
 
+The M56 capability-separated execution capsule and separate scorer now pass their engineering gate; see
+`analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`. Each condition is reduced to its exact
+authorized view, B5/Ours source objects must hash identically, B4 summary and Ours semantic costs are
+counted, all rows are committed before a separately validated outcome join, and token imbalance can block
+a formal pass. Synthetic adversarial and Safari evidence pass, but formal model calls and target-outcome
+access remain zero. This completes the no-target M56 execution machinery, not the M55 human gate, the
+missing real Equation V1 fit/state-transition artifacts, or the M56 result.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A
@@ -133,7 +141,7 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
 | M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content, temporal, boundary, and adjudication tools ready; real rows 0/30; blocked on two-human reliability and target coding |
-| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol preflight frozen; execution blocked; 0 model calls and no formal result |
+| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol and capability-separated execution/scorer frozen; execution blocked; 0 formal model calls and no formal result |
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 
