@@ -98,6 +98,19 @@ are engineering evidence only. A process interruption after model calls but befo
 terminally fails the run and requires a newly human-authorized run rather than automatic recovery; this avoids
 hidden retry but can waste compute. M56.3 therefore adds no predictive-validity or resource-performance result.
 
+The M56.4 separate formal scorer now closes the post-commit execution path; see
+`analysis/m56_4_separate_formal_scorer_acceptance_2026-09-02.md`. Its only public parameter is a run id. It
+revalidates the M56.2 authority chain, the complete M56.3 submission/commitment/release and every actual call
+resource before it opens the private outcome compartment. A B5/Ours prompt-token difference above the frozen
+5% threshold blocks before outcome access and cannot be bypassed with a caller flag. After that gate, the
+scorer uses the frozen seven conditions, B5-versus-Ours primary comparison, proper scores, paired tests and
+success rule, performs zero model calls, and immutably commits either a positive or retained negative scoped
+decision. Current scoring is deliberately denied: V7 is 0/18 and 0/18, V9 and real rows are 0/30, and no
+prediction release, outcome access, score report or result commitment exists. Test-only real-shaped mechanics
+remain zero-human engineering evidence. A token-imbalanced future run would need a separately frozen
+prospective exact-token sensitivity execution before any outcome access. M56.4 adds no predictive-validity or
+resource-performance result.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A

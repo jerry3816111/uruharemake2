@@ -88,7 +88,17 @@
 > future authorized runner mechanics，不是actual resource/performance或人類方程式證據。下一個不可
 > 替代依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.3 lease-gated formal generation runner」覆蓋段；前文各 M 的
+> **M56.4 separate formal scorer與result commitment已凍結，但目前live scoring明確DENIED。** 先讀
+> `analysis/m56_4_separate_formal_scorer_acceptance_2026-09-02.md`。公開入口只有`run_id`；它會在開
+> scoring outcome前重驗M56.2 authority、M56.3完整210 predictions/commitment/release、逐call resources，
+> 並先檢查B5/Ours actual prompt-token差。超過5%時在答案前停止且無caller boolean可補過。通過後才
+> 以固定七組、B5 vs Ours、Brier/NLL bootstrap/sign-flip、Top-1/McNemar規則計分，0 scorer model calls，
+> score report與正／負decision都再SHA commitment。focused 17/17、direct 154/154、選定相容219/219、
+> Safari圖像通過；但V7仍0/18＋0/18、V9/real rows 0/30、prediction release/outcome access/score/result
+> 皆0或不存在。它只證明future scorer mechanics，不是performance或人類方程式證據；下一個不可替代
+> 依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.4 separate formal scorer」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
