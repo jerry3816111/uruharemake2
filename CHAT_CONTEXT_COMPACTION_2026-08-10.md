@@ -1344,48 +1344,84 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   不可由Codex替代的依賴仍是兩位不同真人完成V7；在此之前可繼續做不消耗holdout、不假造真人的必要
   工程，但不得把M56.2宣稱為Equation V1、Uruha預測優勢、人類方程式、full-pipeline或production證據。
 
+### 7.77 2026-09-02 M56.3 lease-gated formal generation runner：真實執行／commitment路徑通過，現在仍拒絕呼叫模型
+
+- 不修改M54–M56.2凍結檔，新增M56.2 lease之後的單一正式狀態機：validate consumed lease→freeze
+  schedule→B4 summaries→30×7 predictions→actual resource ledger→complete submission→SHA commitment→
+  separate-scorer release。公開formal entry point只有`run_id`，沒有provider/readiness/outcome/retry注入。
+- M56.2 activation controller仍負責在scoring隔離側重驗真人chain與consume receipt；M56.3 generation
+  runner只開generation／commitments／telemetry，不列舉、hash或載入scoring outcome key。B0 deterministic
+  0 call；B1–B5/Ours各sample恰好一次call；每個distinct nonempty B4 history另一次summary call。
+- 固定local Ollama `qwen3.5:9b`、同manifest/hardware/options、一次transport、0 retry/fallback。每call
+  記actual prompt/completion tokens、latency、process CPU、process/Ollama memory、Ollama duration fields、
+  model identity、prompt hash與raw-response hash；不保存raw response或reasoning trace。Equation artifacts
+  先deterministically rematerialize並記CPU；drift或budget/parse/schema/model/resource錯誤terminal fail。
+- 只有210列完整、順序/labels/argmax/evidence/resource/artifact全部通過才能atomic寫submission與SHA
+  commitment；之後才建立separate scorer可讀scoring的release。release仍不授權result claim、production、
+  deployment、retry，generation仍0 target access。post-commit mutation與scoring-before-commit均fail closed。
+- test-only forged 30-row in-memory packet可建立210-task schedule與完整mock submission/commit/release，
+  但live audit仍DENIED；mock tokens/latency/memory不是actual formal resource evidence。no-call synthetic
+  rehearsal另用不同schema，0 humans／0 lease／0 formal authority。
+- final focused **14/14**；M54–M56.3 direct **137/137**；選定M1/M2/V7/V9/M54–M56.3相容
+  **202/202**；compile與implementation freeze通過。runner contract hash
+  `43eceb6055d1ba12a394caf2e37f01bd0cbe35026bf6aab9186bdbd985720b6e`；live audit hash
+  `402fc96fb3d09cbd7b53291ee67d40c62cbfa2264d5a65dca489f7aae98bccf9`；rehearsal hash
+  `33f3b1896afee47b96b7243a0f944b441bfd8e0c471d6b6eed915224bd7a7306`。
+- Safari沿用同一tab導向`http://127.0.0.1:7911/dashboard`，仍29 tabs，未新增／關閉tab或送出表單；
+  圖示六步、generation/scoring硬邊界、V7 0/18＋0/18、V9/real rows 0/30、formal calls/result 0。
+  頁面read-only可安全關閉。
+- authoritative state不變：lease absent、formal calls 0、commitment absent、scoring release absent、result
+  absent。M56.3證明未來authorized generation的runner mechanics，不是actual model resource/performance
+  evidence；hash仍是frozen application-level drift control，不是抵抗同機改檔者的digital signature。
+  下一個不可替代依賴仍是兩位不同真人完成V7。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
 
 1. `CHAT_CONTEXT_COMPACTION_2026-08-10.md`
-2. `analysis/m56_2_real_data_activation_envelope_acceptance_2026-09-02.md`
-3. `research/m56_2_real_data_activation_envelope_plan_2026-09-02.md`
-4. `configs/m56_2_real_data_activation_envelope_v1.json`
-5. `research/m56_2_real_data_activation_envelope_implementation_freeze_2026-09-02.json`
-6. `m56_2_real_data_activation_envelope.py`
-7. `analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`
-8. `research/m56_pre_outcome_equation_artifacts_plan_2026-09-01.md`
-9. `configs/m56_pre_outcome_equation_artifacts_v1.json`
-10. `research/m56_pre_outcome_equation_artifacts_implementation_freeze_2026-09-02.json`
-11. `m56_pre_outcome_equation_artifacts.py`
-12. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
-13. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
-14. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
-15. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
-16. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
-17. `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`
-18. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
-19. `research/m56_blinded_execution_capsule_plan_2026-09-01.md`
-20. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
-21. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
-22. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
-23. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-24. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-25. `research/full_completion_roadmap.md`
-26. `configs/m56_blinded_execution_capsule_v1.json`
-27. `configs/m56_fair_comparison_preflight_v1.json`
-28. `configs/m55_boundary_adjudication_tool_v1.json`
-29. `configs/m55_boundary_extension_tool_v1.json`
-30. `configs/m55_temporal_row_contract_v1.json`
-31. `configs/m54_human_response_equation_v1.json`
-32. `m56_blinded_execution_capsule.py`
-33. `m56_fair_comparison_preflight.py`
-34. `m55_boundary_adjudication_tool.py`
-35. `m55_boundary_extension_tool.py`
-36. `m55_temporal_row_contract.py`
-37. `audit_m55_real_person_longitudinal_readiness.py`
-38. `NEXT_THREAD_PROMPT_2026-08-10.md`
+2. `analysis/m56_3_lease_gated_generation_runner_acceptance_2026-09-02.md`
+3. `research/m56_3_lease_gated_generation_runner_plan_2026-09-02.md`
+4. `configs/m56_3_lease_gated_generation_runner_v1.json`
+5. `research/m56_3_lease_gated_generation_runner_implementation_freeze_2026-09-02.json`
+6. `m56_3_lease_gated_generation_runner.py`
+7. `analysis/m56_2_real_data_activation_envelope_acceptance_2026-09-02.md`
+8. `research/m56_2_real_data_activation_envelope_plan_2026-09-02.md`
+9. `configs/m56_2_real_data_activation_envelope_v1.json`
+10. `research/m56_2_real_data_activation_envelope_implementation_freeze_2026-09-02.json`
+11. `m56_2_real_data_activation_envelope.py`
+12. `analysis/m56_pre_outcome_equation_artifacts_acceptance_2026-09-02.md`
+13. `research/m56_pre_outcome_equation_artifacts_plan_2026-09-01.md`
+14. `configs/m56_pre_outcome_equation_artifacts_v1.json`
+15. `research/m56_pre_outcome_equation_artifacts_implementation_freeze_2026-09-02.json`
+16. `m56_pre_outcome_equation_artifacts.py`
+17. `analysis/m54_human_response_equation_v1_acceptance_2026-09-01.md`
+18. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
+19. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
+20. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
+21. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
+22. `analysis/m56_blinded_execution_capsule_acceptance_2026-09-01.md`
+23. `analysis/m56_fair_comparison_preflight_acceptance_2026-09-01.md`
+24. `research/m56_blinded_execution_capsule_plan_2026-09-01.md`
+25. `research/m56_fair_comparison_preflight_plan_2026-09-01.md`
+26. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
+27. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+28. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+29. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+30. `research/full_completion_roadmap.md`
+31. `configs/m56_blinded_execution_capsule_v1.json`
+32. `configs/m56_fair_comparison_preflight_v1.json`
+33. `configs/m55_boundary_adjudication_tool_v1.json`
+34. `configs/m55_boundary_extension_tool_v1.json`
+35. `configs/m55_temporal_row_contract_v1.json`
+36. `configs/m54_human_response_equation_v1.json`
+37. `m56_blinded_execution_capsule.py`
+38. `m56_fair_comparison_preflight.py`
+39. `m55_boundary_adjudication_tool.py`
+40. `m55_boundary_extension_tool.py`
+41. `m55_temporal_row_contract.py`
+42. `audit_m55_real_person_longitudinal_readiness.py`
+43. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 

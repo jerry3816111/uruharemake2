@@ -1,0 +1,119 @@
+{
+  "schema": "uruha_m56_lease_gated_generation_runner_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_formal_m56_generation_call_or_target_outcome_access",
+  "single_changed_variable": "consume one valid M56.2 lease through a no-retry resource-audited generation and pre-scoring commitment state machine",
+  "bindings": {
+    "m56_2_activation_freeze": {
+      "path": "research/m56_2_real_data_activation_envelope_implementation_freeze_2026-09-02.json",
+      "sha256": "814fdbdda5c952f80e8d0f86d6f1801f37a13ee5dff4137b7914bfec97034dc3"
+    },
+    "m56_2_activation_contract": {
+      "path": "configs/m56_2_real_data_activation_envelope_v1.json",
+      "sha256": "970b9a2759175ff4d706490c1ba45abdc85fa89e555ce93e1dbed4df0878d87d"
+    },
+    "m56_capsule_freeze": {
+      "path": "research/m56_blinded_execution_capsule_implementation_freeze_2026-09-01.json",
+      "sha256": "0214c10bf232c3f657371dfe9cfae10e9c6563485876894eaf22035f2a66e979"
+    },
+    "m56_capsule_contract": {
+      "path": "configs/m56_blinded_execution_capsule_v1.json",
+      "sha256": "32dd61ebcb1ad5b5bddd397f2d20077ffcfa481039d6b8b27b6374ac068c4970"
+    },
+    "m56_equation_artifact_freeze": {
+      "path": "research/m56_pre_outcome_equation_artifacts_implementation_freeze_2026-09-02.json",
+      "sha256": "a9c6824aca42eace4a821b5dc035db4bed205a32ef9e1c539ca05e1bc5fde4d2"
+    },
+    "m56_3_plan": {
+      "path": "research/m56_3_lease_gated_generation_runner_plan_2026-09-02.md",
+      "sha256": "b80657f562e2d6e70d017b9849a83236863cf0eb8cc2d1f84eb680a601287a7a"
+    }
+  },
+  "schemas": {
+    "generation_schedule": "uruha_m56_formal_generation_schedule_v1",
+    "formal_submission": "uruha_m56_formal_prediction_submission_v1",
+    "prediction_commitment": "uruha_m56_formal_prediction_commitment_v1",
+    "scoring_release": "uruha_m56_post_commit_scoring_release_v1",
+    "failure_record": "uruha_m56_terminal_generation_failure_v1",
+    "runner_audit": "uruha_m56_lease_gated_runner_audit_v1",
+    "synthetic_rehearsal": "uruha_m56_generation_runner_synthetic_rehearsal_v1"
+  },
+  "state_machine": [
+    "activation_receipt_issued",
+    "execution_lease_consumed",
+    "schedule_committed",
+    "b4_summaries_complete",
+    "all_predictions_complete",
+    "resource_ledger_complete",
+    "submission_committed",
+    "scoring_release_issued"
+  ],
+  "execution": {
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "provider": "local_ollama",
+    "model": "qwen3.5:9b",
+    "summary_tasks_before_prediction_tasks": true,
+    "prediction_task_count": 210,
+    "model_prediction_calls_per_non_B0_task": 1,
+    "model_prediction_calls_per_B0_task": 0,
+    "model_summary_calls_per_distinct_nonempty_history": 1,
+    "transport_attempts_per_call": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "public_provider_injection_allowed": false,
+    "public_readiness_injection_allowed": false,
+    "public_outcome_input_allowed": false,
+    "public_retry_override_allowed": false,
+    "terminal_failure_prevents_commitment": true
+  },
+  "generation_boundary": {
+    "permitted_compartments": ["generation", "commitments", "telemetry"],
+    "scoring_compartment_access_allowed": false,
+    "target_outcome_access_before_commitment": 0,
+    "outcome_named_keys_forbidden": true,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "prompt_and_output": {
+    "input_token_budget": 8192,
+    "output_token_budget": 384,
+    "strict_json_only": true,
+    "required_prediction_fields": ["probabilities", "authorized_evidence_ids", "brief_evidence"],
+    "required_summary_fields": ["summary_text"],
+    "probability_sum_tolerance": 0.000001,
+    "raw_model_response_persisted": false,
+    "reasoning_trace_requested_or_persisted": false
+  },
+  "resource_accounting": {
+    "actual_prompt_tokens_required": true,
+    "actual_completion_tokens_required": true,
+    "wall_latency_required": true,
+    "process_cpu_required": true,
+    "process_or_ollama_memory_observation_required": true,
+    "ollama_duration_fields_required": true,
+    "equation_artifact_rematerialization_cpu_required": true,
+    "B4_summary_cost_included": true,
+    "Ours_upstream_cost_included": true,
+    "retry_and_fallback_count_required": true,
+    "B5_Ours_prompt_difference_fraction_threshold": 0.05
+  },
+  "commitment": {
+    "complete_matrix_required": true,
+    "atomic_submission_write": true,
+    "sha256_commitment_before_scoring_release": true,
+    "post_commit_mutation_invalidates_release": true,
+    "scoring_release_authorizes_result_claim": false,
+    "scoring_release_authorizes_production": false,
+    "scoring_release_authorizes_retry": false
+  },
+  "authorization": {
+    "current_formal_generation": false,
+    "current_target_outcome_access": false,
+    "current_formal_scoring": false,
+    "current_formal_result_claim": false,
+    "synthetic_rehearsal_authorizes_formal_execution": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "This contract can establish only the lease-gated generation, resource ledger, complete prediction commitment, and post-commit scoring-release mechanics for one future formal M56 run. Current live execution remains denied. It cannot establish human evidence, model performance, Equation V1 validity, private mental truth, a solved human-brain equation, full-pipeline readiness, or production readiness."
+}

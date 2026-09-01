@@ -86,6 +86,18 @@ synthetic packet cannot create authority. The controller is intentionally denied
 control engineering evidence, not real-person predictive validity, Equation V1 validity, an M56 comparison,
 full-pipeline readiness, production readiness, or a solved human-response equation.
 
+The M56.3 lease-gated formal generation runner now supplies the next frozen execution boundary; see
+`analysis/m56_3_lease_gated_generation_runner_acceptance_2026-09-02.md`. It accepts only a run identifier,
+revalidates the M56.2 consumed lease, freezes B4-summary plus 30-by-7 prediction order, gives every permitted
+model task one transport attempt with no retry or fallback, and records actual token, latency, CPU, memory,
+provider-duration, model-identity, and content-hash fields. Generation has no scoring capability. Only a
+complete 210-row submission may create a SHA commitment and then a capability for the separate scorer. The
+current live state is intentionally denied: V7 is still 0/18 and 0/18, V9 and real rows are 0/30, and lease,
+formal calls, commitment, scoring release, and result are all absent. Mock mechanics and a no-call rehearsal
+are engineering evidence only. A process interruption after model calls but before commitment currently
+terminally fails the run and requires a newly human-authorized run rather than automatic recovery; this avoids
+hidden retry but can waste compute. M56.3 therefore adds no predictive-validity or resource-performance result.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A

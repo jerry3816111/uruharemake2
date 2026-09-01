@@ -77,7 +77,18 @@
 > 0/18＋0/18、V9 0/30、real rows 0/30、formal calls 0、formal result absent；下一個不可替代依賴仍是
 > 兩位不同真人完成V7，不能用Codex、LLM、synthetic labels或同一人重複作答替代。
 
-> 最新入口是上方的「M56.2 formal real-data activation envelope」覆蓋段；前文各 M 的
+> **M56.3 lease-gated formal generation runner已凍結，但目前仍不允許呼叫模型。** 先讀
+> `analysis/m56_3_lease_gated_generation_runner_acceptance_2026-09-02.md`。M56.3只接受`run_id`，
+> 先重驗M56.2 consumed lease，再依固定順序建立B4 summaries與30×7 prediction schedule；B0為0-call，
+> B1–B5/Ours每sample一次call，0 retry/fallback。每次正式call必須留下actual token、latency、CPU、
+> process/Ollama memory、provider duration、model identity及content hashes；完整210列通過後才可寫
+> submission→SHA commitment→separate-scorer release，generation全程不得讀scoring outcome。
+> focused 14/14、M54–M56.3 direct 137/137、選定相容202/202，Safari圖像頁通過；但現在live audit
+> 仍是V7 0/18＋0/18、V9/real rows 0/30、lease/calls/commitment/release/result皆0或不存在。這只證明
+> future authorized runner mechanics，不是actual resource/performance或人類方程式證據。下一個不可
+> 替代依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.3 lease-gated formal generation runner」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
