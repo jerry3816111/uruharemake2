@@ -32,6 +32,14 @@
 > 合併，每列必須明確真人裁決。Safari合成圖通過，但V7仍0/18＋0/18、V9與真人temporal rows仍0/30、
 > M56禁止。下一個不可替代依賴是兩位不同真人完成V7；通過後才可開兩人的V9＋boundary實際站。
 
+> **M55 explicit adjudication／record assembly工程gate也已通過，真人列仍為0。** 先讀
+> `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`。新private工具對每個完整pair
+> 強制explicit accept-A／accept-B／manual resolution，即使完全一致也不能auto-pass；保存四個source
+> entry hash，不平均時間、不挑標籤、不合併文字。每次page/save/export重驗四份ledger；stale立即
+> HTTP 409。synthetic完整匯出可過22-field temporal validator，但固定0真人、M55 false、M56 false。
+> Safari的outsider與private圖已通過，未送出表單。現在V7仍0/18＋0/18、V9與real rows仍0/30；
+> 不可用Codex/LLM/synthetic補過。所有pre-target M55工具已齊，下一個真依賴就是兩位不同真人V7。
+
 > 最新入口是本文最後的「M44 回饋紀錄已接通，下一步 M45」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。
 

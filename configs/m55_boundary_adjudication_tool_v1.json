@@ -1,0 +1,108 @@
+{
+  "schema": "uruha_m55_boundary_adjudication_tool_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_v7_reliability_or_target_content_access",
+  "single_changed_variable": "require an explicit human decision for every paired V9 plus boundary record before creating a private M55 temporal record pack; no software averaging, label choice, or text merge",
+  "bindings": {
+    "boundary_tool_implementation_freeze": {
+      "path": "research/m55_boundary_extension_tool_implementation_freeze_2026-09-01.json",
+      "sha256": "47651547d664d187b2dd7c613cd76641c08539ae16afd074c62cd13e1a69fac9"
+    },
+    "boundary_tool_contract": {
+      "path": "configs/m55_boundary_extension_tool_v1.json",
+      "sha256": "ab6b8562c2a12e2bd24a05eb22fa12227be970f61982a9370fa35dc9a602e908"
+    },
+    "temporal_row_contract": {
+      "path": "configs/m55_temporal_row_contract_v1.json",
+      "sha256": "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"
+    },
+    "target_v9_result_lock": {
+      "path": "configs/public_persona_target_calibration_coding_v9_result_lock.json",
+      "sha256": "3572c8b5c5b125eac479e6c4082ee410add90b4ed8300c8ced6d3b63aea660fd"
+    },
+    "target_sampling_frame": {
+      "path": "datasets/public_persona_target_calibration_sampling_frame_v9.json",
+      "sha256": "fccac49c7cf2df6b54be2fc9af4182b9c6f20f646d909597c7c0c1831c71d4ae"
+    },
+    "target_source_metadata": {
+      "path": "datasets/public_persona_target_calibration_source_metadata_v9.json",
+      "sha256": "d1e151870cf73d92d454d1b74264b28891629dd1288996bd973480d8fb9402c7"
+    },
+    "behavior_codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    }
+  },
+  "decisions": [
+    "accept_coder_a_complete_record",
+    "accept_coder_b_complete_record",
+    "manual_resolution"
+  ],
+  "ledger": {
+    "schema": "uruha_m55_private_boundary_adjudication_ledger_v1",
+    "status": "private_explicit_boundary_adjudication_ledger",
+    "canonical_coder_order": "lexicographic_pseudonym",
+    "initial_entry_count": 0,
+    "source_ledgers_bound_by_sha256": true,
+    "required_entry_fields": [
+      "sampling_slot_id",
+      "source_id",
+      "adjudicator_pseudonym",
+      "coder_a_pseudonym",
+      "coder_b_pseudonym",
+      "source_v9_entry_a_hash",
+      "source_v9_entry_b_hash",
+      "boundary_entry_a_hash",
+      "boundary_entry_b_hash",
+      "decision",
+      "resolution_record",
+      "adjudication_reason",
+      "adjudication_confidence",
+      "both_independent_records_reviewed_attestation",
+      "no_automatic_merge_attestation",
+      "paraphrase_and_no_quote_attestation",
+      "updated_at"
+    ]
+  },
+  "adjudication": {
+    "every_paired_slot_requires_explicit_human_submit": true,
+    "exact_pairs_auto_accepted": false,
+    "automatic_timestamp_average_allowed": false,
+    "automatic_text_merge_allowed": false,
+    "automatic_behavior_label_choice_allowed": false,
+    "original_independent_entries_preserved": true,
+    "manual_resolution_must_name_reason": true,
+    "entry_hashes_revalidated_on_every_page_load": true,
+    "manual_resolution_requires_no_automatic_merge_attestation": true,
+    "manual_resolution_payload_may_not_request_automatic_average_or_text_merge": true
+  },
+  "record_pack": {
+    "schema": "uruha_m55_private_temporal_record_pack_v1",
+    "required_record_field_count": 22,
+    "synthetic_review_status": "synthetic_engineering_only",
+    "synthetic_independent_coder_count": 0,
+    "real_review_status": "adjudicated_after_retained_disagreement",
+    "real_independent_coder_count": 2,
+    "must_pass_temporal_row_contract_validation": true,
+    "formal_pack_git_tracked": false
+  },
+  "authorization": {
+    "real_initialization_requires_v7_reliability_pass": true,
+    "real_serving_requires_v7_reliability_pass": true,
+    "synthetic_demo_authorizes_human_reliability": false,
+    "synthetic_demo_authorizes_target_coding": false,
+    "synthetic_demo_authorizes_m55_completion": false,
+    "adjudication_or_pack_alone_authorizes_m56": false,
+    "sealed_holdout_access": false,
+    "model_execution": false,
+    "production_memory_write": false
+  },
+  "private_storage": {
+    "root": "analysis/local_m55_boundary_adjudication_v1/",
+    "gitignored": true,
+    "atomic_write": true,
+    "raw_or_verbatim_content_allowed": false,
+    "private_mental_fact_allowed": false
+  },
+  "claim_boundary": "A pass proves only that explicit human decisions can convert two already-complete independent synthetic or real public-observation records into a private temporal record pack that passes the frozen M55 schema without automatic merge. It creates no human labels, does not validate Equation V1, does not complete M55 by itself, and never authorizes M56."
+}

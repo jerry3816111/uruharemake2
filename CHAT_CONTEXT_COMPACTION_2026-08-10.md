@@ -1216,6 +1216,29 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 - 下一個不能由Codex假造的依賴仍是兩位不同真人完成V7。V7通過後才可初始化兩人的V9＋boundary
   工具；30 slots完成後必須先做明確真人裁決與M55 temporal compile，再另凍結M56 protocol。
 
+### 7.72 2026-09-01 M55 explicit adjudication：裁決與record assembly工具通過，真人列仍為0
+
+- 新增獨立private adjudication ledger；初始化永遠是0筆，即使Coder A/B完全一致也不能auto-pass。
+  每個paired selected slot都必須由人明確accept A、accept B或manual resolution，並保留兩份V9 entry
+  與兩份boundary entry digest。caller輸入順序不影響canonical A/B身份。
+- accept A/B只完整複製被選者的event、X/cutoff/Y、paraphrase、public behavior/context/relation，
+  不混另一人的欄位。manual resolution需重填22欄record所需內容、理由、信心與三個attestation；
+  automatic average／text merge請求、bad chronology、unsupported labels、raw/verbatim/private keys都拒絕。
+- 兩份V9與boundary ledger必須完整、有效、不同coder、相同data kind；real V9還必須完整30 slots，
+  real init／serve持續需genuine V7 lock。server每次GET/save/export重新驗證四個ledger hash；source改變
+  立即HTTP 409。synthetic export固定0 human coder與`synthetic_engineering_only`，不可冒充真人。
+- 完整synthetic裁決可輸出並通過既有22-field M55 temporal record validator，但tool/export仍回報
+  M55 false、M56 false、model calls 0、sealed future false、production write 0。
+- 聚焦9/9、M54/V7/V9/M55相容69/69、compile與diff check通過；contract hash
+  `9cb11cca6d75f85f488fbbbcd86054d0ecbe744f1cf5a9754c5c03112b1d3682`，implementation freeze已建立。
+- Safari沿用既有M55 tab並維持28 tabs：outsider graph顯示M54→V7→V9→X/cutoff/Y→裁決→M55→M56；
+  private synthetic頁顯示兩條完整lane、三種決定、manual欄位與evidence boundary。沒有填寫或送出表單。
+- 正式狀態不變：V7 0/18＋0/18、V9 0/30、real temporal rows 0/30、M55 incomplete、M56 forbidden，
+  blocker仍是`complete_two_independent_v7_18_slot_ledgers`。報告：
+  `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`。
+- 目前所有不消耗target content的M55資料工具鏈已齊。下一個不可由Codex替代的依賴是兩位不同真人
+  完成V7；通過後才按V9→boundary→adjudication→temporal compile順序使用，不可跳步。
+
 ## 8. 關鍵檔案，按順序讀取
 
 只先讀以下檔案，避免無目的掃描整個 repository：
@@ -1225,17 +1248,21 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 3. `analysis/m55_real_person_longitudinal_readiness_2026-09-01.md`
 4. `analysis/m55_temporal_row_contract_acceptance_2026-09-01.md`
 5. `analysis/m55_boundary_extension_tool_acceptance_2026-09-01.md`
-6. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
-7. `research/m55_temporal_row_contract_plan_2026-09-01.md`
-8. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
-9. `research/full_completion_roadmap.md`
-10. `configs/m55_boundary_extension_tool_v1.json`
-11. `configs/m55_temporal_row_contract_v1.json`
-12. `configs/m54_human_response_equation_v1.json`
-13. `m55_boundary_extension_tool.py`
-14. `m55_temporal_row_contract.py`
-15. `audit_m55_real_person_longitudinal_readiness.py`
-16. `NEXT_THREAD_PROMPT_2026-08-10.md`
+6. `analysis/m55_boundary_adjudication_tool_acceptance_2026-09-01.md`
+7. `research/m55_boundary_adjudication_tool_plan_2026-09-01.md`
+8. `research/m55_boundary_extension_tool_plan_2026-09-01.md`
+9. `research/m55_temporal_row_contract_plan_2026-09-01.md`
+10. `research/m54_human_response_equation_v1_plan_2026-09-01.md`
+11. `research/full_completion_roadmap.md`
+12. `configs/m55_boundary_adjudication_tool_v1.json`
+13. `configs/m55_boundary_extension_tool_v1.json`
+14. `configs/m55_temporal_row_contract_v1.json`
+15. `configs/m54_human_response_equation_v1.json`
+16. `m55_boundary_adjudication_tool.py`
+17. `m55_boundary_extension_tool.py`
+18. `m55_temporal_row_contract.py`
+19. `audit_m55_real_person_longitudinal_readiness.py`
+20. `NEXT_THREAD_PROMPT_2026-08-10.md`
 
 只有需要更早設計理由時才讀：
 
