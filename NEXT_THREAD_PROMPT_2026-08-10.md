@@ -129,7 +129,18 @@
 > 也尚未強制要求M56.7 release。V7仍0/18＋0/18、V9/real rows 0/30、formal calls/result皆0或不存在；
 > 下一個不可替代依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.7 Mac full-sync generation commit」覆蓋段；前文各 M 的
+> **M56.8 durable-release-gated formal scoring已凍結，但正式scoring仍明確DENIED。** 先讀
+> `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`。只讀稽核已實際重現：歷史
+> M56.4沒有M56.7 mode/release仍可完成fixture scoring。新入口只接受`run_id`，先重驗M56.4 prescore、
+> exact M56.7 mode＋durable release，再完整同步M56.8 pre-outcome gate，才delegate未改的M56.4。
+> 缺失／竄改或答案已先開過卻沒有gate都fail closed，不能事後補證明。forged full path為180 mock
+> generation calls、0 scorer calls；M56.4/M56.8三次fixture的score semantics全相同，中位成本新增
+> 0.149733s。focused 10/10、direct 209/209、selected 274/274，Safari 33 tabs不變且server已停止。
+> 這只建立合作式application/research authority；同機舊API/檔案讀取沒有被cryptographically禁止。
+> V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/result皆0或不存在；下一個不可替代依賴
+> 仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.8 durable-release-gated formal scoring」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

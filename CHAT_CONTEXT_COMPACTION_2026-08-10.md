@@ -1485,15 +1485,47 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   強制要求durable release，更沒有新增真人、actual performance、Equation V1、人類方程式、full-pipeline或
   production證據。下一個不可替代科學依賴仍是兩位不同真人完成V7。
 
+### 7.82 2026-09-03 M56.8 durable-release-gated scoring：耐久生成與正式評分授權已串接，正式實驗仍禁止
+
+- 只讀稽核證實凍結的M56.4完整隔離測試不建立任何M56.7 mode／durable release，仍可開test outcome並
+  建立M56.4 result；因此舊scorer不能單獨證明預測經過後來新增的Mac full-sync generation邊界。
+- 不修改M54–M56.7凍結檔，新增唯一目前授權入口
+  `execute_durable_release_gated_formal_scoring(run_id)`；只接受run-id，先重驗不變的M56.4 prescore、exact
+  M56.7 mode與durable release，再以file＋directory `fsync/F_FULLFSYNC`提交M56.8 gate，之後才delegate
+  未改動的M56.4 outcome join／metrics／result。
+- 缺少或竄改M56.7 mode／release均在outcome loader前拒絕；若沒有較早M56.8 gate卻已出現M56.4 access
+  receipt、score report或result commitment，該run不能事後補證明。既有gate內容改變也fail closed；相同
+  restart只能沿用同一gate與同一result。
+- forged完整路徑實際先走M56.7 generation，再走M56.8：180 mock generation calls、0 scorer calls；測試
+  在outcome loader被呼叫時已觀察到gate `artifact_commit_complete`。七組metrics、B5/Ours主比較與decision
+  和原M56.4相同。
+- 三次相同deterministic score fixture：M56.4中位0.597449s，M56.8中位0.747182s，增加0.149733s；三次
+  score semantics全相同。這不是formal model latency或production throughput。
+- final focused **10/10**；M54–M56.8 direct **209/209**；選定M1/M2/V7/V9/M54–M56.8 **274/274**；
+  compile、JSON、freeze hash與diff check通過。contract hash
+  `ee60d7c4179d347418d24467f7a3b0656cafab14f127cde4b8853f8280cd3316`。
+- Safari重用既有M56.7 tab導向`http://127.0.0.1:7916/dashboard`，前後33 tabs，沒有新增／關閉；五步
+  授權鏈、前後差異、不能事後補證明與same-host限制皆可讀、無form／水平溢出。server已停止，tab可安全
+  關閉；證據為兩張`analysis/m56_8_safari_*.jpeg`。
+- authoritative state不變：V7 0/18＋0/18、V9／real rows 0/30、formal calls/outcome/result皆0或不存在。
+  M56.8是合作式application/research authority，不是OS sandbox；有同機程式／檔案權限者仍可直接呼叫
+  歷史M56.4，該讀取不會被物理阻止，只是不具M56.8授權。沒有新增真人、actual performance、Equation V1、
+  人類方程式、full-pipeline或production證據。下一個不可替代科學依賴仍是兩位不同真人完成V7。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_7_mac_full_sync_generation_acceptance_2026-09-03.md`
-2. `research/m56_7_mac_full_sync_generation_plan_2026-09-03.md`
-3. `configs/m56_7_mac_full_sync_generation_v1.json`
-4. `research/m56_7_mac_full_sync_generation_implementation_freeze_2026-09-03.json`
-5. `m56_7_mac_full_sync_generation.py`
+1. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
+2. `research/m56_8_durable_release_gated_scoring_plan_2026-09-03.md`
+3. `configs/m56_8_durable_release_gated_scoring_v1.json`
+4. `research/m56_8_durable_release_gated_scoring_implementation_freeze_2026-09-03.json`
+5. `m56_8_durable_release_gated_scoring.py`
+6. `analysis/m56_7_mac_full_sync_generation_acceptance_2026-09-03.md`
+7. `research/m56_7_mac_full_sync_generation_plan_2026-09-03.md`
+8. `configs/m56_7_mac_full_sync_generation_v1.json`
+9. `research/m56_7_mac_full_sync_generation_implementation_freeze_2026-09-03.json`
+10. `m56_7_mac_full_sync_generation.py`
 
 需要追上游理由時，再依下列既有順序讀取：
 
