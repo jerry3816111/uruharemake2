@@ -111,6 +111,17 @@ remain zero-human engineering evidence. A token-imbalanced future run would need
 prospective exact-token sensitivity execution before any outcome access. M56.4 adds no predictive-validity or
 resource-performance result.
 
+The M56.5 crash-safe no-retry continuation overlay now closes the ordinary process-interruption gap left by M56.3;
+see `analysis/m56_5_crash_safe_no_retry_continuation_acceptance_2026-09-02.md`. It commits the recovery mode before
+the schedule, writes one immutable invocation intent before each single transport attempt, and atomically checkpoints
+the validated step result together with actual call telemetry. A complete checkpoint is reused without another call;
+an intent without a complete checkpoint is ambiguous and terminal. Fault injection shows an interrupted and an
+uninterrupted forged 30-row run both use exactly 180 calls and yield identical summaries, predictions and ledger;
+M56.3 and M56.4 compatibility remain valid. Current live authority is unchanged: V7 is 0/18 and 0/18, V9 and real
+rows are 0/30, and formal calls, outcome access, commitment, release and result are zero or absent. M56.5 is recovery
+engineering only, not human evidence, actual resource/performance evidence, Equation V1 validity, full-pipeline
+readiness, production readiness or a solved human-response equation.
+
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
 research must conclude either with bounded positive evidence or rejection of the current equation. A

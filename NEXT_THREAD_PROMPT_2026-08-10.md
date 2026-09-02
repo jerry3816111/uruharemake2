@@ -98,7 +98,17 @@
 > 皆0或不存在。它只證明future scorer mechanics，不是performance或人類方程式證據；下一個不可替代
 > 依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.4 separate formal scorer」覆蓋段；前文各 M 的
+> **M56.5 crash-safe no-retry continuation已凍結，但正式generation仍明確DENIED。** 先讀
+> `analysis/m56_5_crash_safe_no_retry_continuation_acceptance_2026-09-02.md`。M56.5只改process
+> interruption recovery：每步model transport前先寫immutable intent，成功後把result與actual resource
+> telemetry合成checkpoint；完整checkpoint可在restart後沿用且不重呼，只有intent沒有checkpoint則
+> terminal、禁止retry/fallback。forged fixture的interrupted/uninterrupted各180 calls且submission內容一致；
+> focused 15/15、direct 169/169＋4 subtests、選定相容234/234＋4 subtests，Safari圖通過且server已停止。
+> 但V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/commitment/release/result皆0或不存在。
+> 這是crash-safety工程，不是actual model performance、Equation V1或人類方程式證據；下一個不可替代
+> 依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.5 crash-safe no-retry continuation」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
