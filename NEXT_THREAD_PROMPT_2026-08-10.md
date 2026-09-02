@@ -108,7 +108,17 @@
 > 這是crash-safety工程，不是actual model performance、Equation V1或人類方程式證據；下一個不可替代
 > 依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.5 crash-safe no-retry continuation」覆蓋段；前文各 M 的
+> **M56.6 single-writer formal generation已凍結，但正式generation仍明確DENIED。** 先讀
+> `analysis/m56_6_single_writer_formal_generation_acceptance_2026-09-03.md`。M56.6不改M56.5任何
+> prompt／schedule／checkpoint／model／retry／scoring，只在同一private run-id進M56.5前取得
+> nonblocking OS advisory exclusive lock。兩個執行緒同時競爭時只有1個delegate、另1個在模型前
+> fail closed，0額外transport且0 contender terminal failure；delegate exception與`os._exit(19)`都會
+> 釋放ownership，stale lock file不是authority。focused 15/15、direct 184/184、選定相容249/249，
+> Safari圖通過且32 tabs不變。這只證明同一台Mac合作式duplicate-launch安全，不是distributed lock、
+> malicious-host security、actual performance或人類方程式。V7仍0/18＋0/18、V9/real rows 0/30，
+> formal calls/outcome/commitment/release/result皆0或不存在；下一個不可替代依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.6 single-writer formal generation」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

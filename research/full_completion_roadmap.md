@@ -1,6 +1,6 @@
 # Development-first roadmap
 
-Status date: 2026-09-02
+Status date: 2026-09-03
 Historical research source: `/Users/jerrychang/Downloads/RESEARCH_SPEC_FOR_CODEX.md`  
 Execution mode: build the working system first; research is retained only as validation and claim control.
 
@@ -121,6 +121,18 @@ M56.3 and M56.4 compatibility remain valid. Current live authority is unchanged:
 rows are 0/30, and formal calls, outcome access, commitment, release and result are zero or absent. M56.5 is recovery
 engineering only, not human evidence, actual resource/performance evidence, Equation V1 validity, full-pipeline
 readiness, production readiness or a solved human-response equation.
+
+The M56.6 single-writer formal-generation overlay now closes one further operational gap without changing any
+frozen prompt, data, model, checkpoint, retry, resource or scoring rule; see
+`analysis/m56_6_single_writer_formal_generation_acceptance_2026-09-03.md`. Before this gate, two local processes
+could validate the same run id: M56.5's exclusive intent prevented a clean double call, but the losing process could
+still poison the healthy run with a terminal failure. M56.6 obtains one non-blocking operating-system advisory lock
+per private run id before delegating to unchanged M56.5. A simultaneous contender fails before delegate entry, adds
+zero transport attempts and writes no terminal generation failure; normal exceptions and abrupt process death
+release ownership, while a stale lock file is never authority. Focused contention and full forged-path tests plus
+Safari visualization pass. This is cooperative one-host execution reliability, not a distributed or malicious-host
+security boundary. Live authority is still unchanged: V7 is 0/18 and 0/18, V9 and real rows are 0/30, and formal
+calls, outcome access, commitment, release and result are zero or absent.
 
 M62 is the optimistic completion line. Honest data/codebook/equation/transfer/replication retries may use
 M63–M75, but every retry requires a new sealed source and retained prior failure. M75 is a hard stop: the
