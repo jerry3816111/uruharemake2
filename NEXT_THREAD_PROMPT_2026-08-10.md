@@ -118,7 +118,18 @@
 > malicious-host security、actual performance或人類方程式。V7仍0/18＋0/18、V9/real rows 0/30，
 > formal calls/outcome/commitment/release/result皆0或不存在；下一個不可替代依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.6 single-writer formal generation」覆蓋段；前文各 M 的
+> **M56.7 Mac full-sync generation commit已凍結，但正式generation仍明確DENIED。** 先讀
+> `analysis/m56_7_mac_full_sync_generation_acceptance_2026-09-03.md`。M56.7不改M56.5/M56.6的
+> prompt／schedule／model／checkpoint content／retry／score，只在新入口中把每個JSON提交提升為
+> payload完成→file fsync＋F_FULLFSYNC→parent directory fsync＋F_FULLFSYNC；checkpoint barrier完成後
+> 才允許清intent。舊M56.5狀態沒有預先M56.7 mode時不能事後冒充。真Mac syscall probe與forged full
+> path通過：180 mock calls、211 checkpoints、400 durable commits、0殘留intent；focused 15/15、direct
+> 199/199、選定相容264/264。三次fixture中位由1.124688s到3.717044s，但不是正式model latency。
+> Safari圖通過且33 tabs不變，server已停止。沒有實際拔電、沒有真人或正式模型結果，凍結M56.4 scorer
+> 也尚未強制要求M56.7 release。V7仍0/18＋0/18、V9/real rows 0/30、formal calls/result皆0或不存在；
+> 下一個不可替代依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.7 Mac full-sync generation commit」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

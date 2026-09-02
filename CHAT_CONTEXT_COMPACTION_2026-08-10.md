@@ -1459,7 +1459,43 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   lock或malicious-host security，也不新增真人、actual performance、Equation V1、人類方程式、full-pipeline
   或production證據。下一個不可替代依賴仍是兩位不同真人完成V7。
 
+### 7.81 2026-09-03 M56.7 Mac full-sync generation commit：檔名落盤邊界通過，正式實驗仍禁止
+
+- M56.5只對JSON檔案本身`fsync`，M56.6只處理重複啟動；新檔名所在directory沒有同步。Mac突然斷電時，
+  模型可能已成功回覆但checkpoint目錄項遺失，重開後只剩intent而使唯一授權terminal。M56.7只改此
+  stable-storage completion boundary，不改prompt、資料、模型、順序、token、checkpoint內容、retry或score。
+- 新入口`execute_full_sync_formal_generation(run_id)`先持有不變的M56.6 lock；沒有M56.7 mode卻已有M56.5
+  狀態的run不能事後冒充。context-local dispatcher只在新入口內把M56.5所有JSON寫入改成payload完成→
+  file `fsync`→file `F_FULLFSYNC`→directory `fsync`→directory `F_FULLFSYNC`，checkpoint barrier完成後才
+  允許原M56.5清intent；前後另有immutable mode與durable release。舊入口不自動取得M56.7證據。
+- 真實目前Mac上的file/directory `fsync`與`F_FULLFSYNC`四項probe通過；操作順序、unsupported barrier、
+  舊狀態拒絕、checkpoint+intent中斷續接均通過。forged 30-row完整路徑仍為180 mock calls、211 step
+  checkpoints、0殘留intent、400 durable artifact commits，M56.4 prescore相容且outcome access 0。
+- 三次同形fixture：M56.6中位1.124688s，M56.7中位3.717044s，增加2.592356s／8192 allocated bytes／2 files；
+  這是快速deterministic filesystem fixture，不是正式模型延遲或production throughput。
+- 第一次focused為12/14：一個test在temp-root context前算路徑，於gitignored private root建立單一假mode；
+  該精確假run已刪除並驗證不存在。另一test mock整個platform而先觸發upstream hardware drift；只改test
+  fault scope後通過，沒有放寬正式gate。final focused 15/15；M54–M56.7 direct 199/199；選定
+  M1/M2/V7/V9/M54–M56.7 264/264；compile、JSON、freeze hash與diff check通過。
+- Safari重用既有M56.6 tab導向`http://127.0.0.1:7915/dashboard`，前後33 tabs，沒有新增／關閉；流程、
+  三種restart state、成本與紅色證據邊界均可讀、無form／水平溢出。server已停止，tab可安全關閉；圖在
+  `analysis/m56_7_safari_full_sync_flow_2026-09-03.jpeg`與`analysis/m56_7_safari_restart_boundary_2026-09-03.jpeg`。
+- authoritative state仍是V7 0/18＋0/18、V9／real rows 0/30、formal calls 0、outcome access 0、formal
+  commitment／release／result absent。沒有實際拔電，不能保證故障硬體；M56.7也尚未讓凍結的M56.4 scorer
+  強制要求durable release，更沒有新增真人、actual performance、Equation V1、人類方程式、full-pipeline或
+  production證據。下一個不可替代科學依賴仍是兩位不同真人完成V7。
+
 ## 8. 關鍵檔案，按順序讀取
+
+最新先讀：
+
+1. `analysis/m56_7_mac_full_sync_generation_acceptance_2026-09-03.md`
+2. `research/m56_7_mac_full_sync_generation_plan_2026-09-03.md`
+3. `configs/m56_7_mac_full_sync_generation_v1.json`
+4. `research/m56_7_mac_full_sync_generation_implementation_freeze_2026-09-03.json`
+5. `m56_7_mac_full_sync_generation.py`
+
+需要追上游理由時，再依下列既有順序讀取：
 
 只先讀以下檔案，避免無目的掃描整個 repository：
 

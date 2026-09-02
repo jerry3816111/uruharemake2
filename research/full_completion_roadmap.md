@@ -507,3 +507,24 @@ step, without supplying one. The next necessary dependency is M45 Actionable
 Help Delivery, specified in `research/m45_actionable_help_delivery_plan_2026-08-27.md`.
 No M45 implementation or acceptance is claimed. Preserve the failure and frozen
 M43/M44 results. More trace or a token mentioning a step is not task fulfillment.
+
+## 2026-09-03 latest research-execution override: M54 → M56.7
+
+The historical product continuation above is not the active research next step. M54 froze the observable
+human-response Equation V1 contract. M55 then built the temporal-row, two-coder boundary and explicit-adjudication
+tools, but the real-person chain remains unavailable because both frozen V7 ledgers are still 0/18. M56 froze the
+same-model B0–B5/Ours protocol, condition-separated execution capsule, pre-outcome Equation artifacts, live
+activation envelope, no-retry generation runner and separate scorer before any formal answer was visible.
+
+M56.5 added crash-safe completed-step reuse, M56.6 added one-host single-writer ownership, and M56.7 now requires
+the Mac to complete file and parent-directory `fsync` plus `F_FULLFSYNC` before a generation artifact is considered
+committed. The full forged path remains 180 mock calls and 211 checkpoints; M56.7 adds 400 durable artifact commits
+and a prospective mode/release without changing prompts, data, model, condition views, token budgets, retries or
+scoring. This is bounded filesystem reliability evidence. No real power cut, human label, formal model call,
+outcome access, score or result occurred.
+
+The scientific next dependency remains two different humans completing frozen V7. Only after V7 reliability passes
+may the project proceed through V9 target coding, boundary adjudication, 30 temporal rows and the already frozen M56
+comparison. M57 begins only after a real M56 result exists; it is not legitimate to substitute more synthetic
+engineering fixtures for that result. While waiting, further engineering must be individually necessary, consume no
+holdout, preserve all freezes and state exactly which later formal entry point will enforce its evidence.
