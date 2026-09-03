@@ -175,7 +175,17 @@
 > 結果。下一步是M56.12 Outcome-Derived Artifact Containment and Public Projection Audit；兩位不同真人V7
 > 仍是不可替代的科學依賴。
 
-> 最新入口是上方的「M56.11 process-death scoring crash matrix」覆蓋段；前文各 M 的
+> **M56.12 outcome-artifact public projection已凍結，但正式scoring仍明確DENIED。** 先讀
+> `analysis/m56_12_outcome_artifact_public_projection_acceptance_2026-09-03.md`。修改前沒有發現production
+> leak，但缺run-specific安全出口；naive forged checkpoint＋report canonical payload為52,458 bytes、
+> 60 sample IDs、60 pair occurrences、14 metric blocks、3 outcome-key hashes、2 decisions。新四個API只收
+> run-id，內部驗證private state後只輸出state-only allowlist；七phase全通過，projection/log/telemetry
+> byte-identical，敏感項與private canary全為0。輸出1,225 bytes（-97.66%）；validated projection中位
+> 0.143658s，這是安全驗證成本。focused 9/9、direct 258/258、selected 323/323。Safari 33 tabs不變、
+> server已停止。這只約束合作式consumer，不是OS/malicious-host security，也不新增真人、real outcome、
+> Equation V1或正式結果。下一步M56.13 Unidirectional Public Snapshot Boundary；兩位不同真人V7仍不可替代。
+
+> 最新入口是上方的「M56.12 outcome-artifact public projection」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

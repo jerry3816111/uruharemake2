@@ -1599,31 +1599,56 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   aggregate state且不洩漏per-sample label、raw source或hidden outcome。不可替代科學依賴仍是兩位不同
   真人完成V7。
 
+### 7.86 2026-09-03 M56.12 outcome-artifact public projection：run-specific安全出口已建立
+
+- 修改前沒有發現production公開外洩，但也沒有run-specific安全投影；隔離forged 30-row run若naive序列化
+  checkpoint＋report，初始default JSON為57,024 bytes，controlled canonical為52,458 bytes，包含60次
+  sample ID、60個pair occurrences、14個condition-metric blocks、3次outcome-key hash與2個decision。這是
+  artifact sensitivity／缺安全出口證據，不是歷史外洩證明。
+- 單一變因只新增private outcome-derived artifact→public state-only allowlist；M56.10 checkpoint、report、
+  metrics、decision與scoring semantics完全不改。四個sanctioned function都只收`run_id`，內部完整驗證
+  private state，再讓dashboard/log/telemetry共用同一schema；呼叫者不能注入artifact、metric、decision、
+  result或readiness。
+- 七個phase全部驗證：未開始、mode、intent incomplete且答案是否開過未知、terminal ambiguous、checkpoint、
+  report、result committed。公開面只含phase、六個existence bool、result artifact是否存在、retry/fallback 0、
+  redaction policy與public projection hash；不含raw run id、private hash、sample/pair、label、metric或decision。
+- controlled canonical 52,458→1,225 bytes（-97.66%）；sample ID 60→0、pair 60→0、metrics 14→0、
+  outcome-key hash 3→0、decision 2→0、全surface private canary hits 0。projection/log/telemetry byte-identical；
+  private或public artifact mutation皆fail closed。
+- 聚焦9/9；M54–M56.12 direct 258/258；選定M1/M2/M6/V7/V9/M54–M56.12為323/323；compile、JSON、
+  contract/dependency/freeze/rehearsal/audit hashes通過。0 formal model call、0 real outcome access。
+- 七次forged completed-run：naive無驗證序列化中位0.000484s，完整validated projection中位0.143658s，
+  三個獨立surface refresh中位0.433071s。這是containment validation overhead，不是production throughput。
+- Safari重用M56.11 tab導向`http://127.0.0.1:7920/dashboard`，前後33 tabs、沒有新增／關閉；前後bytes、
+  全敏感項歸零、3/3 surfaces、data membrane與限制可讀，無form／可見水平溢出。兩張PNG在
+  `analysis/m56_12_safari_public_projection_*.png`；server已停止，唯讀tab可安全關閉。
+- authoritative science仍V7 0/18＋0/18、V9／real rows 0/30、formal call/outcome/result 0或不存在。
+  M56.12只保護遵守新API的合作式consumer；不能阻止same-host direct file/old API，也未證明每個未來consumer
+  都遵守，更沒有Equation V1、完整人類反應方程式、full-pipeline或production證據。
+- 下一個必要單一變因是M56.13 Unidirectional Public Snapshot Boundary：private exporter只把validated
+  M56.12 projection耐久輸出到separate public compartment；dashboard/log/telemetry在private-root access
+  明確禁用時仍能讀同一狀態。不可替代科學依賴仍是兩位不同真人完成V7。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_11_process_death_scoring_crash_matrix_acceptance_2026-09-03.md`
-2. `research/m56_11_process_death_scoring_crash_matrix_plan_2026-09-03.md`
-3. `configs/m56_11_process_death_scoring_crash_matrix_v1.json`
-4. `research/m56_11_process_death_scoring_crash_matrix_implementation_freeze_2026-09-03.json`
-5. `m56_11_process_death_scoring_crash_matrix.py`
-6. `test_m56_11_process_death_scoring_crash_matrix.py`
-7. `analysis/m56_11_process_death_scoring_crash_matrix_result_2026-09-03.json`
-8. `analysis/m56_11_process_death_scoring_crash_matrix_fixture_cost_2026-09-03.json`
-9. `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`
-10. `research/m56_10_crash_safe_outcome_join_plan_2026-09-03.md`
-11. `configs/m56_10_crash_safe_outcome_join_v1.json`
-12. `research/m56_10_crash_safe_outcome_join_implementation_freeze_2026-09-03.json`
-13. `m56_10_crash_safe_outcome_join.py`
-14. `test_m56_10_crash_safe_outcome_join.py`
-15. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
-16. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
-17. `configs/m56_9_single_writer_formal_scoring_v1.json`
-18. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
-19. `m56_9_single_writer_formal_scoring.py`
-20. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
-21. `m56_8_durable_release_gated_scoring.py`
+1. `analysis/m56_12_outcome_artifact_public_projection_acceptance_2026-09-03.md`
+2. `research/m56_12_outcome_artifact_public_projection_plan_2026-09-03.md`
+3. `configs/m56_12_outcome_artifact_public_projection_v1.json`
+4. `research/m56_12_outcome_artifact_public_projection_implementation_freeze_2026-09-03.json`
+5. `m56_12_outcome_artifact_public_projection.py`
+6. `test_m56_12_outcome_artifact_public_projection.py`
+7. `analysis/m56_12_outcome_artifact_public_projection_result_2026-09-03.json`
+8. `analysis/m56_12_outcome_artifact_public_projection_fixture_cost_2026-09-03.json`
+9. `analysis/m56_11_process_death_scoring_crash_matrix_acceptance_2026-09-03.md`
+10. `research/m56_11_process_death_scoring_crash_matrix_plan_2026-09-03.md`
+11. `configs/m56_11_process_death_scoring_crash_matrix_v1.json`
+12. `research/m56_11_process_death_scoring_crash_matrix_implementation_freeze_2026-09-03.json`
+13. `m56_11_process_death_scoring_crash_matrix.py`
+14. `test_m56_11_process_death_scoring_crash_matrix.py`
+15. `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`
+16. `m56_10_crash_safe_outcome_join.py`
 
 需要追上游理由時，再依下列既有順序讀取：
 
