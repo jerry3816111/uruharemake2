@@ -535,3 +535,22 @@ may the project proceed through V9 target coding, boundary adjudication, 30 temp
 comparison. M57 begins only after a real M56 result exists; it is not legitimate to substitute more synthetic
 engineering fixtures for that result. While waiting, further engineering must be individually necessary, consume no
 holdout, preserve all freezes and state exactly which later formal entry point will enforce its evidence.
+
+## 2026-09-04 latest research-execution override: M57 readiness → M57.1
+
+M56.13 is the final M56 decimal point. M57 has an outcome-blind five-stage component-localization analyzer and
+synthetic clear/tie fixtures, but no formal component result. Authoritative science remains V7 0/18 + 0/18, real
+temporal rows 0/30 and formal M56 result 0.
+
+M57.1 now adds the necessary pre-outcome ordering layer. Before any M56 scoring state exists, one `run_id`-only API
+full-sync commits the five frozen M57 stage plans and 17 exact M56 data/runtime/resource/prediction/outcome-input
+hashes under the same per-run scoring lock. First creation after any M56 outcome-state marker is rejected; an existing
+identical commitment may be revalidated after scoring. A temporary forged run proved commit → one forged outcome
+join → bound result validation, with zero M57.1 model calls and zero real target-outcome reads. This is engineering
+readiness, not formal M57 authority or science.
+
+The next independently necessary answer-free unit is M57.2 Component-Substitution Prediction Capsule. It must bind
+concrete pre-outcome evidence manifests and commit all available single-stage substitution predictions before M56
+outcome access. It must not synthesize two-coder evidence, private mental truth or realization ratings. Decision stays
+a post-outcome ceiling; realization remains unavailable without independent human ratings. Formal M57 execution still
+requires the external V7/V9/M55/M56 chain. M58 remains result-dependent and must not start before a formal M57 result.

@@ -1689,29 +1689,69 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   即使收到caller自填`formal_authorization=true`也拒絕real bundle，未來bridge必須從validated M56 artifacts
   導出authority與resource hashes，不能信任caller boolean。
 
+### 7.89 2026-09-04 M57.1 pre-outcome diagnostic commitment：答案前封存順序已補齊，正式M57仍禁止
+
+- 修改前正式入口雖安全拒絕，但M57 durable artifacts為0、pre-outcome commit/validate API都不存在；未來若
+  M56結果出現才建立stage plan，無法證明outcome-blind。保留probe為0 real outcome access、0 formal result。
+- 單一變因只新增M57診斷模式在M56 outcome state前的full-sync commitment；M57五stage、統計規則、M56
+  prediction/scoring、模型、資料、資源與0 retry全部不改。公開commit/validate API都只收`run_id`，沒有plan、
+  resource、outcome、readiness或authorization注入。
+- first commit與M56.10共用同run nonblocking scoring lock；先重驗M56.7 durable release與M56.8 prescore，並要求
+  M56.8 gate、M56.10 mode/intent/checkpoint/failure、M56.4 access/report/result共8個outcome-state artifact全無。
+  commitment綁5個stage plan與17個M56 data/runtime/hardware/model/Equation/schedule/submission/prediction/
+  ledger/release/expected-outcome hashes；事後第一次補做拒絕，既有完全相同commitment可在result後重驗。
+- temporary forged 30-row完整順序為commit→不變M56.10一次fixture outcome load→M56 result link重驗→相同hash
+  replay；M57.1 model calls 0、real target outcome reads 0、formal M57 result 0、M58 authority false。partial或
+  mismatched result、commit/upstream mutation、path escape、dependency drift與lock race均fail closed。
+- focused M57+M57.1 **26/26**；selected M1/M2/M6/V7/V9/M54–M57.1 **385/385**（111.37s）；compile、JSON、
+  freeze hash與diff check通過。首次用system Python跑unittest為281 tests＋7個pytest import errors，保留為環境
+  invocation failure，後用既有pytest重跑綠燈，沒有安裝或放寬依賴。
+- 七次forged fixture first commit中位0.287402s（0.283163–0.315814），post-result validation中位0.146691s
+  （0.144262–0.148582）；commitment固定6,102 bytes，7/7完整M56.10 result-chain links valid。不是formal
+  latency/throughput。review時發現只驗M56.4 report/result不足，已補M56.8 gate＋M56.10 mode/intent/checkpoint
+  完整鏈；legacy M56.4 direct result現在明確不算valid link。
+- Safari在`http://127.0.0.1:7923/dashboard`顯示三步時間順序、修改前0 commitment、5 stages/17 bindings、
+  FORMAL DENIED、V7 0/18＋0/18、real rows 0/30與M58 denied；無可見overflow，server已停止。display-name
+  targeting先意外走過本機test-tab history，改用`com.apple.Safari`才成功；tab 33→34、未關閉任何tab，新增
+  M57.1唯讀測試tab可安全關閉。
+- M57.1只建立cooperative same-Mac順序與artifact binding，不是digital signature，也沒有建立具體兩位coder
+  evidence manifest或30-row component predictions。因此下一個answer-free必要單元是M57.2 component-substitution
+  prediction capsule：在答案前綁具體provenance並封存available stage outputs；不得合成真人證據或啟動M58。
+  正式科學依賴仍是V7兩位真人、V9 review、30 real rows及authorized M56。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m57_component_error_localization_acceptance_2026-09-04.md`
-2. `research/m57_component_error_localization_plan_2026-09-04.md`
-3. `configs/m57_component_error_localization_v1.json`
-4. `research/m57_component_error_localization_implementation_freeze_2026-09-04.json`
-5. `m57_component_error_localization.py`
-6. `test_m57_component_error_localization.py`
-7. `analysis/m57_component_error_localization_rehearsal_result_2026-09-04.json`
-8. `analysis/m57_component_error_localization_live_audit_2026-09-04.json`
-9. `analysis/m57_component_error_localization_fixture_cost_2026-09-04.json`
-10. `analysis/m57_safari_component_localization_acceptance_2026-09-04.json`
-11. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
-12. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
-13. `configs/m56_13_unidirectional_public_snapshot_v1.json`
-14. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
-15. `m56_13_unidirectional_public_snapshot.py`
-16. `m56_13_public_snapshot_reader.py`
-17. `test_m56_13_unidirectional_public_snapshot.py`
-18. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
-19. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
+1. `analysis/m57_1_preoutcome_diagnostic_commitment_acceptance_2026-09-04.md`
+2. `research/m57_1_preoutcome_diagnostic_commitment_plan_2026-09-04.md`
+3. `configs/m57_1_preoutcome_diagnostic_commitment_v1.json`
+4. `research/m57_1_preoutcome_diagnostic_commitment_implementation_freeze_2026-09-04.json`
+5. `m57_1_preoutcome_diagnostic_commitment.py`
+6. `test_m57_1_preoutcome_diagnostic_commitment.py`
+7. `analysis/m57_1_prechange_preoutcome_commitment_gap_probe_2026-09-04.json`
+8. `analysis/m57_1_preoutcome_diagnostic_commitment_rehearsal_2026-09-04.json`
+9. `analysis/m57_1_preoutcome_diagnostic_commitment_fixture_cost_2026-09-04.json`
+10. `analysis/m57_1_safari_preoutcome_diagnostic_acceptance_2026-09-04.json`
+11. `analysis/m57_component_error_localization_acceptance_2026-09-04.md`
+12. `research/m57_component_error_localization_plan_2026-09-04.md`
+13. `configs/m57_component_error_localization_v1.json`
+14. `research/m57_component_error_localization_implementation_freeze_2026-09-04.json`
+15. `m57_component_error_localization.py`
+16. `test_m57_component_error_localization.py`
+17. `analysis/m57_component_error_localization_rehearsal_result_2026-09-04.json`
+18. `analysis/m57_component_error_localization_live_audit_2026-09-04.json`
+19. `analysis/m57_component_error_localization_fixture_cost_2026-09-04.json`
+20. `analysis/m57_safari_component_localization_acceptance_2026-09-04.json`
+21. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
+22. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
+23. `configs/m56_13_unidirectional_public_snapshot_v1.json`
+24. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
+25. `m56_13_unidirectional_public_snapshot.py`
+26. `m56_13_public_snapshot_reader.py`
+27. `test_m56_13_unidirectional_public_snapshot.py`
+28. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
+29. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
 
 需要追上游理由時，再依下列既有順序讀取：
 
