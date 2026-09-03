@@ -151,7 +151,19 @@
 > V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/result皆0或不存在。下一個安全工程單元是
 > crash-safe exactly-once scoring continuation；下一個不可替代科學依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.9 single-writer formal scoring」覆蓋段；前文各 M 的
+> **M56.10 crash-safe at-most-once outcome join已凍結，但正式scoring仍明確DENIED。** 先讀
+> `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`。隔離fixture證實M56.9在答案讀取後、
+> score report前中斷，再啟動會總共load outcome 2次。新入口只接受`run_id`，沿用M56.9 lock；在唯一
+> outcome load前full-sync intent，在不變M56.4 score建構後、canonical result前full-sync private score
+> checkpoint。完整run與完成後依序replay總讀取1次；checkpoint後中斷可0額外讀取完成；只有intent沒有
+> checkpoint時無法知道先前讀過沒有，所以永久terminal、0重讀、不補造結果。這是at-most-once，並不
+> 假稱所有crash point都可exactly-once完成。focused 16/16、direct 240/240、selected 305/305。paired
+> fixture中位0.855593s→0.770818s但不得稱加速；可歸因成本是full-sync commits 1→8。Safari 2→1與三種
+> restart圖通過，33 tabs不變，server已停止。V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/
+> result皆0或不存在。下一個安全工程單元是M56.11 private scoring artifact containment；下一個不可替代
+> 科學依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.10 crash-safe at-most-once outcome join」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

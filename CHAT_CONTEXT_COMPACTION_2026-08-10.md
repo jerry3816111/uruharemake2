@@ -1539,20 +1539,56 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   沒有新增真人、actual performance、Equation V1、人類方程式、full-pipeline或production證據。下一個
   可獨立工程單元是crash-safe exactly-once scoring continuation；不可替代科學依賴仍是兩位不同真人V7。
 
+### 7.84 2026-09-03 M56.10 crash-safe at-most-once outcome join：跨重啟重讀已封閉，模糊狀態刻意terminal
+
+- 隔離30-row forged fixture先證實M56.9缺口：第一次在private outcome loader後、score report前中斷，
+  留下access receipt但無report/result；第二次依序呼叫會再次打開答案並完成，總loader calls為2。沒有讀
+  正式答案；證據在`analysis/m56_10_prechange_crash_window_reproduction_2026-09-03.json`。
+- 檔案讀取與新checkpoint寫入無法形成單一原子交易，因此M56.10沒有假稱所有crash point都能exactly-once
+  完成。凍結的可證明規則是：完整run總讀取1次；已有有效full-sync score checkpoint的重啟額外讀0次；
+  完成後依序再呼叫額外讀0次；只有durable intent而沒有checkpoint時，歷史讀取是0或1不可判定，故永久
+  terminal、不得重試或補造結果。這犧牲狹窄crash window的availability以保住at-most-once。
+- 新公開入口`execute_crash_safe_outcome_join_formal_scoring(run_id)`只收run-id，外圍沿用M56.9同run lock，
+  內部依序full-sync M56.10 mode→不變M56.8 gate→不變M56.4 prescore/access receipt→join intent→唯一outcome
+  load→不變M56.4 score建構→private score checkpoint→不變canonical report/result commitment。M56.4七組
+  metrics、threshold、B5-vs-Ours primary contrast與result內容未改。
+- 完整fixture、checkpoint後中斷續跑、intent-only失敗、completed replay、同時contender、mutated/missing/
+  retroactive state均有測試。修改後完整與checkpoint-restart總loader calls均為1；intent-only首次fixture
+  讀1次後，後續呼叫0次且terminal；scorer model calls 0。focused 16/16；M54–M56.10 direct 240/240；
+  選定M1/M2/M6/V7/V9/M54–M56.10為305/305；compile、JSON、freeze hash與diff check通過。
+- 七組交錯paired fixture的M56.9／M56.10中位為0.855593／0.770818s，paired差-0.080518s；另一次初始
+  3-run也為負。此短fixture不能推論M56.10更快，真正可歸因成本是full-sync JSON commits由1增為8（+7）。
+  五次completed checkpoint replay中位0.278417s、0額外outcome load、0 model call。不是正式模型延遲。
+- Safari重用M56.9 tab導向`http://127.0.0.1:7918/dashboard`，前後33 tabs，沒有新增／關閉；上半部2→1、
+  下半部未開始／checkpoint／intent-only三條路徑、availability tradeoff與證據邊界皆可讀，無form／可見
+  水平溢出。兩張PNG在`analysis/m56_10_safari_*.png`；server已停止，唯讀tab可安全關閉。
+- authoritative state仍為V7 0/18＋0/18、V9／real rows 0/30、formal model calls／real outcome access／
+  result皆0或不存在。舊M56.8/M56.9 API與直接檔案存取仍可由同機程式物理呼叫；M56.10是合作式sanctioned
+  path，不是distributed transaction、OS sandbox或malicious-host security，也沒有實際拔電測試。沒有新增
+  真人、actual performance、Equation V1、人類方程式、full-pipeline或production證據。
+- 下一個可獨立工程單元是M56.11 private scoring artifact containment：證明新增outcome-derived checkpoint
+  與canonical report只留在private scoring compartment，public/live observatory只顯示bounded aggregate
+  state且不洩漏per-sample/outcome內容。不可替代科學依賴仍是兩位不同真人完成V7。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
-2. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
-3. `configs/m56_9_single_writer_formal_scoring_v1.json`
-4. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
-5. `m56_9_single_writer_formal_scoring.py`
-6. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
-7. `research/m56_8_durable_release_gated_scoring_plan_2026-09-03.md`
-8. `configs/m56_8_durable_release_gated_scoring_v1.json`
-9. `research/m56_8_durable_release_gated_scoring_implementation_freeze_2026-09-03.json`
-10. `m56_8_durable_release_gated_scoring.py`
+1. `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`
+2. `research/m56_10_crash_safe_outcome_join_plan_2026-09-03.md`
+3. `configs/m56_10_crash_safe_outcome_join_v1.json`
+4. `research/m56_10_crash_safe_outcome_join_implementation_freeze_2026-09-03.json`
+5. `m56_10_crash_safe_outcome_join.py`
+6. `test_m56_10_crash_safe_outcome_join.py`
+7. `analysis/m56_10_crash_safe_outcome_join_state_evidence_2026-09-03.json`
+8. `analysis/m56_10_crash_safe_outcome_join_fixture_cost_2026-09-03.json`
+9. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
+10. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
+11. `configs/m56_9_single_writer_formal_scoring_v1.json`
+12. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
+13. `m56_9_single_writer_formal_scoring.py`
+14. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
+15. `m56_8_durable_release_gated_scoring.py`
 
 需要追上游理由時，再依下列既有順序讀取：
 
