@@ -1512,20 +1512,47 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   歷史M56.4，該讀取不會被物理阻止，只是不具M56.8授權。沒有新增真人、actual performance、Equation V1、
   人類方程式、full-pipeline或production證據。下一個不可替代科學依賴仍是兩位不同真人完成V7。
 
+### 7.83 2026-09-03 M56.9 single-writer formal scoring：重疊答案讀取已封閉，正式實驗仍禁止
+
+- 只讀稽核與暫存30-row forged fixture證實：有效M56.8 gate/access receipt存在時，兩個同時M56.8呼叫
+  會讓`load_outcome_inputs`執行2次；1個成功、另1個直到建立`formal_score_commitment.json`才因
+  `FileExistsError`失敗。也就是失敗者已先開過答案，與single-logical-join語意不符。沒有讀正式資料。
+- 不修改M54–M56.8任何凍結檔，新增
+  `execute_single_writer_durable_release_gated_formal_scoring(run_id)`。它先只讀驗證標準M56.8 run，再於
+  private telemetry取得同run的nonblocking OS advisory lock，持有期間delegate完全不變的M56.8；同時
+  競爭者在M56.8與outcome前拒絕，不等待、不重試、不寫第二份score/result。
+- lock拒絕symlink、非regular file、wrong owner、multiple hard links、group/world permission與fd/path
+  identity drift。delegate exception及子程序`os._exit(19)`會釋放OS ownership；stale lock text不是
+  authority，不同run互不阻擋。
+- 完整並行fixture修改後為2 callers→1 M56.8 delegate→1 private outcome load＋1 pre-delegate rejection；
+  唯一owner仍產生未改的七組M56.4 report/result，scorer model call 0。focused 15/15；M54–M56.9 direct
+  224/224；選定M1/M2/V7/V9/M54–M56.9 289/289；compile、JSON、freeze hash與diff check通過。
+- 三次deterministic score fixture：M56.8中位0.724372s，M56.9中位0.855941s，增加0.131569s，0新增模型
+  呼叫。這不是正式model latency或production throughput。
+- 保留且測得明確限制：兩個**依序**呼叫在lock釋放後仍會讓凍結M56.8重新讀答案2次；M56.9只處理
+  overlapping concurrency，不是跨重啟exactly-once、distributed lock、OS sandbox或malicious-host安全。
+- Safari重用M56.8 tab導向`http://127.0.0.1:7917/dashboard`，前後33 tabs，未新增／關閉；2→1圖、
+  四步owner流程、依序重開限制及證據邊界可讀，無form／水平溢出。server已停止，tab可安全關閉；圖在
+  `analysis/m56_9_safari_concurrency_flow_2026-09-03.jpeg`與
+  `analysis/m56_9_safari_sequential_boundary_2026-09-03.jpeg`。
+- authoritative state仍是V7 0/18＋0/18、V9／real rows 0/30、formal calls/outcome/result 0或不存在。
+  沒有新增真人、actual performance、Equation V1、人類方程式、full-pipeline或production證據。下一個
+  可獨立工程單元是crash-safe exactly-once scoring continuation；不可替代科學依賴仍是兩位不同真人V7。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
-2. `research/m56_8_durable_release_gated_scoring_plan_2026-09-03.md`
-3. `configs/m56_8_durable_release_gated_scoring_v1.json`
-4. `research/m56_8_durable_release_gated_scoring_implementation_freeze_2026-09-03.json`
-5. `m56_8_durable_release_gated_scoring.py`
-6. `analysis/m56_7_mac_full_sync_generation_acceptance_2026-09-03.md`
-7. `research/m56_7_mac_full_sync_generation_plan_2026-09-03.md`
-8. `configs/m56_7_mac_full_sync_generation_v1.json`
-9. `research/m56_7_mac_full_sync_generation_implementation_freeze_2026-09-03.json`
-10. `m56_7_mac_full_sync_generation.py`
+1. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
+2. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
+3. `configs/m56_9_single_writer_formal_scoring_v1.json`
+4. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
+5. `m56_9_single_writer_formal_scoring.py`
+6. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
+7. `research/m56_8_durable_release_gated_scoring_plan_2026-09-03.md`
+8. `configs/m56_8_durable_release_gated_scoring_v1.json`
+9. `research/m56_8_durable_release_gated_scoring_implementation_freeze_2026-09-03.json`
+10. `m56_8_durable_release_gated_scoring.py`
 
 需要追上游理由時，再依下列既有順序讀取：
 

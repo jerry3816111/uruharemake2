@@ -140,7 +140,18 @@
 > V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/result皆0或不存在；下一個不可替代依賴
 > 仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.8 durable-release-gated formal scoring」覆蓋段；前文各 M 的
+> **M56.9 single-writer formal scoring已凍結，但正式scoring仍明確DENIED。** 先讀
+> `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`。實際並行fixture已證實舊
+> M56.8的兩個重疊呼叫會進private outcome loader 2次，其中一個直到建立result commitment才碰撞。
+> 新入口只接受`run_id`，在完整不變的M56.8外持有同機／同run nonblocking OS lock；修改後兩個重疊
+> 呼叫只有1個delegate、1次outcome load，另1個在M56.8前拒絕且0 score/result write。focused 15/15、
+> direct 224/224、selected 289/289；三次fixture中位增加0.131569s，scorer model calls仍0。Safari
+> 2→1圖與誠實限制通過，33 tabs不變，server已停止。不可過度宣稱：兩次依序呼叫在lock釋放後仍會
+> 重開outcome 2次，所以M56.9不是跨重啟exactly-once、distributed lock或malicious-host security。
+> V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/result皆0或不存在。下一個安全工程單元是
+> crash-safe exactly-once scoring continuation；下一個不可替代科學依賴仍是兩位不同真人完成V7。
+
+> 最新入口是上方的「M56.9 single-writer formal scoring」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
