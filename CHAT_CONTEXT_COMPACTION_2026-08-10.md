@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-04 M56.13 unidirectional public snapshot）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-04 M57 component-localization readiness）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1657,26 +1657,61 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   localization：perception/retrieval/state/decision/realization的oracle substitution protocol與harness可先準備，
   但正式M57結論必須等待authorized M56 result，不得以synthetic fixture冒充。
 
+### 7.88 2026-09-04 M57 outcome-blind component error localization：工程readiness完成，正式診斷仍禁止
+
+- 修改前M56 forged report有7個condition metrics與30組B5/Ours paired records，但M57要求的10個
+  localization keys為0/10、component interventions 0、provenance records 0；這只證明診斷表示缺口，
+  不證明任何真實元件有錯。
+- M57只新增component-substitution diagnostic，不改模型、樣本、結果、generation rules或formal authority。
+  五個stage是perception、retrieval、observable-only state proxy、decision diagnostic ceiling、realization；
+  private mental truth一律不作oracle。每個plan必須在outcome前commit，只換一個stage並記錄downstream
+  recomputation；decision排除判因，缺human realization ratings時保持unavailable。
+- frozen rule以Brier/NLL/Top-1及20,000 paired bootstrap（seed 570904）判recoverable effect；兩個proper
+  score的95% CI lower都必須>0且Top-1不退步。leading stage還要Brier/NLL同一唯一leader且至少領先0.05；
+  tie、mixed metrics與interaction必須abstain，永不宣稱unique biological/psychological cause。
+- 兩個作者構造30-row mechanical fixture通過：clear case中retrieval Brier recovery 1.108、perception 0.402、
+  state 0，得到leading=retrieval；tie case中perception/retrieval各1.108，得到leading=null與
+  ambiguous_interacting_or_unresolved。兩者都是0 model call、0 real outcome access、0 formal result，
+  不是Uruha診斷或Equation V1證據。
+- mutation涵蓋missing sample、probability sum、changed-component drift、plan drift、future leak、retry、
+  outcome-before-commit與caller-minted formal authority並全部fail closed。focused 13/13；final selected
+  M1/M2/M6/V7/V9/M54–M57為349/349（其中direct M54–M57為281/281）；compile、JSON、dependency/freeze
+  hashes與diff check通過。
+- 七次clear＋tie fixture pair中位1.602724s，範圍1.593786–1.612762s；這是本機synthetic analyzer成本，
+  不是formal model latency或production throughput。
+- Safari第一次顯示發現五stage長字串溢出section；未放寬研究規則，改成可縮放換行卡、中文名稱與Brier
+  recovery bars後重驗通過。沿用既有tab，前後33 tabs、沒有新增／關閉；aggregate→component、clear
+  retrieval、tie abstention、FORMAL DENIED與V7 0/18＋0/18皆可讀。server已停止，唯讀tab可安全關閉。
+- M57 **工程readiness完成，但正式M57科學結果未完成**。authoritative science仍V7 0/18＋0/18、V9與
+  real temporal rows 0/30、formal M56 result 0。下一個不可替代步驟是兩位不同真人完成V7，再完成V9、
+  boundary/adjudication、M55 real rows與authorized M56；只有之後才能執行已凍結M57。沒有formal M57
+  結果不得建立結果導向M58或捏造一個leading stage。目前也刻意沒有formal artifact bridge；pure analyzer
+  即使收到caller自填`formal_authorization=true`也拒絕real bundle，未來bridge必須從validated M56 artifacts
+  導出authority與resource hashes，不能信任caller boolean。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
-2. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
-3. `configs/m56_13_unidirectional_public_snapshot_v1.json`
-4. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
-5. `m56_13_unidirectional_public_snapshot.py`
-6. `m56_13_public_snapshot_reader.py`
-7. `test_m56_13_unidirectional_public_snapshot.py`
-8. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
-9. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
-10. `analysis/m56_12_outcome_artifact_public_projection_acceptance_2026-09-03.md`
-11. `research/m56_12_outcome_artifact_public_projection_plan_2026-09-03.md`
-12. `configs/m56_12_outcome_artifact_public_projection_v1.json`
-13. `research/m56_12_outcome_artifact_public_projection_implementation_freeze_2026-09-03.json`
-14. `m56_12_outcome_artifact_public_projection.py`
-15. `test_m56_12_outcome_artifact_public_projection.py`
-16. `analysis/m56_12_outcome_artifact_public_projection_result_2026-09-03.json`
+1. `analysis/m57_component_error_localization_acceptance_2026-09-04.md`
+2. `research/m57_component_error_localization_plan_2026-09-04.md`
+3. `configs/m57_component_error_localization_v1.json`
+4. `research/m57_component_error_localization_implementation_freeze_2026-09-04.json`
+5. `m57_component_error_localization.py`
+6. `test_m57_component_error_localization.py`
+7. `analysis/m57_component_error_localization_rehearsal_result_2026-09-04.json`
+8. `analysis/m57_component_error_localization_live_audit_2026-09-04.json`
+9. `analysis/m57_component_error_localization_fixture_cost_2026-09-04.json`
+10. `analysis/m57_safari_component_localization_acceptance_2026-09-04.json`
+11. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
+12. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
+13. `configs/m56_13_unidirectional_public_snapshot_v1.json`
+14. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
+15. `m56_13_unidirectional_public_snapshot.py`
+16. `m56_13_public_snapshot_reader.py`
+17. `test_m56_13_unidirectional_public_snapshot.py`
+18. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
+19. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
 
 需要追上游理由時，再依下列既有順序讀取：
 

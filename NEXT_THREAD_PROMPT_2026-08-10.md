@@ -196,7 +196,19 @@
 > 下一個主里程碑是M57 outcome-blind component error localization；可先凍結不讀答案的protocol/harness，
 > 但正式M57結論必須等待authorized M56 result，不得用synthetic fixture冒充。
 
-> 最新入口是上方的「M56.13 unidirectional public snapshot」覆蓋段；前文各 M 的
+> **M57 outcome-blind component error-localization工程readiness已完成，但formal M57仍DENIED。** 先讀
+> `analysis/m57_component_error_localization_acceptance_2026-09-04.md`。修改前M56 report有7組metric與
+> 30 paired rows但localization keys 0/10。M57凍結perception/retrieval/observable state proxy/decision
+> ceiling/realization五stage的single-substitution plan；private mental truth不作oracle，decision排除判因，
+> realization缺人評保持unavailable。作者構造clear fixture正確得到retrieval，tie fixture得到null；只證明
+> analyzer mechanics。focused 13/13、selected 349/349，Safari修掉stage-card overflow後通過且33 tabs不變。
+> 正式資料仍V7 0/18＋0/18、V9/real rows 0/30、formal M56 result 0，因此不能執行formal M57，也不得建立
+> result-driven M58。下一個不可替代動作是兩位不同真人完成V7，之後才走V9→boundary/adjudication→M55
+> real rows→authorized M56→formal M57。目前沒有formal artifact bridge，caller boolean不能自我授權；未來
+> bridge必須從validated M56 artifacts導出authority與resource hashes。可繼續做不偷看答案且真正必要的工程，
+> 但不能用synthetic填真人門檻。
+
+> 最新入口是上方的「M57 outcome-blind component error-localization readiness」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
