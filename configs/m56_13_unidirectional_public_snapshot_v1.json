@@ -1,0 +1,69 @@
+{
+  "schema": "uruha_m56_unidirectional_public_snapshot_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_any_real_m56_target_outcome_access",
+  "single_changed_variable": "public consumers data capability from direct private-state validation to public-snapshot-only reads",
+  "private_exporter_api": {
+    "function": "export_public_scoring_snapshot",
+    "parameters": ["run_id"],
+    "snapshot_id_or_public_root_projection_private_artifact_metric_decision_or_readiness_injection_allowed": false
+  },
+  "public_reader_api": {
+    "functions": {
+      "load_public_projection": ["snapshot_id"],
+      "build_public_log_record": ["snapshot_id"],
+      "build_public_telemetry_record": ["snapshot_id"],
+      "render_public_dashboard": ["snapshot_id"]
+    },
+    "private_root_parameter_or_environment_dependency_allowed": false,
+    "m56_python_module_import_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_12_outcome_artifact_public_projection_v1.json": "1fa11e7705a4d937102f0f2ddfaa349d5222a03df18265f5bd984815177ad591",
+    "m56_12_outcome_artifact_public_projection.py": "a1fa6ae8b9858fcf8e9c7067431c40a70c78c858523730842316f6af25a2ec4e",
+    "research/m56_12_outcome_artifact_public_projection_implementation_freeze_2026-09-03.json": "d732dbbaa915ece3b7805f8b0886b35317784c1e9741084fdbbb3ae487751659",
+    "analysis/m56_12_outcome_artifact_public_projection_result_2026-09-03.json": "4923c05f8b4cb343ae1158320052f2ff73028523e1b7e7c906690ac7f631c793"
+  },
+  "snapshot": {
+    "schema": "uruha_m56_public_scoring_snapshot_v1",
+    "snapshot_id_regex": "^[0-9a-f]{32}$",
+    "snapshot_id_entropy_bits": 128,
+    "snapshot_id_derived_from_run_id": false,
+    "raw_run_id_in_snapshot_or_receipt_allowed": false,
+    "immutable_exclusive_full_sync_write": true,
+    "regular_same_owner_single_link_required": true,
+    "symlink_allowed": false,
+    "group_or_world_permissions_allowed": false,
+    "public_root_inside_private_run_root_allowed": false,
+    "projection_must_validate_against_frozen_m56_12_allowlist": true
+  },
+  "consumer_isolation": {
+    "fresh_child_processes_required": 4,
+    "private_root_permissions_removed_during_child_reads": true,
+    "projection_log_telemetry_identical": true,
+    "dashboard_derived_only_from_projection": true,
+    "private_canary_hits_allowed": 0,
+    "private_m56_imports_allowed": 0
+  },
+  "failure_policy": {
+    "invalid_id_traversal_symlink_hardlink_owner_or_permissions_fail_closed": true,
+    "snapshot_or_projection_hash_mutation_fails_closed": true,
+    "forbidden_public_key_fails_closed": true,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "automatic_latest_pointer": false,
+    "replacement_or_revocation": false,
+    "orphan_recovery": false,
+    "cryptographic_writer_authentication": false
+  },
+  "authorization": {
+    "current_formal_scoring": false,
+    "current_target_outcome_access": false,
+    "current_formal_result": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false,
+    "os_user_or_malicious_writer_isolation_claimed": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "M56.13 can establish only that its standalone public consumer operates from an immutable allowlisted snapshot without importing or reading M56 private state. It cannot prevent other same-host programs from reading private files, prove OS-user isolation, authenticate a malicious writer, guarantee every future consumer complies, or add human evidence, real outcome access, model performance, Equation V1 validity, solved human-response equation, full-pipeline value or production authorization."
+}

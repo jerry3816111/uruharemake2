@@ -209,7 +209,12 @@ M30–M32 are complete negative diagnostic/remediation milestones and retain the
 | M38–M53 | guarded correction, surface integrity, evidence delivery, and source-bounded actionable-help sequence | completed bounded/failed sequence; see handoff for each claim boundary |
 | M54 | machine-checkable candidate human-response equation, read-only runtime coverage, and intervention contract | complete contract milestone; no real-person validity claim |
 | M55 | timestamped real-person longitudinal pilot, codebook, provenance, reliability, and missingness | pre-content, temporal, boundary, and adjudication tools ready; real rows 0/30; blocked on two-human reliability and target coding |
-| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol, capability-separated execution/scorer, and real content-addressed pre-outcome Equation artifact overlay frozen; real execution blocked; 0 formal model calls and no formal result |
+| M56 | blinded B0–B5/Ours same-model comparison with outcome isolation and matched resource controls | protocol, capability-separated crash-safe execution/scorer, and one-way public snapshot boundary frozen through M56.13; real execution blocked; 0 formal model calls and no formal result |
+
+M56.13 is the final M56 decimal hardening step. No M56.14 is planned. The next main milestone is M57
+outcome-blind component error localization across perception, retrieval, state, decision and realization. Its
+answer-free protocol and harness may be prepared while the human gate is empty, but a formal localization result
+requires an authorized M56 result and cannot be replaced by forged or synthetic rows.
 
 Research work is now limited to the smallest evidence needed to answer: did the implemented mechanism change actual system behavior as intended, did it avoid corrupting factual memory, and what remains unproven? New paper-style preregistration, venue positioning, and broad statistical packages are out of scope unless the user explicitly restores them.
 

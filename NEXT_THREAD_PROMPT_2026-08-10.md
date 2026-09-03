@@ -185,7 +185,18 @@
 > server已停止。這只約束合作式consumer，不是OS/malicious-host security，也不新增真人、real outcome、
 > Equation V1或正式結果。下一步M56.13 Unidirectional Public Snapshot Boundary；兩位不同真人V7仍不可替代。
 
-> 最新入口是上方的「M56.12 outcome-artifact public projection」覆蓋段；前文各 M 的
+> **M56.13 unidirectional public snapshot已完成，並且是M56最後一點；不要建立M56.14。** 先讀
+> `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`。修改前M56.12三個consumer
+> 在private loader停用時0/3可用且共重驗3次；修改後private exporter只驗證一次並full-sync輸出random
+> 128-bit immutable snapshot，standalone public reader不import M56 module。private root chmod 000後四個
+> fresh child（projection/log/telemetry/HTML）4/4成功，0 private imports、0 canary；focused 10/10、direct
+> 268/268、selected 333/333。Safari沿用既有tab，33 tabs不變，server已停止。這只是public consumer
+> capability reduction，不是OS sandbox、惡意writer防護、真人證據、Equation V1或formal result。
+> authoritative science仍V7 0/18＋0/18、V9/real rows 0/30、formal calls/outcome/result 0或不存在。
+> 下一個主里程碑是M57 outcome-blind component error localization；可先凍結不讀答案的protocol/harness，
+> 但正式M57結論必須等待authorized M56 result，不得用synthetic fixture冒充。
+
+> 最新入口是上方的「M56.13 unidirectional public snapshot」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 
