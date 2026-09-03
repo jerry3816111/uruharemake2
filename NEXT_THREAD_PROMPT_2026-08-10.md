@@ -160,10 +160,22 @@
 > 假稱所有crash point都可exactly-once完成。focused 16/16、direct 240/240、selected 305/305。paired
 > fixture中位0.855593s→0.770818s但不得稱加速；可歸因成本是full-sync commits 1→8。Safari 2→1與三種
 > restart圖通過，33 tabs不變，server已停止。V7仍0/18＋0/18、V9/real rows 0/30、formal calls/outcome/
-> result皆0或不存在。下一個安全工程單元是M56.11 private scoring artifact containment；下一個不可替代
-> 科學依賴仍是兩位不同真人完成V7。
+> result皆0或不存在。當時預定的private scoring artifact containment已由下方M56.11真程序中斷驗證順延
+> 成M56.12；下一個不可替代科學依賴仍是兩位不同真人完成V7。
 
-> 最新入口是上方的「M56.10 crash-safe at-most-once outcome join」覆蓋段；前文各 M 的
+> **M56.11 process-death scoring crash matrix已凍結，但正式scoring仍明確DENIED。** 先讀
+> `analysis/m56_11_process_death_scoring_crash_matrix_acceptance_2026-09-03.md`。M56.10普通exception可能執行
+> cleanup；M56.11以四個獨立child process在凍結位置`os._exit(70..73)`，再由新程序接手。四條路徑
+> 總outcome loader returns都是1：state前死亡可由新程序讀1次完成；outcome後/checkpoint前0重讀、
+> terminal不完成；checkpoint後與report後皆0重讀完成，後者report hash不變。4 child全reaped、retry/
+> fallback/scorer model call 0；focused 9/9、direct 249/249、selected 314/314。圖像頁直接驗證並載入封存
+> matrix而非手寫結果。三次matrix中位5.129000s，
+> 是四個process launch的驗證成本，不是production overhead。Safari 33 tabs不變、server已停止。這不等於
+> power cut、kernel/filesystem corruption、multi-host或malicious host，也不新增真人／Equation V1／正式
+> 結果。下一步是M56.12 Outcome-Derived Artifact Containment and Public Projection Audit；兩位不同真人V7
+> 仍是不可替代的科學依賴。
+
+> 最新入口是上方的「M56.11 process-death scoring crash matrix」覆蓋段；前文各 M 的
 > 下一步均為歷史，不要重跑或回寫既有封存結果。真人gate未通過時繼續做不消耗target的必要工程，
 > 但不得把工程fixture改稱正式結果。
 

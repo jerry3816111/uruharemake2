@@ -1566,29 +1566,64 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   result皆0或不存在。舊M56.8/M56.9 API與直接檔案存取仍可由同機程式物理呼叫；M56.10是合作式sanctioned
   path，不是distributed transaction、OS sandbox或malicious-host security，也沒有實際拔電測試。沒有新增
   真人、actual performance、Equation V1、人類方程式、full-pipeline或production證據。
-- 下一個可獨立工程單元是M56.11 private scoring artifact containment：證明新增outcome-derived checkpoint
-  與canonical report只留在private scoring compartment，public/live observatory只顯示bounded aggregate
-  state且不洩漏per-sample/outcome內容。不可替代科學依賴仍是兩位不同真人完成V7。
+- 原先列為下一步的private scoring artifact containment未被跳過，而是順延成M56.12；M56.11先補一個
+  更直接的證據缺口：M56.10只有普通Python exception，尚未讓程序真的消失並由新程序接手。
+
+### 7.85 2026-09-03 M56.11 process-death scoring crash matrix：四個真程序中斷狀態通過
+
+- 修改前缺口：M56.10例外測試可執行cleanup，不能代表程序突然死亡。隔離30-row forged probe先用
+  `os._exit(71/72)`實證intent-only會0重讀terminal、checkpoint會0重讀完成，再凍結四phase合約；沒有
+  正式答案、真人或模型呼叫。
+- 單一變因只把failure injection從same-process exception提升為四個獨立child process abrupt death；
+  M56.10 runtime、M56.9 lock、M56.8 authority及M56.4 scoring semantics全部不改。新無參數工程入口
+  `run_process_death_crash_matrix()`只建立temp forged run，child-only monkeypatch呼叫`os._exit`，formal
+  runtime沒有新增fault hook；輸出只有state/count/hash，沒有outcome label、source或raw model response。
+- 四個凍結位置實測：lock後/state前exit70由新程序讀1次完成；outcome後/checkpoint前exit71總讀1次、
+  新程序0重讀並terminal不完成；checkpoint後/report前exit72總讀1次、新程序0重讀完成；report後/result
+  前exit73總讀1次、新程序0重讀且report hash不變完成。4/4 exit code符合、4 child皆reaped、retry/
+  fallback/scorer model call為0、real private root/outcome access為0。
+- focused 9/9；M54–M56.11 direct 249/249；選定M1/M2/M6/V7/V9/M54–M56.11為314/314；compile、JSON、
+  contract/schema、dependency與freeze hash通過。matrix hash為
+  `d7346f14b492144746f5db75f929a488fb2634aeda46285f4c7db95234f51c33`。
+- 三次完整matrix為5.115022／5.129000／5.164917s，中位5.129000s；每次4 child launch、4個互相獨立
+  forged outcome load、0 scorer call。這是validation harness cost，不是production scoring overhead。
+- Safari重用M56.10 tab導向`http://127.0.0.1:7919/dashboard`，前後33 tabs、沒有新增／關閉；頁面直接
+  驗證並載入封存matrix而非手寫結果，四phase、每條總讀1、exit71不完成、4 child回收及限制皆可讀，
+  無form／可見水平溢出。兩張PNG在
+  `analysis/m56_11_safari_process_death_*.png`；server已停止，唯讀tab可安全關閉。
+- authoritative state仍是V7 0/18＋0/18、V9／real rows 0/30、formal call/outcome/result 0或不存在。
+  這不是拔電、kernel/filesystem corruption、multi-host或malicious-host測試；不新增Equation V1、完整
+  人類反應方程式、full-pipeline、runtime/production或真人證據，intent-only仍刻意犧牲availability。
+- 下一個必要單一變因是M56.12 Outcome-Derived Artifact Containment and Public Projection Audit：證明private
+  checkpoint/report/outcome-derived material不會流入public renderer、log或telemetry，只能呈現bounded
+  aggregate state且不洩漏per-sample label、raw source或hidden outcome。不可替代科學依賴仍是兩位不同
+  真人完成V7。
 
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`
-2. `research/m56_10_crash_safe_outcome_join_plan_2026-09-03.md`
-3. `configs/m56_10_crash_safe_outcome_join_v1.json`
-4. `research/m56_10_crash_safe_outcome_join_implementation_freeze_2026-09-03.json`
-5. `m56_10_crash_safe_outcome_join.py`
-6. `test_m56_10_crash_safe_outcome_join.py`
-7. `analysis/m56_10_crash_safe_outcome_join_state_evidence_2026-09-03.json`
-8. `analysis/m56_10_crash_safe_outcome_join_fixture_cost_2026-09-03.json`
-9. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
-10. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
-11. `configs/m56_9_single_writer_formal_scoring_v1.json`
-12. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
-13. `m56_9_single_writer_formal_scoring.py`
-14. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
-15. `m56_8_durable_release_gated_scoring.py`
+1. `analysis/m56_11_process_death_scoring_crash_matrix_acceptance_2026-09-03.md`
+2. `research/m56_11_process_death_scoring_crash_matrix_plan_2026-09-03.md`
+3. `configs/m56_11_process_death_scoring_crash_matrix_v1.json`
+4. `research/m56_11_process_death_scoring_crash_matrix_implementation_freeze_2026-09-03.json`
+5. `m56_11_process_death_scoring_crash_matrix.py`
+6. `test_m56_11_process_death_scoring_crash_matrix.py`
+7. `analysis/m56_11_process_death_scoring_crash_matrix_result_2026-09-03.json`
+8. `analysis/m56_11_process_death_scoring_crash_matrix_fixture_cost_2026-09-03.json`
+9. `analysis/m56_10_crash_safe_outcome_join_acceptance_2026-09-03.md`
+10. `research/m56_10_crash_safe_outcome_join_plan_2026-09-03.md`
+11. `configs/m56_10_crash_safe_outcome_join_v1.json`
+12. `research/m56_10_crash_safe_outcome_join_implementation_freeze_2026-09-03.json`
+13. `m56_10_crash_safe_outcome_join.py`
+14. `test_m56_10_crash_safe_outcome_join.py`
+15. `analysis/m56_9_single_writer_formal_scoring_acceptance_2026-09-03.md`
+16. `research/m56_9_single_writer_formal_scoring_plan_2026-09-03.md`
+17. `configs/m56_9_single_writer_formal_scoring_v1.json`
+18. `research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json`
+19. `m56_9_single_writer_formal_scoring.py`
+20. `analysis/m56_8_durable_release_gated_scoring_acceptance_2026-09-03.md`
+21. `m56_8_durable_release_gated_scoring.py`
 
 需要追上游理由時，再依下列既有順序讀取：
 
