@@ -601,3 +601,26 @@ coordinator會一次拿到三個tokens，collector token會進argv/URL/history�
 HTML或browser history，且一個role不能導出／消耗另一個capability。用synthetic fixture與Safari驗mechanics，
 但明說同一macOS user仍非adversarial identity proof；external study oversight不可省略。不得讀outcome、建立
 formal component evidence或啟動M58。
+
+## 2026-09-05 最新續接覆蓋：M57.5 完成，下一步 M57.6
+
+忽略上方M57.4續接點；以handoff §7.93與
+`analysis/m57_5_participant_capability_issuance_acceptance_2026-09-05.md`為最新狀態。完整讀handoff、核對git與
+M57.4/M57.5 freeze後續作。
+
+M57.5 wrapper保留M57.4 frozen evidence semantics，將三個role tokens分別寫入0700 dirs/0600 envelopes；
+public receipt、central commitment、argv、URL、HTML/form與browser cookie均不含raw M57.4 token。一次claim
+寫receipt並scrub envelope，server只在memory保留token；Safari用獨立HttpOnly SameSite=Strict cookie＋CSRF。
+synthetic rehearsal與Safari都完成一筆原M57.4 coder save，token surface occurrences 0、outcome/model 0。
+focused 11/11、adjacent 96/96、selected 420/420；Safari 35→35、servers stopped。
+
+這仍沒有三位真人或正式資料。same-user filesystem不是adversarial separation，plain loopback HTTP不是TLS，
+claim後process若死掉目前無法restart。V7 0/18＋0/18、real temporal rows 0/30、real component rows 0/30、
+formal M56/M57 0，M58不得啟動。
+
+下一個單一變因M57.6只處理participant-owned crash recovery，不改M57.4/M57.5 freeze。先做gap probe實際證明
+claim後restart terminal，並只讀檢查現有環境是否有audited authenticated-encryption primitive。若可用，先freeze
+一個participant recovery secret由interactive non-argv channel輸入、永不落盤，以memory-hard KDF＋AEAD加密active
+role token的設計；restart需同一secret，錯誤secret/tamper fail closed，browser/argv仍不可有token，outcome race仍
+拒絕。若沒有合適primitive，保留M57.5 terminal limitation而不要自創crypto。synthetic mechanics不能冒充真人，
+external identity oversight仍必要，M58仍禁止。

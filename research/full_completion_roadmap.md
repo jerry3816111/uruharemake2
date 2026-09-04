@@ -616,3 +616,24 @@ tokens together and preventing collector tokens from appearing in process argume
 one-time permission-restricted role envelopes and secure local cookie sessions may establish stronger application-level
 role separation, but they still cannot prove three physical people on one user account. External oversight remains
 required, and M58 remains prohibited without the real evidence chain and an unambiguous formal M57 result.
+
+## 2026-09-05 latest research-execution override: M57.4 → M57.5
+
+M57.5 leaves the frozen M57.4 evidence model unchanged and hardens only participant launch. Three M57.4 role tokens
+are now written to separate `0700` role directories and `0600` envelopes after a durable no-retry intent. The public
+receipt and central commitment contain hashes and paths but no raw token. Claim is one-time, scrubs the envelope, and
+keeps the role token only in server memory. The browser receives an independent host-only `HttpOnly; SameSite=Strict`
+session cookie and CSRF token; the M57.4 bearer token is absent from argv, URL/history, HTML/form and cookie.
+
+One isolated synthetic rehearsal and one Safari submission wrote an exact M57.4 coder revision with zero tested token
+surface occurrences, zero model/outcome access and no formal authority. Focused M57.5 tests passed 11/11, adjacent
+tests 96/96 and selected compatibility 420/420. This improves experimental operability, not predictive evidence or
+human identity proof. Same-user filesystem controls remain cooperative and plain loopback HTTP is not TLS.
+
+The next necessary unit is M57.6 crash-recoverable participant-owned capability storage. M57.5 intentionally cannot
+restart after a claim because the plaintext token has been scrubbed. M57.6 may proceed only if an existing audited
+authenticated-encryption primitive is available. A participant recovery secret must enter through an interactive
+non-argv channel, never persist, derive an AEAD key with a memory-hard KDF, and be required again after restart. Wrong
+secrets and tampering must fail closed without browser token exposure or outcome access. If this cannot be done without
+inventing cryptography or plaintext backup, the terminal limitation must remain. M58 stays prohibited until the real
+external evidence chain and an unambiguous formal M57 result exist.

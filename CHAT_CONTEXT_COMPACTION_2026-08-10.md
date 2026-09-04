@@ -1835,9 +1835,61 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   URL／browser history，以分開one-time permission-restricted envelopes與secure local cookie session驗證role
   capability不能互相導出／消耗。仍不能取代external identity oversight，也不得讀outcome、建立formal result或啟動M58。
 
+### 7.93 2026-09-05 M57.5 separate participant capabilities：角色token已移出caller／argv／URL／HTML／cookie
+
+- 修改前M57.4 mode只存token hash，但initializer會把三個raw role tokens一次回傳同一caller；direct collector
+  另把token放進`--token`、query string、hidden form與redirect URL。這不否定M57.4 mechanics，但不適合交給
+  三個不同study roles。
+- 單一變因只新增M57.5 wrapper；M57.4 frozen source/view/ledger/seal/adjudication/manifest semantics完全不改。
+  wrapper先full-sync no-retry intent，再呼叫原initializer，將三個capabilities分別寫入0700 role dirs／0600
+  envelopes；central commitment與public receipt只有pseudonym/token hash/envelope hash/path，raw token 0。
+- collector CLI只收run/role/envelope path/port。claim重驗outcome absent、role/path/hash，寫exclusive receipt，
+  scrub envelope後只在server process memory保留M57.4 token；second claim與claim後restart刻意fail closed。
+  browser改用獨立host-only `HttpOnly; SameSite=Strict` cookie與CSRF；role token不進URL、HTML/form或cookie。
+  loopback plain HTTP未假稱TLS或`Secure` cookie flag。
+- synthetic rehearsal完成3 envelopes、1 claim、303 cookie handshake與1個原M57.4 coder POST；public receipt與
+  測試的URL／redirect／HTML／cookie／CSRF中raw role token occurrences皆0，ledger 1 revision／1 source view，
+  target outcome/model calls 0，formal false，M58 false。沒有用假真人呼叫public real initializer。
+- 第一次rehearsal因macOS `/var`→`/private/var` canonical path差異在artifact accounting失敗，沒有保存；兩側
+  resolve後重跑通過。review另發現rehearsal duplicate了一份claimed server，freeze前刪除，saved result與tests
+  改走同一production server constructor，沒有放寬規則。
+- focused M57.5 **11/11**（20.71s）；adjacent M56.10＋M57–M57.5 **96/96**（188.60s）；selected
+  M1/M2/M6/V7/V9/M54–M57.5 **420/420**（273.55s）。compile、JSON、frozen dependencies、saved rehearsal、
+  JPEG hash/dimensions、servers stopped、freeze hash與Git whitespace checks通過。
+- 七次issuance→claim→cookie→POST中位**4.601486s**（4.586087–4.638623），六個M57.5 durable artifacts
+  **5,587 bytes**/run。這不是人工完成90 entries、model/outcome/energy/TLS/production成本。
+- Safari圖頁與functional synthetic collector皆通過：token-free URL顯示sample ID，正確表單送出後跳第2題；
+  disk確認1 revision／2 source views、spent envelope與claim都無raw token、outcome/model 0。35→35 tabs，未新增／
+  關閉；servers已停止，M57.5 test tab可安全關閉。第一次state capture在303途中混合舊dashboard tree，重讀後
+  才以實際collector頁驗收，未冒充第一次畫面成功。
+- M57.5只提升真人收集的operability/provenance。0700/0600與separate paths在同一macOS user下不是adversarial
+  identity proof；claim後server若crash目前無法restart，因raw token已scrub。live V7仍0/18＋0/18、real temporal
+  rows 0/30、real component rows 0/30、formal M56/M57 0、M58 denied。
+- 下一個必要單元M57.6是crash-recoverable participant-owned active capability。先證明post-claim restart fail，
+  只讀確認可用authenticated-encryption primitive，再prospective freeze；participant recovery secret只能從
+  interactive non-argv channel進入、不落盤，active capability只能加密保存，restart需同一secret，browser仍0 token。
+  若無合適audited primitive就保留terminal failure，不能自創crypto或降回plaintext；仍不得代替human identity
+  oversight、讀outcome或啟動M58。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_5_participant_capability_issuance_acceptance_2026-09-05.md`
+2. `research/m57_5_participant_capability_issuance_plan_2026-09-04.md`
+3. `configs/m57_5_participant_capability_issuance_v1.json`
+4. `research/m57_5_participant_capability_issuance_implementation_freeze_2026-09-04.json`
+5. `m57_5_participant_capability_issuance.py`
+6. `test_m57_5_participant_capability_issuance.py`
+7. `analysis/m57_5_prechange_participant_capability_gap_probe_2026-09-04.json`
+8. `analysis/m57_5_participant_capability_issuance_rehearsal_2026-09-04.json`
+9. `analysis/m57_5_participant_capability_issuance_fixture_cost_2026-09-04.json`
+10. `analysis/m57_5_participant_capability_issuance_live_audit_2026-09-04.json`
+11. `analysis/m57_5_safari_participant_capability_acceptance_2026-09-04.json`
+12. `analysis/m57_5_safari_capability_flow_2026-09-04.jpg` 與
+    `analysis/m57_5_safari_secure_collector_2026-09-04.jpg`
+
+再追M57.4與上游時讀：
 
 1. `analysis/m57_4_component_evidence_collection_acceptance_2026-09-04.md`
 2. `research/m57_4_component_evidence_collection_plan_2026-09-04.md`
@@ -1852,21 +1904,17 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 11. `analysis/m57_4_safari_component_evidence_collection_acceptance_2026-09-04.json`
 12. `analysis/m57_4_safari_component_evidence_flow_2026-09-04.png` 與
     `analysis/m57_4_safari_component_evidence_boundary_2026-09-04.png`
-
-再追M57.3與上游時讀：
-
-1. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_acceptance_2026-09-04.md`
-2. `research/m57_3_sanctioned_outcome_analyzer_bridge_plan_2026-09-04.md`
-3. `configs/m57_3_sanctioned_outcome_analyzer_bridge_v1.json`
-4. `research/m57_3_sanctioned_outcome_analyzer_bridge_implementation_freeze_2026-09-04.json`
-5. `m57_3_sanctioned_outcome_analyzer_bridge.py`
-6. `test_m57_3_sanctioned_outcome_analyzer_bridge.py`
-7. `analysis/m57_3_prechange_outcome_analyzer_bridge_gap_probe_2026-09-04.json`
-8. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_rehearsal_2026-09-04.json`
-9. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_fixture_cost_2026-09-04.json`
-10. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_live_audit_2026-09-04.json`
-11. `analysis/m57_3_safari_outcome_analyzer_bridge_acceptance_2026-09-04.json`
-12. `analysis/m57_3_safari_outcome_bridge_flow_2026-09-04.png` 與
+13. `research/m57_3_sanctioned_outcome_analyzer_bridge_plan_2026-09-04.md`
+14. `configs/m57_3_sanctioned_outcome_analyzer_bridge_v1.json`
+15. `research/m57_3_sanctioned_outcome_analyzer_bridge_implementation_freeze_2026-09-04.json`
+16. `m57_3_sanctioned_outcome_analyzer_bridge.py`
+17. `test_m57_3_sanctioned_outcome_analyzer_bridge.py`
+18. `analysis/m57_3_prechange_outcome_analyzer_bridge_gap_probe_2026-09-04.json`
+19. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_rehearsal_2026-09-04.json`
+20. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_fixture_cost_2026-09-04.json`
+21. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_live_audit_2026-09-04.json`
+22. `analysis/m57_3_safari_outcome_analyzer_bridge_acceptance_2026-09-04.json`
+23. `analysis/m57_3_safari_outcome_bridge_flow_2026-09-04.png` 與
     `analysis/m57_3_safari_outcome_bridge_boundary_2026-09-04.png`
 
 再追M57.2與上游時讀：
