@@ -637,3 +637,28 @@ non-argv channel, never persist, derive an AEAD key with a memory-hard KDF, and 
 secrets and tampering must fail closed without browser token exposure or outcome access. If this cannot be done without
 inventing cryptography or plaintext backup, the terminal limitation must remain. M58 stays prohibited until the real
 external evidence chain and an unambiguous formal M57 result exist.
+
+## 2026-09-05 latest research-execution override: M57.5 → M57.6
+
+M57.6 closes only the post-claim restart gap. The public collector still takes no secret or token argument. A real TTY
+collects a hidden participant secret twice on first activation and once on restart. The exact already-present
+`cryptography==50.0.1` backend derives an AES-256-GCM key with Scrypt and stores only a `0600` authenticated ciphertext;
+its AAD binds the complete M57.5 role/run/commitment identity. A durable vault precedes the unchanged M57.5 claim and
+envelope scrub. Restart must authenticate the same vault, reproduce the committed token hash and revalidate outcome
+absence. Wrong secret, tamper, path/role mismatch, backend drift and outcome race fail closed without browser exposure.
+
+Before the change, a clean post-claim process restart succeeded 0 times. The isolated rehearsal and a real Safari flow
+both started a second clean process with the same secret, preserved the vault SHA and activation hash, and wrote one
+exact M57.4 coder revision; tested durable/browser token and secret occurrences remained zero. Focused tests passed
+14/14, adjacent tests 110/110 and the selected like-for-like compatibility suite 434/434. Seven full local recovery
+fixtures passed with a 7.119880-second median and added 3,649 bytes across three M57.6 artifacts. No dependency was
+installed, and model calls, outcome accesses, real participants, formal evidence and M58 authority remained zero.
+
+This is a bounded local reliability result. It does not prove secret entropy, Python memory zeroization, same-account
+adversarial security, TLS, independent human identity, predictive validity or portability: the normal project Python
+lacks authenticated encryption and the accepted backend is currently inside a Codex-bundled interpreter. The next
+necessary unit is M57.7, an auditable participant runtime launcher that verifies one project-owned locked interpreter
+and exact crypto artifact before accepting any secret, never downloads or installs during collection, preserves all
+M57.4–M57.6 hashes and formal denial, and fails closed on runtime drift. If that cannot be reproduced without broad
+packaging changes, the hidden-runtime dependency remains an explicit terminal limitation rather than a portability
+claim.

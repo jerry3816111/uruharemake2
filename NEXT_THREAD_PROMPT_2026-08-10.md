@@ -624,3 +624,26 @@ claim後restart terminal，並只讀檢查現有環境是否有audited authentic
 role token的設計；restart需同一secret，錯誤secret/tamper fail closed，browser/argv仍不可有token，outcome race仍
 拒絕。若沒有合適primitive，保留M57.5 terminal limitation而不要自創crypto。synthetic mechanics不能冒充真人，
 external identity oversight仍必要，M58仍禁止。
+
+## 2026-09-05 最新續接覆蓋：M57.6 完成，下一步 M57.7
+
+忽略上方M57.5續接點；以handoff §7.94與
+`analysis/m57_6_crash_recoverable_participant_capability_acceptance_2026-09-05.md`為最新狀態。完整讀handoff、
+核對git與M57.4–M57.6 freeze後續作。
+
+M57.6只新增participant-secret-bound encrypted post-claim recovery。public CLI仍只有run/role/envelope path/port；
+first activation真TTY hidden prompt兩次、restart一次。既有Codex runtime的精確`cryptography==50.0.1`以Scrypt
+`N=32768,r=8,p=1`＋AES-256-GCM建立0600 vault，AAD綁完整M57.5 identity/commitment；vault durable後才執行
+原claim/scrub。wrong secret、tamper、role/path、backend drift、outcome race都fail closed。clean process restart由
+0次成功變1次，vault/activation hash不變，且能寫1筆exact M57.4 revision；durable/browser raw token與secret均0。
+
+focused **14/14**、adjacent **110/110**、selected like-for-like **434/434**；七次完整fixture中位**7.119880s**，
+三個M57.6 artifacts **3,649 bytes**。Safari實際first process→stop→new process→form POST通過；33→35 tabs原因
+未證明、沒有關閉任何tab，servers已停止。這仍是0 real participants、0 real temporal/component rows、0 model/outcome、
+formal M56/M57 0、M58 denied；不證明portable runtime、same-account security、TLS、secret entropy或Equation V1。
+
+下一個單一變因M57.7是auditable participant runtime launcher。先只讀證明普通project Python缺少凍結crypto而目前
+依賴hidden Codex runtime，並盤點repo是否已有project-owned lock/launcher；再prospective freeze。launcher必須在接收
+secret前驗證exact interpreter與crypto artifact，collection時不得download/install，secret/token不得進argv/log/browser；
+fresh launch與restart使用相同attested runtime，任何runtime drift fail closed，M57.4–M57.6 hashes、0-outcome與formal
+denial不變。若無法在不做broad packaging的前提下提供可重現runtime，就保留限制，不假稱portable。M58仍禁止。

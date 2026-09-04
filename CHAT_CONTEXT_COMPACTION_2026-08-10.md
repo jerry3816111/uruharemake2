@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-04 M57 component-localization readiness）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-05 M57.6 crash-recoverable participant capability）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1871,9 +1871,65 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   若無合適audited primitive就保留terminal failure，不能自創crypto或降回plaintext；仍不得代替human identity
   oversight、讀outcome或啟動M58。
 
+### 7.94 2026-09-05 M57.6 crash-recoverable participant capability：claim後新process可用同一secret恢復
+
+- 修改前已用隔離實測重現：M57.5第一次collector start成功，但claim與envelope scrub後第二次start以
+  `M57.5 role capability was already claimed; restart is unsupported`終止，post-claim restart成功數為**0**。
+  一次普通process crash因此可能中斷尚未完成的30-row真人收集，雖然既有ledger本身仍有效。
+- 單一變因只新增participant-secret-bound encrypted recovery；M57.4 evidence semantics與M57.5 issuance、claim、
+  token-surface、browser-session契約未改。public CLI仍只收run/role/envelope path/port；first activation從真TTY
+  隱藏輸入同一secret兩次，restart輸入一次，secret不接受argv、environment或browser channel。
+- 既有Codex desktop Python 3.12.14提供精確`cryptography==50.0.1`；普通project Python 3.12.10與default Python
+  不提供authenticated encryption。因此未安裝package或自創crypto，只凍結既有backend；backend缺失或漂移
+  會terminal refuse，這不構成一般portable runtime claim。
+- M57.6先full-sync random Scrypt/AES-GCM參數與0600 encrypted vault，再執行原M57.5 claim/scrub。Scrypt使用
+  `N=32768,r=8,p=1`導出AES-256-GCM key；AAD綁run、role、pseudonym、M57.5 commitment/contract、token hash、
+  initial envelope hash與crypto參數。activation另綁vault與claim；wrong secret、ciphertext tamper、role/path mismatch、
+  crypto drift與outcome race都fail closed且不洩漏哪一項驗證失敗。
+- 三個interruption state都已回歸：vault已落盤但claim前、claim與spent envelope已落盤但activation前、claim receipt
+  已落盤但envelope scrub前。只允許exact hash-committed spent record復原；不重發或弱化capability。
+- 修改後clean new process以同一secret恢復成功數為**1**，vault SHA與activation hash不變；restart collector完成
+  1筆exact M57.4 coder revision並前進下一題。durable/browser surfaces raw token **0**、raw secret **0**，outcome/model/
+  real participant/formal evidence/M58 authority全為**0**。
+- focused M57.6 **14/14**（44.621s）；adjacent M56.10＋M57–M57.6 **110/110**（225.008s）；selected
+  M1/M2/M6/V7/V9/M54–M57.6 **434/434**（300.78s）。compile、JSON、freeze hashes、saved rehearsal、JPEG hashes/
+  dimensions、server stopped與Git whitespace皆通過；未安裝dependency。
+- 七次encrypt→claim→restart→decrypt→cookie/CSRF→POST皆通過，中位**7.119880s**（7.035195–7.267910）；
+  三個M57.6 durable artifacts **3,649 bytes**，連同M57.5 claim/spent envelope共五個受影響artifacts **4,956 bytes**。
+  此成本不含真人90 entries、model/outcome、energy、TLS或production throughput。
+- Safari實際啟動first process（2 hidden prompts）、停止、再以相同command啟動new process（1 hidden prompt），
+  成功送出1筆synthetic coder form；圖頁顯示`TTY secret → Scrypt → AES-GCM vault → M57.5 claim → process restart
+  → M57.4 ledger`、0→1、formal denied。AX index第一次把欄位填反而未submit，fresh screenshot修正後只submit一次。
+  Safari tab count 33→35，沒有明確new-tab action且原因未證明，沒有關閉任何tab；servers已停止，test tab可安全關閉。
+- M57.6只改善未來真人收集的crash operability/provenance，不證明secret entropy、Python memory zeroization、同帳號
+  adversarial security、TLS、三位真人身份、predictive validity或Equation V1。M57.5 handler因沒有claimed-token constructor，
+  M57.6暫時鏡像其HTTP handler，存在parity maintenance risk。live V7仍0/18＋0/18、real temporal/component rows
+  仍0/30、formal M56/M57 0，M58 denied。
+- 下一個必要單元M57.7只處理auditable participant runtime launcher：先證明普通project runtime無法承載凍結crypto、
+  目前依賴hidden Codex runtime；再prospective freeze一個project-owned locked runtime launcher，在接收secret前驗證
+  exact interpreter與crypto artifact，collection時不得download/install，secret/token仍不得進argv/log/browser。fresh launch與
+  restart必須使用相同attested runtime、runtime drift fail closed、M57.4–M57.6 hashes與formal denial不變。若無法在不做
+  broad packaging的前提下重現，保留Codex-runtime limitation，不假稱portable。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_6_crash_recoverable_participant_capability_acceptance_2026-09-05.md`
+2. `research/m57_6_crash_recoverable_participant_capability_plan_2026-09-05.md`
+3. `configs/m57_6_crash_recoverable_participant_capability_v1.json`
+4. `research/m57_6_crash_recoverable_participant_capability_implementation_freeze_2026-09-05.json`
+5. `m57_6_crash_recoverable_participant_capability.py`
+6. `test_m57_6_crash_recoverable_participant_capability.py`
+7. `analysis/m57_6_prechange_post_claim_restart_gap_probe_2026-09-05.json`
+8. `analysis/m57_6_crash_recoverable_participant_capability_rehearsal_2026-09-05.json`
+9. `analysis/m57_6_crash_recoverable_participant_capability_fixture_cost_2026-09-05.json`
+10. `analysis/m57_6_crash_recoverable_participant_capability_live_audit_2026-09-05.json`
+11. `analysis/m57_6_safari_crash_recovery_acceptance_2026-09-05.json`
+12. `analysis/m57_6_safari_crash_recovery_flow_2026-09-05.jpg` 與
+    `analysis/m57_6_safari_recovered_collector_2026-09-05.jpg`
+
+再追M57.5時讀：
 
 1. `analysis/m57_5_participant_capability_issuance_acceptance_2026-09-05.md`
 2. `research/m57_5_participant_capability_issuance_plan_2026-09-04.md`
