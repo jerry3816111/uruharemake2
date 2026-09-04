@@ -1759,9 +1759,65 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   outcome-to-analyzer bridge：可先以forged full chain驗證mechanics，但formal execution必須同時要求既有
   M57.1、完整M57.2、valid M56.10 result，不能接受caller labels；沒有formal M57 result仍不得啟動M58。
 
+### 7.91 2026-09-04 M57.3 sanctioned outcome-to-analyzer bridge：答案只能由受控結果鏈接回凍結分析器
+
+- 修改前M57.2有30 rows與90個答案前perception／retrieval／state predictions，但observed labels與
+  decision ceilings皆為0；capsule schema不能直接進入凍結M57 analyzer。用保留的forged M56 aggregate
+  paired deltas反推label時30/30皆ambiguous，因此不能由總分猜答案，也不能讓caller傳入label或bundle。
+- 單一變因只新增從完整M57.2 capsule與M56.10 result chain到未改M57 analyzer的sanctioned bridge；M56
+  predictions／score／model／samples／resources／thresholds與M57統計全部不改。公開execute／validate API
+  只收`run_id`，author-constructed evidence會在建立M57.3 mode、intent或讀答案前被拒絕。
+- bridge先重驗exact M57.1 mode、完整M57.2 evidence／schedule／capsule／ledger／commitment與完整M56.8／
+  M56.10 gate／intent／checkpoint／report／result chain。之後在同一per-run scoring lock下依序full-sync
+  mode、no-retry intent、一次獨立命名的M57 diagnostic private-outcome load、private joined checkpoint、
+  aggregate-only result與SHA-bound commitment。intent存在但checkpoint缺失時刻意terminal，不能猜測重讀。
+- 一次完整研究run因此有兩個不同用途的答案讀取：M56 score **1**、M57 diagnostic **1**；有效checkpoint
+  replay額外讀取**0**。joined checkpoint加入30 observed labels與30 post-outcome decision one-hot ceilings，
+  保留原90 pre-outcome predictions不變；realization缺獨立盲式人評仍unavailable。aggregate result不輸出逐題label。
+- 機械projection產生120 available stage rows後交給未改`analyze_component_substitution_bundle`；projection本身
+  沒有formal authority。M57.3只有完整real upstream chain才可能formal；M58還額外要求唯一且eligible的
+  `leading_recoverable_stage`，不能因bridge有效或結果ambiguous就啟動。
+- 暫存author-constructed full chain完成M57.1→M57.2→M56.10→M57.3：30 labels、90 preserved
+  predictions、30 decision ceilings、120 available stage rows、0 realization ratings；M56/M57 fixture loads各1，
+  replay額外0；0 real model call、0 real target-outcome access、formal result false、M58 false。刻意無資訊的
+  mock distribution沒有eligible recoverable effect，只是mechanics結果，不解讀為Uruha認知元件發現。
+- focused M57.3 **14/14**；adjacent M56.10＋M57–M57.3 **74/74**（94.30s）；selected
+  M1/M2/M6/V7/V9/M54–M57.3 **398/398**（185.00s）。compile、JSON、saved rehearsal、freeze hash與
+  Git whitespace checks通過。初次測試因系統Python 3.14沒有pytest而未collect；切回既有Python 3.12後，
+  兩個focused失敗均確認為無效mutation fixture與過晚error-message expectation，未放寬任何實作規則。
+- 七次fixture中join＋20,000-bootstrap analyzer中位**2.100255s**（2.081292–2.125582），整個fixture wall
+  中位**6.343483s**，五個M57.3 durable artifacts **214,530 bytes**。這只量Python validation／hash／
+  full-sync／numeric bootstrap，不是未來90個真模型calls、人工標註、energy或production throughput。
+- Safari沿用既有tab在`http://127.0.0.1:7925/dashboard`顯示六步flow、1＋1答案用途、replay 0、
+  30/90/30/120/0 counts、private checkpoint與aggregate-only boundary；FORMAL M57 DENIED、V7 0/18＋0/18、
+  real rows 0/30、formal result 0、M58 denied皆可讀。34→34 tabs，沒有新增／關閉；server已停止，唯讀
+  M57.3 tab可安全關閉。Computer Use第一次取得Safari狀態遇到舊binding/API物件問題，改用模組實際匯出後通過，
+  沒有隱藏成產品錯誤。
+- M57.3只封閉「答案如何合法進分析器」的可反駁性缺口；hash是同使用者合作式integrity control，不是抵抗
+  惡意程序的signature。它仍沒有兩位真人component evidence、真Uruha localization、Equation V1有效性、
+  UruhaBrain優勢或完整人類反應方程式證據。下一個必要單元是M57.4 independently attributable
+  component-evidence collection/quarantine：綁distinct coders／adjudicator、source viewing、timestamp、
+  disagreement、adjudication與pre-outcome export；可以synthetic rehearsal驗工程，但不得冒充真人或解鎖formal。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_acceptance_2026-09-04.md`
+2. `research/m57_3_sanctioned_outcome_analyzer_bridge_plan_2026-09-04.md`
+3. `configs/m57_3_sanctioned_outcome_analyzer_bridge_v1.json`
+4. `research/m57_3_sanctioned_outcome_analyzer_bridge_implementation_freeze_2026-09-04.json`
+5. `m57_3_sanctioned_outcome_analyzer_bridge.py`
+6. `test_m57_3_sanctioned_outcome_analyzer_bridge.py`
+7. `analysis/m57_3_prechange_outcome_analyzer_bridge_gap_probe_2026-09-04.json`
+8. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_rehearsal_2026-09-04.json`
+9. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_fixture_cost_2026-09-04.json`
+10. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_live_audit_2026-09-04.json`
+11. `analysis/m57_3_safari_outcome_analyzer_bridge_acceptance_2026-09-04.json`
+12. `analysis/m57_3_safari_outcome_bridge_flow_2026-09-04.png` 與
+    `analysis/m57_3_safari_outcome_bridge_boundary_2026-09-04.png`
+
+再追M57.2與上游時讀：
 
 1. `analysis/m57_2_component_prediction_capsule_acceptance_2026-09-04.md`
 2. `research/m57_2_component_prediction_capsule_plan_2026-09-04.md`

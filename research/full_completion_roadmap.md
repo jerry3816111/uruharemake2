@@ -572,3 +572,25 @@ The next necessary unit is M57.3, a sanctioned result bridge from an already com
 result into the unchanged M57 analyzer. It must derive observed labels only from the authorized result chain, add the
 decision diagnostic ceiling, preserve unavailable realization evidence, reject caller-supplied labels or authority,
 and keep forged rehearsals explicitly non-formal. M58 remains prohibited until a real formal M57 result exists.
+
+## 2026-09-04 latest research-execution override: M57.2 → M57.3
+
+M57.3 closes the result-path gap without changing any M56 prediction, model, sample, resource, score or M57 statistic.
+Its public execute and validation APIs accept only `run_id`: they revalidate the complete M57.1 commitment, M57.2
+evidence/schedule/capsule/ledger/commitment and M56.8/M56.10 result chain before a separately named M57 diagnostic
+outcome authorization can be used. Under the same per-run scoring lock, mode and no-retry intent are full-synced before
+one diagnostic outcome load; the private joined checkpoint, aggregate-only result and commitment then become durable.
+Intent without a checkpoint is terminal, while valid-checkpoint replay adds no outcome load.
+
+An isolated author-constructed full-chain rehearsal joined 30 observed labels to the unchanged 90 pre-outcome
+perception/retrieval/state predictions and 30 post-outcome decision ceilings, yielding 120 available stage rows for the
+unchanged analyzer. Realization remained unavailable. The two named fixture outcome purposes were exactly one M56
+scoring load and one M57 diagnostic load, with zero additional replay loads. This used zero real model calls and zero
+real target-outcome accesses; the result was non-formal and did not authorize M58. Focused M57.3 tests passed 14/14,
+adjacent tests 74/74 and the selected compatibility suite 398/398. Safari visibly retained the formal-denial boundary.
+
+The next necessary unit is M57.4, an independently attributable component-evidence collection and quarantine
+instrument. It must bind distinct coder/adjudicator identities, permitted-source viewing, timestamps, disagreements,
+adjudication and pre-outcome export without exposing outcomes. Clearly synthetic records may exercise mechanics, but
+they cannot stand in for the required humans or unlock formal M57. M58 still requires the real external evidence chain
+and one unambiguous eligible leading recoverable stage.
