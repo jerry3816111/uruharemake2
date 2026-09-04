@@ -1799,9 +1799,61 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   component-evidence collection/quarantine：綁distinct coders／adjudicator、source viewing、timestamp、
   disagreement、adjudication與pre-outcome export；可以synthetic rehearsal驗工程，但不得冒充真人或解鎖formal。
 
+### 7.92 2026-09-04 M57.4 independently attributable component-evidence collection：可稽核收集路徑完成，真人證據仍為0
+
+- 修改前M57.2只有完成物schema與直接fixture constructor，沒有讓兩位coder與不同adjudicator實際看來源、
+  各自保存、封存、保留分歧並在答案前export的操作路徑。V7的18-slot persona coder回答不同問題，不能代替
+  30-row component evidence。
+- 單一變因只新增三角色pre-outcome collection/quarantine；M56 samples/predictions/model/outcome/score/resource、
+  M57 stages/statistics、M57.2 manifest semantics與M57.3 bridge皆未改。public API為initialize、source view、
+  entry save、ledger seal與manifest export；synthetic initializer明名internal且永遠不能formal。
+- 每一action重驗M57.1與outcome absent。兩位coder只看permitted source與自己的private ledger，先有server
+  timestamped source-view receipt才可save；revision append-only，30/30才可seal。兩份coder seal都valid後
+  adjudicator才看到雙方contribution；perception/retrieval disagreement由系統計算，另建立source-bound
+  observable state proxy。30筆adjudication及第三seal後才能輸出exact M57.2 manifest。
+- complete synthetic rehearsal完成3 roles、90 source views、60 coder entries、30 adjudicator entries、60＋60
+  perception/retrieval contributions、30 state proxies、60 adjudications與3 seals；保留6個perception、8個retrieval
+  disagreements。internal engineering validator接受，public formal validator拒絕；0 real model call、0 real
+  outcome access、M57.2 prediction未啟動、M58 false。
+- 初次rehearsal因兩個synthetic coder的說明文字每題不同而誤報30/30分歧；這是fixture錯誤，freeze前修成只
+  保留刻意semantic差異6/8。Safari填表時AX index更新造成欄位第一次錯置，未送出；重讀後逐欄修正，只送出
+  一次。另一次shell查錯ledger欄位而先看到0，實際`entries`/`source_views`確認1 revision／2 views／0 answer／0 model。
+- focused M57.4 **11/11**（70.81s）；adjacent M56.10＋M57–M57.4 **85/85**（165.40s）；selected
+  M1/M2/M6/V7/V9/M54–M57.4 **409/409**（252.66s）。compile、JSON、screenshot format/hash、freeze hash、
+  stopped services與Git whitespace checks通過。
+- 七次full synthetic collection中位**54.224564s**（54.176508–54.772366），每run九個durable artifacts
+  **685,646 bytes**。這只量Python validation/token checks/hash/atomic full-sync，不是human labor、model latency、
+  energy、formal throughput或production security。
+- Safari dashboard顯示兩個private coder→dual seal→adjudicator→M57.2 manifest與60/30/90/6/8/0 counts，
+  FORMAL M57 DENIED、V7 0/18＋0/18、real rows 0/30、M58 denied皆可讀；functional synthetic collector實際
+  保存一筆正確coder revision並跳下一題。35→35 tabs、未新增／關閉；M57.4 test tab可安全關閉，servers已停止。
+- M57.4只讓未來component evidence在application-level可歸因、可重播、可拒絕答案後寫入；pseudonym、token與
+  self-attestation不是三位physical humans的cryptographic proof，也沒有產生真人label、private mental truth、
+  正式localization、Equation V1、LLM優勢或human equation證據。live real component rows仍0/30。
+- 下一個必要單元M57.5只做separate participant-capability issuance與token-surface hardening：不能修改M57.4
+  frozen evidence semantics；要避免coordinator API把三個bearer tokens回傳給同一caller，避免token出現在argv／
+  URL／browser history，以分開one-time permission-restricted envelopes與secure local cookie session驗證role
+  capability不能互相導出／消耗。仍不能取代external identity oversight，也不得讀outcome、建立formal result或啟動M58。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_4_component_evidence_collection_acceptance_2026-09-04.md`
+2. `research/m57_4_component_evidence_collection_plan_2026-09-04.md`
+3. `configs/m57_4_component_evidence_collection_v1.json`
+4. `research/m57_4_component_evidence_collection_implementation_freeze_2026-09-04.json`
+5. `m57_4_component_evidence_collection.py`
+6. `test_m57_4_component_evidence_collection.py`
+7. `analysis/m57_4_prechange_component_evidence_collection_gap_probe_2026-09-04.json`
+8. `analysis/m57_4_component_evidence_collection_rehearsal_2026-09-04.json`
+9. `analysis/m57_4_component_evidence_collection_fixture_cost_2026-09-04.json`
+10. `analysis/m57_4_component_evidence_collection_live_audit_2026-09-04.json`
+11. `analysis/m57_4_safari_component_evidence_collection_acceptance_2026-09-04.json`
+12. `analysis/m57_4_safari_component_evidence_flow_2026-09-04.png` 與
+    `analysis/m57_4_safari_component_evidence_boundary_2026-09-04.png`
+
+再追M57.3與上游時讀：
 
 1. `analysis/m57_3_sanctioned_outcome_analyzer_bridge_acceptance_2026-09-04.md`
 2. `research/m57_3_sanctioned_outcome_analyzer_bridge_plan_2026-09-04.md`

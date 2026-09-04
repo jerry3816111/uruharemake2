@@ -594,3 +594,25 @@ instrument. It must bind distinct coder/adjudicator identities, permitted-source
 adjudication and pre-outcome export without exposing outcomes. Clearly synthetic records may exercise mechanics, but
 they cannot stand in for the required humans or unlock formal M57. M58 still requires the real external evidence chain
 and one unambiguous eligible leading recoverable stage.
+
+## 2026-09-04 latest research-execution override: M57.3 → M57.4
+
+M57.4 operationalizes the frozen M57.2 evidence schema without changing its meaning. Two private coder ledgers now
+require server-timestamped permitted-source views before append-only perception/retrieval entries can be saved. Both
+30/30 ledgers must be hash-sealed before a distinct adjudicator can view the contributions, retain system-computed
+disagreements, resolve the two stages and add source-bound observable-state proxies. A complete adjudicator ledger and
+third seal are required before a pre-outcome export can create the exact M57.2 manifest. Any M56 outcome-state marker
+blocks initialization, viewing, saving, sealing or export.
+
+An isolated synthetic rehearsal completed 90 source views, 60 coder entries, 30 adjudicator entries and three seals,
+preserving six perception and eight retrieval disagreements. Its manifest passed only the explicitly internal
+engineering validator; the public formal validator rejected it. Focused M57.4 tests passed 11/11, adjacent tests 85/85
+and selected compatibility 409/409. A Safari dashboard and one isolated synthetic form submission passed. No real
+human evidence, model call, target-outcome access, formal M57 result or M58 authorization was created.
+
+The next necessary unit is M57.5 separate participant-capability issuance and token-surface hardening. It must leave
+the frozen M57.4 evidence semantics unchanged while preventing a coordinator-facing API from returning all bearer
+tokens together and preventing collector tokens from appearing in process arguments, URLs or browser history. Separate
+one-time permission-restricted role envelopes and secure local cookie sessions may establish stronger application-level
+role separation, but they still cannot prove three physical people on one user account. External oversight remains
+required, and M58 remains prohibited without the real evidence chain and an unambiguous formal M57 result.

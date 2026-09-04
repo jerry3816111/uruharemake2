@@ -577,3 +577,27 @@ M57.2雖定義兩位不同coder＋不同adjudicator的schema，仍沒有把來�
 disagreement、adjudication、答案前export與隔離ledger綁成可操作收集流程。可以明確synthetic records驗證
 mechanics與fail-closed，但不得由Codex／LLM／同一人冒充三位真人，不得讀outcome或解鎖formal。M58仍須
 外部V7/V9/M55/M56 chain與真實、唯一、eligible的M57 leading stage。
+
+## 2026-09-04 最新續接覆蓋：M57.4 完成，下一步 M57.5
+
+忽略上方M57.3續接點；以handoff §7.92與
+`analysis/m57_4_component_evidence_collection_acceptance_2026-09-04.md`為最新狀態。先完整讀handoff、核對
+git與freeze，保留M57–M57.4所有凍結檔。
+
+M57.4已建立可操作的三角色pre-outcome collection/quarantine：兩位coder各自source-view receipt、private
+append-only ledger與30/30 seal；兩seal有效後不同adjudicator才可看雙方contributions、保留系統計算的
+disagreement、建立observable state proxy並seal，最後投影成exact M57.2 manifest。synthetic full rehearsal
+完成90 views、60 coder entries、30 adjudications、3 seals、6/8 disagreements；public formal validator拒絕，
+0 real model/outcome、M58 false。focused 11/11、adjacent 85/85、selected 409/409。Safari 35→35，dashboard與
+一筆functional synthetic POST通過，server已停止；test tab可安全關閉。
+
+正式狀態仍V7 0/18＋0/18、real temporal rows 0/30、real M57 component rows 0/30、formal M56/M57 result 0。
+pseudonym/token/self-attestation不證明三位physical humans，不能冒充人評或啟動M58。
+
+下一個單一變因M57.5是separate participant-capability issuance與token-surface hardening。先只讀證明M57.4
+coordinator會一次拿到三個tokens，collector token會進argv/URL/history，再prospective freeze一個wrapper；
+不得修改M57.4 frozen semantics。wrapper需產生分開one-time、permission-restricted role envelopes，coordinator
+只拿commitment/reference而非全部token；collector用secure local cookie session，token不得出現在argv、URL、
+HTML或browser history，且一個role不能導出／消耗另一個capability。用synthetic fixture與Safari驗mechanics，
+但明說同一macOS user仍非adversarial identity proof；external study oversight不可省略。不得讀outcome、建立
+formal component evidence或啟動M58。
