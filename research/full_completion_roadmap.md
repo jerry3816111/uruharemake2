@@ -554,3 +554,21 @@ concrete pre-outcome evidence manifests and commit all available single-stage su
 outcome access. It must not synthesize two-coder evidence, private mental truth or realization ratings. Decision stays
 a post-outcome ceiling; realization remains unavailable without independent human ratings. Formal M57 execution still
 requires the external V7/V9/M55/M56 chain. M58 remains result-dependent and must not start before a formal M57 result.
+
+## 2026-09-04 latest research-execution override: M57.1 → M57.2
+
+M57.2 completes the missing concrete pre-outcome prediction layer. For every one of the 30 frozen M56 samples it
+binds source-specific evidence for all five M57 stages, schedules the three potentially available pre-outcome
+interventions, removes the replaced component and downstream artifacts, and commits all new same-model probability
+distributions plus actual resource telemetry before any outcome access. Decision remains post-outcome-only and
+realization remains unavailable without independent blind human ratings.
+
+An isolated author-constructed evidence fixture and mocked provider exercised 90/90 available predictions. The public
+formal entry rejected the same fixture before a schedule or call. This is a mechanics result with zero real model calls
+and zero target-outcome access, not independent human evidence or component localization. Live V7 remains 0/18 + 0/18,
+real temporal rows remain 0/30 and formal M56/M57 results remain absent.
+
+The next necessary unit is M57.3, a sanctioned result bridge from an already complete M57.2 capsule and valid M56.10
+result into the unchanged M57 analyzer. It must derive observed labels only from the authorized result chain, add the
+decision diagnostic ceiling, preserve unavailable realization evidence, reject caller-supplied labels or authority,
+and keep forged rehearsals explicitly non-formal. M58 remains prohibited until a real formal M57 result exists.

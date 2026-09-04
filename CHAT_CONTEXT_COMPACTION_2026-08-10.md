@@ -1719,39 +1719,89 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   prediction capsule：在答案前綁具體provenance並封存available stage outputs；不得合成真人證據或啟動M58。
   正式科學依賴仍是V7兩位真人、V9 review、30 real rows及authorized M56。
 
+### 7.90 2026-09-04 M57.2 component prediction capsule：具體逐題替換預測已能在答案前封存
+
+- 修改前M57.1有5個generic stage plans，但concrete evidence-manifest、component schedule與30-row
+  prediction capsule bindings都是0；只能證明「想過怎麼查」，不能證明逐題替換內容與輸出在答案前存在。
+- 單一變因只新增source-bound pre-outcome component evidence與predictions；M56的30 samples、原始Ours
+  distributions、模型／硬體／decoding／token budget／scoring／0 retry及M57統計全部不改。公開execute／
+  validate API都只收`run_id`，不收evidence、provider、outcome、readiness、authorization或resource注入。
+- 每個sample固定五stage evidence：perception／retrieval各要求兩位不同coder＋不同adjudicator；retrieval
+  只能選cutoff前history ID；state只能含六個observable/derived proxy variable，三個private state禁止；
+  decision在outcome前固定unavailable；realization缺獨立盲式人評固定unavailable。每個contribution、
+  adjudication、row及manifest皆content-addressed。
+- 同M56 scoring lock內先重驗M57.1與M56 durable chain、確認8個outcome-state artifacts全無，然後先
+  full-sync 150-step schedule，再以同Ours model/options/budgets對30×3 available stages做downstream
+  recomputation；逐call要求actual tokens、latency、CPU、process/Ollama memory、durations與model identity，
+  最後full-sync ledger、capsule與commitment。capsule保留原Ours distribution但沒有observed label。
+- 暫存author-constructed 30-row evidence＋mock provider完成90/90 predictions，0 real model call、0 target
+  outcome access；同份forged evidence送公開formal入口會在schedule與call前拒絕。decision／realization都
+  沒有被補造。五個artifact合計826,603 bytes。
+- fail-closed涵蓋path/missing M57.1、dependency/source/hash/order drift、post-cutoff history、同coder、重複
+  contribution、coder兼adjudicator、private-state fabrication、forbidden outcome key、decision提前可用、
+  model identity、token budget、probability mass、transport failure、same-run retry、shared-lock outcome race、
+  prompt/resource/ledger/capsule mutation。
+- review發現公開validator會把forged capsule回報structurally valid，雖executor仍拒絕但未來bridge可能只看
+  `valid`誤用；現已改成public validator對forged必為invalid，只有明名internal validator可驗engineering
+  fixture。安全修改後舊freeze hash test如預期先fail，更新freeze後重驗通過。
+- focused M57.2 **17/17**；adjacent M54–M57.2 **312 tests collected**且包含於下列綠燈；selected
+  M1/M2/M6/V7/V9/M54–M57.2 **403/403**（126.29s）；compile、JSON、freeze hash與diff check通過。
+  七次fixture中位0.374307s（0.371192–0.401570），只是Python/hash/full-sync/mock plumbing成本；formal最多
+  90次local model calls，尚無真實token／latency／energy measurement。
+- Safari在`http://127.0.0.1:7924/dashboard`顯示四步答案前資料流、五stage可用性、5 generic plans→90
+  engineering predictions、成本與FORMAL DENIED boundary；V7 0/18＋0/18、real rows 0/30、M58 denied皆
+  可讀，無form或可見overflow。34→34 tabs、沒有新增／關閉；server已停止，唯讀M57.2 tab可安全關閉。
+  初次快捷鍵拼法、缺paste format與scroll element index被Computer Use API拒絕，修正呼叫後通過，沒有
+  隱藏成系統失敗。
+- M57.2只證明cooperative pre-outcome concrete-prediction mechanics；distinct IDs/hash不是三位真人的
+  cryptographic identity proof，未來formal collection仍須綁獨立稽核的人類ledger。這不是independent-human evidence、
+  Uruha真實錯誤定位、Equation V1、LLM優勢或人類反應方程式證據。下一個必要單元是M57.3 sanctioned
+  outcome-to-analyzer bridge：可先以forged full chain驗證mechanics，但formal execution必須同時要求既有
+  M57.1、完整M57.2、valid M56.10 result，不能接受caller labels；沒有formal M57 result仍不得啟動M58。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
 
-1. `analysis/m57_1_preoutcome_diagnostic_commitment_acceptance_2026-09-04.md`
-2. `research/m57_1_preoutcome_diagnostic_commitment_plan_2026-09-04.md`
-3. `configs/m57_1_preoutcome_diagnostic_commitment_v1.json`
-4. `research/m57_1_preoutcome_diagnostic_commitment_implementation_freeze_2026-09-04.json`
-5. `m57_1_preoutcome_diagnostic_commitment.py`
-6. `test_m57_1_preoutcome_diagnostic_commitment.py`
-7. `analysis/m57_1_prechange_preoutcome_commitment_gap_probe_2026-09-04.json`
-8. `analysis/m57_1_preoutcome_diagnostic_commitment_rehearsal_2026-09-04.json`
-9. `analysis/m57_1_preoutcome_diagnostic_commitment_fixture_cost_2026-09-04.json`
-10. `analysis/m57_1_safari_preoutcome_diagnostic_acceptance_2026-09-04.json`
-11. `analysis/m57_component_error_localization_acceptance_2026-09-04.md`
-12. `research/m57_component_error_localization_plan_2026-09-04.md`
-13. `configs/m57_component_error_localization_v1.json`
-14. `research/m57_component_error_localization_implementation_freeze_2026-09-04.json`
-15. `m57_component_error_localization.py`
-16. `test_m57_component_error_localization.py`
-17. `analysis/m57_component_error_localization_rehearsal_result_2026-09-04.json`
-18. `analysis/m57_component_error_localization_live_audit_2026-09-04.json`
-19. `analysis/m57_component_error_localization_fixture_cost_2026-09-04.json`
-20. `analysis/m57_safari_component_localization_acceptance_2026-09-04.json`
-21. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
-22. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
-23. `configs/m56_13_unidirectional_public_snapshot_v1.json`
-24. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
-25. `m56_13_unidirectional_public_snapshot.py`
-26. `m56_13_public_snapshot_reader.py`
-27. `test_m56_13_unidirectional_public_snapshot.py`
-28. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
-29. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
+1. `analysis/m57_2_component_prediction_capsule_acceptance_2026-09-04.md`
+2. `research/m57_2_component_prediction_capsule_plan_2026-09-04.md`
+3. `configs/m57_2_component_prediction_capsule_v1.json`
+4. `research/m57_2_component_prediction_capsule_implementation_freeze_2026-09-04.json`
+5. `m57_2_component_prediction_capsule.py`
+6. `test_m57_2_component_prediction_capsule.py`
+7. `analysis/m57_2_prechange_component_prediction_capsule_gap_probe_2026-09-04.json`
+8. `analysis/m57_2_component_prediction_capsule_rehearsal_2026-09-04.json`
+9. `analysis/m57_2_component_prediction_capsule_fixture_cost_2026-09-04.json`
+10. `analysis/m57_2_safari_component_prediction_acceptance_2026-09-04.json`
+11. `analysis/m57_1_preoutcome_diagnostic_commitment_acceptance_2026-09-04.md`
+12. `research/m57_1_preoutcome_diagnostic_commitment_plan_2026-09-04.md`
+13. `configs/m57_1_preoutcome_diagnostic_commitment_v1.json`
+14. `research/m57_1_preoutcome_diagnostic_commitment_implementation_freeze_2026-09-04.json`
+15. `m57_1_preoutcome_diagnostic_commitment.py`
+16. `test_m57_1_preoutcome_diagnostic_commitment.py`
+17. `analysis/m57_1_prechange_preoutcome_commitment_gap_probe_2026-09-04.json`
+18. `analysis/m57_1_preoutcome_diagnostic_commitment_rehearsal_2026-09-04.json`
+19. `analysis/m57_1_preoutcome_diagnostic_commitment_fixture_cost_2026-09-04.json`
+20. `analysis/m57_1_safari_preoutcome_diagnostic_acceptance_2026-09-04.json`
+21. `analysis/m57_component_error_localization_acceptance_2026-09-04.md`
+22. `research/m57_component_error_localization_plan_2026-09-04.md`
+23. `configs/m57_component_error_localization_v1.json`
+24. `research/m57_component_error_localization_implementation_freeze_2026-09-04.json`
+25. `m57_component_error_localization.py`
+26. `test_m57_component_error_localization.py`
+27. `analysis/m57_component_error_localization_rehearsal_result_2026-09-04.json`
+28. `analysis/m57_component_error_localization_live_audit_2026-09-04.json`
+29. `analysis/m57_component_error_localization_fixture_cost_2026-09-04.json`
+30. `analysis/m57_safari_component_localization_acceptance_2026-09-04.json`
+31. `analysis/m56_13_unidirectional_public_snapshot_acceptance_2026-09-04.md`
+32. `research/m56_13_unidirectional_public_snapshot_plan_2026-09-03.md`
+33. `configs/m56_13_unidirectional_public_snapshot_v1.json`
+34. `research/m56_13_unidirectional_public_snapshot_implementation_freeze_2026-09-04.json`
+35. `m56_13_unidirectional_public_snapshot.py`
+36. `m56_13_public_snapshot_reader.py`
+37. `test_m56_13_unidirectional_public_snapshot.py`
+38. `analysis/m56_13_unidirectional_public_snapshot_result_2026-09-04.json`
+39. `analysis/m56_13_unidirectional_public_snapshot_fixture_cost_2026-09-04.json`
 
 需要追上游理由時，再依下列既有順序讀取：
 
