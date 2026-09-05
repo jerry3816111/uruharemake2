@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-05 M57.6 crash-recoverable participant capability）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-05 M57.7 auditable participant runtime launcher）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1911,9 +1911,65 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   restart必須使用相同attested runtime、runtime drift fail closed、M57.4–M57.6 hashes與formal denial不變。若無法在不做
   broad packaging的前提下重現，保留Codex-runtime limitation，不假稱portable。
 
+### 7.95 2026-09-05 M57.7 auditable participant runtime launcher：不再依賴hidden Codex interpreter
+
+- 修改前repo沒有dependency lock、Python-version檔、participant launcher或project-owned runtime；default Python
+  3.14.2與普通project Python 3.12.10都沒有`cryptography`，只有非project-owned Codex Python 3.12.14含
+  `cryptography==50.0.1`。project-owned ready runtime為**0**，repository使用者無法獨立啟動M57.6。
+- 單一變因只新增`project_owned_attested_participant_runtime_launcher`，M57.4 evidence、M57.5 capability/session、
+  M57.6 Scrypt/AES-GCM、角色、source visibility、ledger、prediction、outcome、scoring與formal authorization皆未改。
+- `prepare`和collection完全分離：prepare不收run/role/token/secret，可在收集前下載並以`--require-hashes`安裝
+  cryptography 50.0.1、cffi 2.1.1、pycparser 3.0三個精確wheel到staging runtime；child audit通過後才atomic publish，
+  existing/partial runtime不會自動repair或overwrite。runtime目錄0700、attestation 0600。
+- attestation綁M57.7 contract/requirements、base/runtime Python、macOS arm64 platform、三個packages、兩個critical
+  compiled binaries、M57.6 frozen files與smoke test。read-only audit遇missing、path escape、symlink、attestation/
+  interpreter/package/binary/upstream drift都fail closed。
+- `launch`只收run、role、M57.5 envelope path與port；完整audit成功後才以project runtime執行unchanged M57.6
+  `--serve-recoverable`，再由M57.6真TTY收hidden secret。argv secret/token **0**，collection-time download/install/
+  repair **0**，Codex interpreter dependency在collection為**false**，project-owned ready runtime改為**1**。
+- focused M57.7 **18/18**；adjacent M56.10＋M57–M57.7 **128/128**（225.69s）；selected
+  M1/M2/M6/V7/V9/M54–M57.7 **452/452**（309.38s）。第一次selected command用了兩個已不存在的M56檔名，
+  collection前exit 4、0 tests；修正為repo實際檔名後通過，錯誤被保留而未隱藏。
+- explicit project-runtime prepare為**3.349842s**；三wheel **4,243,044 bytes**；runtime **26,073,907 bytes**；
+  七次audit中位**0.291446s**（0.290234–0.293445），collection install calls **0**。成本不含真人、model/outcome、
+  energy、offline mirror、cross-platform、sign/notarize、TLS或production throughput。
+- Safari沿用同一existing test tab，36→36、open 0、close 0。default Python呼叫launcher，project-runtime audit在
+  hidden prompt前通過；first process停止後以同一public command與secret啟動clean second process，reload後送出1筆
+  isolated synthetic coder form，exact M57.4 revision由sample 01前進02。dashboard顯示
+  `PREPARE → HASH LOCK → ATTEST → AUDIT → HIDDEN PROMPT → COLLECT`、install 0、real 0/30、formal denied；
+  services已停止，tab可安全關閉但未關。
+- 開發失敗均保留：`-I`隱藏repo module；過窄PATH漏Homebrew Ollama與`/usr/sbin`；移除HOME令Ollama panic；
+  Safari AX indices shift與一次stale Start Page；最後改為`-E -s`、固定工具PATH並保留既有HOME，只submit一次且disk
+  exact。這些是implementation findings，不是正式資料。
+- M57.7只證明tested macOS 15 arm64 host上的exact-hash local runtime可在不依賴Codex interpreter下承載M57.6。
+  不證明offline/cross-platform、wheel provenance或supply-chain audit、code signing、same-account adversarial security、
+  TLS、真人身份、label validity、Equation V1、LLM advantage、human-response equation或production。live V7仍
+  0/18＋0/18、real temporal/component 0/30、model/outcome/formal M56/M57 0，M58 false。
+- 下一個必要單元M57.8只處理participant-confirmed ledger completion/seal。M57.4已有完整ledger seal primitive，
+  但M57.5/M57.6 browser只有`POST /save`與「保存這一題」，30/30後participant無token-free UI確認並seal自己的
+  ledger。下一步先prospective freeze一個CSRF-protected explicit confirmation；只有30 unique/30且outcome absent才
+  呼叫unchanged M57.4 seal，incomplete、mutated、wrong-role與nonidentical replay fail closed，不得順便改evidence語義。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_7_auditable_participant_runtime_launcher_acceptance_2026-09-05.md`
+2. `research/m57_7_auditable_participant_runtime_launcher_plan_2026-09-05.md`
+3. `configs/m57_7_auditable_participant_runtime_launcher_v1.json`
+4. `configs/m57_7_participant_runtime_requirements.txt`
+5. `research/m57_7_auditable_participant_runtime_launcher_implementation_freeze_2026-09-05.json`
+6. `m57_7_auditable_participant_runtime_launcher.py`
+7. `test_m57_7_auditable_participant_runtime_launcher.py`
+8. `analysis/m57_7_prechange_participant_runtime_gap_probe_2026-09-05.json`
+9. `analysis/m57_7_auditable_participant_runtime_launcher_rehearsal_2026-09-05.json`
+10. `analysis/m57_7_auditable_participant_runtime_launcher_live_audit_2026-09-05.json`
+11. `analysis/m57_7_auditable_participant_runtime_launcher_fixture_cost_2026-09-05.json`
+12. `analysis/m57_7_safari_attested_runtime_acceptance_2026-09-05.json`
+13. `analysis/m57_7_safari_attested_runtime_flow_2026-09-05.jpg` 與
+    `analysis/m57_7_safari_recovered_collector_2026-09-05.jpg`
+
+再追M57.6時讀：
 
 1. `analysis/m57_6_crash_recoverable_participant_capability_acceptance_2026-09-05.md`
 2. `research/m57_6_crash_recoverable_participant_capability_plan_2026-09-05.md`

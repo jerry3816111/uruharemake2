@@ -647,3 +647,27 @@ formal M56/M57 0、M58 denied；不證明portable runtime、same-account securit
 secret前驗證exact interpreter與crypto artifact，collection時不得download/install，secret/token不得進argv/log/browser；
 fresh launch與restart使用相同attested runtime，任何runtime drift fail closed，M57.4–M57.6 hashes、0-outcome與formal
 denial不變。若無法在不做broad packaging的前提下提供可重現runtime，就保留限制，不假稱portable。M58仍禁止。
+
+## 2026-09-05 最新續接覆蓋：M57.7 完成，下一步 M57.8
+
+忽略上方M57.6續接點；以handoff §7.95與
+`analysis/m57_7_auditable_participant_runtime_launcher_acceptance_2026-09-05.md`為最新狀態。完整讀handoff、核對git與
+M57.4–M57.7 freeze後續作。
+
+M57.7新增separate prepare、project-owned local runtime、0600 attestation、read-only audit與fail-closed launch。
+default/project Python修改前都無crypto，project runtime ready 0；修改後project Python 3.12.10由三個exact hash-locked
+wheel建立runtime，ready 1。collection launch先audit再exec unchanged M57.6，只收run/role/envelope/port，argv
+token/secret 0、collection download/install/repair 0、Codex interpreter dependency false。missing、path/symlink、
+attestation/interpreter/package/binary/M57.6 freeze drift皆reject。
+
+focused **18/18**、adjacent **128/128**（225.69s）、selected **452/452**（309.38s）。prepare **3.349842s**、
+wheel **4,243,044 bytes**、runtime **26,073,907 bytes**、七次audit中位**0.291446s**。Safari用同一existing tab實際
+launcher first process→stop→clean restart→single synthetic M57.4 save通過，36→36、0 open/close、services stopped。
+這仍是V7 0/18＋0/18、real temporal/component 0/30、model/outcome/formal M56/M57 0、M58 false，不證明offline/
+cross-platform、supply chain、signing、same-account security、TLS、真人、Equation V1、LLM advantage或production。
+
+下一個單一變因M57.8只處理participant-confirmed ledger completion/seal。先只讀證明M57.4已有
+`seal_component_evidence_ledger`，但M57.5/M57.6 token-free browser只接受`POST /save`，30/30後沒有participant UI
+查看完整性並確認seal。先prospective freeze：加入explicit CSRF-protected confirmation，只在30 unique/30、outcome
+absent且role/ledger/previous seal均一致時呼叫unchanged M57.4 primitive；incomplete、mutated、wrong-role與nonidentical
+replay fail closed。不得改M57.4 evidence semantics，不得建立real/formal資料或啟動M58。

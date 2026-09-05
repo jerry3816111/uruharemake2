@@ -662,3 +662,27 @@ and exact crypto artifact before accepting any secret, never downloads or instal
 M57.4–M57.6 hashes and formal denial, and fails closed on runtime drift. If that cannot be reproduced without broad
 packaging changes, the hidden-runtime dependency remains an explicit terminal limitation rather than a portability
 claim.
+
+## 2026-09-05 latest research-execution override: M57.6 → M57.7
+
+M57.7 closes only the hidden Codex-interpreter dependency at participant collection. The ordinary project Python
+3.12.10 now prepares one ignored local runtime from exactly three hash-locked macOS arm64 wheels. Preparation is a
+separate pre-collection operation with no run, role, token or secret. The runtime and `0600` attestation are published
+only after a child-process audit. Collection launch performs a complete read-only audit before hidden secret input,
+accepts only run/role/envelope/port, strips Python injection variables and executes unchanged M57.6. Missing state,
+path escape, symlink, attestation, interpreter, package, critical-binary or upstream-freeze drift fails closed; no
+download, install or repair can occur during collection.
+
+The prechange project-owned ready-runtime count was 0 and the postchange count is 1 on the tested macOS 15 arm64 host.
+Focused tests passed 18/18, adjacent tests 128/128 and selected compatibility 452/452. A real Safari first-process →
+stop → clean second-process recovery and one isolated synthetic M57.4 form save passed through the repository launcher,
+with 36 → 36 tabs and both services stopped afterward. One-time preparation took 3.349842 seconds for 4,243,044 wheel
+bytes; the local runtime is 26,073,907 bytes, and seven audits had a 0.291446-second median. Collection-time install
+calls, model calls, outcome accesses, real participants and formal results remained zero.
+
+This is not offline or cross-platform packaging, wheel provenance or a supply-chain audit, signing/notarization,
+same-account adversarial security, TLS, human identity proof, label validity, predictive validity, Equation V1,
+LLM advantage or production readiness. M58 remains denied. The next necessary single variable is M57.8
+participant-confirmed ledger completion/seal: expose a CSRF-protected token-free browser confirmation only after 30/30
+unique entries, invoke the unchanged M57.4 seal primitive, and reject incomplete, mutated, wrong-role, outcome-present
+or nonidentical repeated state. It must not alter the evidence schema or turn synthetic mechanics into formal evidence.
