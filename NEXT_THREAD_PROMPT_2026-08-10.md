@@ -671,3 +671,27 @@ cross-platform、supply chain、signing、same-account security、TLS、真人�
 查看完整性並確認seal。先prospective freeze：加入explicit CSRF-protected confirmation，只在30 unique/30、outcome
 absent且role/ledger/previous seal均一致時呼叫unchanged M57.4 primitive；incomplete、mutated、wrong-role與nonidentical
 replay fail closed。不得改M57.4 evidence semantics，不得建立real/formal資料或啟動M58。
+
+## 2026-09-06 最新續接覆蓋：M57.8 完成，下一步 M57.9
+
+忽略上方M57.7續接點；以handoff §7.96與
+`analysis/m57_8_participant_confirmed_ledger_completion_acceptance_2026-09-06.md`為最新狀態。完整讀handoff、
+核對git與M57.4–M57.8 freeze後續作。
+
+M57.8把participant token-free completion從0變1：頁面顯示30/30與exact draft hash，最後一筆save不會auto-seal；
+必須另一個CSRF checkbox＋confirm。single-writer transaction重驗完整ledger與outcome absence，先寫0600 intent，再建立
+unchanged M57.4 sealed ledger/seal與M57.8 receipt。identical crash replay可補完；incomplete、stale、mutated、wrong-role、
+outcome-present或nonidentical state fail closed。封存後browser read-only。argv/browser/M57.8 durable raw token/secret 0。
+
+focused **11/11**、adjacent **139/139**、selected **463/463**。Safari synthetic 30/30→confirm→seal與圖像dashboard通過，
+final 38→38、0 open/close、services stopped。三次completion transaction中位**0.295989s**、intent＋receipt 1,800 bytes。
+失敗與限制見acceptance；特別是M57.8在already-held non-reentrant lock內重建exact M57.4 seal schema，因此未來schema改動
+必須顯式parity update。這仍是V7 0/18＋0/18、real temporal/component 0/30、real completion receipt 0、model/outcome/
+formal M56/M57 0、M58 false；不是真人、預測、Equation V1或production evidence。
+
+下一個單一變因M57.9只處理`adjudicator_confirmed_token_free_preoutcome_manifest_export`。先只讀證明M57.8 browser可讓
+adjudicator封存30/30，但M57.4 `export_component_evidence_manifest`仍要求internal API＋raw role token，participant無法在
+同一安全browser自行完成exact M57.2 pre-outcome export。先建立prechange gap與prospective plan；只有adjudicator seal、
+all role seals、outcome absent、exact preview hash與separate CSRF confirmation都成立時，才可用unchanged M57.4 export。
+必須有durable intent/receipt、crash-identical resume、stale/mutated/outcome/nonidentical fail closed；不得改evidence schema、
+碰target outcome、製造真人／formal evidence或啟動M58。

@@ -1,0 +1,82 @@
+{
+  "schema": "uruha_m57_8_participant_confirmed_ledger_completion_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_before_any_real_participant_collection",
+  "single_changed_variable": "participant_confirmed_token_free_complete_ledger_seal",
+  "frozen_dependencies": {
+    "configs/m57_4_component_evidence_collection_v1.json": "dc1949a44c66e5850c5a925a330a42ce10938c14860d8861b9b6317a7a44c45d",
+    "m57_4_component_evidence_collection.py": "09c964d246322b540041c44950c777c8f5ee026e82e3618d880ab391325466d0",
+    "configs/m57_5_participant_capability_issuance_v1.json": "01370a80da2d09a2ca4f5f1f00a9068a3b8d197483d5a4d7af22ff152b6f8f40",
+    "m57_5_participant_capability_issuance.py": "880091aa1b63475eebc0c125927ed87bf5ff1f6ebbe924d0fd1ae315ab3e8ca4",
+    "configs/m57_6_crash_recoverable_participant_capability_v1.json": "5de95bd51a07139b725cd0e014c3bbc26a884124d82d020983a5020aa6733fd9",
+    "m57_6_crash_recoverable_participant_capability.py": "b0df45a8551e981b6a9e1a7ca935b0be7ffb3a46f522d0825fd82b7fa7039d9e",
+    "configs/m57_7_auditable_participant_runtime_launcher_v1.json": "65660f5da44b9c87a266420b4d64b21722180ee9569404075ed47cb9fb921894",
+    "m57_7_auditable_participant_runtime_launcher.py": "09d76b6bdba98751d51db673f590991aaa054c2141e1862408cfe21bfe0427b3"
+  },
+  "participant_confirmation": {
+    "required_unique_sample_count": 30,
+    "required_source_view_count": 30,
+    "automatic_seal_after_last_save": false,
+    "explicit_checkbox_required": true,
+    "confirmation_value": "confirm_exact_complete_ledger_and_seal",
+    "displayed_draft_ledger_hash_must_match_post": true,
+    "other_private_coder_ledger_visible": false
+  },
+  "transaction": {
+    "existing_single_writer_lock_required": true,
+    "outcome_absence_revalidated_under_lock": true,
+    "complete_ledger_revalidated_under_lock": true,
+    "expected_draft_hash_revalidated_under_lock": true,
+    "durable_intent_before_ledger_mutation": true,
+    "unchanged_m57_4_ledger_and_seal_schema": true,
+    "completion_receipt_binds_intent_ledger_and_seal": true,
+    "identical_interrupted_or_completed_replay_allowed": true,
+    "nonidentical_replay_allowed": false,
+    "sealed_ledger_mutation_allowed": false
+  },
+  "browser": {
+    "loopback_only": true,
+    "http_only_same_site_cookie_reused": true,
+    "csrf_required_for_save_and_seal": true,
+    "seal_post_fields": [
+      "csrf",
+      "expected_ledger_hash",
+      "confirmation"
+    ],
+    "role_token_or_recovery_secret_in_url_form_html_cookie_receipt": false,
+    "post_seal_save_or_seal_form_visible": false
+  },
+  "runtime_launch": {
+    "m57_7_full_audit_precedes_exec": true,
+    "public_arguments": [
+      "run_id",
+      "role_slot",
+      "envelope_path",
+      "port"
+    ],
+    "collection_time_download_install_or_repair_calls": 0,
+    "role_token_or_recovery_secret_argument": false
+  },
+  "public_functions": {
+    "inspect_participant_ledger_completion": [
+      "run_id",
+      "role_slot",
+      "session_token"
+    ],
+    "confirm_and_seal_participant_ledger": [
+      "run_id",
+      "role_slot",
+      "session_token",
+      "expected_ledger_hash",
+      "confirmation"
+    ]
+  },
+  "formal_boundary": {
+    "target_outcome_access_count": 0,
+    "model_call_count": 0,
+    "synthetic_rehearsal_is_real_human_evidence": false,
+    "participant_confirmation_proves_identity_or_label_correctness": false,
+    "m58_authorized": false
+  },
+  "claim_boundary": "M57.8 may prove that the already-authorized participant capability can explicitly and recoverably finalize one exact complete pre-outcome ledger without exposing its token. It cannot prove who the participant is, that labels are correct, predictive validity, Equation V1, LLM superiority, a solved human-response equation, production security or M58 authority."
+}

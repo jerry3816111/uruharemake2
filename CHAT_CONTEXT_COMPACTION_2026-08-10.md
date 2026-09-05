@@ -1,4 +1,4 @@
-# UruhaBrain 新任務交接檔（2026-08-10；2026-09-05 M57.7 auditable participant runtime launcher）
+# UruhaBrain 新任務交接檔（2026-08-10；2026-09-06 M57.8 participant-confirmed ledger completion）
 
 > 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
@@ -1950,9 +1950,61 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   ledger。下一步先prospective freeze一個CSRF-protected explicit confirmation；只有30 unique/30且outcome absent才
   呼叫unchanged M57.4 seal，incomplete、mutated、wrong-role與nonidentical replay fail closed，不得順便改evidence語義。
 
+### 7.96 2026-09-06 M57.8 participant-confirmed ledger completion：30/30後由本人明確封存
+
+- 修改前M57.4已有exact complete-ledger seal，但M57.5/M57.6 browser只有`POST /save`；participant完成30/30後
+  看不到完整度摘要與exact draft hash，也不能在不交回raw token的情況下自行seal。token-free participant seal
+  path由**0→1**。
+- 單一變因只新增`participant_confirmed_token_free_complete_ledger_seal`；M57.4 evidence fields/validation/seal schema、
+  M57.5 capability/session、M57.6 recovery/crypto、M57.7 runtime、prediction/outcome/scoring/formal authority皆未改。
+- 頁面顯示unique完成數、missing、source views、revisions與exact draft ledger hash；29/30沒有seal form，保存第30筆
+  後仍保持open且automatic seal **0**。只有另一個CSRF-protected checkbox＋confirm POST能開始封存。
+- seal在既有single-writer lock內重驗outcome absent、run/role/token、30份entry/source view、revision與displayed hash；
+  先full-sync寫0600 intent，再產生unchanged M57.4 sealed ledger/seal，最後寫0600 M57.8 receipt。identical interrupted/
+  completed replay只重驗或補完相同artifact；incomplete、stale、tampered、wrong-role、outcome-present與nonidentical
+  replay fail closed。封存後browser read-only且save/confirm forms均消失。
+- focused M57.8 **11/11**（217.24s）；adjacent M56.10＋M57–M57.8 **139/139**（454.05s）；selected
+  M1/M2/M6/V7/V9/M54–M57.8 **463/463**（543.64s）。後兩套並行執行，時間只作run evidence，不是效能比較。
+  compile、JSON、contract/rehearsal、freeze hashes與JPEG hash/format均通過。
+- Safari用project launcher完成isolated synthetic 30/30→explicit confirm→seal。顯示draft
+  `bbc8b0e8...9d8df9`、M57.4 seal `30454411...8f346e`、M57.8 receipt `2d52fab7...eb2798`；final acceptance
+  38→38、0 open/close，services stopped。dashboard圖示
+  `SAVE → 30/30 → HASH PREVIEW → CONFIRM → INTENT → SEAL`、automatic 0、receipt 0→1、token/secret 0、real 0/30。
+- 失敗保留：completion panel原本在form下方、title殘留M57.5、一次stale Safari AX index建立Open Codex tab但modal已
+  cancel且未關tab、dashboard曾在confirm後量seal count而fail closed；全部修正後重新驗收。整個debug session 37→38，
+  不是final acceptance新增tab。剩餘test tab可安全關閉但沒有關。
+- 三次synthetic completion transaction為0.293659–0.306211s，中位**0.295989s**；fixture setup＋30 entries
+  18.724178–18.861495s；intent＋receipt每次1,800 bytes。這不是human time或production throughput。
+- 維護限制：M57.8為了在already-held non-reentrant lock內保持stale-hash atomicity，重建exact frozen M57.4 seal schema，
+  沒有呼叫public M57.4 seal function；當前由hash/contract/parity tests綁定，未來M57.4 schema變動需顯式同步。
+- authoritative science完全不變：V7 0/18＋0/18、real temporal/component 0/30、real completion receipt 0、
+  model/outcome/formal M56/M57皆0，M58 false。M57.8只證明synthetic participant completion mechanics，不證明
+  真人身份、label validity、predictive value、Equation V1、LLM advantage、human-response equation或production。
+- 下一個必要單元M57.9只處理`adjudicator_confirmed_token_free_preoutcome_manifest_export`。adjudicator現在可在browser
+  seal 30/30，但exact M57.2 manifest export仍只能用internal M57.4 API＋raw capability。先做prechange gap與prospective
+  freeze，再增加post-seal separate CSRF confirmation、durable intent/receipt、unchanged export與outcome-absence revalidation；
+  不得藉synthetic export建立formal evidence或啟動M58。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
+
+1. `analysis/m57_8_participant_confirmed_ledger_completion_acceptance_2026-09-06.md`
+2. `research/m57_8_participant_confirmed_ledger_completion_plan_2026-09-05.md`
+3. `configs/m57_8_participant_confirmed_ledger_completion_v1.json`
+4. `research/m57_8_participant_confirmed_ledger_completion_implementation_freeze_2026-09-06.json`
+5. `m57_8_participant_confirmed_ledger_completion.py`
+6. `test_m57_8_participant_confirmed_ledger_completion.py`
+7. `analysis/m57_8_prechange_participant_ledger_completion_gap_probe_2026-09-05.json`
+8. `analysis/m57_8_participant_confirmed_ledger_completion_rehearsal_2026-09-05.json`
+9. `analysis/m57_8_participant_confirmed_ledger_completion_live_audit_2026-09-05.json`
+10. `analysis/m57_8_participant_confirmed_ledger_completion_fixture_cost_2026-09-05.json`
+11. `analysis/m57_8_safari_participant_completion_acceptance_2026-09-06.json`
+12. `analysis/m57_8_safari_participant_ready_to_seal_2026-09-06.jpg`、
+    `analysis/m57_8_safari_participant_sealed_2026-09-06.jpg`與
+    `analysis/m57_8_safari_participant_completion_flow_2026-09-06.jpg`
+
+再追M57.7時讀：
 
 1. `analysis/m57_7_auditable_participant_runtime_launcher_acceptance_2026-09-05.md`
 2. `research/m57_7_auditable_participant_runtime_launcher_plan_2026-09-05.md`

@@ -686,3 +686,32 @@ LLM advantage or production readiness. M58 remains denied. The next necessary si
 participant-confirmed ledger completion/seal: expose a CSRF-protected token-free browser confirmation only after 30/30
 unique entries, invoke the unchanged M57.4 seal primitive, and reject incomplete, mutated, wrong-role, outcome-present
 or nonidentical repeated state. It must not alter the evidence schema or turn synthetic mechanics into formal evidence.
+
+## 2026-09-06 latest research-execution override: M57.7 → M57.8
+
+M57.8 closes only the participant-finalization gap. The token-free participant page now shows the exact open-ledger
+progress and draft hash. Reaching 30/30 does not automatically seal. A separate CSRF-protected participant confirmation
+creates a durable intent, the unchanged M57.4 sealed-ledger and seal schemas, and a hash-bound M57.8 receipt under the
+existing one-host single-writer lock. Incomplete, stale, mutated, wrong-role, outcome-present and nonidentical recovery
+states fail closed; identical interrupted or completed state resumes without producing a different seal. The page is
+read-only after completion, and raw role tokens and recovery secrets remain absent from the tested browser and M57.8
+durable state.
+
+Focused tests passed 11/11, the adjacent M56.10 + M57–M57.8 suite passed 139/139, and selected
+M1/M2/M6/V7/V9/M54–M57.8 compatibility passed 463/463. Safari completed one isolated synthetic 30/30 ledger through
+the attested project runtime, explicit checkbox and confirm action, then displayed the exact M57.4 seal and M57.8
+receipt. The final acceptance reused one tab with 38 → 38 tabs and stopped every test service. Three synthetic
+completion transactions had a 0.295989-second median and added 1,800 bytes for intent plus receipt. These are local
+mechanics measurements, not human or production costs.
+
+Formal evidence is unchanged: V7 is 0/18 + 0/18, real temporal and component rows are 0/30, real participant
+completion receipts are 0, model calls and target-outcome accesses are 0, formal M56/M57 results are absent and M58
+remains unauthorized. M57.8 therefore does not establish participant identity, label validity, prediction value,
+Equation V1, LLM advantage, a solved human-response equation or production readiness.
+
+The next independently necessary answer-free unit is M57.9 adjudicator-confirmed token-free pre-outcome manifest
+export. M57.8 lets the adjudicator seal their 30/30 ledger in the browser, but exporting the exact M57.2 evidence
+manifest still requires the internal M57.4 API and raw adjudicator capability. M57.9 should add a distinct post-seal,
+CSRF-protected export confirmation with a preview hash, durable intent/receipt and identical-only crash recovery while
+reusing the unchanged M57.4/M57.2 export and revalidating outcome absence. Synthetic acceptance must remain explicitly
+non-formal, and M58 must remain denied.
