@@ -1,0 +1,38 @@
+{
+  "schema": "uruha_m57_9_prechange_adjudicator_manifest_export_gap_probe_v1",
+  "version": "1.0.0",
+  "status": "observed_after_m57_8_freeze_before_m57_9_implementation",
+  "observed_at_local_date": "2026-09-06",
+  "single_changed_variable_proposed": "adjudicator_confirmed_token_free_preoutcome_manifest_export",
+  "existing_backend": {
+    "m57_4_exact_m57_2_manifest_export_present": true,
+    "m57_4_export_revalidates_all_three_sealed_ledgers": true,
+    "m57_4_export_revalidates_outcome_absence": true,
+    "m57_4_export_is_idempotently_revalidated": true,
+    "m57_4_export_public_parameters": [
+      "run_id",
+      "adjudicator_session_token"
+    ],
+    "raw_adjudicator_capability_required": true
+  },
+  "existing_participant_browser": {
+    "m57_8_post_routes": [
+      "/save",
+      "/seal"
+    ],
+    "adjudicator_can_complete_and_seal_without_raw_token": true,
+    "post_adjudicator_seal_page_is_read_only": true,
+    "exact_manifest_preview_present": false,
+    "separate_adjudicator_export_confirmation_present": false,
+    "token_free_export_route_present": false,
+    "adjudicator_can_export_without_internal_api_or_raw_token": false
+  },
+  "operational_consequence": "After all three participants seal their ledgers, an engineer still has to regain adjudicator authority and call an internal raw-token API to create the exact M57.2 pre-outcome manifest. That breaks participant-owned workflow completion and leaves no explicit adjudicator attribution for the export action.",
+  "target_outcome_access_count": 0,
+  "model_call_count": 0,
+  "real_participant_count": 0,
+  "real_component_rows": 0,
+  "formal_evidence_created": false,
+  "m58_authorized": false,
+  "decision": "Proceed with one post-seal CSRF-protected adjudicator confirmation that previews the exact manifest hash, durably records intent, delegates the unchanged M57.4 export and records an identical-only M57.9 receipt. Preserve all evidence semantics and formal-denial gates."
+}
