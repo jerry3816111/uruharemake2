@@ -1,5 +1,9 @@
 # 新任務啟動提示
 
+> **2026-09-07：本檔下方所有舊「下一步」只作歷史。** 現在讀 `CHAT_CONTEXT_COMPACTION_2026-08-10.md`、
+> `DEVELOPMENT_WORKFLOW.md`、`CURRENT_TASK.md`。當前是 M57.9 部分收尾＋P1 跨重啟回饋紀錄保留。
+> 不自行新增 M57.10，不以產品開發繞過 M55/M56/M57 正式結果門檻；Web/Safari 尚未完成者維持 pending。
+
 > **2026-09-01 最高優先續接：** 舊文所有 M32–M53「下一步」只保留為歷史。使用者已把
 > 長期目標改為候選人類反應方程式的前瞻驗證：M54 Equation V1 契約 → M55 真實人物縱向
 > pilot → M56 B0–B5/Ours 未見未來比較 → M57 Oracle 錯誤定位 → M58 單一變因與新 holdout

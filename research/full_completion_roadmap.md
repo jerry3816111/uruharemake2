@@ -1,5 +1,11 @@
 # Development-first roadmap
 
+## 2026-09-07 使用者批准的產品流程更新
+
+當前執行順序移至 `../DEVELOPMENT_WORKFLOW.md` 與 `../CURRENT_TASK.md`。產品 P1–P4 以實際回饋保留、
+修正使用、強對照及本機整合為有限交付。M57.9 保留最後驗收，不繼續無限 decimal 工程。
+下方 M54–M62/M75 正式研究依賴、資料與 frozen evidence 不變；产品證據不授權正式 M58。
+
 Status date: 2026-09-03
 Historical research source: `/Users/jerrychang/Downloads/RESEARCH_SPEC_FOR_CODEX.md`  
 Execution mode: build the working system first; research is retained only as validation and claim control.

@@ -1,6 +1,11 @@
 # UruhaBrain 新任務交接檔（2026-08-10；2026-09-06 M57.8 participant-confirmed ledger completion）
 
-> 這是新任務的唯一入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
+> **2026-09-07 最新工作順序：** 使用者批准產品效果優先、研究保留驗證，並要求較弱模型也能依明確流程接手。
+> 讀完本交接後，以 `DEVELOPMENT_WORKFLOW.md` 與 `CURRENT_TASK.md` 執行當前工作；歷史「下一步」不直接執行。
+> M57.9 保留收尾，Safari 最終驗收尚未完成；新增有限 P1–P4 產品線，正式 M55–M62/M75 的證據門檻完全保留。
+> P1 先修已重現的跨重啟 prediction ID 碰撞：舊 supported 回饋被同句 turn 1 的 pending 覆蓋。
+
+> 這是新任務的歷史與證據入口。不要要求使用者貼舊聊天室，也不要把整段舊聊天重新載入 Context。
 > 先讀本檔，再用本檔列出的檔案、Git 與測試輸出確認最新狀態。
 
 > **2026-09-01 最高優先目標覆蓋：** M1–M53 全部結果、失敗與產品能力保留，但不再把
@@ -1985,6 +1990,22 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
   freeze，再增加post-seal separate CSRF confirmation、durable intent/receipt、unchanged export與outcome-absence revalidation；
   不得藉synthetic export建立formal evidence或啟動M58。
 
+### 7.97 2026-09-07 產品開發路線與 P1；M57.9 保留 partial
+
+最新排程是 `DEVELOPMENT_WORKFLOW.md`、當前動作是 `CURRENT_TASK.md`，不得繼續舊的下一步而無限新增小數 M。
+P1 修復 turn counter 重啟造成相同 prediction ID 覆寫舊回饋：7/7 focused、39/39 adjacent；隔離 mock／本機
+runtime 各 2 sessions／6 輪，8 項 identity／保存／graph assertions 全過。入口 `uruha_web_ui_product.py`。
+見 `analysis/p1_prediction_identity_acceptance_2026-09-07.md`；歷史 frozen 模組未改。
+
+本機兩次 qwen2.5:7b general-planner 呼叫均逾時，0 completed fresh generation；確認／致謝的兩輪仍多餘追問。
+因此只算事件可靠性通過，不算完整對話品質、Safari 或弱模型等效。下一步 P2 第一批，依
+`research/p2_grounded_validation_plan_2026-09-07.md` 限制未知占位欄位被誤當可澄清的具體假設。
+
+M57.9 backend focused 10/10，507.37 秒；source／既有 synthetic artifact 保存為 WIP，未完成 final freeze／
+相鄰檢查／最終同 run Safari。兩張舊 Safari 圖不是同 run 前後，見 `analysis/m57_9_partial_status_2026-09-07.md`。
+Computer Use 已拒絕當時 Safari 網址並結束 session，禁止改用別的 UI 技術繞過。Web 層 pending 不阻止獨立產品研發。
+正式人類與 M58 gates 未改；保存的 audit 是前階段 snapshot，不能冒充本日新讀私人 ledger。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
@@ -2192,6 +2213,9 @@ V2.11–V2.15 是歷史證據與必要器官，必須保留，但從此不能把
 - `URUHABRAIN_EVOLUTION_LOG.md`
 
 ## 9. 使用者工作方式
+
+2026-09-07 排程更新：依 `DEVELOPMENT_WORKFLOW.md` 與 `CURRENT_TASK.md` 區分產品效果、支援工程與正式研究。
+以下研究資料與單一變因規則繼續有效；低風險支援項不必各自新建 M 或 dashboard。工具受限的驗收層保持 pending。
 
 - 使用中文，先簡短說明計畫，再開始實作。
 - 嚴肅研究使用高推理強度；以證據而非直覺決策。
