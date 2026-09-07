@@ -9,7 +9,10 @@
 - 已完成：M57.8；M57.9 focused 10/10（507.37 秒），但 freeze／相鄰／最後同 run Safari 驗收未完成，保存為 partial。
 - P1：針對性 7/7、相鄰 39/39；隔離完整產品 contract 與本機 runtime 各 2 sessions／6 輪，identity assertions 8/8。
 - P1 品質限制：本機 2 次模型呼叫均逾時，沒有完成 fresh generation；兩輪出現多餘澄清。Safari pending。
-- 當前下一步：P2 第一修正批次，先限制「未知空白」產生無根據的二選一澄清；見下方前瞻計畫。
+- P2 第一修正批次：typed 澄清資格 gate 已實作，10/10 focused、51/51 adjacent；本機原始兩個問題輪撤回無根據的二選一。
+- P2 對話驗收仍 FAIL：通用追問仍在；新增 5 sessions／9 輪 mock 控制揭露候選問題不對題、忽略新請求等失敗。
+- P2 第二批：compact planner 已接入產品，最後 62/62；本機六輪中的兩次一般生成 2/2 完成，6.73／8.62 秒。
+- 當前唯一下一步：P2 兩批後的表達層架構重評，定位／對照無來源 prefix 和重複尾句；先列成功條件再改，不進 P3 或新增 M。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -26,7 +29,9 @@
 ## 檔案與入口
 
 - 實作：`uruha_prediction_identity_p1.py`，小型 opt-in adapter。
-- 產品入口：`uruha_web_ui_product.py`，沿用 M54/M53 runtime 與既有 graph，只安裝 P1。
+- 產品入口：`uruha_web_ui_product.py`，沿用 M54/M53 runtime 與既有 graph，安裝 P1＋P2 gate／compact planner。
+- 產品資源：預設 20 秒／256 output tokens／0 retries；`URUHA_PRODUCT_PLANNER_BUDGET_SECONDS` 合法範圍 1–45 秒。
+  不與正式研究共用 interpreter；凍結研究入口維持原 budget，不能說此次是同預算公平對照。
 - 測試：`test_prediction_identity_p1.py`。
 - 報告：`analysis/p1_prediction_identity_acceptance_2026-09-07.md`。
 - 不改：M1–M57 凍結契約／程式／結果、正式資料、原始 dirty checkout、系統設定。
@@ -74,5 +79,19 @@ P2 第一批前瞻計畫：`research/p2_grounded_validation_plan_2026-09-07.md`�
 先以 typed inference eligibility 限制主動澄清，不加入測試句專用辨識／回覆，不改 M27 supported／unknown。
 下一批再依据實測處理當前 act／既有經驗使用；不能預先宣稱整個 P2 跨 session 修正已通過。
 M57.9 的最後 Safari 操作與原計畫後續驗證仍需補齊；不能宣稱它已完成或自動開始 M57.10。
+
+P2 第一批結果：`analysis/p2_grounded_validation_acceptance_2026-09-07.md`。再次檢查只跑受影響的產品測試：
+
+```sh
+.venv/product_checks/bin/python -m pytest -q test_compact_planner_p2.py test_grounded_validation_p2.py test_prediction_identity_p1.py test_supported_feedback_closure_m43.py test_personhood_loop_v2_13.py
+```
+
+2026-09-07 使用者追加「高效率」：不要重跑未變動的 M57.9 長套件、增加新 dashboard 或只修飾報告。
+先處理已重現的產品阻礙，跑最小實測再擴大；負結果照實保留，不能以省時間跳過影響範圍內的驗證。
+
+最新報告：`analysis/p2_compact_planner_acceptance_2026-09-07.md`。同樣六輪 ledger 仍與 P1 原結果逐欄相同。
+問題已縮小至：model core 被舊表達層補不合情境連接語／尾句；本輪輸出例「いや、ありがとう。そのくらいでいいよ。そのくらいでいいだろ。」
+只讀定位：`uruha_brain_mac.py` 的 `RightBrain._finalize_surface_reply`（hash prefix）及 `direct_chat_answer` variants。
+尚未實作表達層修改。第一批 mock 控制未以 compact 版本重验，不可當已解決。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。

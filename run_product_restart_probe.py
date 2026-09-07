@@ -14,7 +14,7 @@ import tempfile
 import time
 
 
-def probe(backend, report_path):
+def probe(backend, report_path, scenario="restart"):
     with tempfile.TemporaryDirectory(prefix="uruha-product-restart-") as temp:
         root = Path(temp)
         os.environ["URUHA_MEMORY_DB_PATH"] = str(root / "memory")
@@ -34,12 +34,13 @@ def probe(backend, report_path):
         from uruha_memory_observatory import collect_cognitive_graph
         from test_personhood_loop_v2_13 import _IsolatedContractBrain
 
-        result = {"schema": "uruha_product_restart_probe_v1", "backend": backend,
+        result = {"schema": "uruha_product_restart_probe_v2", "backend": backend, "scenario": scenario,
                   "evidence_kind": "developer_authored_isolated_runtime_probe",
                   "mock_memory_and_models": backend == "contract", "safari_verified": False,
                   "human_rating_count": 0, "formal_holdout_used": False,
                   "formal_database_used": False, "rightbrain_transformer_loaded": False,
                   "p1_added_model_calls": 0, "turns": [], "status": "started"}
+        result["planner_budget_seconds"] = product._brain.LEFT_BRAIN_SLOW_PATH_BUDGET_SECONDS
         report_path.parent.mkdir(parents=True, exist_ok=True)
         if report_path.exists() or report_path.with_suffix(".html").exists():
             raise FileExistsError("Use a new output path; prior runs are retained")
@@ -67,6 +68,19 @@ def probe(backend, report_path):
             ["方法はいらない。ただ聞いてほしい。", "不是要方法，今天也只是想讓你聽我說。",
              "No advice right now. Just listen.", "うん、聞いてくれてありがとう。"],
         ]
+        if scenario == "controls":
+            # New development controls, authored after the P2 gate implementation.
+            # Each session resets the brain, but shares the isolated adaptive
+            # store. Never presented as independent blind holdout evidence.
+            sessions = [
+                ["考えとく。", "また今度にしようかな。"],
+                ["今日はただ聞いてほしい。", "謝謝。不過現在請幫我想一個做法。"],
+                ["今日はただ聞いてほしい。", "違う。今日は一人にしてほしい。"],
+                ["今日はただ聞いてほしい。", "「ありがとう」は誰の言葉だった？"],
+                ["那個。"],
+            ]
+        elif scenario == "planner_diagnostic":
+            sessions = sessions[:1]
         started = time.perf_counter()
         try:
             for session_index, turns in enumerate(sessions, 1):
@@ -85,6 +99,8 @@ def probe(backend, report_path):
                              "sequence": model.get("prediction_event_sequence_p1"),
                              "pending_id": (model.get("pending_prediction") or {}).get("prediction_id"),
                              "feedback_status": (trace.get("adaptive_person_feedback_m18") or {}).get("status"),
+                             "active_validation_strategy": (turn.get("logic") or {}).get("active_validation_strategy_v2_13"),
+                             "planner_trace": (turn.get("logic") or {}).get("bounded_slow_path_m21"),
                              "ledger": model.get("outcome_calibration_ledger_m27"),
                              "persistence": brain.runtime.last_adaptive_person_persistence.get("status"),
                              "graph_labels": [node["label"] for node in graph["nodes"]],
@@ -95,26 +111,30 @@ def probe(backend, report_path):
                     graphs.append(product._base.render_memory_observatory(turn))
                     snapshots.append(model)
                     save()
-            old_row = snapshots[1]["outcome_calibration_ledger_m27"][0]
-            restarted_rows = snapshots[2]["outcome_calibration_ledger_m27"]
             result["checks"] = {
-                "restart_cycle_reset": result["turns"][0]["cycle"] == result["turns"][2]["cycle"],
-                "same_input_different_prediction": result["turns"][0]["prediction_id"] != result["turns"][2]["prediction_id"],
-                "old_completed_row_preserved_at_restart": old_row in restarted_rows,
-                "old_completed_row_preserved_at_end": old_row in snapshots[-1]["outcome_calibration_ledger_m27"],
                 "persistence_all_saved": all(row["persistence"] == "saved" for row in result["turns"]),
                 "graph_current_id_all_present": all(row["graph_contains_current_prediction"] for row in result["turns"] if row["prediction_id"]),
                 "no_prediction_turns_leave_no_pending": all(row["pending_id"] is None for row in result["turns"] if not row["prediction_id"]),
                 "all_graphs_include_calibration": all("causal_outcome_calibration_ledger_m27" in row["graph_labels"] for row in result["turns"]),
             }
+            if scenario == "restart":
+                old_row = snapshots[1]["outcome_calibration_ledger_m27"][0]
+                restarted_rows = snapshots[2]["outcome_calibration_ledger_m27"]
+                result["checks"].update({
+                    "restart_cycle_reset": result["turns"][0]["cycle"] == result["turns"][2]["cycle"],
+                    "same_input_different_prediction": result["turns"][0]["prediction_id"] != result["turns"][2]["prediction_id"],
+                    "old_completed_row_preserved_at_restart": old_row in restarted_rows,
+                    "old_completed_row_preserved_at_end": old_row in snapshots[-1]["outcome_calibration_ledger_m27"],
+                })
             result["prediction_graph_turn_count"] = sum(bool(row["prediction_id"]) for row in result["turns"])
             result["no_prediction_turn_count"] = len(result["turns"]) - result["prediction_graph_turn_count"]
-            result["status"] = "bounded_identity_pass" if all(result["checks"].values()) else "identity_check_failed"
+            result["status"] = (("bounded_identity_pass" if scenario == "restart" else "bounded_trace_pass")
+                                if all(result["checks"].values()) else "structural_check_failed")
             # This is the existing product graph from actual probe turns. It is
             # an offline artifact, never represented as a browser screenshot.
             from html import escape
             body = "".join(f"<section><h2>Session {row['session']} · Turn {row['cycle']}</h2><p>{escape(row['input'])}</p><p>{escape(str(row['reply']))}</p>{html}</section>" for row, html in zip(result["turns"], graphs))
-            html = '<!doctype html><meta charset="utf-8"><title>P1 runtime restart probe</title><p>Developer-authored runtime evidence. Browser visual acceptance pending.</p>' + body
+            html = '<!doctype html><meta charset="utf-8"><title>Product runtime probe</title><p>Developer-authored runtime evidence. Browser visual acceptance pending.</p>' + body
             report_path.with_suffix(".html").write_text(html, encoding="utf-8")
             result["graph_html_sha256"] = hashlib.sha256(html.encode()).hexdigest()
         except BaseException as exc:
@@ -133,7 +153,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backend", choices=("contract", "local"), required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--scenario", choices=("restart", "controls", "planner_diagnostic"), default="restart")
     args = parser.parse_args()
-    value = probe(args.backend, args.output)
+    value = probe(args.backend, args.output, args.scenario)
     print(json.dumps({"status": value["status"], "checks": value.get("checks")}, ensure_ascii=False))
-    raise SystemExit(0 if value["status"] == "bounded_identity_pass" else 1)
+    raise SystemExit(0 if value["status"] in {"bounded_identity_pass", "bounded_trace_pass"} else 1)

@@ -1,9 +1,18 @@
 """Current opt-in product entry; frozen research entrypoints remain unchanged."""
+import os
 import uruha_web_ui_m54
 import uruha_web_ui as _base
+import uruha_brain_mac as _brain
 from uruha_prediction_identity_p1 import install_prediction_identity_p1
+from uruha_grounded_validation_p2 import install_grounded_validation_p2
+from uruha_compact_planner_p2 import install_compact_planner_p2, product_planner_budget
 
+# Product-only resource contract. Do not import this entry in a frozen formal
+# experiment interpreter. Existing research entrypoints retain their own budget.
+_brain.LEFT_BRAIN_SLOW_PATH_BUDGET_SECONDS = product_planner_budget(os.environ.get("URUHA_PRODUCT_PLANNER_BUDGET_SECONDS", "20"))
 install_prediction_identity_p1()
+install_grounded_validation_p2()
+install_compact_planner_p2()
 RUNTIME = _base.RUNTIME
 
 if __name__ == "__main__":

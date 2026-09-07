@@ -1997,9 +1997,23 @@ P1 修復 turn counter 重啟造成相同 prediction ID 覆寫舊回饋：7/7 fo
 runtime 各 2 sessions／6 輪，8 項 identity／保存／graph assertions 全過。入口 `uruha_web_ui_product.py`。
 見 `analysis/p1_prediction_identity_acceptance_2026-09-07.md`；歷史 frozen 模組未改。
 
-本機兩次 qwen2.5:7b general-planner 呼叫均逾時，0 completed fresh generation；確認／致謝的兩輪仍多餘追問。
+P1 本機兩次 qwen2.5:7b general-planner 呼叫均逾時，0 completed fresh generation；確認／致謝的兩輪仍多餘追問。
 因此只算事件可靠性通過，不算完整對話品質、Safari 或弱模型等效。下一步 P2 第一批，依
 `research/p2_grounded_validation_plan_2026-09-07.md` 限制未知占位欄位被誤當可澄清的具體假設。
+
+後續 P2 第一批 gate 已實作：10/10 focused、51/51 adjacent，本機相同六輪移除兩次無根據二選一，M27 ledger
+逐欄不變。但模型逾時後的通用追問與新控制中的語意錯誤仍在，**P2 對話品質 FAIL**；詳見
+`analysis/p2_grounded_validation_acceptance_2026-09-07.md`。啟動診斷 19.547616 秒完成一個 token；不得算聊天通過。
+當前接續：本機 planner readiness／生成預算的最小診斷，再依負結果定第二批；不添加測試句專用答案。
+使用者追加高效率要求：不重跑未變动長套件、不新增支援編號，優先修影響實際對話的問題。
+
+P2 第二批已完成 bounded compact general planner：同模型／原 Memory 與 Hard rules，三個有效精簡候選、
+256 output tokens、產品預設 20 秒／0 retries。原研究入口未改，這不是同預算公平研究比較。
+最後相鄰 62/62；本機六輪兩次一般生成 2/2，6.730137／8.623820 秒；M27 與 P1 原始六輪逐欄相同。
+最新圖接線兩輪驗證一個模型呼叫對應一個 compact node；仍非 Safari。詳見
+`analysis/p2_compact_planner_acceptance_2026-09-07.md`。
+P2 整體 partial：自然度與廣泛控制未過。兩批後下一步重評表達層的無來源 hash prefix／重複 suffix，
+先做 model core→最終文字對照，不新增專用測試答案或研究編號。
 
 M57.9 backend focused 10/10，507.37 秒；source／既有 synthetic artifact 保存為 WIP，未完成 final freeze／
 相鄰檢查／最終同 run Safari。兩張舊 Safari 圖不是同 run 前後，見 `analysis/m57_9_partial_status_2026-09-07.md`。
