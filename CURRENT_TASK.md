@@ -1,6 +1,6 @@
 # 目前任務卡
 
-更新：2026-09-07。這是唯一的當前工作順序；歷史各 M 的「下一步」只保留為當時紀錄。
+更新：2026-09-08。這是唯一的當前工作順序；歷史各 M 的「下一步」只保留為當時紀錄。
 
 ## 狀態
 
@@ -12,7 +12,12 @@
 - P2 第一修正批次：typed 澄清資格 gate 已實作，10/10 focused、51/51 adjacent；本機原始兩個問題輪撤回無根據的二選一。
 - P2 對話驗收仍 FAIL：通用追問仍在；新增 5 sessions／9 輪 mock 控制揭露候選問題不對題、忽略新請求等失敗。
 - P2 第二批：compact planner 已接入產品，最後 62/62；本機六輪中的兩次一般生成 2/2 完成，6.73／8.62 秒。
-- 當前唯一下一步：P2 兩批後的表達層架構重評，定位／對照無來源 prefix 和重複尾句；先列成功條件再改，不進 P3 或新增 M。
+- P2 表達層架構修正：預先條件通過；模型 selected core 不再被無來源 hash prefix、固定尾句或 density-only
+  enrichment 覆蓋。最終完整相鄰組 95/95；本機六輪兩個目標
+  final 修正、其他四輪與 M27 逐欄不變，P1 assertions 8/8。
+- P2 現產品 5 sessions／9 輪控制已重跑：4 個結構 checks 通過、4 次實際 compact calls，但原控制目的只有
+  無上下文指稱的保守追問可接受；其餘 4 sessions 仍 FAIL。當前唯一下一步：先修 current-turn explicit help
+  request authority 的自然跨語言 grammar，讓它覆蓋前輪 listening 並交既有 M47→M46；不與其他錯誤同批。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -32,6 +37,8 @@
 - 產品入口：`uruha_web_ui_product.py`，沿用 M54/M53 runtime 與既有 graph，安裝 P1＋P2 gate／compact planner。
 - 產品資源：預設 20 秒／256 output tokens／0 retries；`URUHA_PRODUCT_PLANNER_BUDGET_SECONDS` 合法範圍 1–45 秒。
   不與正式研究共用 interpreter；凍結研究入口維持原 budget，不能說此次是同預算公平對照。
+- 產品表達 commit：`uruha_contextual_expression_commit_p2.py`；只在 completed compact direct-chat 啟用，
+  圖節點顯示 core→decorator gate→visible guard→final，不增加模型呼叫或長期記憶寫入。
 - 測試：`test_prediction_identity_p1.py`。
 - 報告：`analysis/p1_prediction_identity_acceptance_2026-09-07.md`。
 - 不改：M1–M57 凍結契約／程式／結果、正式資料、原始 dirty checkout、系統設定。
@@ -92,6 +99,19 @@ P2 第一批結果：`analysis/p2_grounded_validation_acceptance_2026-09-07.md`�
 最新報告：`analysis/p2_compact_planner_acceptance_2026-09-07.md`。同樣六輪 ledger 仍與 P1 原結果逐欄相同。
 問題已縮小至：model core 被舊表達層補不合情境連接語／尾句；本輪輸出例「いや、ありがとう。そのくらいでいいよ。そのくらいでいいだろ。」
 只讀定位：`uruha_brain_mac.py` 的 `RightBrain._finalize_surface_reply`（hash prefix）及 `direct_chat_answer` variants。
-尚未實作表達層修改。第一批 mock 控制未以 compact 版本重验，不可當已解決。
+這是 2026-09-07 第二批結束時的狀態；後續 2026-09-08 結果如下，不再沿用這句作目前判定。
+
+2026-09-08 表達層架構修正已完成，報告：
+`analysis/p2_contextual_expression_commit_acceptance_2026-09-08.md`。同一六輪的兩個 compact direct-chat final
+由 `先に、うん、そのとおりだ。そのくらいでいいだろ。`／
+`いや、ありがとう。そのくらいでいいよ。そのくらいでいいだろ。` 變為
+`うん、その通りだ。`／`うん、助かったよ。ありがとう`；其他四輪逐字相同，M27 逐欄相同。
+第一次完整 re-run 暴露 self-monitor density repair 會再次裝飾，負結果已保存；最終圖的兩個 expression node
+均為 `final_visible_surface_matched=true`。Safari 仍 pending。
+
+現產品控制診斷：`analysis/p2_current_product_control_diagnosis_2026-09-08.md`。5 sessions／9 輪共 4 次
+qwen2.5:7b compact calls、6,096 total tokens、45.554864 秒；結構 checks 4/4，但語用控制保守判定 4 個
+session FAIL、1 個 bounded acceptable。最先處理 `謝謝。不過現在請幫我想一個做法。` 的 current-turn request
+authority 缺口；這句目前未被既有 M47 grammar 辨識，所以上游仍以 chat 規劃。不得把其他三類錯誤一起修。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。

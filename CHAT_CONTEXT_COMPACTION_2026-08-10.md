@@ -2020,6 +2020,32 @@ M57.9 backend focused 10/10，507.37 秒；source／既有 synthetic artifact �
 Computer Use 已拒絕當時 Safari 網址並結束 session，禁止改用別的 UI 技術繞過。Web 層 pending 不阻止獨立產品研發。
 正式人類與 M58 gates 未改；保存的 audit 是前階段 snapshot，不能冒充本日新讀私人 ledger。
 
+### 7.98 2026-09-08 P2 contextual expression commit：模型核心不再被無來源固定句覆蓋
+
+先保留 `research/p2_contextual_expression_commit_plan_2026-09-08.md` 的修改前 core→variant→final 證據與
+單一變因。產品限定 adapter `uruha_contextual_expression_commit_p2.py` 只在實際完成 compact planner 的普通
+direct-chat 啟用：既有 sanitize／self-monitor／日文 guard 保留，無來源 hash prefix、固定尾句與對同一短核心的
+density-only enrichment 不再覆蓋 selected core；memory／support／safety／boundary／clarification 及非 compact
+路徑維持既有 ownership。沒有測試句路由、額外模型呼叫或長期心理事實寫入。
+
+最終完整相鄰組 95/95，18.47 秒。首次混跑的 92 pass／3 fail 已定位為新測試在 collection 階段安裝
+產品 overlay 而污染後續全域 class；改成逐測試安裝／還原後，同一 process 全過，沒有刪除或放寬斷言。
+本機同一六輪：兩個目標 final 由帶 prefix／重複 suffix 的文字變為 `うん、その通りだ。` 與
+`うん、助かったよ。ありがとう`；其他四輪逐字相同、M27 逐欄相同、P1 assertions 8/8。兩次實際模型呼叫
+與兩個 compact／expression graph node 對齊，expression node 均為 `final_visible_surface_matched=true`。
+中途 self-monitor re-decoration 失敗也已保存，不以最終 pass 覆蓋。
+
+詳見 `analysis/p2_contextual_expression_commit_acceptance_2026-09-08.md` 與同名 raw JSON／HTML。這只通過
+core-to-surface 工作項，P2 整體仍 partial；Safari 仍 pending。下一步只重跑既有 5 sessions／9 輪開發控制，
+先依真實 compact core／final／M27／成本分類錯誤，不進 P3、不新增 M、也不先加入新規則。
+
+同日已完成上述現產品控制：4 次實際 compact calls，總 6,096 tokens，45.554864 秒；4 個結構 checks 全過。
+語用目的保守判定為 4 sessions FAIL、無上下文 `那個。` 的低壓澄清 bounded acceptable；不是人評或普遍率。
+錯誤已分到 active validation 覆蓋貼題 core、當輪明確方法要求未進 M47、correction 追加無來源二選一、
+跨 session feedback/source recall 錯置。詳見 `analysis/p2_current_product_control_diagnosis_2026-09-08.md` 與 raw
+`p2_current_product_controls_local_run1_2026-09-08.json/html`。下一個單一變因只補自然跨語言 current explicit
+help request authority，沿用 M47→M46 source-bounded 路徑；不把其他三類錯誤混成一批。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
