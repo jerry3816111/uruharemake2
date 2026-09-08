@@ -21,7 +21,10 @@
 - P2 current-request authority 已完成 bounded acceptance：focused 14/14、完整相鄰 119/119；本機目標輪從
   policy 空白／泛問改為 `solve_regulation`／`今、どの作業で困ってる？ そこだけ教えて。`，一般 planner call
   1→0、延遲 9.035225→1.749318 秒。5 sessions／9 輪總 calls 4→3、tokens 6,096→4,471，結構 4/4 保持。
-  下一個唯一問題改為：active validation 不應覆蓋 compact planner 已選中的貼題婉拒 core；先凍結 core→override 證據。
+- P2 repeated-refusal arbitration 已完成 bounded acceptance：修改前 compact core `また今度ね。` 被覆蓋成不相關
+  listen／alone 二選一；修改後 final 為原 core、pending=null。最終 focused 9/9、完整相鄰 91/91；本機 5 sessions／9 輪
+  只有目標 final 改變，其他 8 輪逐字相同，calls 3→3、結構 checks 4/4。runtime graph 已有可點擊仲裁節點。
+  下一個唯一問題：明確 solitude correction 後仍追加無來源的 sleep／thought 二選一；先凍結 correction core→add-on trace。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -121,6 +124,10 @@ authority 缺口；這句目前未被既有 M47 grammar 辨識，所以上游仍
 Current-request authority 結果：`analysis/p2_current_request_authority_acceptance_2026-09-08.md`。產品限定 adapter
 擴充自然三語「幫我想／找／決定方法」句法，無 task 時沿既有 source gate 0 action model calls 澄清，未命中 route
 與 source gate 不變。最終實測與相鄰測試已通過 bounded scope；Safari、人評、holdout 與正式比較仍 pending。
-下一個產品問題只處理 active validation 對已貼題 model core 的不當覆蓋，不得順便改 correction/source recall。
+
+Repeated-refusal arbitration 結果：`analysis/p2_repeated_refusal_arbitration_acceptance_2026-09-08.md`。產品限定 adapter
+在連續 indirect refusal 仍 uncertain 且 compact direct plan 已完成時，保留跨輪模型更新但讓較低干預 core 取得 action
+authority。最終 91/91；本機目標 final 改正、其他 8 輪逐字相同。Safari、人評、holdout 與正式比較仍 pending。
+下一個產品問題只處理 explicit correction surface authority，不得順便改 quoted-source／cross-session recall。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。

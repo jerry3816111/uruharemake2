@@ -2062,6 +2062,24 @@ M45 停在 `awaiting_context`、0 action model calls。目標輪一般 planner c
 不是人評、holdout、正式優勢或 P2 整體通過。下一個單一變因：control 1 的 compact core 已是貼題的
 `また今度ね。`，但 active validation 仍覆蓋為不相關二選一；先凍結 core→override，不能同批修 correction/source recall。
 
+### 7.100 2026-09-08 P2 repeated refusal arbitration：保留推測但不再用低信心解讀壓過婉拒
+
+先凍結修改前兩輪因果鏈與五項結構 eligibility。新增產品限定 `uruha_repeated_refusal_arbitration_p2.py`：只有
+前後兩輪都是 typed `indirect_refusal`、前輪 outcome 仍 uncertain、當輪有 text-grounded `decline_or_delay`、
+three-candidate compact direct plan 已完成，且沒有 protected route、direct report、verified preference 或既有 pending 時，
+才讓當輪已有 compact core 取得 action authority。它保留 hypothesis、longitudinal layers、revision／calibration 更新與被拒絕
+proposal 的 trace，只撤回本輪新建的不相關確認；0 固定回覆、0 新增模型 call、0 fact write、0 raw dialogue 複製。
+
+第一次相鄰組 81/82，暴露 adapter 外包 grounded hook 破壞 installer idempotence；失敗已留存，改成插入既有 delegate 內側。
+最終 focused 9/9、合併相鄰 91/91。隔離本機 qwen2.5:7b 的 5 sessions／9 輪中，目標 final 從
+`いや、今は放っといてほしいのか、少し聞いてほしいのかだけ教えて。` 變成 planner 原 core `また今度ね。`；其他
+8 輪逐字相同。calls 3→3、tokens 4,471→4,434、elapsed 37.170483→37.056903 秒，生成差異不作成本因果主張；
+結構 checks 4/4 保持。實際 HTML graph 有連線的仲裁 node 並顯示 base→pragmatic proposal→validation proposal→selection。
+
+詳見 `analysis/p2_repeated_refusal_arbitration_acceptance_2026-09-08.md` 與 raw JSON／HTML／JUnit。Safari 工具仍拒絕
+目前網址，維持 pending；不是人評、holdout、正式優勢或完整 P2。下一個單一變因只修明確 solitude correction 後仍追加
+無來源 sleep／thought 二選一的 surface authority；先凍結 correction core→add-on，不同批處理 quoted-source recall。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
