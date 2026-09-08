@@ -24,7 +24,11 @@
 - P2 repeated-refusal arbitration 已完成 bounded acceptance：修改前 compact core `また今度ね。` 被覆蓋成不相關
   listen／alone 二選一；修改後 final 為原 core、pending=null。最終 focused 9/9、完整相鄰 91/91；本機 5 sessions／9 輪
   只有目標 final 改變，其他 8 輪逐字相同，calls 3→3、結構 checks 4/4。runtime graph 已有可點擊仲裁節點。
-  下一個唯一問題：明確 solitude correction 後仍追加無來源的 sleep／thought 二選一；先凍結 correction core→add-on trace。
+- P2 explicit-space authority 已完成 bounded acceptance：focused 15/15、完整相鄰 145/145。本機目標從無來源
+  sleep／thought 二選一改為 `あ、そっちか。分かった。今日は一人にしとく。`；錯誤 pending 被撤回，下一個隔離
+  session 也不再受到該舊誤判影響。9 輪中 7 輪逐字相同、2 輪為目標與直接下游改善，calls 3→3、checks 4/4。
+  runtime graph 已顯示 observable request→rejected candidate→`respect_space`→final。下一個唯一問題先處理 stale
+  cross-session feedback association，不與 quoted-source recall 混批。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -128,6 +132,10 @@ Current-request authority 結果：`analysis/p2_current_request_authority_accept
 Repeated-refusal arbitration 結果：`analysis/p2_repeated_refusal_arbitration_acceptance_2026-09-08.md`。產品限定 adapter
 在連續 indirect refusal 仍 uncertain 且 compact direct plan 已完成時，保留跨輪模型更新但讓較低干預 core 取得 action
 authority。最終 91/91；本機目標 final 改正、其他 8 輪逐字相同。Safari、人評、holdout 與正式比較仍 pending。
-下一個產品問題只處理 explicit correction surface authority，不得順便改 quoted-source／cross-session recall。
+
+Explicit-space authority 結果：`analysis/p2_explicit_space_authority_acceptance_2026-09-08.md`。產品限定 adapter 把明確的
+當輪獨處要求視為可觀察 interaction action，而不是未知心理；保留舊候選 trace，但在 surface／writeback 前選擇
+`respect_space` 並阻止錯誤 pending。下一個產品問題只定位 stale cross-session feedback association；完成前不得順便修
+quoted-source recall。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。

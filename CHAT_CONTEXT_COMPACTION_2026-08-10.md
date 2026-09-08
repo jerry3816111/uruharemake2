@@ -2080,6 +2080,25 @@ proposal 的 trace，只撤回本輪新建的不相關確認；0 固定回覆、
 目前網址，維持 pending；不是人評、holdout、正式優勢或完整 P2。下一個單一變因只修明確 solitude correction 後仍追加
 無來源 sleep／thought 二選一的 surface authority；先凍結 correction core→add-on，不同批處理 quoted-source recall。
 
+### 7.101 2026-09-08 P2 explicit-space authority：明確要求獨處取得當輪 action authority
+
+修改前，`違う。今日は一人にしてほしい。` 已被 route／pragmatic layer 認成 explicit correction，但既有六種 policy 沒有
+「尊重要求並停止互動」的 action，因此 ordinary `calibrate_need` 產生無來源 sleep／thought 二選一，還保存為新的 pending
+prediction。新增產品限定 `uruha_explicit_space_authority_p2.py`：只把中／英／日直接可見的第一人稱或祈使式獨處要求轉成
+typed `respect_space`；保存 legacy candidate 與 calibration history，卻在 surface／writeback 前使其 not-applied。否定、引述、
+翻譯／詞義問題與 protected route 不接管；不推測情緒原因或長期偏好，不增加 model call、fact write 或 raw-dialogue trace。
+
+Focused 15/15、完整相鄰 145/145。本機 qwen2.5:7b 5 sessions／9 輪的目標 final 從
+`あ、そっちか。さっきは読みすぎた。今の言い方で直す。 寝てないのか、考え事で止まんないのか、まずそこだけどっち？`
+變為 `あ、そっちか。分かった。今日は一人にしとく。`，錯誤 pending 由既有 ID 變為 null、sequence 4→3；下一個隔離
+session 也不再被它誤導。7/9 replies 逐字相同，另 2 輪是目標與直接下游改善。calls 3→3、tokens 4,434→4,459、
+elapsed 37.056903→37.827457 秒；後兩者受 stochastic 生成影響，不作因果成本主張。四個結構 checks 保持通過。
+
+實際 HTML 有連線的 `explicit_space_authority_p2` node，顯示 observable request→legacy proposal→authority→
+`respect_space`→final，且 final surface matched。詳見 `analysis/p2_explicit_space_authority_acceptance_2026-09-08.md` 與
+raw JSON／HTML／JUnit。Safari、人評、holdout、正式優勢與完整 P2 仍 pending。下一個單一變因先定位 stale cross-session
+feedback association；quoted-source recall 另批處理。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
