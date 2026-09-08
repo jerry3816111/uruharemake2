@@ -2120,6 +2120,22 @@ review 發現第一版會把非中文 gratitude 來源也標成「中国語」�
 目前網址，維持 pending；不是 open-domain recall、holdout、人評、正式優勢或人類方程式證明。下一步不新增新回答規則，
 先把五組 P2 產品控制共同執行的整合 gate 凍結；通過才進 P3，失敗則只定位第一個機制交互作用。
 
+### 7.103 2026-09-09 P2 integrated product baseline：五組控制共同成立並凍結 system side
+
+沒有新增產品機制或重跑模型追分；直接判讀 7.102 最終的同一次 5-session／9-turn local qwen2.5:7b run。重複婉拒、
+當輪中文求助、明確獨處、跨語言引句來源四個機制案例 PASS；無上下文 `那個。` 只做低壓追問且不留 pending，列為
+bounded abstention PASS。五組的對應 authority／arbitration／speaker graph node 同時存在，四個全局結構 checks 仍為 4/4；
+一般 planner 2 calls、2,900 accounted tokens、28.973048 秒，ledger 無 raw prompt/reply。這只證明共同安裝時在這批
+developer-authored controls 沒互相覆蓋。
+
+`research/p2_integrated_product_baseline_freeze_2026-09-09.json` 已綁定 product commit `be59317`、base/P1/P2 source hashes、
+最終 JSON／HTML digests、case/structure gate 與成本／證據邊界；詳見
+`analysis/p2_integrated_product_baseline_acceptance_2026-09-09.md`。可稱 P2 bounded product baseline frozen，不是
+open-world P2、長對話可靠、強 LLM 優勢、holdout、人評、Safari pass、正式結果或人類方程式。Safari 仍 pending。
+
+當前唯一下一步是 P3 規格凍結：相同 qwen2.5:7b、相同 input/persona surface 條件、actual-token accounting、明確成功／失敗
+閾值與未參與 P2 開發的新案例來源。現有五組只能作開發／回歸控制，不能改稱 holdout；規格未凍結前不先生成結果。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

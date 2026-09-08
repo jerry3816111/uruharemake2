@@ -34,7 +34,10 @@
   speaker role、bounded gratitude atom、來源語言與 deterministic factual/memory plan；沒有新增 model call、fact write
   或 raw-dialogue contract copy。review 中的固定「中国語」錯誤也已改為依來源標示 zh/en/ja。
 - P2 下一個唯一工作：不新增回答規則，重跑／判讀一份五組控制的整批整合 gate，確認五類機制共同安裝時沒有互相覆蓋；
-  若通過就凍結 P2 bounded product baseline 並進入 P3 同模型效果／成本比較，若失敗只定位第一個交互作用。
+  已完成：同一最終 5-session／9-turn run 中四個機制案例 PASS、一個無上下文指稱 bounded abstention PASS，結構 4/4；
+  product commit、source/run/graph hashes 與成本已凍結。可稱 P2 bounded product baseline，不是 open-world P2。
+- 當前唯一下一步進入 P3 規格凍結：先定公平比較的同模型 baseline/system 介面、actual-token 帳本、成功／失敗閾值與
+  未參與 P2 開發的新案例來源；沒有凍結前不得生成比較結果，也不得把現有五組 developer cases 改名 holdout。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -148,5 +151,10 @@ Speaker-qualified quoted recall 結果：`analysis/p2_speaker_attribution_recall
 只把明確引號來源問題接到已選 memory 的 user／Uruha role；exact match 之外目前只授權 bounded gratitude atom。唯一 role
 直接回答、雙 role 澄清、無 evidence abstain，並將來源語言與 provenance 顯示在既有 runtime graph。最終 162/162；
 五 session／九輪只有 target 改變，calls 3→2。Safari、holdout、人評、正式比較與 open-domain recall 仍未成立。
+
+P2 整合收斂：`analysis/p2_integrated_product_baseline_acceptance_2026-09-09.md` 與
+`research/p2_integrated_product_baseline_freeze_2026-09-09.json`。同一最終 run 的五組 gate 為 4 mechanism PASS +
+1 bounded abstention PASS，結構 4/4；product commit `be59317` 與全部 source/evidence digest 已綁定。下一步只做 P3
+比較規格與未見案例來源凍結，不先跑結果。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。
