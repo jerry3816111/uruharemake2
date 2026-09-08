@@ -2046,6 +2046,22 @@ core-to-surface 工作項，P2 整體仍 partial；Safari 仍 pending。下一�
 `p2_current_product_controls_local_run1_2026-09-08.json/html`。下一個單一變因只補自然跨語言 current explicit
 help request authority，沿用 M47→M46 source-bounded 路徑；不把其他三類錯誤混成一批。
 
+### 7.99 2026-09-08 P2 current request authority：當輪自然求助可覆蓋上一輪傾聽形式
+
+前瞻計畫與修改前 raw 控制先凍結；產品限定 `uruha_current_request_authority_p2.py` 只補中／英／日常見
+「幫我想／找／決定方法或下一步」句法 family，產生既有 M47 typed route／span geometry。沒有改模型、prompt、
+凍結 M47–M54 source 或正式資料。純謝詞和 response-form clause 不得成為 task；獨立當輪 task 保留；未命中路徑逐欄不變。
+
+最終 focused 14/14、相鄰 119/119。隔離本機相同目標從 policy 空白、`ん、その話もう少し聞かせて。` 改為
+`solve_regulation`、`今、どの作業で困ってる？ そこだけ教えて。`；因沒有任務內容，M46 停在 `awaiting_task`、
+M45 停在 `awaiting_context`、0 action model calls。目標輪一般 planner call 1→0、延遲 9.035225→1.749318 秒。
+全 5 sessions／9 輪 calls 4→3、tokens 6,096→4,471，結構 checks 4/4 保持；其他生成差異不作因果主張。
+上一輪回饋仍是 uncertain，沒有把新要求假記成舊預測 supported。
+
+詳見 `analysis/p2_current_request_authority_acceptance_2026-09-08.md` 與 raw JSON／HTML／JUnit。Safari 仍 pending；
+不是人評、holdout、正式優勢或 P2 整體通過。下一個單一變因：control 1 的 compact core 已是貼題的
+`また今度ね。`，但 active validation 仍覆蓋為不相關二選一；先凍結 core→override，不能同批修 correction/source recall。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

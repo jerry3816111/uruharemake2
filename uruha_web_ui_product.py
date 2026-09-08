@@ -7,6 +7,7 @@ from uruha_prediction_identity_p1 import install_prediction_identity_p1
 from uruha_grounded_validation_p2 import install_grounded_validation_p2
 from uruha_compact_planner_p2 import install_compact_planner_p2, product_planner_budget
 from uruha_contextual_expression_commit_p2 import install_contextual_expression_commit_p2
+from uruha_current_request_authority_p2 import install_current_request_authority_p2
 
 # Product-only resource contract. Do not import this entry in a frozen formal
 # experiment interpreter. Existing research entrypoints retain their own budget.
@@ -15,6 +16,7 @@ install_prediction_identity_p1()
 install_grounded_validation_p2()
 install_compact_planner_p2()
 install_contextual_expression_commit_p2()
+install_current_request_authority_p2()
 RUNTIME = _base.RUNTIME
 
 if __name__ == "__main__":
