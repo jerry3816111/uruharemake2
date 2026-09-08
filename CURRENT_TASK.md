@@ -1,6 +1,6 @@
 # 目前任務卡
 
-更新：2026-09-08。這是唯一的當前工作順序；歷史各 M 的「下一步」只保留為當時紀錄。
+更新：2026-09-09。這是唯一的當前工作順序；歷史各 M 的「下一步」只保留為當時紀錄。
 
 ## 狀態
 
@@ -27,8 +27,14 @@
 - P2 explicit-space authority 已完成 bounded acceptance：focused 15/15、完整相鄰 145/145。本機目標從無來源
   sleep／thought 二選一改為 `あ、そっちか。分かった。今日は一人にしとく。`；錯誤 pending 被撤回，下一個隔離
   session 也不再受到該舊誤判影響。9 輪中 7 輪逐字相同、2 輪為目標與直接下游改善，calls 3→3、checks 4/4。
-  runtime graph 已顯示 observable request→rejected candidate→`respect_space`→final。下一個唯一問題先處理 stale
-  cross-session feedback association，不與 quoted-source recall 混批。
+  runtime graph 已顯示 observable request→rejected candidate→`respect_space`→final。
+- P2 speaker-qualified quoted recall 已完成 bounded acceptance：focused 17/17、完整相鄰 162/162。本機 target 從
+  `ん、そこもう少しだけ聞かせて。` 改為 `それ、あんたが言ったやつ。前に中国語でお礼を言ってた。`；
+  其餘 8/9 replies 逐字相同，calls 3→2、tokens 4,459→2,900、checks 4/4。graph 連接已選 episode 的
+  speaker role、bounded gratitude atom、來源語言與 deterministic factual/memory plan；沒有新增 model call、fact write
+  或 raw-dialogue contract copy。review 中的固定「中国語」錯誤也已改為依來源標示 zh/en/ja。
+- P2 下一個唯一工作：不新增回答規則，重跑／判讀一份五組控制的整批整合 gate，確認五類機制共同安裝時沒有互相覆蓋；
+  若通過就凍結 P2 bounded product baseline 並進入 P3 同模型效果／成本比較，若失敗只定位第一個交互作用。
 - Safari 存取：工具拒絕目前網址並結束控制階段；不得透過其他 UI 技術繞過。同意操作不是解除工具限制。
 - 正式 M55/M56/M57：真人與正式結果仍未成立；不得執行 M58。產品 P1 不改動此授權鏈。
 
@@ -137,5 +143,10 @@ Explicit-space authority 結果：`analysis/p2_explicit_space_authority_acceptan
 當輪獨處要求視為可觀察 interaction action，而不是未知心理；保留舊候選 trace，但在 surface／writeback 前選擇
 `respect_space` 並阻止錯誤 pending。下一個產品問題只定位 stale cross-session feedback association；完成前不得順便修
 quoted-source recall。
+
+Speaker-qualified quoted recall 結果：`analysis/p2_speaker_attribution_recall_acceptance_2026-09-09.md`。產品限定 adapter
+只把明確引號來源問題接到已選 memory 的 user／Uruha role；exact match 之外目前只授權 bounded gratitude atom。唯一 role
+直接回答、雙 role 澄清、無 evidence abstain，並將來源語言與 provenance 顯示在既有 runtime graph。最終 162/162；
+五 session／九輪只有 target 改變，calls 3→2。Safari、holdout、人評、正式比較與 open-domain recall 仍未成立。
 
 每次離開本輪前，用實際結果更新本卡；有未完成工作就寫清楚，不用「全部完成」代替剩餘清單。

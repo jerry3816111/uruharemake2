@@ -2099,6 +2099,27 @@ elapsed 37.056903→37.827457 秒；後兩者受 stochastic 生成影響，不�
 raw JSON／HTML／JUnit。Safari、人評、holdout、正式優勢與完整 P2 仍 pending。下一個單一變因先定位 stale cross-session
 feedback association；quoted-source recall 另批處理。
 
+### 7.102 2026-09-09 P2 speaker-qualified quoted recall：把已選記憶的角色來源接到可見回答
+
+修改前，在已取回 episode 保留 `User:`／`Uruha:` 的情況下，`「ありがとう」は誰の言葉だった？` 仍被當成
+general conversation，最後只回 `ん、そこもう少しだけ聞かせて。`。新增產品限定
+`uruha_speaker_attribution_recall_p2.py`：只辨識中／英／日明確 quoted-source 問句，只 join 當輪已選 recent／working
+memory；一般內容用 normalized exact match，跨語言目前僅明列 bounded `gratitude` atom。唯一 role 才回答，雙 role
+澄清，無證據 abstain；translation／meaning、一般提及、unselected memory 與 safety route 不接管。contract 只保留 digest、
+speaker role、match type、來源語言與 trace／memory ID，不新增 raw-dialogue copy、fact write 或 model call。
+
+review 發現第一版會把非中文 gratitude 來源也標成「中国語」，已在收尾前改為依可觀察來源標示 zh／en／ja 並補回歸。
+最終 focused 17/17、完整相鄰 162/162。本機 qwen2.5:7b 五 sessions／九輪只有 target final 改變：
+`ん、そこもう少しだけ聞かせて。` → `それ、あんたが言ったやつ。前に中国語でお礼を言ってた。`；其餘 8/9
+逐字相同。calls 3→2、計入 tokens 4,459→2,900、elapsed 37.827457→28.973048 秒，結構 checks 4/4。目標 route
+為 factual/memory deterministic plan，graph 在 selected plan 前顯示唯一、有連線的 `speaker_attribution_recall_p2`、
+`selected_speaker=user`、bounded gratitude match、`selected_utterance_language=zh` 與來源 ID。只有移除目標 planner call
+屬直接機制證據；總成本觀察不外推全部對話。
+
+詳見 `analysis/p2_speaker_attribution_recall_acceptance_2026-09-09.md`、兩次 local JSON／HTML 與 JUnit。Safari 工具仍拒絕
+目前網址，維持 pending；不是 open-domain recall、holdout、人評、正式優勢或人類方程式證明。下一步不新增新回答規則，
+先把五組 P2 產品控制共同執行的整合 gate 凍結；通過才進 P3，失敗則只定位第一個機制交互作用。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

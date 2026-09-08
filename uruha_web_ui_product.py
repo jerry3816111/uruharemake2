@@ -10,6 +10,7 @@ from uruha_contextual_expression_commit_p2 import install_contextual_expression_
 from uruha_current_request_authority_p2 import install_current_request_authority_p2
 from uruha_repeated_refusal_arbitration_p2 import install_repeated_refusal_arbitration_p2
 from uruha_explicit_space_authority_p2 import install_explicit_space_authority_p2
+from uruha_speaker_attribution_recall_p2 import install_speaker_attribution_recall_p2
 
 # Product-only resource contract. Do not import this entry in a frozen formal
 # experiment interpreter. Existing research entrypoints retain their own budget.
@@ -21,6 +22,7 @@ install_contextual_expression_commit_p2()
 install_current_request_authority_p2()
 install_repeated_refusal_arbitration_p2()
 install_explicit_space_authority_p2()
+install_speaker_attribution_recall_p2()
 RUNTIME = _base.RUNTIME
 
 if __name__ == "__main__":
