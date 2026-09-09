@@ -2136,6 +2136,17 @@ open-world P2、長對話可靠、強 LLM 優勢、holdout、人評、Safari pas
 當前唯一下一步是 P3 規格凍結：相同 qwen2.5:7b、相同 input/persona surface 條件、actual-token accounting、明確成功／失敗
 閾值與未參與 P2 開發的新案例來源。現有五組只能作開發／回歸控制，不能改稱 holdout；規格未凍結前不先生成結果。
 
+### 7.104 2026-09-09 P3 compute accounting 收尾
+
+Optional MemoryManager collection wrapper 與 native M31 Ollama ledger 已接入。最終相鄰 121/121，8 dependency warnings；
+同一 5-session／9-turn 開發控制與 P2 run2 可見輸入／回覆 9/9 逐字相同、結構 4/4。新 ledger 記到 2 次生成＋130 個
+Chroma 操作（90 query、9 add、26 update、5 get）；99 個預期 embedding，127 scoped＋5 unscoped。
+生成 2,901 tokens、總 wall 30.834245 秒；不能把記憶操作當 LLM 次數或把兩次 run 時差當 instrumentation overhead。
+native M31 本機未觸發，只有 mocked transport 證據；CPU/RSS/energy、embedding token 與完整 setup 仍未測。
+兩次 local run 保留；Safari pending，不重跑正式資料、不改 M55–M58 授權。
+詳見 `analysis/p3_complete_product_compute_accounting_acceptance_2026-09-09.md`、
+`research/p3_compute_accounting_freeze_2026-09-09.json`。下一步先定案 P3 比較規格與 GPT5 執行任務卡。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

@@ -4,6 +4,11 @@
 
 ## 狀態
 
+- 2026-09-09 最新：P3 成本記錄修正已收尾，121/121；最終九輪與 P2 逐字相同、4/4 結構通過。
+  2 次生成＋130 個記憶操作可區分，native transport 僅契約驗證；Safari 仍 pending。
+  見 `analysis/p3_complete_product_compute_accounting_acceptance_2026-09-09.md`。
+  使用者授權 GPT6 先定案規格，再通知可交 GPT5 實作；當前先完成該交接準備，不提前跑比較結果。
+
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`
 - 分支：`codex/v2-15-pragmatic-research-showcase`，既有 PR #435。
 - 已完成：M57.8；M57.9 focused 10/10（507.37 秒），但 freeze／相鄰／最後同 run Safari 驗收未完成，保存為 partial。

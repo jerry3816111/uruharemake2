@@ -527,14 +527,35 @@ def _select_recent_action_reference(recent_turns, query_text="", current_user_in
 # 🧠 記憶核心 (Memory Core)
 # ===========================
 class MemoryManager:
-    def __init__(self):
+    def __init__(self, compute_ledger=None):
         print(Style.DIM + f"📂 初始化記憶庫路徑: {DB_PATH}")
+        self.compute_ledger = compute_ledger
         self.client = chromadb.PersistentClient(path=DB_PATH)
-        self.kb_col = self.client.get_or_create_collection("knowledge_base")
-        self.episode_col = self.client.get_or_create_collection("episodic_memory")
-        self.wisdom_col = self.client.get_or_create_collection("wisdom_semantic")
-        self.procedural_col = self.client.get_or_create_collection("procedural_memory")
-        self.profile_col = self.client.get_or_create_collection("user_profile")
+        self.kb_col = ucl.instrument_chroma_collection(
+            self.client.get_or_create_collection("knowledge_base"),
+            compute_ledger,
+            "knowledge_base",
+        )
+        self.episode_col = ucl.instrument_chroma_collection(
+            self.client.get_or_create_collection("episodic_memory"),
+            compute_ledger,
+            "episodic_memory",
+        )
+        self.wisdom_col = ucl.instrument_chroma_collection(
+            self.client.get_or_create_collection("wisdom_semantic"),
+            compute_ledger,
+            "wisdom_semantic",
+        )
+        self.procedural_col = ucl.instrument_chroma_collection(
+            self.client.get_or_create_collection("procedural_memory"),
+            compute_ledger,
+            "procedural_memory",
+        )
+        self.profile_col = ucl.instrument_chroma_collection(
+            self.client.get_or_create_collection("user_profile"),
+            compute_ledger,
+            "user_profile",
+        )
         self.session_turns = []
         self.short_term_buffer = []
         self.session_profile = {
@@ -8364,11 +8385,26 @@ Current input:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=18.0) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-        return self._extract_json_from_text(
-            ((payload.get("message") or {}).get("content") or "")
-        )
+        started = time.perf_counter()
+        payload = None
+        error = None
+        try:
+            with urllib.request.urlopen(request, timeout=18.0) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+            return self._extract_json_from_text(
+                ((payload.get("message") or {}).get("content") or "")
+            )
+        except Exception as exc:
+            error = exc
+            raise
+        finally:
+            if self.compute_ledger is not None:
+                self.compute_ledger.record_native_ollama_chat(
+                    request_body=request_body,
+                    response_payload=payload,
+                    latency_seconds=time.perf_counter() - started,
+                    error=error,
+                )
 
     def authorize_literal_topic_m31(self, user_input, projection):
         """Authorize a literal topic from the exact source before surface commit."""
@@ -15456,7 +15492,7 @@ class UruhaBrainV4_Mac:
             sys.exit(1)
         self.client_logic = ucl.instrument_openai_client(raw_client_logic, compute_ledger)
 
-        self.memory = MemoryManager()
+        self.memory = MemoryManager(compute_ledger=compute_ledger)
         self.runtime_config = RuntimeConfig(
             drive_boredom_gain_per_second=DRIVE_BOREDOM_GAIN_PER_SECOND,
             drive_social_gain_per_second=DRIVE_SOCIAL_GAIN_PER_SECOND,
@@ -20274,7 +20310,7 @@ class UruhaBrainV4_Mac:
         self.stop_async_runtime(join_timeout=0.2)
         if db_path:
             DB_PATH = db_path
-            self.memory = MemoryManager()
+            self.memory = MemoryManager(compute_ledger=self.compute_ledger)
         else:
             self.memory.clear_session_state()
         self.psyche = Psyche(config=getattr(self, "psyche_config", PsycheConfig()))

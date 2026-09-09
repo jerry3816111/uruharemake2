@@ -85,9 +85,13 @@ def probe(backend, report_path, scenario="restart"):
         try:
             for session_index, turns in enumerate(sessions, 1):
                 brain = new_brain()
-                for user_text in turns:
+                for turn_index, user_text in enumerate(turns, 1):
                     turn_started = time.perf_counter()
-                    turn = brain.run_turn_debug(user_text)
+                    with ledger.item_scope(
+                        f"session-{session_index}-turn-{turn_index}",
+                        "product_system",
+                    ):
+                        turn = brain.run_turn_debug(user_text)
                     trace = turn.get("runtime_trace") or {}
                     model = deepcopy(brain.runtime.adaptive_person_model)
                     graph = collect_cognitive_graph(turn)
@@ -143,8 +147,25 @@ def probe(backend, report_path, scenario="restart"):
             raise
         finally:
             result["elapsed_seconds"] = round(time.perf_counter() - started, 6)
-            result["openai_compatible_call_ledger"] = ledger.snapshot()
-            result["call_accounting_scope"] = "OpenAI-compatible calls only; native urllib calls, embeddings and uninstrumented inference may be absent"
+            compute_snapshot = ledger.snapshot()
+            openai_calls = [
+                call
+                for call in compute_snapshot["calls"]
+                if call.get("backend") == "openai_compatible_local"
+            ]
+            result["compute_ledger"] = compute_snapshot
+            result["openai_compatible_call_ledger"] = {
+                "schema": compute_snapshot["schema"],
+                "call_count": len(openai_calls),
+                "contains_raw_prompt_or_reply": False,
+                "calls": openai_calls,
+            }
+            result["call_accounting_scope"] = (
+                "OpenAI-compatible generation, instrumented native Ollama chat and "
+                "instrumented Chroma collection operations. Chroma token counts are "
+                "unavailable; process CPU/RSS/energy and unknown library-internal work "
+                "remain outside this ledger."
+            )
             save()
     return result
 
