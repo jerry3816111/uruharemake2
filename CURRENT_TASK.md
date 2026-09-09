@@ -2,27 +2,22 @@
 
 更新：2026-09-09。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-A（可交 GPT5）
+## 唯一下一步：GPT6 審查 P3-A implementation freeze
 
-狀態：READY_FOR_GPT5_OFFLINE_IMPLEMENTATION。使用者已授權 GPT6 定案、GPT5 實作。
-先讀 `GPT5_HANDOFF.md`、`research/p3_product_comparison_spec_v1.md`、
-`configs/p3_product_comparison_v1.json`，執行：
+狀態：**REVIEW_REQUIRED**。GPT5 已完成 P3-A 離線公平比較入口；真模型、網路、付費呼叫均為 0。
+驗收：`analysis/p3_a_offline_harness_acceptance_2026-09-10.md`；contract／preflight／run-refusal／JUnit
+均在 `analysis/p3_a_*_2026-09-09.*`。30 項 P3-A 測試與 32 項受影響既有回歸通過。
 
-```sh
-git status --short --branch
-python3 scripts/verify_p3_handoff.py
-```
+已交付：
 
-目標：建立同一完整可見歷史下的 direct／deliberate／product 比較入口，用 fake transport 驗證資訊、
-模型、資源、記憶隔離。P3-A 真模型／付費呼叫預算均為 0。不是再加回覆規則，不新增 M 或 dashboard。
+- 同一 frozen 完整可見 prefix/input 建立 direct／deliberate／product 三個 allowlisted generation views。
+- shared prompt/output/call/context/common-history/wall budget；OpenAI-compatible/native path 同 7B model gate。
+- case state 隔離、6-case balanced order、intent-only no-retry、completed checkpoint reuse與不可覆寫 artifacts。
+- `contract` deterministic fake；`preflight` 只讀 metadata；`run` 缺三份 release 時 exit 2、attempts 0。
 
-允許：新增 `p3_product_comparison.py`、`run_p3_product_comparison.py`、`test_p3_product_comparison.py`；
-必要 P3 worker helper 至多一個且先說明。更新本卡與一份 acceptance、contract JSON／JUnit。
-不得改 source baseline、P1/P2、正式 M、persona data、設計／lock／門檻。全部細節與負測試在 handoff。
-
-完成：負案例通過＋0-call contract result＋diff review＋commit/push/PR核對，更新為 REVIEW_REQUIRED，
-通知使用者切回 GPT6 做生成前審查。先前的「不停止」不授權跳過此審查，也不能把整個 Goal 標為 complete。
-P3-B smoke、P3-C data freeze、P3-D confirmation、P3-E long dialogue／P4 依 spec 的後續 gates 執行。
+GPT6 必須審查 view 隔離、共同歷史實作、所有模型路徑、逐輪累計 budget、checkpoint integrity、worker factory
+與 claim boundary。未通過不可製作資料或真實生成；通過後才另建含 artifact hashes／split／資源上限的
+implementation release，放行 P3-B developer smoke。不可自行前進 P3-C confirmation 或改 design／lock／門檻。
 
 ## 工作環境
 
