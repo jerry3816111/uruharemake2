@@ -1,0 +1,193 @@
+{
+  "schema": "uruha_p3_product_comparison_design_v1",
+  "status": "design_frozen_implementation_pending",
+  "evidence_scope": "developer_constructed_product_comparison_proxy",
+  "product_commit": "34bef3d01d236873b4aa384b76aba2893ff9949d",
+  "product_entry": "uruha_web_ui_product.py",
+  "accounting_freeze": "research/p3_compute_accounting_freeze_2026-09-09.json",
+  "implementation_release": {
+    "stage": "P3-A",
+    "real_generation_authorized": false,
+    "automatic_model_switch": false,
+    "review_before_first_real_run": true
+  },
+  "conditions": [
+    "full_history_direct",
+    "full_history_deliberate",
+    "product_system"
+  ],
+  "common_history": {
+    "mode": "system_anchored_prefix_paired",
+    "include_all_prior_sessions": true,
+    "include_roles": true,
+    "include_only_past_visible_messages": true,
+    "baseline_output_written_back": false,
+    "current_system_reply_visible_to_baselines": false,
+    "cross_case_state_shared": false,
+    "truncate_or_summarize": false
+  },
+  "model": {
+    "generation_model": "qwen2.5:7b",
+    "all_generation_routes_same_model": true,
+    "m31_env_override": "URUHA_M31_SEMANTIC_VERIFIER_MODEL=qwen2.5:7b",
+    "rightbrain_transformer_loaded": false,
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "transport_retries": 0,
+    "remote_paid_calls_allowed": false
+  },
+  "budget": {
+    "per_condition_turn": {
+      "aggregate_prompt_tokens_max": 32768,
+      "aggregate_completion_tokens_max": 768,
+      "wall_seconds_max": 60
+    },
+    "per_call_context_total_tokens_max": 8192,
+    "common_history_tokens_max": 6000,
+    "system_calls_max": 4,
+    "direct_calls_max": 1,
+    "deliberate_calls_max": 3,
+    "deliberate_completion_allocations": [
+      256,
+      256,
+      256
+    ],
+    "system_per_call_completion_max": 320,
+    "concurrency": 1,
+    "failed_attempts_count": true,
+    "automatic_rerun": false,
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 20260909
+  },
+  "data": {
+    "pilot": {
+      "case_count": 6,
+      "turns_per_case": 4,
+      "label": "developer_smoke"
+    },
+    "confirmation": {
+      "case_count": 24,
+      "turns_per_case": 4,
+      "label": "author_exposed_development_disjoint_confirmation"
+    },
+    "case_languages": [
+      "zh",
+      "en",
+      "ja"
+    ],
+    "families": [
+      "need_change_after_correction",
+      "tentative_agreement_or_refusal",
+      "literal_vs_emotional_bid",
+      "relationship_and_humor_boundary",
+      "speaker_qualified_memory",
+      "unknown_and_topic_change"
+    ],
+    "confirmation_cases_per_family": 4,
+    "confirmation_cases_per_language": 8,
+    "source_manifest_required": true,
+    "source_manifest_present": false,
+    "independent_human_holdout_present": false,
+    "case_author_after_implementation_freeze": true,
+    "answer_annotations_in_generation": false,
+    "old_p2_and_m_cases_eligible": false,
+    "long_dialogue": {
+      "turns": 50,
+      "label": "separate_developer_stress",
+      "included_in_primary_score": false,
+      "required_before_p4": true
+    }
+  },
+  "persona": {
+    "evidence_file": "datasets/public_persona_evidence_v1.json",
+    "evidence_sha256": "ee5fc95ffa15203a4aa605c4ecdc67c0269de392831847cebbb44ee6b3891f07",
+    "evidence_ids": [
+      "persona_dev_v1_002",
+      "persona_dev_v1_003"
+    ],
+    "scope": "development_expression_contract_not_persona_fidelity",
+    "shared_contract": "研究用のうるは風対話。実在の本人と同一だとは主張しない。公開資料の範囲で率直に、相手との距離に合わせて話す。初対面から親密さを決めつけない。私生活、未公開の経験、相手の心理や医学的状態を作らない。ユーザーに見せる返答は入力言語に関係なく自然で短い日本語一文か二文。一人称が必要なら「うち」。内部分析や信頼度は見せない。根拠のある記憶を使い、訂正や現在の希望を尊重する。不確かな意味を断定しない。危険な要求は安全に扱う。"
+  },
+  "baselines": {
+    "direct_instruction": "Use the entire visible conversation history, including earlier sessions. Consider the user's likely purpose, explicit corrections, uncertainty, relationship and relevant memory. Produce the best grounded response under the shared persona contract. Output only the final Japanese reply. Do not invent facts or mention evaluation.",
+    "deliberate_instructions": [
+      "Using the entire visible history and shared persona contract, draft the best Japanese reply. You may consider alternative interpretations privately. Return a draft only.",
+      "Check the draft against the complete visible history. Identify unsupported assumptions, missed requests or corrections, wrong speakers, and language/persona problems. Give concise revision notes. You receive no answer key.",
+      "Using the complete visible history, draft and revision notes, produce only the best final Japanese reply under the shared persona contract."
+    ]
+  },
+  "grading": {
+    "generation_and_grading_separate": true,
+    "outputs_locked_before_grading": true,
+    "judge_model": "qwen3.5:9b",
+    "judge_temperature": 0,
+    "judge_seed": 20260909,
+    "judge_num_ctx": 8192,
+    "judge_output_tokens_max": 384,
+    "judge_timeout_seconds": 30,
+    "judge_retries": 0,
+    "judge_orders": [
+      "AB",
+      "BA"
+    ],
+    "judge_condition_names_hidden": true,
+    "dimensions": [
+      "attunement",
+      "grounding",
+      "correction",
+      "continuity"
+    ],
+    "scale": [
+      0,
+      1,
+      2
+    ],
+    "primary_dimension": "attunement",
+    "correction_only_if_eligible": true,
+    "unobservable_desired_reply_has_no_single_gold": true,
+    "source_spans_required": true,
+    "minimum_grading_coverage": 0.95,
+    "minimum_order_agreement": 0.9,
+    "human_preference_claim_allowed": false
+  },
+  "gates": {
+    "validity": {
+      "same_model_digest": true,
+      "common_history_hash_equal": true,
+      "source_provenance_valid": true,
+      "no_future_or_answer_leak": true,
+      "no_production_database": true,
+      "budget_violations": 0
+    },
+    "quality_proxy": {
+      "must_pass_against_both_baselines": true,
+      "mean_attunement_delta_min": 0.2,
+      "case_bootstrap_ci_lower_gt": 0,
+      "unsupported_assertion_rate_increase_max": 0.05,
+      "correction_mean_delta_min": -0.1
+    },
+    "cost_proxy": {
+      "quality_delta_ci_within": [
+        -0.1,
+        0.1
+      ],
+      "generation_tokens_reduction_min": 0.2,
+      "median_end_to_end_latency_reduction_min": 0.2,
+      "p95_latency_regression_max": 0.1,
+      "report_memory_operations_separately": true
+    },
+    "japanese_and_identity_observed_violation_rate_max": 0.05,
+    "repeat_confirmation_after_failure": false
+  },
+  "reporting": {
+    "selective_case_omission": false,
+    "empty_human_ratings_not_zero_preference": true,
+    "all_outputs_errors_and_costs_retained": true,
+    "claim_scope": "conditional_on_system_generated_prefix_and_constructed_cases",
+    "safari_status": "pending_existing_access_restriction",
+    "graph_source": "actual_per_turn_runtime_graph_not_illustration"
+  }
+}

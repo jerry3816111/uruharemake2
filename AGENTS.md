@@ -1,7 +1,8 @@
 # UruhaBrain 接手規則
 
-- 使用中文。首先讀 `CHAT_CONTEXT_COMPACTION_2026-08-10.md`，再讀 `DEVELOPMENT_WORKFLOW.md` 和
-  `CURRENT_TASK.md`；後兩者是 2026-09-07 使用者批准的產品開發流程與當前順序。
+- 使用中文。2026-09-09 使用者批准 GPT6 定案／GPT5 實作交接：先讀 `CURRENT_TASK.md`、
+  `DEVELOPMENT_WORKFLOW.md` 與卡上指定規格；長期方向在 `LONG_TERM_GOAL.md`。新接手讀交接第1–4、9節，
+  再讀當前最新紀錄；續作只補讀變更／直接依賴，避免每輪重載整份歷史。舊「下一步」不覆蓋任務卡。
 - 檢查 Git，只在此安全 worktree 工作；原始 `/Users/jerrychang/Desktop/uruharemake2` 的 dirty 內容不可碰。
 - 每個任務先重現、列成功條件，再改單一核心變因。精確驗證命令在 `CURRENT_TASK.md`。
 - 保存凍結研究資料、失敗及 contracts。產品 P1–P4 不能替代 M55 真人門檻或授權正式 M58。
@@ -10,3 +11,5 @@
 - 收尾更新任務卡、檢查 diff、只提交本任務檔案、推既有分支、核對 PR。未驗收者保留 partial。
 - 使用者已授權持續開發，不需要逐步要求確認；新的外部副作用仍限於授權範圍。
 - 不宣稱較弱開發模型或較小 runtime 模型已達同等效果；必須有各自實驗。
+- GPT5 依 `GPT5_HANDOFF.md` 執行 P3-A。規格、資料、基線、閾值、模型或正式授權的變更需設計審查；
+  已定案範圍內的實作選擇自行完成。到 `REVIEW_REQUIRED` 留具體產物並通知，不假裝能自動換模型。

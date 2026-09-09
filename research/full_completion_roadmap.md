@@ -1,5 +1,12 @@
 # Development-first roadmap
 
+## 2026-09-09 設計與實作交接
+
+長期文字整理於 `../LONG_TERM_GOAL.md`；當前執行以 `../CURRENT_TASK.md` 和 `../GPT5_HANDOFF.md` 為準。
+P3 公平比較設計見 `p3_product_comparison_spec_v1.md`；當前僅放行 P3-A offline implementation。
+P3 採完整歷史 direct／deliberate／product 三條件，先驗證全部 model paths／source／budget 再跑一次 confirmation。
+完成是可重現正／負結論與真實回覆圖，沒有優勢不能改弱 baseline。正式研究依賴與 M75 界線保持。
+
 ## 2026-09-07 使用者批准的產品流程更新
 
 當前執行順序移至 `../DEVELOPMENT_WORKFLOW.md` 與 `../CURRENT_TASK.md`。產品 P1–P4 以實際回饋保留、

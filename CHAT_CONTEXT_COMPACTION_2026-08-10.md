@@ -1,6 +1,8 @@
 # UruhaBrain 新任務交接檔（2026-08-10；2026-09-06 M57.8 participant-confirmed ledger completion）
 
 > **2026-09-07 最新工作順序：** 使用者批准產品效果優先、研究保留驗證，並要求較弱模型也能依明確流程接手。
+> **2026-09-09 最新接手：** 使用者批准 GPT6 先定案、GPT5 依任務卡實作。先讀 `CURRENT_TASK.md` 與
+> `GPT5_HANDOFF.md`，目前只放行 P3-A offline harness。長期方向見 `LONG_TERM_GOAL.md`；歷史下一步不覆蓋此順序。
 > 讀完本交接後，以 `DEVELOPMENT_WORKFLOW.md` 與 `CURRENT_TASK.md` 執行當前工作；歷史「下一步」不直接執行。
 > M57.9 保留收尾，Safari 最終驗收尚未完成；新增有限 P1–P4 產品線，正式 M55–M62/M75 的證據門檻完全保留。
 > P1 先修已重現的跨重啟 prediction ID 碰撞：舊 supported 回饋被同句 turn 1 的 pending 覆蓋。
@@ -2146,6 +2148,22 @@ native M31 本機未觸發，只有 mocked transport 證據；CPU/RSS/energy、e
 兩次 local run 保留；Safari pending，不重跑正式資料、不改 M55–M58 授權。
 詳見 `analysis/p3_complete_product_compute_accounting_acceptance_2026-09-09.md`、
 `research/p3_compute_accounting_freeze_2026-09-09.json`。下一步先定案 P3 比較規格與 GPT5 執行任務卡。
+
+### 7.105 2026-09-09 GPT6 設計／GPT5 實作交接就緒
+
+成本修正已提交 `34bef3d`。P3設計已在 `research/p3_product_comparison_spec_v1.md` 與
+`configs/p3_product_comparison_v1.json` 定案：完整歷史direct、完整歷史draft/check/revise、現產品三條件；
+所有生成7b（含原預設9b的native M31）、共同768 output／32,768 input token／60秒上限、完整歷史hash、
+獨立case記憶、盲式proxy與case-level比較。共同prefix由system實際輸出延續，明列conditional限制。
+6-case smoke／24-case author-exposed confirmation／50輪stress的順序與界線先定；沒有製作或跑新的資料。
+
+`GPT5_HANDOFF.md` 只放行 P3-A 0-call離線harness，帶明確檔案/API/命令/負案例/失敗分支；完成需交回GPT6
+生成前review。不是自動換模型，也不是每步再問確認。靜態交接檢查8檔案與12個錯誤config變體通過；
+不代表尚未建立的runner已有端到端證據。見 `analysis/p3_gpt5_handoff_readiness_2026-09-09.md`。
+
+新目標檔 `LONG_TERM_GOAL.md` 與任務卡／AGENTS／流程已同步，避免每輪重讀所有歷史或無限支援編號。
+App Goal 仍usageLimited；無objective更新工具，Computer Use控制Codex App被拒絕，故App文字未改。
+下一步使用者切到GPT5後依任務卡直接實作P3-A；不重跑已完成的成本修正、正式資料或M57.9長套件。
 
 ## 8. 關鍵檔案，按順序讀取
 
