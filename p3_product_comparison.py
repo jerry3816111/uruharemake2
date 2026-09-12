@@ -25,6 +25,8 @@ CONDITIONS = (
 DESIGN_SCHEMA = "uruha_p3_product_comparison_design_v1"
 VIEW_SCHEMA = "uruha_p3_generation_view_v1"
 MANIFEST_SCHEMA = "uruha_p3_contract_manifest_v1"
+SMOKE_SOURCE_SCHEMA = "uruha_p3_developer_smoke_source_v1"
+SMOKE_ANNOTATION_SCHEMA = "uruha_p3_developer_smoke_annotations_v1"
 VIEW_KEYS = frozenset(
     {
         "schema",
@@ -39,6 +41,86 @@ VIEW_KEYS = frozenset(
 )
 ALLOWED_TURN_KEYS = frozenset({"turn_id", "session_id", "role", "content"})
 ALLOWED_INPUT_KEYS = frozenset({"turn_id", "session_id", "content"})
+SMOKE_SOURCE_ROOT_KEYS = frozenset(
+    {
+        "schema",
+        "split",
+        "evidence_scope",
+        "author_role",
+        "created_at",
+        "implementation_freeze",
+        "case_count",
+        "turns_per_case",
+        "cases",
+    }
+)
+SMOKE_SOURCE_CASE_KEYS = frozenset(
+    {
+        "source_id",
+        "case_id",
+        "family",
+        "language",
+        "exposure_status",
+        "derivation",
+        "sessions",
+        "turns",
+    }
+)
+SMOKE_DERIVATION_KEYS = frozenset(
+    {
+        "kind",
+        "parent_source_id",
+        "translation_of",
+        "scenario_concept",
+        "prior_development_case_reuse",
+    }
+)
+SMOKE_SESSION_KEYS = frozenset({"session_id", "starts_at_turn_id"})
+SMOKE_TURN_KEYS = frozenset(
+    {"turn_id", "session_id", "content", "content_sha256"}
+)
+SMOKE_ANNOTATION_ROOT_KEYS = frozenset(
+    {
+        "schema",
+        "split",
+        "source_manifest_path",
+        "source_manifest_sha256",
+        "annotation_role",
+        "prediction_outcome_policy",
+        "created_at",
+        "case_count",
+        "cases",
+    }
+)
+SMOKE_ANNOTATION_CASE_KEYS = frozenset(
+    {"case_id", "source_id", "family", "turns"}
+)
+SMOKE_ANNOTATION_TURN_KEYS = frozenset(
+    {
+        "turn_id",
+        "visible_evidence_turn_ids",
+        "exact_source_spans",
+        "pragmatic_possibilities",
+        "preferred_response_behaviors",
+        "unacceptable_unsupported_claims",
+        "event_kind",
+        "correction_eligible",
+    }
+)
+SMOKE_EVENT_KINDS = frozenset(
+    {
+        "none",
+        "user_denial",
+        "user_confirmation",
+        "decision_update",
+        "request_change",
+        "clarification",
+        "boundary_update",
+        "speaker_correction",
+        "memory_query",
+        "topic_change",
+    }
+)
 
 
 class P3ContractError(ValueError):
@@ -107,6 +189,352 @@ def load_design(path: str | Path) -> dict[str, Any]:
     frozen["_design_sha256"] = canonical_sha256(design)
     frozen["_design_path"] = str(design_path.resolve())
     return frozen
+
+
+def _require_exact_keys(value: Any, expected: frozenset[str], code: str) -> None:
+    if not isinstance(value, Mapping) or set(value) != expected:
+        raise P3ContractError(code)
+
+
+def _require_nonempty_strings(value: Any, code: str, *, minimum: int = 1) -> list[str]:
+    if (
+        not isinstance(value, list)
+        or len(value) < minimum
+        or not all(isinstance(item, str) and item.strip() for item in value)
+    ):
+        raise P3ContractError(code)
+    return list(value)
+
+
+def load_developer_smoke_manifests(
+    source_path: str | Path,
+    annotation_path: str | Path,
+    design: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate the P3-B2 source/annotation split without exposing annotations."""
+
+    source_file = Path(source_path)
+    annotation_file = Path(annotation_path)
+    source = _load_json(source_file)
+    annotations = _load_json(annotation_file)
+    _require_exact_keys(source, SMOKE_SOURCE_ROOT_KEYS, "smoke_source_root_allowlist")
+    _require_exact_keys(
+        annotations,
+        SMOKE_ANNOTATION_ROOT_KEYS,
+        "smoke_annotation_root_allowlist",
+    )
+    if source.get("schema") != SMOKE_SOURCE_SCHEMA:
+        raise P3ContractError("smoke_source_schema_mismatch")
+    if annotations.get("schema") != SMOKE_ANNOTATION_SCHEMA:
+        raise P3ContractError("smoke_annotation_schema_mismatch")
+    if source.get("split") != "developer_smoke" or annotations.get("split") != "developer_smoke":
+        raise P3ContractError("smoke_split_mismatch")
+    expected_cases = design["data"]["pilot"]["case_count"]
+    expected_turns = design["data"]["pilot"]["turns_per_case"]
+    if source.get("case_count") != expected_cases or annotations.get("case_count") != expected_cases:
+        raise P3ContractError("smoke_case_count_mismatch")
+    if source.get("turns_per_case") != expected_turns:
+        raise P3ContractError("smoke_turn_count_mismatch")
+    if source.get("evidence_scope") != "developer_authored_after_p3_b1_implementation_freeze_not_holdout":
+        raise P3ContractError("smoke_evidence_scope_mismatch")
+    if source.get("author_role") != "codex_implementation_task":
+        raise P3ContractError("smoke_author_role_mismatch")
+    if annotations.get("annotation_role") != "developer_proxy_rubric_not_gold_reply_or_human_preference":
+        raise P3ContractError("smoke_annotation_role_mismatch")
+    if annotations.get("prediction_outcome_policy") != (
+        "event_kind_describes_user_evidence_only; supported_refuted_or_unknown_must_be_computed_against_the_actual_prior_prediction"
+    ):
+        raise P3ContractError("smoke_prediction_outcome_policy_mismatch")
+
+    repo = source_file.resolve().parent.parent
+    freeze = source.get("implementation_freeze")
+    if not isinstance(freeze, Mapping) or set(freeze) != {"path", "sha256"}:
+        raise P3ContractError("smoke_implementation_freeze_invalid")
+    freeze_path = (repo / str(freeze.get("path"))).resolve()
+    if not _is_path_inside(freeze_path, repo) or not freeze_path.is_file():
+        raise P3ContractError("smoke_implementation_freeze_missing")
+    if hashlib.sha256(freeze_path.read_bytes()).hexdigest() != freeze.get("sha256"):
+        raise P3ContractError("smoke_implementation_freeze_digest_mismatch")
+    source_sha = hashlib.sha256(source_file.read_bytes()).hexdigest()
+    if annotations.get("source_manifest_path") != str(source_file.resolve().relative_to(repo)):
+        raise P3ContractError("smoke_annotation_source_path_mismatch")
+    if annotations.get("source_manifest_sha256") != source_sha:
+        raise P3ContractError("smoke_annotation_source_digest_mismatch")
+
+    source_cases = source.get("cases")
+    annotation_cases = annotations.get("cases")
+    if not isinstance(source_cases, list) or len(source_cases) != expected_cases:
+        raise P3ContractError("smoke_case_count_mismatch")
+    if not isinstance(annotation_cases, list) or len(annotation_cases) != expected_cases:
+        raise P3ContractError("smoke_annotation_case_count_mismatch")
+
+    expected_families = set(design["data"]["families"])
+    expected_languages = set(design["data"]["case_languages"])
+    case_ids: set[str] = set()
+    source_ids: set[str] = set()
+    session_ids: set[str] = set()
+    turn_ids: set[str] = set()
+    content_hashes: set[str] = set()
+    scenario_concepts: set[str] = set()
+    family_counts = {name: 0 for name in expected_families}
+    language_counts = {name: 0 for name in expected_languages}
+    source_by_case: dict[str, Mapping[str, Any]] = {}
+    turn_by_id: dict[str, Mapping[str, Any]] = {}
+
+    for case in source_cases:
+        _require_exact_keys(case, SMOKE_SOURCE_CASE_KEYS, "smoke_source_case_allowlist")
+        case_id = case.get("case_id")
+        source_id = case.get("source_id")
+        if not isinstance(case_id, str) or not case_id or case_id in case_ids:
+            raise P3ContractError("smoke_case_id_invalid")
+        if not isinstance(source_id, str) or not source_id or source_id in source_ids:
+            raise P3ContractError("smoke_source_id_invalid")
+        case_ids.add(case_id)
+        source_ids.add(source_id)
+        source_by_case[case_id] = case
+        family = case.get("family")
+        language = case.get("language")
+        if family not in expected_families:
+            raise P3ContractError("smoke_family_invalid", str(family))
+        if language not in expected_languages:
+            raise P3ContractError("smoke_language_invalid", str(language))
+        family_counts[family] += 1
+        language_counts[language] += 1
+        if case.get("exposure_status") != "developer_authored_exposed":
+            raise P3ContractError("smoke_exposure_status_invalid")
+        derivation = case.get("derivation")
+        _require_exact_keys(derivation, SMOKE_DERIVATION_KEYS, "smoke_derivation_allowlist")
+        concept = derivation.get("scenario_concept")
+        if (
+            derivation.get("kind") != "new_developer_authored"
+            or derivation.get("parent_source_id") is not None
+            or derivation.get("translation_of") is not None
+            or derivation.get("prior_development_case_reuse") is not False
+            or not isinstance(concept, str)
+            or not concept
+            or concept in scenario_concepts
+        ):
+            raise P3ContractError("smoke_derivation_not_disjoint")
+        scenario_concepts.add(concept)
+
+        sessions = case.get("sessions")
+        turns = case.get("turns")
+        if not isinstance(sessions, list) or len(sessions) < 2:
+            raise P3ContractError("smoke_session_boundary_missing", case_id)
+        if not isinstance(turns, list) or len(turns) != expected_turns:
+            raise P3ContractError("smoke_turn_count_mismatch", case_id)
+        local_sessions: list[str] = []
+        for session in sessions:
+            _require_exact_keys(session, SMOKE_SESSION_KEYS, "smoke_session_allowlist")
+            session_id = session.get("session_id")
+            if not isinstance(session_id, str) or not session_id or session_id in session_ids:
+                raise P3ContractError("smoke_session_id_invalid")
+            session_ids.add(session_id)
+            local_sessions.append(session_id)
+        first_turn_by_session: dict[str, str] = {}
+        observed_session_order: list[str] = []
+        session_sequence: list[str] = []
+        for turn in turns:
+            _require_exact_keys(turn, SMOKE_TURN_KEYS, "smoke_turn_allowlist")
+            turn_id = turn.get("turn_id")
+            session_id = turn.get("session_id")
+            content = turn.get("content")
+            if not isinstance(turn_id, str) or not turn_id or turn_id in turn_ids:
+                raise P3ContractError("smoke_turn_id_invalid")
+            if session_id not in local_sessions:
+                raise P3ContractError("smoke_turn_session_mismatch", turn_id)
+            if not isinstance(content, str) or not content:
+                raise P3ContractError("smoke_turn_content_invalid", turn_id)
+            if turn.get("content_sha256") != canonical_sha256(content):
+                raise P3ContractError("smoke_turn_content_digest_mismatch", turn_id)
+            if turn["content_sha256"] in content_hashes:
+                raise P3ContractError("smoke_duplicate_turn_content")
+            content_hashes.add(turn["content_sha256"])
+            turn_ids.add(turn_id)
+            turn_by_id[turn_id] = turn
+            if session_id not in first_turn_by_session:
+                first_turn_by_session[session_id] = turn_id
+                observed_session_order.append(session_id)
+            if not session_sequence or session_sequence[-1] != session_id:
+                session_sequence.append(session_id)
+        if observed_session_order != local_sessions:
+            raise P3ContractError("smoke_session_order_mismatch", case_id)
+        if session_sequence != local_sessions:
+            raise P3ContractError("smoke_session_not_contiguous", case_id)
+        for session in sessions:
+            if first_turn_by_session[session["session_id"]] != session["starts_at_turn_id"]:
+                raise P3ContractError("smoke_session_start_mismatch", case_id)
+
+    if set(family_counts.values()) != {1}:
+        raise P3ContractError("smoke_family_quota_mismatch")
+    if set(language_counts.values()) != {2}:
+        raise P3ContractError("smoke_language_quota_mismatch")
+
+    annotation_case_ids: set[str] = set()
+    for annotation_case in annotation_cases:
+        _require_exact_keys(
+            annotation_case,
+            SMOKE_ANNOTATION_CASE_KEYS,
+            "smoke_annotation_case_allowlist",
+        )
+        case_id = annotation_case.get("case_id")
+        if case_id not in source_by_case or case_id in annotation_case_ids:
+            raise P3ContractError("smoke_annotation_case_mismatch")
+        annotation_case_ids.add(case_id)
+        source_case = source_by_case[case_id]
+        if (
+            annotation_case.get("source_id") != source_case["source_id"]
+            or annotation_case.get("family") != source_case["family"]
+        ):
+            raise P3ContractError("smoke_annotation_identity_mismatch", case_id)
+        source_turns = source_case["turns"]
+        case_turn_ids = [turn["turn_id"] for turn in source_turns]
+        annotation_turns = annotation_case.get("turns")
+        if not isinstance(annotation_turns, list) or [
+            turn.get("turn_id") if isinstance(turn, Mapping) else None
+            for turn in annotation_turns
+        ] != case_turn_ids:
+            raise P3ContractError("smoke_annotation_turn_order_mismatch", case_id)
+        observed_event = False
+        observed_correction = False
+        for index, annotation in enumerate(annotation_turns):
+            _require_exact_keys(
+                annotation,
+                SMOKE_ANNOTATION_TURN_KEYS,
+                "smoke_annotation_turn_allowlist",
+            )
+            visible_ids = _require_nonempty_strings(
+                annotation.get("visible_evidence_turn_ids"),
+                "smoke_annotation_evidence_invalid",
+            )
+            allowed_visible = set(case_turn_ids[: index + 1])
+            if (
+                len(visible_ids) != len(set(visible_ids))
+                or set(visible_ids) - allowed_visible
+                or case_turn_ids[index] not in visible_ids
+            ):
+                raise P3ContractError("smoke_annotation_future_evidence", annotation["turn_id"])
+            spans = _require_nonempty_strings(
+                annotation.get("exact_source_spans"),
+                "smoke_annotation_source_spans_invalid",
+            )
+            evidence_texts = [str(turn_by_id[turn_id]["content"]) for turn_id in visible_ids]
+            if any(not any(span in text for text in evidence_texts) for span in spans):
+                raise P3ContractError("smoke_annotation_span_not_in_source", annotation["turn_id"])
+            _require_nonempty_strings(
+                annotation.get("pragmatic_possibilities"),
+                "smoke_annotation_pragmatics_invalid",
+                minimum=2,
+            )
+            _require_nonempty_strings(
+                annotation.get("preferred_response_behaviors"),
+                "smoke_annotation_behaviors_invalid",
+            )
+            _require_nonempty_strings(
+                annotation.get("unacceptable_unsupported_claims"),
+                "smoke_annotation_unsupported_invalid",
+            )
+            event_kind = annotation.get("event_kind")
+            if event_kind not in SMOKE_EVENT_KINDS:
+                raise P3ContractError("smoke_annotation_event_invalid")
+            correction_eligible = annotation.get("correction_eligible")
+            if not isinstance(correction_eligible, bool):
+                raise P3ContractError("smoke_annotation_correction_invalid")
+            observed_event = observed_event or event_kind != "none"
+            observed_correction = observed_correction or correction_eligible
+        if not observed_event or not observed_correction:
+            raise P3ContractError("smoke_case_missing_verification_event", case_id)
+    if annotation_case_ids != case_ids:
+        raise P3ContractError("smoke_annotation_case_set_mismatch")
+
+    return {
+        "source": json.loads(json.dumps(source, ensure_ascii=False)),
+        "annotations": json.loads(json.dumps(annotations, ensure_ascii=False)),
+        "summary": {
+            "source_sha256": source_sha,
+            "annotation_sha256": hashlib.sha256(annotation_file.read_bytes()).hexdigest(),
+            "case_count": len(case_ids),
+            "turn_count": len(turn_ids),
+            "session_count": len(session_ids),
+            "family_counts": dict(sorted(family_counts.items())),
+            "language_counts": dict(sorted(language_counts.items())),
+            "verification_case_count": len(case_ids),
+            "content_hash_count": len(content_hashes),
+            "scenario_concept_count": len(scenario_concepts),
+        },
+    }
+
+
+def _is_path_inside(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
+def build_smoke_generation_view(
+    source_case: Mapping[str, Any],
+    turn_number: int,
+    condition: str,
+    prior_system_replies: Mapping[str, str],
+) -> dict[str, Any]:
+    """Build a system-anchored view from source text and prior system replies only."""
+
+    _require_exact_keys(source_case, SMOKE_SOURCE_CASE_KEYS, "smoke_source_case_allowlist")
+    turns = source_case.get("turns")
+    if (
+        isinstance(turn_number, bool)
+        or not isinstance(turn_number, int)
+        or not isinstance(turns, list)
+        or turn_number < 1
+        or turn_number > len(turns)
+    ):
+        raise P3ContractError("smoke_turn_number_invalid")
+    prior_turns = turns[: turn_number - 1]
+    for turn in turns:
+        _require_exact_keys(turn, SMOKE_TURN_KEYS, "smoke_turn_allowlist")
+        if not isinstance(turn.get("content"), str) or not turn.get("content"):
+            raise P3ContractError("smoke_turn_content_invalid")
+        if turn.get("content_sha256") != canonical_sha256(turn.get("content")):
+            raise P3ContractError(
+                "smoke_turn_content_digest_mismatch",
+                str(turn.get("turn_id")),
+            )
+    expected_reply_ids = {turn["turn_id"] for turn in prior_turns}
+    if not isinstance(prior_system_replies, Mapping) or set(prior_system_replies) != expected_reply_ids:
+        raise P3ContractError("smoke_prior_system_reply_set_mismatch")
+    prefix: list[dict[str, str]] = []
+    for turn in prior_turns:
+        reply = prior_system_replies[turn["turn_id"]]
+        if not isinstance(reply, str) or not reply:
+            raise P3ContractError("smoke_prior_system_reply_invalid")
+        prefix.append(
+            {
+                "turn_id": turn["turn_id"],
+                "session_id": turn["session_id"],
+                "role": "user",
+                "content": turn["content"],
+            }
+        )
+        prefix.append(
+            {
+                "turn_id": f"{turn['turn_id']}-system-reply",
+                "session_id": turn["session_id"],
+                "role": "assistant",
+                "content": reply,
+            }
+        )
+    current = turns[turn_number - 1]
+    return build_generation_view(
+        prefix,
+        {
+            "turn_id": current["turn_id"],
+            "session_id": current["session_id"],
+            "content": current["content"],
+        },
+        condition,
+    )
 
 
 def _normalise_prefix(prefix: Iterable[Mapping[str, Any]]) -> list[dict[str, str]]:

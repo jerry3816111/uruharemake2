@@ -28,9 +28,11 @@ from p3_product_comparison import (
     P3ContractError,
     build_balanced_condition_schedule,
     build_generation_view,
+    build_smoke_generation_view,
     canonical_sha256,
     freeze_common_source,
     load_design,
+    load_developer_smoke_manifests,
     run_condition,
     validate_common_views,
     validate_run_manifest,
@@ -463,11 +465,135 @@ def build_product_worker_preflight(
     return result
 
 
+def build_smoke_data_validation(
+    design_path: str | Path,
+    source_path: str | Path,
+    annotation_path: str | Path,
+) -> dict[str, Any]:
+    """Validate all P3-B2 data and build all 72 zero-generation views."""
+
+    design = load_design(design_path)
+    loaded = load_developer_smoke_manifests(
+        source_path,
+        annotation_path,
+        design,
+    )
+    view_digests: list[str] = []
+    source_digests: list[str] = []
+    input_digests: list[str] = []
+    prefix_turn_counts: list[int] = []
+    for case in loaded["source"]["cases"]:
+        prior_system_replies: dict[str, str] = {}
+        for turn_number, turn in enumerate(case["turns"], 1):
+            views = {
+                condition: build_smoke_generation_view(
+                    case,
+                    turn_number,
+                    condition,
+                    prior_system_replies,
+                )
+                for condition in CONDITIONS
+            }
+            commitment = freeze_common_source(
+                views["product_system"]["visible_prefix"],
+                views["product_system"]["current_input"],
+            )
+            validate_common_views(views, commitment)
+            for view in views.values():
+                view_digests.append(view["view_sha256"])
+                source_digests.append(view["source_sha256"])
+                input_digests.append(view["input_sha256"])
+                prefix_turn_counts.append(len(view["visible_prefix"]))
+                if set(view) != {
+                    "schema",
+                    "condition",
+                    "visible_prefix",
+                    "current_input",
+                    "source_history_sha256",
+                    "input_sha256",
+                    "source_sha256",
+                    "view_sha256",
+                }:
+                    raise P3ContractError("smoke_generation_view_allowlist_mismatch")
+            prior_system_replies[turn["turn_id"]] = (
+                f"P3-B2 source isolation fixture reply {turn_number}."
+            )
+    case_ids = [case["case_id"] for case in loaded["source"]["cases"]]
+    schedule = build_balanced_condition_schedule(case_ids, design["model"]["seed"])
+    position_counts = []
+    for position in range(len(CONDITIONS)):
+        counts = {condition: 0 for condition in CONDITIONS}
+        for order in schedule.values():
+            counts[order[position]] += 1
+        position_counts.append(counts)
+    summary = loaded["summary"]
+    checks = {
+        "six_cases": summary["case_count"] == 6,
+        "twenty_four_user_turns": summary["turn_count"] == 24,
+        "twelve_sessions": summary["session_count"] == 12,
+        "one_case_per_family": set(summary["family_counts"].values()) == {1},
+        "two_cases_per_language": set(summary["language_counts"].values()) == {2},
+        "all_cases_have_verification_event": summary["verification_case_count"] == 6,
+        "all_turn_hashes_unique": summary["content_hash_count"] == 24,
+        "all_scenario_concepts_unique": summary["scenario_concept_count"] == 6,
+        "seventy_two_views_built": len(view_digests) == 72
+        and len(set(view_digests)) == 72,
+        "three_conditions_share_each_source": all(
+            len(set(source_digests[index : index + 3])) == 1
+            for index in range(0, len(source_digests), 3)
+        ),
+        "three_conditions_share_each_input": all(
+            len(set(input_digests[index : index + 3])) == 1
+            for index in range(0, len(input_digests), 3)
+        ),
+        "system_anchored_prefix_shape": set(prefix_turn_counts) == {0, 2, 4, 6},
+        "balanced_condition_order": all(
+            set(counts.values()) == {2} for counts in position_counts
+        ),
+        "annotations_separate_from_source_hash": summary["source_sha256"]
+        != summary["annotation_sha256"],
+    }
+    return {
+        "schema": "uruha_p3_developer_smoke_data_validation_v1",
+        "phase": "P3-B2",
+        "status": "p3_b2_data_contract_pass" if all(checks.values()) else "p3_b2_data_contract_failed",
+        "design_sha256": design["_design_sha256"],
+        "source_manifest": {
+            "path": str(Path(source_path)),
+            "sha256": summary["source_sha256"],
+        },
+        "annotation_manifest": {
+            "path": str(Path(annotation_path)),
+            "sha256": summary["annotation_sha256"],
+        },
+        "summary": summary,
+        "condition_schedule": schedule,
+        "position_counts": position_counts,
+        "generation_view_count": len(view_digests),
+        "checks": checks,
+        "network_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "formal_cases_accessed": 0,
+        "claim_boundary": (
+            "This validates developer-smoke provenance, quotas, annotation separation, "
+            "and generation views only. It is not generated output, scoring, holdout, "
+            "human preference, or product advantage evidence."
+        ),
+    }
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--mode",
-        choices=("contract", "preflight", "product-dry-run", "run"),
+        choices=(
+            "contract",
+            "preflight",
+            "product-dry-run",
+            "smoke-data-validate",
+            "run",
+        ),
         required=True,
     )
     parser.add_argument("--design", required=True)
@@ -476,6 +602,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--data-freeze")
     parser.add_argument("--review-release")
     parser.add_argument("--product-python")
+    parser.add_argument("--smoke-source")
+    parser.add_argument("--smoke-annotations")
     return parser.parse_args(argv)
 
 
@@ -497,6 +625,15 @@ def main(argv: list[str] | None = None) -> int:
                 args.product_python,
             )
             exit_code = 0 if payload["status"] == "p3_b1_contract_pass" else 2
+        elif args.mode == "smoke-data-validate":
+            if not args.smoke_source or not args.smoke_annotations:
+                raise P3ContractError("smoke_data_paths_required")
+            payload = build_smoke_data_validation(
+                args.design,
+                args.smoke_source,
+                args.smoke_annotations,
+            )
+            exit_code = 0 if payload["status"] == "p3_b2_data_contract_pass" else 2
         else:
             payload = build_run_refusal(args.design, args)
             exit_code = 2

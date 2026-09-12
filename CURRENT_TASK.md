@@ -2,33 +2,31 @@
 
 更新：2026-09-13。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B2 developer-smoke source／annotation freeze（0 generation）
+## 唯一下一步：P3-B3 tokenizer/provider binding probe preregistration（0 generation）
 
-狀態：**READY_FOR_DATA_DESIGN／SELF_REVIEW_NOT_INDEPENDENT**。P3-B1 的 isolated product worker 在限定範圍
-PASS；release：`research/p3_b1_product_worker_release_2026-09-13.json`。42 項 P3 contract、32 項相鄰回歸通過，
-真模型／network／paid calls 仍為 0，confirmation／formal case access 為 0。
+狀態：**READY_FOR_PROBE_DESIGN／SELF_REVIEW_NOT_INDEPENDENT**。P3-B2 已凍結 6 cases × 4 turns 的 developer
+smoke source 與分離 annotations；53 項 P3 contract、32 項相鄰回歸通過。資料驗收仍是 0 real model/network/paid
+calls，不代表產品品質或優勢。
 
-### P3-B2 before 與單一變因
+### P3-B3 before 與單一變因
 
-before：config 仍為 `source_manifest_present=false`，沒有可執行的 6-case developer-smoke source 或分離 scorer
-annotations。單一變因：依 frozen P3 spec 建立 6 cases × 4 user turns；每 family 一 case，zh/en/ja 各兩 case，
-且每 case 至少一個可觀察的確認／否定／需要改變。這批資料只能修 smoke 接線，不是 confirmation 或 holdout。
+before：本機已找到 offline `Qwen2TokenizerFast` + chat template，但
+`provider_usage_equivalence_validated=false`；real product transport 因此 fail closed。單一變因：事前鎖定極小的
+tokenizer binding probe，將 HF chat-template count 與同一 `qwen2.5:7b` digest 的 OpenAI-compatible／native Ollama
+prompt usage 比較；只驗 token accounting，不評回覆內容。
 
-source 只允許 case/source/session/turn/language/family/provenance 與使用者原文／hash；不得有答案、期待、評分、
-future annotation。annotations 必須分檔，寫 acceptable actions、unsupported claims、可見 evidence turn IDs、
-correction eligibility，不指定唯一漂亮句子。generation view 只能逐輪由當時已可見 prefix + current input 新建。
+先建立 prereg config 與 execution release，不能邊跑邊改規則。固定 4 個不含 P3 smoke／annotations 的 synthetic
+fixtures：前 3 個 fit 每條 transport 的整數 offset，第 4 個為未參與 fit 的 verification fixture；兩 transport 各跑
+4 次，最多 8 local calls、每 call 最多 1 completion token、temperature 0、seed 20260909、top_p 1、num_ctx 8192、
+think false、concurrency 1、0 retry。output 只留 hash，不留文字；先驗 model digest，intent 後中斷不可自動重打。
 
-允許改 `p3_product_comparison.py`、`run_p3_product_comparison.py`、`test_p3_product_comparison.py`、本卡；允許新增
-兩份 P3 smoke JSON、一份 validation artifact、一份 acceptance 與一份 data freeze。不得改 brain、P1/P2、frozen
-design、baseline prompt、family/language quota、rubric、threshold 或正式資料。
+成功：每 transport 的前三 fixture offset 必須完全一致，且預先凍結的第 4 fixture 使用該 offset 精確預測 provider
+prompt count；兩 transport 都有 exact usage、model/digest/options 對帳。任一 mismatch、unknown usage、非 localhost、
+額外 call、timeout 或殘缺 intent 都保留為 failed binding，不放行 product smoke，不調 tolerance 或換 fixture。
 
-成功：schema exact allowlist、24 個唯一 turn/source hashes、6 family 各1、三語各2、每 case 4 turns 且至少
-跨兩 session、每 case 有 verification/correction event；所有 annotation evidence 只指當時或過去 turn，所有 exact
-source spans 真為原文 substring；source 與 annotations hash 分離且 annotation 不進 generation view。需有 future／
-gold leak、錯 hash、跨 case ID、future evidence、翻譯換皮重複等負測試。全程 0 generation/network/paid calls。
-
-完成後下一 gate 才能設計一次性的 tokenizer provider-binding probe 與 6-case product smoke execution release；
-仍不能讀 confirmation、不能開 production DB、不能以資料驗證通過宣稱產品品質。
+允許新增一份 probe config、一份 prereg／release 與相稱 contract tests；在 execution release 產生前仍 0 generation。
+不得改 P3 smoke、annotations、brain、P1/P2、frozen comparison design/baseline/rubric/threshold。execution release 若
+通過自審，只能授權這 8 次本機低 token probe；不能讀 confirmation、production DB 或執行 6-case smoke。
 
 ## 工作環境
 
@@ -51,6 +49,9 @@ gold leak、錯 hash、跨 case ID、future evidence、翻譯換皮重複等負�
 - P3-A fail-closed comparison harness 與自審修正已凍結；P3-B1 isolated product worker 將產品真實 OpenAI／
   native M31 globals 綁到同一 gate，兩次 lazy import、same-case restart、cross-case refusal 均通過。驗收：
   `analysis/p3_b1_product_worker_acceptance_2026-09-13.md`。仍為 0 real model/network/paid calls。
+- P3-B2 developer smoke source／annotations 已分離凍結：6 cases、24 user turns、12 sessions、三語各2、
+  六 family 各1，建立 72 個 allowlisted views。驗收：
+  `analysis/p3_b2_developer_smoke_acceptance_2026-09-13.md`；未執行任何生成。
 - 真實本機run2：5 sessions／9輪，與P2可見回覆9/9相同；ledger 2生成＋130記憶操作，
   2,901生成tokens、30.834245秒；四個結構checks通過。兩次run均保存。
 - native M31只mocked transport驗證，這九輪未實際觸發；Chroma embedding token／CPU/RSS/energy未量測。
@@ -65,7 +66,7 @@ gold leak、錯 hash、跨 case ID、future evidence、翻譯換皮重複等負�
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- 後續資料尚未製作／sealed。沒有implementation/data/review release，run mode必須0-call拒絕。
+- developer smoke 已 sealed，但 tokenizer binding 與 execution review release 尚未完成；run mode仍必須0-call拒絕。
 
 ## 回報方式
 

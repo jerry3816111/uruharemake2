@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,9 +16,11 @@ from p3_product_comparison import (
     P3ContractError,
     build_balanced_condition_schedule,
     build_generation_view,
+    build_smoke_generation_view,
     canonical_sha256,
     freeze_common_source,
     load_design,
+    load_developer_smoke_manifests,
     make_request,
     map_blind_scores,
     new_budget,
@@ -42,6 +45,8 @@ from p3_product_worker import (
 
 ROOT = Path(__file__).resolve().parent
 DESIGN_PATH = ROOT / "configs" / "p3_product_comparison_v1.json"
+SMOKE_SOURCE_PATH = ROOT / "datasets" / "p3_developer_smoke_source_v1.json"
+SMOKE_ANNOTATION_PATH = ROOT / "datasets" / "p3_developer_smoke_annotations_v1.json"
 
 
 def source_fixture():
@@ -89,6 +94,30 @@ def assert_code(code, callable_):
     with pytest.raises(P3ContractError) as caught:
         callable_()
     assert caught.value.code == code
+
+
+def write_smoke_pair(tmp_path, source, annotations):
+    repo = tmp_path / "repo"
+    datasets = repo / "datasets"
+    research = repo / "research"
+    datasets.mkdir(parents=True)
+    research.mkdir(parents=True)
+    release_name = "p3_b1_product_worker_release_2026-09-13.json"
+    (research / release_name).write_bytes((ROOT / "research" / release_name).read_bytes())
+    source_path = datasets / "p3_developer_smoke_source_v1.json"
+    annotation_path = datasets / "p3_developer_smoke_annotations_v1.json"
+    source_path.write_text(
+        json.dumps(source, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    annotations["source_manifest_sha256"] = hashlib.sha256(
+        source_path.read_bytes()
+    ).hexdigest()
+    annotation_path.write_text(
+        json.dumps(annotations, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return source_path, annotation_path
 
 
 def test_contract_manifest_runs_three_conditions_with_zero_real_calls():
@@ -364,6 +393,194 @@ def test_p3_product_worker_real_entry_import_is_lazy_and_offline(tmp_path):
     assert payload["first_import"]["brain_instances"] == 0
     assert payload["restart_import"]["restart"] is True
     assert payload["cross_case_refusal"]["contract_code"] == "cross_case_state_reuse"
+
+
+def test_p3_smoke_source_and_annotations_are_balanced_and_separate():
+    loaded = load_developer_smoke_manifests(
+        SMOKE_SOURCE_PATH,
+        SMOKE_ANNOTATION_PATH,
+        load_design(DESIGN_PATH),
+    )
+    summary = loaded["summary"]
+    assert summary["case_count"] == 6
+    assert summary["turn_count"] == 24
+    assert summary["session_count"] == 12
+    assert set(summary["family_counts"].values()) == {1}
+    assert summary["language_counts"] == {"en": 2, "ja": 2, "zh": 2}
+    assert summary["content_hash_count"] == 24
+    assert summary["scenario_concept_count"] == 6
+
+
+def test_p3_smoke_generation_views_use_only_visible_source_and_system_prefix():
+    loaded = load_developer_smoke_manifests(
+        SMOKE_SOURCE_PATH,
+        SMOKE_ANNOTATION_PATH,
+        load_design(DESIGN_PATH),
+    )
+    for case in loaded["source"]["cases"]:
+        prior = {}
+        for turn_number, turn in enumerate(case["turns"], 1):
+            views = {
+                condition: build_smoke_generation_view(
+                    case,
+                    turn_number,
+                    condition,
+                    prior,
+                )
+                for condition in CONDITIONS
+            }
+            commitment = freeze_common_source(
+                views["product_system"]["visible_prefix"],
+                views["product_system"]["current_input"],
+            )
+            validate_common_views(views, commitment)
+            assert all(
+                len(view["visible_prefix"]) == 2 * (turn_number - 1)
+                for view in views.values()
+            )
+            serialized = json.dumps(views, ensure_ascii=False)
+            assert "preferred_response_behaviors" not in serialized
+            assert "unacceptable_unsupported_claims" not in serialized
+            assert "pragmatic_possibilities" not in serialized
+            prior[turn["turn_id"]] = f"検証用の過去返答{turn_number}。"
+
+
+def test_p3_smoke_source_rejects_gold_or_future_field_even_with_rebound_hash(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    source["cases"][0]["expected_answer"] = "leak"
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_source_case_allowlist",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_source_rejects_changed_content_with_stale_digest(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    source["cases"][0]["turns"][0]["content"] += " tampered"
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_turn_content_digest_mismatch",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_view_rechecks_source_digest_after_load():
+    loaded = load_developer_smoke_manifests(
+        SMOKE_SOURCE_PATH,
+        SMOKE_ANNOTATION_PATH,
+        load_design(DESIGN_PATH),
+    )
+    case = loaded["source"]["cases"][0]
+    case["turns"][0]["content"] += " tampered after validation"
+    assert_code(
+        "smoke_turn_content_digest_mismatch",
+        lambda: build_smoke_generation_view(case, 1, "product_system", {}),
+    )
+
+
+def test_p3_smoke_annotations_reject_future_evidence(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    annotations["cases"][0]["turns"][0]["visible_evidence_turn_ids"].append(
+        "p3-smoke-01-u2"
+    )
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_annotation_future_evidence",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_annotations_reject_span_not_in_visible_source(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    annotations["cases"][0]["turns"][0]["exact_source_spans"] = [
+        "not present in any visible source"
+    ]
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_annotation_span_not_in_source",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_rejects_translation_reskin_declaration(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    source["cases"][1]["derivation"]["translation_of"] = "p3-smoke-source-01"
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_derivation_not_disjoint",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_rejects_annotation_cross_case_identity(tmp_path):
+    source = json.loads(SMOKE_SOURCE_PATH.read_text(encoding="utf-8"))
+    annotations = json.loads(SMOKE_ANNOTATION_PATH.read_text(encoding="utf-8"))
+    annotations["cases"][0]["case_id"] = "p3-smoke-tentative-refusal-en"
+    source_path, annotation_path = write_smoke_pair(tmp_path, source, annotations)
+    assert_code(
+        "smoke_annotation_identity_mismatch",
+        lambda: load_developer_smoke_manifests(
+            source_path, annotation_path, load_design(DESIGN_PATH)
+        ),
+    )
+
+
+def test_p3_smoke_view_rejects_future_system_reply():
+    loaded = load_developer_smoke_manifests(
+        SMOKE_SOURCE_PATH,
+        SMOKE_ANNOTATION_PATH,
+        load_design(DESIGN_PATH),
+    )
+    case = loaded["source"]["cases"][0]
+    assert_code(
+        "smoke_prior_system_reply_set_mismatch",
+        lambda: build_smoke_generation_view(
+            case,
+            1,
+            "product_system",
+            {case["turns"][0]["turn_id"]: "future leak"},
+        ),
+    )
+
+
+def test_p3_smoke_data_validation_cli_builds_all_views_without_generation(tmp_path):
+    output = tmp_path / "p3-b2-data-validation.json"
+    exit_code = main(
+        [
+            "--mode",
+            "smoke-data-validate",
+            "--design",
+            str(DESIGN_PATH),
+            "--smoke-source",
+            str(SMOKE_SOURCE_PATH),
+            "--smoke-annotations",
+            str(SMOKE_ANNOTATION_PATH),
+            "--output",
+            str(output),
+        ]
+    )
+    assert exit_code == 0
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["status"] == "p3_b2_data_contract_pass"
+    assert payload["generation_view_count"] == 72
+    assert payload["network_calls"] == payload["real_model_calls"] == 0
+    assert all(payload["checks"].values())
 
 
 def test_native_m31_wrong_model_is_rejected_before_transport():
