@@ -251,6 +251,87 @@ def test_deliberate_allocations_share_exact_768_total(tmp_path):
     assert result["private_scratch_written_to_visible_history"] is False
 
 
+def test_condition_runner_revalidates_view_digest_before_transport(tmp_path):
+    design = load_design(DESIGN_PATH)
+    prefix, current = source_fixture()
+    view = build_generation_view(prefix, current, "full_history_direct")
+    view["visible_prefix"][0]["content"] = "tampered after freeze"
+    transport = FakeTransport()
+    assert_code(
+        "view_digest_mismatch",
+        lambda: run_condition(
+            condition="full_history_direct",
+            view=view,
+            design=design,
+            transport=transport,
+            checkpoint_root=tmp_path,
+            item_id="tampered-view",
+            token_counter=FakeExactTokenCounter(),
+        ),
+    )
+    assert transport.attempts == 0
+
+
+def test_condition_runner_rejects_rehashed_extra_view_fields(tmp_path):
+    design = load_design(DESIGN_PATH)
+    prefix, current = source_fixture()
+    view = build_generation_view(prefix, current, "product_system")
+    view["scorer_annotation"] = "must not reach a condition"
+    unhashed = dict(view)
+    unhashed.pop("view_sha256")
+    view["view_sha256"] = canonical_sha256(unhashed)
+    transport = FakeTransport()
+    assert_code(
+        "view_allowlist_violation",
+        lambda: run_condition(
+            condition="product_system",
+            view=view,
+            design=design,
+            transport=transport,
+            checkpoint_root=tmp_path,
+            item_id="extra-field",
+            token_counter=FakeExactTokenCounter(),
+            product_worker=lambda **kwargs: {},
+        ),
+    )
+    assert transport.attempts == 0
+
+
+def test_contract_retains_exact_per_call_usage_for_budget_audit():
+    manifest = build_contract_manifest(DESIGN_PATH)
+    for result in manifest["results"].values():
+        assert all("request_sha256" in call for call in result["calls"])
+        assert all("usage" in call for call in result["calls"])
+        assert sum(call["usage"]["prompt_tokens"] for call in result["calls"]) == result[
+            "budget"
+        ]["actual_prompt_tokens"]
+        assert sum(
+            call["usage"]["completion_tokens"] for call in result["calls"]
+        ) == result["budget"]["actual_completion_tokens"]
+
+
+def test_condition_wall_includes_non_transport_work_and_fails_closed(tmp_path):
+    design = load_design(DESIGN_PATH)
+    prefix, current = source_fixture()
+    view = build_generation_view(prefix, current, "full_history_direct")
+    ticks = iter([100.0, 161.0])
+    transport = FakeTransport()
+    assert_code(
+        "condition_wall_budget_exceeded",
+        lambda: run_condition(
+            condition="full_history_direct",
+            view=view,
+            design=design,
+            transport=transport,
+            checkpoint_root=tmp_path,
+            item_id="wall-overflow",
+            token_counter=FakeExactTokenCounter(),
+            clock=lambda: next(ticks),
+        ),
+    )
+    assert transport.attempts == 1
+
+
 def test_context_overflow_fails_without_truncation():
     design = load_design(DESIGN_PATH)
     budget = new_budget(design, "full_history_direct")

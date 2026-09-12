@@ -1,10 +1,11 @@
 # 目前任務卡
 
-更新：2026-09-09。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-13。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：GPT6 審查 P3-A implementation freeze
+## 唯一下一步：P3-B1 isolated product worker adapter（0 generation）
 
-狀態：**REVIEW_REQUIRED**。GPT5 已完成 P3-A 離線公平比較入口；真模型、網路、付費呼叫均為 0。
+狀態：**READY_FOR_IMPLEMENTATION／SELF_REVIEW_NOT_INDEPENDENT**。P3-A 修正後 34 項 contract 與 32 項
+相鄰回歸通過；release：`research/p3_a_implementation_release_2026-09-13.json`。真模型、網路、付費呼叫仍為 0。
 驗收：`analysis/p3_a_offline_harness_acceptance_2026-09-10.md`；contract／preflight／run-refusal／JUnit
 均在 `analysis/p3_a_*_2026-09-09.*`。30 項 P3-A 測試與 32 項受影響既有回歸通過。
 
@@ -15,9 +16,26 @@
 - case state 隔離、6-case balanced order、intent-only no-retry、completed checkpoint reuse與不可覆寫 artifacts。
 - `contract` deterministic fake；`preflight` 只讀 metadata；`run` 缺三份 release 時 exit 2、attempts 0。
 
-GPT6 必須審查 view 隔離、共同歷史實作、所有模型路徑、逐輪累計 budget、checkpoint integrity、worker factory
-與 claim boundary。未通過不可製作資料或真實生成；通過後才另建含 artifact hashes／split／資源上限的
-implementation release，放行 P3-B developer smoke。不可自行前進 P3-C confirmation 或改 design／lock／門檻。
+### P3-A review 結果
+
+- condition runner 現在自行驗 view schema／allowlist／source/input/view digests。
+- contract manifest 保留逐 call request hash、exact usage與allocation，並和 aggregate 對帳。
+- condition wall 從收到 view 到 final，包含 worker 時間；60秒外 fail closed。
+- 自審不是獨立 review，不代表 product、generation、quality 或優勢證據。
+
+### P3-B1 before 與範圍
+
+before：`analysis/p3_a_self_review_preflight_2026-09-13.json` 的 tokenizer binding false，且 P3 harness 尚無真實
+product worker；`run` 正確 0-call 拒絕。單一變因：把現有 product 入口放入每-case 隔離 subprocess，接上兩條
+transport/model/usage gate，但只做 import/env/dry-run，不生成。
+
+允許新增唯一 helper `p3_product_worker.py`：產品 import 必須與純標準庫 harness 分離，並在 import 前設定每-case
+memory/adaptive/web-log 路徑、`URUHA_M31_SEMANTIC_VERIFIER_MODEL=qwen2.5:7b`、idle/prewarm/rightbrain off。
+可改 P3 runner/core/test、本卡與一份 P3-B1 acceptance/preflight。不得改 brain、P1/P2、design、baseline、資料、門檻。
+
+成功：兩條 transport 都被 adapter 攔截並核對 model/options/usage；case restart 保留自己的 state、跨 case 拒絕；
+production DB path 不可達；dry-run import 不觸發生成／prewarm／可見 idle；真模型/network/paid calls 0。
+完成後才設計 6-case developer smoke source/annotation manifest 與一次性 review release；仍不可讀 confirmation。
 
 ## 工作環境
 

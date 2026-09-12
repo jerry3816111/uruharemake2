@@ -25,6 +25,18 @@ CONDITIONS = (
 DESIGN_SCHEMA = "uruha_p3_product_comparison_design_v1"
 VIEW_SCHEMA = "uruha_p3_generation_view_v1"
 MANIFEST_SCHEMA = "uruha_p3_contract_manifest_v1"
+VIEW_KEYS = frozenset(
+    {
+        "schema",
+        "condition",
+        "visible_prefix",
+        "current_input",
+        "source_history_sha256",
+        "input_sha256",
+        "source_sha256",
+        "view_sha256",
+    }
+)
 ALLOWED_TURN_KEYS = frozenset({"turn_id", "session_id", "role", "content"})
 ALLOWED_INPUT_KEYS = frozenset({"turn_id", "session_id", "content"})
 
@@ -204,6 +216,7 @@ def validate_common_views(
     )
     for condition in CONDITIONS:
         view = views[condition]
+        validate_generation_view(view, condition)
         actual = (
             view.get("source_history_sha256"),
             view.get("input_sha256"),
@@ -211,13 +224,31 @@ def validate_common_views(
         )
         if actual != expected:
             raise P3ContractError("common_source_mismatch", condition)
-        if view.get("condition") != condition:
-            raise P3ContractError("view_condition_mismatch", condition)
-        stored_hash = view.get("view_sha256")
-        unhashed = dict(view)
-        unhashed.pop("view_sha256", None)
-        if stored_hash != canonical_sha256(unhashed):
-            raise P3ContractError("view_digest_mismatch", condition)
+
+
+def validate_generation_view(
+    view: Mapping[str, Any], expected_condition: str | None = None
+) -> None:
+    if not isinstance(view, Mapping) or set(view) != VIEW_KEYS:
+        raise P3ContractError("view_allowlist_violation")
+    if view.get("schema") != VIEW_SCHEMA:
+        raise P3ContractError("view_schema_mismatch")
+    condition = view.get("condition")
+    if condition not in CONDITIONS:
+        raise P3ContractError("unknown_condition", str(condition))
+    if expected_condition is not None and condition != expected_condition:
+        raise P3ContractError("view_condition_mismatch", expected_condition)
+    stored_hash = view.get("view_sha256")
+    unhashed = dict(view)
+    unhashed.pop("view_sha256", None)
+    if stored_hash != canonical_sha256(unhashed):
+        raise P3ContractError("view_digest_mismatch", str(condition))
+    prefix = _normalise_prefix(view.get("visible_prefix"))
+    current_input = _normalise_current_input(view.get("current_input"))
+    commitment = freeze_common_source(prefix, current_input)
+    for key in ("source_history_sha256", "input_sha256", "source_sha256"):
+        if view.get(key) != commitment[key]:
+            raise P3ContractError("view_source_digest_mismatch", key)
 
 
 @dataclass
@@ -239,6 +270,7 @@ class BudgetState:
     actual_prompt_tokens: int = 0
     actual_completion_tokens: int = 0
     wall_seconds: float = 0.0
+    condition_wall_seconds: float = 0.0
     measured_transport_wall_seconds: float = 0.0
     terminal_failure: str | None = None
     reservations: MutableMapping[str, dict[str, Any]] = field(default_factory=dict)
@@ -253,6 +285,7 @@ class BudgetState:
             "actual_prompt_tokens": self.actual_prompt_tokens,
             "actual_completion_tokens": self.actual_completion_tokens,
             "wall_seconds": round(self.wall_seconds, 6),
+            "condition_wall_seconds": round(self.condition_wall_seconds, 6),
             "terminal_failure": self.terminal_failure,
             "calls_max": self.calls_max,
             "aggregate_prompt_tokens_max": self.aggregate_prompt_tokens_max,
@@ -432,6 +465,16 @@ def mark_transport_failure(budget: BudgetState, code: str) -> None:
     budget.terminal_failure = code
 
 
+def record_condition_wall(budget: BudgetState, elapsed: float) -> None:
+    if isinstance(elapsed, bool) or not isinstance(elapsed, (int, float)) or elapsed < 0:
+        budget.terminal_failure = "invalid_condition_wall_seconds"
+        raise P3ContractError("invalid_condition_wall_seconds")
+    budget.condition_wall_seconds = float(elapsed)
+    if budget.condition_wall_seconds > budget.wall_seconds_max:
+        budget.terminal_failure = "condition_wall_budget_exceeded"
+        raise P3ContractError("condition_wall_budget_exceeded")
+
+
 def build_balanced_condition_schedule(
     case_ids: Iterable[str], seed: int
 ) -> dict[str, list[str]]:
@@ -525,6 +568,8 @@ def run_call_once(
             completed_result.get("content")
         ):
             raise P3ContractError("complete_checkpoint_output_digest_mismatch")
+        if completed_result.get("request_sha256") != request_sha:
+            raise P3ContractError("complete_checkpoint_request_digest_mismatch")
         reservation = reserve_call(budget, request)
         record_usage(budget, completed_usage, reservation)
         return {"reused": True, **completed_result}
@@ -591,6 +636,9 @@ def run_call_once(
         result = {
             "content": content,
             "content_sha256": canonical_sha256(content),
+            "request_sha256": request_sha,
+            "usage": recorded,
+            "max_completion_tokens": reservation["max_completion_tokens"],
             "model": response["model"],
             "backend": response["backend"],
             "network_calls": network_calls,
@@ -715,11 +763,12 @@ def run_condition(
     item_id: str,
     token_counter: Callable[[Iterable[Mapping[str, str]]], int],
     product_worker: Callable[..., Mapping[str, Any]] | None = None,
+    clock: Callable[[], float] = time.monotonic,
 ) -> dict[str, Any]:
     """Run one condition using injected token evidence, transport, and worker."""
 
-    if view.get("condition") != condition:
-        raise P3ContractError("runner_view_condition_mismatch")
+    validate_generation_view(view, condition)
+    started = clock()
     budget = new_budget(design, condition)
     persona = design["persona"]["shared_contract"]
     visible = render_visible_messages(view)
@@ -797,6 +846,7 @@ def run_condition(
         private_scratch_count = int(worker_result.get("private_scratch_count", 0))
         worker_evidence = dict(worker_result.get("evidence", {}))
 
+    record_condition_wall(budget, clock() - started)
     return {
         "condition": condition,
         "source_history_sha256": view["source_history_sha256"],
@@ -851,11 +901,42 @@ def validate_run_manifest(manifest: Mapping[str, Any]) -> None:
             raise P3ContractError("manifest_budget_invalid", condition)
         if budget.get("attempts") != budget.get("completed_calls"):
             raise P3ContractError("manifest_incomplete_calls", condition)
-        for call in result.get("calls", []):
+        calls = result.get("calls", [])
+        if not isinstance(calls, list) or len(calls) != budget.get("completed_calls"):
+            raise P3ContractError("manifest_call_count_mismatch", condition)
+        prompt_total = 0
+        completion_total = 0
+        allocation_total = 0
+        for call in calls:
             if call.get("content_sha256") != canonical_sha256(call.get("content")):
                 raise P3ContractError("manifest_output_digest_mismatch", condition)
+            request_sha = call.get("request_sha256")
+            if not isinstance(request_sha, str) or len(request_sha) != 64:
+                raise P3ContractError("manifest_request_digest_missing", condition)
+            usage = call.get("usage")
+            if not isinstance(usage, Mapping):
+                raise P3ContractError("manifest_call_usage_missing", condition)
+            prompt_total += _require_exact_int(
+                usage.get("prompt_tokens"), "prompt_tokens"
+            )
+            completion_total += _require_exact_int(
+                usage.get("completion_tokens"), "completion_tokens"
+            )
+            allocation_total += _require_exact_int(
+                call.get("max_completion_tokens"),
+                "max_completion_tokens",
+                minimum=1,
+            )
+            if call.get("model") != "qwen2.5:7b":
+                raise P3ContractError("manifest_model_mismatch", condition)
             if call.get("network_calls") != 0 or call.get("real_model_calls") != 0:
                 raise P3ContractError("manifest_nonzero_call", condition)
+        if prompt_total != budget.get("actual_prompt_tokens"):
+            raise P3ContractError("manifest_prompt_total_mismatch", condition)
+        if completion_total != budget.get("actual_completion_tokens"):
+            raise P3ContractError("manifest_completion_total_mismatch", condition)
+        if allocation_total != budget.get("allocated_completion_tokens"):
+            raise P3ContractError("manifest_allocation_total_mismatch", condition)
     checks = manifest.get("contract_checks")
     if not isinstance(checks, Mapping) or not all(value is True for value in checks.values()):
         raise P3ContractError("manifest_contract_check_failed")

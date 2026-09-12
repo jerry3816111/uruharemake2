@@ -116,6 +116,7 @@ def build_contract_manifest(design_path: str | Path) -> dict[str, Any]:
         )["case-fixture"]
         results: dict[str, Any] = {}
         for condition in order:
+            ticks = iter([0.0, 0.005])
             results[condition] = run_condition(
                 condition=condition,
                 view=views[condition],
@@ -125,9 +126,11 @@ def build_contract_manifest(design_path: str | Path) -> dict[str, Any]:
                 item_id="case-fixture-turn-1",
                 token_counter=token_counter,
                 product_worker=fake_product_worker if condition == "product_system" else None,
+                clock=lambda ticks=ticks: next(ticks),
             )
 
         reuse_transport = FakeTransport()
+        reuse_ticks = iter([0.0, 0.005])
         reused = run_condition(
             condition="full_history_direct",
             view=views["full_history_direct"],
@@ -136,6 +139,7 @@ def build_contract_manifest(design_path: str | Path) -> dict[str, Any]:
             checkpoint_root=root / "checkpoints",
             item_id="case-fixture-turn-1",
             token_counter=token_counter,
+            clock=lambda: next(reuse_ticks),
         )
 
     calls = [call for result in results.values() for call in result["calls"]]
