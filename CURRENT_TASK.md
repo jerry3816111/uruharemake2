@@ -2,40 +2,33 @@
 
 更新：2026-09-13。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B1 isolated product worker adapter（0 generation）
+## 唯一下一步：P3-B2 developer-smoke source／annotation freeze（0 generation）
 
-狀態：**READY_FOR_IMPLEMENTATION／SELF_REVIEW_NOT_INDEPENDENT**。P3-A 修正後 34 項 contract 與 32 項
-相鄰回歸通過；release：`research/p3_a_implementation_release_2026-09-13.json`。真模型、網路、付費呼叫仍為 0。
-驗收：`analysis/p3_a_offline_harness_acceptance_2026-09-10.md`；contract／preflight／run-refusal／JUnit
-均在 `analysis/p3_a_*_2026-09-09.*`。30 項 P3-A 測試與 32 項受影響既有回歸通過。
+狀態：**READY_FOR_DATA_DESIGN／SELF_REVIEW_NOT_INDEPENDENT**。P3-B1 的 isolated product worker 在限定範圍
+PASS；release：`research/p3_b1_product_worker_release_2026-09-13.json`。42 項 P3 contract、32 項相鄰回歸通過，
+真模型／network／paid calls 仍為 0，confirmation／formal case access 為 0。
 
-已交付：
+### P3-B2 before 與單一變因
 
-- 同一 frozen 完整可見 prefix/input 建立 direct／deliberate／product 三個 allowlisted generation views。
-- shared prompt/output/call/context/common-history/wall budget；OpenAI-compatible/native path 同 7B model gate。
-- case state 隔離、6-case balanced order、intent-only no-retry、completed checkpoint reuse與不可覆寫 artifacts。
-- `contract` deterministic fake；`preflight` 只讀 metadata；`run` 缺三份 release 時 exit 2、attempts 0。
+before：config 仍為 `source_manifest_present=false`，沒有可執行的 6-case developer-smoke source 或分離 scorer
+annotations。單一變因：依 frozen P3 spec 建立 6 cases × 4 user turns；每 family 一 case，zh/en/ja 各兩 case，
+且每 case 至少一個可觀察的確認／否定／需要改變。這批資料只能修 smoke 接線，不是 confirmation 或 holdout。
 
-### P3-A review 結果
+source 只允許 case/source/session/turn/language/family/provenance 與使用者原文／hash；不得有答案、期待、評分、
+future annotation。annotations 必須分檔，寫 acceptable actions、unsupported claims、可見 evidence turn IDs、
+correction eligibility，不指定唯一漂亮句子。generation view 只能逐輪由當時已可見 prefix + current input 新建。
 
-- condition runner 現在自行驗 view schema／allowlist／source/input/view digests。
-- contract manifest 保留逐 call request hash、exact usage與allocation，並和 aggregate 對帳。
-- condition wall 從收到 view 到 final，包含 worker 時間；60秒外 fail closed。
-- 自審不是獨立 review，不代表 product、generation、quality 或優勢證據。
+允許改 `p3_product_comparison.py`、`run_p3_product_comparison.py`、`test_p3_product_comparison.py`、本卡；允許新增
+兩份 P3 smoke JSON、一份 validation artifact、一份 acceptance 與一份 data freeze。不得改 brain、P1/P2、frozen
+design、baseline prompt、family/language quota、rubric、threshold 或正式資料。
 
-### P3-B1 before 與範圍
+成功：schema exact allowlist、24 個唯一 turn/source hashes、6 family 各1、三語各2、每 case 4 turns 且至少
+跨兩 session、每 case 有 verification/correction event；所有 annotation evidence 只指當時或過去 turn，所有 exact
+source spans 真為原文 substring；source 與 annotations hash 分離且 annotation 不進 generation view。需有 future／
+gold leak、錯 hash、跨 case ID、future evidence、翻譯換皮重複等負測試。全程 0 generation/network/paid calls。
 
-before：`analysis/p3_a_self_review_preflight_2026-09-13.json` 的 tokenizer binding false，且 P3 harness 尚無真實
-product worker；`run` 正確 0-call 拒絕。單一變因：把現有 product 入口放入每-case 隔離 subprocess，接上兩條
-transport/model/usage gate，但只做 import/env/dry-run，不生成。
-
-允許新增唯一 helper `p3_product_worker.py`：產品 import 必須與純標準庫 harness 分離，並在 import 前設定每-case
-memory/adaptive/web-log 路徑、`URUHA_M31_SEMANTIC_VERIFIER_MODEL=qwen2.5:7b`、idle/prewarm/rightbrain off。
-可改 P3 runner/core/test、本卡與一份 P3-B1 acceptance/preflight。不得改 brain、P1/P2、design、baseline、資料、門檻。
-
-成功：兩條 transport 都被 adapter 攔截並核對 model/options/usage；case restart 保留自己的 state、跨 case 拒絕；
-production DB path 不可達；dry-run import 不觸發生成／prewarm／可見 idle；真模型/network/paid calls 0。
-完成後才設計 6-case developer smoke source/annotation manifest 與一次性 review release；仍不可讀 confirmation。
+完成後下一 gate 才能設計一次性的 tokenizer provider-binding probe 與 6-case product smoke execution release；
+仍不能讀 confirmation、不能開 production DB、不能以資料驗證通過宣稱產品品質。
 
 ## 工作環境
 
@@ -55,6 +48,9 @@ production DB path 不可達；dry-run import 不觸發生成／prewarm／可見
 - P3成本記錄收尾 commit：`34bef3d01d236873b4aa384b76aba2893ff9949d`。
   `research/p3_compute_accounting_freeze_2026-09-09.json`；121 passed／8 dependency warnings。
   `analysis/p3_complete_product_compute_accounting_acceptance_2026-09-09.md`。
+- P3-A fail-closed comparison harness 與自審修正已凍結；P3-B1 isolated product worker 將產品真實 OpenAI／
+  native M31 globals 綁到同一 gate，兩次 lazy import、same-case restart、cross-case refusal 均通過。驗收：
+  `analysis/p3_b1_product_worker_acceptance_2026-09-13.md`。仍為 0 real model/network/paid calls。
 - 真實本機run2：5 sessions／9輪，與P2可見回覆9/9相同；ledger 2生成＋130記憶操作，
   2,901生成tokens、30.834245秒；四個結構checks通過。兩次run均保存。
 - native M31只mocked transport驗證，這九輪未實際觸發；Chroma embedding token／CPU/RSS/energy未量測。

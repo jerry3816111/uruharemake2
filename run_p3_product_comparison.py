@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import shutil
@@ -298,14 +299,183 @@ def build_run_refusal(design_path: str | Path, args: argparse.Namespace) -> dict
     }
 
 
+def _read_worker_output(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise P3ContractError("invalid_product_worker_output", path.name) from exc
+    if not isinstance(value, dict):
+        raise P3ContractError("invalid_product_worker_output", path.name)
+    return value
+
+
+def build_product_worker_preflight(
+    design_path: str | Path,
+    product_python: str | Path | None = None,
+) -> dict[str, Any]:
+    """Run the P3-B1 worker/import contract without any model generation."""
+
+    design = load_design(design_path)
+    repo = Path(__file__).resolve().parent
+    worker = repo / "p3_product_worker.py"
+    interpreter = Path(product_python or repo / ".venv/product_checks/bin/python")
+    if not worker.is_file():
+        raise P3ContractError("product_worker_missing")
+    if not interpreter.is_file():
+        raise P3ContractError("product_python_missing", str(interpreter))
+
+    def invoke(
+        mode: str,
+        output: Path,
+        *,
+        workspace_root: Path | None = None,
+        case_id: str | None = None,
+        state_slot: str | None = None,
+    ) -> tuple[int, dict[str, Any]]:
+        command = [
+            str(interpreter),
+            str(worker),
+            "--mode",
+            mode,
+            "--design",
+            str(Path(design_path).resolve()),
+            "--output",
+            str(output),
+        ]
+        if workspace_root is not None:
+            command.extend(["--workspace-root", str(workspace_root)])
+        if case_id is not None:
+            command.extend(["--case-id", case_id])
+        if state_slot is not None:
+            command.extend(["--state-slot", state_slot])
+        completed = subprocess.run(
+            command,
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+            env={**os.environ, "URUHA_SKIP_AUTO_VENV": "1"},
+        )
+        return completed.returncode, _read_worker_output(output)
+
+    with tempfile.TemporaryDirectory(prefix="uruha-p3b1-") as temporary:
+        temp_root = Path(temporary)
+        workspace_root = temp_root / "worker-root"
+        adapter_rc, adapter = invoke(
+            "adapter-contract", temp_root / "adapter.json"
+        )
+        first_rc, first = invoke(
+            "dry-run",
+            temp_root / "dry-first.json",
+            workspace_root=workspace_root,
+            case_id="p3-b1-fixture",
+            state_slot="restart-probe",
+        )
+        second_rc, second = invoke(
+            "dry-run",
+            temp_root / "dry-second.json",
+            workspace_root=workspace_root,
+            case_id="p3-b1-fixture",
+            state_slot="restart-probe",
+        )
+        cross_rc, cross = invoke(
+            "dry-run",
+            temp_root / "dry-cross-case.json",
+            workspace_root=workspace_root,
+            case_id="p3-b1-other-case",
+            state_slot="restart-probe",
+        )
+        checks = {
+            "adapter_contract_passed": adapter_rc == 0
+            and adapter.get("status") == "offline_transport_contract_pass",
+            "openai_compatible_intercepted": bool(
+                adapter.get("checks", {}).get("openai_compatible_intercepted")
+            ),
+            "native_ollama_intercepted": bool(
+                adapter.get("checks", {}).get("native_ollama_intercepted")
+            ),
+            "first_isolated_import_passed": first_rc == 0
+            and first.get("status") == "isolated_import_pass",
+            "same_case_restart_passed": second_rc == 0
+            and second.get("restart") is True
+            and first.get("case_sha256") == second.get("case_sha256"),
+            "same_case_state_path_retained": first.get("environment", {}).get(
+                "state_paths_sha256"
+            )
+            == second.get("environment", {}).get("state_paths_sha256"),
+            "cross_case_state_reuse_rejected": cross_rc != 0
+            and cross.get("contract_code") == "cross_case_state_reuse",
+            "product_brain_never_instantiated": first.get("brain_instances") == 0
+            and second.get("brain_instances") == 0,
+            "production_db_unreachable": bool(
+                first.get("checks", {}).get("production_db_unreachable")
+            )
+            and bool(second.get("checks", {}).get("production_db_unreachable")),
+            "no_generation_or_network": all(
+                int(payload.get(key, 0)) == 0
+                for payload in (adapter, first, second, cross)
+                for key in (
+                    "network_calls",
+                    "real_model_calls",
+                    "paid_calls",
+                )
+            ),
+            "no_blocked_network_attempts": all(
+                (
+                    len(payload.get("network_attempts", []))
+                    if isinstance(payload.get("network_attempts", []), list)
+                    else int(payload.get("network_attempts", 0))
+                )
+                == 0
+                for payload in (adapter, first, second, cross)
+            ),
+            "tokenizer_candidate_not_overclaimed": first.get(
+                "tokenizer_candidate", {}
+            ).get("provider_usage_equivalence_validated")
+            is False,
+        }
+        result = {
+            "schema": "uruha_p3_product_worker_preflight_v1",
+            "phase": "P3-B1",
+            "status": "p3_b1_contract_pass" if all(checks.values()) else "p3_b1_contract_failed",
+            "design_sha256": design["_design_sha256"],
+            "implementation_sha256": {
+                worker.name: hashlib.sha256(worker.read_bytes()).hexdigest(),
+                Path(__file__).name: hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            },
+            "checks": checks,
+            "adapter_contract": adapter,
+            "first_import": first,
+            "restart_import": second,
+            "cross_case_refusal": cross,
+            "network_calls": 0,
+            "real_model_calls": 0,
+            "paid_calls": 0,
+            "formal_cases_accessed": 0,
+            "claim_boundary": (
+                "P3-B1 proves a zero-generation isolated product import and guarded fake "
+                "transport seam. It does not prove provider token binding, product output "
+                "quality, or comparative advantage."
+            ),
+        }
+    result["ephemeral_workspace_removed_after_probe"] = not temp_root.exists()
+    return result
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("contract", "preflight", "run"), required=True)
+    parser.add_argument(
+        "--mode",
+        choices=("contract", "preflight", "product-dry-run", "run"),
+        required=True,
+    )
     parser.add_argument("--design", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--implementation-release")
     parser.add_argument("--data-freeze")
     parser.add_argument("--review-release")
+    parser.add_argument("--product-python")
     return parser.parse_args(argv)
 
 
@@ -321,6 +491,12 @@ def main(argv: list[str] | None = None) -> int:
         elif args.mode == "preflight":
             payload = build_preflight(args.design)
             exit_code = 0
+        elif args.mode == "product-dry-run":
+            payload = build_product_worker_preflight(
+                args.design,
+                args.product_python,
+            )
+            exit_code = 0 if payload["status"] == "p3_b1_contract_pass" else 2
         else:
             payload = build_run_refusal(args.design, args)
             exit_code = 2

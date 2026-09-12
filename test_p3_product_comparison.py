@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
+import urllib.request
 
 import pytest
 
@@ -28,6 +30,14 @@ from p3_product_comparison import (
     write_new_json,
 )
 from run_p3_product_comparison import build_contract_manifest, main
+from p3_product_worker import (
+    ProductTransportGate,
+    build_adapter_contract,
+    build_native_call,
+    build_openai_call,
+    claim_case_workspace,
+    install_product_transport_gate,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -165,6 +175,195 @@ def test_cross_case_state_path_reuse_is_rejected_but_restart_is_allowed(tmp_path
     first = registry.claim("case-1", path)
     assert registry.claim("case-1", path) == first
     assert_code("cross_case_state_reuse", lambda: registry.claim("case-2", path))
+
+
+def test_p3_product_worker_state_persists_only_for_the_same_case(tmp_path):
+    root = tmp_path / "p3-worker-root"
+    first = claim_case_workspace(root, "case-1", state_slot="shared-slot")
+    state_probe = first["paths"]["memory"] / "restart-probe.txt"
+    state_probe.write_text("kept", encoding="utf-8")
+    second = claim_case_workspace(root, "case-1", state_slot="shared-slot")
+    assert first["restart"] is False
+    assert second["restart"] is True
+    assert state_probe.read_text(encoding="utf-8") == "kept"
+    assert_code(
+        "cross_case_state_reuse",
+        lambda: claim_case_workspace(root, "case-2", state_slot="shared-slot"),
+    )
+
+
+def test_p3_product_worker_rejects_existing_unsentinelled_root(tmp_path):
+    root = tmp_path / "existing-root"
+    root.mkdir()
+    assert_code(
+        "existing_worker_root_without_sentinel",
+        lambda: claim_case_workspace(root, "case-1"),
+    )
+
+
+def test_p3_product_adapter_intercepts_both_routes_with_exact_fake_usage():
+    result = build_adapter_contract(DESIGN_PATH)
+    assert result["status"] == "offline_transport_contract_pass"
+    assert [row["backend"] for row in result["interceptions"]] == [
+        "openai_compatible_local",
+        "native_ollama_chat",
+    ]
+    assert result["budget"]["completed_calls"] == 2
+    assert result["network_calls"] == result["real_model_calls"] == 0
+
+
+def test_p3_product_adapter_rejects_option_drift_before_transport():
+    design = load_design(DESIGN_PATH)
+    gate = ProductTransportGate(design, lambda messages: 100)
+    call = build_openai_call(
+        design,
+        [{"role": "user", "content": "fixture"}],
+        128,
+    )
+    call["temperature"] = 0.2
+    attempts = []
+    assert_code(
+        "openai_product_options_mismatch",
+        lambda: gate.intercept_openai(
+            stage="option-drift",
+            call_kwargs=call,
+            transport=lambda kwargs: attempts.append(kwargs),
+            contract_fake=True,
+        ),
+    )
+    assert attempts == []
+    assert gate.budget.attempts == 0
+
+
+def test_p3_product_adapter_refuses_unreleased_real_transport_before_call():
+    design = load_design(DESIGN_PATH)
+    gate = ProductTransportGate(design, lambda messages: 100)
+    attempts = []
+    assert_code(
+        "real_product_transport_not_released",
+        lambda: gate.intercept_openai(
+            stage="unreleased",
+            call_kwargs=build_openai_call(
+                design,
+                [{"role": "user", "content": "fixture"}],
+                128,
+            ),
+            transport=lambda kwargs: attempts.append(kwargs),
+        ),
+    )
+    assert attempts == []
+    assert gate.budget.attempts == 0
+
+
+def test_p3_product_adapter_transport_failure_is_terminal_no_retry():
+    design = load_design(DESIGN_PATH)
+    gate = ProductTransportGate(design, lambda messages: 100)
+    call = build_openai_call(
+        design,
+        [{"role": "user", "content": "fixture"}],
+        128,
+    )
+    assert_code(
+        "transport_failure_no_retry",
+        lambda: gate.intercept_openai(
+            stage="transport-failure",
+            call_kwargs=call,
+            transport=lambda kwargs: (_ for _ in ()).throw(TimeoutError("fixture")),
+            contract_fake=True,
+        ),
+    )
+    assert gate.budget.terminal_failure == "transport_failure_no_retry"
+    assert_code(
+        "budget_terminal",
+        lambda: gate.intercept_openai(
+            stage="no-retry",
+            call_kwargs=call,
+            transport=lambda kwargs: {},
+            contract_fake=True,
+        ),
+    )
+
+
+def test_p3_product_gate_is_bound_to_the_actual_product_global_seams():
+    design = load_design(DESIGN_PATH)
+    calls = {"openai": 0, "models": 0, "native": 0}
+
+    class DummyCompletions:
+        def create(self, **kwargs):
+            calls["openai"] += 1
+            return {}
+
+    class DummyModels:
+        def list(self):
+            calls["models"] += 1
+            return {}
+
+    def openai_factory(*args, **kwargs):
+        return SimpleNamespace(
+            chat=SimpleNamespace(completions=DummyCompletions()),
+            models=DummyModels(),
+        )
+
+    def native_opener(*args, **kwargs):
+        calls["native"] += 1
+        return None
+
+    brain = SimpleNamespace(
+        OpenAI=openai_factory,
+        urllib=SimpleNamespace(request=SimpleNamespace(urlopen=native_opener)),
+        M31_SEMANTIC_VERIFIER_MODEL="qwen2.5:7b",
+        M31_SEMANTIC_VERIFIER_URL="http://localhost:11434/api/chat",
+    )
+    gate = ProductTransportGate(design, lambda messages: 100)
+    binding = install_product_transport_gate(brain, gate)
+    assert binding["openai_global_guarded"]
+    assert binding["native_urlopen_global_guarded"]
+
+    client = brain.OpenAI(base_url="http://localhost:11434/v1", max_retries=0)
+    assert client.models.list()["source"] == "reviewed_preflight_metadata"
+    assert calls["models"] == 0
+    messages = [{"role": "user", "content": "fixture"}]
+    assert_code(
+        "real_product_transport_not_released",
+        lambda: client.chat.completions.create(
+            **build_openai_call(design, messages, 128)
+        ),
+    )
+    native_request = urllib.request.Request(
+        brain.M31_SEMANTIC_VERIFIER_URL,
+        data=json.dumps(build_native_call(design, messages, 128)).encode("utf-8"),
+        method="POST",
+    )
+    assert_code(
+        "real_product_transport_not_released",
+        lambda: brain.urllib.request.urlopen(native_request, timeout=18),
+    )
+    assert calls == {"openai": 0, "models": 0, "native": 0}
+
+
+def test_p3_product_worker_real_entry_import_is_lazy_and_offline(tmp_path):
+    product_python = ROOT / ".venv/product_checks/bin/python"
+    output = tmp_path / "p3-b1-preflight.json"
+    exit_code = main(
+        [
+            "--mode",
+            "product-dry-run",
+            "--design",
+            str(DESIGN_PATH),
+            "--product-python",
+            str(product_python),
+            "--output",
+            str(output),
+        ]
+    )
+    assert exit_code == 0
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["status"] == "p3_b1_contract_pass"
+    assert payload["network_calls"] == payload["real_model_calls"] == 0
+    assert all(payload["checks"].values())
+    assert payload["first_import"]["brain_instances"] == 0
+    assert payload["restart_import"]["restart"] is True
+    assert payload["cross_case_refusal"]["contract_code"] == "cross_case_state_reuse"
 
 
 def test_native_m31_wrong_model_is_rejected_before_transport():
