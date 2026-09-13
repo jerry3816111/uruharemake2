@@ -2,31 +2,29 @@
 
 更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B6 single-turn real product canary preregistration
+## 唯一下一步：P3-B7 same-model canary baseline comparison
 
-狀態：**RELEASED_FOR_ONE_PRODUCT_CANARY／SELF_REVIEW_NOT_INDEPENDENT**。P3-B6 source/config、worker、preflight
-與 release 已用 SHA 凍結；76 項 P3、32 項相鄰回歸通過。執行前仍是 0 product canary calls；唯一下一動作是
-依 release 跑一次，不能再修改 canary、程式或門檻。
+狀態：**PRODUCT_CANARY_ENGINEERING_PASS／QUALITY_UNDETERMINED**。P3-B6 真實 product canary 以 1 個 native call
+完成：441 prompt、151 completion、turn 10.752605 秒、0 fallback/rejection/paid；future/annotations/production DB 均未
+讀取。visible reply 已保存，但尚無 baseline 或品質結論。
 
-### P3-B6 before 與單一變因
+### P3-B7 before 與單一變因
 
-before：token binding 與第一個 call normalization 均通過，但尚未有任何真實 product full-turn；模型回覆後可能出現
-尚未觀察的 OpenAI/native shape、額外 calls、usage 超額或產品 fallback。直接跑 6 cases × 4 turns 會把 sealed developer
-smoke 當整合除錯資料。
+before：product canary 的回覆是 `最近退社後は常に不機嫌で何もしたくないんだね。`。它通過日文／整合 gate，
+但 `退社後` 偏書面、`常に不機嫌` 可能過度定性，也未判明是否比強 baseline 更接住需求。沒有同模型輸出就不能把
+產品工程成功外推成品質價值。
 
-單一變因：事前鎖定 `p3-smoke-need-change-zh` 的第一輪 `p3-smoke-01-u1` 作為 product-only canary；只讀 source manifest
-與該輪文字，不讀 annotations／future turns。fresh subprocess、ephemeral DB、同一 qwen2.5:7b digest，最多 4 provider
-calls、aggregate completion 768、wall 60 秒、0 retry；保存 reply 與 runtime trace 供之後評分，但不在此階段打分。
+單一變因：保持完全相同 canary input、共享 persona、qwen2.5:7b digest、temperature/seed/top_p/num_ctx/think 與每條件
+768 completion budget，只新增 `full_history_direct` 1-call 與 `full_history_deliberate` 3-call baseline；不重跑 product。
+baselines 不讀 product trace、annotations、future 或答案，只能看同一空 prefix＋current input。
 
-成功：真實產品完成一輪且 visible reply 非空；所有實際 calls 的 model/options/usage 通過 gate，prompt／completion 與 wall
-在共同 budget 內，無 fallback 掩蓋 transport failure；production DB 不可達，source/future/annotation access 可核對，
-checkpoint 完整且不可重打。任何 unobserved shape、cap 缺失、usage 超額、timeout、intent-only 或產品錯誤都保留失敗，
-不修改該 canary 或 release 追分。
+成功：兩 baseline 各自在 calls/wall/token budget 內完成，provider prompt usage 與 tokenizer reservation 精確一致，輸出鎖定
+後才讀分離 annotation 做明示 proxy 描述；三輸出並列但不預設 product 勝。任一 transport／budget／checkpoint／source drift
+保留失敗，不重跑或改 prompt。單一 canary 只能是受控例子，不能形成整批或普遍優勢結論。
 
-canary config、crash-safe worker、tests、preflight 與 execution release 已建立。只能依
-`research/p3_b6_product_canary_execution_release_2026-09-14.json` 執行一次；不得改 brain、P1/P2、P3 source／
-annotations、comparison design/baseline/rubric/threshold，不得讀 future／confirmation／production DB。canary PASS 後
-仍需另行 release 三條件 developer smoke，不能把單輪結果當品質或優勢。
+先補 baseline localhost transport 的 exact prompt check、crash-safe runner、tests、preflight 與獨立 execution release；release
+commit 前 0 新 generation。不得改 product result、brain、P1/P2、source／annotations、frozen baseline prompt/rubric/threshold，
+不得讀 future／confirmation／production DB。輸出鎖定後的 proxy 分析必須清楚標示非真人偏好。
 
 ## 工作環境
 
@@ -66,8 +64,8 @@ annotations、comparison design/baseline/rubric/threshold，不得讀 future／c
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- developer smoke 已 sealed、tokenizer binding 與第一個 native normalization 已通過；P3-B6 尚未 release，產品真實
-  developer turn 與全部 response-dependent routes 仍為 0 evidence。
+- 只有第一個 product turn 有真實證據；其兩個 baseline 尚未生成，其餘 23 developer turns、評分、Safari、真人與 formal
+  confirmation 仍未執行。
 
 ## 回報方式
 
