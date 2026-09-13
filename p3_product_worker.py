@@ -299,6 +299,8 @@ class LocalQwenTokenizerCandidate:
 
     def __call__(self, messages: Iterable[Mapping[str, str]]) -> int:
         rows = [dict(message) for message in messages]
+        if not rows:
+            return 0
         token_ids = self.tokenizer.apply_chat_template(
             rows,
             tokenize=True,
@@ -792,12 +794,14 @@ def build_canary_baselines_preflight(config_path: str | Path) -> dict[str, Any]:
             for condition in config["conditions"]
         }
         input_tokens = tokenizer([{"role": "user", "content": source["content"]}])
+        empty_prefix_tokens = tokenizer([])
     checks = {
         "config_valid": True,
         "model_digest_matches": metadata["digest"] == config["generation"]["digest"],
         "two_views_share_source": len({view["source_sha256"] for view in views.values()})
         == 1,
         "offline_tokenizer_available": input_tokens > 0,
+        "empty_visible_prefix_is_zero_tokens": empty_prefix_tokens == 0,
         "no_tokenizer_network_attempts": len(attempts) == 0,
         "product_result_locked_before_baselines": True,
         "config_does_not_self_authorize": config["execution_boundary"][
@@ -813,6 +817,7 @@ def build_canary_baselines_preflight(config_path: str | Path) -> dict[str, Any]:
         "view_sha256": {condition: view["view_sha256"] for condition, view in views.items()},
         "shared_source_sha256": next(iter(views.values()))["source_sha256"],
         "input_tokens_without_system_prompt": input_tokens,
+        "empty_visible_prefix_tokens": empty_prefix_tokens,
         "model_metadata": metadata,
         "checks": checks,
         "network_calls": 0,

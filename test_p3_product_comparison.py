@@ -817,6 +817,7 @@ def test_p3_canary_baselines_preflight_reads_no_labels_or_generation():
     assert preflight["network_calls"] == preflight["real_model_calls"] == 0
     assert preflight["future_turns_accessed"] == 0
     assert preflight["annotations_accessed"] == 0
+    assert preflight["empty_visible_prefix_tokens"] == 0
     assert len(set(preflight["view_sha256"].values())) == 2
     assert all(preflight["checks"].values())
 
