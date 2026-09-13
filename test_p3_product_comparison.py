@@ -47,6 +47,8 @@ from p3_product_worker import (
     claim_case_workspace,
     execute_tokenizer_binding_probe,
     install_product_transport_gate,
+    normalize_product_native_call,
+    normalize_product_openai_call,
 )
 
 
@@ -283,7 +285,7 @@ def test_p3_product_adapter_rejects_option_drift_before_transport():
     call["temperature"] = 0.2
     attempts = []
     assert_code(
-        "openai_product_options_mismatch",
+        "openai_product_temperature_mismatch",
         lambda: gate.intercept_openai(
             stage="option-drift",
             call_kwargs=call,
@@ -969,6 +971,97 @@ def test_p3_product_call_shape_audit_uses_real_product_without_generation(tmp_pa
     assert payload["developer_smoke_cases_accessed"] == 0
     assert payload["ephemeral_workspace_removed_after_audit"] is True
     assert all(payload["checks"].values())
+
+
+def test_p3_product_adapter_adds_only_missing_frozen_generation_fields():
+    design = load_design(DESIGN_PATH)
+    messages = [{"role": "user", "content": "fixture"}]
+    native_original = {
+        "model": "qwen2.5:7b",
+        "messages": messages,
+        "stream": False,
+        "think": False,
+        "options": {"temperature": 0, "num_predict": 280},
+    }
+    native, native_trace = normalize_product_native_call(design, native_original)
+    assert native == build_native_call(design, messages, 280)
+    assert native_trace["inserted_fields"] == [
+        "options.seed",
+        "options.top_p",
+        "options.num_ctx",
+    ]
+    assert native_trace["messages_preserved"] is True
+    assert native_trace["completion_cap_preserved"] is True
+
+    response_format = {"type": "json_object"}
+    openai_original = {
+        "model": "qwen2.5:7b",
+        "messages": messages,
+        "temperature": 0,
+        "max_tokens": 128,
+        "timeout": 20,
+        "response_format": response_format,
+    }
+    openai, openai_trace = normalize_product_openai_call(design, openai_original)
+    expected_generation = build_openai_call(design, messages, 128)
+    assert {key: openai[key] for key in expected_generation} == expected_generation
+    assert openai["timeout"] == 20
+    assert openai["response_format"] == response_format
+    assert openai_trace["messages_preserved"] is True
+    assert openai_trace["completion_cap_preserved"] is True
+
+
+def test_p3_product_adapter_rejects_unknown_or_conflicting_fields():
+    design = load_design(DESIGN_PATH)
+    messages = [{"role": "user", "content": "fixture"}]
+    native = build_native_call(design, messages, 128)
+    native["options"]["seed"] = 7
+    assert_code(
+        "native_product_seed_mismatch",
+        lambda: normalize_product_native_call(design, native),
+    )
+    openai = build_openai_call(design, messages, 128)
+    openai["frequency_penalty"] = 1
+    assert_code(
+        "openai_product_unknown_option",
+        lambda: normalize_product_openai_call(design, openai),
+    )
+
+
+def test_p3_normalized_shape_audit_is_exact_without_generation(tmp_path):
+    output = tmp_path / "p3-b5-normalized-shape.json"
+    completed = subprocess.run(
+        [
+            str(ROOT / ".venv/product_checks/bin/python"),
+            str(ROOT / "p3_product_worker.py"),
+            "--mode",
+            "normalized-shape-audit",
+            "--design",
+            str(DESIGN_PATH),
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+        env={**os.environ, "URUHA_SKIP_AUTO_VENV": "1"},
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["status"] == "p3_b5_normalized_shape_audit_pass"
+    assert payload["normalization_drift_counts"] == {}
+    assert payload["real_model_calls"] == payload["network_calls"] == 0
+    assert all(payload["checks"].values())
+    trace = payload["call_shapes"][0]["adapter_normalization"]
+    assert trace["inserted_fields"] == [
+        "options.seed",
+        "options.top_p",
+        "options.num_ctx",
+    ]
+    assert trace["messages_preserved"] is True
+    assert trace["completion_cap_preserved"] is True
 
 
 def test_native_m31_wrong_model_is_rejected_before_transport():

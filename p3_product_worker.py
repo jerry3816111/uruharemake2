@@ -913,6 +913,145 @@ def build_native_call(
     }
 
 
+def normalize_product_openai_call(
+    design: Mapping[str, Any], call_kwargs: Mapping[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Add only missing frozen generation fields to an allowlisted OpenAI call."""
+
+    allowed = {
+        "model",
+        "messages",
+        "temperature",
+        "seed",
+        "top_p",
+        "max_tokens",
+        "extra_body",
+        "timeout",
+        "response_format",
+    }
+    if not isinstance(call_kwargs, Mapping) or not set(call_kwargs).issubset(allowed):
+        raise P3ContractError("openai_product_unknown_option")
+    rows = _message_rows(call_kwargs.get("messages"))
+    model = design["model"]
+    if call_kwargs.get("model") != model["generation_model"]:
+        raise P3ContractError("model_gate_rejected")
+    if call_kwargs.get("temperature") != model["temperature"]:
+        raise P3ContractError("openai_product_temperature_mismatch")
+    cap = call_kwargs.get("max_tokens")
+    if (
+        isinstance(cap, bool)
+        or not isinstance(cap, int)
+        or cap <= 0
+        or cap > design["budget"]["system_per_call_completion_max"]
+    ):
+        raise P3ContractError("openai_product_completion_cap_invalid")
+    normalized = dict(call_kwargs)
+    inserted: list[str] = []
+    for key in ("seed", "top_p"):
+        expected = model[key]
+        if key in normalized and normalized[key] != expected:
+            raise P3ContractError(f"openai_product_{key}_mismatch")
+        if key not in normalized:
+            normalized[key] = expected
+            inserted.append(key)
+    extra_body = normalized.get("extra_body")
+    if extra_body is None:
+        extra: dict[str, Any] = {}
+    elif isinstance(extra_body, Mapping):
+        extra = dict(extra_body)
+    else:
+        raise P3ContractError("openai_product_extra_body_invalid")
+    if not set(extra).issubset({"options", "think"}):
+        raise P3ContractError("openai_product_extra_body_unknown_option")
+    extra_options = extra.get("options")
+    if extra_options is None:
+        normalized_options: dict[str, Any] = {}
+    elif isinstance(extra_options, Mapping):
+        normalized_options = dict(extra_options)
+    else:
+        raise P3ContractError("openai_product_extra_options_invalid")
+    if not set(normalized_options).issubset({"num_ctx"}):
+        raise P3ContractError("openai_product_extra_options_unknown_option")
+    if "num_ctx" in normalized_options and normalized_options["num_ctx"] != model["num_ctx"]:
+        raise P3ContractError("openai_product_num_ctx_mismatch")
+    if "num_ctx" not in normalized_options:
+        normalized_options["num_ctx"] = model["num_ctx"]
+        inserted.append("extra_body.options.num_ctx")
+    if "think" in extra and extra["think"] != model["think"]:
+        raise P3ContractError("openai_product_think_mismatch")
+    if "think" not in extra:
+        extra["think"] = model["think"]
+        inserted.append("extra_body.think")
+    extra["options"] = normalized_options
+    normalized["extra_body"] = extra
+    normalized["messages"] = rows
+    return normalized, {
+        "schema": "uruha_p3_product_adapter_normalization_v1",
+        "backend": "openai_compatible_local",
+        "inserted_fields": inserted,
+        "original_request_sha256": canonical_sha256(call_kwargs),
+        "normalized_request_sha256": canonical_sha256(normalized),
+        "messages_preserved": canonical_sha256(call_kwargs.get("messages"))
+        == canonical_sha256(rows),
+        "completion_cap_preserved": normalized.get("max_tokens") == cap,
+    }
+
+
+def normalize_product_native_call(
+    design: Mapping[str, Any], request_body: Mapping[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Add only missing frozen generation fields to an allowlisted native call."""
+
+    allowed = {"model", "messages", "stream", "think", "options"}
+    if not isinstance(request_body, Mapping) or set(request_body) != allowed:
+        raise P3ContractError("native_product_unknown_option")
+    rows = _message_rows(request_body.get("messages"))
+    model = design["model"]
+    if request_body.get("model") != model["generation_model"]:
+        raise P3ContractError("model_gate_rejected")
+    if request_body.get("stream") is not False:
+        raise P3ContractError("native_product_stream_mismatch")
+    if request_body.get("think") != model["think"]:
+        raise P3ContractError("native_product_think_mismatch")
+    options = request_body.get("options")
+    if not isinstance(options, Mapping) or not set(options).issubset(
+        {"temperature", "seed", "top_p", "num_ctx", "num_predict"}
+    ):
+        raise P3ContractError("native_product_options_unknown_option")
+    normalized_options = dict(options)
+    if normalized_options.get("temperature") != model["temperature"]:
+        raise P3ContractError("native_product_temperature_mismatch")
+    cap = normalized_options.get("num_predict")
+    if (
+        isinstance(cap, bool)
+        or not isinstance(cap, int)
+        or cap <= 0
+        or cap > design["budget"]["system_per_call_completion_max"]
+    ):
+        raise P3ContractError("native_product_completion_cap_invalid")
+    inserted: list[str] = []
+    for key in ("seed", "top_p", "num_ctx"):
+        expected = model[key]
+        if key in normalized_options and normalized_options[key] != expected:
+            raise P3ContractError(f"native_product_{key}_mismatch")
+        if key not in normalized_options:
+            normalized_options[key] = expected
+            inserted.append(f"options.{key}")
+    normalized = dict(request_body)
+    normalized["messages"] = rows
+    normalized["options"] = normalized_options
+    return normalized, {
+        "schema": "uruha_p3_product_adapter_normalization_v1",
+        "backend": "native_ollama_chat",
+        "inserted_fields": inserted,
+        "original_request_sha256": canonical_sha256(request_body),
+        "normalized_request_sha256": canonical_sha256(normalized),
+        "messages_preserved": canonical_sha256(request_body.get("messages"))
+        == canonical_sha256(rows),
+        "completion_cap_preserved": normalized_options.get("num_predict") == cap,
+    }
+
+
 def _message_rows(value: Any) -> list[dict[str, str]]:
     if not isinstance(value, list):
         raise P3ContractError("adapter_messages_invalid")
@@ -946,6 +1085,7 @@ class ProductTransportGate:
         self.clock = clock
         self.budget = new_budget(design, "product_system")
         self.interceptions: list[dict[str, Any]] = []
+        self.normalizations: list[dict[str, Any]] = []
 
     def _assert_transport_release(self, contract_fake: bool) -> None:
         if contract_fake:
@@ -989,6 +1129,7 @@ class ProductTransportGate:
         response_model: Any,
         elapsed: float,
         contract_fake: bool,
+        normalization: Mapping[str, Any],
     ) -> dict[str, Any]:
         if response_model != self.design["model"]["generation_model"]:
             mark_transport_failure(self.budget, "transport_model_mismatch")
@@ -1013,6 +1154,7 @@ class ProductTransportGate:
             "content_sha256": canonical_sha256(content),
             "usage": usage,
             "contract_fake": contract_fake,
+            "normalization": dict(normalization),
             "network_calls": 0 if contract_fake else 1,
             "real_model_calls": 0 if contract_fake else 1,
         }
@@ -1028,10 +1170,17 @@ class ProductTransportGate:
         contract_fake: bool = False,
     ) -> dict[str, Any]:
         self._assert_transport_release(contract_fake)
-        messages = _message_rows(call_kwargs.get("messages"))
-        cap = call_kwargs.get("max_tokens")
+        normalized, normalization = normalize_product_openai_call(
+            self.design, call_kwargs
+        )
+        self.normalizations.append(normalization)
+        messages = _message_rows(normalized.get("messages"))
+        cap = normalized.get("max_tokens")
         expected = build_openai_call(self.design, messages, cap)
-        if dict(call_kwargs) != expected:
+        generation_projection = {
+            key: normalized.get(key) for key in expected
+        }
+        if generation_projection != expected:
             raise P3ContractError("openai_product_options_mismatch")
         reserved = self._reserve(
             backend="openai_compatible_local",
@@ -1041,7 +1190,7 @@ class ProductTransportGate:
         )
         started = self.clock()
         try:
-            response = transport(call_kwargs)
+            response = transport(normalized)
         except Exception as exc:
             mark_transport_failure(self.budget, "transport_failure_no_retry")
             raise P3ContractError("transport_failure_no_retry", type(exc).__name__) from exc
@@ -1065,6 +1214,7 @@ class ProductTransportGate:
             response_model=response.get("model"),
             elapsed=elapsed,
             contract_fake=contract_fake,
+            normalization=normalization,
         )
 
     def intercept_native(
@@ -1076,13 +1226,15 @@ class ProductTransportGate:
         contract_fake: bool = False,
     ) -> dict[str, Any]:
         self._assert_transport_release(contract_fake)
-        messages = _message_rows(request_body.get("messages"))
-        options = request_body.get("options")
-        if not isinstance(options, Mapping):
-            raise P3ContractError("native_product_options_mismatch")
+        normalized, normalization = normalize_product_native_call(
+            self.design, request_body
+        )
+        self.normalizations.append(normalization)
+        messages = _message_rows(normalized.get("messages"))
+        options = normalized.get("options")
         cap = options.get("num_predict")
         expected = build_native_call(self.design, messages, cap)
-        if dict(request_body) != expected:
+        if normalized != expected:
             raise P3ContractError("native_product_options_mismatch")
         reserved = self._reserve(
             backend="native_ollama_chat",
@@ -1092,7 +1244,7 @@ class ProductTransportGate:
         )
         started = self.clock()
         try:
-            response = transport(request_body)
+            response = transport(normalized)
         except Exception as exc:
             mark_transport_failure(self.budget, "transport_failure_no_retry")
             raise P3ContractError("transport_failure_no_retry", type(exc).__name__) from exc
@@ -1111,6 +1263,7 @@ class ProductTransportGate:
             response_model=response.get("model"),
             elapsed=elapsed,
             contract_fake=contract_fake,
+            normalization=normalization,
         )
 
 
@@ -1192,10 +1345,12 @@ class ProductCallShapeObserver:
         token_counter: Callable[[Iterable[Mapping[str, str]]], int],
         *,
         maximum_attempts: int = 16,
+        normalize_generation: bool = False,
     ) -> None:
         self.design = design
         self.token_counter = token_counter
         self.maximum_attempts = maximum_attempts
+        self.normalize_generation = normalize_generation
         self.native_url = "http://127.0.0.1:11434/api/chat"
         self.calls: list[dict[str, Any]] = []
 
@@ -1211,6 +1366,7 @@ class ProductCallShapeObserver:
         payload: Mapping[str, Any],
         cap_key: str,
         option_source: Mapping[str, Any],
+        normalization_trace: Mapping[str, Any] | None = None,
     ) -> None:
         if len(self.calls) >= self.maximum_attempts:
             raise P3ContractError("product_call_shape_attempt_cap_exceeded")
@@ -1277,6 +1433,9 @@ class ProductCallShapeObserver:
                     else None
                 ),
                 "normalization": normalization,
+                "adapter_normalization": (
+                    dict(normalization_trace) if normalization_trace is not None else None
+                ),
                 "forwarded_to_transport": False,
                 "rejection_code": "product_call_shape_observed_no_generation",
             }
@@ -1286,12 +1445,19 @@ class ProductCallShapeObserver:
     def observe_openai(self, args: tuple[Any, ...], kwargs: Mapping[str, Any]) -> None:
         if args:
             raise P3ContractError("positional_product_generation_forbidden")
+        payload = dict(kwargs)
+        normalization_trace = None
+        if self.normalize_generation:
+            payload, normalization_trace = normalize_product_openai_call(
+                self.design, payload
+            )
         self._record(
             backend="openai_compatible_local",
-            messages=kwargs.get("messages"),
-            payload=kwargs,
+            messages=payload.get("messages"),
+            payload=payload,
             cap_key="max_tokens",
-            option_source=kwargs,
+            option_source=payload,
+            normalization_trace=normalization_trace,
         )
 
     def observe_native(self, request: Any, args: tuple[Any, ...]) -> None:
@@ -1306,12 +1472,19 @@ class ProductCallShapeObserver:
         options = payload.get("options")
         if not isinstance(options, Mapping):
             options = {}
+        normalization_trace = None
+        if self.normalize_generation:
+            payload, normalization_trace = normalize_product_native_call(
+                self.design, payload
+            )
+            options = payload["options"]
         self._record(
             backend="native_ollama_chat",
             messages=payload.get("messages"),
             payload=payload,
             cap_key="num_predict",
             option_source=options,
+            normalization_trace=normalization_trace,
         )
 
 
@@ -1602,6 +1775,8 @@ def build_product_call_shape_audit(
     design_path: str | Path,
     workspace_root: str | Path,
     case_id: str = "p3-b4-call-shape-fixture",
+    *,
+    normalize_generation: bool = False,
 ) -> dict[str, Any]:
     """Run one isolated product turn while every generation route is blocked."""
 
@@ -1628,7 +1803,11 @@ def build_product_call_shape_audit(
         product = importlib.import_module("uruha_web_ui_product")
         brain_module = product._brain
         tokenizer = LocalQwenTokenizerCandidate()
-        observer = ProductCallShapeObserver(design, tokenizer)
+        observer = ProductCallShapeObserver(
+            design,
+            tokenizer,
+            normalize_generation=normalize_generation,
+        )
         observer.native_url = str(brain_module.M31_SEMANTIC_VERIFIER_URL)
         original_openai = brain_module.OpenAI
         original_urlopen = brain_module.urllib.request.urlopen
@@ -1678,13 +1857,37 @@ def build_product_call_shape_audit(
             "messages" not in call and "content" not in call for call in calls
         ),
     }
+    if normalize_generation:
+        checks.update(
+            {
+                "all_normalized_generation_fields_exact": all(
+                    all(call["normalization"].values()) for call in calls
+                ),
+                "normalization_trace_present": all(
+                    isinstance(call.get("adapter_normalization"), Mapping)
+                    for call in calls
+                ),
+                "messages_and_caps_preserved": all(
+                    call["adapter_normalization"].get("messages_preserved") is True
+                    and call["adapter_normalization"].get("completion_cap_preserved")
+                    is True
+                    for call in calls
+                ),
+            }
+        )
+    phase = "P3-B5" if normalize_generation else "P3-B4"
+    pass_status = (
+        "p3_b5_normalized_shape_audit_pass"
+        if normalize_generation
+        else "p3_b4_call_shape_audit_pass"
+    )
     return {
         "schema": "uruha_p3_product_call_shape_audit_v1",
-        "phase": "P3-B4",
+        "phase": phase,
         "status": (
-            "p3_b4_call_shape_audit_pass"
+            pass_status
             if all(checks.values())
-            else "p3_b4_call_shape_audit_failed"
+            else f"{phase.lower().replace('-', '_')}_call_shape_audit_failed"
         ),
         "design_sha256": design["_design_sha256"],
         "case_sha256": case_workspace["case_sha256"],
@@ -1695,6 +1898,7 @@ def build_product_call_shape_audit(
         "call_shapes": calls,
         "observed_attempts": len(calls),
         "normalization_drift_counts": drift_counts,
+        "adapter_normalization_enabled": normalize_generation,
         "checks": checks,
         "environment": {
             "memory_path_sha256": canonical_sha256(env["URUHA_MEMORY_DB_PATH"]),
@@ -1727,6 +1931,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "tokenizer-contract",
             "tokenizer-run",
             "call-shape-audit",
+            "normalized-shape-audit",
         ),
         required=True,
     )
@@ -1798,6 +2003,7 @@ def main(argv: list[str] | None = None) -> int:
                 payload = build_product_call_shape_audit(
                     args.design,
                     temporary_path / "workspace",
+                    normalize_generation=args.mode == "normalized-shape-audit",
                 )
             payload["ephemeral_workspace_removed_after_audit"] = not temporary_path.exists()
         write_new_json(output, payload)
@@ -1808,6 +2014,7 @@ def main(argv: list[str] | None = None) -> int:
             "offline_tokenizer_contract_pass",
             "provider_binding_pass",
             "p3_b4_call_shape_audit_pass",
+            "p3_b5_normalized_shape_audit_pass",
         } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"

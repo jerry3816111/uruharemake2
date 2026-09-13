@@ -2,29 +2,30 @@
 
 更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B5 frozen adapter normalization（0 generation）
+## 唯一下一步：P3-B6 single-turn real product canary preregistration
 
-狀態：**CALL_SHAPE_OBSERVED／NORMALIZATION_REQUIRED**。P3-B4 在真實 product brain 的 synthetic turn 觀察到
-1 個 native M31 call：model／temperature／think／cap 符合，缺 seed／top_p／num_ctx；432 prompt tokens。所有
-transport 在生成前停止，0 real/network/paid calls；ephemeral workspace 已移除。
+狀態：**NORMALIZED_SHAPE_PASS／REAL_PRODUCT_TURN_UNRELEASED**。P3-B5 同一真實 native request 的 generation drift
+由 3 降為 0：adapter 只補 seed／top_p／num_ctx，messages、432 prompt tokens 與 cap 280 不變；71 項 P3、32 項
+相鄰回歸通過，0 real/network/paid calls。
 
-### P3-B5 before 與單一變因
+### P3-B6 before 與單一變因
 
-before：真實第一個 native request 缺少 frozen design 要求的 seed 20260909、top_p 1、num_ctx 8192；若直接放行，
-三條件不再是相同 generation params，且 provider context limit 無法在 request 中核對。其他欄位已符合，不應改產品 prompt
-或回答邏輯。
+before：token binding 與第一個 call normalization 均通過，但尚未有任何真實 product full-turn；模型回覆後可能出現
+尚未觀察的 OpenAI/native shape、額外 calls、usage 超額或產品 fallback。直接跑 6 cases × 4 turns 會把 sealed developer
+smoke 當整合除錯資料。
 
-單一變因：只在 P3 experimental transport adapter 將既有 OpenAI-compatible／native request 正規化成 frozen model
-generation fields；保留 messages、原本 cap、response_format 與 timeout 等非比較內容。adapter 不得修改 brain 或共同
-history，不得放大 cap，不得接受未知 generation keys。
+單一變因：事前鎖定 `p3-smoke-need-change-zh` 的第一輪 `p3-smoke-01-u1` 作為 product-only canary；只讀 source manifest
+與該輪文字，不讀 annotations／future turns。fresh subprocess、ephemeral DB、同一 qwen2.5:7b digest，最多 4 provider
+calls、aggregate completion 768、wall 60 秒、0 retry；保存 reply 與 runtime trace 供之後評分，但不在此階段打分。
 
-成功：同一 synthetic turn 的 call 經 normalization 後 model、temperature、seed、top_p、num_ctx、think 與 cap 全部符合
-frozen design，仍 0 generation/network/paid、raw text 不落 artifact；原始 drift 與 normalized shape 都可追溯。未知 key、
-缺 cap、cap 超 320、超 4 attempts 或 messages 改變都 fail closed。
+成功：真實產品完成一輪且 visible reply 非空；所有實際 calls 的 model/options/usage 通過 gate，prompt／completion 與 wall
+在共同 budget 內，無 fallback 掩蓋 transport failure；production DB 不可達，source/future/annotation access 可核對，
+checkpoint 完整且不可重打。任何 unobserved shape、cap 缺失、usage 超額、timeout、intent-only 或產品錯誤都保留失敗，
+不修改該 canary 或 release 追分。
 
-允許修改 P3 worker adapter、相稱 tests 與零生成 artifact；不得改 brain、P1/P2、P3 smoke、annotations、frozen
-comparison design/baseline/rubric/threshold。不得讀 confirmation／production DB 或執行 6-case generation。通過後仍需
-另建有限 execution release，不能由 normalization 測試直接放行模型。
+先建立 canary config、crash-safe worker、tests、preflight 與 execution release；release commit 前 0 generation。不得改
+brain、P1/P2、P3 source／annotations、comparison design/baseline/rubric/threshold，不得讀 future／confirmation／production
+DB。canary PASS 後仍需另行 release 三條件 developer smoke，不能把單輪結果當品質或優勢。
 
 ## 工作環境
 
@@ -64,8 +65,8 @@ comparison design/baseline/rubric/threshold。不得讀 confirmation／productio
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- developer smoke 已 sealed、tokenizer binding 已通過；目前只觀察到第一個 native route，後續 response-dependent call
-  shapes 仍可能在第一次 real developer turn 出現並被 gate 拒絕。
+- developer smoke 已 sealed、tokenizer binding 與第一個 native normalization 已通過；P3-B6 尚未 release，產品真實
+  developer turn 與全部 response-dependent routes 仍為 0 evidence。
 
 ## 回報方式
 
