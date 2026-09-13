@@ -2,32 +2,29 @@
 
 更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B3 tokenizer/provider binding probe 單次執行
+## 唯一下一步：P3-B4 isolated product call-shape audit（0 generation）
 
-狀態：**RELEASED_FOR_EXACTLY_8_LOCAL_CALLS／SELF_REVIEW_NOT_INDEPENDENT**。P3-B3 config、程式與 preflight
-已用 SHA 凍結；66 項 P3 contract、32 項相鄰回歸通過。執行前仍是 0 real model/network/paid calls，不代表產品
-品質或優勢。
+狀態：**TOKEN_BINDING_PASS／PRODUCT_CALL_SHAPE_UNOBSERVED**。P3-B3 已依事前 release 執行：兩條 transport、
+4 個 fixtures 的 HF/provider prompt tokens 逐列完全相等，offset 0；8 real/network calls、8 completion tokens、
+6.052747 秒、0 paid。這只放行 token accounting，不代表產品品質或優勢。
 
-### P3-B3 before 與單一變因
+### P3-B4 before 與單一變因
 
-before：本機已找到 offline `Qwen2TokenizerFast` + chat template，但
-`provider_usage_equivalence_validated=false`；real product transport 因此 fail closed。單一變因：事前鎖定極小的
-tokenizer binding probe，將 HF chat-template count 與同一 `qwen2.5:7b` digest 的 OpenAI-compatible／native Ollama
-prompt usage 比較；只驗 token accounting，不評回覆內容。
+before：B1 只證明產品 import 與兩條 transport seam 被 gate 接住，沒有實例化 brain；既有產品 call sites 的
+temperature、timeout、response_format、completion cap 與實際 call 數是否符合 frozen P3 比較契約仍未觀察。若直接跑
+6 × 4 developer smoke，可能在第一次 call 才發現選項漂移，浪費 sealed 執行並留下不可重試的殘缺結果。
 
-prereg config 與 execution release 已建立，不能邊跑邊改規則。固定 4 個不含 P3 smoke／annotations 的 synthetic
-fixtures：前 3 個 fit 每條 transport 的整數 offset，第 4 個為未參與 fit 的 verification fixture；兩 transport 各跑
-4 次，最多 8 local calls、每 call 最多 1 completion token、temperature 0、seed 20260909、top_p 1、num_ctx 8192、
-think false、concurrency 1、0 retry。output 只留 hash，不留文字；先驗 model digest，intent 後中斷不可自動重打。
+單一變因：在 fresh subprocess 與 ephemeral memory 中實例化真實 product brain，用一個不屬於 P3 smoke 的 synthetic
+turn 走真實 `run_turn_debug`，但讓 transport 在生成前 fail closed；只記錄每個 call 的 stage、allowlisted option keys、
+message/token digest、cap 與拒絕原因，不記 raw dialogue。任何網路或生成都是失敗。
 
-成功：每 transport 的前三 fixture offset 必須完全一致，且預先凍結的第 4 fixture 使用該 offset 精確預測 provider
-prompt count；兩 transport 都有 exact usage、model/digest/options 對帳。任一 mismatch、unknown usage、非 localhost、
-額外 call、timeout 或殘缺 intent 都保留為 failed binding，不放行 product smoke，不調 tolerance 或換 fixture。
+成功：brain 真實實例化、production DB 不可達、至少觀察一個 pre-transport call shape、real/network/paid calls 皆 0，
+且結果足以把現有 options/cap drift 列成有限 adapter 規格。失敗：產品在到達 call seam 前崩潰、接觸 production DB、
+發出網路／生成、記錄 raw text 或無法得到任何 call shape；保留失敗，不以 6-case smoke 探路。
 
-唯一允許的下一動作是依
-`research/p3_b3_tokenizer_binding_probe_execution_release_2026-09-14.json` 執行一次；只能產生 8 個本機低 token
-evidence calls。不得改 P3 smoke、annotations、brain、P1/P2、frozen comparison design/baseline/rubric/threshold；
-不能讀 confirmation、production DB 或執行 6-case smoke。
+允許新增 call-shape observer／worker mode、相稱 tests 與零生成 artifact；不得改 brain、P1/P2、P3 smoke、
+annotations、frozen comparison design/baseline/rubric/threshold。不得讀 confirmation／production DB 或執行 6-case
+generation。得到 shape 後另行凍結 adapter normalization；不能從 audit 直接放行生成。
 
 ## 工作環境
 
@@ -67,7 +64,7 @@ evidence calls。不得改 P3 smoke、annotations、brain、P1/P2、frozen compa
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- developer smoke 已 sealed；tokenizer execution release 已凍結但尚未執行，因此 provider binding 尚未成立。
+- developer smoke 已 sealed，tokenizer binding 已通過；產品 full-turn call shape 與 frozen P3 options 的相容性仍未觀察。
 
 ## 回報方式
 
