@@ -4,9 +4,9 @@
 
 ## 唯一下一步：P3-B6 single-turn real product canary preregistration
 
-狀態：**NORMALIZED_SHAPE_PASS／REAL_PRODUCT_TURN_UNRELEASED**。P3-B5 同一真實 native request 的 generation drift
-由 3 降為 0：adapter 只補 seed／top_p／num_ctx，messages、432 prompt tokens 與 cap 280 不變；71 項 P3、32 項
-相鄰回歸通過，0 real/network/paid calls。
+狀態：**RELEASED_FOR_ONE_PRODUCT_CANARY／SELF_REVIEW_NOT_INDEPENDENT**。P3-B6 source/config、worker、preflight
+與 release 已用 SHA 凍結；76 項 P3、32 項相鄰回歸通過。執行前仍是 0 product canary calls；唯一下一動作是
+依 release 跑一次，不能再修改 canary、程式或門檻。
 
 ### P3-B6 before 與單一變因
 
@@ -23,9 +23,10 @@ calls、aggregate completion 768、wall 60 秒、0 retry；保存 reply 與 runt
 checkpoint 完整且不可重打。任何 unobserved shape、cap 缺失、usage 超額、timeout、intent-only 或產品錯誤都保留失敗，
 不修改該 canary 或 release 追分。
 
-先建立 canary config、crash-safe worker、tests、preflight 與 execution release；release commit 前 0 generation。不得改
-brain、P1/P2、P3 source／annotations、comparison design/baseline/rubric/threshold，不得讀 future／confirmation／production
-DB。canary PASS 後仍需另行 release 三條件 developer smoke，不能把單輪結果當品質或優勢。
+canary config、crash-safe worker、tests、preflight 與 execution release 已建立。只能依
+`research/p3_b6_product_canary_execution_release_2026-09-14.json` 執行一次；不得改 brain、P1/P2、P3 source／
+annotations、comparison design/baseline/rubric/threshold，不得讀 future／confirmation／production DB。canary PASS 後
+仍需另行 release 三條件 developer smoke，不能把單輪結果當品質或優勢。
 
 ## 工作環境
 

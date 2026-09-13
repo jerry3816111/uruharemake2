@@ -23,6 +23,7 @@ from p3_product_comparison import (
     freeze_common_source,
     load_design,
     load_developer_smoke_manifests,
+    load_product_canary,
     load_tokenizer_binding_probe,
     make_request,
     map_blind_scores,
@@ -44,6 +45,7 @@ from p3_product_worker import (
     build_openai_call,
     build_tokenizer_probe_contract,
     build_tokenizer_probe_preflight,
+    build_product_canary_preflight,
     claim_case_workspace,
     execute_tokenizer_binding_probe,
     install_product_transport_gate,
@@ -63,6 +65,7 @@ TOKEN_PROBE_RELEASE_PATH = (
 TOKEN_PROBE_RESULT_PATH = (
     ROOT / "analysis" / "p3_b3_tokenizer_binding_probe_result_2026-09-14.json"
 )
+PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
 
 
 def source_fixture():
@@ -151,6 +154,27 @@ def write_token_probe(tmp_path, config):
         encoding="utf-8",
     )
     return probe_path
+
+
+def write_product_canary(tmp_path, config):
+    repo = tmp_path / "repo"
+    for folder in ("configs", "datasets", "analysis"):
+        (repo / folder).mkdir(parents=True, exist_ok=True)
+    (repo / "configs" / "p3_product_comparison_v1.json").write_bytes(
+        DESIGN_PATH.read_bytes()
+    )
+    (repo / "datasets" / "p3_product_canary_source_v1.json").write_bytes(
+        (ROOT / "datasets" / "p3_product_canary_source_v1.json").read_bytes()
+    )
+    (repo / "analysis" / "p3_b3_tokenizer_binding_probe_result_2026-09-14.json").write_bytes(
+        TOKEN_PROBE_RESULT_PATH.read_bytes()
+    )
+    path = repo / "configs" / "p3_product_canary_v1.json"
+    path.write_text(
+        json.dumps(config, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return path
 
 
 def test_contract_manifest_runs_three_conditions_with_zero_real_calls():
@@ -346,6 +370,27 @@ def test_p3_product_adapter_transport_failure_is_terminal_no_retry():
     )
 
 
+def test_p3_product_gate_rejects_provider_prompt_count_drift():
+    design = load_design(DESIGN_PATH)
+    gate = ProductTransportGate(design, lambda messages: 100)
+    messages = [{"role": "user", "content": "fixture"}]
+    assert_code(
+        "provider_prompt_count_mismatch",
+        lambda: gate.intercept_native(
+            stage="provider-count-drift",
+            request_body=build_native_call(design, messages, 128),
+            transport=lambda body: {
+                "model": "qwen2.5:7b",
+                "message": {"content": "うん。"},
+                "prompt_eval_count": 101,
+                "eval_count": 1,
+            },
+            contract_fake=True,
+        ),
+    )
+    assert gate.budget.terminal_failure == "provider_prompt_count_mismatch"
+
+
 def test_p3_product_gate_is_bound_to_the_actual_product_global_seams():
     design = load_design(DESIGN_PATH)
     calls = {"openai": 0, "models": 0, "native": 0}
@@ -401,6 +446,69 @@ def test_p3_product_gate_is_bound_to_the_actual_product_global_seams():
         lambda: brain.urllib.request.urlopen(native_request, timeout=18),
     )
     assert calls == {"openai": 0, "models": 0, "native": 0}
+
+
+def test_p3_native_bound_seam_sends_the_normalized_body_to_transport():
+    design = load_design(DESIGN_PATH)
+    captured = {}
+
+    class Response:
+        def __init__(self, payload):
+            self.payload = payload
+
+        def read(self):
+            return self.payload
+
+        def close(self):
+            pass
+
+    def native_opener(request, **kwargs):
+        captured["body"] = json.loads(request.data.decode("utf-8"))
+        return Response(
+            json.dumps(
+                {
+                    "model": "qwen2.5:7b",
+                    "message": {"content": "うん。"},
+                    "prompt_eval_count": 100,
+                    "eval_count": 1,
+                }
+            ).encode("utf-8")
+        )
+
+    brain = SimpleNamespace(
+        OpenAI=lambda *args, **kwargs: None,
+        urllib=SimpleNamespace(request=SimpleNamespace(urlopen=native_opener)),
+        M31_SEMANTIC_VERIFIER_MODEL="qwen2.5:7b",
+        M31_SEMANTIC_VERIFIER_URL="http://localhost:11434/api/chat",
+    )
+    gate = ProductTransportGate(
+        design,
+        lambda messages: 100,
+        allow_real_transport=True,
+        provider_binding_verified=True,
+    )
+    install_product_transport_gate(brain, gate)
+    messages = [{"role": "user", "content": "fixture"}]
+    original = {
+        "model": "qwen2.5:7b",
+        "messages": messages,
+        "stream": False,
+        "think": False,
+        "options": {"temperature": 0, "num_predict": 128},
+    }
+    request = urllib.request.Request(
+        brain.M31_SEMANTIC_VERIFIER_URL,
+        data=json.dumps(original).encode("utf-8"),
+        method="POST",
+    )
+    response = brain.urllib.request.urlopen(request, timeout=18)
+    assert json.loads(response.read().decode("utf-8"))["message"]["content"] == "うん。"
+    assert captured["body"] == build_native_call(design, messages, 128)
+    assert gate.interceptions[0]["normalization"]["inserted_fields"] == [
+        "options.seed",
+        "options.top_p",
+        "options.num_ctx",
+    ]
 
 
 def test_p3_product_worker_real_entry_import_is_lazy_and_offline(tmp_path):
@@ -642,6 +750,44 @@ def test_p3_tokenizer_binding_probe_result_is_bound_to_frozen_release_and_scope(
     ).hexdigest()
     assert result["status"] == "provider_binding_pass"
     assert result["provider_call_evidence"] == 8
+
+
+def test_p3_product_canary_is_first_turn_fixed_and_non_authorizing():
+    canary = load_product_canary(PRODUCT_CANARY_PATH)
+    assert canary["selection"] == {
+        "rule": "first_case_first_turn_in_frozen_source_manifest",
+        "case_id": "p3-smoke-need-change-zh",
+        "turn_id": "p3-smoke-01-u1",
+        "content_sha256": "75701b9635c545bb6ec8a36d1f4d26be2981ccc6c21dfc9c0ca7eb65b236d55e",
+    }
+    assert canary["_source"]["visible_prefix"] == []
+    assert canary["_source"]["future_turns_included"] is False
+    assert canary["_source"]["annotations_included"] is False
+    assert canary["access_boundary"]["real_model_calls_authorized_by_this_config"] is False
+
+
+def test_p3_product_canary_rejects_selection_or_authorization_drift(tmp_path):
+    config = json.loads(PRODUCT_CANARY_PATH.read_text(encoding="utf-8"))
+    config["selection"]["turn_id"] = "p3-smoke-01-u2"
+    path = write_product_canary(tmp_path / "selection", config)
+    assert_code("product_canary_selection_mismatch", lambda: load_product_canary(path))
+
+    config = json.loads(PRODUCT_CANARY_PATH.read_text(encoding="utf-8"))
+    config["access_boundary"]["real_model_calls_authorized_by_this_config"] = True
+    path = write_product_canary(tmp_path / "authorization", config)
+    assert_code(
+        "product_canary_access_boundary_mismatch",
+        lambda: load_product_canary(path),
+    )
+
+
+def test_p3_product_canary_preflight_reads_no_annotations_or_generation():
+    preflight = build_product_canary_preflight(PRODUCT_CANARY_PATH)
+    assert preflight["status"] == "ready_for_single_product_canary_review"
+    assert preflight["annotations_accessed"] is False
+    assert preflight["runtime_future_turn_access_authorized"] is False
+    assert preflight["network_calls"] == preflight["real_model_calls"] == 0
+    assert all(preflight["checks"].values())
 
 
 def test_p3_tokenizer_binding_probe_rejects_remote_transport(tmp_path):

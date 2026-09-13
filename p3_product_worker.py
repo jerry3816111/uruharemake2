@@ -32,10 +32,12 @@ from p3_product_comparison import (
     P3ContractError,
     canonical_sha256,
     load_design,
+    load_product_canary,
     load_tokenizer_binding_probe,
     make_request,
     mark_transport_failure,
     new_budget,
+    record_condition_wall,
     record_usage,
     reserve_call,
     write_new_json,
@@ -47,6 +49,7 @@ CASE_OWNER_SCHEMA = "uruha_p3_case_owner_v1"
 DRY_RUN_SCHEMA = "uruha_p3_product_worker_dry_run_v1"
 ADAPTER_SCHEMA = "uruha_p3_product_transport_adapter_contract_v1"
 TOKEN_PROBE_RELEASE_SCHEMA = "uruha_p3_tokenizer_binding_probe_execution_release_v1"
+PRODUCT_CANARY_RELEASE_SCHEMA = "uruha_p3_product_canary_execution_release_v1"
 SAFE_SLOT_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 REPO_ROOT = Path(__file__).resolve().parent
 PRODUCTION_DB_PATH = (REPO_ROOT / "uruha_memory_mac_db").resolve()
@@ -232,6 +235,30 @@ def network_forbidden() -> Iterable[list[dict[str, str]]]:
     with mock.patch.object(socket.socket, "connect", blocked_connect), mock.patch.object(
         socket, "create_connection", blocked_create_connection
     ), mock.patch.object(urllib.request, "urlopen", blocked_urlopen):
+        yield attempts
+
+
+@contextmanager
+def localhost_network_only() -> Iterable[list[dict[str, Any]]]:
+    """Allow only loopback sockets and record every connection attempt."""
+
+    attempts: list[dict[str, Any]] = []
+    original_connect = socket.socket.connect
+
+    def guarded_connect(socket_self: Any, address: Any) -> Any:
+        host = address[0] if isinstance(address, tuple) and address else None
+        allowed = host in {"127.0.0.1", "::1", "localhost"}
+        attempts.append(
+            {
+                "target_sha256": canonical_sha256(str(address)),
+                "loopback_allowed": allowed,
+            }
+        )
+        if not allowed:
+            raise P3ContractError("non_localhost_network_forbidden")
+        return original_connect(socket_self, address)
+
+    with mock.patch.object(socket.socket, "connect", guarded_connect):
         yield attempts
 
 
@@ -452,6 +479,158 @@ def validate_tokenizer_probe_release(
         "external_deployment": False,
     }:
         raise P3ContractError("token_probe_release_authorization_mismatch")
+    return dict(release)
+
+
+def build_product_canary_preflight(canary_path: str | Path) -> dict[str, Any]:
+    canary = load_product_canary(canary_path)
+    repo = Path(canary_path).resolve().parent.parent
+    source = canary["_source"]
+    parent_path = (repo / source["parent_source"]["path"]).resolve()
+    parent = _read_json(parent_path)
+    first_case = (parent.get("cases") or [None])[0]
+    first_turn = (
+        (first_case.get("turns") or [None])[0]
+        if isinstance(first_case, Mapping)
+        else None
+    )
+    selection_matches_parent = (
+        isinstance(first_case, Mapping)
+        and isinstance(first_turn, Mapping)
+        and first_case.get("case_id") == source["case_id"]
+        and first_turn.get("turn_id") == source["turn_id"]
+        and first_turn.get("content_sha256") == source["content_sha256"]
+        and first_turn.get("content") == source["content"]
+    )
+    metadata = _ollama_model_metadata(canary["model"]["name"])
+    with network_forbidden() as network_attempts:
+        tokenizer = LocalQwenTokenizerCandidate()
+        prompt_tokens = tokenizer(
+            [{"role": "user", "content": source["content"]}]
+        )
+    checks = {
+        "canary_config_valid": True,
+        "first_case_first_turn_matches_parent": selection_matches_parent,
+        "parent_source_digest_matches": hashlib.sha256(parent_path.read_bytes()).hexdigest()
+        == source["parent_source"]["sha256"],
+        "model_digest_matches": metadata["digest"] == canary["model"]["digest"],
+        "offline_tokenizer_count_available": prompt_tokens > 0,
+        "no_tokenizer_network_attempts": len(network_attempts) == 0,
+        "config_does_not_self_authorize": canary["access_boundary"][
+            "real_model_calls_authorized_by_this_config"
+        ]
+        is False,
+        "runtime_source_has_no_future_or_annotations": source[
+            "future_turns_included"
+        ]
+        is False
+        and source["annotations_included"] is False
+        and source["visible_prefix"] == [],
+    }
+    return {
+        "schema": "uruha_p3_product_canary_preflight_v1",
+        "phase": "P3-B6",
+        "status": (
+            "ready_for_single_product_canary_review"
+            if all(checks.values())
+            else "not_ready_for_single_product_canary_review"
+        ),
+        "canary_sha256": canary["_canary_sha256"],
+        "selection": canary["selection"],
+        "source_path": canary["canary_source"]["path"],
+        "source_sha256": canary["canary_source"]["sha256"],
+        "prompt_tokens_without_product_system_prompt": prompt_tokens,
+        "model_metadata": metadata,
+        "checks": checks,
+        "parent_future_turns_read_for_selection_audit": True,
+        "parent_future_turns_retained": False,
+        "runtime_future_turn_access_authorized": False,
+        "annotations_accessed": False,
+        "network_attempts": network_attempts,
+        "network_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "claim_boundary": (
+            "This preflight verifies the first-item selection and local runtime inputs only. "
+            "It does not authorize or execute product generation."
+        ),
+    }
+
+
+def validate_product_canary_release(
+    release_path: str | Path,
+    canary: Mapping[str, Any],
+) -> dict[str, Any]:
+    release_file = Path(release_path)
+    release = _read_json(release_file)
+    if set(release) != {
+        "schema",
+        "phase",
+        "status",
+        "review_kind",
+        "canary",
+        "implementation_sha256",
+        "preflight",
+        "authorization",
+        "claim_boundary",
+    } or release.get("schema") != PRODUCT_CANARY_RELEASE_SCHEMA:
+        raise P3ContractError("product_canary_release_schema_mismatch")
+    if release.get("phase") != "P3-B6" or release.get("status") != (
+        "released_for_single_local_product_canary"
+    ):
+        raise P3ContractError("product_canary_release_status_mismatch")
+    if release.get("review_kind") != "same_task_self_review_not_independent":
+        raise P3ContractError("product_canary_release_review_mismatch")
+    repo = release_file.resolve().parent.parent
+    canary_ref = release.get("canary")
+    if not isinstance(canary_ref, Mapping) or set(canary_ref) != {"path", "sha256"}:
+        raise P3ContractError("product_canary_release_canary_invalid")
+    if canary_ref.get("sha256") != canary.get("_canary_sha256") or (
+        repo / str(canary_ref.get("path"))
+    ).resolve() != Path(str(canary.get("_canary_path"))).resolve():
+        raise P3ContractError("product_canary_release_canary_mismatch")
+    implementation = release.get("implementation_sha256")
+    if not isinstance(implementation, Mapping) or set(implementation) != {
+        "p3_product_comparison.py",
+        "p3_product_worker.py",
+        "test_p3_product_comparison.py",
+    }:
+        raise P3ContractError("product_canary_release_implementation_invalid")
+    for name, expected_sha in implementation.items():
+        path = repo / name
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected_sha:
+            raise P3ContractError("product_canary_release_implementation_mismatch", name)
+    preflight = release.get("preflight")
+    if not isinstance(preflight, Mapping) or set(preflight) != {"path", "sha256", "status"}:
+        raise P3ContractError("product_canary_release_preflight_invalid")
+    preflight_path = (repo / str(preflight.get("path"))).resolve()
+    if (
+        not preflight_path.is_file()
+        or hashlib.sha256(preflight_path.read_bytes()).hexdigest()
+        != preflight.get("sha256")
+        or preflight.get("status") != "ready_for_single_product_canary_review"
+    ):
+        raise P3ContractError("product_canary_release_preflight_mismatch")
+    if release.get("authorization") != {
+        "run_id": "p3-b6-single-product-canary-v1",
+        "localhost_only": True,
+        "model": "qwen2.5:7b",
+        "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "case_id": "p3-smoke-need-change-zh",
+        "turn_id": "p3-smoke-01-u1",
+        "source_turns_exact": 1,
+        "provider_calls_max": 4,
+        "completion_tokens_total_max": 768,
+        "automatic_retry": False,
+        "checkpoint_root": "analysis/p3_b6_product_canary_checkpoint_v1",
+        "result_path": "analysis/p3_b6_product_canary_result_2026-09-14.json",
+        "future_turn_access": False,
+        "annotation_access": False,
+        "confirmation_access": False,
+        "production_database_access": False,
+        "external_deployment": False,
+    }:
+        raise P3ContractError("product_canary_release_authorization_mismatch")
     return dict(release)
 
 
@@ -1086,6 +1265,7 @@ class ProductTransportGate:
         self.budget = new_budget(design, "product_system")
         self.interceptions: list[dict[str, Any]] = []
         self.normalizations: list[dict[str, Any]] = []
+        self.rejections: list[dict[str, str]] = []
 
     def _assert_transport_release(self, contract_fake: bool) -> None:
         if contract_fake:
@@ -1137,6 +1317,9 @@ class ProductTransportGate:
         if not isinstance(content, str):
             mark_transport_failure(self.budget, "invalid_transport_payload")
             raise P3ContractError("invalid_transport_payload")
+        if prompt_tokens != reservation.get("prompt_tokens"):
+            mark_transport_failure(self.budget, "provider_prompt_count_mismatch")
+            raise P3ContractError("provider_prompt_count_mismatch")
         usage = record_usage(
             self.budget,
             {
@@ -1307,11 +1490,22 @@ class _GuardedCompletions:
             captured["response"] = response
             return _openai_response_mapping(response)
 
-        self._gate.intercept_openai(
-            stage=f"product_openai_{self._gate.budget.attempts + 1}",
-            call_kwargs=kwargs,
-            transport=transport,
-        )
+        stage = f"product_openai_{self._gate.budget.attempts + 1}"
+        try:
+            self._gate.intercept_openai(
+                stage=stage,
+                call_kwargs=kwargs,
+                transport=transport,
+            )
+        except P3ContractError as exc:
+            self._gate.rejections.append(
+                {
+                    "backend": "openai_compatible_local",
+                    "stage": stage,
+                    "code": exc.code,
+                }
+            )
+            raise
         return captured["response"]
 
 
@@ -1565,7 +1759,13 @@ def install_product_transport_gate(
         captured: dict[str, Any] = {}
 
         def transport(body: Mapping[str, Any]) -> Mapping[str, Any]:
-            raw_response = original_urlopen(request, **kwargs)
+            normalized_request = urllib.request.Request(
+                request.full_url,
+                data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+                headers=dict(request.headers),
+                method=request.get_method(),
+            )
+            raw_response = original_urlopen(normalized_request, **kwargs)
             try:
                 raw_payload = raw_response.read()
             finally:
@@ -1581,11 +1781,22 @@ def install_product_transport_gate(
                 raise P3ContractError("invalid_transport_payload")
             return value
 
-        gate.intercept_native(
-            stage=f"product_native_{gate.budget.attempts + 1}",
-            request_body=request_body,
-            transport=transport,
-        )
+        stage = f"product_native_{gate.budget.attempts + 1}"
+        try:
+            gate.intercept_native(
+                stage=stage,
+                request_body=request_body,
+                transport=transport,
+            )
+        except P3ContractError as exc:
+            gate.rejections.append(
+                {
+                    "backend": "native_ollama_chat",
+                    "stage": stage,
+                    "code": exc.code,
+                }
+            )
+            raise
         return _BufferedNativeResponse(captured["payload"])
 
     guarded_openai._p3_product_gate = gate  # type: ignore[attr-defined]
@@ -1920,6 +2131,241 @@ def build_product_call_shape_audit(
     }
 
 
+def run_local_product_canary(
+    canary_path: str | Path,
+    release_path: str | Path,
+    checkpoint_root: str | Path,
+) -> dict[str, Any]:
+    """Execute the one released product canary once, with crash-safe refusal."""
+
+    canary = load_product_canary(canary_path)
+    release = validate_product_canary_release(release_path, canary)
+    repo = Path(release_path).resolve().parent.parent
+    expected_checkpoint = (repo / release["authorization"]["checkpoint_root"]).resolve()
+    actual_checkpoint = Path(checkpoint_root).resolve()
+    if actual_checkpoint != expected_checkpoint:
+        raise P3ContractError("product_canary_checkpoint_path_mismatch")
+    intent_path = actual_checkpoint / "intent.json"
+    complete_path = actual_checkpoint / "complete.json"
+    failure_path = actual_checkpoint / "failure.json"
+    release_sha = hashlib.sha256(Path(release_path).read_bytes()).hexdigest()
+    request_commitment = {
+        "canary_sha256": canary["_canary_sha256"],
+        "source_sha256": canary["canary_source"]["sha256"],
+        "content_sha256": canary["selection"]["content_sha256"],
+        "release_sha256": release_sha,
+        "model": canary["model"],
+        "budget": canary["budget"],
+    }
+    request_sha = canonical_sha256(request_commitment)
+    if complete_path.exists():
+        complete = _read_json(complete_path)
+        _verify_signed_record(complete, "product_canary_complete_digest_mismatch")
+        if complete.get("request_sha256") != request_sha:
+            raise P3ContractError("product_canary_complete_source_mismatch")
+        saved = complete.get("result")
+        if not isinstance(saved, Mapping):
+            raise P3ContractError("product_canary_complete_invalid")
+        return {
+            **dict(saved),
+            "reused": True,
+            "real_model_calls": 0,
+            "network_calls": 0,
+        }
+    if intent_path.exists():
+        intent = _read_json(intent_path)
+        _verify_signed_record(intent, "product_canary_intent_digest_mismatch")
+        if intent.get("request_sha256") != request_sha:
+            raise P3ContractError("product_canary_intent_source_mismatch")
+        raise P3ContractError("product_canary_intent_without_complete_no_retry")
+    write_new_json(
+        intent_path,
+        _signed_record(
+            {
+                "schema": "uruha_p3_product_canary_intent_v1",
+                "request_sha256": request_sha,
+                "case_id": canary["selection"]["case_id"],
+                "turn_id": canary["selection"]["turn_id"],
+            }
+        ),
+    )
+    try:
+        metadata = _ollama_model_metadata(canary["model"]["name"])
+        if metadata["digest"] != canary["model"]["digest"]:
+            raise P3ContractError("product_canary_runtime_model_digest_mismatch")
+        design = load_design(repo / canary["comparison_design"]["path"])
+        source = canary["_source"]
+        import tempfile
+
+        with tempfile.TemporaryDirectory(prefix="uruha-p3b6-product-canary-") as temporary:
+            temporary_path = Path(temporary)
+            case_workspace = claim_case_workspace(
+                temporary_path / "workspace",
+                source["case_id"],
+            )
+            env = prepare_isolated_environment(case_workspace, design)
+            forbidden_modules = {
+                "uruha_brain_mac",
+                "uruha_web_ui",
+                "uruha_web_ui_product",
+            }
+            already_loaded = sorted(forbidden_modules.intersection(sys.modules))
+            if already_loaded:
+                raise P3ContractError("product_import_not_fresh", ",".join(already_loaded))
+            with localhost_network_only() as network_attempts:
+                import project_paths
+
+                paths = case_workspace["paths"]
+                project_paths.WEB_LOG_DIR = str(paths["web_logs"])
+                project_paths.WEB_CONVERSATION_LOG_JSONL_PATH = env[
+                    "URUHA_WEB_LOG_JSONL_PATH"
+                ]
+                project_paths.WEB_CONVERSATION_LOG_TXT_PATH = env[
+                    "URUHA_WEB_LOG_TXT_PATH"
+                ]
+                product = importlib.import_module("uruha_web_ui_product")
+                brain_module = product._brain
+                tokenizer = LocalQwenTokenizerCandidate()
+                gate = ProductTransportGate(
+                    design,
+                    tokenizer,
+                    allow_real_transport=True,
+                    provider_binding_verified=True,
+                )
+                binding = install_product_transport_gate(brain_module, gate)
+                initialization_started = time.monotonic()
+                brain_instance = product.RUNTIME.get_brain()
+                initialization_seconds = time.monotonic() - initialization_started
+                turn_started = time.monotonic()
+                turn = brain_instance.run_turn_debug(
+                    source["content"],
+                    input_context={"input_mode": "text", "acoustic_summary": None},
+                )
+                turn_seconds = time.monotonic() - turn_started
+                record_condition_wall(gate.budget, turn_seconds)
+                reply = turn.get("reply") if isinstance(turn, Mapping) else None
+                runtime_trace = (
+                    turn.get("runtime_trace") if isinstance(turn, Mapping) else None
+                )
+                logic = turn.get("logic") if isinstance(turn, Mapping) else None
+                memory_snapshot = brain_instance.memory.get_runtime_snapshot()
+                production_db_unreachable = (
+                    Path(brain_module.DB_PATH).resolve() == paths["memory"].resolve()
+                    and Path(brain_module.DB_PATH).resolve() != PRODUCTION_DB_PATH
+                )
+        ephemeral_removed = not temporary_path.exists()
+        calls = list(gate.interceptions)
+        budget = gate.budget.snapshot()
+        checks = {
+            "nonempty_visible_reply": isinstance(reply, str) and bool(reply.strip()),
+            "turn_completed_without_transport_fallback": not gate.rejections
+            and budget["terminal_failure"] is None
+            and budget["attempts"] == budget["completed_calls"],
+            "at_least_one_provider_call": len(calls) >= 1,
+            "all_provider_calls_accounted": len(calls)
+            == budget["completed_calls"]
+            == budget["attempts"]
+            and len(calls) <= canary["budget"]["provider_calls_max"],
+            "all_generation_options_exact": all(
+                row["normalization"].get("messages_preserved") is True
+                and row["normalization"].get("completion_cap_preserved") is True
+                for row in calls
+            ),
+            "prompt_budget_within_limit": budget["actual_prompt_tokens"]
+            <= canary["budget"]["aggregate_prompt_tokens_max"],
+            "completion_budget_within_limit": budget["actual_completion_tokens"]
+            <= canary["budget"]["aggregate_completion_tokens_max"],
+            "turn_wall_within_limit": turn_seconds
+            <= canary["budget"]["wall_seconds_max"],
+            "localhost_only": all(
+                attempt["loopback_allowed"] is True for attempt in network_attempts
+            ),
+            "production_db_unreachable": production_db_unreachable,
+            "ephemeral_workspace_removed": ephemeral_removed,
+            "runtime_trace_retained": isinstance(runtime_trace, Mapping),
+            "source_boundary_exact": source["visible_prefix"] == []
+            and source["future_turns_included"] is False
+            and source["annotations_included"] is False,
+        }
+        result = {
+            "schema": "uruha_p3_product_canary_result_v1",
+            "phase": "P3-B6",
+            "status": (
+                "product_canary_pass"
+                if all(checks.values())
+                else "product_canary_failed_retained"
+            ),
+            "request_sha256": request_sha,
+            "release_sha256": release_sha,
+            "canary_sha256": canary["_canary_sha256"],
+            "selection": canary["selection"],
+            "visible_reply": reply,
+            "visible_reply_sha256": canonical_sha256(reply),
+            "logic": logic,
+            "runtime_trace": runtime_trace,
+            "memory_snapshot": memory_snapshot,
+            "calls": calls,
+            "normalizations": gate.normalizations,
+            "rejections": gate.rejections,
+            "budget": budget,
+            "checks": checks,
+            "model_metadata": metadata,
+            "network_attempts": network_attempts,
+            "provider_call_evidence": len(calls),
+            "real_model_calls": sum(row["real_model_calls"] for row in calls),
+            "network_calls": sum(row["network_calls"] for row in calls),
+            "paid_calls": 0,
+            "actual_prompt_tokens": budget["actual_prompt_tokens"],
+            "actual_completion_tokens": budget["actual_completion_tokens"],
+            "initialization_seconds": round(initialization_seconds, 6),
+            "turn_wall_seconds": round(turn_seconds, 6),
+            "ephemeral_workspace_removed": ephemeral_removed,
+            "source_turns_accessed": 1,
+            "future_turns_accessed": 0,
+            "annotations_accessed": 0,
+            "confirmation_accessed": 0,
+            "production_database_accessed": False,
+            "raw_provider_payload_retained": False,
+            "reused": False,
+            "claim_boundary": (
+                "This is one developer-smoke product integration canary. It is not a "
+                "baseline comparison, quality score, holdout, human preference, or advantage result."
+            ),
+        }
+        json.dumps(result, ensure_ascii=False)
+        write_new_json(
+            complete_path,
+            _signed_record(
+                {
+                    "schema": "uruha_p3_product_canary_complete_v1",
+                    "request_sha256": request_sha,
+                    "result": result,
+                }
+            ),
+        )
+        return result
+    except Exception as exc:
+        code = exc.code if isinstance(exc, P3ContractError) else "product_canary_execution_failure_no_retry"
+        if not failure_path.exists():
+            write_new_json(
+                failure_path,
+                _signed_record(
+                    {
+                        "schema": "uruha_p3_product_canary_failure_v1",
+                        "request_sha256": request_sha,
+                        "code": code,
+                        "error_type": type(exc).__name__,
+                        "error_sha256": canonical_sha256(str(exc)),
+                    }
+                ),
+            )
+        if isinstance(exc, P3ContractError):
+            raise
+        raise P3ContractError(
+            "product_canary_execution_failure_no_retry", type(exc).__name__
+        ) from exc
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -1932,6 +2378,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "tokenizer-run",
             "call-shape-audit",
             "normalized-shape-audit",
+            "product-canary-preflight",
+            "product-canary-run",
         ),
         required=True,
     )
@@ -1943,6 +2391,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--probe")
     parser.add_argument("--probe-release")
     parser.add_argument("--checkpoint-root")
+    parser.add_argument("--canary")
+    parser.add_argument("--canary-release")
     return parser.parse_args(argv)
 
 
@@ -1995,6 +2445,25 @@ def main(argv: list[str] | None = None) -> int:
                 args.probe_release,
                 args.checkpoint_root,
             )
+        elif args.mode == "product-canary-preflight":
+            if not args.canary:
+                raise P3ContractError("product_canary_path_required")
+            payload = build_product_canary_preflight(args.canary)
+        elif args.mode == "product-canary-run":
+            if not args.canary or not args.canary_release or not args.checkpoint_root:
+                raise P3ContractError("product_canary_run_artifacts_required")
+            release = _read_json(Path(args.canary_release))
+            repo = Path(args.canary_release).resolve().parent.parent
+            expected_output = (
+                repo / str((release.get("authorization") or {}).get("result_path"))
+            ).resolve()
+            if output.resolve() != expected_output:
+                raise P3ContractError("product_canary_result_path_mismatch")
+            payload = run_local_product_canary(
+                args.canary,
+                args.canary_release,
+                args.checkpoint_root,
+            )
         else:
             import tempfile
 
@@ -2015,10 +2484,18 @@ def main(argv: list[str] | None = None) -> int:
             "provider_binding_pass",
             "p3_b4_call_shape_audit_pass",
             "p3_b5_normalized_shape_audit_pass",
+            "ready_for_single_product_canary_review",
+            "product_canary_pass",
         } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"
-        phase = "P3-B3" if args.mode.startswith("tokenizer-") else "P3-B1"
+        phase = (
+            "P3-B3"
+            if args.mode.startswith("tokenizer-")
+            else "P3-B6"
+            if args.mode.startswith("product-canary-")
+            else "P3-B1"
+        )
         failure = {
             "schema": "uruha_p3_product_worker_failure_v1",
             "phase": phase,

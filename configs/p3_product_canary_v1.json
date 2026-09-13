@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_p3_product_canary_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "single_turn_real_product_integration_canary_before_developer_smoke",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "canary_source": {
+    "path": "datasets/p3_product_canary_source_v1.json",
+    "sha256": "29666448033ba387c0bd76abc1d573a32f1dc63bee3af3666657023332054810"
+  },
+  "tokenizer_binding_result": {
+    "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+    "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+    "required_status": "provider_binding_pass"
+  },
+  "selection": {
+    "rule": "first_case_first_turn_in_frozen_source_manifest",
+    "case_id": "p3-smoke-need-change-zh",
+    "turn_id": "p3-smoke-01-u1",
+    "content_sha256": "75701b9635c545bb6ec8a36d1f4d26be2981ccc6c21dfc9c0ca7eb65b236d55e"
+  },
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false
+  },
+  "budget": {
+    "provider_calls_max": 4,
+    "aggregate_prompt_tokens_max": 32768,
+    "aggregate_completion_tokens_max": 768,
+    "per_call_completion_tokens_max": 320,
+    "wall_seconds_max": 60,
+    "concurrency": 1,
+    "automatic_retry": false
+  },
+  "retention": {
+    "reply_text": true,
+    "runtime_trace": true,
+    "raw_provider_payload": false,
+    "provider_output_hash": true,
+    "checkpoint_intent_without_complete_terminal": true
+  },
+  "access_boundary": {
+    "source_turns_exact": 1,
+    "future_turns": false,
+    "annotations": false,
+    "confirmation": false,
+    "production_database": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "nonempty_visible_reply": true,
+    "turn_completed_without_transport_fallback": true,
+    "all_provider_calls_accounted": true,
+    "all_generation_options_exact": true,
+    "budget_violations": 0,
+    "ephemeral_workspace_removed": true
+  }
+}

@@ -167,6 +167,23 @@ TOKEN_BINDING_OPTION_KEYS = frozenset(
 TOKEN_BINDING_FIXTURE_KEYS = frozenset(
     {"fixture_id", "role", "messages_sha256", "messages"}
 )
+PRODUCT_CANARY_SCHEMA = "uruha_p3_product_canary_v1"
+PRODUCT_CANARY_ROOT_KEYS = frozenset(
+    {
+        "schema",
+        "status",
+        "purpose",
+        "comparison_design",
+        "canary_source",
+        "tokenizer_binding_result",
+        "selection",
+        "model",
+        "budget",
+        "retention",
+        "access_boundary",
+        "success",
+    }
+)
 
 
 class P3ContractError(ValueError):
@@ -404,6 +421,155 @@ def load_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
     frozen = json.loads(json.dumps(config, ensure_ascii=False))
     frozen["_probe_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
     frozen["_probe_path"] = str(config_path.resolve())
+    return frozen
+
+
+def load_product_canary(path: str | Path) -> dict[str, Any]:
+    """Load the frozen, non-authorizing single-turn P3 product canary."""
+
+    config_path = Path(path)
+    config = _load_json(config_path)
+    _require_exact_keys(config, PRODUCT_CANARY_ROOT_KEYS, "product_canary_root_allowlist")
+    if config.get("schema") != PRODUCT_CANARY_SCHEMA:
+        raise P3ContractError("product_canary_schema_mismatch")
+    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != (
+        "single_turn_real_product_integration_canary_before_developer_smoke"
+    ):
+        raise P3ContractError("product_canary_status_mismatch")
+    repo = config_path.resolve().parent.parent
+    expected_refs = {
+        "comparison_design": {
+            "keys": {"path", "sha256"},
+            "path": "configs/p3_product_comparison_v1.json",
+            "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+        },
+        "canary_source": {
+            "keys": {"path", "sha256"},
+            "path": "datasets/p3_product_canary_source_v1.json",
+            "sha256": "29666448033ba387c0bd76abc1d573a32f1dc63bee3af3666657023332054810",
+        },
+        "tokenizer_binding_result": {
+            "keys": {"path", "sha256", "required_status"},
+            "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+            "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+            "required_status": "provider_binding_pass",
+        },
+    }
+    resolved_refs: dict[str, Path] = {}
+    for name, expected in expected_refs.items():
+        value = config.get(name)
+        if not isinstance(value, Mapping) or set(value) != expected["keys"]:
+            raise P3ContractError("product_canary_reference_invalid", name)
+        if dict(value) != {key: expected[key] for key in expected["keys"]}:
+            raise P3ContractError("product_canary_reference_mismatch", name)
+        resolved = (repo / value["path"]).resolve()
+        if not _is_path_inside(resolved, repo) or not resolved.is_file():
+            raise P3ContractError("product_canary_reference_missing", name)
+        if hashlib.sha256(resolved.read_bytes()).hexdigest() != value["sha256"]:
+            raise P3ContractError("product_canary_reference_digest_mismatch", name)
+        resolved_refs[name] = resolved
+    source = _load_json(resolved_refs["canary_source"])
+    if set(source) != {
+        "schema",
+        "split",
+        "selection_rule",
+        "parent_source",
+        "case_id",
+        "turn_id",
+        "session_id",
+        "language",
+        "content",
+        "content_sha256",
+        "visible_prefix",
+        "future_turns_included",
+        "annotations_included",
+    } or source != {
+        "schema": "uruha_p3_product_canary_source_v1",
+        "split": "developer_smoke_canary",
+        "selection_rule": "first_case_first_turn_in_frozen_source_manifest",
+        "parent_source": {
+            "path": "datasets/p3_developer_smoke_source_v1.json",
+            "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
+        },
+        "case_id": "p3-smoke-need-change-zh",
+        "turn_id": "p3-smoke-01-u1",
+        "session_id": "p3-smoke-01-s1",
+        "language": "zh",
+        "content": "最近下班後我總是很煩，什麼都不想做。",
+        "content_sha256": "75701b9635c545bb6ec8a36d1f4d26be2981ccc6c21dfc9c0ca7eb65b236d55e",
+        "visible_prefix": [],
+        "future_turns_included": False,
+        "annotations_included": False,
+    }:
+        raise P3ContractError("product_canary_source_mismatch")
+    if canonical_sha256(source["content"]) != source["content_sha256"]:
+        raise P3ContractError("product_canary_content_digest_mismatch")
+    binding = _load_json(resolved_refs["tokenizer_binding_result"])
+    if (
+        binding.get("status") != "provider_binding_pass"
+        or binding.get("binding_verified") is not True
+        or binding.get("provider_call_evidence") != 8
+    ):
+        raise P3ContractError("product_canary_tokenizer_binding_invalid")
+    if config.get("selection") != {
+        "rule": "first_case_first_turn_in_frozen_source_manifest",
+        "case_id": source["case_id"],
+        "turn_id": source["turn_id"],
+        "content_sha256": source["content_sha256"],
+    }:
+        raise P3ContractError("product_canary_selection_mismatch")
+    if config.get("model") != {
+        "name": "qwen2.5:7b",
+        "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "temperature": 0,
+        "seed": 20260909,
+        "top_p": 1,
+        "num_ctx": 8192,
+        "think": False,
+    }:
+        raise P3ContractError("product_canary_model_mismatch")
+    if config.get("budget") != {
+        "provider_calls_max": 4,
+        "aggregate_prompt_tokens_max": 32768,
+        "aggregate_completion_tokens_max": 768,
+        "per_call_completion_tokens_max": 320,
+        "wall_seconds_max": 60,
+        "concurrency": 1,
+        "automatic_retry": False,
+    }:
+        raise P3ContractError("product_canary_budget_mismatch")
+    if config.get("retention") != {
+        "reply_text": True,
+        "runtime_trace": True,
+        "raw_provider_payload": False,
+        "provider_output_hash": True,
+        "checkpoint_intent_without_complete_terminal": True,
+    }:
+        raise P3ContractError("product_canary_retention_mismatch")
+    if config.get("access_boundary") != {
+        "source_turns_exact": 1,
+        "future_turns": False,
+        "annotations": False,
+        "confirmation": False,
+        "production_database": False,
+        "external_deployment": False,
+        "remote_paid_calls": False,
+        "real_model_calls_authorized_by_this_config": False,
+    }:
+        raise P3ContractError("product_canary_access_boundary_mismatch")
+    if config.get("success") != {
+        "nonempty_visible_reply": True,
+        "turn_completed_without_transport_fallback": True,
+        "all_provider_calls_accounted": True,
+        "all_generation_options_exact": True,
+        "budget_violations": 0,
+        "ephemeral_workspace_removed": True,
+    }:
+        raise P3ContractError("product_canary_success_mismatch")
+    frozen = json.loads(json.dumps(config, ensure_ascii=False))
+    frozen["_canary_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    frozen["_canary_path"] = str(config_path.resolve())
+    frozen["_source"] = source
     return frozen
 
 
