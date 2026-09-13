@@ -1442,6 +1442,11 @@ def run_call_once(
         )
         exact_usage = dict(usage)
         exact_usage.setdefault("wall_seconds", elapsed)
+        provider_prompt_tokens = _require_exact_int(
+            exact_usage.get("prompt_tokens"), "prompt_tokens"
+        )
+        if provider_prompt_tokens != reservation["prompt_tokens"]:
+            raise P3ContractError("provider_prompt_count_mismatch")
         recorded = record_usage(budget, exact_usage, reservation)
         result = {
             "content": content,
@@ -1573,6 +1578,7 @@ def run_condition(
     item_id: str,
     token_counter: Callable[[Iterable[Mapping[str, str]]], int],
     product_worker: Callable[..., Mapping[str, Any]] | None = None,
+    backend: str = "fake_local",
     clock: Callable[[], float] = time.monotonic,
 ) -> dict[str, Any]:
     """Run one condition using injected token evidence, transport, and worker."""
@@ -1603,6 +1609,7 @@ def run_condition(
             messages=messages,
             prompt_tokens=count,
             max_completion_tokens=cap,
+            backend=backend,
         )
         result = run_call_once(
             budget=budget,

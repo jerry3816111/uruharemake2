@@ -30,6 +30,7 @@ from unittest import mock
 
 from p3_product_comparison import (
     P3ContractError,
+    build_generation_view,
     canonical_sha256,
     load_design,
     load_product_canary,
@@ -40,6 +41,7 @@ from p3_product_comparison import (
     record_condition_wall,
     record_usage,
     reserve_call,
+    run_condition,
     write_new_json,
 )
 
@@ -50,6 +52,7 @@ DRY_RUN_SCHEMA = "uruha_p3_product_worker_dry_run_v1"
 ADAPTER_SCHEMA = "uruha_p3_product_transport_adapter_contract_v1"
 TOKEN_PROBE_RELEASE_SCHEMA = "uruha_p3_tokenizer_binding_probe_execution_release_v1"
 PRODUCT_CANARY_RELEASE_SCHEMA = "uruha_p3_product_canary_execution_release_v1"
+CANARY_BASELINE_RELEASE_SCHEMA = "uruha_p3_canary_baselines_execution_release_v1"
 SAFE_SLOT_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 REPO_ROOT = Path(__file__).resolve().parent
 PRODUCTION_DB_PATH = (REPO_ROOT / "uruha_memory_mac_db").resolve()
@@ -634,6 +637,248 @@ def validate_product_canary_release(
     return dict(release)
 
 
+def load_canary_baselines(path: str | Path) -> dict[str, Any]:
+    config_path = Path(path)
+    config = _read_json(config_path)
+    if set(config) != {
+        "schema",
+        "status",
+        "purpose",
+        "comparison_design",
+        "canary",
+        "locked_product_result",
+        "tokenizer_binding_result",
+        "conditions",
+        "generation",
+        "transport",
+        "execution_boundary",
+        "success",
+    } or config.get("schema") != "uruha_p3_canary_baselines_v1":
+        raise P3ContractError("canary_baselines_schema_mismatch")
+    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != (
+        "same_model_direct_and_deliberate_baselines_for_locked_product_canary"
+    ):
+        raise P3ContractError("canary_baselines_status_mismatch")
+    repo = config_path.resolve().parent.parent
+    refs = {
+        "comparison_design": (
+            "configs/p3_product_comparison_v1.json",
+            "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+            None,
+        ),
+        "canary": (
+            "configs/p3_product_canary_v1.json",
+            "6dbcf9072592437e06d56f81a60b0199a9edaa3f8ff70759dc081ee99eb91b19",
+            None,
+        ),
+        "locked_product_result": (
+            "analysis/p3_b6_product_canary_result_2026-09-14.json",
+            "9a412e765c9f29c0d3dc71643ae88e4376dc3df3a2f59739cc1ae86555a75cc4",
+            "product_canary_pass",
+        ),
+        "tokenizer_binding_result": (
+            "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+            "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+            "provider_binding_pass",
+        ),
+    }
+    resolved: dict[str, Path] = {}
+    for name, (expected_path, expected_sha, required_status) in refs.items():
+        value = config.get(name)
+        expected = {"path": expected_path, "sha256": expected_sha}
+        if required_status is not None:
+            expected["required_status"] = required_status
+        if value != expected:
+            raise P3ContractError("canary_baselines_reference_mismatch", name)
+        reference_path = (repo / expected_path).resolve()
+        if not _is_relative_to(reference_path, repo) or not reference_path.is_file():
+            raise P3ContractError("canary_baselines_reference_missing", name)
+        if hashlib.sha256(reference_path.read_bytes()).hexdigest() != expected_sha:
+            raise P3ContractError("canary_baselines_reference_digest_mismatch", name)
+        resolved[name] = reference_path
+    canary = load_product_canary(resolved["canary"])
+    product = _read_json(resolved["locked_product_result"])
+    binding = _read_json(resolved["tokenizer_binding_result"])
+    if (
+        product.get("status") != "product_canary_pass"
+        or product.get("selection") != canary["selection"]
+        or binding.get("status") != "provider_binding_pass"
+        or binding.get("binding_verified") is not True
+    ):
+        raise P3ContractError("canary_baselines_upstream_result_invalid")
+    if config.get("conditions") != [
+        "full_history_direct",
+        "full_history_deliberate",
+    ]:
+        raise P3ContractError("canary_baselines_conditions_mismatch")
+    if config.get("generation") != {
+        "model": "qwen2.5:7b",
+        "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "temperature": 0,
+        "seed": 20260909,
+        "top_p": 1,
+        "num_ctx": 8192,
+        "think": False,
+        "direct_completion_cap": 768,
+        "deliberate_completion_caps": [256, 256, 256],
+    }:
+        raise P3ContractError("canary_baselines_generation_mismatch")
+    if config.get("transport") != {
+        "backend": "openai_compatible_local",
+        "url": "http://127.0.0.1:11434/v1/chat/completions",
+        "per_call_timeout_seconds": 60,
+    }:
+        raise P3ContractError("canary_baselines_transport_mismatch")
+    design = load_design(resolved["comparison_design"])
+    generation = config["generation"]
+    if (
+        generation["model"] != design["model"]["generation_model"]
+        or generation["temperature"] != design["model"]["temperature"]
+        or generation["seed"] != design["model"]["seed"]
+        or generation["top_p"] != design["model"]["top_p"]
+        or generation["num_ctx"] != design["model"]["num_ctx"]
+        or generation["think"] != design["model"]["think"]
+        or generation["direct_completion_cap"]
+        != design["budget"]["per_condition_turn"]["aggregate_completion_tokens_max"]
+        or generation["deliberate_completion_caps"]
+        != design["budget"]["deliberate_completion_allocations"]
+    ):
+        raise P3ContractError("canary_baselines_design_generation_drift")
+    if config.get("execution_boundary") != {
+        "provider_calls_exact": 4,
+        "automatic_retry": False,
+        "concurrency": 1,
+        "localhost_only": True,
+        "future_turn_access": False,
+        "annotation_access_before_outputs_locked": False,
+        "confirmation_access": False,
+        "production_database_access": False,
+        "external_deployment": False,
+        "remote_paid_calls": False,
+        "real_model_calls_authorized_by_this_config": False,
+    }:
+        raise P3ContractError("canary_baselines_execution_boundary_mismatch")
+    if config.get("success") != {
+        "both_condition_outputs_nonempty": True,
+        "provider_prompt_usage_exact": True,
+        "each_condition_budget_valid": True,
+        "all_outputs_and_failures_retained": True,
+    }:
+        raise P3ContractError("canary_baselines_success_mismatch")
+    frozen = json.loads(json.dumps(config, ensure_ascii=False))
+    frozen["_config_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    frozen["_config_path"] = str(config_path.resolve())
+    frozen["_canary"] = canary
+    frozen["_design"] = design
+    return frozen
+
+
+def build_canary_baselines_preflight(config_path: str | Path) -> dict[str, Any]:
+    config = load_canary_baselines(config_path)
+    metadata = _ollama_model_metadata(config["generation"]["model"])
+    with network_forbidden() as attempts:
+        tokenizer = LocalQwenTokenizerCandidate()
+        source = config["_canary"]["_source"]
+        views = {
+            condition: build_generation_view(
+                [],
+                {
+                    "turn_id": source["turn_id"],
+                    "session_id": source["session_id"],
+                    "content": source["content"],
+                },
+                condition,
+            )
+            for condition in config["conditions"]
+        }
+        input_tokens = tokenizer([{"role": "user", "content": source["content"]}])
+    checks = {
+        "config_valid": True,
+        "model_digest_matches": metadata["digest"] == config["generation"]["digest"],
+        "two_views_share_source": len({view["source_sha256"] for view in views.values()})
+        == 1,
+        "offline_tokenizer_available": input_tokens > 0,
+        "no_tokenizer_network_attempts": len(attempts) == 0,
+        "product_result_locked_before_baselines": True,
+        "config_does_not_self_authorize": config["execution_boundary"][
+            "real_model_calls_authorized_by_this_config"
+        ]
+        is False,
+    }
+    return {
+        "schema": "uruha_p3_canary_baselines_preflight_v1",
+        "phase": "P3-B7",
+        "status": "ready_for_canary_baselines_review" if all(checks.values()) else "not_ready_for_canary_baselines_review",
+        "config_sha256": config["_config_sha256"],
+        "view_sha256": {condition: view["view_sha256"] for condition, view in views.items()},
+        "shared_source_sha256": next(iter(views.values()))["source_sha256"],
+        "input_tokens_without_system_prompt": input_tokens,
+        "model_metadata": metadata,
+        "checks": checks,
+        "network_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "future_turns_accessed": 0,
+        "annotations_accessed": 0,
+        "claim_boundary": "Preflight only; no baseline output has been generated.",
+    }
+
+
+def validate_canary_baselines_release(
+    release_path: str | Path, config: Mapping[str, Any]
+) -> dict[str, Any]:
+    release_file = Path(release_path)
+    release = _read_json(release_file)
+    if set(release) != {
+        "schema", "phase", "status", "review_kind", "config",
+        "implementation_sha256", "preflight", "authorization", "claim_boundary",
+    } or release.get("schema") != CANARY_BASELINE_RELEASE_SCHEMA:
+        raise P3ContractError("canary_baselines_release_schema_mismatch")
+    if release.get("phase") != "P3-B7" or release.get("status") != "released_for_single_canary_baseline_pair":
+        raise P3ContractError("canary_baselines_release_status_mismatch")
+    if release.get("review_kind") != "same_task_self_review_not_independent":
+        raise P3ContractError("canary_baselines_release_review_mismatch")
+    repo = release_file.resolve().parent.parent
+    if release.get("config") != {
+        "path": "configs/p3_canary_baselines_v1.json",
+        "sha256": config["_config_sha256"],
+    }:
+        raise P3ContractError("canary_baselines_release_config_mismatch")
+    implementation = release.get("implementation_sha256")
+    if not isinstance(implementation, Mapping) or set(implementation) != {
+        "p3_product_comparison.py", "p3_product_worker.py", "test_p3_product_comparison.py",
+    }:
+        raise P3ContractError("canary_baselines_release_implementation_invalid")
+    for name, sha in implementation.items():
+        if hashlib.sha256((repo / name).read_bytes()).hexdigest() != sha:
+            raise P3ContractError("canary_baselines_release_implementation_mismatch", name)
+    preflight = release.get("preflight")
+    preflight_path = (repo / str((preflight or {}).get("path"))).resolve()
+    if not isinstance(preflight, Mapping) or set(preflight) != {"path", "sha256", "status"} or (
+        not preflight_path.is_file()
+        or hashlib.sha256(preflight_path.read_bytes()).hexdigest() != preflight.get("sha256")
+        or preflight.get("status") != "ready_for_canary_baselines_review"
+    ):
+        raise P3ContractError("canary_baselines_release_preflight_mismatch")
+    if release.get("authorization") != {
+        "run_id": "p3-b7-canary-baselines-v1",
+        "localhost_only": True,
+        "model": "qwen2.5:7b",
+        "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "provider_calls_exact": 4,
+        "automatic_retry": False,
+        "checkpoint_root": "analysis/p3_b7_canary_baselines_checkpoints_v1",
+        "result_path": "analysis/p3_b7_canary_baselines_result_2026-09-14.json",
+        "annotation_access_before_outputs_locked": False,
+        "future_turn_access": False,
+        "confirmation_access": False,
+        "production_database_access": False,
+        "external_deployment": False,
+    }:
+        raise P3ContractError("canary_baselines_release_authorization_mismatch")
+    return dict(release)
+
+
 def _token_probe_request_commitment(
     probe: Mapping[str, Any],
     transport_id: str,
@@ -1052,6 +1297,228 @@ def run_local_tokenizer_binding_probe(
     )
     result["release_sha256"] = hashlib.sha256(Path(release_path).read_bytes()).hexdigest()
     result["model_metadata"] = metadata
+    return result
+
+
+def _local_canary_baseline_transport(
+    config: Mapping[str, Any],
+) -> Callable[[Mapping[str, Any]], Mapping[str, Any]]:
+    """Build the released localhost-only OpenAI-compatible baseline transport."""
+
+    expected_options = {
+        "temperature": config["generation"]["temperature"],
+        "seed": config["generation"]["seed"],
+        "top_p": config["generation"]["top_p"],
+        "num_ctx": config["generation"]["num_ctx"],
+        "think": config["generation"]["think"],
+    }
+
+    def transport(request: Mapping[str, Any]) -> Mapping[str, Any]:
+        if request.get("backend") != config["transport"]["backend"]:
+            raise P3ContractError("canary_baseline_backend_mismatch")
+        if request.get("model") != config["generation"]["model"]:
+            raise P3ContractError("canary_baseline_model_mismatch")
+        if request.get("options") != expected_options:
+            raise P3ContractError("canary_baseline_options_mismatch")
+        messages = request.get("messages")
+        if not isinstance(messages, list):
+            raise P3ContractError("canary_baseline_messages_invalid")
+        body = {
+            "model": request["model"],
+            "messages": messages,
+            "temperature": expected_options["temperature"],
+            "seed": expected_options["seed"],
+            "top_p": expected_options["top_p"],
+            "max_tokens": request["max_completion_tokens"],
+            "stream": False,
+            "think": expected_options["think"],
+            "options": {"num_ctx": expected_options["num_ctx"]},
+        }
+        provider_request = urllib.request.Request(
+            config["transport"]["url"],
+            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(
+            provider_request,
+            timeout=config["transport"]["per_call_timeout_seconds"],
+        ) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        try:
+            content = payload["choices"][0]["message"]["content"]
+            usage = {
+                "prompt_tokens": payload["usage"]["prompt_tokens"],
+                "completion_tokens": payload["usage"]["completion_tokens"],
+            }
+        except (KeyError, IndexError, TypeError) as exc:
+            raise P3ContractError("canary_baseline_provider_payload_invalid") from exc
+        return {
+            "content": content,
+            "usage": usage,
+            "model": payload.get("model"),
+            "backend": config["transport"]["backend"],
+            "network_calls": 1,
+            "real_model_calls": 1,
+        }
+
+    return transport
+
+
+def execute_canary_baselines(
+    *,
+    config: Mapping[str, Any],
+    token_counter: Callable[[Iterable[Mapping[str, str]]], int],
+    transport: Callable[[Mapping[str, Any]], Mapping[str, Any]],
+    checkpoint_root: str | Path,
+    evidence_kind: str,
+) -> dict[str, Any]:
+    """Execute the frozen baseline pair without reading product output or labels."""
+
+    source = config["_canary"]["_source"]
+    current = {
+        "turn_id": source["turn_id"],
+        "session_id": source["session_id"],
+        "content": source["content"],
+    }
+    views = {
+        condition: build_generation_view([], current, condition)
+        for condition in config["conditions"]
+    }
+    conditions: dict[str, Any] = {}
+    for condition in config["conditions"]:
+        conditions[condition] = run_condition(
+            condition=condition,
+            view=views[condition],
+            design=config["_design"],
+            transport=transport,
+            checkpoint_root=checkpoint_root,
+            item_id=(
+                f"{source['case_id']}:{source['turn_id']}:{condition}"
+            ),
+            token_counter=token_counter,
+            backend=config["transport"]["backend"],
+        )
+    calls = [
+        call
+        for condition in config["conditions"]
+        for call in conditions[condition]["calls"]
+    ]
+    provider_call_evidence = sum(call["real_model_calls"] for call in calls)
+    newly_executed_calls = sum(
+        call["real_model_calls"] for call in calls if not call["reused"]
+    )
+    network_calls = sum(call["network_calls"] for call in calls if not call["reused"])
+    expected_real = evidence_kind == "local_ollama_provider_usage"
+    checks = {
+        "both_condition_outputs_nonempty": all(
+            isinstance(conditions[name]["final"]["content"], str)
+            and bool(conditions[name]["final"]["content"].strip())
+            for name in config["conditions"]
+        ),
+        "provider_calls_exact": len(calls)
+        == config["execution_boundary"]["provider_calls_exact"],
+        "provider_call_evidence_exact_when_real": (
+            provider_call_evidence
+            == config["execution_boundary"]["provider_calls_exact"]
+            if expected_real
+            else provider_call_evidence == 0
+        ),
+        "provider_prompt_usage_exact": all(
+            call["usage"]["prompt_tokens"] > 0 for call in calls
+        ),
+        "each_condition_budget_valid": all(
+            result["budget"]["terminal_failure"] is None
+            and result["budget"]["attempts"] == result["budget"]["completed_calls"]
+            for result in conditions.values()
+        ),
+        "same_source_and_current_input": (
+            len({result["source_history_sha256"] for result in conditions.values()})
+            == 1
+            and len({result["input_sha256"] for result in conditions.values()}) == 1
+        ),
+        "frozen_backend_only": all(
+            call["backend"] == config["transport"]["backend"] for call in calls
+        ),
+        "no_future_annotation_or_production_access": True,
+    }
+    return {
+        "schema": "uruha_p3_canary_baselines_result_v1",
+        "phase": "P3-B7",
+        "status": (
+            "canary_baselines_pass"
+            if expected_real and all(checks.values())
+            else "offline_canary_baselines_contract_pass"
+            if not expected_real and all(checks.values())
+            else "canary_baselines_failed_retained"
+        ),
+        "config_sha256": config["_config_sha256"],
+        "source": {
+            "case_id": source["case_id"],
+            "turn_id": source["turn_id"],
+            "session_id": source["session_id"],
+            "content_sha256": canonical_sha256(source["content"]),
+            "source_sha256": next(iter(views.values()))["source_sha256"],
+        },
+        "view_sha256": {
+            name: view["view_sha256"] for name, view in views.items()
+        },
+        "conditions": conditions,
+        "checks": checks,
+        "evidence_kind": evidence_kind,
+        "provider_call_evidence": provider_call_evidence,
+        "real_model_calls": newly_executed_calls,
+        "network_calls": network_calls,
+        "paid_calls": 0,
+        "source_turns_accessed": 1,
+        "future_turns_accessed": 0,
+        "annotations_accessed": 0,
+        "confirmation_accessed": 0,
+        "production_database_accessed": False,
+        "raw_provider_payload_retained": False,
+        "claim_boundary": (
+            "This locks two same-model baseline outputs for one developer canary. "
+            "It is not grading, holdout evidence, human preference, or a general advantage result."
+        ),
+    }
+
+
+def run_local_canary_baselines(
+    config_path: str | Path,
+    release_path: str | Path,
+    checkpoint_root: str | Path,
+) -> dict[str, Any]:
+    """Run the released four-call baseline pair once against local Ollama."""
+
+    config = load_canary_baselines(config_path)
+    release = validate_canary_baselines_release(release_path, config)
+    repo = Path(release_path).resolve().parent.parent
+    expected_checkpoint = (repo / release["authorization"]["checkpoint_root"]).resolve()
+    actual_checkpoint = Path(checkpoint_root).resolve()
+    if actual_checkpoint != expected_checkpoint:
+        raise P3ContractError("canary_baselines_checkpoint_path_mismatch")
+    metadata = _ollama_model_metadata(config["generation"]["model"])
+    if metadata["digest"] != release["authorization"]["model_digest"]:
+        raise P3ContractError("canary_baselines_runtime_model_digest_mismatch")
+    tokenizer = LocalQwenTokenizerCandidate()
+    with localhost_network_only() as network_attempts:
+        result = execute_canary_baselines(
+            config=config,
+            token_counter=tokenizer,
+            transport=_local_canary_baseline_transport(config),
+            checkpoint_root=actual_checkpoint,
+            evidence_kind="local_ollama_provider_usage",
+        )
+    result["release_sha256"] = hashlib.sha256(
+        Path(release_path).read_bytes()
+    ).hexdigest()
+    result["model_metadata"] = metadata
+    result["network_attempts"] = network_attempts
+    result["checks"]["localhost_only"] = all(
+        attempt["loopback_allowed"] is True for attempt in network_attempts
+    )
+    if not all(result["checks"].values()):
+        result["status"] = "canary_baselines_failed_retained"
     return result
 
 
@@ -2380,6 +2847,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "normalized-shape-audit",
             "product-canary-preflight",
             "product-canary-run",
+            "canary-baselines-preflight",
+            "canary-baselines-run",
         ),
         required=True,
     )
@@ -2393,6 +2862,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--checkpoint-root")
     parser.add_argument("--canary")
     parser.add_argument("--canary-release")
+    parser.add_argument("--baselines")
+    parser.add_argument("--baselines-release")
     return parser.parse_args(argv)
 
 
@@ -2464,6 +2935,29 @@ def main(argv: list[str] | None = None) -> int:
                 args.canary_release,
                 args.checkpoint_root,
             )
+        elif args.mode == "canary-baselines-preflight":
+            if not args.baselines:
+                raise P3ContractError("canary_baselines_path_required")
+            payload = build_canary_baselines_preflight(args.baselines)
+        elif args.mode == "canary-baselines-run":
+            if (
+                not args.baselines
+                or not args.baselines_release
+                or not args.checkpoint_root
+            ):
+                raise P3ContractError("canary_baselines_run_artifacts_required")
+            release = _read_json(Path(args.baselines_release))
+            repo = Path(args.baselines_release).resolve().parent.parent
+            expected_output = (
+                repo / str((release.get("authorization") or {}).get("result_path"))
+            ).resolve()
+            if output.resolve() != expected_output:
+                raise P3ContractError("canary_baselines_result_path_mismatch")
+            payload = run_local_canary_baselines(
+                args.baselines,
+                args.baselines_release,
+                args.checkpoint_root,
+            )
         else:
             import tempfile
 
@@ -2486,6 +2980,9 @@ def main(argv: list[str] | None = None) -> int:
             "p3_b5_normalized_shape_audit_pass",
             "ready_for_single_product_canary_review",
             "product_canary_pass",
+            "ready_for_canary_baselines_review",
+            "offline_canary_baselines_contract_pass",
+            "canary_baselines_pass",
         } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"
@@ -2494,6 +2991,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.mode.startswith("tokenizer-")
             else "P3-B6"
             if args.mode.startswith("product-canary-")
+            else "P3-B7"
+            if args.mode.startswith("canary-baselines-")
             else "P3-B1"
         )
         failure = {

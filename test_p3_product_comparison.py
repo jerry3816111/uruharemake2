@@ -45,12 +45,15 @@ from p3_product_worker import (
     build_openai_call,
     build_tokenizer_probe_contract,
     build_tokenizer_probe_preflight,
+    build_canary_baselines_preflight,
     build_product_canary_preflight,
     claim_case_workspace,
     execute_tokenizer_binding_probe,
+    execute_canary_baselines,
     install_product_transport_gate,
     normalize_product_native_call,
     normalize_product_openai_call,
+    load_canary_baselines,
 )
 
 
@@ -66,6 +69,7 @@ TOKEN_PROBE_RESULT_PATH = (
     ROOT / "analysis" / "p3_b3_tokenizer_binding_probe_result_2026-09-14.json"
 )
 PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
+CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
 
 
 def source_fixture():
@@ -788,6 +792,115 @@ def test_p3_product_canary_preflight_reads_no_annotations_or_generation():
     assert preflight["runtime_future_turn_access_authorized"] is False
     assert preflight["network_calls"] == preflight["real_model_calls"] == 0
     assert all(preflight["checks"].values())
+
+
+def test_p3_canary_baselines_are_fixed_same_model_and_non_authorizing():
+    config = load_canary_baselines(CANARY_BASELINES_PATH)
+    assert config["conditions"] == [
+        "full_history_direct",
+        "full_history_deliberate",
+    ]
+    assert config["generation"]["model"] == config["_design"]["model"][
+        "generation_model"
+    ]
+    assert config["generation"]["direct_completion_cap"] == 768
+    assert sum(config["generation"]["deliberate_completion_caps"]) == 768
+    assert config["execution_boundary"]["provider_calls_exact"] == 4
+    assert config["execution_boundary"][
+        "real_model_calls_authorized_by_this_config"
+    ] is False
+
+
+def test_p3_canary_baselines_preflight_reads_no_labels_or_generation():
+    preflight = build_canary_baselines_preflight(CANARY_BASELINES_PATH)
+    assert preflight["status"] == "ready_for_canary_baselines_review"
+    assert preflight["network_calls"] == preflight["real_model_calls"] == 0
+    assert preflight["future_turns_accessed"] == 0
+    assert preflight["annotations_accessed"] == 0
+    assert len(set(preflight["view_sha256"].values())) == 2
+    assert all(preflight["checks"].values())
+
+
+def test_p3_canary_baselines_contract_uses_four_crash_safe_calls(tmp_path):
+    config = load_canary_baselines(CANARY_BASELINES_PATH)
+
+    class ExactZeroNetworkTransport:
+        def __init__(self):
+            self.requests = []
+
+        def __call__(self, request):
+            self.requests.append(request)
+            return {
+                "content": f"固定出力-{request['stage']}",
+                "usage": {
+                    "prompt_tokens": request["prompt_tokens"],
+                    "completion_tokens": 4,
+                    "wall_seconds": 0.001,
+                },
+                "model": request["model"],
+                "backend": request["backend"],
+                "network_calls": 0,
+                "real_model_calls": 0,
+            }
+
+    transport = ExactZeroNetworkTransport()
+    result = execute_canary_baselines(
+        config=config,
+        token_counter=FakeExactTokenCounter(),
+        transport=transport,
+        checkpoint_root=tmp_path,
+        evidence_kind="contract_fake",
+    )
+    assert result["status"] == "offline_canary_baselines_contract_pass"
+    assert [request["stage"] for request in transport.requests] == [
+        "direct",
+        "draft",
+        "critique",
+        "revise",
+    ]
+    assert result["provider_call_evidence"] == 0
+    assert result["real_model_calls"] == result["network_calls"] == 0
+    assert len(list(tmp_path.rglob("intent.json"))) == 4
+    assert len(list(tmp_path.rglob("complete.json"))) == 4
+    assert all(result["checks"].values())
+
+
+def test_provider_prompt_drift_is_terminal_before_completion(tmp_path):
+    design = load_design(DESIGN_PATH)
+    request = request_for(
+        design,
+        "full_history_direct",
+        stage="prompt-drift",
+        backend="openai_compatible_local",
+    )
+
+    def drift(raw_request):
+        return {
+            "content": "fixture",
+            "usage": {
+                "prompt_tokens": raw_request["prompt_tokens"] + 1,
+                "completion_tokens": 4,
+                "wall_seconds": 0.001,
+            },
+            "model": raw_request["model"],
+            "backend": raw_request["backend"],
+            "network_calls": 0,
+            "real_model_calls": 0,
+        }
+
+    assert_code(
+        "provider_prompt_count_mismatch",
+        lambda: run_call_once(
+            budget=new_budget(design, "full_history_direct"),
+            request=request,
+            transport=drift,
+            checkpoint_root=tmp_path,
+            item_id="prompt-drift",
+        ),
+    )
+    failure = json.loads(next(tmp_path.rglob("failure.json")).read_text(encoding="utf-8"))
+    assert failure["contract_code"] == "provider_prompt_count_mismatch"
+    assert not list(tmp_path.rglob("complete.json"))
 
 
 def test_p3_tokenizer_binding_probe_rejects_remote_transport(tmp_path):
