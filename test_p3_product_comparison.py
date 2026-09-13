@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
+import subprocess
 from types import SimpleNamespace
 import urllib.request
 
@@ -36,6 +38,7 @@ from p3_product_comparison import (
 from run_p3_product_comparison import build_contract_manifest, main
 from p3_product_worker import (
     ProductTransportGate,
+    ProductCallShapeObserver,
     build_adapter_contract,
     build_native_call,
     build_openai_call,
@@ -44,7 +47,6 @@ from p3_product_worker import (
     claim_case_workspace,
     execute_tokenizer_binding_probe,
     install_product_transport_gate,
-    validate_tokenizer_probe_release,
 )
 
 
@@ -55,6 +57,9 @@ SMOKE_ANNOTATION_PATH = ROOT / "datasets" / "p3_developer_smoke_annotations_v1.j
 TOKEN_PROBE_PATH = ROOT / "configs" / "p3_tokenizer_binding_probe_v1.json"
 TOKEN_PROBE_RELEASE_PATH = (
     ROOT / "research" / "p3_b3_tokenizer_binding_probe_execution_release_2026-09-14.json"
+)
+TOKEN_PROBE_RESULT_PATH = (
+    ROOT / "analysis" / "p3_b3_tokenizer_binding_probe_result_2026-09-14.json"
 )
 
 
@@ -624,12 +629,17 @@ def test_p3_tokenizer_binding_probe_is_fixed_and_non_authorizing():
     assert probe["fit_and_verification"]["tolerance_tokens"] == 0
 
 
-def test_p3_tokenizer_binding_probe_release_matches_frozen_code_and_scope():
-    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
-    release = validate_tokenizer_probe_release(TOKEN_PROBE_RELEASE_PATH, probe)
+def test_p3_tokenizer_binding_probe_result_is_bound_to_frozen_release_and_scope():
+    release = json.loads(TOKEN_PROBE_RELEASE_PATH.read_text(encoding="utf-8"))
+    result = json.loads(TOKEN_PROBE_RESULT_PATH.read_text(encoding="utf-8"))
     assert release["authorization"]["provider_calls_exact"] == 8
     assert release["authorization"]["developer_smoke_access"] is False
     assert release["authorization"]["production_database_access"] is False
+    assert result["release_sha256"] == hashlib.sha256(
+        TOKEN_PROBE_RELEASE_PATH.read_bytes()
+    ).hexdigest()
+    assert result["status"] == "provider_binding_pass"
+    assert result["provider_call_evidence"] == 8
 
 
 def test_p3_tokenizer_binding_probe_rejects_remote_transport(tmp_path):
@@ -904,6 +914,61 @@ def test_p3_tokenizer_probe_invalid_payload_is_recorded_and_cannot_retry(tmp_pat
         ),
     )
     assert attempts["count"] == 1
+
+
+def test_p3_product_call_shape_observer_never_forwards_raw_messages():
+    design = load_design(DESIGN_PATH)
+    observer = ProductCallShapeObserver(design, lambda messages: 23)
+    assert_code(
+        "product_call_shape_observed_no_generation",
+        lambda: observer.observe_openai(
+            (),
+            {
+                "model": "qwen2.5:7b",
+                "messages": [{"role": "user", "content": "private fixture"}],
+                "temperature": 0.1,
+                "timeout": 20,
+            },
+        ),
+    )
+    assert len(observer.calls) == 1
+    shape = observer.calls[0]
+    assert shape["forwarded_to_transport"] is False
+    assert shape["prompt_tokens"] == 23
+    assert "messages" not in shape and "content" not in shape
+    assert shape["normalization"]["model_exact"] is True
+    assert shape["normalization"]["temperature_exact"] is False
+    assert shape["normalization"]["completion_cap_present_and_within_system_limit"] is False
+
+
+def test_p3_product_call_shape_audit_uses_real_product_without_generation(tmp_path):
+    output = tmp_path / "p3-b4-call-shape.json"
+    completed = subprocess.run(
+        [
+            str(ROOT / ".venv/product_checks/bin/python"),
+            str(ROOT / "p3_product_worker.py"),
+            "--mode",
+            "call-shape-audit",
+            "--design",
+            str(DESIGN_PATH),
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+        env={**os.environ, "URUHA_SKIP_AUTO_VENV": "1"},
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["status"] == "p3_b4_call_shape_audit_pass"
+    assert payload["observed_attempts"] >= 1
+    assert payload["real_model_calls"] == payload["network_calls"] == 0
+    assert payload["developer_smoke_cases_accessed"] == 0
+    assert payload["ephemeral_workspace_removed_after_audit"] is True
+    assert all(payload["checks"].values())
 
 
 def test_native_m31_wrong_model_is_rejected_before_transport():

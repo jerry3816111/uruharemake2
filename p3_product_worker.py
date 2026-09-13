@@ -195,6 +195,7 @@ def prepare_isolated_environment(
         "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "false",
         "URUHA_M31_SEMANTIC_VERIFIER_MODEL": model,
         "GRADIO_ANALYTICS_ENABLED": "false",
+        "ANONYMIZED_TELEMETRY": "False",
         "HF_HUB_OFFLINE": "1",
         "TRANSFORMERS_OFFLINE": "1",
         "TOKENIZERS_PARALLELISM": "false",
@@ -209,16 +210,27 @@ def network_forbidden() -> Iterable[list[dict[str, str]]]:
 
     attempts: list[dict[str, str]] = []
 
-    def blocked_socket(*args: Any, **kwargs: Any) -> Any:
-        attempts.append({"api": "socket", "target_sha256": canonical_sha256(str(args[1:] or kwargs))})
+    def blocked_connect(socket_self: Any, address: Any, *args: Any, **kwargs: Any) -> Any:
+        attempts.append(
+            {"api": "socket.connect", "target_sha256": canonical_sha256(str(address))}
+        )
+        raise P3ContractError("network_attempt_during_product_dry_run")
+
+    def blocked_create_connection(address: Any, *args: Any, **kwargs: Any) -> Any:
+        attempts.append(
+            {
+                "api": "socket.create_connection",
+                "target_sha256": canonical_sha256(str(address)),
+            }
+        )
         raise P3ContractError("network_attempt_during_product_dry_run")
 
     def blocked_urlopen(*args: Any, **kwargs: Any) -> Any:
         attempts.append({"api": "urlopen", "target_sha256": canonical_sha256(str(args[:1] or kwargs))})
         raise P3ContractError("network_attempt_during_product_dry_run")
 
-    with mock.patch.object(socket.socket, "connect", blocked_socket), mock.patch.object(
-        socket, "create_connection", blocked_socket
+    with mock.patch.object(socket.socket, "connect", blocked_connect), mock.patch.object(
+        socket, "create_connection", blocked_create_connection
     ), mock.patch.object(urllib.request, "urlopen", blocked_urlopen):
         yield attempts
 
@@ -1171,6 +1183,159 @@ class _OfflineModelsMetadata:
         return {"data": [{"id": self.model}], "source": "reviewed_preflight_metadata"}
 
 
+class ProductCallShapeObserver:
+    """Record product call shapes without forwarding any model request."""
+
+    def __init__(
+        self,
+        design: Mapping[str, Any],
+        token_counter: Callable[[Iterable[Mapping[str, str]]], int],
+        *,
+        maximum_attempts: int = 16,
+    ) -> None:
+        self.design = design
+        self.token_counter = token_counter
+        self.maximum_attempts = maximum_attempts
+        self.native_url = "http://127.0.0.1:11434/api/chat"
+        self.calls: list[dict[str, Any]] = []
+
+    @staticmethod
+    def _optional_field(value: Mapping[str, Any], key: str) -> dict[str, Any]:
+        return {"present": key in value, "value": value.get(key)}
+
+    def _record(
+        self,
+        *,
+        backend: str,
+        messages: Any,
+        payload: Mapping[str, Any],
+        cap_key: str,
+        option_source: Mapping[str, Any],
+    ) -> None:
+        if len(self.calls) >= self.maximum_attempts:
+            raise P3ContractError("product_call_shape_attempt_cap_exceeded")
+        rows = _message_rows(messages)
+        prompt_tokens = self.token_counter(rows)
+        model = payload.get("model")
+        temperature = option_source.get("temperature")
+        seed = option_source.get("seed")
+        top_p = option_source.get("top_p")
+        num_ctx = option_source.get("num_ctx")
+        think = payload.get("think")
+        if backend == "openai_compatible_local":
+            extra_body = payload.get("extra_body")
+            extra_options = (
+                extra_body.get("options")
+                if isinstance(extra_body, Mapping)
+                and isinstance(extra_body.get("options"), Mapping)
+                else {}
+            )
+            seed = payload.get("seed")
+            top_p = payload.get("top_p")
+            num_ctx = extra_options.get("num_ctx")
+            think = extra_body.get("think") if isinstance(extra_body, Mapping) else None
+        generation = {
+            "temperature": self._optional_field(option_source, "temperature"),
+            "seed": {"present": seed is not None, "value": seed},
+            "top_p": {"present": top_p is not None, "value": top_p},
+            "num_ctx": {"present": num_ctx is not None, "value": num_ctx},
+            "think": {"present": think is not None, "value": think},
+            "completion_cap": self._optional_field(option_source, cap_key),
+        }
+        frozen_model = self.design["model"]
+        cap = generation["completion_cap"]["value"]
+        normalization = {
+            "model_exact": model == frozen_model["generation_model"],
+            "temperature_exact": temperature == frozen_model["temperature"],
+            "seed_exact": seed == frozen_model["seed"],
+            "top_p_exact": top_p == frozen_model["top_p"],
+            "num_ctx_exact": num_ctx == frozen_model["num_ctx"],
+            "think_exact": think == frozen_model["think"],
+            "completion_cap_present_and_within_system_limit": (
+                isinstance(cap, int)
+                and not isinstance(cap, bool)
+                and 0 < cap
+                <= self.design["budget"]["system_per_call_completion_max"]
+            ),
+        }
+        self.calls.append(
+            {
+                "attempt_index": len(self.calls) + 1,
+                "backend": backend,
+                "kwarg_keys": sorted(str(key) for key in payload),
+                "model": model,
+                "message_count": len(rows),
+                "message_roles": [row["role"] for row in rows],
+                "messages_sha256": canonical_sha256(rows),
+                "prompt_tokens": prompt_tokens,
+                "generation": generation,
+                "timeout_present": "timeout" in payload,
+                "response_format_present": "response_format" in payload,
+                "response_format_sha256": (
+                    canonical_sha256(payload["response_format"])
+                    if "response_format" in payload
+                    else None
+                ),
+                "normalization": normalization,
+                "forwarded_to_transport": False,
+                "rejection_code": "product_call_shape_observed_no_generation",
+            }
+        )
+        raise P3ContractError("product_call_shape_observed_no_generation")
+
+    def observe_openai(self, args: tuple[Any, ...], kwargs: Mapping[str, Any]) -> None:
+        if args:
+            raise P3ContractError("positional_product_generation_forbidden")
+        self._record(
+            backend="openai_compatible_local",
+            messages=kwargs.get("messages"),
+            payload=kwargs,
+            cap_key="max_tokens",
+            option_source=kwargs,
+        )
+
+    def observe_native(self, request: Any, args: tuple[Any, ...]) -> None:
+        if not isinstance(request, urllib.request.Request) or args:
+            raise P3ContractError("unaccounted_product_network_route")
+        try:
+            payload = json.loads((request.data or b"").decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise P3ContractError("native_product_request_invalid") from exc
+        if not isinstance(payload, Mapping) or str(request.full_url) != self.native_url:
+            raise P3ContractError("unaccounted_product_network_route")
+        options = payload.get("options")
+        if not isinstance(options, Mapping):
+            options = {}
+        self._record(
+            backend="native_ollama_chat",
+            messages=payload.get("messages"),
+            payload=payload,
+            cap_key="num_predict",
+            option_source=options,
+        )
+
+
+class _ObservedCompletions:
+    def __init__(self, observer: ProductCallShapeObserver) -> None:
+        self.observer = observer
+
+    def create(self, *args: Any, **kwargs: Any) -> Any:
+        self.observer.observe_openai(args, kwargs)
+
+
+class _ObservedChat:
+    def __init__(self, observer: ProductCallShapeObserver) -> None:
+        self.completions = _ObservedCompletions(observer)
+
+
+class _ObservedOpenAIClient:
+    def __init__(self, observer: ProductCallShapeObserver) -> None:
+        self.chat = _ObservedChat(observer)
+        self.models = _OfflineModelsMetadata(
+            observer.design["model"]["generation_model"]
+        )
+
+
 class _GuardedOpenAIClient:
     def __init__(self, target: Any, gate: ProductTransportGate) -> None:
         self._target = target
@@ -1433,6 +1598,124 @@ def build_product_dry_run(
     }
 
 
+def build_product_call_shape_audit(
+    design_path: str | Path,
+    workspace_root: str | Path,
+    case_id: str = "p3-b4-call-shape-fixture",
+) -> dict[str, Any]:
+    """Run one isolated product turn while every generation route is blocked."""
+
+    design = load_design(design_path)
+    case_workspace = claim_case_workspace(workspace_root, case_id)
+    env = prepare_isolated_environment(case_workspace, design)
+    forbidden_modules = {"uruha_brain_mac", "uruha_web_ui", "uruha_web_ui_product"}
+    already_loaded = sorted(forbidden_modules.intersection(sys.modules))
+    if already_loaded:
+        raise P3ContractError("product_import_not_fresh", ",".join(already_loaded))
+    synthetic_input = "今日は少し眠い。"
+    turn_completed = False
+    turn_error_code: str | None = None
+    reply_sha256: str | None = None
+    brain_instance: Any = None
+    observer: ProductCallShapeObserver | None = None
+    with network_forbidden() as network_attempts:
+        import project_paths
+
+        paths = case_workspace["paths"]
+        project_paths.WEB_LOG_DIR = str(paths["web_logs"])
+        project_paths.WEB_CONVERSATION_LOG_JSONL_PATH = env["URUHA_WEB_LOG_JSONL_PATH"]
+        project_paths.WEB_CONVERSATION_LOG_TXT_PATH = env["URUHA_WEB_LOG_TXT_PATH"]
+        product = importlib.import_module("uruha_web_ui_product")
+        brain_module = product._brain
+        tokenizer = LocalQwenTokenizerCandidate()
+        observer = ProductCallShapeObserver(design, tokenizer)
+        observer.native_url = str(brain_module.M31_SEMANTIC_VERIFIER_URL)
+        original_openai = brain_module.OpenAI
+        original_urlopen = brain_module.urllib.request.urlopen
+
+        def observed_openai(*args: Any, **kwargs: Any) -> _ObservedOpenAIClient:
+            return _ObservedOpenAIClient(observer)
+
+        def observed_urlopen(request: Any, *args: Any, **kwargs: Any) -> Any:
+            observer.observe_native(request, args)
+
+        brain_module.OpenAI = observed_openai
+        brain_module.urllib.request.urlopen = observed_urlopen
+        try:
+            brain_instance = product.RUNTIME.get_brain()
+            try:
+                turn = brain_instance.run_turn_debug(
+                    synthetic_input,
+                    input_context={"input_mode": "text", "acoustic_summary": None},
+                )
+                reply = turn.get("reply") if isinstance(turn, Mapping) else None
+                if isinstance(reply, str):
+                    reply_sha256 = canonical_sha256(reply)
+                turn_completed = isinstance(reply, str) and bool(reply.strip())
+            except P3ContractError as exc:
+                turn_error_code = exc.code
+        finally:
+            brain_module.OpenAI = original_openai
+            brain_module.urllib.request.urlopen = original_urlopen
+    calls = list(observer.calls if observer is not None else [])
+    drift_counts: dict[str, int] = {}
+    for call in calls:
+        for field, passed in call["normalization"].items():
+            if not passed:
+                drift_counts[field] = drift_counts.get(field, 0) + 1
+    paths = case_workspace["paths"]
+    checks = {
+        "product_brain_instantiated": brain_instance is not None,
+        "production_db_unreachable": Path(brain_module.DB_PATH).resolve()
+        == paths["memory"].resolve()
+        and Path(brain_module.DB_PATH).resolve() != PRODUCTION_DB_PATH,
+        "at_least_one_call_shape_observed": len(calls) >= 1,
+        "all_generation_stopped_before_transport": all(
+            call["forwarded_to_transport"] is False for call in calls
+        ),
+        "no_socket_or_unaccounted_url_attempts": len(network_attempts) == 0,
+        "no_raw_dialogue_in_result": all(
+            "messages" not in call and "content" not in call for call in calls
+        ),
+    }
+    return {
+        "schema": "uruha_p3_product_call_shape_audit_v1",
+        "phase": "P3-B4",
+        "status": (
+            "p3_b4_call_shape_audit_pass"
+            if all(checks.values())
+            else "p3_b4_call_shape_audit_failed"
+        ),
+        "design_sha256": design["_design_sha256"],
+        "case_sha256": case_workspace["case_sha256"],
+        "synthetic_input_sha256": canonical_sha256(synthetic_input),
+        "turn_completed_with_fallback": turn_completed,
+        "turn_error_code": turn_error_code,
+        "reply_sha256": reply_sha256,
+        "call_shapes": calls,
+        "observed_attempts": len(calls),
+        "normalization_drift_counts": drift_counts,
+        "checks": checks,
+        "environment": {
+            "memory_path_sha256": canonical_sha256(env["URUHA_MEMORY_DB_PATH"]),
+            "web_log_path_sha256": canonical_sha256(env["URUHA_WEB_LOG_JSONL_PATH"]),
+            "m31_model": env["URUHA_M31_SEMANTIC_VERIFIER_MODEL"],
+            "prewarm": env["URUHA_WEB_PREWARM_BRAIN"],
+            "idle_visible": env["URUHA_IDLE_VISIBLE_PROACTIVE_ENABLED"],
+        },
+        "network_attempts": network_attempts,
+        "network_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "developer_smoke_cases_accessed": 0,
+        "production_database_accessed": False,
+        "claim_boundary": (
+            "This audit observes real product call shapes while blocking every generation "
+            "before transport. It is adapter-design evidence, not output-quality evidence."
+        ),
+    }
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -1443,6 +1726,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "tokenizer-preflight",
             "tokenizer-contract",
             "tokenizer-run",
+            "call-shape-audit",
         ),
         required=True,
     )
@@ -1491,7 +1775,7 @@ def main(argv: list[str] | None = None) -> int:
 
                 with tempfile.TemporaryDirectory(prefix="uruha-p3-token-contract-") as temporary:
                     payload = build_tokenizer_probe_contract(args.probe, temporary)
-        else:
+        elif args.mode == "tokenizer-run":
             if not args.probe or not args.probe_release or not args.checkpoint_root:
                 raise P3ContractError("token_probe_run_artifacts_required")
             release = _read_json(Path(args.probe_release))
@@ -1506,6 +1790,16 @@ def main(argv: list[str] | None = None) -> int:
                 args.probe_release,
                 args.checkpoint_root,
             )
+        else:
+            import tempfile
+
+            with tempfile.TemporaryDirectory(prefix="uruha-p3b4-call-shape-") as temporary:
+                temporary_path = Path(temporary)
+                payload = build_product_call_shape_audit(
+                    args.design,
+                    temporary_path / "workspace",
+                )
+            payload["ephemeral_workspace_removed_after_audit"] = not temporary_path.exists()
         write_new_json(output, payload)
         return 0 if payload.get("status") in {
             "isolated_import_pass",
@@ -1513,6 +1807,7 @@ def main(argv: list[str] | None = None) -> int:
             "ready_for_execution_review",
             "offline_tokenizer_contract_pass",
             "provider_binding_pass",
+            "p3_b4_call_shape_audit_pass",
         } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"

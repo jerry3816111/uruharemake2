@@ -2,29 +2,29 @@
 
 更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B4 isolated product call-shape audit（0 generation）
+## 唯一下一步：P3-B5 frozen adapter normalization（0 generation）
 
-狀態：**TOKEN_BINDING_PASS／PRODUCT_CALL_SHAPE_UNOBSERVED**。P3-B3 已依事前 release 執行：兩條 transport、
-4 個 fixtures 的 HF/provider prompt tokens 逐列完全相等，offset 0；8 real/network calls、8 completion tokens、
-6.052747 秒、0 paid。這只放行 token accounting，不代表產品品質或優勢。
+狀態：**CALL_SHAPE_OBSERVED／NORMALIZATION_REQUIRED**。P3-B4 在真實 product brain 的 synthetic turn 觀察到
+1 個 native M31 call：model／temperature／think／cap 符合，缺 seed／top_p／num_ctx；432 prompt tokens。所有
+transport 在生成前停止，0 real/network/paid calls；ephemeral workspace 已移除。
 
-### P3-B4 before 與單一變因
+### P3-B5 before 與單一變因
 
-before：B1 只證明產品 import 與兩條 transport seam 被 gate 接住，沒有實例化 brain；既有產品 call sites 的
-temperature、timeout、response_format、completion cap 與實際 call 數是否符合 frozen P3 比較契約仍未觀察。若直接跑
-6 × 4 developer smoke，可能在第一次 call 才發現選項漂移，浪費 sealed 執行並留下不可重試的殘缺結果。
+before：真實第一個 native request 缺少 frozen design 要求的 seed 20260909、top_p 1、num_ctx 8192；若直接放行，
+三條件不再是相同 generation params，且 provider context limit 無法在 request 中核對。其他欄位已符合，不應改產品 prompt
+或回答邏輯。
 
-單一變因：在 fresh subprocess 與 ephemeral memory 中實例化真實 product brain，用一個不屬於 P3 smoke 的 synthetic
-turn 走真實 `run_turn_debug`，但讓 transport 在生成前 fail closed；只記錄每個 call 的 stage、allowlisted option keys、
-message/token digest、cap 與拒絕原因，不記 raw dialogue。任何網路或生成都是失敗。
+單一變因：只在 P3 experimental transport adapter 將既有 OpenAI-compatible／native request 正規化成 frozen model
+generation fields；保留 messages、原本 cap、response_format 與 timeout 等非比較內容。adapter 不得修改 brain 或共同
+history，不得放大 cap，不得接受未知 generation keys。
 
-成功：brain 真實實例化、production DB 不可達、至少觀察一個 pre-transport call shape、real/network/paid calls 皆 0，
-且結果足以把現有 options/cap drift 列成有限 adapter 規格。失敗：產品在到達 call seam 前崩潰、接觸 production DB、
-發出網路／生成、記錄 raw text 或無法得到任何 call shape；保留失敗，不以 6-case smoke 探路。
+成功：同一 synthetic turn 的 call 經 normalization 後 model、temperature、seed、top_p、num_ctx、think 與 cap 全部符合
+frozen design，仍 0 generation/network/paid、raw text 不落 artifact；原始 drift 與 normalized shape 都可追溯。未知 key、
+缺 cap、cap 超 320、超 4 attempts 或 messages 改變都 fail closed。
 
-允許新增 call-shape observer／worker mode、相稱 tests 與零生成 artifact；不得改 brain、P1/P2、P3 smoke、
-annotations、frozen comparison design/baseline/rubric/threshold。不得讀 confirmation／production DB 或執行 6-case
-generation。得到 shape 後另行凍結 adapter normalization；不能從 audit 直接放行生成。
+允許修改 P3 worker adapter、相稱 tests 與零生成 artifact；不得改 brain、P1/P2、P3 smoke、annotations、frozen
+comparison design/baseline/rubric/threshold。不得讀 confirmation／production DB 或執行 6-case generation。通過後仍需
+另建有限 execution release，不能由 normalization 測試直接放行模型。
 
 ## 工作環境
 
@@ -64,7 +64,8 @@ generation。得到 shape 後另行凍結 adapter normalization；不能從 audi
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- developer smoke 已 sealed，tokenizer binding 已通過；產品 full-turn call shape 與 frozen P3 options 的相容性仍未觀察。
+- developer smoke 已 sealed、tokenizer binding 已通過；目前只觀察到第一個 native route，後續 response-dependent call
+  shapes 仍可能在第一次 real developer turn 出現並被 gate 拒絕。
 
 ## 回報方式
 
