@@ -2,29 +2,28 @@
 
 更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B7 same-model canary baseline comparison
+## 唯一下一步：P3-B8 stage-complete tokenizer binding
 
-狀態：**PRODUCT_CANARY_ENGINEERING_PASS／QUALITY_UNDETERMINED**。P3-B6 真實 product canary 以 1 個 native call
-完成：441 prompt、151 completion、turn 10.752605 秒、0 fallback/rejection/paid；future/annotations/production DB 均未
-讀取。visible reply 已保存，但尚無 baseline 或品質結論。
+狀態：**P3-B7 FAILED_RETAINED／NO QUALITY COMPARISON**。direct 與 deliberate draft 完成；deliberate critique 在第 3 次
+provider call 後因 `provider_prompt_count_mismatch` 終止，revise 未執行且不得重跑。authoritative checkpoint 證據為 3 attempts、
+2 complete、1 failure；已知 470 prompt＋74 completion tokens。annotation/future/confirmation/production DB 仍未讀取，沒有三條件
+品質分數或勝負。
 
-### P3-B7 before 與單一變因
+### P3-B8 before 與單一變因
 
-before：product canary 的回覆是 `最近退社後は常に不機嫌で何もしたくないんだね。`。它通過日文／整合 gate，
-但 `退社後` 偏書面、`常に不機嫌` 可能過度定性，也未判明是否比強 baseline 更接住需求。沒有同模型輸出就不能把
-產品工程成功外推成品質價值。
+before：P3-B3 只驗證 system/user 與 assistant 後接 user 的形狀，沒有覆蓋 deliberate critique／revise 的 assistant-ending private
+scratch。P3-B7 證明這個 binding 不能外推。一般 CLI failure summary 又把 post-transport 失敗誤報成 0 calls，不能作正式成本證據。
 
-單一變因：保持完全相同 canary input、共享 persona、qwen2.5:7b digest、temperature/seed/top_p/num_ctx/think 與每條件
-768 completion budget，只新增 `full_history_direct` 1-call 與 `full_history_deliberate` 3-call baseline；不重跑 product。
-baselines 不讀 product trace、annotations、future 或答案，只能看同一空 prefix＋current input。
+單一變因：不改模型、persona、baseline instructions、資料或品質門檻，只擴充 tokenizer/provider probe，使它覆蓋 direct、draft、
+critique、revise 四種實際 messages role／template 形狀；同時讓 post-transport failure 保存 declared 與 provider actual usage，並從
+checkpoint 匯總真實 attempts/completions。先以全新合成內容做 bounded localhost probe，不使用 P3-B7 的失敗 request 或 annotation。
 
-成功：兩 baseline 各自在 calls/wall/token budget 內完成，provider prompt usage 與 tokenizer reservation 精確一致，輸出鎖定
-後才讀分離 annotation 做明示 proxy 描述；三輸出並列但不預設 product 勝。任一 transport／budget／checkpoint／source drift
-保留失敗，不重跑或改 prompt。單一 canary 只能是受控例子，不能形成整批或普遍優勢結論。
+成功：所有 stage shape 在 OpenAI-compatible route 的 provider prompt usage 與離線計數精確一致，或得到可重現、預先定義的
+stage-specific correction；verification fixture tolerance 仍為 0。失敗也封存，不靠估算或移除 exact gate。release commit 前 0 新 calls；
+新 probe calls 與資源上限另行凍結。通過後只能放行新的、未執行 source turn 之 product canary＋baseline pair，不能洗白 P3-B7。
 
-先補 baseline localhost transport 的 exact prompt check、crash-safe runner、tests、preflight 與獨立 execution release；release
-commit 前 0 新 generation。不得改 product result、brain、P1/P2、source／annotations、frozen baseline prompt/rubric/threshold，
-不得讀 future／confirmation／production DB。輸出鎖定後的 proxy 分析必須清楚標示非真人偏好。
+不得改 product brain、P1/P2、既有 P3-B7 checkpoints/result、frozen source/annotations、baseline prompt/rubric/threshold；不得讀
+future／confirmation／production DB。這仍是實驗基礎設施 gate，不是使用者感受或一般優勢證據。
 
 ## 工作環境
 
@@ -50,6 +49,9 @@ commit 前 0 新 generation。不得改 product result、brain、P1/P2、source�
 - P3-B2 developer smoke source／annotations 已分離凍結：6 cases、24 user turns、12 sessions、三語各2、
   六 family 各1，建立 72 個 allowlisted views。驗收：
   `analysis/p3_b2_developer_smoke_acceptance_2026-09-13.md`；未執行任何生成。
+- P3-B3 provider/tokenizer binding 在既有四種 fixture 通過；P3-B4 找到產品 call shape drift；P3-B5 adapter 已補齊並驗證
+  seed/top_p/num_ctx。P3-B6 單一 product canary 工程通過，但品質未定。P3-B7 baseline 執行保留負結果：3 calls、2 complete、
+  1 prompt-count failure，沒有三條件比較。詳見 `analysis/p3_b7_canary_baselines_acceptance_2026-09-14.md`。
 - 真實本機run2：5 sessions／9輪，與P2可見回覆9/9相同；ledger 2生成＋130記憶操作，
   2,901生成tokens、30.834245秒；四個結構checks通過。兩次run均保存。
 - native M31只mocked transport驗證，這九輪未實際觸發；Chroma embedding token／CPU/RSS/energy未量測。
