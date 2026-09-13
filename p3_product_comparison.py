@@ -121,6 +121,52 @@ SMOKE_EVENT_KINDS = frozenset(
         "topic_change",
     }
 )
+TOKEN_BINDING_SCHEMA = "uruha_p3_tokenizer_binding_probe_v1"
+TOKEN_BINDING_ROOT_KEYS = frozenset(
+    {
+        "schema",
+        "status",
+        "purpose",
+        "comparison_design",
+        "developer_smoke_freeze",
+        "model",
+        "transports",
+        "generation_options",
+        "fixtures",
+        "fit_and_verification",
+        "execution_boundary",
+    }
+)
+TOKEN_BINDING_MODEL_KEYS = frozenset(
+    {
+        "ollama_model",
+        "ollama_blob_digest",
+        "hf_tokenizer",
+        "local_files_only",
+        "add_generation_prompt",
+    }
+)
+TOKEN_BINDING_TRANSPORT_KEYS = frozenset(
+    {"id", "url", "usage_prompt_field", "usage_completion_field"}
+)
+TOKEN_BINDING_OPTION_KEYS = frozenset(
+    {
+        "temperature",
+        "seed",
+        "top_p",
+        "num_ctx",
+        "think",
+        "max_completion_tokens",
+        "stream",
+        "transport_retries",
+        "concurrency",
+        "per_call_timeout_seconds",
+        "total_wall_seconds_max",
+    }
+)
+TOKEN_BINDING_FIXTURE_KEYS = frozenset(
+    {"fixture_id", "role", "messages_sha256", "messages"}
+)
 
 
 class P3ContractError(ValueError):
@@ -188,6 +234,176 @@ def load_design(path: str | Path) -> dict[str, Any]:
     frozen = json.loads(json.dumps(design, ensure_ascii=False))
     frozen["_design_sha256"] = canonical_sha256(design)
     frozen["_design_path"] = str(design_path.resolve())
+    return frozen
+
+
+def load_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
+    """Load and validate the frozen, non-authorizing P3-B3 probe design."""
+
+    config_path = Path(path)
+    config = _load_json(config_path)
+    _require_exact_keys(config, TOKEN_BINDING_ROOT_KEYS, "token_probe_root_allowlist")
+    if config.get("schema") != TOKEN_BINDING_SCHEMA:
+        raise P3ContractError("token_probe_schema_mismatch")
+    if config.get("status") != "preregistered_not_executed":
+        raise P3ContractError("token_probe_status_mismatch")
+    if config.get("purpose") != (
+        "bind_offline_hf_chat_template_counts_to_two_local_ollama_provider_usage_routes"
+    ):
+        raise P3ContractError("token_probe_purpose_mismatch")
+    repo = config_path.resolve().parent.parent
+    for key in ("comparison_design", "developer_smoke_freeze"):
+        reference = config.get(key)
+        if not isinstance(reference, Mapping) or set(reference) != {"path", "sha256"}:
+            raise P3ContractError("token_probe_reference_invalid", key)
+        reference_path = (repo / str(reference["path"])).resolve()
+        if not _is_path_inside(reference_path, repo) or not reference_path.is_file():
+            raise P3ContractError("token_probe_reference_missing", key)
+        if hashlib.sha256(reference_path.read_bytes()).hexdigest() != reference["sha256"]:
+            raise P3ContractError("token_probe_reference_digest_mismatch", key)
+    model = config.get("model")
+    _require_exact_keys(model, TOKEN_BINDING_MODEL_KEYS, "token_probe_model_allowlist")
+    if model != {
+        "ollama_model": "qwen2.5:7b",
+        "ollama_blob_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "hf_tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+        "local_files_only": True,
+        "add_generation_prompt": True,
+    }:
+        raise P3ContractError("token_probe_model_mismatch")
+    transports = config.get("transports")
+    if not isinstance(transports, list) or len(transports) != 2:
+        raise P3ContractError("token_probe_transport_count_mismatch")
+    expected_transports = {
+        "openai_compatible_local": {
+            "url": "http://127.0.0.1:11434/v1/chat/completions",
+            "usage_prompt_field": "usage.prompt_tokens",
+            "usage_completion_field": "usage.completion_tokens",
+        },
+        "native_ollama_chat": {
+            "url": "http://127.0.0.1:11434/api/chat",
+            "usage_prompt_field": "prompt_eval_count",
+            "usage_completion_field": "eval_count",
+        },
+    }
+    transport_ids: set[str] = set()
+    for transport in transports:
+        _require_exact_keys(
+            transport,
+            TOKEN_BINDING_TRANSPORT_KEYS,
+            "token_probe_transport_allowlist",
+        )
+        transport_id = transport.get("id")
+        if transport_id in transport_ids or transport_id not in expected_transports:
+            raise P3ContractError("token_probe_transport_invalid")
+        transport_ids.add(transport_id)
+        expected = {"id": transport_id, **expected_transports[transport_id]}
+        if transport != expected:
+            raise P3ContractError("token_probe_transport_mismatch", str(transport_id))
+    options = config.get("generation_options")
+    _require_exact_keys(options, TOKEN_BINDING_OPTION_KEYS, "token_probe_options_allowlist")
+    if options != {
+        "temperature": 0,
+        "seed": 20260909,
+        "top_p": 1,
+        "num_ctx": 8192,
+        "think": False,
+        "max_completion_tokens": 1,
+        "stream": False,
+        "transport_retries": 0,
+        "concurrency": 1,
+        "per_call_timeout_seconds": 45,
+        "total_wall_seconds_max": 240,
+    }:
+        raise P3ContractError("token_probe_options_mismatch")
+    fixtures = config.get("fixtures")
+    if not isinstance(fixtures, list) or len(fixtures) != 4:
+        raise P3ContractError("token_probe_fixture_count_mismatch")
+    fixture_ids: set[str] = set()
+    fit_ids: list[str] = []
+    verification_ids: list[str] = []
+    message_hashes: set[str] = set()
+    for fixture in fixtures:
+        _require_exact_keys(
+            fixture,
+            TOKEN_BINDING_FIXTURE_KEYS,
+            "token_probe_fixture_allowlist",
+        )
+        fixture_id = fixture.get("fixture_id")
+        if not isinstance(fixture_id, str) or not fixture_id or fixture_id in fixture_ids:
+            raise P3ContractError("token_probe_fixture_id_invalid")
+        fixture_ids.add(fixture_id)
+        role = fixture.get("role")
+        if role == "fit":
+            fit_ids.append(fixture_id)
+        elif role == "verification":
+            verification_ids.append(fixture_id)
+        else:
+            raise P3ContractError("token_probe_fixture_role_invalid")
+        messages = fixture.get("messages")
+        if not isinstance(messages, list) or len(messages) < 2:
+            raise P3ContractError("token_probe_messages_invalid", fixture_id)
+        _request_commitment(
+            {
+                "condition": "product_system",
+                "stage": fixture_id,
+                "model": model["ollama_model"],
+                "backend": "native_ollama_chat",
+                "options": {},
+                "prompt_tokens": 0,
+                "max_completion_tokens": 1,
+                "messages": messages,
+            }
+        )
+        message_sha = canonical_sha256(messages)
+        if fixture.get("messages_sha256") != message_sha:
+            raise P3ContractError("token_probe_messages_digest_mismatch", fixture_id)
+        if message_sha in message_hashes:
+            raise P3ContractError("token_probe_duplicate_messages")
+        message_hashes.add(message_sha)
+    fit = config.get("fit_and_verification")
+    if not isinstance(fit, Mapping) or set(fit) != {
+        "estimator",
+        "fit_fixture_ids",
+        "verification_fixture_ids",
+        "fit_offsets_must_be_identical_within_each_transport",
+        "verification_prediction_must_be_exact",
+        "provider_counts_must_match_across_transports",
+        "tolerance_tokens",
+        "post_result_fixture_or_tolerance_change_allowed",
+    }:
+        raise P3ContractError("token_probe_fit_allowlist")
+    if fit != {
+        "estimator": "provider_prompt_tokens = hf_chat_template_tokens + integer_transport_offset",
+        "fit_fixture_ids": fit_ids,
+        "verification_fixture_ids": verification_ids,
+        "fit_offsets_must_be_identical_within_each_transport": True,
+        "verification_prediction_must_be_exact": True,
+        "provider_counts_must_match_across_transports": True,
+        "tolerance_tokens": 0,
+        "post_result_fixture_or_tolerance_change_allowed": False,
+    } or len(fit_ids) != 3 or len(verification_ids) != 1:
+        raise P3ContractError("token_probe_fit_contract_mismatch")
+    boundary = config.get("execution_boundary")
+    if not isinstance(boundary, Mapping) or boundary != {
+        "expected_provider_calls": 8,
+        "maximum_provider_calls": 8,
+        "maximum_completion_tokens_total": 8,
+        "localhost_only": True,
+        "remote_paid_calls_allowed": False,
+        "retain_output_text": False,
+        "retain_output_sha256": True,
+        "intent_without_complete_is_terminal": True,
+        "automatic_retry": False,
+        "real_model_calls_authorized_by_this_config": False,
+        "developer_smoke_access_allowed": False,
+        "annotation_access_allowed": False,
+        "production_database_access_allowed": False,
+    }:
+        raise P3ContractError("token_probe_execution_boundary_mismatch")
+    frozen = json.loads(json.dumps(config, ensure_ascii=False))
+    frozen["_probe_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    frozen["_probe_path"] = str(config_path.resolve())
     return frozen
 
 

@@ -21,6 +21,7 @@ from p3_product_comparison import (
     freeze_common_source,
     load_design,
     load_developer_smoke_manifests,
+    load_tokenizer_binding_probe,
     make_request,
     map_blind_scores,
     new_budget,
@@ -38,8 +39,12 @@ from p3_product_worker import (
     build_adapter_contract,
     build_native_call,
     build_openai_call,
+    build_tokenizer_probe_contract,
+    build_tokenizer_probe_preflight,
     claim_case_workspace,
+    execute_tokenizer_binding_probe,
     install_product_transport_gate,
+    validate_tokenizer_probe_release,
 )
 
 
@@ -47,6 +52,10 @@ ROOT = Path(__file__).resolve().parent
 DESIGN_PATH = ROOT / "configs" / "p3_product_comparison_v1.json"
 SMOKE_SOURCE_PATH = ROOT / "datasets" / "p3_developer_smoke_source_v1.json"
 SMOKE_ANNOTATION_PATH = ROOT / "datasets" / "p3_developer_smoke_annotations_v1.json"
+TOKEN_PROBE_PATH = ROOT / "configs" / "p3_tokenizer_binding_probe_v1.json"
+TOKEN_PROBE_RELEASE_PATH = (
+    ROOT / "research" / "p3_b3_tokenizer_binding_probe_execution_release_2026-09-14.json"
+)
 
 
 def source_fixture():
@@ -118,6 +127,23 @@ def write_smoke_pair(tmp_path, source, annotations):
         encoding="utf-8",
     )
     return source_path, annotation_path
+
+
+def write_token_probe(tmp_path, config):
+    repo = tmp_path / "repo"
+    configs = repo / "configs"
+    research = repo / "research"
+    configs.mkdir(parents=True)
+    research.mkdir(parents=True)
+    (configs / "p3_product_comparison_v1.json").write_bytes(DESIGN_PATH.read_bytes())
+    freeze_name = "p3_b2_developer_smoke_data_freeze_2026-09-13.json"
+    (research / freeze_name).write_bytes((ROOT / "research" / freeze_name).read_bytes())
+    probe_path = configs / "p3_tokenizer_binding_probe_v1.json"
+    probe_path.write_text(
+        json.dumps(config, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return probe_path
 
 
 def test_contract_manifest_runs_three_conditions_with_zero_real_calls():
@@ -581,6 +607,303 @@ def test_p3_smoke_data_validation_cli_builds_all_views_without_generation(tmp_pa
     assert payload["generation_view_count"] == 72
     assert payload["network_calls"] == payload["real_model_calls"] == 0
     assert all(payload["checks"].values())
+
+
+def test_p3_tokenizer_binding_probe_is_fixed_and_non_authorizing():
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+    assert probe["status"] == "preregistered_not_executed"
+    assert len(probe["fixtures"]) == 4
+    assert [fixture["role"] for fixture in probe["fixtures"]] == [
+        "fit",
+        "fit",
+        "fit",
+        "verification",
+    ]
+    assert probe["execution_boundary"]["expected_provider_calls"] == 8
+    assert probe["execution_boundary"]["real_model_calls_authorized_by_this_config"] is False
+    assert probe["fit_and_verification"]["tolerance_tokens"] == 0
+
+
+def test_p3_tokenizer_binding_probe_release_matches_frozen_code_and_scope():
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+    release = validate_tokenizer_probe_release(TOKEN_PROBE_RELEASE_PATH, probe)
+    assert release["authorization"]["provider_calls_exact"] == 8
+    assert release["authorization"]["developer_smoke_access"] is False
+    assert release["authorization"]["production_database_access"] is False
+
+
+def test_p3_tokenizer_binding_probe_rejects_remote_transport(tmp_path):
+    config = json.loads(TOKEN_PROBE_PATH.read_text(encoding="utf-8"))
+    config["transports"][0]["url"] = "https://example.com/v1/chat/completions"
+    path = write_token_probe(tmp_path, config)
+    assert_code(
+        "token_probe_transport_mismatch",
+        lambda: load_tokenizer_binding_probe(path),
+    )
+
+
+def test_p3_tokenizer_binding_probe_rejects_fixture_change_after_freeze(tmp_path):
+    config = json.loads(TOKEN_PROBE_PATH.read_text(encoding="utf-8"))
+    config["fixtures"][3]["messages"][-1]["content"] += " changed"
+    path = write_token_probe(tmp_path, config)
+    assert_code(
+        "token_probe_messages_digest_mismatch",
+        lambda: load_tokenizer_binding_probe(path),
+    )
+
+
+def test_p3_tokenizer_binding_probe_rejects_tolerance_or_fit_change(tmp_path):
+    config = json.loads(TOKEN_PROBE_PATH.read_text(encoding="utf-8"))
+    config["fit_and_verification"]["tolerance_tokens"] = 1
+    path = write_token_probe(tmp_path, config)
+    assert_code(
+        "token_probe_fit_contract_mismatch",
+        lambda: load_tokenizer_binding_probe(path),
+    )
+
+
+def test_p3_tokenizer_binding_probe_rejects_self_authorized_generation(tmp_path):
+    config = json.loads(TOKEN_PROBE_PATH.read_text(encoding="utf-8"))
+    config["execution_boundary"]["real_model_calls_authorized_by_this_config"] = True
+    path = write_token_probe(tmp_path, config)
+    assert_code(
+        "token_probe_execution_boundary_mismatch",
+        lambda: load_tokenizer_binding_probe(path),
+    )
+
+
+def test_p3_tokenizer_probe_preflight_counts_all_fixtures_without_generation():
+    preflight = build_tokenizer_probe_preflight(TOKEN_PROBE_PATH)
+    assert preflight["status"] == "ready_for_execution_review"
+    assert len(preflight["fixture_counts"]) == 4
+    assert all(row["hf_prompt_tokens"] > 0 for row in preflight["fixture_counts"])
+    assert preflight["model_metadata"]["digest"] == (
+        "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730"
+    )
+    assert preflight["real_model_calls"] == preflight["network_generation_calls"] == 0
+    assert all(preflight["checks"].values())
+
+
+def test_p3_tokenizer_probe_fake_contract_is_exact_and_raw_text_free(tmp_path):
+    result = build_tokenizer_probe_contract(TOKEN_PROBE_PATH, tmp_path / "checkpoints")
+    assert result["status"] == "offline_tokenizer_contract_pass"
+    assert result["transport_offsets"] == {
+        "openai_compatible_local": 2,
+        "native_ollama_chat": 2,
+    }
+    assert result["real_model_calls"] == result["network_calls"] == 0
+    assert len(result["rows"]) == 8
+    assert all("content" not in row for row in result["rows"])
+    checkpoint_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (tmp_path / "checkpoints").rglob("*.json")
+    )
+    assert "contract-output" not in checkpoint_text
+
+
+def test_p3_tokenizer_probe_retains_nonconstant_offset_as_failed_result(tmp_path):
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+
+    def counter(messages):
+        return 100 + len(messages)
+
+    verification_id = probe["fit_and_verification"]["verification_fixture_ids"][0]
+
+    def fake(backend):
+        def transport(fixture, raw_probe):
+            extra = 3 if fixture["fixture_id"] == verification_id else 2
+            return {
+                "backend": backend,
+                "model": raw_probe["model"]["ollama_model"],
+                "prompt_tokens": counter(fixture["messages"]) + extra,
+                "completion_tokens": 1,
+                "content": "fixture",
+                "real_model_calls": 0,
+                "network_calls": 0,
+            }
+
+        return transport
+
+    result = execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transports={
+            backend: fake(backend)
+            for backend in ("openai_compatible_local", "native_ollama_chat")
+        },
+        checkpoint_root=tmp_path / "mismatch",
+        evidence_kind="contract_fake",
+    )
+    assert result["status"] == "binding_failed_retained"
+    assert not all(result["verification_exact"].values())
+    assert result["binding_verified"] is False
+
+
+def test_p3_tokenizer_probe_transport_failure_cannot_retry(tmp_path):
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+    attempts = {"count": 0}
+
+    def counter(messages):
+        return 100
+
+    def fail(fixture, raw_probe):
+        attempts["count"] += 1
+        raise TimeoutError("fixture")
+
+    transports = {
+        "openai_compatible_local": fail,
+        "native_ollama_chat": fail,
+    }
+    root = tmp_path / "no-retry"
+    assert_code(
+        "token_probe_transport_failure_no_retry",
+        lambda: execute_tokenizer_binding_probe(
+            probe=probe,
+            token_counter=counter,
+            transports=transports,
+            checkpoint_root=root,
+            evidence_kind="contract_fake",
+        ),
+    )
+    assert attempts["count"] == 1
+    assert_code(
+        "token_probe_intent_without_complete_no_retry",
+        lambda: execute_tokenizer_binding_probe(
+            probe=probe,
+            token_counter=counter,
+            transports=transports,
+            checkpoint_root=root,
+            evidence_kind="contract_fake",
+        ),
+    )
+    assert attempts["count"] == 1
+
+
+def test_p3_tokenizer_probe_local_evidence_must_be_exact_and_survives_reuse(tmp_path):
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+
+    def counter(messages):
+        return 100 + len(messages)
+
+    def local(backend):
+        def transport(fixture, raw_probe):
+            return {
+                "backend": backend,
+                "model": raw_probe["model"]["ollama_model"],
+                "prompt_tokens": counter(fixture["messages"]) + 2,
+                "completion_tokens": 1,
+                "content": "discarded",
+                "real_model_calls": 1,
+                "network_calls": 1,
+            }
+
+        return transport
+
+    root = tmp_path / "local-evidence"
+    transports = {
+        backend: local(backend)
+        for backend in ("openai_compatible_local", "native_ollama_chat")
+    }
+    first = execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transports=transports,
+        checkpoint_root=root,
+        evidence_kind="local_ollama_provider_usage",
+    )
+    assert first["status"] == "provider_binding_pass"
+    assert first["provider_call_evidence"] == first["real_model_calls"] == 8
+    assert all(not row["reused"] for row in first["rows"])
+
+    def forbidden(fixture, raw_probe):
+        raise AssertionError("complete checkpoints must prevent a second provider call")
+
+    reused = execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transports={backend: forbidden for backend in transports},
+        checkpoint_root=root,
+        evidence_kind="local_ollama_provider_usage",
+    )
+    assert reused["status"] == "provider_binding_pass"
+    assert reused["provider_call_evidence"] == 8
+    assert reused["real_model_calls"] == reused["network_calls"] == 0
+    assert all(row["reused"] for row in reused["rows"])
+
+
+def test_p3_tokenizer_probe_cannot_label_zero_call_rows_as_provider_evidence(tmp_path):
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+
+    def counter(messages):
+        return 100 + len(messages)
+
+    def fake(backend):
+        def transport(fixture, raw_probe):
+            return {
+                "backend": backend,
+                "model": raw_probe["model"]["ollama_model"],
+                "prompt_tokens": counter(fixture["messages"]) + 2,
+                "completion_tokens": 1,
+                "content": "fixture",
+                "real_model_calls": 0,
+                "network_calls": 0,
+            }
+
+        return transport
+
+    result = execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transports={
+            backend: fake(backend)
+            for backend in ("openai_compatible_local", "native_ollama_chat")
+        },
+        checkpoint_root=tmp_path / "false-provider",
+        evidence_kind="local_ollama_provider_usage",
+    )
+    assert result["status"] == "binding_failed_retained"
+    assert result["provider_call_evidence"] == 0
+    assert result["checks"]["provider_call_evidence_exact_for_scope"] is False
+    assert result["binding_verified"] is False
+
+
+def test_p3_tokenizer_probe_invalid_payload_is_recorded_and_cannot_retry(tmp_path):
+    probe = load_tokenizer_binding_probe(TOKEN_PROBE_PATH)
+    attempts = {"count": 0}
+
+    def invalid(fixture, raw_probe):
+        attempts["count"] += 1
+        return {"unexpected": True}
+
+    root = tmp_path / "invalid-payload"
+    transports = {
+        "openai_compatible_local": invalid,
+        "native_ollama_chat": invalid,
+    }
+    assert_code(
+        "token_probe_provider_payload_invalid",
+        lambda: execute_tokenizer_binding_probe(
+            probe=probe,
+            token_counter=lambda messages: 100,
+            transports=transports,
+            checkpoint_root=root,
+            evidence_kind="contract_fake",
+        ),
+    )
+    assert attempts["count"] == 1
+    failure = next(root.rglob("failure.json"))
+    assert "token_probe_provider_payload_invalid" in failure.read_text(encoding="utf-8")
+    assert_code(
+        "token_probe_intent_without_complete_no_retry",
+        lambda: execute_tokenizer_binding_probe(
+            probe=probe,
+            token_counter=lambda messages: 100,
+            transports=transports,
+            checkpoint_root=root,
+            evidence_kind="contract_fake",
+        ),
+    )
+    assert attempts["count"] == 1
 
 
 def test_native_m31_wrong_model_is_rejected_before_transport():

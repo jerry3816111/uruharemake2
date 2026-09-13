@@ -19,7 +19,9 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import socket
+import subprocess
 import sys
 import time
 import urllib.request
@@ -30,6 +32,7 @@ from p3_product_comparison import (
     P3ContractError,
     canonical_sha256,
     load_design,
+    load_tokenizer_binding_probe,
     make_request,
     mark_transport_failure,
     new_budget,
@@ -43,6 +46,7 @@ WORKSPACE_SCHEMA = "uruha_p3_ephemeral_workspace_v1"
 CASE_OWNER_SCHEMA = "uruha_p3_case_owner_v1"
 DRY_RUN_SCHEMA = "uruha_p3_product_worker_dry_run_v1"
 ADAPTER_SCHEMA = "uruha_p3_product_transport_adapter_contract_v1"
+TOKEN_PROBE_RELEASE_SCHEMA = "uruha_p3_tokenizer_binding_probe_execution_release_v1"
 SAFE_SLOT_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 REPO_ROOT = Path(__file__).resolve().parent
 PRODUCTION_DB_PATH = (REPO_ROOT / "uruha_memory_mac_db").resolve()
@@ -228,8 +232,26 @@ class LocalQwenTokenizerCandidate:
         from transformers import AutoTokenizer
 
         self.model_name = model_name
+        cache_root = Path(
+            os.environ.get(
+                "HF_HUB_CACHE",
+                Path.home() / ".cache" / "huggingface" / "hub",
+            )
+        ).resolve()
+        repo_dir = cache_root / f"models--{model_name.replace('/', '--')}"
+        ref_path = repo_dir / "refs" / "main"
+        try:
+            revision = ref_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise P3ContractError("offline_tokenizer_snapshot_missing") from exc
+        if not revision or any(character not in "0123456789abcdef" for character in revision):
+            raise P3ContractError("offline_tokenizer_revision_invalid")
+        snapshot_path = (repo_dir / "snapshots" / revision).resolve()
+        if not _is_relative_to(snapshot_path, repo_dir.resolve()) or not snapshot_path.is_dir():
+            raise P3ContractError("offline_tokenizer_snapshot_missing")
+        self.snapshot_revision = revision
         self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name,
+            str(snapshot_path),
             local_files_only=True,
         )
 
@@ -256,6 +278,7 @@ class LocalQwenTokenizerCandidate:
         return {
             "evidence_kind": self.evidence_kind,
             "model_name": self.model_name,
+            "snapshot_revision": self.snapshot_revision,
             "tokenizer_class": type(self.tokenizer).__name__,
             "chat_template_present": bool(template),
             "chat_template_sha256": canonical_sha256(template),
@@ -264,6 +287,581 @@ class LocalQwenTokenizerCandidate:
             "local_files_only": True,
             "provider_usage_equivalence_validated": False,
         }
+
+
+def _ollama_model_metadata(model: str) -> dict[str, Any]:
+    ollama = shutil.which("ollama")
+    if ollama is None:
+        raise P3ContractError("ollama_command_unavailable")
+    try:
+        completed = subprocess.run(
+            [ollama, "show", model, "--modelfile"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise P3ContractError("ollama_metadata_unavailable") from exc
+    if completed.returncode != 0:
+        raise P3ContractError("ollama_metadata_unavailable")
+    from_line = next(
+        (line for line in completed.stdout.splitlines() if line.startswith("FROM ")),
+        "",
+    )
+    digest = from_line.rsplit("sha256-", 1)[-1] if "sha256-" in from_line else ""
+    return {
+        "model": model,
+        "digest": digest,
+        "template_present": "TEMPLATE " in completed.stdout,
+        "modelfile_sha256": canonical_sha256(completed.stdout),
+        "metadata_command_calls": 1,
+        "generation_calls": 0,
+    }
+
+
+def build_tokenizer_probe_preflight(probe_path: str | Path) -> dict[str, Any]:
+    probe = load_tokenizer_binding_probe(probe_path)
+    model = probe["model"]
+    metadata = _ollama_model_metadata(model["ollama_model"])
+    with network_forbidden() as network_attempts:
+        tokenizer = LocalQwenTokenizerCandidate(model["hf_tokenizer"])
+        fixture_counts = [
+            {
+                "fixture_id": fixture["fixture_id"],
+                "role": fixture["role"],
+                "messages_sha256": fixture["messages_sha256"],
+                "hf_prompt_tokens": tokenizer(fixture["messages"]),
+            }
+            for fixture in probe["fixtures"]
+        ]
+        tokenizer_evidence = tokenizer.evidence()
+    checks = {
+        "probe_valid": True,
+        "model_digest_matches": metadata["digest"] == model["ollama_blob_digest"],
+        "model_template_present": metadata["template_present"],
+        "offline_tokenizer_available": tokenizer_evidence["chat_template_present"],
+        "four_fixture_counts_available": len(fixture_counts) == 4
+        and all(row["hf_prompt_tokens"] > 0 for row in fixture_counts),
+        "no_network_attempts_during_tokenizer_load": len(network_attempts) == 0,
+        "config_does_not_self_authorize": probe["execution_boundary"][
+            "real_model_calls_authorized_by_this_config"
+        ]
+        is False,
+    }
+    return {
+        "schema": "uruha_p3_tokenizer_binding_probe_preflight_v1",
+        "phase": "P3-B3",
+        "status": "ready_for_execution_review" if all(checks.values()) else "not_ready_for_execution_review",
+        "probe_sha256": probe["_probe_sha256"],
+        "model_metadata": metadata,
+        "tokenizer": tokenizer_evidence,
+        "fixture_counts": fixture_counts,
+        "checks": checks,
+        "network_attempts": network_attempts,
+        "network_generation_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "claim_boundary": (
+            "This preflight reads model metadata and the offline tokenizer only. "
+            "It does not establish provider token equivalence or authorize generation."
+        ),
+    }
+
+
+def validate_tokenizer_probe_release(
+    release_path: str | Path,
+    probe: Mapping[str, Any],
+) -> dict[str, Any]:
+    release_file = Path(release_path)
+    release = _read_json(release_file)
+    expected_keys = {
+        "schema",
+        "phase",
+        "status",
+        "review_kind",
+        "probe",
+        "implementation_sha256",
+        "preflight",
+        "authorization",
+        "claim_boundary",
+    }
+    if set(release) != expected_keys or release.get("schema") != TOKEN_PROBE_RELEASE_SCHEMA:
+        raise P3ContractError("token_probe_release_schema_mismatch")
+    if release.get("phase") != "P3-B3" or release.get("status") != "released_for_single_local_binding_probe":
+        raise P3ContractError("token_probe_release_status_mismatch")
+    if release.get("review_kind") != "same_task_self_review_not_independent":
+        raise P3ContractError("token_probe_release_review_mismatch")
+    repo = release_file.resolve().parent.parent
+    probe_ref = release.get("probe")
+    if not isinstance(probe_ref, Mapping) or set(probe_ref) != {"path", "sha256"}:
+        raise P3ContractError("token_probe_release_probe_invalid")
+    if probe_ref.get("sha256") != probe.get("_probe_sha256"):
+        raise P3ContractError("token_probe_release_probe_digest_mismatch")
+    probe_ref_path = (repo / str(probe_ref.get("path"))).resolve()
+    if probe_ref_path != Path(str(probe.get("_probe_path"))).resolve():
+        raise P3ContractError("token_probe_release_probe_path_mismatch")
+    implementation = release.get("implementation_sha256")
+    if not isinstance(implementation, Mapping) or set(implementation) != {
+        "p3_product_comparison.py",
+        "p3_product_worker.py",
+        "test_p3_product_comparison.py",
+    }:
+        raise P3ContractError("token_probe_release_implementation_invalid")
+    for name, expected_sha in implementation.items():
+        path = repo / name
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected_sha:
+            raise P3ContractError("token_probe_release_implementation_digest_mismatch", name)
+    preflight = release.get("preflight")
+    if not isinstance(preflight, Mapping) or set(preflight) != {"path", "sha256", "status"}:
+        raise P3ContractError("token_probe_release_preflight_invalid")
+    preflight_path = (repo / str(preflight.get("path"))).resolve()
+    if (
+        not preflight_path.is_file()
+        or hashlib.sha256(preflight_path.read_bytes()).hexdigest() != preflight.get("sha256")
+        or preflight.get("status") != "ready_for_execution_review"
+    ):
+        raise P3ContractError("token_probe_release_preflight_mismatch")
+    authorization = release.get("authorization")
+    if authorization != {
+        "run_id": "p3-b3-tokenizer-binding-probe-v1",
+        "localhost_only": True,
+        "model": "qwen2.5:7b",
+        "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "provider_calls_exact": 8,
+        "completion_tokens_total_max": 8,
+        "automatic_retry": False,
+        "retain_output_text": False,
+        "checkpoint_root": "analysis/p3_b3_tokenizer_binding_probe_checkpoints_v1",
+        "result_path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+        "developer_smoke_access": False,
+        "annotation_access": False,
+        "production_database_access": False,
+        "external_deployment": False,
+    }:
+        raise P3ContractError("token_probe_release_authorization_mismatch")
+    return dict(release)
+
+
+def _token_probe_request_commitment(
+    probe: Mapping[str, Any],
+    transport_id: str,
+    fixture: Mapping[str, Any],
+) -> dict[str, Any]:
+    return {
+        "probe_sha256": probe["_probe_sha256"],
+        "transport": transport_id,
+        "url_sha256": canonical_sha256(
+            next(
+                transport["url"]
+                for transport in probe["transports"]
+                if transport["id"] == transport_id
+            )
+        ),
+        "fixture_id": fixture["fixture_id"],
+        "fixture_role": fixture["role"],
+        "messages_sha256": fixture["messages_sha256"],
+        "model": probe["model"]["ollama_model"],
+        "model_digest": probe["model"]["ollama_blob_digest"],
+        "generation_options": probe["generation_options"],
+    }
+
+
+def _run_token_probe_call_once(
+    *,
+    probe: Mapping[str, Any],
+    transport_id: str,
+    fixture: Mapping[str, Any],
+    hf_prompt_tokens: int,
+    transport: Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]],
+    checkpoint_root: str | Path,
+    clock: Callable[[], float],
+) -> dict[str, Any]:
+    request = _token_probe_request_commitment(probe, transport_id, fixture)
+    request_sha = canonical_sha256(request)
+    call_dir = Path(checkpoint_root) / transport_id / fixture["fixture_id"]
+    intent_path = call_dir / "intent.json"
+    complete_path = call_dir / "complete.json"
+    failure_path = call_dir / "failure.json"
+    if complete_path.exists():
+        complete = _read_json(complete_path)
+        _verify_signed_record(complete, "token_probe_complete_digest_mismatch")
+        if complete.get("request_sha256") != request_sha:
+            raise P3ContractError("token_probe_complete_source_mismatch")
+        result = complete.get("result")
+        if not isinstance(result, Mapping):
+            raise P3ContractError("token_probe_complete_invalid")
+        provider_call_evidence = result.get(
+            "provider_call_evidence", result.get("real_model_calls")
+        )
+        if provider_call_evidence not in (0, 1):
+            raise P3ContractError("token_probe_complete_evidence_invalid")
+        return {
+            **dict(result),
+            "reused": True,
+            "provider_call_evidence": provider_call_evidence,
+            "real_model_calls": 0,
+            "network_calls": 0,
+        }
+    if intent_path.exists():
+        intent = _read_json(intent_path)
+        _verify_signed_record(intent, "token_probe_intent_digest_mismatch")
+        if intent.get("request_sha256") != request_sha:
+            raise P3ContractError("token_probe_intent_source_mismatch")
+        raise P3ContractError("token_probe_intent_without_complete_no_retry")
+    intent = _signed_record(
+        {
+            "schema": "uruha_p3_tokenizer_probe_intent_v1",
+            "request_sha256": request_sha,
+            "transport": transport_id,
+            "fixture_id": fixture["fixture_id"],
+        }
+    )
+    write_new_json(intent_path, intent)
+    started = clock()
+    try:
+        response = transport(fixture, probe)
+        elapsed = clock() - started
+        if not isinstance(response, Mapping) or set(response) != {
+            "backend",
+            "model",
+            "prompt_tokens",
+            "completion_tokens",
+            "content",
+            "real_model_calls",
+            "network_calls",
+        }:
+            raise P3ContractError("token_probe_provider_payload_invalid")
+        prompt_tokens = response.get("prompt_tokens")
+        completion_tokens = response.get("completion_tokens")
+        content = response.get("content")
+        if (
+            response.get("backend") != transport_id
+            or response.get("model") != probe["model"]["ollama_model"]
+            or isinstance(prompt_tokens, bool)
+            or not isinstance(prompt_tokens, int)
+            or prompt_tokens <= 0
+            or isinstance(completion_tokens, bool)
+            or not isinstance(completion_tokens, int)
+            or completion_tokens < 0
+            or completion_tokens > probe["generation_options"]["max_completion_tokens"]
+            or not isinstance(content, str)
+            or isinstance(elapsed, bool)
+            or not isinstance(elapsed, (int, float))
+            or elapsed < 0
+            or elapsed > probe["generation_options"]["per_call_timeout_seconds"]
+        ):
+            raise P3ContractError("token_probe_provider_payload_invalid")
+        for count_name in ("real_model_calls", "network_calls"):
+            count = response.get(count_name)
+            if isinstance(count, bool) or not isinstance(count, int) or count < 0 or count > 1:
+                raise P3ContractError("token_probe_provider_call_count_invalid", count_name)
+    except Exception as exc:
+        code = (
+            exc.code
+            if isinstance(exc, P3ContractError)
+            else "token_probe_transport_failure_no_retry"
+        )
+        failure = _signed_record(
+            {
+                "schema": "uruha_p3_tokenizer_probe_failure_v1",
+                "request_sha256": request_sha,
+                "code": code,
+                "error_type": type(exc).__name__,
+                "error_sha256": canonical_sha256(str(exc)),
+            }
+        )
+        write_new_json(failure_path, failure)
+        if isinstance(exc, P3ContractError):
+            raise
+        raise P3ContractError(
+            "token_probe_transport_failure_no_retry",
+            type(exc).__name__,
+        ) from exc
+    result = {
+        "transport": transport_id,
+        "fixture_id": fixture["fixture_id"],
+        "fixture_role": fixture["role"],
+        "request_sha256": request_sha,
+        "hf_prompt_tokens": hf_prompt_tokens,
+        "provider_prompt_tokens": prompt_tokens,
+        "offset": prompt_tokens - hf_prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "output_sha256": canonical_sha256(content),
+        "wall_seconds": round(float(elapsed), 6),
+        "provider_call_evidence": response["real_model_calls"],
+        "real_model_calls": response["real_model_calls"],
+        "network_calls": response["network_calls"],
+        "reused": False,
+    }
+    complete = _signed_record(
+        {
+            "schema": "uruha_p3_tokenizer_probe_complete_v1",
+            "request_sha256": request_sha,
+            "result": result,
+        }
+    )
+    write_new_json(complete_path, complete)
+    return result
+
+
+def execute_tokenizer_binding_probe(
+    *,
+    probe: Mapping[str, Any],
+    token_counter: Callable[[Iterable[Mapping[str, str]]], int],
+    transports: Mapping[
+        str,
+        Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]],
+    ],
+    checkpoint_root: str | Path,
+    evidence_kind: str,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    if evidence_kind not in {"contract_fake", "local_ollama_provider_usage"}:
+        raise P3ContractError("token_probe_evidence_kind_invalid")
+    expected_transports = [transport["id"] for transport in probe["transports"]]
+    if set(transports) != set(expected_transports):
+        raise P3ContractError("token_probe_transport_set_mismatch")
+    started = clock()
+    rows: list[dict[str, Any]] = []
+    hf_counts: dict[str, int] = {}
+    for fixture in probe["fixtures"]:
+        count = token_counter(fixture["messages"])
+        if isinstance(count, bool) or not isinstance(count, int) or count <= 0:
+            raise P3ContractError("token_probe_hf_count_invalid", fixture["fixture_id"])
+        hf_counts[fixture["fixture_id"]] = count
+    for transport_id in expected_transports:
+        for fixture in probe["fixtures"]:
+            rows.append(
+                _run_token_probe_call_once(
+                    probe=probe,
+                    transport_id=transport_id,
+                    fixture=fixture,
+                    hf_prompt_tokens=hf_counts[fixture["fixture_id"]],
+                    transport=transports[transport_id],
+                    checkpoint_root=checkpoint_root,
+                    clock=clock,
+                )
+            )
+    total_wall = clock() - started
+    if total_wall > probe["generation_options"]["total_wall_seconds_max"]:
+        raise P3ContractError("token_probe_total_wall_exceeded")
+    fit_ids = set(probe["fit_and_verification"]["fit_fixture_ids"])
+    verification_id = probe["fit_and_verification"]["verification_fixture_ids"][0]
+    offsets: dict[str, int | None] = {}
+    fit_offset_consistent: dict[str, bool] = {}
+    verification_exact: dict[str, bool] = {}
+    for transport_id in expected_transports:
+        transport_rows = [row for row in rows if row["transport"] == transport_id]
+        fit_offsets = {row["offset"] for row in transport_rows if row["fixture_id"] in fit_ids}
+        fit_offset_consistent[transport_id] = len(fit_offsets) == 1
+        offset = next(iter(fit_offsets)) if len(fit_offsets) == 1 else None
+        offsets[transport_id] = offset
+        verify_row = next(row for row in transport_rows if row["fixture_id"] == verification_id)
+        verification_exact[transport_id] = (
+            offset is not None
+            and verify_row["provider_prompt_tokens"]
+            == verify_row["hf_prompt_tokens"] + offset
+        )
+    provider_counts_match = all(
+        len(
+            {
+                row["provider_prompt_tokens"]
+                for row in rows
+                if row["fixture_id"] == fixture["fixture_id"]
+            }
+        )
+        == 1
+        for fixture in probe["fixtures"]
+    )
+    is_fake = evidence_kind == "contract_fake"
+    provider_evidence_calls = sum(row["provider_call_evidence"] for row in rows)
+    newly_executed_calls = sum(row["real_model_calls"] for row in rows)
+    expected_provider_evidence = (
+        0 if is_fake else probe["execution_boundary"]["expected_provider_calls"]
+    )
+    checks = {
+        "eight_evidence_rows": len(rows) == 8,
+        "fit_offsets_consistent": all(fit_offset_consistent.values()),
+        "verification_exact": all(verification_exact.values()),
+        "provider_counts_match_across_transports": provider_counts_match,
+        "completion_tokens_within_total": sum(row["completion_tokens"] for row in rows)
+        <= probe["execution_boundary"]["maximum_completion_tokens_total"],
+        "no_output_text_retained": all("content" not in row for row in rows),
+        "call_counts_within_release": newly_executed_calls
+        <= probe["execution_boundary"]["maximum_provider_calls"],
+        "provider_call_evidence_exact_for_scope": provider_evidence_calls
+        == expected_provider_evidence,
+    }
+    status = (
+        "offline_tokenizer_contract_pass"
+        if is_fake and all(checks.values())
+        else "provider_binding_pass"
+        if not is_fake and all(checks.values())
+        else "binding_failed_retained"
+    )
+    return {
+        "schema": "uruha_p3_tokenizer_binding_probe_result_v1",
+        "phase": "P3-B3",
+        "status": status,
+        "evidence_kind": evidence_kind,
+        "probe_sha256": probe["_probe_sha256"],
+        "rows": rows,
+        "transport_offsets": offsets,
+        "fit_offset_consistent": fit_offset_consistent,
+        "verification_exact": verification_exact,
+        "provider_counts_match_across_transports": provider_counts_match,
+        "checks": checks,
+        "total_wall_seconds": round(float(total_wall), 6),
+        "provider_call_evidence": provider_evidence_calls,
+        "real_model_calls": newly_executed_calls,
+        "network_calls": sum(row["network_calls"] for row in rows),
+        "paid_calls": 0,
+        "output_text_retained": False,
+        "binding_verified": (not is_fake and all(checks.values())),
+        "claim_boundary": (
+            "A passing local-provider result binds token counts only for this frozen "
+            "model/template and probe shape; it is not reply-quality evidence."
+        ),
+    }
+
+
+def build_tokenizer_probe_contract(probe_path: str | Path, checkpoint_root: str | Path) -> dict[str, Any]:
+    probe = load_tokenizer_binding_probe(probe_path)
+
+    def counter(messages: Iterable[Mapping[str, str]]) -> int:
+        return 20 + sum(len(message["content"].encode("utf-8")) for message in messages)
+
+    def fake(backend: str) -> Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]]:
+        def transport(fixture: Mapping[str, Any], raw_probe: Mapping[str, Any]) -> Mapping[str, Any]:
+            return {
+                "backend": backend,
+                "model": raw_probe["model"]["ollama_model"],
+                "prompt_tokens": counter(fixture["messages"]) + 2,
+                "completion_tokens": 1,
+                "content": f"contract-output-{backend}-{fixture['fixture_id']}",
+                "real_model_calls": 0,
+                "network_calls": 0,
+            }
+
+        return transport
+
+    ticks = iter(float(index) * 0.01 for index in range(20))
+    return execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transports={transport_id: fake(transport_id) for transport_id in (
+            "openai_compatible_local",
+            "native_ollama_chat",
+        )},
+        checkpoint_root=checkpoint_root,
+        evidence_kind="contract_fake",
+        clock=lambda: next(ticks),
+    )
+
+
+def _local_provider_transport(
+    transport_id: str,
+) -> Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]]:
+    def transport(
+        fixture: Mapping[str, Any], probe: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
+        transport_config = next(
+            item for item in probe["transports"] if item["id"] == transport_id
+        )
+        options = probe["generation_options"]
+        if transport_id == "openai_compatible_local":
+            request_body = {
+                "model": probe["model"]["ollama_model"],
+                "messages": fixture["messages"],
+                "temperature": options["temperature"],
+                "seed": options["seed"],
+                "top_p": options["top_p"],
+                "max_tokens": options["max_completion_tokens"],
+                "stream": options["stream"],
+                "think": options["think"],
+                "options": {"num_ctx": options["num_ctx"]},
+            }
+        else:
+            request_body = {
+                "model": probe["model"]["ollama_model"],
+                "messages": fixture["messages"],
+                "stream": options["stream"],
+                "think": options["think"],
+                "options": {
+                    "temperature": options["temperature"],
+                    "seed": options["seed"],
+                    "top_p": options["top_p"],
+                    "num_ctx": options["num_ctx"],
+                    "num_predict": options["max_completion_tokens"],
+                },
+            }
+        request = urllib.request.Request(
+            transport_config["url"],
+            data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(
+            request,
+            timeout=options["per_call_timeout_seconds"],
+        ) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        if not isinstance(payload, Mapping):
+            raise P3ContractError("token_probe_provider_payload_invalid")
+        if transport_id == "openai_compatible_local":
+            try:
+                content = payload["choices"][0]["message"]["content"]
+                prompt_tokens = payload["usage"]["prompt_tokens"]
+                completion_tokens = payload["usage"]["completion_tokens"]
+            except (KeyError, IndexError, TypeError) as exc:
+                raise P3ContractError("token_probe_provider_payload_invalid") from exc
+        else:
+            content = (payload.get("message") or {}).get("content")
+            prompt_tokens = payload.get("prompt_eval_count")
+            completion_tokens = payload.get("eval_count")
+        return {
+            "backend": transport_id,
+            "model": payload.get("model"),
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "content": content,
+            "real_model_calls": 1,
+            "network_calls": 1,
+        }
+
+    return transport
+
+
+def run_local_tokenizer_binding_probe(
+    probe_path: str | Path,
+    release_path: str | Path,
+    checkpoint_root: str | Path,
+) -> dict[str, Any]:
+    probe = load_tokenizer_binding_probe(probe_path)
+    release = validate_tokenizer_probe_release(release_path, probe)
+    repo = Path(release_path).resolve().parent.parent
+    expected_checkpoint = (repo / release["authorization"]["checkpoint_root"]).resolve()
+    actual_checkpoint = Path(checkpoint_root).resolve()
+    if actual_checkpoint != expected_checkpoint:
+        raise P3ContractError("token_probe_checkpoint_path_mismatch")
+    metadata = _ollama_model_metadata(probe["model"]["ollama_model"])
+    if metadata["digest"] != release["authorization"]["model_digest"]:
+        raise P3ContractError("token_probe_runtime_model_digest_mismatch")
+    tokenizer = LocalQwenTokenizerCandidate(probe["model"]["hf_tokenizer"])
+    result = execute_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=tokenizer,
+        transports={
+            transport["id"]: _local_provider_transport(transport["id"])
+            for transport in probe["transports"]
+        },
+        checkpoint_root=actual_checkpoint,
+        evidence_kind="local_ollama_provider_usage",
+    )
+    result["release_sha256"] = hashlib.sha256(Path(release_path).read_bytes()).hexdigest()
+    result["model_metadata"] = metadata
+    return result
 
 
 def build_openai_call(
@@ -837,12 +1435,25 @@ def build_product_dry_run(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("dry-run", "adapter-contract"), required=True)
+    parser.add_argument(
+        "--mode",
+        choices=(
+            "dry-run",
+            "adapter-contract",
+            "tokenizer-preflight",
+            "tokenizer-contract",
+            "tokenizer-run",
+        ),
+        required=True,
+    )
     parser.add_argument("--design", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--workspace-root")
     parser.add_argument("--case-id")
     parser.add_argument("--state-slot")
+    parser.add_argument("--probe")
+    parser.add_argument("--probe-release")
+    parser.add_argument("--checkpoint-root")
     return parser.parse_args(argv)
 
 
@@ -854,7 +1465,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.mode == "adapter-contract":
             payload = build_adapter_contract(args.design)
-        else:
+        elif args.mode == "dry-run":
             if not args.workspace_root or not args.case_id:
                 raise P3ContractError("dry_run_workspace_and_case_required")
             payload = build_product_dry_run(
@@ -863,13 +1474,52 @@ def main(argv: list[str] | None = None) -> int:
                 args.case_id,
                 args.state_slot,
             )
+        elif args.mode == "tokenizer-preflight":
+            if not args.probe:
+                raise P3ContractError("token_probe_path_required")
+            payload = build_tokenizer_probe_preflight(args.probe)
+        elif args.mode == "tokenizer-contract":
+            if not args.probe:
+                raise P3ContractError("token_probe_path_required")
+            if args.checkpoint_root:
+                payload = build_tokenizer_probe_contract(
+                    args.probe,
+                    args.checkpoint_root,
+                )
+            else:
+                import tempfile
+
+                with tempfile.TemporaryDirectory(prefix="uruha-p3-token-contract-") as temporary:
+                    payload = build_tokenizer_probe_contract(args.probe, temporary)
+        else:
+            if not args.probe or not args.probe_release or not args.checkpoint_root:
+                raise P3ContractError("token_probe_run_artifacts_required")
+            release = _read_json(Path(args.probe_release))
+            repo = Path(args.probe_release).resolve().parent.parent
+            expected_output = (
+                repo / str((release.get("authorization") or {}).get("result_path"))
+            ).resolve()
+            if output.resolve() != expected_output:
+                raise P3ContractError("token_probe_result_path_mismatch")
+            payload = run_local_tokenizer_binding_probe(
+                args.probe,
+                args.probe_release,
+                args.checkpoint_root,
+            )
         write_new_json(output, payload)
-        return 0 if payload.get("status", "").endswith("pass") else 2
+        return 0 if payload.get("status") in {
+            "isolated_import_pass",
+            "offline_transport_contract_pass",
+            "ready_for_execution_review",
+            "offline_tokenizer_contract_pass",
+            "provider_binding_pass",
+        } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"
+        phase = "P3-B3" if args.mode.startswith("tokenizer-") else "P3-B1"
         failure = {
             "schema": "uruha_p3_product_worker_failure_v1",
-            "phase": "P3-B1",
+            "phase": phase,
             "status": "refused_before_product_transport",
             "contract_code": exc.code,
             "detail_sha256": canonical_sha256(exc.detail),
