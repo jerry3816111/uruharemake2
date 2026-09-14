@@ -747,17 +747,26 @@ def validate_product_canary_release(
     ):
         raise P3ContractError("product_canary_release_preflight_mismatch")
     phase = canary["_phase"]
-    run_suffix = "p3-b6-single-product-canary-v1" if phase == "P3-B6" else "p3-b9-fresh-product-canary-v1"
-    checkpoint_root = (
-        "analysis/p3_b6_product_canary_checkpoint_v1"
-        if phase == "P3-B6"
-        else "analysis/p3_b9_product_canary_checkpoint_v1"
-    )
-    result_path = (
-        "analysis/p3_b6_product_canary_result_2026-09-14.json"
-        if phase == "P3-B6"
-        else "analysis/p3_b9_product_canary_result_2026-09-15.json"
-    )
+    phase_artifacts = {
+        "P3-B6": (
+            "p3-b6-single-product-canary-v1",
+            "analysis/p3_b6_product_canary_checkpoint_v1",
+            "analysis/p3_b6_product_canary_result_2026-09-14.json",
+        ),
+        "P3-B9": (
+            "p3-b9-fresh-product-canary-v1",
+            "analysis/p3_b9_product_canary_checkpoint_v1",
+            "analysis/p3_b9_product_canary_result_2026-09-15.json",
+        ),
+        "P3-B15": (
+            "p3-b15-direct-v2-product-canary-v1",
+            "analysis/p3_b15_product_canary_checkpoint_v1",
+            "analysis/p3_b15_product_canary_result_2026-09-15.json",
+        ),
+    }
+    if phase not in phase_artifacts:
+        raise P3ContractError("product_canary_release_phase_invalid")
+    run_suffix, checkpoint_root, result_path = phase_artifacts[phase]
     if release.get("authorization") != {
         "run_id": run_suffix,
         "localhost_only": True,
@@ -3918,6 +3927,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.mode.startswith("stage-tokenizer-")
             else "P3-B3"
             if args.mode.startswith("tokenizer-")
+            else "P3-B15"
+            if requested_schema == "uruha_p3_product_canary_v3"
             else "P3-B9"
             if requested_schema in {
                 "uruha_p3_product_canary_v2",

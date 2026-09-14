@@ -76,6 +76,7 @@ TOKEN_PROBE_RESULT_PATH = (
 )
 PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
 FRESH_PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v2.json"
+DIRECT_V2_PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v3.json"
 CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
 FRESH_CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v2.json"
 STAGE_TOKEN_PROBE_PATH = (
@@ -932,6 +933,28 @@ def test_stage_counter_can_model_ollama_collation_for_adjacent_user_scratch():
     assert counter.evidence()["adjacent_same_role_rule"] == (
         "merge_content_with_two_newlines_before_template"
     )
+
+
+def test_p3_b15_product_canary_selects_only_case_three_first_turn():
+    canary = load_product_canary(DIRECT_V2_PRODUCT_CANARY_PATH)
+
+    assert canary["_phase"] == "P3-B15"
+    assert canary["selection"]["case_id"] == "p3-smoke-emotional-bid-ja"
+    assert canary["selection"]["turn_id"] == "p3-smoke-03-u1"
+    assert canary["_source"]["visible_prefix"] == []
+    assert canary["_source"]["future_turns_included"] is False
+    assert canary["_source"]["annotations_included"] is False
+
+
+def test_p3_b15_product_canary_preflight_is_zero_call_and_ready():
+    result = build_product_canary_preflight(DIRECT_V2_PRODUCT_CANARY_PATH)
+
+    assert result["phase"] == "P3-B15"
+    assert result["status"] == "ready_for_single_product_canary_review"
+    assert result["real_model_calls"] == result["network_calls"] == 0
+    assert result["runtime_future_turn_access_authorized"] is False
+    assert result["annotations_accessed"] is False
+    assert all(result["checks"].values())
 
 
 def test_p3_canary_baselines_contract_uses_four_crash_safe_calls(tmp_path):

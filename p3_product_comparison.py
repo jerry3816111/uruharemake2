@@ -170,6 +170,7 @@ TOKEN_BINDING_FIXTURE_KEYS = frozenset(
 )
 PRODUCT_CANARY_SCHEMA = "uruha_p3_product_canary_v1"
 PRODUCT_CANARY_FRESH_SCHEMA = "uruha_p3_product_canary_v2"
+PRODUCT_CANARY_DIRECT_V2_SCHEMA = "uruha_p3_product_canary_v3"
 PRODUCT_CANARY_ROOT_KEYS = frozenset(
     {
         "schema",
@@ -505,24 +506,49 @@ def load_product_canary(path: str | Path) -> dict[str, Any]:
             },
         }
         binding_calls = 8
-    elif schema == PRODUCT_CANARY_FRESH_SCHEMA:
-        purpose = "fresh_single_turn_product_canary_after_stage_binding"
-        phase = "P3-B9"
-        case_index = 1
+    elif schema in {PRODUCT_CANARY_FRESH_SCHEMA, PRODUCT_CANARY_DIRECT_V2_SCHEMA}:
+        direct_v2 = schema == PRODUCT_CANARY_DIRECT_V2_SCHEMA
+        purpose = (
+            "fresh_direct_v2_surface_product_canary"
+            if direct_v2
+            else "fresh_single_turn_product_canary_after_stage_binding"
+        )
+        phase = "P3-B15" if direct_v2 else "P3-B9"
+        case_index = 2 if direct_v2 else 1
         expected_source = {
-            "schema": "uruha_p3_product_canary_source_v2",
+            "schema": (
+                "uruha_p3_product_canary_source_v3"
+                if direct_v2
+                else "uruha_p3_product_canary_source_v2"
+            ),
             "split": "developer_smoke_canary",
-            "selection_rule": "second_case_first_turn_after_retained_failed_baseline",
+            "selection_rule": (
+                "third_case_first_turn_after_direct_v2_design_review"
+                if direct_v2
+                else "second_case_first_turn_after_retained_failed_baseline"
+            ),
             "parent_source": {
                 "path": "datasets/p3_developer_smoke_source_v1.json",
                 "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
             },
-            "case_id": "p3-smoke-tentative-refusal-en",
-            "turn_id": "p3-smoke-02-u1",
-            "session_id": "p3-smoke-02-s1",
-            "language": "en",
-            "content": "A friend invited me to a crowded concert this weekend. I said maybe.",
-            "content_sha256": "ef46d14a23b81d61a6e4286365be7596dcdeab3dc2448a602097c2cf1b1a0d28",
+            "case_id": (
+                "p3-smoke-emotional-bid-ja"
+                if direct_v2
+                else "p3-smoke-tentative-refusal-en"
+            ),
+            "turn_id": "p3-smoke-03-u1" if direct_v2 else "p3-smoke-02-u1",
+            "session_id": "p3-smoke-03-s1" if direct_v2 else "p3-smoke-02-s1",
+            "language": "ja" if direct_v2 else "en",
+            "content": (
+                "今日の発表、最後の質問だけ答えられなかった。"
+                if direct_v2
+                else "A friend invited me to a crowded concert this weekend. I said maybe."
+            ),
+            "content_sha256": (
+                "00000231b0c6bf86a385126dd4f5bba7d7b99418ee883c133fa018bd8a660e39"
+                if direct_v2
+                else "ef46d14a23b81d61a6e4286365be7596dcdeab3dc2448a602097c2cf1b1a0d28"
+            ),
             "visible_prefix": [],
             "future_turns_included": False,
             "annotations_included": False,
@@ -535,8 +561,16 @@ def load_product_canary(path: str | Path) -> dict[str, Any]:
             },
             "canary_source": {
                 "keys": {"path", "sha256"},
-                "path": "datasets/p3_product_canary_source_v2.json",
-                "sha256": "6450524c729d8bb09a9d9bb74ab183a9afd0253f6f9105c62025dee981bd5c03",
+                "path": (
+                    "datasets/p3_product_canary_source_v3.json"
+                    if direct_v2
+                    else "datasets/p3_product_canary_source_v2.json"
+                ),
+                "sha256": (
+                    "52c09d8df6ff409d4ae3759ff3d734891cdc63501668b90581a84dd34ee1cb77"
+                    if direct_v2
+                    else "6450524c729d8bb09a9d9bb74ab183a9afd0253f6f9105c62025dee981bd5c03"
+                ),
             },
             "tokenizer_binding_result": {
                 "keys": {"path", "sha256", "required_status"},
