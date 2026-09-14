@@ -45,15 +45,20 @@ from p3_product_worker import (
     build_openai_call,
     build_tokenizer_probe_contract,
     build_tokenizer_probe_preflight,
+    build_stage_tokenizer_probe_contract,
+    build_stage_tokenizer_probe_preflight,
     build_canary_baselines_preflight,
     build_product_canary_preflight,
     claim_case_workspace,
     execute_tokenizer_binding_probe,
+    execute_stage_tokenizer_binding_probe,
     execute_canary_baselines,
     install_product_transport_gate,
     normalize_product_native_call,
     normalize_product_openai_call,
     load_canary_baselines,
+    load_stage_tokenizer_binding_probe,
+    summarize_checkpoint_evidence,
 )
 
 
@@ -70,6 +75,9 @@ TOKEN_PROBE_RESULT_PATH = (
 )
 PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
 CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
+STAGE_TOKEN_PROBE_PATH = (
+    ROOT / "configs" / "p3_stage_tokenizer_binding_probe_v1.json"
+)
 
 
 def source_fixture():
@@ -901,6 +909,29 @@ def test_provider_prompt_drift_is_terminal_before_completion(tmp_path):
     )
     failure = json.loads(next(tmp_path.rglob("failure.json")).read_text(encoding="utf-8"))
     assert failure["contract_code"] == "provider_prompt_count_mismatch"
+    assert failure["transport_attempted"] is True
+    assert failure["response_received"] is True
+    assert failure["declared_reservation"] == {
+        "prompt_tokens": request["prompt_tokens"],
+        "max_completion_tokens": request["max_completion_tokens"],
+    }
+    assert failure["provider_actual_usage"] == {
+        "prompt_tokens": request["prompt_tokens"] + 1,
+        "completion_tokens": 4,
+        "measured_wall_seconds": failure["provider_actual_usage"][
+            "measured_wall_seconds"
+        ],
+        "network_calls": 0,
+        "real_model_calls": 0,
+    }
+    summary = summarize_checkpoint_evidence(tmp_path)
+    assert summary["declared_invocation_intents"] == 1
+    assert summary["completed_calls"] == 0
+    assert summary["terminal_failures"] == 1
+    assert summary["post_transport_failures"] == 1
+    assert summary["declared_prompt_tokens"] == request["prompt_tokens"]
+    assert summary["provider_prompt_tokens_observed"] == request["prompt_tokens"] + 1
+    assert summary["provider_completion_tokens_observed"] == 4
     assert not list(tmp_path.rglob("complete.json"))
 
 
@@ -954,6 +985,76 @@ def test_p3_tokenizer_probe_preflight_counts_all_fixtures_without_generation():
     )
     assert preflight["real_model_calls"] == preflight["network_generation_calls"] == 0
     assert all(preflight["checks"].values())
+
+
+def test_p3_stage_tokenizer_probe_preflight_covers_assistant_continuations():
+    preflight = build_stage_tokenizer_probe_preflight(STAGE_TOKEN_PROBE_PATH)
+    assert preflight["status"] == "ready_for_stage_tokenizer_probe_review"
+    assert [row["stage"] for row in preflight["fixture_counts"]] == [
+        "direct", "draft", "critique", "revise"
+    ]
+    assert {
+        row["stage"]: row["candidate_correction_tokens"]
+        for row in preflight["fixture_counts"]
+    } == {"direct": 0, "draft": 0, "critique": -5, "revise": -5}
+    assert preflight["real_model_calls"] == preflight["network_calls"] == 0
+    assert all(preflight["checks"].values())
+
+
+def test_p3_stage_tokenizer_probe_fake_contract_is_exact_and_raw_text_free(
+    tmp_path,
+):
+    result = build_stage_tokenizer_probe_contract(
+        STAGE_TOKEN_PROBE_PATH, tmp_path / "stage-checkpoints"
+    )
+    assert result["status"] == "offline_stage_tokenizer_contract_pass"
+    assert result["stage_offsets"] == {
+        "critique": 0,
+        "direct": 0,
+        "draft": 0,
+        "revise": 0,
+    }
+    assert result["declared_invocation_intents"] == 4
+    assert result["completed_calls"] == 4
+    assert result["real_model_calls"] == result["network_calls"] == 0
+    assert all(result["checks"].values())
+    checkpoint_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (tmp_path / "stage-checkpoints").rglob("*.json")
+    )
+    assert "discard-stage" not in checkpoint_text
+
+
+def test_p3_stage_tokenizer_probe_retains_one_shape_mismatch(tmp_path):
+    probe = load_stage_tokenizer_binding_probe(STAGE_TOKEN_PROBE_PATH)
+
+    def counter(messages):
+        return 100 + len(messages)
+
+    def drift(fixture, raw_probe):
+        extra = 1 if fixture["stage"] == "revise" else 0
+        return {
+            "backend": "openai_compatible_local",
+            "model": raw_probe["model"]["ollama_model"],
+            "prompt_tokens": counter(fixture["messages"]) + extra,
+            "completion_tokens": 1,
+            "content": "discarded",
+            "real_model_calls": 0,
+            "network_calls": 0,
+        }
+
+    result = execute_stage_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transport=drift,
+        checkpoint_root=tmp_path / "stage-mismatch",
+        evidence_kind="contract_fake",
+    )
+    assert result["status"] == "stage_binding_failed_retained"
+    assert result["checks"]["fit_rows_exact"] is True
+    assert result["checks"]["verification_row_exact"] is False
+    assert result["stage_offsets"]["revise"] == 1
+    assert result["binding_verified"] is False
 
 
 def test_p3_tokenizer_probe_fake_contract_is_exact_and_raw_text_free(tmp_path):

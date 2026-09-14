@@ -53,6 +53,7 @@ ADAPTER_SCHEMA = "uruha_p3_product_transport_adapter_contract_v1"
 TOKEN_PROBE_RELEASE_SCHEMA = "uruha_p3_tokenizer_binding_probe_execution_release_v1"
 PRODUCT_CANARY_RELEASE_SCHEMA = "uruha_p3_product_canary_execution_release_v1"
 CANARY_BASELINE_RELEASE_SCHEMA = "uruha_p3_canary_baselines_execution_release_v1"
+STAGE_TOKEN_PROBE_RELEASE_SCHEMA = "uruha_p3_stage_tokenizer_binding_execution_release_v1"
 SAFE_SLOT_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 REPO_ROOT = Path(__file__).resolve().parent
 PRODUCTION_DB_PATH = (REPO_ROOT / "uruha_memory_mac_db").resolve()
@@ -333,6 +334,52 @@ class LocalQwenTokenizerCandidate:
         }
 
 
+class LocalOllamaQwenStageCounter:
+    """Count the frozen Ollama Qwen chat-template shape, including continuation."""
+
+    evidence_kind = "local_ollama_qwen_stage_template_candidate"
+    TERMINAL_ASSISTANT_SUFFIX = "<|im_end|>\n"
+
+    def __init__(self, model_name: str = "Qwen/Qwen2.5-7B-Instruct") -> None:
+        self.base = LocalQwenTokenizerCandidate(model_name)
+
+    def hf_default_count(self, messages: Iterable[Mapping[str, str]]) -> int:
+        return self.base(messages)
+
+    def __call__(self, messages: Iterable[Mapping[str, str]]) -> int:
+        rows = [dict(message) for message in messages]
+        if not rows:
+            return 0
+        if rows[-1].get("role") != "assistant":
+            return self.base(rows)
+        rendered = self.base.tokenizer.apply_chat_template(
+            rows,
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+        if not isinstance(rendered, str) or not rendered.endswith(
+            self.TERMINAL_ASSISTANT_SUFFIX
+        ):
+            raise P3ContractError("stage_counter_terminal_assistant_shape_mismatch")
+        continuation = rendered[: -len(self.TERMINAL_ASSISTANT_SUFFIX)]
+        return len(
+            self.base.tokenizer.encode(continuation, add_special_tokens=False)
+        )
+
+    def evidence(self) -> dict[str, Any]:
+        evidence = self.base.evidence()
+        return {
+            "evidence_kind": self.evidence_kind,
+            "hf_snapshot_revision": self.base.snapshot_revision,
+            "hf_chat_template_sha256": evidence["chat_template_sha256"],
+            "assistant_final_rule": (
+                "render_without_generation_prompt_then_remove_one_terminal_im_end_newline"
+            ),
+            "non_assistant_final_rule": "hf_add_generation_prompt_true",
+            "provider_usage_equivalence_validated": False,
+        }
+
+
 def _ollama_model_metadata(model: str) -> dict[str, Any]:
     ollama = shutil.which("ollama")
     if ollama is None:
@@ -362,6 +409,24 @@ def _ollama_model_metadata(model: str) -> dict[str, Any]:
         "metadata_command_calls": 1,
         "generation_calls": 0,
     }
+
+
+def _ollama_template_sha256(model: str) -> str:
+    ollama = shutil.which("ollama")
+    if ollama is None:
+        raise P3ContractError("ollama_command_unavailable")
+    try:
+        completed = subprocess.run(
+            [ollama, "show", model, "--template"],
+            capture_output=True,
+            check=False,
+            timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise P3ContractError("ollama_template_unavailable") from exc
+    if completed.returncode != 0 or not completed.stdout:
+        raise P3ContractError("ollama_template_unavailable")
+    return hashlib.sha256(completed.stdout).hexdigest()
 
 
 def build_tokenizer_probe_preflight(probe_path: str | Path) -> dict[str, Any]:
@@ -884,6 +949,275 @@ def validate_canary_baselines_release(
     return dict(release)
 
 
+def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
+    probe_path = Path(path)
+    probe = _read_json(probe_path)
+    if set(probe) != {
+        "schema", "status", "purpose", "comparison_design",
+        "prior_binding_result", "failed_baseline_acceptance", "model",
+        "transports", "generation_options", "counter_contract", "fixtures",
+        "fit_and_verification", "execution_boundary",
+    } or probe.get("schema") != "uruha_p3_stage_tokenizer_binding_probe_v1":
+        raise P3ContractError("stage_token_probe_schema_mismatch")
+    if probe.get("status") != "preregistered_not_executed" or probe.get("purpose") != (
+        "bind_offline_counts_to_every_real_baseline_stage_message_shape"
+    ):
+        raise P3ContractError("stage_token_probe_status_mismatch")
+    repo = probe_path.resolve().parent.parent
+    refs = {
+        "comparison_design": {
+            "path": "configs/p3_product_comparison_v1.json",
+            "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+        },
+        "prior_binding_result": {
+            "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+            "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+            "required_status": "provider_binding_pass",
+        },
+        "failed_baseline_acceptance": {
+            "path": "analysis/p3_b7_canary_baselines_acceptance_2026-09-14.md",
+            "sha256": "5897f578f4fa613ade6f4296c6c7b60f048909729def9a0ba2a597a88d922563",
+            "required_status": "FAILED_RETAINED",
+        },
+    }
+    resolved: dict[str, Path] = {}
+    for name, expected in refs.items():
+        if probe.get(name) != expected:
+            raise P3ContractError("stage_token_probe_reference_mismatch", name)
+        ref = (repo / expected["path"]).resolve()
+        if not _is_relative_to(ref, repo) or not ref.is_file():
+            raise P3ContractError("stage_token_probe_reference_missing", name)
+        if hashlib.sha256(ref.read_bytes()).hexdigest() != expected["sha256"]:
+            raise P3ContractError("stage_token_probe_reference_digest_mismatch", name)
+        resolved[name] = ref
+    prior = _read_json(resolved["prior_binding_result"])
+    if prior.get("status") != "provider_binding_pass" or prior.get("binding_verified") is not True:
+        raise P3ContractError("stage_token_probe_prior_binding_invalid")
+    if "Status: **FAILED_RETAINED / NO QUALITY COMPARISON**" not in resolved[
+        "failed_baseline_acceptance"
+    ].read_text(encoding="utf-8"):
+        raise P3ContractError("stage_token_probe_failed_result_missing")
+    model = {
+        "ollama_model": "qwen2.5:7b",
+        "ollama_blob_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "hf_tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+        "hf_snapshot_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+        "hf_chat_template_sha256": "2e2d2512cfe46af53dc1eed45368ecaab26ac4461c480e6b69fe571cf0ceaa75",
+        "ollama_template_sha256": "eb4402837c7829a690fa845de4d7f3fd842c2adee476d5341da8a46ea9255175",
+    }
+    if probe.get("model") != model:
+        raise P3ContractError("stage_token_probe_model_mismatch")
+    if probe.get("transports") != [{
+        "id": "openai_compatible_local",
+        "url": "http://127.0.0.1:11434/v1/chat/completions",
+        "usage_prompt_field": "usage.prompt_tokens",
+        "usage_completion_field": "usage.completion_tokens",
+    }]:
+        raise P3ContractError("stage_token_probe_transport_mismatch")
+    if probe.get("generation_options") != {
+        "temperature": 0, "seed": 20260909, "top_p": 1, "num_ctx": 8192,
+        "think": False, "max_completion_tokens": 1, "stream": False,
+        "transport_retries": 0, "concurrency": 1,
+        "per_call_timeout_seconds": 30, "total_wall_seconds_max": 120,
+    }:
+        raise P3ContractError("stage_token_probe_generation_mismatch")
+    if probe.get("counter_contract") != {
+        "non_assistant_final": "hf_apply_chat_template_add_generation_prompt_true",
+        "assistant_final": "hf_apply_chat_template_add_generation_prompt_false_then_remove_one_terminal_im_end_newline",
+        "fit_after_provider_access": False,
+        "allowed_global_offset": 0,
+        "verification_tolerance_tokens": 0,
+    }:
+        raise P3ContractError("stage_token_probe_counter_contract_mismatch")
+    expected_fixture_meta = [
+        ("stage-fit-direct", "fit", "direct", 0),
+        ("stage-fit-draft", "fit", "draft", 0),
+        ("stage-fit-critique", "fit", "critique", 1),
+        ("stage-verify-revise", "verification", "revise", 2),
+    ]
+    fixtures = probe.get("fixtures")
+    if not isinstance(fixtures, list) or len(fixtures) != 4:
+        raise P3ContractError("stage_token_probe_fixture_set_mismatch")
+    design = load_design(resolved["comparison_design"])
+    instruction_by_stage = {
+        "direct": design["baselines"]["direct_instruction"],
+        "draft": design["baselines"]["deliberate_instructions"][0],
+        "critique": design["baselines"]["deliberate_instructions"][1],
+        "revise": design["baselines"]["deliberate_instructions"][2],
+    }
+    frozen_fixtures: list[dict[str, Any]] = []
+    for fixture, (fixture_id, role, stage, scratch_count) in zip(
+        fixtures, expected_fixture_meta, strict=True
+    ):
+        if not isinstance(fixture, Mapping) or set(fixture) != {
+            "fixture_id", "role", "stage", "synthetic_user",
+            "private_scratch", "messages_sha256",
+        }:
+            raise P3ContractError("stage_token_probe_fixture_shape_mismatch", fixture_id)
+        if (
+            fixture.get("fixture_id") != fixture_id
+            or fixture.get("role") != role
+            or fixture.get("stage") != stage
+            or not isinstance(fixture.get("synthetic_user"), str)
+            or not isinstance(fixture.get("private_scratch"), list)
+            or len(fixture["private_scratch"]) != scratch_count
+            or not all(isinstance(item, str) and item for item in fixture["private_scratch"])
+        ):
+            raise P3ContractError("stage_token_probe_fixture_value_mismatch", fixture_id)
+        messages = [{
+            "role": "system",
+            "content": design["persona"]["shared_contract"] + "\n" + instruction_by_stage[stage],
+        }, {
+            "role": "user", "content": fixture["synthetic_user"],
+        }]
+        messages.extend(
+            {"role": "assistant", "content": item}
+            for item in fixture["private_scratch"]
+        )
+        if canonical_sha256(messages) != fixture.get("messages_sha256"):
+            raise P3ContractError("stage_token_probe_messages_digest_mismatch", fixture_id)
+        frozen_fixtures.append({**dict(fixture), "messages": messages})
+    if probe.get("fit_and_verification") != {
+        "fit_fixture_ids": ["stage-fit-direct", "stage-fit-draft", "stage-fit-critique"],
+        "verification_fixture_ids": ["stage-verify-revise"],
+        "expected_offset_tokens": 0,
+        "tolerance_tokens": 0,
+    }:
+        raise P3ContractError("stage_token_probe_fit_contract_mismatch")
+    if probe.get("execution_boundary") != {
+        "expected_provider_calls": 4, "maximum_provider_calls": 4,
+        "maximum_completion_tokens_total": 4, "automatic_retry": False,
+        "localhost_only": True, "failed_p3_b7_request_reuse": False,
+        "developer_smoke_access": False, "annotation_access": False,
+        "future_turn_access": False, "confirmation_access": False,
+        "production_database_access": False, "remote_paid_calls": False,
+        "real_model_calls_authorized_by_this_config": False,
+    }:
+        raise P3ContractError("stage_token_probe_boundary_mismatch")
+    frozen = json.loads(json.dumps(probe, ensure_ascii=False))
+    frozen["fixtures"] = frozen_fixtures
+    frozen["_probe_sha256"] = hashlib.sha256(probe_path.read_bytes()).hexdigest()
+    frozen["_probe_path"] = str(probe_path.resolve())
+    frozen["_phase"] = "P3-B8"
+    return frozen
+
+
+def build_stage_tokenizer_probe_preflight(path: str | Path) -> dict[str, Any]:
+    probe = load_stage_tokenizer_binding_probe(path)
+    metadata = _ollama_model_metadata(probe["model"]["ollama_model"])
+    runtime_template_sha = _ollama_template_sha256(probe["model"]["ollama_model"])
+    with network_forbidden() as attempts:
+        counter = LocalOllamaQwenStageCounter(probe["model"]["hf_tokenizer"])
+        rows = []
+        for fixture in probe["fixtures"]:
+            stage_count = counter(fixture["messages"])
+            default_count = counter.hf_default_count(fixture["messages"])
+            rows.append({
+                "fixture_id": fixture["fixture_id"],
+                "stage": fixture["stage"],
+                "last_role": fixture["messages"][-1]["role"],
+                "stage_prompt_tokens": stage_count,
+                "hf_default_prompt_tokens": default_count,
+                "candidate_correction_tokens": stage_count - default_count,
+                "messages_sha256": fixture["messages_sha256"],
+            })
+        evidence = counter.evidence()
+    checks = {
+        "config_valid": True,
+        "model_digest_matches": metadata["digest"] == probe["model"]["ollama_blob_digest"],
+        "ollama_template_matches": runtime_template_sha == probe["model"]["ollama_template_sha256"],
+        "hf_snapshot_matches": evidence["hf_snapshot_revision"] == probe["model"]["hf_snapshot_revision"],
+        "hf_template_matches": evidence["hf_chat_template_sha256"] == probe["model"]["hf_chat_template_sha256"],
+        "all_four_stages_present": {row["stage"] for row in rows} == {"direct", "draft", "critique", "revise"},
+        "non_assistant_stages_unchanged": all(
+            row["candidate_correction_tokens"] == 0
+            for row in rows if row["last_role"] != "assistant"
+        ),
+        "assistant_continuation_correction_observed": all(
+            row["candidate_correction_tokens"] == -5
+            for row in rows if row["last_role"] == "assistant"
+        ),
+        "no_network_during_counter": len(attempts) == 0,
+        "config_does_not_self_authorize": probe["execution_boundary"]["real_model_calls_authorized_by_this_config"] is False,
+    }
+    return {
+        "schema": "uruha_p3_stage_tokenizer_binding_preflight_v1",
+        "phase": "P3-B8",
+        "status": "ready_for_stage_tokenizer_probe_review" if all(checks.values()) else "not_ready_for_stage_tokenizer_probe_review",
+        "probe_sha256": probe["_probe_sha256"],
+        "fixture_counts": rows,
+        "counter_evidence": evidence,
+        "model_metadata": metadata,
+        "ollama_template_sha256": runtime_template_sha,
+        "checks": checks,
+        "network_calls": 0,
+        "real_model_calls": 0,
+        "paid_calls": 0,
+        "developer_smoke_accessed": 0,
+        "annotations_accessed": 0,
+        "future_turns_accessed": 0,
+        "claim_boundary": "Zero-generation stage-shape preflight only; provider equivalence is not yet established.",
+    }
+
+
+def validate_stage_tokenizer_probe_release(
+    release_path: str | Path, probe: Mapping[str, Any]
+) -> dict[str, Any]:
+    release_file = Path(release_path)
+    release = _read_json(release_file)
+    if set(release) != {
+        "schema", "phase", "status", "review_kind", "probe",
+        "implementation_sha256", "preflight", "authorization", "claim_boundary",
+    } or release.get("schema") != STAGE_TOKEN_PROBE_RELEASE_SCHEMA:
+        raise P3ContractError("stage_token_probe_release_schema_mismatch")
+    if release.get("phase") != "P3-B8" or release.get("status") != "released_for_stage_tokenizer_probe":
+        raise P3ContractError("stage_token_probe_release_status_mismatch")
+    if release.get("review_kind") != "same_task_self_review_not_independent":
+        raise P3ContractError("stage_token_probe_release_review_mismatch")
+    repo = release_file.resolve().parent.parent
+    if release.get("probe") != {
+        "path": "configs/p3_stage_tokenizer_binding_probe_v1.json",
+        "sha256": probe["_probe_sha256"],
+    }:
+        raise P3ContractError("stage_token_probe_release_probe_mismatch")
+    implementation = release.get("implementation_sha256")
+    if not isinstance(implementation, Mapping) or set(implementation) != {
+        "p3_product_comparison.py", "p3_product_worker.py",
+        "test_p3_product_comparison.py",
+    }:
+        raise P3ContractError("stage_token_probe_release_implementation_invalid")
+    for name, sha in implementation.items():
+        if hashlib.sha256((repo / name).read_bytes()).hexdigest() != sha:
+            raise P3ContractError("stage_token_probe_release_implementation_mismatch", name)
+    preflight = release.get("preflight")
+    preflight_path = (repo / str((preflight or {}).get("path"))).resolve()
+    if not isinstance(preflight, Mapping) or set(preflight) != {"path", "sha256", "status"} or (
+        not preflight_path.is_file()
+        or hashlib.sha256(preflight_path.read_bytes()).hexdigest() != preflight.get("sha256")
+        or preflight.get("status") != "ready_for_stage_tokenizer_probe_review"
+    ):
+        raise P3ContractError("stage_token_probe_release_preflight_mismatch")
+    if release.get("authorization") != {
+        "run_id": "p3-b8-stage-tokenizer-probe-v1",
+        "localhost_only": True,
+        "model": "qwen2.5:7b",
+        "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+        "provider_calls_exact": 4,
+        "automatic_retry": False,
+        "checkpoint_root": "analysis/p3_b8_stage_tokenizer_binding_checkpoints_v1",
+        "result_path": "analysis/p3_b8_stage_tokenizer_binding_result_2026-09-15.json",
+        "failed_p3_b7_request_reuse": False,
+        "developer_smoke_access": False,
+        "annotation_access": False,
+        "future_turn_access": False,
+        "confirmation_access": False,
+        "production_database_access": False,
+        "external_deployment": False,
+    }:
+        raise P3ContractError("stage_token_probe_release_authorization_mismatch")
+    return dict(release)
+
+
 def _token_probe_request_commitment(
     probe: Mapping[str, Any],
     transport_id: str,
@@ -1023,6 +1357,7 @@ def _run_token_probe_call_once(
         "transport": transport_id,
         "fixture_id": fixture["fixture_id"],
         "fixture_role": fixture["role"],
+        "stage": fixture.get("stage"),
         "request_sha256": request_sha,
         "hf_prompt_tokens": hf_prompt_tokens,
         "provider_prompt_tokens": prompt_tokens,
@@ -1167,6 +1502,163 @@ def execute_tokenizer_binding_probe(
     }
 
 
+def execute_stage_tokenizer_binding_probe(
+    *,
+    probe: Mapping[str, Any],
+    token_counter: Callable[[Iterable[Mapping[str, str]]], int],
+    transport: Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]],
+    checkpoint_root: str | Path,
+    evidence_kind: str,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    """Bind all four baseline stage shapes without reusing the failed B7 request."""
+
+    if evidence_kind not in {"contract_fake", "local_ollama_provider_usage"}:
+        raise P3ContractError("stage_token_probe_evidence_kind_invalid")
+    transport_id = "openai_compatible_local"
+    if [item["id"] for item in probe["transports"]] != [transport_id]:
+        raise P3ContractError("stage_token_probe_transport_set_mismatch")
+    started = clock()
+    rows: list[dict[str, Any]] = []
+    for fixture in probe["fixtures"]:
+        prompt_tokens = token_counter(fixture["messages"])
+        if (
+            isinstance(prompt_tokens, bool)
+            or not isinstance(prompt_tokens, int)
+            or prompt_tokens <= 0
+        ):
+            raise P3ContractError(
+                "stage_token_probe_count_invalid", fixture["fixture_id"]
+            )
+        rows.append(
+            _run_token_probe_call_once(
+                probe=probe,
+                transport_id=transport_id,
+                fixture=fixture,
+                hf_prompt_tokens=prompt_tokens,
+                transport=transport,
+                checkpoint_root=checkpoint_root,
+                clock=clock,
+            )
+        )
+    total_wall = clock() - started
+    if total_wall > probe["generation_options"]["total_wall_seconds_max"]:
+        raise P3ContractError("stage_token_probe_total_wall_exceeded")
+
+    by_stage = {row["stage"]: row for row in rows}
+    fit_ids = set(probe["fit_and_verification"]["fit_fixture_ids"])
+    verification_ids = set(
+        probe["fit_and_verification"]["verification_fixture_ids"]
+    )
+    expected_offset = probe["fit_and_verification"]["expected_offset_tokens"]
+    tolerance = probe["fit_and_verification"]["tolerance_tokens"]
+    provider_call_evidence = sum(row["provider_call_evidence"] for row in rows)
+    newly_executed_calls = sum(row["real_model_calls"] for row in rows)
+    expected_provider_evidence = (
+        0
+        if evidence_kind == "contract_fake"
+        else probe["execution_boundary"]["expected_provider_calls"]
+    )
+    checks = {
+        "four_evidence_rows": len(rows) == 4,
+        "all_four_stages_once": set(by_stage) == {
+            "direct", "draft", "critique", "revise"
+        },
+        "fit_rows_exact": all(
+            abs(row["offset"] - expected_offset) <= tolerance
+            for row in rows
+            if row["fixture_id"] in fit_ids
+        ),
+        "verification_row_exact": all(
+            abs(row["offset"] - expected_offset) <= tolerance
+            for row in rows
+            if row["fixture_id"] in verification_ids
+        ) and len(verification_ids) == 1,
+        "every_stage_exact": all(
+            abs(row["offset"] - expected_offset) <= tolerance for row in rows
+        ),
+        "completion_tokens_within_total": sum(
+            row["completion_tokens"] for row in rows
+        ) <= probe["execution_boundary"]["maximum_completion_tokens_total"],
+        "no_output_text_retained": all("content" not in row for row in rows),
+        "new_calls_within_release": newly_executed_calls
+        <= probe["execution_boundary"]["maximum_provider_calls"],
+        "provider_call_evidence_exact_for_scope": provider_call_evidence
+        == expected_provider_evidence,
+    }
+    passed = all(checks.values())
+    is_fake = evidence_kind == "contract_fake"
+    return {
+        "schema": "uruha_p3_stage_tokenizer_binding_result_v1",
+        "phase": "P3-B8",
+        "status": (
+            "offline_stage_tokenizer_contract_pass"
+            if is_fake and passed
+            else "stage_provider_binding_pass"
+            if not is_fake and passed
+            else "stage_binding_failed_retained"
+        ),
+        "evidence_kind": evidence_kind,
+        "probe_sha256": probe["_probe_sha256"],
+        "rows": rows,
+        "stage_offsets": {stage: by_stage[stage]["offset"] for stage in sorted(by_stage)},
+        "checks": checks,
+        "total_wall_seconds": round(float(total_wall), 6),
+        "declared_invocation_intents": len(rows),
+        "completed_calls": len(rows),
+        "terminal_failures": 0,
+        "provider_call_evidence": provider_call_evidence,
+        "real_model_calls": newly_executed_calls,
+        "network_calls": sum(row["network_calls"] for row in rows),
+        "paid_calls": 0,
+        "output_text_retained": False,
+        "binding_verified": bool(not is_fake and passed),
+        "failed_p3_b7_request_reused": False,
+        "developer_smoke_accessed": 0,
+        "annotations_accessed": 0,
+        "future_turns_accessed": 0,
+        "confirmation_accessed": 0,
+        "production_database_accessed": False,
+        "claim_boundary": (
+            "A pass binds exact prompt counts only for the four frozen baseline stage "
+            "message shapes on this local model/template. It does not repair or rerun "
+            "P3-B7 and is not reply-quality evidence."
+        ),
+    }
+
+
+def build_stage_tokenizer_probe_contract(
+    probe_path: str | Path, checkpoint_root: str | Path
+) -> dict[str, Any]:
+    probe = load_stage_tokenizer_binding_probe(probe_path)
+
+    def counter(messages: Iterable[Mapping[str, str]]) -> int:
+        return 20 + sum(len(message["content"].encode("utf-8")) for message in messages)
+
+    def fake(
+        fixture: Mapping[str, Any], raw_probe: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
+        return {
+            "backend": "openai_compatible_local",
+            "model": raw_probe["model"]["ollama_model"],
+            "prompt_tokens": counter(fixture["messages"]),
+            "completion_tokens": 1,
+            "content": f"discard-stage-{fixture['fixture_id']}",
+            "real_model_calls": 0,
+            "network_calls": 0,
+        }
+
+    ticks = iter(float(index) * 0.01 for index in range(16))
+    return execute_stage_tokenizer_binding_probe(
+        probe=probe,
+        token_counter=counter,
+        transport=fake,
+        checkpoint_root=checkpoint_root,
+        evidence_kind="contract_fake",
+        clock=lambda: next(ticks),
+    )
+
+
 def build_tokenizer_probe_contract(probe_path: str | Path, checkpoint_root: str | Path) -> dict[str, Any]:
     probe = load_tokenizer_binding_probe(probe_path)
 
@@ -1302,6 +1794,55 @@ def run_local_tokenizer_binding_probe(
     )
     result["release_sha256"] = hashlib.sha256(Path(release_path).read_bytes()).hexdigest()
     result["model_metadata"] = metadata
+    return result
+
+
+def run_local_stage_tokenizer_binding_probe(
+    probe_path: str | Path,
+    release_path: str | Path,
+    checkpoint_root: str | Path,
+) -> dict[str, Any]:
+    """Run the released four-stage prompt-count probe once against local Ollama."""
+
+    probe = load_stage_tokenizer_binding_probe(probe_path)
+    release = validate_stage_tokenizer_probe_release(release_path, probe)
+    repo = Path(release_path).resolve().parent.parent
+    expected_checkpoint = (
+        repo / release["authorization"]["checkpoint_root"]
+    ).resolve()
+    actual_checkpoint = Path(checkpoint_root).resolve()
+    if actual_checkpoint != expected_checkpoint:
+        raise P3ContractError("stage_token_probe_checkpoint_path_mismatch")
+    metadata = _ollama_model_metadata(probe["model"]["ollama_model"])
+    if metadata["digest"] != release["authorization"]["model_digest"]:
+        raise P3ContractError("stage_token_probe_runtime_model_digest_mismatch")
+    runtime_template_sha = _ollama_template_sha256(probe["model"]["ollama_model"])
+    if runtime_template_sha != probe["model"]["ollama_template_sha256"]:
+        raise P3ContractError("stage_token_probe_runtime_template_mismatch")
+    tokenizer = LocalOllamaQwenStageCounter(probe["model"]["hf_tokenizer"])
+    with localhost_network_only() as network_attempts:
+        result = execute_stage_tokenizer_binding_probe(
+            probe=probe,
+            token_counter=tokenizer,
+            transport=_local_provider_transport("openai_compatible_local"),
+            checkpoint_root=actual_checkpoint,
+            evidence_kind="local_ollama_provider_usage",
+        )
+    result["release_sha256"] = hashlib.sha256(
+        Path(release_path).read_bytes()
+    ).hexdigest()
+    result["model_metadata"] = metadata
+    result["ollama_template_sha256"] = runtime_template_sha
+    result["counter_evidence"] = tokenizer.evidence()
+    result["network_attempts"] = network_attempts
+    result["checks"]["localhost_only"] = all(
+        attempt["loopback_allowed"] is True for attempt in network_attempts
+    )
+    if not all(result["checks"].values()):
+        result["status"] = "stage_binding_failed_retained"
+        result["binding_verified"] = False
+    else:
+        result["counter_evidence"]["provider_usage_equivalence_validated"] = True
     return result
 
 
@@ -2838,6 +3379,120 @@ def run_local_product_canary(
         ) from exc
 
 
+def summarize_checkpoint_evidence(checkpoint_root: str | Path) -> dict[str, Any]:
+    """Summarize immutable intents/completions/failures without reading raw output."""
+
+    empty = {
+        "declared_invocation_intents": 0,
+        "completed_calls": 0,
+        "terminal_failures": 0,
+        "post_transport_failures": 0,
+        "declared_prompt_tokens": 0,
+        "provider_prompt_tokens_observed": 0,
+        "provider_completion_tokens_observed": 0,
+        "provider_call_evidence": 0,
+        "network_call_evidence": 0,
+    }
+    if str(checkpoint_root) == "":
+        return empty
+    root = Path(checkpoint_root)
+    intents = sorted(root.rglob("intent.json")) if root.exists() else []
+    completes = sorted(root.rglob("complete.json")) if root.exists() else []
+    failures = sorted(root.rglob("failure.json")) if root.exists() else []
+    declared_prompt_tokens = 0
+    provider_prompt_tokens = 0
+    provider_completion_tokens = 0
+    provider_call_evidence = 0
+    network_call_evidence = 0
+    post_transport_failures = 0
+
+    for path in intents:
+        record = _read_json(path)
+        _verify_signed_record(record, "checkpoint_summary_intent_digest_mismatch")
+        reservation = record.get("reservation")
+        value = reservation.get("prompt_tokens") if isinstance(reservation, Mapping) else None
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+            declared_prompt_tokens += value
+
+    for path in completes:
+        record = _read_json(path)
+        _verify_signed_record(record, "checkpoint_summary_complete_digest_mismatch")
+        result = record.get("result")
+        usage = record.get("usage")
+        if isinstance(result, Mapping):
+            if not isinstance(usage, Mapping):
+                usage = {
+                    "prompt_tokens": result.get("provider_prompt_tokens"),
+                    "completion_tokens": result.get("completion_tokens"),
+                }
+            for key, accumulator in (
+                ("real_model_calls", "provider"),
+                ("network_calls", "network"),
+            ):
+                value = result.get(key)
+                if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+                    if accumulator == "provider":
+                        provider_call_evidence += value
+                    else:
+                        network_call_evidence += value
+        if isinstance(usage, Mapping):
+            prompt = usage.get("prompt_tokens")
+            completion = usage.get("completion_tokens")
+            if isinstance(prompt, int) and not isinstance(prompt, bool) and prompt >= 0:
+                provider_prompt_tokens += prompt
+            if (
+                isinstance(completion, int)
+                and not isinstance(completion, bool)
+                and completion >= 0
+            ):
+                provider_completion_tokens += completion
+
+    for path in failures:
+        record = _read_json(path)
+        _verify_signed_record(record, "checkpoint_summary_failure_digest_mismatch")
+        actual = record.get("provider_actual_usage")
+        if record.get("response_received") is True:
+            post_transport_failures += 1
+        if not isinstance(actual, Mapping):
+            continue
+        prompt = actual.get("prompt_tokens")
+        completion = actual.get("completion_tokens")
+        real_calls = actual.get("real_model_calls")
+        network_calls = actual.get("network_calls")
+        if isinstance(prompt, int) and not isinstance(prompt, bool) and prompt >= 0:
+            provider_prompt_tokens += prompt
+        if (
+            isinstance(completion, int)
+            and not isinstance(completion, bool)
+            and completion >= 0
+        ):
+            provider_completion_tokens += completion
+        if (
+            isinstance(real_calls, int)
+            and not isinstance(real_calls, bool)
+            and real_calls >= 0
+        ):
+            provider_call_evidence += real_calls
+        if (
+            isinstance(network_calls, int)
+            and not isinstance(network_calls, bool)
+            and network_calls >= 0
+        ):
+            network_call_evidence += network_calls
+
+    return {
+        "declared_invocation_intents": len(intents),
+        "completed_calls": len(completes),
+        "terminal_failures": len(failures),
+        "post_transport_failures": post_transport_failures,
+        "declared_prompt_tokens": declared_prompt_tokens,
+        "provider_prompt_tokens_observed": provider_prompt_tokens,
+        "provider_completion_tokens_observed": provider_completion_tokens,
+        "provider_call_evidence": provider_call_evidence,
+        "network_call_evidence": network_call_evidence,
+    }
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -2848,6 +3503,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "tokenizer-preflight",
             "tokenizer-contract",
             "tokenizer-run",
+            "stage-tokenizer-preflight",
+            "stage-tokenizer-contract",
+            "stage-tokenizer-run",
             "call-shape-audit",
             "normalized-shape-audit",
             "product-canary-preflight",
@@ -2921,6 +3579,42 @@ def main(argv: list[str] | None = None) -> int:
                 args.probe_release,
                 args.checkpoint_root,
             )
+        elif args.mode == "stage-tokenizer-preflight":
+            if not args.probe:
+                raise P3ContractError("stage_token_probe_path_required")
+            payload = build_stage_tokenizer_probe_preflight(args.probe)
+        elif args.mode == "stage-tokenizer-contract":
+            if not args.probe:
+                raise P3ContractError("stage_token_probe_path_required")
+            if args.checkpoint_root:
+                payload = build_stage_tokenizer_probe_contract(
+                    args.probe,
+                    args.checkpoint_root,
+                )
+            else:
+                import tempfile
+
+                with tempfile.TemporaryDirectory(
+                    prefix="uruha-p3-stage-token-contract-"
+                ) as temporary:
+                    payload = build_stage_tokenizer_probe_contract(
+                        args.probe, temporary
+                    )
+        elif args.mode == "stage-tokenizer-run":
+            if not args.probe or not args.probe_release or not args.checkpoint_root:
+                raise P3ContractError("stage_token_probe_run_artifacts_required")
+            release = _read_json(Path(args.probe_release))
+            repo = Path(args.probe_release).resolve().parent.parent
+            expected_output = (
+                repo / str((release.get("authorization") or {}).get("result_path"))
+            ).resolve()
+            if output.resolve() != expected_output:
+                raise P3ContractError("stage_token_probe_result_path_mismatch")
+            payload = run_local_stage_tokenizer_binding_probe(
+                args.probe,
+                args.probe_release,
+                args.checkpoint_root,
+            )
         elif args.mode == "product-canary-preflight":
             if not args.canary:
                 raise P3ContractError("product_canary_path_required")
@@ -2981,6 +3675,9 @@ def main(argv: list[str] | None = None) -> int:
             "ready_for_execution_review",
             "offline_tokenizer_contract_pass",
             "provider_binding_pass",
+            "ready_for_stage_tokenizer_probe_review",
+            "offline_stage_tokenizer_contract_pass",
+            "stage_provider_binding_pass",
             "p3_b4_call_shape_audit_pass",
             "p3_b5_normalized_shape_audit_pass",
             "ready_for_single_product_canary_review",
@@ -2992,7 +3689,9 @@ def main(argv: list[str] | None = None) -> int:
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"
         phase = (
-            "P3-B3"
+            "P3-B8"
+            if args.mode.startswith("stage-tokenizer-")
+            else "P3-B3"
             if args.mode.startswith("tokenizer-")
             else "P3-B6"
             if args.mode.startswith("product-canary-")
@@ -3000,17 +3699,29 @@ def main(argv: list[str] | None = None) -> int:
             if args.mode.startswith("canary-baselines-")
             else "P3-B1"
         )
+        checkpoint_evidence = (
+            summarize_checkpoint_evidence(args.checkpoint_root)
+            if args.checkpoint_root
+            else summarize_checkpoint_evidence("")
+        )
         failure = {
             "schema": "uruha_p3_product_worker_failure_v1",
             "phase": phase,
-            "status": "refused_before_product_transport",
+            "status": (
+                "failed_after_transport_retained"
+                if checkpoint_evidence["declared_invocation_intents"] > 0
+                else "refused_before_product_transport"
+            ),
             "contract_code": exc.code,
             "detail_sha256": canonical_sha256(exc.detail),
-            "transport_attempts": 0,
+            "transport_attempts": checkpoint_evidence[
+                "declared_invocation_intents"
+            ],
             "network_attempts": 1 if blocked_network_attempt else 0,
-            "network_calls": 0,
-            "real_model_calls": 0,
+            "network_calls": checkpoint_evidence["network_call_evidence"],
+            "real_model_calls": checkpoint_evidence["provider_call_evidence"],
             "paid_calls": 0,
+            "checkpoint_evidence": checkpoint_evidence,
         }
         if not output.exists():
             write_new_json(output, failure)

@@ -1405,6 +1405,7 @@ def run_call_once(
     intent["record_sha256"] = canonical_sha256(intent)
     _write_new_json(intent_path, intent)
     started = time.monotonic()
+    response: Mapping[str, Any] | None = None
     try:
         response = transport(request)
     except Exception as exc:
@@ -1415,6 +1416,13 @@ def run_call_once(
             "contract_code": "transport_failure_no_retry",
             "error_type": type(exc).__name__,
             "error_sha256": canonical_sha256(str(exc)),
+            "transport_attempted": True,
+            "response_received": False,
+            "declared_reservation": {
+                "prompt_tokens": reservation["prompt_tokens"],
+                "max_completion_tokens": reservation["max_completion_tokens"],
+            },
+            "provider_actual_usage": None,
         }
         failure["record_sha256"] = canonical_sha256(failure)
         _write_new_json(failure_path, failure)
@@ -1461,12 +1469,50 @@ def run_call_once(
         }
     except P3ContractError as exc:
         mark_transport_failure(budget, exc.code)
+        response_usage = response.get("usage") if isinstance(response, Mapping) else None
+
+        def observed_nonnegative_int(value: Any) -> int | None:
+            return (
+                value
+                if isinstance(value, int) and not isinstance(value, bool) and value >= 0
+                else None
+            )
+
         failure = {
             "schema": "uruha_p3_terminal_failure_v1",
             "request_sha256": request_sha,
             "contract_code": exc.code,
             "error_type": type(exc).__name__,
             "error_sha256": canonical_sha256(exc.detail),
+            "transport_attempted": True,
+            "response_received": response is not None,
+            "declared_reservation": {
+                "prompt_tokens": reservation["prompt_tokens"],
+                "max_completion_tokens": reservation["max_completion_tokens"],
+            },
+            "provider_actual_usage": {
+                "prompt_tokens": observed_nonnegative_int(
+                    response_usage.get("prompt_tokens")
+                    if isinstance(response_usage, Mapping)
+                    else None
+                ),
+                "completion_tokens": observed_nonnegative_int(
+                    response_usage.get("completion_tokens")
+                    if isinstance(response_usage, Mapping)
+                    else None
+                ),
+                "measured_wall_seconds": round(float(elapsed), 6),
+                "network_calls": observed_nonnegative_int(
+                    response.get("network_calls")
+                    if isinstance(response, Mapping)
+                    else None
+                ),
+                "real_model_calls": observed_nonnegative_int(
+                    response.get("real_model_calls")
+                    if isinstance(response, Mapping)
+                    else None
+                ),
+            },
         }
         failure["record_sha256"] = canonical_sha256(failure)
         _write_new_json(failure_path, failure)
