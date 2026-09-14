@@ -2213,6 +2213,14 @@ current `run_condition`把draft放成最後assistant message，Ollama不加新as
 報告：`analysis/p3_b11_instruction_language_probe_acceptance_2026-09-15.md`。下一步P3-B12先對user-role labeled scratch的critique／
 revise兩種新shape做2-call exact tokenizer binding；未通過前不做品質probe、不改正式baseline。
 
+### 7.110 2026-09-15 P3-B12：user-role labeled private scratch兩種shape exact binding通過
+
+critique offline/provider 302/302、revise 313/313，2 intents／2 completes／2 real＋network calls／2 completion tokens／
+3.026870秒／0 paid；raw output文字不留，0 developer／annotation／confirmation／production DB access。counter新增Ollama任意相鄰
+same-role以雙換行合併模式，舊assistant-only模式保留。報告：`analysis/p3_b12_private_scratch_binding_acceptance_2026-09-15.md`。
+這只證明計量可執行。下一步P3-B13重用P3-B11 locked synthetic input／日文instructions／draft，只改scratch carrier，新增critique／
+revise各1 call，檢查critique是否非空、final是否保留未決定語意且不再是客服逃逸；control不重跑。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

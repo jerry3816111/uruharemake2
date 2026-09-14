@@ -2,26 +2,24 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B12 private-scratch carrier tokenizer binding
+## 唯一下一步：P3-B13 private-scratch carrier causal probe
 
-狀態：**P3-B11窄surface hypothesis PASS，但baseline仍不可用**。同一synthetic English input下，日文instructions把final obvious
-surface pass由1/2提高到2/2；8 calls exact，2,107 prompt＋115 completion tokens、10.198241 summed秒、0 paid。但日文deliberate
-回成無關的敬體客服句，兩組critique都為空字串／1 completion token。這不是品質提升。詳見
-`analysis/p3_b11_instruction_language_probe_acceptance_2026-09-15.md`。
+狀態：**P3-B12 PASS（只限新scratch shape token binding）**。user-role labeled scratch的critique 302=302、revise 313=313；
+2 intents／2 completes／2 real＋network calls／2 completion tokens／3.026870秒／0 paid，raw output不留，0資料存取。這只放行品質probe。
 
-### P3-B12 before 與單一變因
+### P3-B13 before 與單一變因
 
-before：`run_condition`把draft／critique private scratch都附加成assistant messages。critique call最後一個message因此已是assistant，
-Ollama不加新的assistant generation prompt；P3-B11兩組critique都產生空字串／1 token，revise也接到連續assistant scratch。
+before：P3-B11日文instruction arm的locked draft有內容，但assistant-carrier critique為空字串，final變成無關客服句；P3-B12已證明
+user-role labeled scratch的兩種新shape可exact計量，尚未證明輸出改善。
 
-單一變因：先不跑回答品質，只為`user` role承載明確標記的private scratch（draft、critique）建立critique／revise兩種新message shape的
-offline/provider exact tokenizer binding。固定qwen2.5:7b、options與synthetic scratch，2 calls、max completion 1、raw output不留、無retry。
+單一變因：重用P3-B11鎖定的synthetic input、日文instructions與draft，把private scratch carrier從最後assistant改為labeled user context；
+只新跑critique與revise各一次，qwen2.5:7b／options／256 caps不變，無retry。control直接引用P3-B11，不重跑。
 
-成功：兩種shape offline count都與provider prompt usage完全相等（tolerance 0），2 intents／2 completes，無developer／annotation／production
-access。失敗就保留，不能直接執行scratch-role品質probe；通過後P3-B13才用P3-B11鎖定draft比較assistant-carrier與user-carrier。
+成功：new critique非空；new final通過shared surface，保留source的未決定狀態（預先限定`まだ／決め／未定／迷`任一），且不出現
+`質問／お手伝い／教えてください`客服逃逸；相對locked control由fail變pass。這仍只是一個synthetic機制probe，不是產品或理解優勢。
 
-不得改產品、P1/P2、`run_condition`正式路徑、既有P3 artifacts、v1 design/source/annotations、rubric／threshold；不得讀其他annotation、
-confirmation／production DB。token binding通過只證明計量可執行，不是scratch carrier或理解品質改善。
+不得改產品、P1/P2、`run_condition`正式路徑、既有P3 artifacts、v1 design/source/annotations、rubric／threshold；不得讀annotation、
+confirmation／production DB。probe失敗即保留；通過後另開正式baseline v2改動與fresh developer驗收。
 
 ## 工作環境
 

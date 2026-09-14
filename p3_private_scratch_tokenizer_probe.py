@@ -254,7 +254,7 @@ def run_probe(probe_path: str | Path, release_path: str | Path, checkpoint_root:
         "every_fixture_exact": all(row["offset"] == 0 for row in rows),
         "two_intents_two_completes": provider_calls == 2,
         "completion_tokens_within_total": sum(row["completion_tokens"] for row in rows) <= 2,
-        "output_text_retained": all("content" not in row for row in rows),
+        "no_output_text_retained": all("content" not in row for row in rows),
         "localhost_only": all(row["loopback_allowed"] is True for row in attempts),
         "total_wall_within_limit": total_wall <= probe["generation_options"]["total_wall_seconds_max"],
     }
