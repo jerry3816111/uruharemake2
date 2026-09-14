@@ -74,6 +74,7 @@ TOKEN_PROBE_RESULT_PATH = (
     ROOT / "analysis" / "p3_b3_tokenizer_binding_probe_result_2026-09-14.json"
 )
 PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
+FRESH_PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v2.json"
 CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
 STAGE_TOKEN_PROBE_PATH = (
     ROOT / "configs" / "p3_stage_tokenizer_binding_probe_v1.json"
@@ -802,6 +803,29 @@ def test_p3_product_canary_preflight_reads_no_annotations_or_generation():
     assert preflight["annotations_accessed"] is False
     assert preflight["runtime_future_turn_access_authorized"] is False
     assert preflight["network_calls"] == preflight["real_model_calls"] == 0
+    assert all(preflight["checks"].values())
+
+
+def test_p3_b9_product_canary_is_next_unexecuted_turn_and_non_authorizing():
+    canary = load_product_canary(FRESH_PRODUCT_CANARY_PATH)
+    assert canary["_phase"] == "P3-B9"
+    assert canary["_selection_case_index"] == 1
+    assert canary["selection"] == {
+        "rule": "second_case_first_turn_after_retained_failed_baseline",
+        "case_id": "p3-smoke-tentative-refusal-en",
+        "turn_id": "p3-smoke-02-u1",
+        "content_sha256": "ef46d14a23b81d61a6e4286365be7596dcdeab3dc2448a602097c2cf1b1a0d28",
+    }
+    assert canary["_source"]["language"] == "en"
+    assert canary["_source"]["visible_prefix"] == []
+    assert canary["_source"]["future_turns_included"] is False
+    assert canary["_source"]["annotations_included"] is False
+    assert canary["access_boundary"]["real_model_calls_authorized_by_this_config"] is False
+    preflight = build_product_canary_preflight(FRESH_PRODUCT_CANARY_PATH)
+    assert preflight["phase"] == "P3-B9"
+    assert preflight["status"] == "ready_for_single_product_canary_review"
+    assert preflight["annotations_accessed"] is False
+    assert preflight["real_model_calls"] == 0
     assert all(preflight["checks"].values())
 
 

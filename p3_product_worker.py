@@ -596,19 +596,24 @@ def build_product_canary_preflight(canary_path: str | Path) -> dict[str, Any]:
     source = canary["_source"]
     parent_path = (repo / source["parent_source"]["path"]).resolve()
     parent = _read_json(parent_path)
-    first_case = (parent.get("cases") or [None])[0]
-    first_turn = (
-        (first_case.get("turns") or [None])[0]
-        if isinstance(first_case, Mapping)
+    cases = parent.get("cases") or []
+    selected_case = (
+        cases[canary["_selection_case_index"]]
+        if len(cases) > canary["_selection_case_index"]
+        else None
+    )
+    selected_turn = (
+        (selected_case.get("turns") or [None])[0]
+        if isinstance(selected_case, Mapping)
         else None
     )
     selection_matches_parent = (
-        isinstance(first_case, Mapping)
-        and isinstance(first_turn, Mapping)
-        and first_case.get("case_id") == source["case_id"]
-        and first_turn.get("turn_id") == source["turn_id"]
-        and first_turn.get("content_sha256") == source["content_sha256"]
-        and first_turn.get("content") == source["content"]
+        isinstance(selected_case, Mapping)
+        and isinstance(selected_turn, Mapping)
+        and selected_case.get("case_id") == source["case_id"]
+        and selected_turn.get("turn_id") == source["turn_id"]
+        and selected_turn.get("content_sha256") == source["content_sha256"]
+        and selected_turn.get("content") == source["content"]
     )
     metadata = _ollama_model_metadata(canary["model"]["name"])
     with network_forbidden() as network_attempts:
@@ -618,7 +623,7 @@ def build_product_canary_preflight(canary_path: str | Path) -> dict[str, Any]:
         )
     checks = {
         "canary_config_valid": True,
-        "first_case_first_turn_matches_parent": selection_matches_parent,
+        "selected_case_first_turn_matches_parent": selection_matches_parent,
         "parent_source_digest_matches": hashlib.sha256(parent_path.read_bytes()).hexdigest()
         == source["parent_source"]["sha256"],
         "model_digest_matches": metadata["digest"] == canary["model"]["digest"],
@@ -637,7 +642,7 @@ def build_product_canary_preflight(canary_path: str | Path) -> dict[str, Any]:
     }
     return {
         "schema": "uruha_p3_product_canary_preflight_v1",
-        "phase": "P3-B6",
+        "phase": canary["_phase"],
         "status": (
             "ready_for_single_product_canary_review"
             if all(checks.values())
@@ -659,7 +664,7 @@ def build_product_canary_preflight(canary_path: str | Path) -> dict[str, Any]:
         "real_model_calls": 0,
         "paid_calls": 0,
         "claim_boundary": (
-            "This preflight verifies the first-item selection and local runtime inputs only. "
+            "This preflight verifies the preregistered selection and local runtime inputs only. "
             "It does not authorize or execute product generation."
         ),
     }
@@ -683,7 +688,7 @@ def validate_product_canary_release(
         "claim_boundary",
     } or release.get("schema") != PRODUCT_CANARY_RELEASE_SCHEMA:
         raise P3ContractError("product_canary_release_schema_mismatch")
-    if release.get("phase") != "P3-B6" or release.get("status") != (
+    if release.get("phase") != canary["_phase"] or release.get("status") != (
         "released_for_single_local_product_canary"
     ):
         raise P3ContractError("product_canary_release_status_mismatch")
@@ -719,19 +724,31 @@ def validate_product_canary_release(
         or preflight.get("status") != "ready_for_single_product_canary_review"
     ):
         raise P3ContractError("product_canary_release_preflight_mismatch")
+    phase = canary["_phase"]
+    run_suffix = "p3-b6-single-product-canary-v1" if phase == "P3-B6" else "p3-b9-fresh-product-canary-v1"
+    checkpoint_root = (
+        "analysis/p3_b6_product_canary_checkpoint_v1"
+        if phase == "P3-B6"
+        else "analysis/p3_b9_product_canary_checkpoint_v1"
+    )
+    result_path = (
+        "analysis/p3_b6_product_canary_result_2026-09-14.json"
+        if phase == "P3-B6"
+        else "analysis/p3_b9_product_canary_result_2026-09-15.json"
+    )
     if release.get("authorization") != {
-        "run_id": "p3-b6-single-product-canary-v1",
+        "run_id": run_suffix,
         "localhost_only": True,
         "model": "qwen2.5:7b",
         "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
-        "case_id": "p3-smoke-need-change-zh",
-        "turn_id": "p3-smoke-01-u1",
+        "case_id": canary["selection"]["case_id"],
+        "turn_id": canary["selection"]["turn_id"],
         "source_turns_exact": 1,
         "provider_calls_max": 4,
         "completion_tokens_total_max": 768,
         "automatic_retry": False,
-        "checkpoint_root": "analysis/p3_b6_product_canary_checkpoint_v1",
-        "result_path": "analysis/p3_b6_product_canary_result_2026-09-14.json",
+        "checkpoint_root": checkpoint_root,
+        "result_path": result_path,
         "future_turn_access": False,
         "annotation_access": False,
         "confirmation_access": False,
@@ -758,39 +775,73 @@ def load_canary_baselines(path: str | Path) -> dict[str, Any]:
         "transport",
         "execution_boundary",
         "success",
-    } or config.get("schema") != "uruha_p3_canary_baselines_v1":
+    }:
         raise P3ContractError("canary_baselines_schema_mismatch")
-    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != (
-        "same_model_direct_and_deliberate_baselines_for_locked_product_canary"
-    ):
+    schema = config.get("schema")
+    if schema == "uruha_p3_canary_baselines_v1":
+        phase = "P3-B7"
+        purpose = "same_model_direct_and_deliberate_baselines_for_locked_product_canary"
+        refs = {
+            "comparison_design": (
+                "configs/p3_product_comparison_v1.json",
+                "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+                None,
+            ),
+            "canary": (
+                "configs/p3_product_canary_v1.json",
+                "6dbcf9072592437e06d56f81a60b0199a9edaa3f8ff70759dc081ee99eb91b19",
+                None,
+            ),
+            "locked_product_result": (
+                "analysis/p3_b6_product_canary_result_2026-09-14.json",
+                "9a412e765c9f29c0d3dc71643ae88e4376dc3df3a2f59739cc1ae86555a75cc4",
+                "product_canary_pass",
+            ),
+            "tokenizer_binding_result": (
+                "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+                "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+                "provider_binding_pass",
+            ),
+        }
+    elif schema == "uruha_p3_canary_baselines_v2":
+        phase = "P3-B9"
+        purpose = "same_model_baselines_for_fresh_locked_product_canary"
+        refs = {
+            "comparison_design": (
+                "configs/p3_product_comparison_v1.json",
+                "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+                None,
+            ),
+            "canary": (
+                "configs/p3_product_canary_v2.json",
+                "2ff66ae43e51a8870018c993d72462899e970f50cb99913e1cb19692c6602c4b",
+                None,
+            ),
+            "locked_product_result": (
+                "analysis/p3_b9_product_canary_result_2026-09-15.json",
+                None,
+                "product_canary_pass",
+            ),
+            "tokenizer_binding_result": (
+                "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json",
+                "e360e626931d40ff52f5a217131541701a1eb69831fa3b249214dbb4fed5774f",
+                "stage_provider_binding_pass",
+            ),
+        }
+    else:
+        raise P3ContractError("canary_baselines_schema_mismatch")
+    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != purpose:
         raise P3ContractError("canary_baselines_status_mismatch")
     repo = config_path.resolve().parent.parent
-    refs = {
-        "comparison_design": (
-            "configs/p3_product_comparison_v1.json",
-            "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
-            None,
-        ),
-        "canary": (
-            "configs/p3_product_canary_v1.json",
-            "6dbcf9072592437e06d56f81a60b0199a9edaa3f8ff70759dc081ee99eb91b19",
-            None,
-        ),
-        "locked_product_result": (
-            "analysis/p3_b6_product_canary_result_2026-09-14.json",
-            "9a412e765c9f29c0d3dc71643ae88e4376dc3df3a2f59739cc1ae86555a75cc4",
-            "product_canary_pass",
-        ),
-        "tokenizer_binding_result": (
-            "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
-            "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
-            "provider_binding_pass",
-        ),
-    }
     resolved: dict[str, Path] = {}
     for name, (expected_path, expected_sha, required_status) in refs.items():
         value = config.get(name)
-        expected = {"path": expected_path, "sha256": expected_sha}
+        if not isinstance(value, Mapping):
+            raise P3ContractError("canary_baselines_reference_mismatch", name)
+        actual_sha = value.get("sha256") if expected_sha is None else expected_sha
+        if not isinstance(actual_sha, str) or len(actual_sha) != 64:
+            raise P3ContractError("canary_baselines_reference_mismatch", name)
+        expected = {"path": expected_path, "sha256": actual_sha}
         if required_status is not None:
             expected["required_status"] = required_status
         if value != expected:
@@ -798,7 +849,7 @@ def load_canary_baselines(path: str | Path) -> dict[str, Any]:
         reference_path = (repo / expected_path).resolve()
         if not _is_relative_to(reference_path, repo) or not reference_path.is_file():
             raise P3ContractError("canary_baselines_reference_missing", name)
-        if hashlib.sha256(reference_path.read_bytes()).hexdigest() != expected_sha:
+        if hashlib.sha256(reference_path.read_bytes()).hexdigest() != actual_sha:
             raise P3ContractError("canary_baselines_reference_digest_mismatch", name)
         resolved[name] = reference_path
     canary = load_product_canary(resolved["canary"])
@@ -807,7 +858,7 @@ def load_canary_baselines(path: str | Path) -> dict[str, Any]:
     if (
         product.get("status") != "product_canary_pass"
         or product.get("selection") != canary["selection"]
-        or binding.get("status") != "provider_binding_pass"
+        or binding.get("status") != refs["tokenizer_binding_result"][2]
         or binding.get("binding_verified") is not True
     ):
         raise P3ContractError("canary_baselines_upstream_result_invalid")
@@ -875,6 +926,7 @@ def load_canary_baselines(path: str | Path) -> dict[str, Any]:
     frozen["_config_path"] = str(config_path.resolve())
     frozen["_canary"] = canary
     frozen["_design"] = design
+    frozen["_phase"] = phase
     return frozen
 
 
@@ -914,7 +966,7 @@ def build_canary_baselines_preflight(config_path: str | Path) -> dict[str, Any]:
     }
     return {
         "schema": "uruha_p3_canary_baselines_preflight_v1",
-        "phase": "P3-B7",
+        "phase": config["_phase"],
         "status": "ready_for_canary_baselines_review" if all(checks.values()) else "not_ready_for_canary_baselines_review",
         "config_sha256": config["_config_sha256"],
         "view_sha256": {condition: view["view_sha256"] for condition, view in views.items()},
@@ -942,13 +994,19 @@ def validate_canary_baselines_release(
         "implementation_sha256", "preflight", "authorization", "claim_boundary",
     } or release.get("schema") != CANARY_BASELINE_RELEASE_SCHEMA:
         raise P3ContractError("canary_baselines_release_schema_mismatch")
-    if release.get("phase") != "P3-B7" or release.get("status") != "released_for_single_canary_baseline_pair":
+    if release.get("phase") != config["_phase"] or release.get("status") != "released_for_single_canary_baseline_pair":
         raise P3ContractError("canary_baselines_release_status_mismatch")
     if release.get("review_kind") != "same_task_self_review_not_independent":
         raise P3ContractError("canary_baselines_release_review_mismatch")
     repo = release_file.resolve().parent.parent
+    phase = config["_phase"]
+    config_relative_path = (
+        "configs/p3_canary_baselines_v1.json"
+        if phase == "P3-B7"
+        else "configs/p3_canary_baselines_v2.json"
+    )
     if release.get("config") != {
-        "path": "configs/p3_canary_baselines_v1.json",
+        "path": config_relative_path,
         "sha256": config["_config_sha256"],
     }:
         raise P3ContractError("canary_baselines_release_config_mismatch")
@@ -968,15 +1026,26 @@ def validate_canary_baselines_release(
         or preflight.get("status") != "ready_for_canary_baselines_review"
     ):
         raise P3ContractError("canary_baselines_release_preflight_mismatch")
+    run_id = "p3-b7-canary-baselines-v1" if phase == "P3-B7" else "p3-b9-fresh-canary-baselines-v1"
+    checkpoint_root = (
+        "analysis/p3_b7_canary_baselines_checkpoints_v1"
+        if phase == "P3-B7"
+        else "analysis/p3_b9_canary_baselines_checkpoints_v1"
+    )
+    result_path = (
+        "analysis/p3_b7_canary_baselines_result_2026-09-14.json"
+        if phase == "P3-B7"
+        else "analysis/p3_b9_canary_baselines_result_2026-09-15.json"
+    )
     if release.get("authorization") != {
-        "run_id": "p3-b7-canary-baselines-v1",
+        "run_id": run_id,
         "localhost_only": True,
         "model": "qwen2.5:7b",
         "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
         "provider_calls_exact": 4,
         "automatic_retry": False,
-        "checkpoint_root": "analysis/p3_b7_canary_baselines_checkpoints_v1",
-        "result_path": "analysis/p3_b7_canary_baselines_result_2026-09-14.json",
+        "checkpoint_root": checkpoint_root,
+        "result_path": result_path,
         "annotation_access_before_outputs_locked": False,
         "future_turn_access": False,
         "confirmation_access": False,
@@ -2104,7 +2173,7 @@ def execute_canary_baselines(
     }
     return {
         "schema": "uruha_p3_canary_baselines_result_v1",
-        "phase": "P3-B7",
+        "phase": config["_phase"],
         "status": (
             "canary_baselines_pass"
             if expected_real and all(checks.values())
@@ -3418,7 +3487,7 @@ def run_local_product_canary(
         }
         result = {
             "schema": "uruha_p3_product_canary_result_v1",
-            "phase": "P3-B6",
+            "phase": canary["_phase"],
             "status": (
                 "product_canary_pass"
                 if all(checks.values())
@@ -3808,11 +3877,23 @@ def main(argv: list[str] | None = None) -> int:
         } else 3
     except P3ContractError as exc:
         blocked_network_attempt = exc.code == "network_attempt_during_product_dry_run"
+        requested_schema = None
+        requested_config_path = args.canary if args.mode.startswith("product-canary-") else args.baselines
+        if requested_config_path:
+            try:
+                requested_schema = _read_json(Path(requested_config_path)).get("schema")
+            except (OSError, json.JSONDecodeError):
+                requested_schema = None
         phase = (
             "P3-B8"
             if args.mode.startswith("stage-tokenizer-")
             else "P3-B3"
             if args.mode.startswith("tokenizer-")
+            else "P3-B9"
+            if requested_schema in {
+                "uruha_p3_product_canary_v2",
+                "uruha_p3_canary_baselines_v2",
+            }
             else "P3-B6"
             if args.mode.startswith("product-canary-")
             else "P3-B7"

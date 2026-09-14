@@ -168,6 +168,7 @@ TOKEN_BINDING_FIXTURE_KEYS = frozenset(
     {"fixture_id", "role", "messages_sha256", "messages"}
 )
 PRODUCT_CANARY_SCHEMA = "uruha_p3_product_canary_v1"
+PRODUCT_CANARY_FRESH_SCHEMA = "uruha_p3_product_canary_v2"
 PRODUCT_CANARY_ROOT_KEYS = frozenset(
     {
         "schema",
@@ -430,31 +431,94 @@ def load_product_canary(path: str | Path) -> dict[str, Any]:
     config_path = Path(path)
     config = _load_json(config_path)
     _require_exact_keys(config, PRODUCT_CANARY_ROOT_KEYS, "product_canary_root_allowlist")
-    if config.get("schema") != PRODUCT_CANARY_SCHEMA:
+    schema = config.get("schema")
+    if schema == PRODUCT_CANARY_SCHEMA:
+        purpose = "single_turn_real_product_integration_canary_before_developer_smoke"
+        phase = "P3-B6"
+        case_index = 0
+        expected_source = {
+            "schema": "uruha_p3_product_canary_source_v1",
+            "split": "developer_smoke_canary",
+            "selection_rule": "first_case_first_turn_in_frozen_source_manifest",
+            "parent_source": {
+                "path": "datasets/p3_developer_smoke_source_v1.json",
+                "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
+            },
+            "case_id": "p3-smoke-need-change-zh",
+            "turn_id": "p3-smoke-01-u1",
+            "session_id": "p3-smoke-01-s1",
+            "language": "zh",
+            "content": "最近下班後我總是很煩，什麼都不想做。",
+            "content_sha256": "75701b9635c545bb6ec8a36d1f4d26be2981ccc6c21dfc9c0ca7eb65b236d55e",
+            "visible_prefix": [],
+            "future_turns_included": False,
+            "annotations_included": False,
+        }
+        expected_refs = {
+            "comparison_design": {
+                "keys": {"path", "sha256"},
+                "path": "configs/p3_product_comparison_v1.json",
+                "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+            },
+            "canary_source": {
+                "keys": {"path", "sha256"},
+                "path": "datasets/p3_product_canary_source_v1.json",
+                "sha256": "29666448033ba387c0bd76abc1d573a32f1dc63bee3af3666657023332054810",
+            },
+            "tokenizer_binding_result": {
+                "keys": {"path", "sha256", "required_status"},
+                "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+                "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+                "required_status": "provider_binding_pass",
+            },
+        }
+        binding_calls = 8
+    elif schema == PRODUCT_CANARY_FRESH_SCHEMA:
+        purpose = "fresh_single_turn_product_canary_after_stage_binding"
+        phase = "P3-B9"
+        case_index = 1
+        expected_source = {
+            "schema": "uruha_p3_product_canary_source_v2",
+            "split": "developer_smoke_canary",
+            "selection_rule": "second_case_first_turn_after_retained_failed_baseline",
+            "parent_source": {
+                "path": "datasets/p3_developer_smoke_source_v1.json",
+                "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
+            },
+            "case_id": "p3-smoke-tentative-refusal-en",
+            "turn_id": "p3-smoke-02-u1",
+            "session_id": "p3-smoke-02-s1",
+            "language": "en",
+            "content": "A friend invited me to a crowded concert this weekend. I said maybe.",
+            "content_sha256": "ef46d14a23b81d61a6e4286365be7596dcdeab3dc2448a602097c2cf1b1a0d28",
+            "visible_prefix": [],
+            "future_turns_included": False,
+            "annotations_included": False,
+        }
+        expected_refs = {
+            "comparison_design": {
+                "keys": {"path", "sha256"},
+                "path": "configs/p3_product_comparison_v1.json",
+                "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
+            },
+            "canary_source": {
+                "keys": {"path", "sha256"},
+                "path": "datasets/p3_product_canary_source_v2.json",
+                "sha256": "6450524c729d8bb09a9d9bb74ab183a9afd0253f6f9105c62025dee981bd5c03",
+            },
+            "tokenizer_binding_result": {
+                "keys": {"path", "sha256", "required_status"},
+                "path": "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json",
+                "sha256": "e360e626931d40ff52f5a217131541701a1eb69831fa3b249214dbb4fed5774f",
+                "required_status": "stage_provider_binding_pass",
+            },
+        }
+        binding_calls = 4
+    else:
         raise P3ContractError("product_canary_schema_mismatch")
-    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != (
-        "single_turn_real_product_integration_canary_before_developer_smoke"
-    ):
+    if config.get("status") != "preregistered_not_executed" or config.get("purpose") != purpose:
         raise P3ContractError("product_canary_status_mismatch")
     repo = config_path.resolve().parent.parent
-    expected_refs = {
-        "comparison_design": {
-            "keys": {"path", "sha256"},
-            "path": "configs/p3_product_comparison_v1.json",
-            "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
-        },
-        "canary_source": {
-            "keys": {"path", "sha256"},
-            "path": "datasets/p3_product_canary_source_v1.json",
-            "sha256": "29666448033ba387c0bd76abc1d573a32f1dc63bee3af3666657023332054810",
-        },
-        "tokenizer_binding_result": {
-            "keys": {"path", "sha256", "required_status"},
-            "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
-            "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
-            "required_status": "provider_binding_pass",
-        },
-    }
     resolved_refs: dict[str, Path] = {}
     for name, expected in expected_refs.items():
         value = config.get(name)
@@ -483,36 +547,19 @@ def load_product_canary(path: str | Path) -> dict[str, Any]:
         "visible_prefix",
         "future_turns_included",
         "annotations_included",
-    } or source != {
-        "schema": "uruha_p3_product_canary_source_v1",
-        "split": "developer_smoke_canary",
-        "selection_rule": "first_case_first_turn_in_frozen_source_manifest",
-        "parent_source": {
-            "path": "datasets/p3_developer_smoke_source_v1.json",
-            "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
-        },
-        "case_id": "p3-smoke-need-change-zh",
-        "turn_id": "p3-smoke-01-u1",
-        "session_id": "p3-smoke-01-s1",
-        "language": "zh",
-        "content": "最近下班後我總是很煩，什麼都不想做。",
-        "content_sha256": "75701b9635c545bb6ec8a36d1f4d26be2981ccc6c21dfc9c0ca7eb65b236d55e",
-        "visible_prefix": [],
-        "future_turns_included": False,
-        "annotations_included": False,
-    }:
+    } or source != expected_source:
         raise P3ContractError("product_canary_source_mismatch")
     if canonical_sha256(source["content"]) != source["content_sha256"]:
         raise P3ContractError("product_canary_content_digest_mismatch")
     binding = _load_json(resolved_refs["tokenizer_binding_result"])
     if (
-        binding.get("status") != "provider_binding_pass"
+        binding.get("status") != expected_refs["tokenizer_binding_result"]["required_status"]
         or binding.get("binding_verified") is not True
-        or binding.get("provider_call_evidence") != 8
+        or binding.get("provider_call_evidence") != binding_calls
     ):
         raise P3ContractError("product_canary_tokenizer_binding_invalid")
     if config.get("selection") != {
-        "rule": "first_case_first_turn_in_frozen_source_manifest",
+        "rule": source["selection_rule"],
         "case_id": source["case_id"],
         "turn_id": source["turn_id"],
         "content_sha256": source["content_sha256"],
@@ -570,6 +617,8 @@ def load_product_canary(path: str | Path) -> dict[str, Any]:
     frozen["_canary_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
     frozen["_canary_path"] = str(config_path.resolve())
     frozen["_source"] = source
+    frozen["_phase"] = phase
+    frozen["_selection_case_index"] = case_index
     return frozen
 
 
