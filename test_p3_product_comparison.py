@@ -78,6 +78,9 @@ CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
 STAGE_TOKEN_PROBE_PATH = (
     ROOT / "configs" / "p3_stage_tokenizer_binding_probe_v1.json"
 )
+STAGE_TOKEN_CONFIRMATION_PATH = (
+    ROOT / "configs" / "p3_stage_tokenizer_binding_confirmation_v1.json"
+)
 
 
 def source_fixture():
@@ -1001,6 +1004,23 @@ def test_p3_stage_tokenizer_probe_preflight_covers_assistant_continuations():
     assert all(preflight["checks"].values())
 
 
+def test_p3_stage_tokenizer_confirmation_collates_adjacent_assistant_scratch():
+    preflight = build_stage_tokenizer_probe_preflight(
+        STAGE_TOKEN_CONFIRMATION_PATH
+    )
+    assert preflight["phase"] == "P3-B8.1"
+    assert preflight["status"] == "ready_for_stage_tokenizer_probe_review"
+    assert {
+        row["stage"]: row["candidate_correction_tokens"]
+        for row in preflight["fixture_counts"]
+    } == {"direct": 0, "draft": 0, "critique": -5, "revise": -10}
+    assert preflight["counter_evidence"]["adjacent_assistant_rule"] == (
+        "merge_content_with_two_newlines_before_template"
+    )
+    assert preflight["real_model_calls"] == preflight["network_calls"] == 0
+    assert all(preflight["checks"].values())
+
+
 def test_p3_stage_tokenizer_probe_fake_contract_is_exact_and_raw_text_free(
     tmp_path,
 ):
@@ -1023,6 +1043,28 @@ def test_p3_stage_tokenizer_probe_fake_contract_is_exact_and_raw_text_free(
         for path in (tmp_path / "stage-checkpoints").rglob("*.json")
     )
     assert "discard-stage" not in checkpoint_text
+
+
+def test_p3_stage_tokenizer_confirmation_contract_remains_zero_call(tmp_path):
+    result = build_stage_tokenizer_probe_contract(
+        STAGE_TOKEN_CONFIRMATION_PATH, tmp_path / "confirmation-checkpoints"
+    )
+    assert result["phase"] == "P3-B8.1"
+    assert result["status"] == "offline_stage_tokenizer_contract_pass"
+    assert result["stage_offsets"] == {
+        "critique": 0,
+        "direct": 0,
+        "draft": 0,
+        "revise": 0,
+    }
+    assert result["real_model_calls"] == result["network_calls"] == 0
+    assert all(result["checks"].values())
+    summary = summarize_checkpoint_evidence(
+        tmp_path / "confirmation-checkpoints"
+    )
+    assert summary["declared_invocation_intents"] == 4
+    assert summary["completed_calls"] == 4
+    assert summary["declared_prompt_tokens"] > 0
 
 
 def test_p3_stage_tokenizer_probe_retains_one_shape_mismatch(tmp_path):

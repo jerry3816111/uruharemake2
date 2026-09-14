@@ -340,14 +340,42 @@ class LocalOllamaQwenStageCounter:
     evidence_kind = "local_ollama_qwen_stage_template_candidate"
     TERMINAL_ASSISTANT_SUFFIX = "<|im_end|>\n"
 
-    def __init__(self, model_name: str = "Qwen/Qwen2.5-7B-Instruct") -> None:
+    def __init__(
+        self,
+        model_name: str = "Qwen/Qwen2.5-7B-Instruct",
+        *,
+        merge_adjacent_assistant: bool = True,
+    ) -> None:
         self.base = LocalQwenTokenizerCandidate(model_name)
+        self.merge_adjacent_assistant = merge_adjacent_assistant
 
     def hf_default_count(self, messages: Iterable[Mapping[str, str]]) -> int:
         return self.base(messages)
 
+    @staticmethod
+    def _merge_adjacent_assistant(
+        messages: Iterable[Mapping[str, str]],
+    ) -> list[dict[str, str]]:
+        merged: list[dict[str, str]] = []
+        for message in messages:
+            row = dict(message)
+            if (
+                merged
+                and row.get("role") == "assistant"
+                and merged[-1].get("role") == "assistant"
+            ):
+                merged[-1]["content"] += "\n\n" + row["content"]
+            else:
+                merged.append(row)
+        return merged
+
     def __call__(self, messages: Iterable[Mapping[str, str]]) -> int:
-        rows = [dict(message) for message in messages]
+        original = [dict(message) for message in messages]
+        rows = (
+            self._merge_adjacent_assistant(original)
+            if self.merge_adjacent_assistant
+            else original
+        )
         if not rows:
             return 0
         if rows[-1].get("role") != "assistant":
@@ -374,6 +402,16 @@ class LocalOllamaQwenStageCounter:
             "hf_chat_template_sha256": evidence["chat_template_sha256"],
             "assistant_final_rule": (
                 "render_without_generation_prompt_then_remove_one_terminal_im_end_newline"
+            ),
+            "adjacent_assistant_rule": (
+                "merge_content_with_two_newlines_before_template"
+                if self.merge_adjacent_assistant
+                else "not_applied"
+            ),
+            "provider_rule_source": (
+                "ollama_v0.33.3_template/template.go_collate_consecutive_same_role"
+                if self.merge_adjacent_assistant
+                else None
             ),
             "non_assistant_final_rule": "hf_add_generation_prompt_true",
             "provider_usage_equivalence_validated": False,
@@ -952,15 +990,59 @@ def validate_canary_baselines_release(
 def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
     probe_path = Path(path)
     probe = _read_json(probe_path)
+    schema = probe.get("schema")
+    if schema == "uruha_p3_stage_tokenizer_binding_probe_v1":
+        phase = "P3-B8"
+        purpose = "bind_offline_counts_to_every_real_baseline_stage_message_shape"
+        prior_ref = {
+            "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+            "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+            "required_status": "provider_binding_pass",
+        }
+        failure_ref = {
+            "path": "analysis/p3_b7_canary_baselines_acceptance_2026-09-14.md",
+            "sha256": "5897f578f4fa613ade6f4296c6c7b60f048909729def9a0ba2a597a88d922563",
+            "required_status": "FAILED_RETAINED",
+        }
+        expected_fixture_meta = [
+            ("stage-fit-direct", "fit", "direct", 0),
+            ("stage-fit-draft", "fit", "draft", 0),
+            ("stage-fit-critique", "fit", "critique", 1),
+            ("stage-verify-revise", "verification", "revise", 2),
+        ]
+        adjacent_rule = "not_applied"
+    elif schema == "uruha_p3_stage_tokenizer_binding_confirmation_v1":
+        phase = "P3-B8.1"
+        purpose = "confirm_adjacent_assistant_collation_for_every_baseline_stage_shape"
+        prior_ref = {
+            "path": "analysis/p3_b8_stage_tokenizer_binding_result_2026-09-15.json",
+            "sha256": "0a2a35b86e82e31c98a692fb71e424ab277759519ff8729d4b137ca9739d9b49",
+            "required_status": "stage_binding_failed_retained",
+        }
+        failure_ref = {
+            "path": "analysis/p3_b8_stage_tokenizer_binding_acceptance_2026-09-15.md",
+            "sha256": "1940e4035466ee78b75df5d27ade684d23398d0601b3275dfef71b3dd9dd40a3",
+            "required_status": "FAILED_RETAINED / SECOND CORRECTION REQUIRED",
+        }
+        expected_fixture_meta = [
+            ("stage-confirm-direct", "fit", "direct", 0),
+            ("stage-confirm-draft", "fit", "draft", 0),
+            ("stage-confirm-critique", "fit", "critique", 1),
+            ("stage-confirm-revise", "verification", "revise", 2),
+        ]
+        adjacent_rule = "merge_content_with_two_newlines_before_template"
+    else:
+        raise P3ContractError("stage_token_probe_schema_mismatch")
     if set(probe) != {
         "schema", "status", "purpose", "comparison_design",
         "prior_binding_result", "failed_baseline_acceptance", "model",
         "transports", "generation_options", "counter_contract", "fixtures",
         "fit_and_verification", "execution_boundary",
-    } or probe.get("schema") != "uruha_p3_stage_tokenizer_binding_probe_v1":
+    }:
         raise P3ContractError("stage_token_probe_schema_mismatch")
-    if probe.get("status") != "preregistered_not_executed" or probe.get("purpose") != (
-        "bind_offline_counts_to_every_real_baseline_stage_message_shape"
+    if (
+        probe.get("status") != "preregistered_not_executed"
+        or probe.get("purpose") != purpose
     ):
         raise P3ContractError("stage_token_probe_status_mismatch")
     repo = probe_path.resolve().parent.parent
@@ -969,16 +1051,8 @@ def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
             "path": "configs/p3_product_comparison_v1.json",
             "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836",
         },
-        "prior_binding_result": {
-            "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
-            "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
-            "required_status": "provider_binding_pass",
-        },
-        "failed_baseline_acceptance": {
-            "path": "analysis/p3_b7_canary_baselines_acceptance_2026-09-14.md",
-            "sha256": "5897f578f4fa613ade6f4296c6c7b60f048909729def9a0ba2a597a88d922563",
-            "required_status": "FAILED_RETAINED",
-        },
+        "prior_binding_result": prior_ref,
+        "failed_baseline_acceptance": failure_ref,
     }
     resolved: dict[str, Path] = {}
     for name, expected in refs.items():
@@ -991,9 +1065,13 @@ def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
             raise P3ContractError("stage_token_probe_reference_digest_mismatch", name)
         resolved[name] = ref
     prior = _read_json(resolved["prior_binding_result"])
-    if prior.get("status") != "provider_binding_pass" or prior.get("binding_verified") is not True:
+    expected_binding = phase == "P3-B8"
+    if (
+        prior.get("status") != prior_ref["required_status"]
+        or prior.get("binding_verified") is not expected_binding
+    ):
         raise P3ContractError("stage_token_probe_prior_binding_invalid")
-    if "Status: **FAILED_RETAINED / NO QUALITY COMPARISON**" not in resolved[
+    if failure_ref["required_status"] not in resolved[
         "failed_baseline_acceptance"
     ].read_text(encoding="utf-8"):
         raise P3ContractError("stage_token_probe_failed_result_missing")
@@ -1021,20 +1099,17 @@ def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
         "per_call_timeout_seconds": 30, "total_wall_seconds_max": 120,
     }:
         raise P3ContractError("stage_token_probe_generation_mismatch")
-    if probe.get("counter_contract") != {
+    expected_counter_contract = {
         "non_assistant_final": "hf_apply_chat_template_add_generation_prompt_true",
         "assistant_final": "hf_apply_chat_template_add_generation_prompt_false_then_remove_one_terminal_im_end_newline",
         "fit_after_provider_access": False,
         "allowed_global_offset": 0,
         "verification_tolerance_tokens": 0,
-    }:
+    }
+    if phase == "P3-B8.1":
+        expected_counter_contract["adjacent_assistant"] = adjacent_rule
+    if probe.get("counter_contract") != expected_counter_contract:
         raise P3ContractError("stage_token_probe_counter_contract_mismatch")
-    expected_fixture_meta = [
-        ("stage-fit-direct", "fit", "direct", 0),
-        ("stage-fit-draft", "fit", "draft", 0),
-        ("stage-fit-critique", "fit", "critique", 1),
-        ("stage-verify-revise", "verification", "revise", 2),
-    ]
     fixtures = probe.get("fixtures")
     if not isinstance(fixtures, list) or len(fixtures) != 4:
         raise P3ContractError("stage_token_probe_fixture_set_mismatch")
@@ -1078,8 +1153,8 @@ def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
             raise P3ContractError("stage_token_probe_messages_digest_mismatch", fixture_id)
         frozen_fixtures.append({**dict(fixture), "messages": messages})
     if probe.get("fit_and_verification") != {
-        "fit_fixture_ids": ["stage-fit-direct", "stage-fit-draft", "stage-fit-critique"],
-        "verification_fixture_ids": ["stage-verify-revise"],
+        "fit_fixture_ids": [row[0] for row in expected_fixture_meta[:3]],
+        "verification_fixture_ids": [expected_fixture_meta[3][0]],
         "expected_offset_tokens": 0,
         "tolerance_tokens": 0,
     }:
@@ -1098,7 +1173,8 @@ def load_stage_tokenizer_binding_probe(path: str | Path) -> dict[str, Any]:
     frozen["fixtures"] = frozen_fixtures
     frozen["_probe_sha256"] = hashlib.sha256(probe_path.read_bytes()).hexdigest()
     frozen["_probe_path"] = str(probe_path.resolve())
-    frozen["_phase"] = "P3-B8"
+    frozen["_phase"] = phase
+    frozen["_merge_adjacent_assistant"] = phase == "P3-B8.1"
     return frozen
 
 
@@ -1107,7 +1183,10 @@ def build_stage_tokenizer_probe_preflight(path: str | Path) -> dict[str, Any]:
     metadata = _ollama_model_metadata(probe["model"]["ollama_model"])
     runtime_template_sha = _ollama_template_sha256(probe["model"]["ollama_model"])
     with network_forbidden() as attempts:
-        counter = LocalOllamaQwenStageCounter(probe["model"]["hf_tokenizer"])
+        counter = LocalOllamaQwenStageCounter(
+            probe["model"]["hf_tokenizer"],
+            merge_adjacent_assistant=probe["_merge_adjacent_assistant"],
+        )
         rows = []
         for fixture in probe["fixtures"]:
             stage_count = counter(fixture["messages"])
@@ -1133,16 +1212,21 @@ def build_stage_tokenizer_probe_preflight(path: str | Path) -> dict[str, Any]:
             row["candidate_correction_tokens"] == 0
             for row in rows if row["last_role"] != "assistant"
         ),
-        "assistant_continuation_correction_observed": all(
-            row["candidate_correction_tokens"] == -5
-            for row in rows if row["last_role"] == "assistant"
+        "assistant_continuation_correction_observed": {
+            row["stage"]: row["candidate_correction_tokens"]
+            for row in rows
+            if row["last_role"] == "assistant"
+        } == (
+            {"critique": -5, "revise": -10}
+            if probe["_merge_adjacent_assistant"]
+            else {"critique": -5, "revise": -5}
         ),
         "no_network_during_counter": len(attempts) == 0,
         "config_does_not_self_authorize": probe["execution_boundary"]["real_model_calls_authorized_by_this_config"] is False,
     }
     return {
         "schema": "uruha_p3_stage_tokenizer_binding_preflight_v1",
-        "phase": "P3-B8",
+        "phase": probe["_phase"],
         "status": "ready_for_stage_tokenizer_probe_review" if all(checks.values()) else "not_ready_for_stage_tokenizer_probe_review",
         "probe_sha256": probe["_probe_sha256"],
         "fixture_counts": rows,
@@ -1170,13 +1254,26 @@ def validate_stage_tokenizer_probe_release(
         "implementation_sha256", "preflight", "authorization", "claim_boundary",
     } or release.get("schema") != STAGE_TOKEN_PROBE_RELEASE_SCHEMA:
         raise P3ContractError("stage_token_probe_release_schema_mismatch")
-    if release.get("phase") != "P3-B8" or release.get("status") != "released_for_stage_tokenizer_probe":
+    confirmation = probe["_phase"] == "P3-B8.1"
+    expected_release_status = (
+        "released_for_stage_tokenizer_confirmation"
+        if confirmation
+        else "released_for_stage_tokenizer_probe"
+    )
+    if (
+        release.get("phase") != probe["_phase"]
+        or release.get("status") != expected_release_status
+    ):
         raise P3ContractError("stage_token_probe_release_status_mismatch")
     if release.get("review_kind") != "same_task_self_review_not_independent":
         raise P3ContractError("stage_token_probe_release_review_mismatch")
     repo = release_file.resolve().parent.parent
     if release.get("probe") != {
-        "path": "configs/p3_stage_tokenizer_binding_probe_v1.json",
+        "path": (
+            "configs/p3_stage_tokenizer_binding_confirmation_v1.json"
+            if confirmation
+            else "configs/p3_stage_tokenizer_binding_probe_v1.json"
+        ),
         "sha256": probe["_probe_sha256"],
     }:
         raise P3ContractError("stage_token_probe_release_probe_mismatch")
@@ -1197,15 +1294,27 @@ def validate_stage_tokenizer_probe_release(
         or preflight.get("status") != "ready_for_stage_tokenizer_probe_review"
     ):
         raise P3ContractError("stage_token_probe_release_preflight_mismatch")
-    if release.get("authorization") != {
-        "run_id": "p3-b8-stage-tokenizer-probe-v1",
+    expected_authorization = {
+        "run_id": (
+            "p3-b8-1-stage-tokenizer-confirmation-v1"
+            if confirmation
+            else "p3-b8-stage-tokenizer-probe-v1"
+        ),
         "localhost_only": True,
         "model": "qwen2.5:7b",
         "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
         "provider_calls_exact": 4,
         "automatic_retry": False,
-        "checkpoint_root": "analysis/p3_b8_stage_tokenizer_binding_checkpoints_v1",
-        "result_path": "analysis/p3_b8_stage_tokenizer_binding_result_2026-09-15.json",
+        "checkpoint_root": (
+            "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_checkpoints_v1"
+            if confirmation
+            else "analysis/p3_b8_stage_tokenizer_binding_checkpoints_v1"
+        ),
+        "result_path": (
+            "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json"
+            if confirmation
+            else "analysis/p3_b8_stage_tokenizer_binding_result_2026-09-15.json"
+        ),
         "failed_p3_b7_request_reuse": False,
         "developer_smoke_access": False,
         "annotation_access": False,
@@ -1213,7 +1322,8 @@ def validate_stage_tokenizer_probe_release(
         "confirmation_access": False,
         "production_database_access": False,
         "external_deployment": False,
-    }:
+    }
+    if release.get("authorization") != expected_authorization:
         raise P3ContractError("stage_token_probe_release_authorization_mismatch")
     return dict(release)
 
@@ -1290,6 +1400,7 @@ def _run_token_probe_call_once(
             "request_sha256": request_sha,
             "transport": transport_id,
             "fixture_id": fixture["fixture_id"],
+            "declared_prompt_tokens": hf_prompt_tokens,
         }
     )
     write_new_json(intent_path, intent)
@@ -1590,7 +1701,7 @@ def execute_stage_tokenizer_binding_probe(
     is_fake = evidence_kind == "contract_fake"
     return {
         "schema": "uruha_p3_stage_tokenizer_binding_result_v1",
-        "phase": "P3-B8",
+        "phase": probe["_phase"],
         "status": (
             "offline_stage_tokenizer_contract_pass"
             if is_fake and passed
@@ -1819,7 +1930,10 @@ def run_local_stage_tokenizer_binding_probe(
     runtime_template_sha = _ollama_template_sha256(probe["model"]["ollama_model"])
     if runtime_template_sha != probe["model"]["ollama_template_sha256"]:
         raise P3ContractError("stage_token_probe_runtime_template_mismatch")
-    tokenizer = LocalOllamaQwenStageCounter(probe["model"]["hf_tokenizer"])
+    tokenizer = LocalOllamaQwenStageCounter(
+        probe["model"]["hf_tokenizer"],
+        merge_adjacent_assistant=probe["_merge_adjacent_assistant"],
+    )
     with localhost_network_only() as network_attempts:
         result = execute_stage_tokenizer_binding_probe(
             probe=probe,
@@ -3410,7 +3524,11 @@ def summarize_checkpoint_evidence(checkpoint_root: str | Path) -> dict[str, Any]
         record = _read_json(path)
         _verify_signed_record(record, "checkpoint_summary_intent_digest_mismatch")
         reservation = record.get("reservation")
-        value = reservation.get("prompt_tokens") if isinstance(reservation, Mapping) else None
+        value = (
+            reservation.get("prompt_tokens")
+            if isinstance(reservation, Mapping)
+            else record.get("declared_prompt_tokens")
+        )
         if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
             declared_prompt_tokens += value
 
