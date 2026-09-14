@@ -2165,6 +2165,20 @@ native M31 本機未觸發，只有 mocked transport 證據；CPU/RSS/energy、e
 App Goal 仍usageLimited；無objective更新工具，Computer Use控制Codex App被拒絕，故App文字未改。
 下一步使用者切到GPT5後依任務卡直接實作P3-A；不重跑已完成的成本修正、正式資料或M57.9長套件。
 
+### 7.106 2026-09-15 P3-B8／B8.1：四階段 tokenizer binding 通過，舊比較失敗不洗白
+
+P3-B7 的 direct、draft 完成與 critique `provider_prompt_count_mismatch` 繼續是不可重跑的
+`FAILED_RETAINED`。P3-B8 第一版只移除 final assistant terminal marker；release commit `1f5b40e` 後四個 fresh synthetic
+calls 中 direct／draft／critique exact，但 revise 244 vs provider 239，故以 `547892a` 封存失敗。沒有估算或降低 exact gate。
+
+本機 Ollama 0.33.3 原始碼與離線反事實共同指出 consecutive same-role messages 會先以兩個換行合併。P3-B8.1 只加入
+adjacent assistant scratch collation；release commit `41285f8` 後，另一組 fresh synthetic direct／draft／critique／revise 全部
+offset 0：244、223、241、250。4 calls、958 prompt＋4 completion tokens、3.186574秒、0 paid；raw output未留；85項 focused
+tests 通過。post-transport failure 現在保存 declared/provider actual usage，CLI也從 checkpoint匯總 attempts/completions。
+
+這只完成 frozen qwen2.5:7b／HF snapshot／Ollama template／四 stage shape 的計量綁定，不是品質或優勢證據；P3-B7 不改判。
+下一步 P3-B9 機械選尚未執行的 `p3-smoke-02-u1`，先鎖新的 product＋direct＋deliberate outputs，全部完成前仍不讀 annotation。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

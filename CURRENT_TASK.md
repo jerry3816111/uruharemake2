@@ -2,22 +2,22 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B8.1 adjacent-assistant confirmation（第二且最後修正）
+## 唯一下一步：P3-B9 fresh product＋baseline canary lock
 
-狀態：**P3-B8 FAILED_RETAINED**。事前 release commit `1f5b40e` 後的四次 localhost synthetic probe 中，direct、draft、
-critique 都 exact；revise 的 offline candidate 244、provider 239，offset -5，因此 binding 未通過。4 intents／4 completes／
-4 real＋network calls／4 completion tokens／4.431273 秒／0 paid；raw output 未留。P3-B7 仍是 FAILED_RETAINED，沒有品質比較。
+狀態：**P3-B8.1 PASS（只限四種 stage token binding）**。事前 release commit `41285f8` 後，fresh synthetic direct／draft／
+critique／revise 的 offline/provider prompt counts 為 244/244、223/223、241/241、250/250；4 intents／4 completes／
+4 real＋network calls／958 prompt＋4 completion tokens／3.186574 秒／0 paid。P3-B8 與 P3-B7 的失敗都保留，仍沒有品質比較。
 
-### P3-B8.1 before 與單一變因
+### P3-B9 before 與單一變因
 
-before：P3-B8 第一修正只移除 final assistant 的 terminal marker；它正確預測一段 scratch 的 critique，卻高估有兩段相鄰
-assistant scratch 的 revise 5 tokens。離線反事實顯示先合併相鄰 assistant scratch，再套 terminal rule，會得到 provider 已觀察的239。
+before：目前唯一一組 product output 是 `p3-smoke-01-u1`；其 P3-B7 baselines 因計量 failure 未形成可比較 pair，而且不得重跑。
+P3-B8.1 已把新 baseline 四階段所需的 exact accounting gate 補齊，但還沒有第二個完整三條件 output lock。
 
-單一變因：只在離線 token counter 合併相鄰 assistant private scratch；不改模型、persona、baseline instructions、資料、生成
-transport、exact gate 或品質門檻。用另一組全新 synthetic direct／draft／critique／revise 四形狀做 bounded localhost confirmation。
+單一變因：機械選取尚未執行的下一個 source turn `p3-smoke-02-u1`，先凍結同一 qwen2.5:7b、persona、options、token/call
+上限與隔離狀態，再依序鎖定 product、direct、deliberate final。輸出全部鎖定前不得讀 annotation；不沿用P3-B7 checkpoint或回答。
 
-成功：四形狀 provider prompt usage 與離線計數全部 exact，tolerance 0；最多4 calls、每次1 completion token、0 retry。失敗封存為
-`REVIEW_REQUIRED`，不得第三次追修。通過後只能放行新的、未執行 source turn 之 product canary＋baseline pair，不能洗白P3-B7。
+成功：三條件都有非空最終日文輸出，所有 provider calls、實際 tokens、wall、模型與 options 可對帳，無 retry、無 annotation／future／
+production DB access；baseline deliberate 的四 stage exact gate 全通過。失敗照 checkpoint 保留且不重跑該 turn，再決定是否review。
 
 不得改 product brain、P1/P2、既有 P3-B7 checkpoints/result、frozen source/annotations、baseline prompt/rubric/threshold；不得讀
 future／confirmation／production DB。這仍是實驗基礎設施 gate，不是使用者感受或一般優勢證據。

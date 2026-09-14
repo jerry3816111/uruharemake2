@@ -2160,7 +2160,9 @@ def run_local_canary_baselines(
     metadata = _ollama_model_metadata(config["generation"]["model"])
     if metadata["digest"] != release["authorization"]["model_digest"]:
         raise P3ContractError("canary_baselines_runtime_model_digest_mismatch")
-    tokenizer = LocalQwenTokenizerCandidate()
+    tokenizer = LocalOllamaQwenStageCounter(
+        merge_adjacent_assistant=True,
+    )
     with localhost_network_only() as network_attempts:
         result = execute_canary_baselines(
             config=config,
