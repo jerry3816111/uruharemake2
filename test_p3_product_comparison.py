@@ -76,6 +76,7 @@ TOKEN_PROBE_RESULT_PATH = (
 PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v1.json"
 FRESH_PRODUCT_CANARY_PATH = ROOT / "configs" / "p3_product_canary_v2.json"
 CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v1.json"
+FRESH_CANARY_BASELINES_PATH = ROOT / "configs" / "p3_canary_baselines_v2.json"
 STAGE_TOKEN_PROBE_PATH = (
     ROOT / "configs" / "p3_stage_tokenizer_binding_probe_v1.json"
 )
@@ -854,6 +855,30 @@ def test_p3_canary_baselines_preflight_reads_no_labels_or_generation():
     assert preflight["annotations_accessed"] == 0
     assert preflight["empty_visible_prefix_tokens"] == 0
     assert len(set(preflight["view_sha256"].values())) == 2
+    assert all(preflight["checks"].values())
+
+
+def test_p3_b9_baselines_bind_fresh_product_and_stage_counter_without_authorizing():
+    config = load_canary_baselines(FRESH_CANARY_BASELINES_PATH)
+    assert config["_phase"] == "P3-B9"
+    assert config["_canary"]["selection"]["turn_id"] == "p3-smoke-02-u1"
+    assert config["tokenizer_binding_result"]["required_status"] == (
+        "stage_provider_binding_pass"
+    )
+    assert config["conditions"] == [
+        "full_history_direct",
+        "full_history_deliberate",
+    ]
+    assert config["execution_boundary"]["provider_calls_exact"] == 4
+    assert config["execution_boundary"][
+        "real_model_calls_authorized_by_this_config"
+    ] is False
+    preflight = build_canary_baselines_preflight(FRESH_CANARY_BASELINES_PATH)
+    assert preflight["phase"] == "P3-B9"
+    assert preflight["status"] == "ready_for_canary_baselines_review"
+    assert preflight["annotations_accessed"] == 0
+    assert preflight["future_turns_accessed"] == 0
+    assert preflight["real_model_calls"] == 0
     assert all(preflight["checks"].values())
 
 
