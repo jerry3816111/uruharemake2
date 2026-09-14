@@ -1,26 +1,23 @@
 # 目前任務卡
 
-更新：2026-09-14。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B8 stage-complete tokenizer binding
+## 唯一下一步：P3-B8.1 adjacent-assistant confirmation（第二且最後修正）
 
-狀態：**P3-B7 FAILED_RETAINED／NO QUALITY COMPARISON**。direct 與 deliberate draft 完成；deliberate critique 在第 3 次
-provider call 後因 `provider_prompt_count_mismatch` 終止，revise 未執行且不得重跑。authoritative checkpoint 證據為 3 attempts、
-2 complete、1 failure；已知 470 prompt＋74 completion tokens。annotation/future/confirmation/production DB 仍未讀取，沒有三條件
-品質分數或勝負。
+狀態：**P3-B8 FAILED_RETAINED**。事前 release commit `1f5b40e` 後的四次 localhost synthetic probe 中，direct、draft、
+critique 都 exact；revise 的 offline candidate 244、provider 239，offset -5，因此 binding 未通過。4 intents／4 completes／
+4 real＋network calls／4 completion tokens／4.431273 秒／0 paid；raw output 未留。P3-B7 仍是 FAILED_RETAINED，沒有品質比較。
 
-### P3-B8 before 與單一變因
+### P3-B8.1 before 與單一變因
 
-before：P3-B3 只驗證 system/user 與 assistant 後接 user 的形狀，沒有覆蓋 deliberate critique／revise 的 assistant-ending private
-scratch。P3-B7 證明這個 binding 不能外推。一般 CLI failure summary 又把 post-transport 失敗誤報成 0 calls，不能作正式成本證據。
+before：P3-B8 第一修正只移除 final assistant 的 terminal marker；它正確預測一段 scratch 的 critique，卻高估有兩段相鄰
+assistant scratch 的 revise 5 tokens。離線反事實顯示先合併相鄰 assistant scratch，再套 terminal rule，會得到 provider 已觀察的239。
 
-單一變因：不改模型、persona、baseline instructions、資料或品質門檻，只擴充 tokenizer/provider probe，使它覆蓋 direct、draft、
-critique、revise 四種實際 messages role／template 形狀；同時讓 post-transport failure 保存 declared 與 provider actual usage，並從
-checkpoint 匯總真實 attempts/completions。先以全新合成內容做 bounded localhost probe，不使用 P3-B7 的失敗 request 或 annotation。
+單一變因：只在離線 token counter 合併相鄰 assistant private scratch；不改模型、persona、baseline instructions、資料、生成
+transport、exact gate 或品質門檻。用另一組全新 synthetic direct／draft／critique／revise 四形狀做 bounded localhost confirmation。
 
-成功：所有 stage shape 在 OpenAI-compatible route 的 provider prompt usage 與離線計數精確一致，或得到可重現、預先定義的
-stage-specific correction；verification fixture tolerance 仍為 0。失敗也封存，不靠估算或移除 exact gate。release commit 前 0 新 calls；
-新 probe calls 與資源上限另行凍結。通過後只能放行新的、未執行 source turn 之 product canary＋baseline pair，不能洗白 P3-B7。
+成功：四形狀 provider prompt usage 與離線計數全部 exact，tolerance 0；最多4 calls、每次1 completion token、0 retry。失敗封存為
+`REVIEW_REQUIRED`，不得第三次追修。通過後只能放行新的、未執行 source turn 之 product canary＋baseline pair，不能洗白P3-B7。
 
 不得改 product brain、P1/P2、既有 P3-B7 checkpoints/result、frozen source/annotations、baseline prompt/rubric/threshold；不得讀
 future／confirmation／production DB。這仍是實驗基礎設施 gate，不是使用者感受或一般優勢證據。
