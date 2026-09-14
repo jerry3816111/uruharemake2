@@ -2,24 +2,28 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B13 private-scratch carrier causal probe
+## 唯一下一步：P3-B14 deliberate baseline design review
 
-狀態：**P3-B12 PASS（只限新scratch shape token binding）**。user-role labeled scratch的critique 302=302、revise 313=313；
-2 intents／2 completes／2 real＋network calls／2 completion tokens／3.026870秒／0 paid，raw output不留，0資料存取。這只放行品質probe。
+狀態：**P3-B13 FAIL retained**。carrier改成user-role labeled private context後，critique由空字串變為非空，證明舊shape缺陷確實存在；
+但critique只是包裝並抄寫draft，revise逐字回到原draft，仍含`です／ください`。預註冊結果為FAIL。2 real/local calls，
+618 prompt＋58 completion tokens，5.097759秒，0 paid／retry／資料存取。詳見
+`analysis/p3_b13_private_scratch_carrier_acceptance_2026-09-15.md`。
 
-### P3-B13 before 與單一變因
+### P3-B14 before 與設計決策
 
-before：P3-B11日文instruction arm的locked draft有內容，但assistant-carrier critique為空字串，final變成無關客服句；P3-B12已證明
-user-role labeled scratch的兩種新shape可exact計量，尚未證明輸出改善。
+before：P3-B11先只改stage instruction語言，P3-B13再只改scratch carrier；兩個有證據的修正批次都未得到可用的three-stage deliberate
+baseline。不能在已曝光synthetic input上繼續換prompt追分，也不能把失敗baseline拿來證明產品有優勢。
 
-單一變因：重用P3-B11鎖定的synthetic input、日文instructions與draft，把private scratch carrier從最後assistant改為labeled user context；
-只新跑critique與revise各一次，qwen2.5:7b／options／256 caps不變，無retry。control直接引用P3-B11，不重跑。
+本階段不做新生成。只用已凍結B9／B11／B13輸出與成本，審查三段式baseline是否應退出v2；若退出，定義versioned v2 comparison，
+以目前證據較穩定的單次direct生成作為可執行control，同時保留同模型、同raw可用資料、persona、decoding、硬體與每條件明列的實際
+token／延遲。v1設計與負結果不可改寫。
 
-成功：new critique非空；new final通過shared surface，保留source的未決定狀態（預先限定`まだ／決め／未定／迷`任一），且不出現
-`質問／お手伝い／教えてください`客服逃逸；相對locked control由fail變pass。這仍只是一個synthetic機制probe，不是產品或理解優勢。
+成功：形成可反駁的v2設計決策，說明為何不是削弱baseline；鎖定fresh developer case在輸出完成前不得讀annotation；將共同surface
+guard公平套用於所有visible outputs；精確列出product與control呼叫／token budget差異，不用假equal宣稱。若無法構成competent control，
+標`REVIEW_REQUIRED`且不執行下一個fresh case。
 
-不得改產品、P1/P2、`run_condition`正式路徑、既有P3 artifacts、v1 design/source/annotations、rubric／threshold；不得讀annotation、
-confirmation／production DB。probe失敗即保留；通過後另開正式baseline v2改動與fresh developer驗收。
+不得改產品、P1/P2、既有P3 artifacts、v1 source／annotations／results、rubric門檻或正式M55–M58授權；本階段0 model/network calls、
+0 annotation／confirmation／production DB access。
 
 ## 工作環境
 

@@ -2221,6 +2221,15 @@ same-role以雙換行合併模式，舊assistant-only模式保留。報告：`an
 這只證明計量可執行。下一步P3-B13重用P3-B11 locked synthetic input／日文instructions／draft，只改scratch carrier，新增critique／
 revise各1 call，檢查critique是否非空、final是否保留未決定語意且不再是客服逃逸；control不重跑。
 
+### 7.111 2026-09-15 P3-B13：carrier修正解決空輸出，但deliberate品質仍失敗
+
+user-role labeled private context讓critique由空字串變成非空，但輸出只是`了解しました。回答は以下の通りです：`後抄寫draft；
+revise最終逐字回到原draft，仍含`です／ください`。預註冊結果`private_scratch_carrier_failed_retained`：其餘surface、未決定語意、
+無客服逃逸、兩次exact／loopback checks通過，no-polite與aggregate treatment優勢失敗。2 real/local calls、618 prompt＋58 completion、
+5.097759秒、0 paid／retry／developer／annotation／confirmation／production DB access；121 focused tests於release前通過。報告：
+`analysis/p3_b13_private_scratch_carrier_acceptance_2026-09-15.md`。P3-B11與B13已構成兩個有證據但未成功的修正批次；下一步P3-B14
+先做0-call設計審查，不在已曝光synthetic input上繼續調prompt，也不拿失敗deliberate baseline製造產品優勢。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
