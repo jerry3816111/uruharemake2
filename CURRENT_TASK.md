@@ -17,7 +17,8 @@ before：case03第一輪已鎖，annotation仍未讀；只讀第一輪標註會�
 
 每輪先鎖product再鎖direct，condition各自同qwen2.5:7b／persona／decoding與768 completion ceiling；product每輪最多4 calls，direct每輪1 call。
 所有8個visible outputs非空且通過shared surface、來源/prefix hash一致、exact accounting、無retry／annotation／production DB後，才允許另階段開
-case03 annotations評分。P3-B15 u1可引用immutable checkpoint，不重做provider call；其餘u2–u4 fresh。
+case03 annotations評分。B15已刪除ephemeral state，不能拿其result假裝延續記憶；B16必須在一個新case workspace獨立重跑u1–u4，B15不計入
+B16 calls或品質結果。
 
 失敗即保留，annotation仍關閉。不得修改題目、v1資料／結果、rubric、產品或P1/P2；不使用u2–u4 annotation、confirmation、formal data，
 不外部部署。此步只鎖輸出，不能稱優勢。
