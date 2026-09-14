@@ -102,6 +102,19 @@ class UserVisibleJapaneseGuardV211Tests(unittest.TestCase):
         self.assertFalse(trace["changed"])
         self.assertEqual(trace["repair_action"], "none")
 
+    def test_persona_first_person_is_normalized_without_touching_private_life_word(self):
+        final, trace = self.guard(
+            "私はまだ決めてない。私生活の話でもないし。",
+            "I said maybe.",
+            {"scene": "casual"},
+        )
+
+        self.assertEqual(final, "うちはまだ決めてない。私生活の話でもないし。")
+        self.assertJapaneseVisibleSurface(final)
+        self.assertNotIn("私は", final)
+        self.assertIn("私生活", final)
+        self.assertEqual(trace["repair_action"], "localized_known_terms")
+
     def test_broken_punctuation_after_legacy_ascii_removal_fails_closed_naturally(self):
         final, trace = self.guard(
             "ん、。そのくらいでいいだろ。",

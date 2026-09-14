@@ -2,25 +2,26 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B9 fresh product＋baseline canary lock
+## 唯一下一步：P3-B11 baseline instruction-language isolation probe
 
-狀態：**P3-B8.1 PASS（只限四種 stage token binding）**。事前 release commit `41285f8` 後，fresh synthetic direct／draft／
-critique／revise 的 offline/provider prompt counts 為 244/244、223/223、241/241、250/250；4 intents／4 completes／
-4 real＋network calls／958 prompt＋4 completion tokens／3.186574 秒／0 paid。P3-B8 與 P3-B7 的失敗都保留，仍沒有品質比較。
+狀態：**P3-B10 PASS（只限 surface fail-closed）**。comparison 現在會把P3-B9三個鎖定輸出判為0/3 surface pass；產品
+final normalization只把第一人稱`私`改成`うち`，保留`私生活`等複合詞。109 focused tests通過，0新model/network/paid calls。
+這沒有改善P3-B9語意，也沒有品質優勢；詳見`analysis/p3_b10_shared_surface_fail_closed_acceptance_2026-09-15.md`。
 
-### P3-B9 before 與單一變因
+### P3-B11 before 與單一變因
 
-before：目前唯一一組 product output 是 `p3-smoke-01-u1`；其 P3-B7 baselines 因計量 failure 未形成可比較 pair，而且不得重跑。
-P3-B8.1 已把新 baseline 四階段所需的 exact accounting gate 補齊，但還沒有第二個完整三條件 output lock。
+before：P3-B9 的 shared persona contract 本身是日文，但 direct 與三個 deliberate stage instruction 都是英文；英文source下，
+direct生成英日碎片、deliberate最後輸出整句英文。P3-B10已能fail closed，但還不知道instruction language是否為可歸因原因。
 
-單一變因：機械選取尚未執行的下一個 source turn `p3-smoke-02-u1`，先凍結同一 qwen2.5:7b、persona、options、token/call
-上限與隔離狀態，再依序鎖定 product、direct、deliberate final。輸出全部鎖定前不得讀 annotation；不沿用P3-B7 checkpoint或回答。
+單一變因：建立不含開發案例／annotation的fresh synthetic English input，對同一qwen2.5:7b、persona、options、caps與空history，
+比較原英文stage instructions與語意等價的日文stage instructions；direct/draft/critique/revise各自固定一次，總8 calls，exact counter、
+無retry。probe只評shared surface contract，不評理解品質；兩組輸出全部鎖定前不看結果選prompt。
 
-成功：三條件都有非空最終日文輸出，所有 provider calls、實際 tokens、wall、模型與 options 可對帳，無 retry、無 annotation／future／
-production DB access；baseline deliberate 的四 stage exact gate 全通過。失敗照 checkpoint 保留且不重跑該 turn，再決定是否review。
+成功：8/8 calls exact且兩組都有direct/deliberate finals；日文instructions的final surface pass數必須大於英文instructions，且不得靠
+改model/persona/input/options/caps。若沒有改善，保留負結果，不把它帶入新比較。若改善，才可建立新design版本與fresh developer case。
 
-不得改 product brain、P1/P2、既有 P3-B7 checkpoints/result、frozen source/annotations、baseline prompt/rubric/threshold；不得讀
-future／confirmation／production DB。這仍是實驗基礎設施 gate，不是使用者感受或一般優勢證據。
+不得改產品、P1/P2、既有P3-B7/B9 artifacts、v1 frozen design/source/annotations、rubric／threshold；probe文句不得來自developer case。
+不得讀其他annotation、confirmation／production DB。prompt日文化若通過也只代表surface realization原因，不是認知優勢。
 
 ## 工作環境
 

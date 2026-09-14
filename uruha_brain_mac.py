@@ -10122,6 +10122,11 @@ class RightBrain:
                 text,
                 flags=re.IGNORECASE,
             )
+        text = re.sub(
+            r"(?<![一-龠ぁ-んァ-ヶー])私(?=(?:は|が|を|の|も|に|だ|じゃ|、|。|？|！|\s|$))",
+            "うち",
+            text,
+        )
         text = self._localize_model_surface_ascii_terms(text)
         text = text.replace("．", "。").replace("｡", "。").replace("，", "、")
         text = re.sub(r"\.(?=\s*(?:[。！？!?ぁ-んァ-ヶー一-龠]|$))", "。", text)

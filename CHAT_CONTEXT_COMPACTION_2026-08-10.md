@@ -2179,6 +2179,29 @@ tests 通過。post-transport failure 現在保存 declared/provider actual usag
 這只完成 frozen qwen2.5:7b／HF snapshot／Ollama template／四 stage shape 的計量綁定，不是品質或優勢證據；P3-B7 不改判。
 下一步 P3-B9 機械選尚未執行的 `p3-smoke-02-u1`，先鎖新的 product＋direct＋deliberate outputs，全部完成前仍不讀 annotation。
 
+### 7.107 2026-09-15 P3-B9：fresh 三條件完成 exact accounting，但共同 surface gate 失敗保留
+
+`p3-smoke-02-u1` 先鎖 product，再鎖 direct／deliberate；release/output commits 分別為
+`bb576e4`／`0aeb721` 與 `a0090a6`／`8c190cb`。5個本機 qwen2.5:7b calls 全部一次完成，合計1,428 prompt＋247
+completion tokens、16.068573 summed condition seconds、0 paid；generation 是0 future／annotation／confirmation／production DB access。
+
+但品質比較 gate 失敗：product 是日文卻用了人格契約禁止的 `私`，且沒有清楚保留 `I said maybe`；direct 混成英日碎片；
+deliberate 輸出英文 wrapper，並新增 happy／safety 未支持內容。既有 `visible_reply_contract` 為0/3 pass。因此 technical result 的
+`canary_baselines_pass` 只代表四階段呼叫與exact token accounting，不得寫成產品較佳。完整保留於
+`analysis/p3_b9_fresh_product_baseline_canary_acceptance_2026-09-15.md`。
+
+標註只在 output commit 後讀；檢查時顯示了case 02全四輪 annotation，雖然此報告只用u1，u2–u4也必須視為evaluator-exposed，
+不能再當fresh continuation。下一步P3-B10先讓comparison surface fail closed，並只修產品第一人稱 `私`→`うち`；不新跑模型。
+
+### 7.108 2026-09-15 P3-B10：共同 surface acceptance 改為 fail closed
+
+新增純contract的`shared_visible_surface_contract`，未來product與baseline canary除了nonempty與exact accounting，還必須通過明顯可機器
+核對的日文／人格表面條件。它對P3-B9鎖定輸出正確得到0/3 pass，不會把mixed English technical pass寫成有效比較。
+產品final normalization另只將獨立第一人稱`私`改成`うち`，`私生活`不變；舊產品句離線變為
+`友人が週末のコンサートに招待し、うちは行こうかと言ったんだね。`，語意問題未被掩蓋。109 focused tests、0新模型calls。
+報告：`analysis/p3_b10_shared_surface_fail_closed_acceptance_2026-09-15.md`。下一步P3-B11用fresh synthetic English input隔離測
+英文vs日文baseline stage instructions；不得直接在另一個developer case上把source與prompt同時改掉後宣稱因果。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

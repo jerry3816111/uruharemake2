@@ -32,6 +32,7 @@ from p3_product_comparison import (
     reserve_call,
     run_call_once,
     run_condition,
+    shared_visible_surface_contract,
     validate_common_views,
     validate_run_manifest,
     write_new_json,
@@ -882,6 +883,34 @@ def test_p3_b9_baselines_bind_fresh_product_and_stage_counter_without_authorizin
     assert all(preflight["checks"].values())
 
 
+def test_p3_b10_shared_surface_contract_rejects_all_retained_b9_finals():
+    product = json.loads(
+        (ROOT / "analysis/p3_b9_product_canary_result_2026-09-15.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    baselines = json.loads(
+        (ROOT / "analysis/p3_b9_canary_baselines_result_2026-09-15.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    finals = {
+        "product_system": product["visible_reply"],
+        **{
+            name: row["final"]["content"]
+            for name, row in baselines["conditions"].items()
+        },
+    }
+    audits = {
+        name: shared_visible_surface_contract(reply)
+        for name, reply in finals.items()
+    }
+    assert not any(all(audit.values()) for audit in audits.values())
+    assert audits["product_system"]["no_watashi_first_person"] is False
+    assert audits["full_history_direct"]["no_latin_script"] is False
+    assert audits["full_history_deliberate"]["no_latin_script"] is False
+
+
 def test_p3_canary_baselines_contract_uses_four_crash_safe_calls(tmp_path):
     config = load_canary_baselines(CANARY_BASELINES_PATH)
 
@@ -891,8 +920,14 @@ def test_p3_canary_baselines_contract_uses_four_crash_safe_calls(tmp_path):
 
         def __call__(self, request):
             self.requests.append(request)
+            outputs = {
+                "direct": "まだ決めてないんだな。",
+                "draft": "まだ決めてないんだな。",
+                "critique": "断定を避ける。",
+                "revise": "まだ決めてないんだな。",
+            }
             return {
-                "content": f"固定出力-{request['stage']}",
+                "content": outputs[request["stage"]],
                 "usage": {
                     "prompt_tokens": request["prompt_tokens"],
                     "completion_tokens": 4,

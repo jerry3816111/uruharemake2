@@ -42,6 +42,7 @@ from p3_product_comparison import (
     record_usage,
     reserve_call,
     run_condition,
+    shared_visible_surface_contract,
     write_new_json,
 )
 
@@ -2145,6 +2146,10 @@ def execute_canary_baselines(
             and bool(conditions[name]["final"]["content"].strip())
             for name in config["conditions"]
         ),
+        "all_final_replies_meet_shared_surface_contract": all(
+            all(shared_visible_surface_contract(conditions[name]["final"]["content"]).values())
+            for name in config["conditions"]
+        ),
         "provider_calls_exact": len(calls)
         == config["execution_boundary"]["provider_calls_exact"],
         "provider_call_evidence_exact_when_real": (
@@ -3456,6 +3461,9 @@ def run_local_product_canary(
         budget = gate.budget.snapshot()
         checks = {
             "nonempty_visible_reply": isinstance(reply, str) and bool(reply.strip()),
+            "shared_visible_surface_contract": all(
+                shared_visible_surface_contract(reply).values()
+            ),
             "turn_completed_without_transport_fallback": not gate.rejections
             and budget["terminal_failure"] is None
             and budget["attempts"] == budget["completed_calls"],

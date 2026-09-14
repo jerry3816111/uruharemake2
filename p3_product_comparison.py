@@ -13,6 +13,7 @@ import itertools
 import json
 from pathlib import Path
 import random
+import re
 import time
 from typing import Any, Callable, Iterable, Mapping, MutableMapping
 
@@ -207,6 +208,37 @@ def _canonical_bytes(value: Any) -> bytes:
 
 def canonical_sha256(value: Any) -> str:
     return hashlib.sha256(_canonical_bytes(value)).hexdigest()
+
+
+def shared_visible_surface_contract(reply: Any) -> dict[str, bool]:
+    """Fail-closed obvious surface checks shared by every P3 condition.
+
+    This deliberately does not claim human-rated naturalness. It catches only
+    machine-observable violations of the frozen Japanese/persona contract.
+    """
+
+    text = str(reply or "").strip()
+    return {
+        "nonempty": bool(text),
+        "has_japanese": bool(re.search(r"[ぁ-んァ-ヶー一-龠]", text)),
+        "no_latin_script": not bool(re.search(r"[A-Za-z]", text)),
+        "no_watashi_first_person": not bool(
+            re.search(r"(?<![一-龠ぁ-んァ-ヶー])私(?=(?:は|が|を|の|も|に|だ|じゃ|、|。|？|！|\s|$))", text)
+        ),
+        "no_quote_or_translation_wrapper": not bool(
+            re.search(r"[\"'“”‘’「」『』]|(?:英語|中国語|日本語)版[：:]", text)
+        ),
+        "no_internal_analysis_dump": not any(
+            marker.lower() in text.lower()
+            for marker in (
+                "confidence",
+                "pragmatic_label",
+                "structured_hypothesis",
+                "内部条件",
+                "JSON",
+            )
+        ),
+    }
 
 
 def _require_exact_int(value: Any, name: str, *, minimum: int = 0) -> int:
