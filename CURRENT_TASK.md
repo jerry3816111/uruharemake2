@@ -2,28 +2,24 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B14 deliberate baseline design review
+## 唯一下一步：P3-B15 direct-v2 fresh surface canary implementation
 
-狀態：**P3-B13 FAIL retained**。carrier改成user-role labeled private context後，critique由空字串變為非空，證明舊shape缺陷確實存在；
-但critique只是包裝並抄寫draft，revise逐字回到原draft，仍含`です／ください`。預註冊結果為FAIL。2 real/local calls，
-618 prompt＋58 completion tokens，5.097759秒，0 paid／retry／資料存取。詳見
-`analysis/p3_b13_private_scratch_carrier_acceptance_2026-09-15.md`。
+狀態：**P3-B14 PASS（只限candidate design）**。three-stage deliberate在B11/B13兩次單變因修正後仍不可用，因此退出versioned v2
+developer comparison，但v1與全部負結果不變。v2候選control改為完整raw visible history的一次direct生成；同模型／persona／decoding／
+硬體與每條件768 completion ceiling，actual tokens／latency分開報告。105 tests、0 model/network/data calls。詳見
+`analysis/p3_b14_direct_baseline_v2_design_review_acceptance_2026-09-15.md`。
 
-### P3-B14 before 與設計決策
+### P3-B15 before 與單一交付
 
-before：P3-B11先只改stage instruction語言，P3-B13再只改scratch carrier；兩個有證據的修正批次都未得到可用的three-stage deliberate
-baseline。不能在已曝光synthetic input上繼續換prompt追分，也不能把失敗baseline拿來證明產品有優勢。
+before：candidate direct在B11的一個synthetic輸入通過shared surface，尚未在fresh developer case證明可執行；產品B10 surface修正也尚未在
+新source實際驗證。下一個來源固定為`p3-smoke-03-u1`：`今日の発表、最後の質問だけ答えられなかった。`。
 
-本階段不做新生成。只用已凍結B9／B11／B13輸出與成本，審查三段式baseline是否應退出v2；若退出，定義versioned v2 comparison，
-以目前證據較穩定的單次direct生成作為可執行control，同時保留同模型、同raw可用資料、persona、decoding、硬體與每條件明列的實際
-token／延遲。v1設計與負結果不可改寫。
+實作一個versioned、fail-closed的雙條件canary：product與direct各只取得同一個current turn，future 0，annotation 0。product依既有isolated
+worker最多4 calls；direct依B14日文instruction恰好1 call；共同檢查非空、自然日文/persona surface、exact provider accounting、同模型與options、
+ephemeral product workspace清除。先preflight與release commit，再各執行一次，無retry；兩者輸出都鎖定前不讀annotation。
 
-成功：形成可反駁的v2設計決策，說明為何不是削弱baseline；鎖定fresh developer case在輸出完成前不得讀annotation；將共同surface
-guard公平套用於所有visible outputs；精確列出product與control呼叫／token budget差異，不用假equal宣稱。若無法構成competent control，
-標`REVIEW_REQUIRED`且不執行下一個fresh case。
-
-不得改產品、P1/P2、既有P3 artifacts、v1 source／annotations／results、rubric門檻或正式M55–M58授權；本階段0 model/network calls、
-0 annotation／confirmation／production DB access。
+成功只代表兩個condition都可進完整case輸出，不評語用優劣；若任一surface／accounting fail，保留結果並停止該case，不開annotation。
+不得讀`p3-smoke-03-u2..u4`作為生成輸入、annotation、confirmation／production DB，不改產品、P1/P2、v1結果或rubric，不外部部署。
 
 ## 工作環境
 

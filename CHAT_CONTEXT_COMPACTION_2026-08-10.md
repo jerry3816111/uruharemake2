@@ -2230,6 +2230,15 @@ revise最終逐字回到原draft，仍含`です／ください`。預註冊結�
 `analysis/p3_b13_private_scratch_carrier_acceptance_2026-09-15.md`。P3-B11與B13已構成兩個有證據但未成功的修正批次；下一步P3-B14
 先做0-call設計審查，不在已曝光synthetic input上繼續調prompt，也不拿失敗deliberate baseline製造產品優勢。
 
+### 7.112 2026-09-15 P3-B14：退出壞掉的deliberate chain，鎖定direct-v2候選設計
+
+0-call設計審查通過：P3-B11／B13兩次有歸因修正仍無usable deliberate final，因此three-stage condition只退出versioned v2 developer
+comparison，v1與負結果全保留。候選control為一次full-history direct，與product共用raw visible history、persona、qwen2.5:7b digest、decoding、
+本機transport與每條件768 completion-token ceiling；實際prompt／completion／latency分報，product private state是被測變因。這不是削弱control，
+而是拒絕使用已證明非功能的comparison；direct仍只是一個需fresh驗證的候選。105 tests、0 calls／資料存取。報告：
+`analysis/p3_b14_direct_baseline_v2_design_review_acceptance_2026-09-15.md`。下一步P3-B15使用尚未讀annotation的`p3-smoke-03-u1`，
+先鎖product與direct的surface／accounting canary；全case輸出鎖定前不得開case03 annotation。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
