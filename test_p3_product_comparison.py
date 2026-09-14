@@ -911,6 +911,29 @@ def test_p3_b10_shared_surface_contract_rejects_all_retained_b9_finals():
     assert audits["full_history_deliberate"]["no_latin_script"] is False
 
 
+def test_stage_counter_can_model_ollama_collation_for_adjacent_user_scratch():
+    from p3_product_worker import LocalOllamaQwenStageCounter
+
+    rows = [
+        {"role": "system", "content": "日本語で確認する。"},
+        {"role": "user", "content": "入力。"},
+        {"role": "user", "content": "内部の返答案。"},
+    ]
+    counter = LocalOllamaQwenStageCounter(
+        merge_adjacent_assistant=False,
+        merge_adjacent_same_role=True,
+    )
+    assert counter(rows) == counter(
+        [
+            {"role": "system", "content": "日本語で確認する。"},
+            {"role": "user", "content": "入力。\n\n内部の返答案。"},
+        ]
+    )
+    assert counter.evidence()["adjacent_same_role_rule"] == (
+        "merge_content_with_two_newlines_before_template"
+    )
+
+
 def test_p3_canary_baselines_contract_uses_four_crash_safe_calls(tmp_path):
     config = load_canary_baselines(CANARY_BASELINES_PATH)
 
