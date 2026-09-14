@@ -346,9 +346,11 @@ class LocalOllamaQwenStageCounter:
         model_name: str = "Qwen/Qwen2.5-7B-Instruct",
         *,
         merge_adjacent_assistant: bool = True,
+        merge_adjacent_same_role: bool = False,
     ) -> None:
         self.base = LocalQwenTokenizerCandidate(model_name)
         self.merge_adjacent_assistant = merge_adjacent_assistant
+        self.merge_adjacent_same_role = merge_adjacent_same_role
 
     def hf_default_count(self, messages: Iterable[Mapping[str, str]]) -> int:
         return self.base(messages)
@@ -370,13 +372,27 @@ class LocalOllamaQwenStageCounter:
                 merged.append(row)
         return merged
 
+    @staticmethod
+    def _merge_adjacent_roles(
+        messages: Iterable[Mapping[str, str]],
+    ) -> list[dict[str, str]]:
+        merged: list[dict[str, str]] = []
+        for message in messages:
+            row = dict(message)
+            if merged and row.get("role") == merged[-1].get("role"):
+                merged[-1]["content"] += "\n\n" + row["content"]
+            else:
+                merged.append(row)
+        return merged
+
     def __call__(self, messages: Iterable[Mapping[str, str]]) -> int:
         original = [dict(message) for message in messages]
-        rows = (
-            self._merge_adjacent_assistant(original)
-            if self.merge_adjacent_assistant
-            else original
-        )
+        if self.merge_adjacent_same_role:
+            rows = self._merge_adjacent_roles(original)
+        elif self.merge_adjacent_assistant:
+            rows = self._merge_adjacent_assistant(original)
+        else:
+            rows = original
         if not rows:
             return 0
         if rows[-1].get("role") != "assistant":
@@ -409,9 +425,14 @@ class LocalOllamaQwenStageCounter:
                 if self.merge_adjacent_assistant
                 else "not_applied"
             ),
+            "adjacent_same_role_rule": (
+                "merge_content_with_two_newlines_before_template"
+                if self.merge_adjacent_same_role
+                else "not_applied"
+            ),
             "provider_rule_source": (
                 "ollama_v0.33.3_template/template.go_collate_consecutive_same_role"
-                if self.merge_adjacent_assistant
+                if self.merge_adjacent_assistant or self.merge_adjacent_same_role
                 else None
             ),
             "non_assistant_final_rule": "hf_add_generation_prompt_true",
