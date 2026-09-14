@@ -2202,6 +2202,17 @@ deliberate 輸出英文 wrapper，並新增 happy／safety 未支持內容。既
 報告：`analysis/p3_b10_shared_surface_fail_closed_acceptance_2026-09-15.md`。下一步P3-B11用fresh synthetic English input隔離測
 英文vs日文baseline stage instructions；不得直接在另一個developer case上把source與prompt同時改掉後宣稱因果。
 
+### 7.109 2026-09-15 P3-B11：日文stage instructions改善obvious surface，但暴露private scratch結構錯誤
+
+fresh synthetic English input的單變因probe完成8次qwen2.5:7b calls，2,107 prompt＋115 completion tokens、10.198241 summed
+condition seconds、0 paid；全部exact、無retry，0 developer case／annotation／confirmation／production DB access。英文instructions finals
+為1/2 obvious surface pass，日文instructions為2/2，因此窄surface hypothesis通過。
+
+但日文deliberate final是無關敬體句`何か他に質問があれば教えてください。`，不能稱usable baseline。兩組critique皆為空字串／1 token；
+current `run_condition`把draft放成最後assistant message，Ollama不加新assistant generation prompt，revise又接連續assistant scratch。
+報告：`analysis/p3_b11_instruction_language_probe_acceptance_2026-09-15.md`。下一步P3-B12先對user-role labeled scratch的critique／
+revise兩種新shape做2-call exact tokenizer binding；未通過前不做品質probe、不改正式baseline。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

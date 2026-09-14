@@ -2,26 +2,26 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B11 baseline instruction-language isolation probe
+## 唯一下一步：P3-B12 private-scratch carrier tokenizer binding
 
-狀態：**P3-B10 PASS（只限 surface fail-closed）**。comparison 現在會把P3-B9三個鎖定輸出判為0/3 surface pass；產品
-final normalization只把第一人稱`私`改成`うち`，保留`私生活`等複合詞。109 focused tests通過，0新model/network/paid calls。
-這沒有改善P3-B9語意，也沒有品質優勢；詳見`analysis/p3_b10_shared_surface_fail_closed_acceptance_2026-09-15.md`。
+狀態：**P3-B11窄surface hypothesis PASS，但baseline仍不可用**。同一synthetic English input下，日文instructions把final obvious
+surface pass由1/2提高到2/2；8 calls exact，2,107 prompt＋115 completion tokens、10.198241 summed秒、0 paid。但日文deliberate
+回成無關的敬體客服句，兩組critique都為空字串／1 completion token。這不是品質提升。詳見
+`analysis/p3_b11_instruction_language_probe_acceptance_2026-09-15.md`。
 
-### P3-B11 before 與單一變因
+### P3-B12 before 與單一變因
 
-before：P3-B9 的 shared persona contract 本身是日文，但 direct 與三個 deliberate stage instruction 都是英文；英文source下，
-direct生成英日碎片、deliberate最後輸出整句英文。P3-B10已能fail closed，但還不知道instruction language是否為可歸因原因。
+before：`run_condition`把draft／critique private scratch都附加成assistant messages。critique call最後一個message因此已是assistant，
+Ollama不加新的assistant generation prompt；P3-B11兩組critique都產生空字串／1 token，revise也接到連續assistant scratch。
 
-單一變因：建立不含開發案例／annotation的fresh synthetic English input，對同一qwen2.5:7b、persona、options、caps與空history，
-比較原英文stage instructions與語意等價的日文stage instructions；direct/draft/critique/revise各自固定一次，總8 calls，exact counter、
-無retry。probe只評shared surface contract，不評理解品質；兩組輸出全部鎖定前不看結果選prompt。
+單一變因：先不跑回答品質，只為`user` role承載明確標記的private scratch（draft、critique）建立critique／revise兩種新message shape的
+offline/provider exact tokenizer binding。固定qwen2.5:7b、options與synthetic scratch，2 calls、max completion 1、raw output不留、無retry。
 
-成功：8/8 calls exact且兩組都有direct/deliberate finals；日文instructions的final surface pass數必須大於英文instructions，且不得靠
-改model/persona/input/options/caps。若沒有改善，保留負結果，不把它帶入新比較。若改善，才可建立新design版本與fresh developer case。
+成功：兩種shape offline count都與provider prompt usage完全相等（tolerance 0），2 intents／2 completes，無developer／annotation／production
+access。失敗就保留，不能直接執行scratch-role品質probe；通過後P3-B13才用P3-B11鎖定draft比較assistant-carrier與user-carrier。
 
-不得改產品、P1/P2、既有P3-B7/B9 artifacts、v1 frozen design/source/annotations、rubric／threshold；probe文句不得來自developer case。
-不得讀其他annotation、confirmation／production DB。prompt日文化若通過也只代表surface realization原因，不是認知優勢。
+不得改產品、P1/P2、`run_condition`正式路徑、既有P3 artifacts、v1 design/source/annotations、rubric／threshold；不得讀其他annotation、
+confirmation／production DB。token binding通過只證明計量可執行，不是scratch carrier或理解品質改善。
 
 ## 工作環境
 
