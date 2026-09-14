@@ -2239,6 +2239,15 @@ comparison，v1與負結果全保留。候選control為一次full-history direct
 `analysis/p3_b14_direct_baseline_v2_design_review_acceptance_2026-09-15.md`。下一步P3-B15使用尚未讀annotation的`p3-smoke-03-u1`，
 先鎖product與direct的surface／accounting canary；全case輸出鎖定前不得開case03 annotation。
 
+### 7.113 2026-09-15 P3-B15：direct-v2與product在fresh turn皆通過surface／accounting
+
+case03-u1輸入`今日の発表、最後の質問だけ答えられなかった。`。product鎖定回覆`今日の発表で最後の質問だけ答えられなかったんだね。`，
+1 call／442 prompt＋150 completion／9.586112秒；direct-v2鎖定`うん、その質問はちょっと難しかったみたいだね。次回はもう少し準備して
+臨めばいいよ。`，1 call／295＋29／3.176941秒。兩者shared surface、exact accounting、同source／model/options、0 future／annotation／
+confirmation／production DB皆通過；direct runner只按SHA綁product artifact，未載入其JSON內容。報告：
+`analysis/p3_b15_direct_v2_surface_canary_acceptance_2026-09-15.md`。目前不能評哪個更懂；下一步P3-B16先鎖完整case03四輪兩條件輸出，
+之後才開annotation，避免洩漏u2–u4期待。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

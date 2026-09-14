@@ -2,24 +2,25 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B15 direct-v2 fresh surface canary implementation
+## 唯一下一步：P3-B16 case-03 complete dual-condition output lock
 
-狀態：**P3-B14 PASS（只限candidate design）**。three-stage deliberate在B11/B13兩次單變因修正後仍不可用，因此退出versioned v2
-developer comparison，但v1與全部負結果不變。v2候選control改為完整raw visible history的一次direct生成；同模型／persona／decoding／
-硬體與每條件768 completion ceiling，actual tokens／latency分開報告。105 tests、0 model/network/data calls。詳見
-`analysis/p3_b14_direct_baseline_v2_design_review_acceptance_2026-09-15.md`。
+狀態：**P3-B15 PASS（只限surface／accounting）**。同一fresh turn的product與direct皆自然日文、exact accounting、0 future／annotation。
+product=`今日の発表で最後の質問だけ答えられなかったんだね。`，1 call／442+150 tokens／9.586112秒；direct=`うん、その質問はちょっと
+難しかったみたいだね。次回はもう少し準備して臨めばいいよ。`，1 call／295+29／3.176941秒。尚未做語用品質判定。詳見
+`analysis/p3_b15_direct_v2_surface_canary_acceptance_2026-09-15.md`。
 
-### P3-B15 before 與單一交付
+### P3-B16 before 與單一交付
 
-before：candidate direct在B11的一個synthetic輸入通過shared surface，尚未在fresh developer case證明可執行；產品B10 surface修正也尚未在
-新source實際驗證。下一個來源固定為`p3-smoke-03-u1`：`今日の発表、最後の質問だけ答えられなかった。`。
+before：case03第一輪已鎖，annotation仍未讀；只讀第一輪標註會讓u2–u4也暴露，因此必須先生成完整case。實作versioned 4-turn runner，
+固定讀case03 source、不讀annotation；product在同一case-owned隔離workspace跨session持續，direct每輪收到同一份完整raw visible prefix
+（先前user與已鎖product visible replies），但不取得product private state、當輪product reply或自己的舊output。
 
-實作一個versioned、fail-closed的雙條件canary：product與direct各只取得同一個current turn，future 0，annotation 0。product依既有isolated
-worker最多4 calls；direct依B14日文instruction恰好1 call；共同檢查非空、自然日文/persona surface、exact provider accounting、同模型與options、
-ephemeral product workspace清除。先preflight與release commit，再各執行一次，無retry；兩者輸出都鎖定前不讀annotation。
+每輪先鎖product再鎖direct，condition各自同qwen2.5:7b／persona／decoding與768 completion ceiling；product每輪最多4 calls，direct每輪1 call。
+所有8個visible outputs非空且通過shared surface、來源/prefix hash一致、exact accounting、無retry／annotation／production DB後，才允許另階段開
+case03 annotations評分。P3-B15 u1可引用immutable checkpoint，不重做provider call；其餘u2–u4 fresh。
 
-成功只代表兩個condition都可進完整case輸出，不評語用優劣；若任一surface／accounting fail，保留結果並停止該case，不開annotation。
-不得讀`p3-smoke-03-u2..u4`作為生成輸入、annotation、confirmation／production DB，不改產品、P1/P2、v1結果或rubric，不外部部署。
+失敗即保留，annotation仍關閉。不得修改題目、v1資料／結果、rubric、產品或P1/P2；不使用u2–u4 annotation、confirmation、formal data，
+不外部部署。此步只鎖輸出，不能稱優勢。
 
 ## 工作環境
 
