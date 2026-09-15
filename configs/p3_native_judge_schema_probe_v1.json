@@ -1,0 +1,55 @@
+{
+  "schema": "uruha_p3_native_judge_schema_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "final_bounded_native_format_probe_after_openai_compatible_failure",
+  "before_failure": {
+    "path": "analysis/p3_b18_judge_json_conformance_result_2026-09-15.json",
+    "sha256": "01ac5ace960f1f1e052360f5ad3c9e6b20d8cb8e9a95cca8dc61250927dbaecb",
+    "required_status": "judge_json_conformance_failed_retained"
+  },
+  "synthetic_parent": {
+    "path": "configs/p3_judge_json_conformance_probe_v1.json",
+    "sha256": "3c8a2d6daef397eac8edcb1c16e5e138d25ec0b9b09f77e8a3b236adabd421e4",
+    "fixture_id": "p3-b18-schema-only-01"
+  },
+  "single_variable": "openai_compatible_response_format_to_native_api_chat_direct_format",
+  "transport": {
+    "backend": "native_ollama_chat",
+    "url": "http://127.0.0.1:11434/api/chat",
+    "ollama_version": "0.33.3",
+    "format_source": "synthetic_parent.response_formats.json_schema.json_schema.schema"
+  },
+  "judge": {
+    "model": "qwen3.5:9b",
+    "digest": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 384,
+    "timeout_seconds": 30,
+    "retries": 0
+  },
+  "execution_boundary": {
+    "calls_exact": 1,
+    "automatic_retry": false,
+    "localhost_only": true,
+    "developer_case_access": false,
+    "annotation_file_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "case03_rerun": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "success": {
+    "strict_judgment_valid": true,
+    "done_reason_not_length": true,
+    "provider_usage_exactly_accounted": true,
+    "no_retry": true,
+    "authorizes_only_future_fresh_case_judge_transport": true,
+    "authorizes_quality_claim": false
+  }
+}
