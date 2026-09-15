@@ -2262,6 +2262,13 @@ strict validator拒絕且0 retry。Ollama log留有620 prompt＋384 completion�
 0 call。保留commit `d2444cd`，沒有任何有效grade。下一步P3-B18只修失敗核帳並用無開發案例的synthetic JSON schema-conformance probe；不得重跑case03、
 改回答、改rubric或宣稱品質比較。
 
+### 7.116 2026-09-15 P3-B18：OpenAI-compatible兩種JSON constraint同樣截斷
+
+post-transport failure accounting修正後，使用完全synthetic prompt比較`json_object`與`json_schema`，各1 call、同qwen3.5:9b／seed／384 cap。兩者皆
+555 prompt＋384 completion、`finish_reason=length`、strict JSON invalid，且raw response SHA完全相同；2 calls／1,110＋768 tokens正確保存，0 retry／
+developer／annotation／confirmation／production access。狀態`REVIEW_REQUIRED`，不能續跑case03。官方Ollama文件明定native `/api/chat`可用direct
+JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synthetic prompt的native format；若再失敗則停止serialization實驗。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

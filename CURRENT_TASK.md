@@ -2,28 +2,22 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B18 judge schema-conformance 與失敗核帳修正
+## 唯一下一步：P3-B19 native structured-output 最終合成驗證
 
-狀態：**P3-B16 generation lock PASS；P3-B17 proxy grade FAIL，尚無品質分數。** B16已在commit `b8758b0`鎖定case03的4輪product＋4輪
-direct outputs：8 calls／3,177+654 tokens／52.272845秒／0 paid，跨session隔離與paired hashes通過。product u2把「資料」誤判成
-`cooked_food`並答`いや、いいじゃん、普通にうまそう。`；direct u2混入中文，均原樣保留。
+狀態：**P3-B18 REVIEW_REQUIRED，B17／B18尚無有效品質分數。** B18在同一無案例synthetic prompt比較OpenAI-compatible `json_object`與
+`json_schema`；兩者皆555+384 tokens、`finish_reason=length`、strict JSON invalid，而且raw response hash相同。2 calls／1,110+768 tokens／
+39.341902秒、0 retry／paid／developer／annotation access皆精確保存。這證明該response-format變更在目前路徑沒有生效，不可拿來續跑case03。
 
-B17輸出鎖後才讀case03 annotations。第一個匿名AB judge得到HTTP 200，但qwen3.5:9b用滿384 completion tokens後不是完整JSON；依0-retry規則
-立即停止。更發現failure checkpoint漏記已完成的provider call／usage，令結果錯報0 calls。Ollama log顯示實際至少1 call、620+384 tokens、
-23.629662秒。詳見`analysis/p3_b16_case03_output_lock_acceptance_2026-09-15.md`與
-`analysis/p3_b17_case03_proxy_grade_failure_2026-09-15.md`。
+### P3-B19 before 與單一交付
 
-### P3-B18 before 與單一交付
+官方Ollama文件明定native `POST /api/chat`的`format`可直接接JSON Schema，response帶`done_reason`、`prompt_eval_count`與`eval_count`；本機client/server
+均為0.33.3。最後一個修正候選只把同一B18 synthetic prompt的transport／schema承載改成native `format=<direct schema>`；qwen3.5:9b、temperature=0、
+seed、384 cap、validator與0-retry不變，只允許1 call。
 
-before：問題不是產品回答，而是judge介面的bounded structured-output與post-transport failure accounting。先只修failure checkpoint：若transport已返回
-但JSON/schema驗證失敗，必須記`response_received`、response hash、finish reason、provider prompt/completion、wall、real/network calls；CLI summary需正確核帳。
-不得修改或重跑B17 case03。
+成功：完整strict JSON、`done_reason`不是length、provider usage精確、零資料存取。失敗：保留response hash／usage並停止，不再嘗試第三種序列化。
+不論結果均不重跑case03、不修改產品或rubric、不產生品質／人評主張。若通過，下一個品質實驗必須使用尚未生成與評分的fresh developer case。
 
-再用不含任何developer/annotation/confirmation內容的synthetic pair，前瞻比較目前`json_object`與明確`json_schema` serialization constraint；
-同一qwen3.5:9b、prompt、384 cap、0 retry，各1 call。成功是至少取得可驗證的完整JSON且所有呼叫/失敗都精確核帳；若仍失敗，保留raw hash與usage後進
-`REVIEW_REQUIRED`，不靠提高cap、放寬validator或抽取半截JSON追分。
-
-此步只解除評分基礎設施阻塞，不產生產品優勢、被理解感或人類偏好證據。
+詳見`analysis/p3_b18_judge_json_conformance_failure_2026-09-15.md`。
 
 ## 工作環境
 
