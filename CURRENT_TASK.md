@@ -2,22 +2,22 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B19 native structured-output 最終合成驗證
+## 唯一下一步：P3-B20 fresh case04 complete dual-condition output lock
 
-狀態：**P3-B18 REVIEW_REQUIRED，B17／B18尚無有效品質分數。** B18在同一無案例synthetic prompt比較OpenAI-compatible `json_object`與
-`json_schema`；兩者皆555+384 tokens、`finish_reason=length`、strict JSON invalid，而且raw response hash相同。2 calls／1,110+768 tokens／
-39.341902秒、0 retry／paid／developer／annotation access皆精確保存。這證明該response-format變更在目前路徑沒有生效，不可拿來續跑case03。
+狀態：**P3-B19 synthetic native judge schema PASS；仍無產品品質優勢結論。** 相同B18 prompt／qwen3.5:9b／384 cap改用native `/api/chat`
+direct `format=<schema>`後，557+244 tokens、`done_reason=stop`、16.248327秒，strict judgment完整；1/1 call核帳、0 retry／developer／annotation。
+它只解除judge serialization阻塞，case03因B17 item已spent不重跑。詳見`analysis/p3_b19_native_judge_schema_acceptance_2026-09-15.md`。
 
-### P3-B19 before 與單一交付
+### P3-B20 before 與單一交付
 
-官方Ollama文件明定native `POST /api/chat`的`format`可直接接JSON Schema，response帶`done_reason`、`prompt_eval_count`與`eval_count`；本機client/server
-均為0.33.3。最後一個修正候選只把同一B18 synthetic prompt的transport／schema承載改成native `format=<direct schema>`；qwen3.5:9b、temperature=0、
-seed、384 cap、validator與0-retry不變，只允許1 call。
+選下一個未生成、未評分的developer case `p3-smoke-humor-boundary-zh`：四輪中文輸入，family=`relationship_and_humor_boundary`，u3前跨session。
+內容逐步區分「班導」是玩笑、不是討厭被關心、但不接受老師口氣命令、可吐槽卻不能把玩笑當同意。這直接測關係訊號、否定更新與邊界尊重。
 
-成功：完整strict JSON、`done_reason`不是length、provider usage精確、零資料存取。失敗：保留response hash／usage並停止，不再嘗試第三種序列化。
-不論結果均不重跑case03、不修改產品或rubric、不產生品質／人評主張。若通過，下一個品質實驗必須使用尚未生成與評分的fresh developer case。
+先只鎖4輪product＋4輪direct-v2輸出；annotation仍不讀。沿用同qwen2.5:7b digest／persona／decoding／budget與system-anchored完整visible prefix；
+product在隔離workspace跨新brain instance保留同case paths，direct不讀product private state、當輪reply或自己的舊output。8 outputs、paired hashes、surface、
+exact accounting、restart與隔離全通過並commit後，才能另開B21用B19已驗證的native judge做AB／BA評分。
 
-詳見`analysis/p3_b18_judge_json_conformance_failure_2026-09-15.md`。
+任何生成失敗原樣保留，不重跑；此步不能稱品質或優勢。
 
 ## 工作環境
 

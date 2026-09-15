@@ -2269,6 +2269,13 @@ post-transport failure accounting修正後，使用完全synthetic prompt比較`
 developer／annotation／confirmation／production access。狀態`REVIEW_REQUIRED`，不能續跑case03。官方Ollama文件明定native `/api/chat`可用direct
 JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synthetic prompt的native format；若再失敗則停止serialization實驗。
 
+### 7.117 2026-09-15 P3-B19：native direct JSON Schema在384 cap內完整通過
+
+同一B18 synthetic prompt、qwen3.5:9b、temperature/seed與384 completion cap，只把carrier改成Ollama native `/api/chat`的direct `format=<schema>`。
+結果557 prompt＋244 completion、`done_reason=stop`、16.248327秒，strict judgment、quote/evidence validation與exact accounting全通過；1 call、0 retry／資料／paid。
+它只證明評分transport可用，不是產品品質證據。case03的spent judge item不重跑。下一步P3-B20選未生成的case04中文關係／玩笑邊界四輪，先在annotation
+關閉下鎖product/direct完整輸出，再另階段評分。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

@@ -522,6 +522,7 @@ def run_case(config_path: str | Path, release_path: str | Path, checkpoint_root:
     product_calls = [call for row in product_rows for call in row["calls"]]
     direct_calls = [call for row in direct_rows for call in row["calls"]]
     all_surfaces = [row["surface_contract"] for row in product_rows] + [row["surface_contract"] for row in direct_rows]
+    source_session_ids = [row["session_id"] for row in config["_source"]["sessions"]]
     checks = {
         "all_eight_visible_outputs_nonempty": len(product_rows) == len(direct_rows) == 4 and all(
             bool(str(row["visible_reply"]).strip()) for row in product_rows
@@ -544,7 +545,8 @@ def run_case(config_path: str | Path, release_path: str | Path, checkpoint_root:
         ),
         "session_restart_preserves_case_paths": (
             product_rows[2]["session_restart_before_turn"] is True
-            and session_instances.get("p3-smoke-03-s1") != session_instances.get("p3-smoke-03-s2")
+            and len(source_session_ids) == 2
+            and session_instances.get(source_session_ids[0]) != session_instances.get(source_session_ids[1])
             and len({row["memory_path_sha256"] for row in product_rows}) == 1
             and len(set(workspace_paths.values())) == len(workspace_paths)
         ),
