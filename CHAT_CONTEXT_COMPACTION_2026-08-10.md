@@ -2276,6 +2276,14 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 它只證明評分transport可用，不是產品品質證據。case03的spent judge item不重跑。下一步P3-B20選未生成的case04中文關係／玩笑邊界四輪，先在annotation
 關閉下鎖product/direct完整輸出，再另階段評分。
 
+### 7.118 2026-09-15 P3-B20：case04八個輸出保留，但預註冊呼叫下限錯誤且暴露語意反例
+
+- fresh `relationship_and_humor_boundary` case04在annotation仍封閉時完成4輪product＋4輪direct-v2，u3前以新brain instance保留同case memory path；結果先commit `264d568`後才只開case04四輪annotation。
+- 8/8非空、surface、4組source/prefix hash、restart、隔離與逐輪budget通過；7個本機call全部核帳，2,766 prompt＋508 completion、51.544689秒、0 paid。
+- 預註冊錯把product provider calls minimum寫成4；u4其實合法走zero-call deterministic fast path，故product 3＋direct 4，B20仍以`case04_output_lock_failed_retained`保存，不能事後改門檻宣稱PASS。
+- product u4把`可以吐槽我`選成`playful_tease`後輸出`脳みそ元気すぎだろ。少し落ち着けって。`，未接住「玩笑不是同意」的關係邊界；這是下一步先評後修的真實反例。
+- 下一步P3-B21只可用B19通過的native schema對固定輸出做8次AB/BA診斷評分；即使完成也因B20 gate fail不能當正向優勢、人評、holdout或formal evidence。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
