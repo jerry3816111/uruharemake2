@@ -2284,6 +2284,14 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - product u4把`可以吐槽我`選成`playful_tease`後輸出`脳みそ元気すぎだろ。少し落ち着けって。`，未接住「玩笑不是同意」的關係邊界；這是下一步先評後修的真實反例。
 - 下一步P3-B21只可用B19通過的native schema對固定輸出做8次AB/BA診斷評分；即使完成也因B20 gate fail不能當正向優勢、人評、holdout或formal evidence。
 
+### 7.119 2026-09-15 P3-B21：native匿名診斷完成，case04為產品負結果
+
+- qwen3.5:9b native direct schema完成8/8 AB/BA judgments，四輪mapped preference全數跨順序一致：product只贏u1兩票，direct-v2贏u2–u4共6票。
+- mean product−direct：attunement −0.50、grounding 0、correction −1.25、continuity −0.125；u4證實產品遺失「玩笑不等於同意／照做」邊界，不是只差句型。
+- judge共6,098 prompt＋2,111 completion、122.139371秒runner、0 retry／paid；個別subscore仍有order variance，因此model-judge decimal只作developer diagnosis。
+- generation成本同案product 1,747 tokens／38.924088秒、direct 1,527／9.197616秒；產品在此案同時較慢且proxy較差，不能宣稱優勢。
+- B20失敗狀態、原輸出與B21負分皆保留。下一步P3-B22只改M39 current-source humor-vs-consent boundary repair，中英日與隔離runtime驗證；不得重跑或重評B20/B21。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

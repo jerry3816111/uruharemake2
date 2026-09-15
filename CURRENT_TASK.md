@@ -2,24 +2,23 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B21 case04 native blind diagnostic grade
+## 唯一下一步：P3-B22 preserve humor-vs-consent boundary in deterministic surface repair
 
-狀態：**P3-B20 preregistered output-lock gate FAIL，但8個輸出與7次呼叫完整保留；仍無產品品質優勢結論。**
-product u4走合法的zero-call deterministic fast path，故實際product 3＋direct 4次，與錯寫的product minimum=4衝突；
-結果不是漏帳，仍原樣失敗。更重要的是u4把「可吐槽但玩笑不是同意」錯套成`脳みそ元気すぎだろ。少し落ち着けって。`，
-是待診斷的真實反例。詳見`analysis/p3_b20_case04_output_lock_failure_2026-09-15.md`。
+狀態：**P3-B21 8/8 native匿名診斷完成，case04為產品負結果；仍無產品品質優勢結論。** AB/BA四輪偏好全部一致：
+direct-v2 6票、product 2票；product−direct為attunement −0.50、correction −1.25、continuity −0.125、grounding 0。
+product成本1,747 tokens／38.924088秒，direct 1,527／9.197616秒。這是developer proxy model-judge diagnosis，
+不是人評、holdout或formal gate。詳見`analysis/p3_b21_case04_native_diagnostic_grade_2026-09-15.md`。
 
-### P3-B21 before 與單一交付
+### P3-B22 before 與單一交付
 
-case04全部生成輸出已先commit為`264d568`，之後才只開case04的4輪developer-proxy annotation；u3/u4為correction eligible。
-B21只做診斷：沿用B19已通過的native `/api/chat` direct `format=<schema>`，讓同一`qwen3.5:9b`對每輪做AB／BA匿名評分，
-共8次、0 retry、逐call checkpoint、每輪依correction eligibility產生嚴格schema。
+B21確認u4真正故障鏈：current input同時有「可吐槽」與「玩笑不是同意」，M25只把前者選成`playful_tease`；
+上游沿用「腦袋停不下來」案例的固定core，M39發現其中`朝から`無根據後，又以另一句固定腦袋吐槽修復，完全遺失行動／同意邊界。
 
-先建立config／runner／tests／零生成preflight並commit，再建立獨立release；只有release hash完全吻合才能執行。
-B21可讀B20固定輸出及case04 annotation，不可改或重跑生成、不可讀其他case annotation／future／confirmation／production DB。
-若任一call transport不確定或strict validation失敗，立即停止、保留完整用量與hash、不重試。
+單一核心變因只改M39 bounded source frame＋`playful_tease` repair：從當前可見文字辨識「允許玩笑」和「不授權行動／命令」同時存在，
+在需要repair時輸出同時保留兩者的自然日文，不再回落到無關腦袋模板。不得改generation model、baseline、rubric、舊output或B21分數。
 
-即使8次評分完整，因B20 preregistered gate失敗，B21只提供語意故障定位與下一個單一變因依據；不能稱產品優勢、人評、holdout或正式結論。
+驗收先做中英日source-disjoint deterministic正例、只有吐槽邀請與只有拒絕授權的負例、既有M39 regression；再用隔離actual product route檢查
+visible Japanese與runtime graph。B20/B21不可重跑；修後結果只算exposed developer repair evidence，下一個fresh case才能再比較。
 
 ## 工作環境
 
