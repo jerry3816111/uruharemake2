@@ -1,0 +1,48 @@
+{
+  "schema": "uruha_p3_judge_json_conformance_probe_release_v1",
+  "phase": "P3-B18",
+  "status": "released_for_judge_conformance_probe",
+  "reviewed_commit": "66338562f2a88a1755ac87dbe335967491410b14",
+  "artifacts": {
+    "config": {
+      "path": "configs/p3_judge_json_conformance_probe_v1.json",
+      "sha256": "3c8a2d6daef397eac8edcb1c16e5e138d25ec0b9b09f77e8a3b236adabd421e4"
+    },
+    "implementation": {
+      "path": "p3_judge_json_conformance_probe.py",
+      "sha256": "57edb9aba5008685fcea00e204414b2b0e874c867bbb497b87d5717e34e99d4e"
+    },
+    "shared_judge": {
+      "path": "p3_case03_proxy_grade.py",
+      "sha256": "df545b0229af9dd00cc2fc9cbdd08545794bd54c11b9b915975dbe39fd785df4"
+    },
+    "tests": {
+      "path": "test_p3_judge_json_conformance_probe.py",
+      "sha256": "233d0a1ae58c56e4ad7fea4b77202da161af5ca1da6960e31b4d4ab7d34b2cb3"
+    },
+    "preflight": {
+      "path": "analysis/p3_b18_judge_json_conformance_preflight_2026-09-15.json",
+      "sha256": "4b71e593c36f46562f5e2bb0976570b48dc34dead619ca5b4b29daeebd35fb9d"
+    }
+  },
+  "review": {
+    "before_failure_preserved": true,
+    "same_synthetic_prompt": true,
+    "only_response_format_changes": true,
+    "no_developer_or_annotation_content": true,
+    "post_transport_failure_usage_retained": true,
+    "continue_only_after_received_invalid_response": true,
+    "transport_uncertainty_stops_later_calls": true,
+    "zero_retry": true
+  },
+  "authorization": {
+    "calls_exact": 2,
+    "automatic_retry": false,
+    "localhost_only": true,
+    "checkpoint_root": "analysis/p3_b18_judge_json_conformance_checkpoints_v1",
+    "result_path": "analysis/p3_b18_judge_json_conformance_result_2026-09-15.json",
+    "case03_rerun": false,
+    "quality_claim": false
+  },
+  "claim_boundary": "Authorizes two localhost calls on one synthetic judge prompt to compare serialization constraints. It does not authorize a retry of B17, any developer or holdout grading, product changes, or quality claims."
+}
