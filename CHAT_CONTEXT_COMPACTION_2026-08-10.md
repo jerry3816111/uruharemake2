@@ -2248,6 +2248,20 @@ confirmation／production DB皆通過；direct runner只按SHA綁product artifac
 `analysis/p3_b15_direct_v2_surface_canary_acceptance_2026-09-15.md`。目前不能評哪個更懂；下一步P3-B16先鎖完整case03四輪兩條件輸出，
 之後才開annotation，避免洩漏u2–u4期待。
 
+### 7.114 2026-09-15 P3-B16：case03八個生成輸出已在評分前完整鎖定
+
+在單一新隔離case workspace完成4輪product＋4輪direct-v2，u3前換新brain instance但保留同一case memory/adaptive paths；兩條件每輪source/input hash
+一致，direct只看完整system-anchored visible prefix。8 local calls、3,177 prompt＋654 completion、52.272845秒、0 paid；future／annotation／confirmation／
+production DB皆0，workspace已清除。結果commit `b8758b0`。工程gate通過不等於語意通過：product u2把「資料」路由成`cooked_food`並回答食物，
+direct u2混入中文，均未回改。
+
+### 7.115 2026-09-15 P3-B17：首次匿名proxy grade因JSON截斷與核帳缺口停止
+
+輸出commit後才讀case03 annotations，preregister每輪AB／BA、共8次qwen3.5:9b judge。第一個u1/AB得到HTTP 200，但用滿384 completion cap後不是完整JSON，
+strict validator拒絕且0 retry。Ollama log留有620 prompt＋384 completion／23.629662秒；runner failure artifact卻因post-transport validation path沒有寫usage，錯報
+0 call。保留commit `d2444cd`，沒有任何有效grade。下一步P3-B18只修失敗核帳並用無開發案例的synthetic JSON schema-conformance probe；不得重跑case03、
+改回答、改rubric或宣稱品質比較。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

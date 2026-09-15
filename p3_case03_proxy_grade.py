@@ -283,7 +283,10 @@ def _write_checkpoint(path: Path, payload: Mapping[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
-def local_transport(config: Mapping[str, Any], messages: list[dict[str, str]]) -> dict[str, Any]:
+def local_transport(
+    config: Mapping[str, Any], messages: list[dict[str, str]],
+    *, response_format: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     judge = config["judge"]
     body = {
         "model": judge["model"], "messages": messages,
@@ -291,7 +294,7 @@ def local_transport(config: Mapping[str, Any], messages: list[dict[str, str]]) -
         "top_p": judge["top_p"], "max_tokens": judge["max_completion_tokens"],
         "stream": False, "think": judge["think"],
         "options": {"num_ctx": judge["num_ctx"]},
-        "response_format": {"type": "json_object"},
+        "response_format": dict(response_format or {"type": "json_object"}),
     }
     request = urllib.request.Request(
         "http://127.0.0.1:11434/v1/chat/completions",
@@ -304,6 +307,7 @@ def local_transport(config: Mapping[str, Any], messages: list[dict[str, str]]) -
     elapsed = time.monotonic() - started
     try:
         content = payload["choices"][0]["message"]["content"]
+        finish_reason = payload["choices"][0]["finish_reason"]
         prompt_tokens = payload["usage"]["prompt_tokens"]
         completion_tokens = payload["usage"]["completion_tokens"]
     except (KeyError, IndexError, TypeError) as exc:
@@ -314,12 +318,40 @@ def local_transport(config: Mapping[str, Any], messages: list[dict[str, str]]) -
         "content": content, "prompt_tokens": prompt_tokens,
         "completion_tokens": completion_tokens, "wall_seconds": round(elapsed, 6),
         "model": payload.get("model"), "network_calls": 1, "real_model_calls": 1,
+        "finish_reason": finish_reason,
     }
 
 
 def _mapped_preference(judgment: Mapping[str, Any], mapping: Mapping[str, str]) -> str:
     value = judgment["preference"]
     return "tie" if value == "tie" else mapping[value]
+
+
+def build_failure_record(
+    item_id: str, exc: Exception, response: Mapping[str, Any] | None
+) -> dict[str, Any]:
+    """Retain post-transport evidence even when strict judgment validation fails."""
+
+    received = isinstance(response, Mapping) and isinstance(response.get("content"), str)
+    actual = None
+    if received:
+        actual = {
+            "prompt_tokens": response.get("prompt_tokens"),
+            "completion_tokens": response.get("completion_tokens"),
+            "wall_seconds": response.get("wall_seconds"),
+            "real_model_calls": response.get("real_model_calls"),
+            "network_calls": response.get("network_calls"),
+        }
+    return _signed({
+        "schema": "uruha_p3_case03_proxy_grade_failure_v1", "phase": "P3-B17",
+        "item_id": item_id, "error_type": type(exc).__name__,
+        "contract_code": getattr(exc, "code", "transport_or_validation_failure"),
+        "response_received": received,
+        "raw_content_sha256": canonical_sha256(response["content"]) if received else None,
+        "finish_reason": response.get("finish_reason") if received else None,
+        "provider_actual_usage": actual,
+        "retry_performed": False,
+    })
 
 
 def summarize(rows: list[dict[str, Any]], config: Mapping[str, Any]) -> dict[str, Any]:
@@ -466,16 +498,12 @@ def run_grade(
                 "judge_model": config["judge"]["model"], "automatic_retry": False,
             })
             _write_checkpoint(item_root / "intent.json", intent)
+            response: dict[str, Any] | None = None
             try:
                 response = dict(transport(config, messages))
                 judgment = validate_judgment(response["content"], item)
             except Exception as exc:
-                failure = _signed({
-                    "schema": "uruha_p3_case03_proxy_grade_failure_v1", "phase": "P3-B17",
-                    "item_id": item["item_id"], "error_type": type(exc).__name__,
-                    "contract_code": getattr(exc, "code", "transport_or_validation_failure"),
-                    "retry_performed": False,
-                })
+                failure = build_failure_record(item["item_id"], exc, response)
                 _write_checkpoint(item_root / "failure.json", failure)
                 raise P3ContractError("p3_b17_judge_failure_no_retry", item["item_id"]) from exc
             complete = _signed({
@@ -484,7 +512,8 @@ def run_grade(
                 "raw_content_sha256": canonical_sha256(response["content"]),
                 "usage": {k: response[k] for k in ("prompt_tokens", "completion_tokens", "wall_seconds")},
                 "model": response["model"], "real_model_calls": response["real_model_calls"],
-                "network_calls": response["network_calls"], "retry_performed": False,
+                "network_calls": response["network_calls"], "finish_reason": response["finish_reason"],
+                "retry_performed": False,
             })
             _write_checkpoint(item_root / "complete.json", complete)
             rows.append({

@@ -102,3 +102,24 @@ def test_preflight_is_zero_generation_and_one_case_only(monkeypatch):
     assert result["real_model_calls"] == result["network_calls"] == 0
     assert result["case03_annotation_turns_used"] == 4
     assert result["other_case_annotations_used"] == 0
+
+
+def test_post_transport_validation_failure_retains_usage_and_response_hash(tmp_path):
+    response = {
+        "content": '{"truncated":', "prompt_tokens": 620,
+        "completion_tokens": 384, "wall_seconds": 23.6,
+        "real_model_calls": 1, "network_calls": 1,
+        "finish_reason": "length", "model": "qwen3.5:9b",
+    }
+    exc = P3ContractError("p3_b17_judge_json_invalid")
+    record = grade.build_failure_record("synthetic:AB", exc, response)
+    grade._write_checkpoint(tmp_path / "failure.json", record)
+    evidence = grade.summarize_checkpoint_evidence(tmp_path)
+    assert record["response_received"] is True
+    assert record["raw_content_sha256"]
+    assert record["finish_reason"] == "length"
+    assert evidence["post_transport_failures"] == 1
+    assert evidence["provider_call_evidence"] == 1
+    assert evidence["network_call_evidence"] == 1
+    assert evidence["provider_prompt_tokens_observed"] == 620
+    assert evidence["provider_completion_tokens_observed"] == 384

@@ -2,26 +2,28 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B16 case-03 complete dual-condition output lock
+## 唯一下一步：P3-B18 judge schema-conformance 與失敗核帳修正
 
-狀態：**P3-B15 PASS（只限surface／accounting）**。同一fresh turn的product與direct皆自然日文、exact accounting、0 future／annotation。
-product=`今日の発表で最後の質問だけ答えられなかったんだね。`，1 call／442+150 tokens／9.586112秒；direct=`うん、その質問はちょっと
-難しかったみたいだね。次回はもう少し準備して臨めばいいよ。`，1 call／295+29／3.176941秒。尚未做語用品質判定。詳見
-`analysis/p3_b15_direct_v2_surface_canary_acceptance_2026-09-15.md`。
+狀態：**P3-B16 generation lock PASS；P3-B17 proxy grade FAIL，尚無品質分數。** B16已在commit `b8758b0`鎖定case03的4輪product＋4輪
+direct outputs：8 calls／3,177+654 tokens／52.272845秒／0 paid，跨session隔離與paired hashes通過。product u2把「資料」誤判成
+`cooked_food`並答`いや、いいじゃん、普通にうまそう。`；direct u2混入中文，均原樣保留。
 
-### P3-B16 before 與單一交付
+B17輸出鎖後才讀case03 annotations。第一個匿名AB judge得到HTTP 200，但qwen3.5:9b用滿384 completion tokens後不是完整JSON；依0-retry規則
+立即停止。更發現failure checkpoint漏記已完成的provider call／usage，令結果錯報0 calls。Ollama log顯示實際至少1 call、620+384 tokens、
+23.629662秒。詳見`analysis/p3_b16_case03_output_lock_acceptance_2026-09-15.md`與
+`analysis/p3_b17_case03_proxy_grade_failure_2026-09-15.md`。
 
-before：case03第一輪已鎖，annotation仍未讀；只讀第一輪標註會讓u2–u4也暴露，因此必須先生成完整case。實作versioned 4-turn runner，
-固定讀case03 source、不讀annotation；product在同一case-owned隔離workspace跨session持續，direct每輪收到同一份完整raw visible prefix
-（先前user與已鎖product visible replies），但不取得product private state、當輪product reply或自己的舊output。
+### P3-B18 before 與單一交付
 
-每輪先鎖product再鎖direct，condition各自同qwen2.5:7b／persona／decoding與768 completion ceiling；product每輪最多4 calls，direct每輪1 call。
-所有8個visible outputs非空且通過shared surface、來源/prefix hash一致、exact accounting、無retry／annotation／production DB後，才允許另階段開
-case03 annotations評分。B15已刪除ephemeral state，不能拿其result假裝延續記憶；B16必須在一個新case workspace獨立重跑u1–u4，B15不計入
-B16 calls或品質結果。
+before：問題不是產品回答，而是judge介面的bounded structured-output與post-transport failure accounting。先只修failure checkpoint：若transport已返回
+但JSON/schema驗證失敗，必須記`response_received`、response hash、finish reason、provider prompt/completion、wall、real/network calls；CLI summary需正確核帳。
+不得修改或重跑B17 case03。
 
-失敗即保留，annotation仍關閉。不得修改題目、v1資料／結果、rubric、產品或P1/P2；不使用u2–u4 annotation、confirmation、formal data，
-不外部部署。此步只鎖輸出，不能稱優勢。
+再用不含任何developer/annotation/confirmation內容的synthetic pair，前瞻比較目前`json_object`與明確`json_schema` serialization constraint；
+同一qwen3.5:9b、prompt、384 cap、0 retry，各1 call。成功是至少取得可驗證的完整JSON且所有呼叫/失敗都精確核帳；若仍失敗，保留raw hash與usage後進
+`REVIEW_REQUIRED`，不靠提高cap、放寬validator或抽取半截JSON追分。
+
+此步只解除評分基礎設施阻塞，不產生產品優勢、被理解感或人類偏好證據。
 
 ## 工作環境
 
