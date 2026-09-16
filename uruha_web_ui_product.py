@@ -14,6 +14,7 @@ from uruha_speaker_attribution_recall_p2 import install_speaker_attribution_reca
 from uruha_speaker_qualified_fact_p3 import install_speaker_qualified_fact_p3
 from uruha_shared_amusement_authority_p3 import install_shared_amusement_authority_p3
 from uruha_playful_guess_authority_p3 import install_playful_guess_authority_p3
+from uruha_wait_and_see_authority_p3 import install_wait_and_see_authority_p3
 
 # Product-only resource contract. Do not import this entry in a frozen formal
 # experiment interpreter. Existing research entrypoints retain their own budget.
@@ -29,6 +30,7 @@ install_speaker_attribution_recall_p2()
 install_speaker_qualified_fact_p3()
 install_shared_amusement_authority_p3()
 install_playful_guess_authority_p3()
+install_wait_and_see_authority_p3()
 RUNTIME = _base.RUNTIME
 
 if __name__ == "__main__":

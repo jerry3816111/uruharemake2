@@ -2,19 +2,19 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B43 explicit wait-and-see authority
+## 唯一下一步：P3-B44 prospective v3 predeclared comparison batch
 
-狀態：**P3-B42 structural output lock PASS，product advantage未成立。** 5次本機call、1,846 prompt＋269 completion tokens、42.563107秒，
-8/8 records與所有surface／pairing／restart／cleanup gate通過，0 retry／annotation。產品u1過度判成婉拒，u4忽略明示的`今回は様子見って一緒に整理して`；
-direct雖冗長，u4較接近要求。這是新prospective負結果，不能重跑。
+狀態：**P3-B43 bounded exposed repair PASS。** B42 u4由泛用presence改為不判希望／拒絕、只整理成暫時觀察；0新增model call、0 fact write、graph已連接。
+12 focused＋1隔離四輪runtime＋100相鄰回歸通過；B42未重跑。B33三案均已曝光，不再可當新驗證。
 
-### P3-B43 before 與單一交付
+### P3-B44 before 與單一交付
 
-B43只處理u4明示response-form，不同時修u1 implicit inference：必須同時出現「不要樂觀保證／勵志安慰」與「一起整理成先觀察／wait and see」才選取。
-輸出應明確保留兩側不確定性，例如不判定「一定有希望」或「就是拒絕」，只把當前狀態整理為觀察中。
+B35／B38／B42提供了三種真實失敗：語言gate漏洞、明示社交行動被presence壓過、模糊關係被過度斷定；後兩者已做exposed repair，仍沒有未曝光優勢證據。
+B44建立全新source-only v3批次，generation前同時凍結獨立annotation/rubric commitment，避免看完outputs才訂標準。
 
-不得推測對方心理、不得把關係判斷寫成事實或長期記憶、不得新增model call。否定、引用／劇本、第三人稱、一般等待敘述、VRM／function command與risk cue fail closed，
-safety route優先。先做source-disjoint中英日契約，再隔離重播B42四輪核對日文surface、trace/node與0 fact write；B42本身不重新評分。
+最小批次需至少3個四輪case、中文／英文／日文各1，且不得複製B33措辭：一案測no-advice＋共同情緒反應，一案測正向興奮＋直接社交邀請，一案測關係不確定＋中性觀察。
+每案先固定逐turn required／forbidden semantic acts、evidence span、可接受替代與surface條件；source與annotation分檔，runner只可讀source，generation完成前禁止annotation access。
+同時固定case-order selection、future-turn manifests、content overlap audit與0-call validation。B44只凍結資料與評分承諾，不生成、不改產品、不宣稱holdout或winner。
 
 ## 工作環境
 
