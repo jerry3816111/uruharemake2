@@ -2,22 +2,23 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B30 prospective exact-evidence judge schema hardening
+## 唯一下一步：P3-B31 explicit shared-amusement surface authority
 
-狀態：**P3-B28 output lock PASS；P3-B29 blind diagnostic INCONCLUSIVE且禁止重試。** B28在commit `68fcf0f`鎖定8個outputs：
-product 1 call、direct 4 calls、合計1,923 prompt／235 completion tokens、43.946028秒，所有generation checks通過。B29依release盲評，
-在第6個item收到非精確`reply_quote`後fail closed；5/8有效、coverage 62.5% < 95%，6 calls全核帳，0 retry。partial scores不可判勝負，
-B28 hash未變。詳見`analysis/p3_b29_case06_native_diagnostic_grade_failure_2026-09-17.md`。
+狀態：**P3-B30 prospective judge contract PASS（offline only）。** scores改成A／B keyed objects，每格slot與完整locked reply由單值enum綁定，
+避免已知不可靠的oneOf；invented／縮短／other-slot／wrong-slot evidence均被schema與validator拒絕。27 contract＋adjacent tests通過，
+0 model／network calls，commit `706ca54`與freeze `research/p3_b30_exact_evidence_judge_contract_freeze_2026-09-17.json`。
+B29仍INCONCLUSIVE且未重試；native qwen3.5對新schema的conformance仍需未來case preflight。
 
-### P3-B30 before 與單一交付
+### P3-B31 before 與單一交付
 
-B29失敗不是generation或network問題，而是native JSON schema只要求`reply_quote`為non-empty string，無法保證model複製鎖定回覆中的精確片段；
-strict validator正確拒絕。B30只做prospective judge contract修正，不能重跑／補完B29，也不能修改其outputs、rubric、threshold或partial result。
+B28 case06 u4的明確輸入`別に困ってない、ただ笑ってほしかっただけ。`得到product輸出`ん、そこもう少しだけ聞かせて。`；
+它在當輪已否定解題並直接要求shared amusement，現有surface卻繼續澄清。這是可見產品缺陷，和B29 judge failure分開。
 
-B30需先離線證明：每個score的`reply_quote`只能是該slot鎖定reply的exact value（或等價deterministic exact-span contract），slot交換後enum也交換；
-invented／other-slot quote被schema或validator拒絕；correction eligibility、AB/BA、分數與evidence-turn rules不變。不得把完整reply evidence宣稱成更細粒度解釋。
+B31只新增bounded current-turn surface authority：當使用者明確表示不需要解題／沒有困擾，並直接要求一起笑或接住笑點時，最後日文應短句加入共同幽默，
+不得再問細節、提供幫忙或延續舊問題。必須重用既有M25／M23與current-authority鏈，不能把一般`笑って`、引用、否定、第三人稱描述或VRM表情指令都當成對話幽默請求。
 
-B30只建立可供下一個尚未執行developer case使用的共用contract、測試與0-call preflight。完成後另選既有未執行case；不得用新schema回頭追B29分數。
+B31成功需有source-disjoint中／英／日正例、否定／引用／模糊／動作指令負例、case06 exposed reproduction、相鄰authority回歸、實際隔離product runtime日文與graph node；
+推測不寫長期事實，B28/B29 artifacts保持immutable。這是exposed product repair，不是fresh advantage evidence；修後仍需新資料驗證。
 
 ## 工作環境
 

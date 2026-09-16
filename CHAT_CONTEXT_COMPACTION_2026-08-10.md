@@ -2353,6 +2353,16 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 下一步B30只prospective harden judge evidence schema，讓未來`reply_quote`由schema綁定該slot exact reply或等價deterministic exact span；
   不重跑B29、不改threshold／rubric／outputs，修正也不等於改善產品理解。
 
+### 7.127 P3-B30 prospective exact-evidence judge contract（2026-09-17）
+
+- B29失敗源是judge evidence serialization：schema只保證non-empty string，validator才發現quote不是該slot locked reply的exact span；不是generation或network故障。
+- 新contract用`score.A`／`score.B` keyed simple objects，`reply_slot`與完整`reply_quote`各用單值enum綁定；避免repository已有證據顯示不可靠的`oneOf`。
+- schema與validator都拒絕invented、shortened、other-slot與wrong-slot evidence；AB／BA會交換binding，correction eligibility、四分數、issue booleans與evidence turn rules不變。
+- 27項contract＋case06／case04 adjacent tests通過，preflight 0 model／network／paid calls；commit `706ca54`，freeze為
+  `research/p3_b30_exact_evidence_judge_contract_freeze_2026-09-17.json`。這只證明offline contract，native qwen3.5 conformance尚未跑。
+- B29永久保持INCONCLUSIVE，不能用新contract回頭補評。下一步B31改真正產品缺陷：case06 u4已明確說只想讓對方笑，product卻繼續澄清；
+  建立bounded shared-amusement current-turn surface authority，先做source-disjoint正負例與隔離runtime，不碰B28/B29。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
