@@ -1,0 +1,39 @@
+{
+  "annotations_accessed": 0,
+  "checks": {
+    "checkpoint_written_before_crash_is_reused": true,
+    "fresh_run_then_complete_reuse_without_recall": true,
+    "intent_only_is_terminal_without_recall": true,
+    "transport_failure_is_terminal_without_retry": true
+  },
+  "claim_boundary": "Deterministic fake-transport checkpoint audit only; no product or direct-baseline generation and no quality evidence.",
+  "evidence": {
+    "complete_reuse": {
+      "first_new_calls": 24,
+      "second_reused": 24,
+      "transport_calls_total": 24
+    },
+    "intent_only": {
+      "resume_contract_code": "p3_b45_intent_without_complete_no_retry",
+      "transport_calls_before_crash": 4
+    },
+    "post_complete_crash": {
+      "resume_new_calls": 19,
+      "resume_reused": 5,
+      "transport_calls_total": 24
+    },
+    "transport_failure": {
+      "first_contract_code": "p3_b45_transport_failure_no_retry",
+      "resume_contract_code": "p3_b45_terminal_failure_no_retry",
+      "transport_calls_total": 1
+    }
+  },
+  "network_calls": 0,
+  "paid_calls": 0,
+  "phase": "P3-B45",
+  "production_database_accessed": false,
+  "real_model_calls": 0,
+  "schema": "uruha_p3_b45_checkpoint_mechanical_audit_v1",
+  "status": "checkpoint_mechanical_audit_pass",
+  "temporary_checkpoint_roots_removed": true
+}
