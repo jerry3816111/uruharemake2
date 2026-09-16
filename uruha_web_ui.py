@@ -363,6 +363,8 @@ WEB_HEAD = """
 </script>
 """
 os.makedirs(WEB_LOG_DIR, exist_ok=True)
+for _web_log_path in {WEB_LOG_JSONL, WEB_LOG_TXT}:
+    os.makedirs(os.path.dirname(_web_log_path), exist_ok=True)
 
 
 def _default_taxonomy_catalog():

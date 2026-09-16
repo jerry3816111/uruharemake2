@@ -2314,6 +2314,13 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - source-disjoint owner correction已由既有M32輸出正確自然日文，故B24不另建競爭權威。21 focused、130 affected、193 P3／route adjacent回歸通過。
 - 這是exposed-development bounded repair，不是fresh holdout、人評、open-domain preference能力或相對baseline優勢；B23仍immutable FAIL。下一步B25只做ephemeral Safari產品表面驗收，若工具拒絕就維持pending，不繞過。
 
+### 7.123 2026-09-16 P3-B25：Safari聊天與runtime node graph完成同輪交付
+
+- 初次Safari實測聊天泡泡正確，但自訂temporary log parent不存在，Gradio在final graph payload前`FileNotFoundError`；Web UI現在會建立resolved JSONL／TXT parent，nested override subprocess回歸通過。
+- 全新ephemeral DB／log重跑後，Safari顯示`あんたが好みって言ってたのはブラックコーヒー。`，可展開`"speaker_qualified_fact_p3"`，順序位於selected plan與utterance前；隔離JSONL同時為matched contract、0 planner generation、2 chunks／3 lightweight updates／1 full graph commit。
+- 22 focused與131 affected回歸通過；local server停止、本次新增Safari分頁關閉、兩個temporary workspaces移至垃圾桶，其他41個分頁未動。Safari CUA未提供screenshot，證據為accessibility tree與matching runtime log。
+- 這仍是B24 exposed-case browser delivery evidence，不是fresh comparison。下一步B26只從既有凍結且未執行的P3-B2 source-only corpus選case並freeze；不得先讀annotation或為修正現寫有利題目。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

@@ -2,25 +2,24 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B25 isolated Safari product surface acceptance
+## 唯一下一步：P3-B26 pre-existing source-only fresh case selection and freeze
 
-狀態：**P3-B24 bounded exposed-development repair PASS。** 第一人稱過去偏好問句現在只用already-selected、明確第一人稱、
-category相符且唯一的記憶證據回答；缺失、多義、第三人稱或無安全日文對應時不猜。actual product隔離路徑把英文偏好問句輸出為
-`あんたが好みって言ってたのはブラックコーヒー。`，0 model call，graph有唯一且有連線的raw-free B24 node。21 focused、
-130 affected及193 P3／route adjacent tests通過。詳見`analysis/p3_b24_speaker_qualified_preference_recall_acceptance_2026-09-16.md`。
-B23仍是immutable gate FAIL，未重跑、未改輸出、未重評。
+狀態：**P3-B25 Safari產品表面驗收PASS。** 首輪發現environment-overridden Web log目錄未建立，導致聊天泡泡正確但最終graph payload
+在log write中斷；最小修正後以全新ephemeral DB／logs重跑，Safari聊天顯示`あんたが好みって言ってたのはブラックコーヒー。`，
+頁面可展開`"speaker_qualified_fact_p3"` node，並和隔離JSONL的matched contract、0 planner generation、1次full graph commit一致。
+22 focused與131 affected通過；server、分頁與temporary workspaces均已清理。詳見
+`analysis/p3_b25_safari_product_surface_acceptance_2026-09-16.md`。這仍是exposed-case UI evidence，不是fresh comparison。
 
-### P3-B25 before 與單一交付
+### P3-B26 before 與單一交付
 
-B24已通過函式、actual product entry與runtime graph的ephemeral subprocess證據，但尚未經瀏覽器真實表面驗收。
-歷史Safari曾被工具拒絕；本輪若現有Safari控制可用，先以全新temporary DB／log／adaptive path啟動單一local product instance，
-只執行一個source-disjoint偏好回溯流程，核對聊天泡泡與頁面node graph和runtime JSON一致，再停止server並刪除ephemeral狀態。
+B24／B25只證明已曝光失敗的bounded機制與Web交付修好；不能用同案再跑一次宣稱泛化或優勢。B26先只讀既有P3-B2凍結、尚未執行的
+source-only corpus，不讀對應annotations／targets，選一個能測speaker-qualified跨輪記憶且未被B23／B24語句曝光的case；若沒有合格case就明確FAIL並停止，
+不得現寫對修正有利的題目再叫holdout。
 
-B25是驗收層，不新增能力變因、不修改B24分類或表面文字、不執行model generation、不碰正式DB，也不把瀏覽器展示當fresh holdout／人評／優勢證據。
-若Safari控制仍拒絕，保留精確阻擋證據並把Safari層維持pending，不用其他UI自動化假稱通過。
+B26交付只包含source eligibility audit、source projection、digest、不可變output-lock config、成本上限與release前preflight；0 generation／judge／annotation access。
+product與direct沿用相同B23 zero-call-aware accounting、同模型／generation params／共同history條件，不改baseline instruction、不改surface gate、不重跑B23。
 
-若真實頁面無法安全注入所需selected memory evidence，B25只做既有可重現案例的頁面渲染，不為了通過而讀寫正式記憶；
-此時能力證據仍以B24 subprocess為準，Safari只驗可見聊天與圖的呈現一致性。
+只有完成implementation-freeze review與release commit後，後續單獨一步才可做一次、no-retry dual-condition generation；B26本身不看結果。
 
 ## 工作環境
 
