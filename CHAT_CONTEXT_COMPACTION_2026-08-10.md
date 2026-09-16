@@ -2385,6 +2385,15 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 證據只放行未來prospective case使用B30 schema；不證明rubric、人評、holdout或UruhaBrain優勢。下一步B33須先凍結新source-only cases，
   annotation與generation仍不可同時建立，不能重用已曝光B2 cases冒充fresh evidence。
 
+### 7.130 P3-B33 prospective source-only case freeze（2026-09-17）
+
+- 舊B2六案皆已曝光，B26又確認沒有合法fresh舊案；B33因此在任何output／annotation前新建並以commit `a1ca9be`固定source-only batch。
+- 資料為3 cases／12 user turns／6 sessions，中英日各1與3個不同語用family；12個view逐輪只允許current＋prior turns，future-turn counts為3／2／1／0。
+- verifier確認和B2 24 turns的exact／normalized文字重用0，所有ID／hash／session唯一且一致，case中gold reply／score／rubric／winner／condition preference／
+  solution rule／annotation payload皆為0。8 tests通過，0 annotation／generation／network／paid calls。
+- 這是B31/B32後由implementation task撰寫的prospective developer data；先凍結可防止看output後改題，但不是formal temporal holdout或independent human sample。
+- 下一步B34依固定case順序先為case01建立雙condition no-retry output-lock contract與0-call preflight；annotation繼續不存在，不能先改產品適配新題。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

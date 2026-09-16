@@ -2,23 +2,23 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B33 prospective source-only case freeze
+## 唯一下一步：P3-B34 prospective case01 output-lock contract
 
-狀態：**P3-B32 exact-evidence native conformance PASS。** 前註冊／release後只執行一次AB＋BA；2 intents／2 completes／0 failure／0 retry，
-948 prompt＋496 completion tokens、28.044645秒、2 localhost calls、0 paid。兩order的A／B slot與entire reply exact quote皆符合B30 schema；
-B29 hash不變且未重評。這只放行未來prospective judge transport，不是產品品質、holdout、人評或advantage結果。
+狀態：**P3-B33 prospective source-only freeze PASS。** commit `a1ca9be`先固定3 cases／12 turns／6 sessions，中英日各1、3 distinct families、
+12個逐輪future-turn封鎖views；與B2 24 turns exact／normalized重用0，gold／score／rubric／preference／annotation payload 0。
+8 verifier tests通過，0 annotation／generation／network／paid。這是developer-authored prospective資料，不是formal temporal holdout。
 
-### P3-B33 before 與單一交付
+### P3-B34 before 與單一交付
 
-B2原有六個developer-smoke cases都已在B6–B29執行、評分或暴露給修正；B26已證明沒有可合法重標為fresh的舊source-only同家族案例。
-因此即使B31修正與B32 judge transport通過，也沒有未曝光案例可檢查是否generalize，不能回收舊case冒充新證據。
+B33已凍結新source但尚無generation contract；直接跑完整3 cases會一次放出過大call budget，也會讓失敗難以定位。依固定case順序先處理case01
+`p3-prospective-v2-overwhelm-company-zh`，不能依預期好壞挑case，也不能先讀或建立annotation。
 
-B33只建立並凍結新的source-only prospective developer batch；在commit完成前不得建立／讀取annotation、不得生成output、不得跑judge。
-cases需與B2文字和情境不同，至少覆蓋三語與多輪「字面回覆不夠」情境；future turns只能在同case逐輪執行時解鎖，不能預先暴露給任一condition。
-source需有case／turn IDs、language、observable setup、surface-safety expectation與資料角色，但不能含gold reply、分數、condition偏好或解題規則。
+B34只建立case01 product-system vs full-history-direct output-lock contract與offline preflight；沿用B27/B28同模型、同generation params、同surface gate、
+同逐輪visible prefix、session restart與no-retry checkpoint規則。product可使用自身凍結機制與記憶，direct只得到當輪允許的共同可見history；每輪未來turn維持鎖住。
+不得新增annotation、不得生成output、不得修改B33 source或B31產品來適配case01。
 
-B33成功需有source schema verifier、與B2 exact／normalized文本去重、至少3個case／12個user turns／中英日各1、逐輪future-turn封鎖manifest、0 model／network calls，
-並在source-only commit中封存hash。這仍是developer-authored prospective資料，不是formal temporal holdout；下一步才可另凍結generation contract，annotation必須繼續封存。
+B34成功需凍結case01 projection hash、exact 4 views、兩condition資源上限、intent-before-call／complete-or-terminal-failure、localhost-only、0 retry、相同模型與surface checks；
+preflight需確認B33 source/freeze hash、B32 judge result hash與0 annotation access，但B34本身仍必須是0 generation／network calls。下一步經獨立release才可執行一次output lock。
 
 ## 工作環境
 
