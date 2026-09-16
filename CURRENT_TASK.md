@@ -2,18 +2,19 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B42 prospective case03 one-time output lock
+## 唯一下一步：P3-B43 explicit wait-and-see authority
 
-狀態：**P3-B41 contract PASS（0 call）。** B33 index 2第三案、quotation-aware v2 gate、paired views、future locks、u3 restart、
-同模型／資源與no-retry界線已在commit `ce585b2`前固定；14 preflight gates通過，未生成、未讀annotation。
+狀態：**P3-B42 structural output lock PASS，product advantage未成立。** 5次本機call、1,846 prompt＋269 completion tokens、42.563107秒，
+8/8 records與所有surface／pairing／restart／cleanup gate通過，0 retry／annotation。產品u1過度判成婉拒，u4忽略明示的`今回は様子見って一緒に整理して`；
+direct雖冗長，u4較接近要求。這是新prospective負結果，不能重跑。
 
-### P3-B42 before 與單一交付
+### P3-B43 before 與單一交付
 
-B42建立最小case03 wrapper，重用B38 accounting與current engine，但把result success key改綁quotation-aware surface；先測試、commit，
-再建立獨立release commit並核對全部hash。只允許一次localhost no-retry run，逐turn先寫intent；任一失敗保留且不重跑。
+B43只處理u4明示response-form，不同時修u1 implicit inference：必須同時出現「不要樂觀保證／勵志安慰」與「一起整理成先觀察／wait and see」才選取。
+輸出應明確保留兩側不確定性，例如不判定「一定有希望」或「就是拒絕」，只把當前狀態整理為觀察中。
 
-成功也只鎖8個outputs與trace／memory／cost證據，不開annotation、不宣稱winner。若產品出現新的明確失敗，先保存為新反例；
-不得回頭改B33 source或用case01/02的repair重跑舊結果。
+不得推測對方心理、不得把關係判斷寫成事實或長期記憶、不得新增model call。否定、引用／劇本、第三人稱、一般等待敘述、VRM／function command與risk cue fail closed，
+safety route優先。先做source-disjoint中英日契約，再隔離重播B42四輪核對日文surface、trace/node與0 fact write；B42本身不重新評分。
 
 ## 工作環境
 
