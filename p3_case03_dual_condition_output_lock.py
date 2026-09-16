@@ -25,7 +25,7 @@ from p3_product_comparison import (
     run_condition,
     write_new_json,
 )
-from p3_strict_visible_surface import strict_japanese_visible_surface_contract
+from p3_strict_visible_surface_v2 import strict_japanese_visible_surface_contract
 from p3_product_worker import (
     LocalOllamaQwenStageCounter,
     LocalQwenTokenizerCandidate,

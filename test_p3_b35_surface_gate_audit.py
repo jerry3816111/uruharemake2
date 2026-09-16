@@ -12,6 +12,9 @@ from p3_b35_surface_gate_audit import (
 )
 from p3_product_comparison import shared_visible_surface_contract
 from p3_strict_visible_surface import strict_japanese_visible_surface_contract
+from p3_strict_visible_surface_v2 import (
+    strict_japanese_visible_surface_contract as quotation_aware_surface_contract,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -34,10 +37,10 @@ def test_strict_contract_accepts_machine_clean_japanese_surface():
     assert all(strict.values())
 
 
-def test_future_dual_condition_engine_is_bound_to_strict_surface_contract():
+def test_future_dual_condition_engine_is_bound_to_latest_strict_surface_contract():
     assert (
         output_engine.strict_japanese_visible_surface_contract
-        is strict_japanese_visible_surface_contract
+        is quotation_aware_surface_contract
     )
 
 

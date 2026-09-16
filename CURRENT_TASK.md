@@ -2,22 +2,19 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B39 quotation-aware immutable surface audit
+## 唯一下一步：P3-B40 explicit playful-guess authority
 
-狀態：**P3-B38一次性執行FAIL retained，未重跑。** 8 intents／8 completes，product 3＋direct 4＝7次本機呼叫，
-2,730 prompt＋483 completion tokens，41.877593秒；除strict surface外所有結構gate通過，0 annotation／production access、workspace已移除。
+狀態：**P3-B39 validator repair PASS；B38原FAIL保持。** immutable result與8/8輸出hash核對完成，原gate 1 fail；quotation-aware audit為8 pass／0 fail。
+v1 strict檔保留供B37/B38重現，future engine改綁v2。0 model／network／annotation，未重跑；comparison-quality readiness仍為false。
 
-唯一surface failure是direct u3自然句中的`「配達中」`；現有predicate把任何引號都當translation wrapper，屬validator false positive。
-同時保留產品負例：u4明示`Guess what I'm going to photograph first`，product卻回泛用陪伴，沒有執行playful guess；direct至少維持攝影主題但也沒有猜。
+### P3-B40 before 與單一交付
 
-### P3-B39 before 與單一交付
+B38 exposed u4明示`Don't calm me down—I'm excited. Guess what I'm going to photograph first.`，但product回`そっか。まあ、今はうちがここにいる。`。
+目前current-turn response authority能處理no-advice、shared amusement等形式，尚無「明示不要安撫＋邀請猜一個接下來行動」的typed route，安全presence因而壓過使用者要求。
 
-B39只修machine-observable surface語義：句中引用日文詞彙可通過；整段被引號包裝、`英語版／中国語版／日本語版:`等翻譯包裝仍拒絕。
-先加正負契約測試，再對immutable B38 result與8個output hashes做0-call audit。B38原始status不得改寫；audit可標明「生成完整但原gate假陽性」，
-不得因此宣稱quality PASS或winner。修正後predicate只供未來run使用。
-
-B39封存後，下一個產品交付是exposed-development的explicit playful-guess authority：只在目前句明確邀請猜測時，產生一個克制、可被否定的日文猜測；
-不得把猜測寫成事實或長期偏好，且需保留安全、否定、引用、第三人稱、VRM command等fail-closed邊界。
+B40只新增一個bounded current-turn authority：必須同時有明示positive arousal／拒絕安撫，以及第一人稱、當前直接邀請猜測；輸出一個克制的日文猜測並保留可被否定餘地。
+不得從歷史自行補成私密事實、不得寫長期偏好、不得新增model call。否定、引用／劇本、第三人稱、一般問句、VRM／function command與self-harm cue都fail closed；
+safety route優先。先做source-disjoint中英日正反契約，再隔離重播B38四輪，核對trace/node與0 fact write；這是exposed repair，不是case02重新評分。
 
 ## 工作環境
 
