@@ -2363,6 +2363,17 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - B29永久保持INCONCLUSIVE，不能用新contract回頭補評。下一步B31改真正產品缺陷：case06 u4已明確說只想讓對方笑，product卻繼續澄清；
   建立bounded shared-amusement current-turn surface authority，先做source-disjoint正負例與隔離runtime，不碰B28/B29。
 
+### 7.128 P3-B31 explicit shared-amusement surface authority（2026-09-17）
+
+- B28 case06 u4明確否定解題並要求一起笑，product卻回`ん、そこもう少しだけ聞かせて。`；根因是M25只有tease／joke request，
+  沒有辨識`no solve／no trouble + direct shared amusement`這個兩子句當輪回覆權限。
+- 新product-only adapter只在兩個可觀察子句同時出現時選取；一般`笑って`、否定、引用／腳本、第三人稱、VRM表情命令與protected risk都fail closed。
+  safety runtime route仍優先；不推測穩定幽默偏好或私人心理，不加model call，不寫fact memory。
+- case06四輪隔離產品重播後回覆為`あー、そっちね。解決じゃなくて一緒に笑ってほしかったのか。なにそれ、ちょっと笑う。`；
+  deterministic planner、M23／M25 matched、唯一相連`shared_amusement_authority_p3` graph node、普通turn episode以外0 fact writes。
+- 13 focused＋1 isolated runtime＋101 affected tests通過。這是exposed product repair，不是implicit humor、fresh holdout、人評或baseline advantage。
+- 下一步B32先做B30新exact-evidence schema的native qwen3.5 AB／BA no-retry conformance canary；B29仍永久INCONCLUSIVE，不能回頭補評。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

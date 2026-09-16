@@ -1,24 +1,25 @@
 # 目前任務卡
 
-更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B31 explicit shared-amusement surface authority
+## 唯一下一步：P3-B32 prospective judge native-schema conformance canary
 
-狀態：**P3-B30 prospective judge contract PASS（offline only）。** scores改成A／B keyed objects，每格slot與完整locked reply由單值enum綁定，
-避免已知不可靠的oneOf；invented／縮短／other-slot／wrong-slot evidence均被schema與validator拒絕。27 contract＋adjacent tests通過，
-0 model／network calls，commit `706ca54`與freeze `research/p3_b30_exact_evidence_judge_contract_freeze_2026-09-17.json`。
-B29仍INCONCLUSIVE且未重試；native qwen3.5對新schema的conformance仍需未來case preflight。
+狀態：**P3-B31 exposed product repair PASS。** case06四輪隔離重播後，u4由舊輸出`ん、そこもう少しだけ聞かせて。`修成
+`あー、そっちね。解決じゃなくて一緒に笑ってほしかったのか。なにそれ、ちょっと笑う。`；deterministic route、0 general planner call，
+M23／M25 surface matched，唯一相連graph node，0 fact-memory write。13 focused＋1 actual runtime＋101 affected tests通過。
+這只修正已曝光的明確shared-amusement act；不是implicit humor、fresh advantage或人評證據。
 
-### P3-B31 before 與單一交付
+### P3-B32 before 與單一交付
 
-B28 case06 u4的明確輸入`別に困ってない、ただ笑ってほしかっただけ。`得到product輸出`ん、そこもう少しだけ聞かせて。`；
-它在當輪已否定解題並直接要求shared amusement，現有surface卻繼續澄清。這是可見產品缺陷，和B29 judge failure分開。
+B30只用deterministic fixtures證明新exact-evidence schema／validator contract；B29證明舊schema在真實native qwen3.5:9b會產生
+non-exact quote而fail closed。新schema能否被同一native structured-output transport可靠接受仍未知，不能直接拿新case評分。
 
-B31只新增bounded current-turn surface authority：當使用者明確表示不需要解題／沒有困擾，並直接要求一起笑或接住笑點時，最後日文應短句加入共同幽默，
-不得再問細節、提供幫忙或延續舊問題。必須重用既有M25／M23與current-authority鏈，不能把一般`笑って`、引用、否定、第三人稱描述或VRM表情指令都當成對話幽默請求。
+B32只做prospective native-schema conformance canary：用與任何developer/formal case無關的合成日文reply pair，依B30凍結schema做AB／BA各一次、
+strict no-retry。只判斷transport是否接受keyed A／B objects、單值enum slot與entire exact reply quote，並完整核帳intent／complete／failure、token與latency；
+不得開B29重評、不得評B31品質或產生研究勝負。
 
-B31成功需有source-disjoint中／英／日正例、否定／引用／模糊／動作指令負例、case06 exposed reproduction、相鄰authority回歸、實際隔離product runtime日文與graph node；
-推測不寫長期事實，B28/B29 artifacts保持immutable。這是exposed product repair，不是fresh advantage evidence；修後仍需新資料驗證。
+B32成功需先凍結config／prompt／schema hash與2-call上限，再經release執行；兩個order都必須完成且通過既有strict validator，evidence quote只能是該slot完整reply。
+任一transport、schema或validation失敗即保留INCONCLUSIVE並停止，不重試、不換弱schema追結果。即使PASS也只放行未來新case評分工具，不證明產品優勢。
 
 ## 工作環境
 
