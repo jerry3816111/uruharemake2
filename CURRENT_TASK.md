@@ -1,25 +1,26 @@
 # 目前任務卡
 
-更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B23 fresh case05 output lock with zero-call-aware accounting
+## 唯一下一步：P3-B24 bounded speaker-qualified fact surface repair
 
-狀態：**P3-B22 bounded repair PASS；B20/B21負結果不變，仍無產品品質優勢結論。** M39現在把同輪的「允許玩笑」與
-「玩笑不授權行動／命令」組成typed observable concept；中英日actual product fast path皆輸出
-`ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。`，0 model／network calls，graph節點在utterance前。
-73 affected＋182 P3/adjacent regressions通過。詳見`analysis/p3_b22_humor_nonconsent_surface_acceptance_2026-09-15.md`。
+狀態：**P3-B23完整執行但gate FAIL，原樣保留且不得重跑。** 8 intents／8 completions、product 2＋direct 4共6個actual
+provider/network calls均精確核帳，證明product合法0-call turn不應被任意minimum判失敗；2,285 prompt＋381 completion tokens，
+51.232715秒，0 retry／paid／annotation／production DB access。唯一contract failure是direct u3混入Latin，故case05不進judge。
+product u3/u4都退化成`ん、その話もう少し聞かせて。`。詳見`analysis/p3_b23_case05_output_lock_failure_2026-09-16.md`。
 
-### P3-B23 before 與單一交付
+### P3-B24 before 與單一交付
 
-選下一個未生成的developer case05 `p3-smoke-speaker-memory-en`：4輪英文、u3前跨session。u1分開Mina的藍色馬克杯與使用者的透明杯偏好，
-u2加入Mina下月逛夜市，u3跨session問使用者自己的杯子偏好，u4再明確糾正夜市計畫屬於Mina。這測speaker-qualified memory與跨session歸屬。
+B23 trace顯示檢索層已取回u1/u2，u3 planner core也含正確偏好；但現有P2 speaker adapter只支援quoted-source問句，
+「我說過偏好哪種東西」被標為`background_only`，沒有visible authority。self-monitor修復又產生內部指令句，language guard正確fail-closed成泛用澄清；
+u4明確other-vs-self owner correction也未分類，重複同一fallback。
 
-先建立case05 source-only projection、config／tests／zero-call preflight。B20證明product可合法有0-call deterministic turn，因此B23只移除錯誤的
-`product_provider_calls_min=4`必要條件；仍要求每個實際intent／provider／network call逐一核帳、總上限16、direct固定4、每輪budget與failure retention。
-其他model、prompt、persona、history、restart、annotation封閉與隔離規則沿用B20，這是唯一比較設計修正。
+單一核心變因新增product-only bounded `speaker_qualified_fact` contract：只在當輪是明確第一人稱過去偏好回溯，且already-selected
+recent／working memory存在唯一、category相符的第一人稱偏好證據時回答；或當輪明確陳述「此事屬於另一人而非我」時自然承認owner correction。
+候選缺失／多義／speaker不明就abstain；safety route不覆蓋；不掃unselected DB、不讓model猜speaker、不新增事實性長期記憶，trace只留typed fact、digest與provenance。
 
-release後一次鎖4輪product＋4輪direct-v2；不讀case05 annotation、future／confirmation／production DB，不重用任何B20/B21 call。
-8 outputs、paired hash、surface、restart、isolation與exact accounting全通過並commit，才可另開case05 diagnosis。任何失敗原樣保留且不重跑。
+驗收先做中英日source-disjoint正例、third-party／metalinguistic／缺失／多義負例、quoted-source舊能力與語言guard回歸；再用ephemeral
+actual product做跨session新案例，核對自然日文、唯一graph node、來源、0正式DB與不污染。B23 locked output／baseline／annotation／分數不可修改或重評。
 
 ## 工作環境
 

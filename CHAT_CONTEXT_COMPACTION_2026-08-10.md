@@ -2299,6 +2299,14 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - actual `uruha_web_ui_product`在ephemeral workspace連跑中英日三輪，皆0 model／network、0 rejection，M39 node唯一且位於utterance前，正式DB未用；73 affected與182 P3/adjacent回歸通過。
 - 這是exposed-case repair，不是新holdout或優勢證據；B20/B21仍維持failed／negative。下一步P3-B23以case05 speaker-qualified跨session memory做新output lock，並修正B20暴露的錯誤call-minimum設計。
 
+### 7.121 2026-09-16 P3-B23：zero-call核帳修正有效，但case05 output lock因共同surface失敗
+
+- fresh case05完成product/direct各4輪；8 intents／8 completions與product 2＋direct 4共6個actual provider/network calls完全一致，0 retry／paid／annotation／production DB；2,285 prompt＋381 completion tokens、51.232715秒。
+- 這證明任意`product_provider_calls_min=4`錯誤；合法deterministic turn可以0-call，但仍要有signed intent／completion並逐筆核帳。
+- 唯一contract failure是direct u3含`Plain glass cups` Latin，故不進judge；product u3/u4皆退化成`ん、その話もう少し聞かせて。`，不能主張比較優勢。
+- trace定位：u3已取回正確speaker-qualified episode且planner core正確，但既有P2只處理quoted-source，未給偏好回溯visible authority；self-monitor instruction leak再被language guard安全降級。B23結果commit `362152a`後不得重跑／改分。
+- 下一步P3-B24只新增already-selected evidence上的bounded speaker-qualified fact contract，處理明確第一人稱偏好回溯與other-vs-self owner correction；缺失／多義就abstain，不碰baseline／locked output／annotation。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
