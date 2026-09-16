@@ -2,19 +2,17 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B44 prospective v3 predeclared comparison batch
+## 唯一下一步：P3-B45 prospective v3 immutable execution contract
 
-狀態：**P3-B43 bounded exposed repair PASS。** B42 u4由泛用presence改為不判希望／拒絕、只整理成暫時觀察；0新增model call、0 fact write、graph已連接。
-12 focused＋1隔離四輪runtime＋100相鄰回歸通過；B42未重跑。B33三案均已曝光，不再可當新驗證。
+狀態：**P3-B44 data＋rubric freeze PASS。** 新的中／英／日三案共12輪已在generation前固定source、逐輪required／forbidden acts、evidence spans、acceptable alternatives與uncertainty boundary；13項凍結測試通過，0 generation。產品快照仍為`0cab07b`，禁止首跑前依題目調整產品。
 
-### P3-B44 before 與單一交付
+### P3-B45 before 與單一交付
 
-B35／B38／B42提供了三種真實失敗：語言gate漏洞、明示社交行動被presence壓過、模糊關係被過度斷定；後兩者已做exposed repair，仍沒有未曝光優勢證據。
-B44建立全新source-only v3批次，generation前同時凍結獨立annotation/rubric commitment，避免看完outputs才訂標準。
+B44只建立可追溯評測承諾，沒有runner或任何品質結果。source hash為`8980e85d...011d`、annotation hash為`c72c648b...603f`；兩者和產品snapshot必須由後續release逐byte綁定。
+B45建立v3整批的一次性、crash-safe、fail-closed execution contract；不是執行generation，也不能打開annotation。
 
-最小批次需至少3個四輪case、中文／英文／日文各1，且不得複製B33措辭：一案測no-advice＋共同情緒反應，一案測正向興奮＋直接社交邀請，一案測關係不確定＋中性觀察。
-每案先固定逐turn required／forbidden semantic acts、evidence span、可接受替代與surface條件；source與annotation分檔，runner只可讀source，generation完成前禁止annotation access。
-同時固定case-order selection、future-turn manifests、content overlap audit與0-call validation。B44只凍結資料與評分承諾，不生成、不改產品、不宣稱holdout或winner。
+contract需固定case／condition／turn順序、同模型與generation config、共同可見history、session boundary、token／latency accounting、輸出hash與checkpoint格式；annotation path不得成為runner參數或import依賴。
+每個call在transport前留下invocation intent；complete checkpoint可精確resume，intent-only或不一致狀態必須terminal fail，禁止自動retry與替代provider。先用fake transport證明fresh run、完整checkpoint reuse、intent-only拒絕、source／product／config hash drift拒絕；B45為0 real call，不改產品，不評分。
 
 ## 工作環境
 
