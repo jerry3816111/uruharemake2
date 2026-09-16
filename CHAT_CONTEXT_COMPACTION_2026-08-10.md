@@ -2321,6 +2321,13 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 22 focused與131 affected回歸通過；local server停止、本次新增Safari分頁關閉、兩個temporary workspaces移至垃圾桶，其他41個分頁未動。Safari CUA未提供screenshot，證據為accessibility tree與matching runtime log。
 - 這仍是B24 exposed-case browser delivery evidence，不是fresh comparison。下一步B26只從既有凍結且未執行的P3-B2 source-only corpus選case並freeze；不得先讀annotation或為修正現寫有利題目。
 
+### 7.124 2026-09-16 P3-B26：既有source無未曝光speaker-memory候選，資格審核FAIL
+
+- B2 source-only六案只有case05屬`speaker_qualified_memory`；它已在B23執行，失敗trace直接用於B24修正並在B24/B25重驗，故未執行且未被repair曝光的候選為0。
+- 沒有把其他family重新命名、沒有新寫有利題目；未建立projection／config／release。annotation／target未讀，generation／judge／network／paid／正式DB皆0，B23未重跑或改分。
+- 這只證明目前資料庫存不足以提供B24 fresh validation，不代表B24無效。B24仍只能主張exposed bounded repair。
+- 為繼續整體P3，下一步B27可凍結原B2已存在且無case-specific generation artifact的case06 `unknown_and_topic_change`；它只能叫pre-existing unexecuted developer smoke，不是B24 generalization或formal holdout。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

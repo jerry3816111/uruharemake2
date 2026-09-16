@@ -2,24 +2,23 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B26 pre-existing source-only fresh case selection and freeze
+## 唯一下一步：P3-B27 case06 source-only output-lock freeze
 
-狀態：**P3-B25 Safari產品表面驗收PASS。** 首輪發現environment-overridden Web log目錄未建立，導致聊天泡泡正確但最終graph payload
-在log write中斷；最小修正後以全新ephemeral DB／logs重跑，Safari聊天顯示`あんたが好みって言ってたのはブラックコーヒー。`，
-頁面可展開`"speaker_qualified_fact_p3"` node，並和隔離JSONL的matched contract、0 planner generation、1次full graph commit一致。
-22 focused與131 affected通過；server、分頁與temporary workspaces均已清理。詳見
-`analysis/p3_b25_safari_product_surface_acceptance_2026-09-16.md`。這仍是exposed-case UI evidence，不是fresh comparison。
+狀態：**P3-B26 eligibility audit FAIL並原樣保留。** B2 source-only corpus只有case05屬`speaker_qualified_memory`，但它已在B23執行，
+且失敗trace直接用於B24修正與B24/B25驗收；符合未執行、未被repair曝光的候選為0。未讀annotation／target，0 generation／judge／network／paid／正式DB，
+未建立projection、config或release。詳見`analysis/p3_b26_preexisting_source_eligibility_failure_2026-09-16.md`與同名JSON audit。
+B24能力因此仍只有exposed-case證據，不能宣稱fresh generalization。
 
-### P3-B26 before 與單一交付
+### P3-B27 before 與單一交付
 
-B24／B25只證明已曝光失敗的bounded機制與Web交付修好；不能用同案再跑一次宣稱泛化或優勢。B26先只讀既有P3-B2凍結、尚未執行的
-source-only corpus，不讀對應annotations／targets，選一個能測speaker-qualified跨輪記憶且未被B23／B24語句曝光的case；若沒有合格case就明確FAIL並停止，
-不得現寫對修正有利的題目再叫holdout。
+整體P3仍可用另一個既有、未執行的developer-smoke family前進。repository case-specific artifacts顯示case03／04／05已有output lock，
+case06 `p3-smoke-unknown-topic-ja`沒有case-specific generation artifact；它是B2之前凍結的source-only日文跨session四輪案例，測unknown reference澄清後換話題。
+B27只把case06從原source做exact projection並freeze zero-call-aware dual-condition output lock，不讀annotation，不執行generation。
 
-B26交付只包含source eligibility audit、source projection、digest、不可變output-lock config、成本上限與release前preflight；0 generation／judge／annotation access。
-product與direct沿用相同B23 zero-call-aware accounting、同模型／generation params／共同history條件，不改baseline instruction、不改surface gate、不重跑B23。
+B27必須沿用B23 runner與核帳契約：product合法0–16 calls、direct精確4 calls、總量最多20、8 intents／8 completions、no retry；同模型、共同history、
+generation params與surface gate不變。驗收只證明source/config/release前preflight完整，不把case06稱B24 generalization、formal holdout或人評。
 
-只有完成implementation-freeze review與release commit後，後續單獨一步才可做一次、no-retry dual-condition generation；B26本身不看結果。
+只有source digest、未執行證據、config hash、runner hash、model digest與0-call preflight全部通過並先commit，才另建release commit；B27本身0 model／network call。
 
 ## 工作環境
 
