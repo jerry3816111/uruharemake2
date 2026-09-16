@@ -2,18 +2,22 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B38 prospective case02 one-time strict output lock
+## 唯一下一步：P3-B39 quotation-aware immutable surface audit
 
-狀態：**P3-B37 strict generation contract PASS（0 call）。** source-order第二案、四輪paired views、future locks、u3 restart、
-strict Japanese gate、call/token上限與8 intents／8 records都已在commit `d58e50e`前固定；15 preflight checks通過，未生成、未讀annotation。
+狀態：**P3-B38一次性執行FAIL retained，未重跑。** 8 intents／8 completes，product 3＋direct 4＝7次本機呼叫，
+2,730 prompt＋483 completion tokens，41.877593秒；除strict surface外所有結構gate通過，0 annotation／production access、workspace已移除。
 
-### P3-B38 before 與單一交付
+唯一surface failure是direct u3自然句中的`「配達中」`；現有predicate把任何引號都當translation wrapper，屬validator false positive。
+同時保留產品負例：u4明示`Guess what I'm going to photograph first`，product卻回泛用陪伴，沒有執行playful guess；direct至少維持攝影主題但也沒有猜。
 
-B37 config不自我授權。B38需建立最小execution wrapper，重用既有engine與B35 zero-call-aware accounting，但把phase、case ID、artifact hashes、
-result path與strict success key明確綁到B37。先跑wrapper tests並commit；再建立separate release commit，核對所有hash後只執行一次no-retry run。
+### P3-B39 before 與單一交付
 
-每輪condition intent必須先於transport落盤；成功或terminal failure都要留下。若任何輸出沒有通過strict日文gate，整案保留failed result且停止後續quality grading，
-不重跑、不修prompt追分。若結構PASS，也只代表8個outputs可安全鎖定，仍不得開annotation或宣稱product advantage。
+B39只修machine-observable surface語義：句中引用日文詞彙可通過；整段被引號包裝、`英語版／中国語版／日本語版:`等翻譯包裝仍拒絕。
+先加正負契約測試，再對immutable B38 result與8個output hashes做0-call audit。B38原始status不得改寫；audit可標明「生成完整但原gate假陽性」，
+不得因此宣稱quality PASS或winner。修正後predicate只供未來run使用。
+
+B39封存後，下一個產品交付是exposed-development的explicit playful-guess authority：只在目前句明確邀請猜測時，產生一個克制、可被否定的日文猜測；
+不得把猜測寫成事實或長期偏好，且需保留安全、否定、引用、第三人稱、VRM command等fail-closed邊界。
 
 ## 工作環境
 
