@@ -23,9 +23,9 @@ from p3_product_comparison import (
     load_design,
     record_condition_wall,
     run_condition,
-    shared_visible_surface_contract,
     write_new_json,
 )
+from p3_strict_visible_surface import strict_japanese_visible_surface_contract
 from p3_product_worker import (
     LocalOllamaQwenStageCounter,
     LocalQwenTokenizerCandidate,
@@ -453,7 +453,7 @@ def run_case(config_path: str | Path, release_path: str | Path, checkpoint_root:
                             "input_sha256": product_view["input_sha256"],
                             "visible_reply": product_reply,
                             "visible_reply_sha256": canonical_sha256(product_reply),
-                            "surface_contract": shared_visible_surface_contract(product_reply),
+                            "surface_contract": strict_japanese_visible_surface_contract(product_reply),
                             "logic": product_turn.get("logic") if isinstance(product_turn, Mapping) else None,
                             "runtime_trace": product_turn.get("runtime_trace") if isinstance(product_turn, Mapping) else None,
                             "memory_snapshot": memory_snapshot,
@@ -505,7 +505,7 @@ def run_case(config_path: str | Path, release_path: str | Path, checkpoint_root:
                     direct_result["turn_id"] = turn["turn_id"]
                     direct_result["session_id"] = turn["session_id"]
                     direct_result["view_sha256"] = direct_view["view_sha256"]
-                    direct_result["surface_contract"] = shared_visible_surface_contract(
+                    direct_result["surface_contract"] = strict_japanese_visible_surface_contract(
                         direct_result["final"]["content"]
                     )
                     direct_rows.append(direct_result)

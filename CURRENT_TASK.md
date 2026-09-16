@@ -2,21 +2,21 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B36 immutable Japanese-surface gate audit
+## 唯一下一步：P3-B37 prospective case02 strict output-lock contract
 
-狀態：**P3-B35一次性output lock已完成，但comparison-quality readiness暫停。** 8 intents／8 completes，product 2＋direct 4＝6次本機呼叫，
-2,323 prompt＋379 completion tokens，43.114338秒，0 retry、0 annotation／confirmation／production DB，隔離workspace已移除。
-四輪雙condition輸出已鎖定，不得重跑追分。
+狀態：**P3-B36已將B35共同表面gate更正為FAIL並封存。** B35 result與8/8輸出hash核對成功；strict gate為7 pass／1 fail，
+失敗是full-history direct u1純中文。0 model／network／annotation、未重跑；generic dual-condition engine已接strict日文predicate。
+B35仍是完整執行與負結果證據，但comparison-quality readiness=false，不得開annotation或算winner。
 
-### P3-B36 before 與單一交付
+### P3-B37 before 與單一交付
 
-B35 runner回報`all_eight_shared_surface_pass=true`，但direct u1實際為純中文：
-`可能是整理房间累了，坐下来休息一下了。继续整理的话，要注意休息哦。`。原因是既有`has_japanese`把任何Han字元都視為日文，
-這是共同表面條件的false positive。這個問題若不先處理，後續評分會把未遵守相同日文輸出條件的pair誤當成公平比較。
+B33 source-order第二案`p3-prospective-v2-excitement-en`尚未生成、沒有annotation；它測試「反覆刷新配送頁」可能被誤讀成焦慮，
+後續明示其實是期待存錢買的相機，最後要求不要安撫而要猜第一張會拍什麼。這能直接測跨輪修正、正向高亢與隱含期待，而非重做case01。
 
-B36只對immutable B35 result做離線audit：驗證result hash與8個輸出hash，要求至少有日文kana、拒絕已知中文／非日文字形、保留其餘既有surface條件，
-逐輪輸出fail reasons。預期且必須保留direct u1 failure；0 model、0 network、0 annotation。接著把嚴格predicate接到未來prospective runner的生成後gate，
-但不得回寫或改稱B35通過。B36完成以前不得開annotation、不得算winner。
+B37先只建立第二案projection、strict雙condition config、future-turn lock與0-call preflight。selection固定為B33 source index 1，不依品質挑選；
+兩條件仍用同qwen2.5 digest、相同visible prefix、相同人格與token上限，product於u3跨session重啟並保留同隔離memory path。
+成功條件明確改為strict machine-observable Japanese surface；0 generation／network／annotation。只有contract、tests與preflight先commit後，
+下一步才可另建release並執行一次no-retry run。
 
 ## 工作環境
 
