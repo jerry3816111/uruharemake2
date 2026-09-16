@@ -2,24 +2,23 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B32 prospective judge native-schema conformance canary
+## 唯一下一步：P3-B33 prospective source-only case freeze
 
-狀態：**P3-B31 exposed product repair PASS。** case06四輪隔離重播後，u4由舊輸出`ん、そこもう少しだけ聞かせて。`修成
-`あー、そっちね。解決じゃなくて一緒に笑ってほしかったのか。なにそれ、ちょっと笑う。`；deterministic route、0 general planner call，
-M23／M25 surface matched，唯一相連graph node，0 fact-memory write。13 focused＋1 actual runtime＋101 affected tests通過。
-這只修正已曝光的明確shared-amusement act；不是implicit humor、fresh advantage或人評證據。
+狀態：**P3-B32 exact-evidence native conformance PASS。** 前註冊／release後只執行一次AB＋BA；2 intents／2 completes／0 failure／0 retry，
+948 prompt＋496 completion tokens、28.044645秒、2 localhost calls、0 paid。兩order的A／B slot與entire reply exact quote皆符合B30 schema；
+B29 hash不變且未重評。這只放行未來prospective judge transport，不是產品品質、holdout、人評或advantage結果。
 
-### P3-B32 before 與單一交付
+### P3-B33 before 與單一交付
 
-B30只用deterministic fixtures證明新exact-evidence schema／validator contract；B29證明舊schema在真實native qwen3.5:9b會產生
-non-exact quote而fail closed。新schema能否被同一native structured-output transport可靠接受仍未知，不能直接拿新case評分。
+B2原有六個developer-smoke cases都已在B6–B29執行、評分或暴露給修正；B26已證明沒有可合法重標為fresh的舊source-only同家族案例。
+因此即使B31修正與B32 judge transport通過，也沒有未曝光案例可檢查是否generalize，不能回收舊case冒充新證據。
 
-B32只做prospective native-schema conformance canary：用與任何developer/formal case無關的合成日文reply pair，依B30凍結schema做AB／BA各一次、
-strict no-retry。只判斷transport是否接受keyed A／B objects、單值enum slot與entire exact reply quote，並完整核帳intent／complete／failure、token與latency；
-不得開B29重評、不得評B31品質或產生研究勝負。
+B33只建立並凍結新的source-only prospective developer batch；在commit完成前不得建立／讀取annotation、不得生成output、不得跑judge。
+cases需與B2文字和情境不同，至少覆蓋三語與多輪「字面回覆不夠」情境；future turns只能在同case逐輪執行時解鎖，不能預先暴露給任一condition。
+source需有case／turn IDs、language、observable setup、surface-safety expectation與資料角色，但不能含gold reply、分數、condition偏好或解題規則。
 
-B32成功需先凍結config／prompt／schema hash與2-call上限，再經release執行；兩個order都必須完成且通過既有strict validator，evidence quote只能是該slot完整reply。
-任一transport、schema或validation失敗即保留INCONCLUSIVE並停止，不重試、不換弱schema追結果。即使PASS也只放行未來新case評分工具，不證明產品優勢。
+B33成功需有source schema verifier、與B2 exact／normalized文本去重、至少3個case／12個user turns／中英日各1、逐輪future-turn封鎖manifest、0 model／network calls，
+並在source-only commit中封存hash。這仍是developer-authored prospective資料，不是formal temporal holdout；下一步才可另凍結generation contract，annotation必須繼續封存。
 
 ## 工作環境
 

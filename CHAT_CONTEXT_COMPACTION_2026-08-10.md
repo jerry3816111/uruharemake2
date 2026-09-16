@@ -2374,6 +2374,17 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 13 focused＋1 isolated runtime＋101 affected tests通過。這是exposed product repair，不是implicit humor、fresh holdout、人評或baseline advantage。
 - 下一步B32先做B30新exact-evidence schema的native qwen3.5 AB／BA no-retry conformance canary；B29仍永久INCONCLUSIVE，不能回頭補評。
 
+### 7.129 P3-B32 prospective exact-evidence native conformance（2026-09-17）
+
+- B32使用完全合成、與developer cases／annotations無關的短日文reply pair，先commit前註冊`4e5fb89`，再由release commit `cb69365`
+  授權qwen3.5:9b native structured output做AB／BA各一次；第一次失敗即停止、0 retry。
+- 真實結果PASS：2 intents／2 completes／0 failure，948 prompt＋496 completion tokens、28.044645秒、2 localhost calls、0 paid；
+  兩order均回傳keyed A／B objects，slot與完整reply quote exact match，finish非length。
+- B29 result SHA保持`f17edab...`且未重評；0 developer case、0 annotation file、0 production DB access。judge回傳的tie只屬合成transport輸出，
+  不是產品品質結果。
+- 證據只放行未來prospective case使用B30 schema；不證明rubric、人評、holdout或UruhaBrain優勢。下一步B33須先凍結新source-only cases，
+  annotation與generation仍不可同時建立，不能重用已曝光B2 cases冒充fresh evidence。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
