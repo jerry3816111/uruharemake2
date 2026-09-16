@@ -2,23 +2,22 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B34 prospective case01 output-lock contract
+## 唯一下一步：P3-B35 prospective case01 one-time output lock
 
-狀態：**P3-B33 prospective source-only freeze PASS。** commit `a1ca9be`先固定3 cases／12 turns／6 sessions，中英日各1、3 distinct families、
-12個逐輪future-turn封鎖views；與B2 24 turns exact／normalized重用0，gold／score／rubric／preference／annotation payload 0。
-8 verifier tests通過，0 annotation／generation／network／paid。這是developer-authored prospective資料，不是formal temporal holdout。
+狀態：**P3-B34 case01 output-lock contract PASS（0 call）。** commit `95cb7f6`先固定第一案projection、雙condition config與preflight；
+18 related tests、14 preflight gates通過，四輪source/history paired、future turns locked、session restart與同隔離memory path固定。
+qwen2.5 digest一致，product 0–16＋direct exact 4、total max 20、8 intents／8 records、0 retry；尚未生成、未讀annotation、config不自我授權。
 
-### P3-B34 before 與單一交付
+### P3-B35 before 與單一交付
 
-B33已凍結新source但尚無generation contract；直接跑完整3 cases會一次放出過大call budget，也會讓失敗難以定位。依固定case順序先處理case01
-`p3-prospective-v2-overwhelm-company-zh`，不能依預期好壞挑case，也不能先讀或建立annotation。
+B34契約已凍結但沒有可執行release；不能直接呼叫既有case06 runner，因其artifact paths、case IDs、phase與result claims皆綁定B27/B28。
+B35需加入最小case01 execution wrapper，重用已驗證的B27/B28 engine與zero-call accounting，不複製或改寫生成邏輯。
 
-B34只建立case01 product-system vs full-history-direct output-lock contract與offline preflight；沿用B27/B28同模型、同generation params、同surface gate、
-同逐輪visible prefix、session restart與no-retry checkpoint規則。product可使用自身凍結機制與記憶，direct只得到當輪允許的共同可見history；每輪未來turn維持鎖住。
-不得新增annotation、不得生成output、不得修改B33 source或B31產品來適配case01。
+B35先完成wrapper tests、artifact hash review與separate release commit，再只執行release允許的一次no-retry output lock。每個condition-turn先寫intent；成功寫complete，
+transport／validation失敗寫terminal failure並停止。保留visible replies、runtime trace、memory snapshot、call/token/latency與cleanup證據；不得新增annotation、不得修改B33/B34或產品追分。
 
-B34成功需凍結case01 projection hash、exact 4 views、兩condition資源上限、intent-before-call／complete-or-terminal-failure、localhost-only、0 retry、相同模型與surface checks；
-preflight需確認B33 source/freeze hash、B32 judge result hash與0 annotation access，但B34本身仍必須是0 generation／network calls。下一步經獨立release才可執行一次output lock。
+B35成功需8/8 visible outputs與surface checks、8 intents／8 completes、所有actual provider／network calls逐一核帳、每輪budget通過、session restart保留路徑、
+ephemeral workspace移除、0 annotation／production access。任一gate失敗就保留failed result且不重試；即使PASS也只先鎖outputs，不可看annotation或宣稱advantage。
 
 ## 工作環境
 

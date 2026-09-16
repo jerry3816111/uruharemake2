@@ -2394,6 +2394,16 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 這是B31/B32後由implementation task撰寫的prospective developer data；先凍結可防止看output後改題，但不是formal temporal holdout或independent human sample。
 - 下一步B34依固定case順序先為case01建立雙condition no-retry output-lock contract與0-call preflight；annotation繼續不存在，不能先改產品適配新題。
 
+### 7.131 P3-B34 prospective case01 output-lock contract（2026-09-17）
+
+- 依B33 immutable order選第一案`p3-prospective-v2-overwhelm-company-zh`，不是按預期quality挑題；projection、config、verifier與preflight先以
+  commit `95cb7f6`固定，仍無任何output或annotation。
+- product-system與full-history-direct四輪使用相同source/history view；current product reply不洩漏給同輪direct，B33 future-turn manifests全匹配；turn3重啟brain但保留
+  同一隔離case memory path。
+- 凍結qwen2.5 digest與generation params；product 0–16 calls、direct exact 4、total max 20，8 intents／8 complete-or-terminal records、0 retry、localhost-only。
+- 18 related tests與14 preflight checks通過；first direct offline prompt 291 tokens，0 generation／network／paid calls，0 annotation／confirmation／production access。
+- B34只是0-call execution contract，不是品質結果。下一步B35新增最小wrapper、先commit separate release，再只跑一次no-retry output lock；失敗保留且不評分。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
