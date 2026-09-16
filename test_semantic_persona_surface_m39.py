@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+import subprocess
+import sys
 
 from uruha_semantic_persona_surface_m39 import (
     inspect_surface_m39,
@@ -105,3 +108,121 @@ def test_formal_register_is_repaired_to_casual_persona():
     assert "formal_register" in trace["violations_before"]
     assert "ください" not in final_reply
     assert inspect_surface_m39("Could you listen?", final_reply, _logic("listen_presence"))["policy_act_match"]
+
+
+def test_humor_permission_does_not_erase_explicit_nonconsent_boundary_across_languages():
+    sources = [
+        "你可以吐槽我，但不要把玩笑當成我答應照做。",
+        "You can tease me, but don't treat a joke as permission to make decisions for me.",
+        "ツッコんでいいけど、冗談を同意したことにしないで。",
+    ]
+    stale_candidate = "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。"
+    for source in sources:
+        final_reply, trace = verify_and_repair_surface_m39(
+            source,
+            stale_candidate,
+            _logic("playful_tease", route="general_conversation"),
+        )
+        assert trace["action"] == "repair"
+        assert "humor_not_action_consent" in trace["source_frame"]["observable_concepts"]
+        assert trace["policy_act_match_after"] is True
+        assert final_reply == "ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。"
+        assert "脳" not in final_reply and "朝" not in final_reply
+        encoded = json.dumps(trace, ensure_ascii=False)
+        assert source not in encoded
+        assert stale_candidate not in encoded
+
+
+def test_humor_or_nonconsent_alone_does_not_activate_combined_boundary():
+    for source in (
+        "吐槽我一下。",
+        "不要把我的玩笑當成同意。",
+        "You can tease me.",
+        "A joke is not consent.",
+        "ツッコんでいいよ。",
+        "冗談は同意じゃない。",
+    ):
+        frame = inspect_surface_m39(
+            source,
+            "脳みそ元気すぎだろ。",
+            _logic("playful_tease", route="general_conversation"),
+        )["source_frame"]
+        assert "humor_not_action_consent" not in frame["observable_concepts"]
+
+
+def test_actual_isolated_product_fast_path_preserves_humor_nonconsent_boundary():
+    program = r'''
+import json
+import tempfile
+from pathlib import Path
+
+from p3_product_comparison import load_design
+from p3_product_worker import (
+    LocalQwenTokenizerCandidate,
+    ProductTransportGate,
+    claim_case_workspace,
+    install_product_transport_gate,
+    network_forbidden,
+    prepare_isolated_environment,
+)
+
+sources = [
+    "你可以吐槽我，但不要把笑話當成我同意你替我決定。",
+    "You can tease me, but don't treat a joke as permission to decide for me.",
+    "ツッコんでいいけど、冗談を同意したことにしないで。",
+]
+with tempfile.TemporaryDirectory(prefix="uruha-b22-product-test-") as temporary:
+    workspace = claim_case_workspace(
+        Path(temporary) / "workspace",
+        "p3-b22-humor-boundary-source-disjoint",
+    )
+    design = load_design("configs/p3_product_comparison_v1.json")
+    env = prepare_isolated_environment(workspace, design)
+    import project_paths
+    project_paths.WEB_LOG_DIR = str(workspace["paths"]["web_logs"])
+    project_paths.WEB_CONVERSATION_LOG_JSONL_PATH = env["URUHA_WEB_LOG_JSONL_PATH"]
+    project_paths.WEB_CONVERSATION_LOG_TXT_PATH = env["URUHA_WEB_LOG_TXT_PATH"]
+
+    with network_forbidden() as network_attempts:
+        import uruha_web_ui_product as product
+        gate = ProductTransportGate(
+            design,
+            LocalQwenTokenizerCandidate(),
+            allow_real_transport=False,
+            provider_binding_verified=True,
+        )
+        install_product_transport_gate(product._brain, gate)
+        brain = product.RUNTIME.get_brain()
+        expected = "ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。"
+        for source in sources:
+            result = brain.run_turn_debug(
+                source,
+                input_context={"input_mode": "text", "acoustic_summary": None},
+            )
+            trace = result["logic"]["semantic_persona_surface_verifier_m39"]
+            blackboard = result["runtime_trace"]["blackboard"]
+            m39_nodes = [row for row in blackboard if row.get("label") == "semantic_persona_surface_verifier_m39"]
+            utterance_index = next(i for i, row in enumerate(blackboard) if row.get("label") == "utterance")
+            m39_index = next(i for i, row in enumerate(blackboard) if row.get("label") == "semantic_persona_surface_verifier_m39")
+            assert result["reply"] == expected
+            assert trace["selected_policy_id"] == "playful_tease"
+            assert "humor_not_action_consent" in trace["source_frame"]["observable_concepts"]
+            assert trace["action"] == "repair" and trace["status"] == "repaired_and_verified"
+            assert trace["policy_act_match_after"] is True
+            assert source not in json.dumps(trace, ensure_ascii=False)
+            assert len(m39_nodes) == 1 and m39_nodes[0]["payload"] == trace
+            assert m39_index < utterance_index
+            assert result["logic"]["visible_language_guard"]["final_reply"] == expected
+    assert gate.budget.attempts == 0 and gate.rejections == []
+    assert network_attempts == []
+    assert Path(product._brain.DB_PATH).resolve() == workspace["paths"]["memory"].resolve()
+print("actual isolated product fast path and runtime graph passed with zero model/network calls")
+'''
+    result = subprocess.run(
+        [sys.executable, "-c", program],
+        capture_output=True,
+        text=True,
+        cwd=Path(__file__).resolve().parent,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "zero model/network calls" in result.stdout

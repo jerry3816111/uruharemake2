@@ -2292,6 +2292,13 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - generation成本同案product 1,747 tokens／38.924088秒、direct 1,527／9.197616秒；產品在此案同時較慢且proxy較差，不能宣稱優勢。
 - B20失敗狀態、原輸出與B21負分皆保留。下一步P3-B22只改M39 current-source humor-vs-consent boundary repair，中英日與隔離runtime驗證；不得重跑或重評B20/B21。
 
+### 7.120 2026-09-15 P3-B22：同輪玩笑邀請與行動同意邊界已可在visible surface合成
+
+- 單一變因只改M39：當前文字同時允許玩笑且否認agreement／permission／compliance時記`humor_not_action_consent`；`playful_tease` repair不再套腦袋模板。
+- 新回覆固定語義為`ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。`；中英日developer variants與6個單側負例通過，trace不留raw dialogue／private-state claim。
+- actual `uruha_web_ui_product`在ephemeral workspace連跑中英日三輪，皆0 model／network、0 rejection，M39 node唯一且位於utterance前，正式DB未用；73 affected與182 P3/adjacent回歸通過。
+- 這是exposed-case repair，不是新holdout或優勢證據；B20/B21仍維持failed／negative。下一步P3-B23以case05 speaker-qualified跨session memory做新output lock，並修正B20暴露的錯誤call-minimum設計。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

@@ -38,8 +38,26 @@ _POLICY_ACT_PATTERNS = {
     "solve_regulation": re.compile(r"まず|先に|一個|一つ|ひとつ|決めよ|手をつけ|整理しよ|やってみ"),
     "care_physiology": re.compile(r"無理すんな|休め|休も|水|食べ|口に入れ|横にな|呼吸|しんど|ゆっくり"),
     "calibrate_need": re.compile(r"どっち|どうしてほしい|何がほしい|どれに近い|どっちに近い|教えて[。？]?$"),
-    "playful_tease": re.compile(r"元気すぎ|全力運転|暴走|過動|脳みそ|笑う|じゃん|すぎだろ"),
+    "playful_tease": re.compile(r"元気すぎ|全力運転|暴走|過動|脳みそ|笑う|ツッコミ|じゃん|すぎだろ"),
 }
+
+_HUMOR_PERMISSION = re.compile(
+    r"(?:可以|可|能|允許|允许)[^。！？!?]{0,8}(?:吐槽|開玩笑|开玩笑|調侃|调侃|虧|亏)"
+    r"|\b(?:you\s+)?(?:can|may)\s+(?:tease|joke|make\s+fun)\b"
+    r"|(?:ツッコん|ツッコミ|いじって|冗談)[^。！？!?]{0,8}(?:いい|構わない|していい)",
+    re.IGNORECASE,
+)
+_HUMOR_NOT_ACTION_CONSENT = re.compile(
+    r"(?:不要|別|别|不能|不代表|不等於|不等于)[^。！？!?]{0,16}(?:玩笑|冗談|笑話|笑话)"
+    r"[^。！？!?]{0,20}(?:答應|答应|同意|照做|允許|允许|授權|授权|命令)"
+    r"|\b(?:do\s+not|don't|does\s+not|doesn't)\b[^.!?]{0,18}(?:joke|teas(?:e|ing))"
+    r"[^.!?]{0,20}(?:consent|agreement|permission|promise|compliance)"
+    r"|\b(?:joke|teas(?:e|ing))\b[^.!?]{0,16}(?:is\s+not|isn't|does\s+not|doesn't)"
+    r"[^.!?]{0,12}(?:consent|agreement|permission|promise|compliance)"
+    r"|(?:冗談|ツッコミ|いじり)[^。！？!?]{0,20}(?:同意|許可|約束|従う|言うことを聞く)"
+    r"[^。！？!?]{0,12}(?:じゃない|ではない|にしない|扱わない|ことにしない)",
+    re.IGNORECASE,
+)
 
 
 def _digest(value):
@@ -80,6 +98,8 @@ def _source_frame_m39(source):
         concepts.append("morning_time")
     if _contains_any(text, [r"work", r"job", r"仕事", r"工作"]):
         concepts.append("work_cause")
+    if _HUMOR_PERMISSION.search(text) and _HUMOR_NOT_ACTION_CONSENT.search(text):
+        concepts.append("humor_not_action_consent")
     return {
         "schema": "uruha_observable_source_frame_m39",
         "speaker_role": "user_first_person" if first_person else "unspecified",
@@ -172,6 +192,8 @@ def _repair_reply_m39(frame, policy_id):
     if policy_id == "calibrate_need":
         return "今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？"
     if policy_id == "playful_tease":
+        if "humor_not_action_consent" in concepts:
+            return "ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。"
         if "cognitive_arousal" in concepts:
             return "頭ずっと全力運転じゃん。ちょっとは休憩覚えろって。"
         return "脳みそ元気すぎだろ。少し落ち着けって。"

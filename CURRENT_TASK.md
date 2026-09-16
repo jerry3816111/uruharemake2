@@ -2,23 +2,24 @@
 
 更新：2026-09-15。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B22 preserve humor-vs-consent boundary in deterministic surface repair
+## 唯一下一步：P3-B23 fresh case05 output lock with zero-call-aware accounting
 
-狀態：**P3-B21 8/8 native匿名診斷完成，case04為產品負結果；仍無產品品質優勢結論。** AB/BA四輪偏好全部一致：
-direct-v2 6票、product 2票；product−direct為attunement −0.50、correction −1.25、continuity −0.125、grounding 0。
-product成本1,747 tokens／38.924088秒，direct 1,527／9.197616秒。這是developer proxy model-judge diagnosis，
-不是人評、holdout或formal gate。詳見`analysis/p3_b21_case04_native_diagnostic_grade_2026-09-15.md`。
+狀態：**P3-B22 bounded repair PASS；B20/B21負結果不變，仍無產品品質優勢結論。** M39現在把同輪的「允許玩笑」與
+「玩笑不授權行動／命令」組成typed observable concept；中英日actual product fast path皆輸出
+`ツッコミはする。でも、その冗談を同意扱いするほど雑じゃないって。`，0 model／network calls，graph節點在utterance前。
+73 affected＋182 P3/adjacent regressions通過。詳見`analysis/p3_b22_humor_nonconsent_surface_acceptance_2026-09-15.md`。
 
-### P3-B22 before 與單一交付
+### P3-B23 before 與單一交付
 
-B21確認u4真正故障鏈：current input同時有「可吐槽」與「玩笑不是同意」，M25只把前者選成`playful_tease`；
-上游沿用「腦袋停不下來」案例的固定core，M39發現其中`朝から`無根據後，又以另一句固定腦袋吐槽修復，完全遺失行動／同意邊界。
+選下一個未生成的developer case05 `p3-smoke-speaker-memory-en`：4輪英文、u3前跨session。u1分開Mina的藍色馬克杯與使用者的透明杯偏好，
+u2加入Mina下月逛夜市，u3跨session問使用者自己的杯子偏好，u4再明確糾正夜市計畫屬於Mina。這測speaker-qualified memory與跨session歸屬。
 
-單一核心變因只改M39 bounded source frame＋`playful_tease` repair：從當前可見文字辨識「允許玩笑」和「不授權行動／命令」同時存在，
-在需要repair時輸出同時保留兩者的自然日文，不再回落到無關腦袋模板。不得改generation model、baseline、rubric、舊output或B21分數。
+先建立case05 source-only projection、config／tests／zero-call preflight。B20證明product可合法有0-call deterministic turn，因此B23只移除錯誤的
+`product_provider_calls_min=4`必要條件；仍要求每個實際intent／provider／network call逐一核帳、總上限16、direct固定4、每輪budget與failure retention。
+其他model、prompt、persona、history、restart、annotation封閉與隔離規則沿用B20，這是唯一比較設計修正。
 
-驗收先做中英日source-disjoint deterministic正例、只有吐槽邀請與只有拒絕授權的負例、既有M39 regression；再用隔離actual product route檢查
-visible Japanese與runtime graph。B20/B21不可重跑；修後結果只算exposed developer repair evidence，下一個fresh case才能再比較。
+release後一次鎖4輪product＋4輪direct-v2；不讀case05 annotation、future／confirmation／production DB，不重用任何B20/B21 call。
+8 outputs、paired hash、surface、restart、isolation與exact accounting全通過並commit，才可另開case05 diagnosis。任何失敗原樣保留且不重跑。
 
 ## 工作環境
 
