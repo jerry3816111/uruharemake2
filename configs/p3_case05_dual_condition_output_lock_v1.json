@@ -1,0 +1,98 @@
+{
+  "schema": "uruha_p3_case05_dual_condition_output_lock_v1",
+  "phase": "P3-B23",
+  "status": "preregistered_not_executed",
+  "purpose": "lock_complete_fresh_case05_product_and_direct_outputs_before_annotation_access_with_zero_call_aware_accounting",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "direct_v2_review": {
+    "path": "configs/p3_direct_baseline_v2_design_review_v1.json",
+    "sha256": "2d0a17759e4daa4f7fd9cc2533cda3d285d5c04bf88c8f7428dc96e194aeed53"
+  },
+  "case_source": {
+    "path": "datasets/p3_case05_generation_source_v1.json",
+    "sha256": "5221eb937c02e9cc281156d2a90a728572ccf42d297a036b09cb6da285939aa1"
+  },
+  "judge_conformance": {
+    "path": "analysis/p3_b19_native_judge_schema_result_2026-09-15.json",
+    "sha256": "5b01e324116123ceacca0f44eb39bac05cae56b595ec953bd25c00e58b4de6d1",
+    "required_status": "native_judge_schema_conformance_pass"
+  },
+  "conditions": [
+    "product_system",
+    "full_history_direct"
+  ],
+  "common_history": {
+    "mode": "system_anchored_prefix_paired",
+    "include_all_prior_sessions": true,
+    "include_roles": true,
+    "include_only_past_visible_messages": true,
+    "baseline_output_written_back": false,
+    "current_product_reply_visible_to_baseline": false,
+    "product_visible_reply_added_after_both_current_views_freeze": true,
+    "cross_case_state_shared": false,
+    "truncate_or_summarize": false
+  },
+  "session_boundary": {
+    "restart_product_before_turn_ids": [
+      "p3-smoke-05-u3"
+    ],
+    "same_case_memory_path_retained": true,
+    "new_brain_instance": true
+  },
+  "direct_instruction": "過去のセッションを含む、ユーザーに見えている会話履歴をすべて使う。相手のあり得る目的、明示された訂正、不確実性、関係性、関連する記憶を考慮し、共通人格契約に従った根拠のある最善の返答を作る。最終的な自然な日本語の返答だけを出力し、事実を作ったり評価に言及したりしない。",
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "aggregate_prompt_tokens_max_per_condition_turn": 32768,
+    "aggregate_completion_tokens_max_per_condition_turn": 768,
+    "product_calls_max_per_turn": 4,
+    "direct_calls_exact_per_turn": 1,
+    "wall_seconds_max_per_condition_turn": 60
+  },
+  "execution_boundary": {
+    "source_turns_exact": 4,
+    "visible_outputs_exact": 8,
+    "product_provider_calls_min": 0,
+    "product_provider_calls_max": 16,
+    "direct_provider_calls_exact": 4,
+    "total_provider_calls_max": 20,
+    "automatic_retry": false,
+    "concurrency": 1,
+    "localhost_only": true,
+    "prior_case_calls_reused_or_counted": false,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "retention": {
+    "visible_replies": true,
+    "product_runtime_trace": true,
+    "product_memory_snapshot": true,
+    "per_call_usage_and_hashes": true,
+    "raw_provider_payload": false,
+    "partial_failure_evidence": true,
+    "ephemeral_workspace_removed": true
+  },
+  "success": {
+    "all_eight_visible_outputs_nonempty": true,
+    "all_eight_shared_surface_pass": true,
+    "all_four_view_pairs_share_source_and_prefix": true,
+    "all_actual_provider_and_network_calls_accounted": true,
+    "all_eight_turn_intents_and_completions_accounted": true,
+    "all_condition_turn_budgets_valid": true,
+    "session_restart_preserves_case_paths": true,
+    "product_state_isolated_and_workspace_removed": true,
+    "zero_annotation_or_production_access": true
+  }
+}
