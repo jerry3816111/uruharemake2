@@ -2,19 +2,19 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B40 explicit playful-guess authority
+## 唯一下一步：P3-B41 prospective case03 quotation-aware contract
 
-狀態：**P3-B39 validator repair PASS；B38原FAIL保持。** immutable result與8/8輸出hash核對完成，原gate 1 fail；quotation-aware audit為8 pass／0 fail。
-v1 strict檔保留供B37/B38重現，future engine改綁v2。0 model／network／annotation，未重跑；comparison-quality readiness仍為false。
+狀態：**P3-B40 bounded product repair PASS（exposed development only）。** B38 u4產品回覆由泛用presence改成一個明示為預測的日文猜測；
+0新增model call、0 fact-memory write、graph節點已連接。13 focused＋1隔離四輪runtime＋93相鄰回歸全通過；B38原結果未重跑。
 
-### P3-B40 before 與單一交付
+### P3-B41 before 與單一交付
 
-B38 exposed u4明示`Don't calm me down—I'm excited. Guess what I'm going to photograph first.`，但product回`そっか。まあ、今はうちがここにいる。`。
-目前current-turn response authority能處理no-advice、shared amusement等形式，尚無「明示不要安撫＋邀請猜一個接下來行動」的typed route，安全presence因而壓過使用者要求。
+B33 source-order第三案`p3-prospective-v2-ambiguous-delay-ja`尚未生成、沒有annotation。它測試前輩說「また今度」的模糊關係訊號，
+結合上個月曾延遲回覆的歷史後，使用者最後明示不要被保證「一定沒問題」，而是希望一起等、一起觀察。
 
-B40只新增一個bounded current-turn authority：必須同時有明示positive arousal／拒絕安撫，以及第一人稱、當前直接邀請猜測；輸出一個克制的日文猜測並保留可被否定餘地。
-不得從歷史自行補成私密事實、不得寫長期偏好、不得新增model call。否定、引用／劇本、第三人稱、一般問句、VRM／function command與self-harm cue都fail closed；
-safety route優先。先做source-disjoint中英日正反契約，再隔離重播B38四輪，核對trace/node與0 fact write；這是exposed repair，不是case02重新評分。
+B41先只固定case03 projection、quotation-aware v2 surface contract、paired history、future locks與0-call preflight；selection必須是B33 index 2，
+不可因前兩案結果挑題。兩條件同模型／人格／資源，u3跨session重啟保留同隔離memory path。不得生成、讀annotation或重跑case01/02。
+contract與tests先commit後，下一步才建立獨立release並執行唯一一次no-retry run。
 
 ## 工作環境
 
