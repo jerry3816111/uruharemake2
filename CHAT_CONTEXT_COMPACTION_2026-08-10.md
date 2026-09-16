@@ -2341,6 +2341,18 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 下一步B28不得讀annotation或評分；先封存8個outputs、實際call/token/latency與所有失敗。生成結果仍只是developer-smoke evidence，
   不是formal holdout、人評、B24 generalization或系統優勢結論。
 
+### 7.126 P3-B28／B29 case06 output lock PASS、盲評INCONCLUSIVE（2026-09-17）
+
+- B28只執行release允許的一次no-retry生成；8 intents／8 completes，product 1 call、direct 4 calls，總計1,923 prompt／235 completion tokens、
+  43.946028秒，所有generation checks通過。outputs與16個checkpoints先在commit `68fcf0f`封存，再打開case06 annotation。
+- 鎖定可見差異已保留：product u2帶入visible history未支持的`しんどくて／楽しみで`問題；u4沒有接住`ただ笑ってほしかった`而要求再說。
+  direct u4有笑但又詢問能否幫忙。這些是source/output observation，不是正式分數。
+- B29使用既有native qwen3.5:9b、blind AB/BA與凍結rubric。第6個item `u3:BA`收到response但`reply_quote`不是locked reply exact substring，
+  strict validator fail closed且不重試。5/8有效、coverage 62.5% < 95%，6 calls／4,418 prompt／1,512 completion tokens全核帳。
+- partial rows為3 ties、1 product、1 direct；只有u2雙order一致，不能判勝負或報平均分為結果。B29永久保留INCONCLUSIVE，B28 hash未變。
+- 下一步B30只prospective harden judge evidence schema，讓未來`reply_quote`由schema綁定該slot exact reply或等價deterministic exact span；
+  不重跑B29、不改threshold／rubric／outputs，修正也不等於改善產品理解。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：

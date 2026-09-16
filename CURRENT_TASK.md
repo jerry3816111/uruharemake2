@@ -2,25 +2,22 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B28 case06 no-retry dual-condition output lock
+## 唯一下一步：P3-B30 prospective exact-evidence judge schema hardening
 
-狀態：**P3-B27 output-lock freeze PASS。** case06已由原B2 source exact projection，annotations未讀；paired view、跨session restart、
-model digest、direct精確4 calls與zero-call-aware product accounting全數通過。14項case06＋case05相鄰測試通過，preflight為
-`ready_for_case06_output_lock_review`，0 generation／network／paid calls。preregister commit `34bdcfc`；release
-`research/p3_b27_case06_output_lock_release_2026-09-16.json`只授權下一步一次no-retry output lock。這是pre-existing developer smoke，
-不是B24 generalization、formal holdout、人評或優勢證據。
+狀態：**P3-B28 output lock PASS；P3-B29 blind diagnostic INCONCLUSIVE且禁止重試。** B28在commit `68fcf0f`鎖定8個outputs：
+product 1 call、direct 4 calls、合計1,923 prompt／235 completion tokens、43.946028秒，所有generation checks通過。B29依release盲評，
+在第6個item收到非精確`reply_quote`後fail closed；5/8有效、coverage 62.5% < 95%，6 calls全核帳，0 retry。partial scores不可判勝負，
+B28 hash未變。詳見`analysis/p3_b29_case06_native_diagnostic_grade_failure_2026-09-17.md`。
 
-### P3-B28 before 與單一交付
+### P3-B30 before 與單一交付
 
-依release只執行一次case06四輪兩條件生成：product可有0–16次provider calls，full-history direct必須精確4次，總量最多20；
-每一條件／輪各一個intent與complete，共8／8，automatic retry禁止。使用既有checkpoint與result固定路徑，不看annotation、confirmation，
-不用production DB、不外部部署；任一transport後失敗即保留partial evidence並停止。
+B29失敗不是generation或network問題，而是native JSON schema只要求`reply_quote`為non-empty string，無法保證model複製鎖定回覆中的精確片段；
+strict validator正確拒絕。B30只做prospective judge contract修正，不能重跑／補完B29，也不能修改其outputs、rubric、threshold或partial result。
 
-生成成功只代表8個可見outputs按鎖定條件產生且calls／token／latency可核對；仍不打分、不看答案。必須先commit完整output lock，
-下一個獨立步驟才可打開case06 annotation並做既有judge/schema評分，不得看結果後補生成或修改threshold。
+B30需先離線證明：每個score的`reply_quote`只能是該slot鎖定reply的exact value（或等價deterministic exact-span contract），slot交換後enum也交換；
+invented／other-slot quote被schema或validator拒絕；correction eligibility、AB/BA、分數與evidence-turn rules不變。不得把完整reply evidence宣稱成更細粒度解釋。
 
-B28結束需回報每輪product/direct可見輸出、實際provider calls、token、latency、surface gate、restart/state isolation與任何失敗；
-不可把case06結果混成整體優勢或人類理解證明。
+B30只建立可供下一個尚未執行developer case使用的共用contract、測試與0-call preflight。完成後另選既有未執行case；不得用新schema回頭追B29分數。
 
 ## 工作環境
 
