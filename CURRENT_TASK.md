@@ -2,25 +2,25 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B24 bounded speaker-qualified fact surface repair
+## 唯一下一步：P3-B25 isolated Safari product surface acceptance
 
-狀態：**P3-B23完整執行但gate FAIL，原樣保留且不得重跑。** 8 intents／8 completions、product 2＋direct 4共6個actual
-provider/network calls均精確核帳，證明product合法0-call turn不應被任意minimum判失敗；2,285 prompt＋381 completion tokens，
-51.232715秒，0 retry／paid／annotation／production DB access。唯一contract failure是direct u3混入Latin，故case05不進judge。
-product u3/u4都退化成`ん、その話もう少し聞かせて。`。詳見`analysis/p3_b23_case05_output_lock_failure_2026-09-16.md`。
+狀態：**P3-B24 bounded exposed-development repair PASS。** 第一人稱過去偏好問句現在只用already-selected、明確第一人稱、
+category相符且唯一的記憶證據回答；缺失、多義、第三人稱或無安全日文對應時不猜。actual product隔離路徑把英文偏好問句輸出為
+`あんたが好みって言ってたのはブラックコーヒー。`，0 model call，graph有唯一且有連線的raw-free B24 node。21 focused、
+130 affected及193 P3／route adjacent tests通過。詳見`analysis/p3_b24_speaker_qualified_preference_recall_acceptance_2026-09-16.md`。
+B23仍是immutable gate FAIL，未重跑、未改輸出、未重評。
 
-### P3-B24 before 與單一交付
+### P3-B25 before 與單一交付
 
-B23 trace顯示檢索層已取回u1/u2，u3 planner core也含正確偏好；但現有P2 speaker adapter只支援quoted-source問句，
-「我說過偏好哪種東西」被標為`background_only`，沒有visible authority。self-monitor修復又產生內部指令句，language guard正確fail-closed成泛用澄清；
-u4明確other-vs-self owner correction也未分類，重複同一fallback。
+B24已通過函式、actual product entry與runtime graph的ephemeral subprocess證據，但尚未經瀏覽器真實表面驗收。
+歷史Safari曾被工具拒絕；本輪若現有Safari控制可用，先以全新temporary DB／log／adaptive path啟動單一local product instance，
+只執行一個source-disjoint偏好回溯流程，核對聊天泡泡與頁面node graph和runtime JSON一致，再停止server並刪除ephemeral狀態。
 
-單一核心變因新增product-only bounded `speaker_qualified_fact` contract：只在當輪是明確第一人稱過去偏好回溯，且already-selected
-recent／working memory存在唯一、category相符的第一人稱偏好證據時回答；或當輪明確陳述「此事屬於另一人而非我」時自然承認owner correction。
-候選缺失／多義／speaker不明就abstain；safety route不覆蓋；不掃unselected DB、不讓model猜speaker、不新增事實性長期記憶，trace只留typed fact、digest與provenance。
+B25是驗收層，不新增能力變因、不修改B24分類或表面文字、不執行model generation、不碰正式DB，也不把瀏覽器展示當fresh holdout／人評／優勢證據。
+若Safari控制仍拒絕，保留精確阻擋證據並把Safari層維持pending，不用其他UI自動化假稱通過。
 
-驗收先做中英日source-disjoint正例、third-party／metalinguistic／缺失／多義負例、quoted-source舊能力與語言guard回歸；再用ephemeral
-actual product做跨session新案例，核對自然日文、唯一graph node、來源、0正式DB與不污染。B23 locked output／baseline／annotation／分數不可修改或重評。
+若真實頁面無法安全注入所需selected memory evidence，B25只做既有可重現案例的頁面渲染，不為了通過而讀寫正式記憶；
+此時能力證據仍以B24 subprocess為準，Safari只驗可見聊天與圖的呈現一致性。
 
 ## 工作環境
 

@@ -2307,6 +2307,13 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - trace定位：u3已取回正確speaker-qualified episode且planner core正確，但既有P2只處理quoted-source，未給偏好回溯visible authority；self-monitor instruction leak再被language guard安全降級。B23結果commit `362152a`後不得重跑／改分。
 - 下一步P3-B24只新增already-selected evidence上的bounded speaker-qualified fact contract，處理明確第一人稱偏好回溯與other-vs-self owner correction；缺失／多義就abstain，不碰baseline／locked output／annotation。
 
+### 7.122 2026-09-16 P3-B24：第一人稱偏好回溯取得bounded visible authority
+
+- B23暴露的product u3缺口已限定修復：明確詢問自己過去偏好時，只join already-selected recent／working memory中明確第一人稱、category相符且唯一的證據；缺失、多義、第三人稱或無安全日文對應就短句abstain。
+- actual `uruha_web_ui_product`隔離路徑將英文咖啡偏好回溯輸出為`あんたが好みって言ってたのはブラックコーヒー。`，0 model call；graph有唯一、有連線且raw-free的`"speaker_qualified_fact_p3"` node。
+- source-disjoint owner correction已由既有M32輸出正確自然日文，故B24不另建競爭權威。21 focused、130 affected、193 P3／route adjacent回歸通過。
+- 這是exposed-development bounded repair，不是fresh holdout、人評、open-domain preference能力或相對baseline優勢；B23仍immutable FAIL。下一步B25只做ephemeral Safari產品表面驗收，若工具拒絕就維持pending，不繞過。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
