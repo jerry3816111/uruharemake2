@@ -2,23 +2,25 @@
 
 更新：2026-09-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B27 case06 source-only output-lock freeze
+## 唯一下一步：P3-B28 case06 no-retry dual-condition output lock
 
-狀態：**P3-B26 eligibility audit FAIL並原樣保留。** B2 source-only corpus只有case05屬`speaker_qualified_memory`，但它已在B23執行，
-且失敗trace直接用於B24修正與B24/B25驗收；符合未執行、未被repair曝光的候選為0。未讀annotation／target，0 generation／judge／network／paid／正式DB，
-未建立projection、config或release。詳見`analysis/p3_b26_preexisting_source_eligibility_failure_2026-09-16.md`與同名JSON audit。
-B24能力因此仍只有exposed-case證據，不能宣稱fresh generalization。
+狀態：**P3-B27 output-lock freeze PASS。** case06已由原B2 source exact projection，annotations未讀；paired view、跨session restart、
+model digest、direct精確4 calls與zero-call-aware product accounting全數通過。14項case06＋case05相鄰測試通過，preflight為
+`ready_for_case06_output_lock_review`，0 generation／network／paid calls。preregister commit `34bdcfc`；release
+`research/p3_b27_case06_output_lock_release_2026-09-16.json`只授權下一步一次no-retry output lock。這是pre-existing developer smoke，
+不是B24 generalization、formal holdout、人評或優勢證據。
 
-### P3-B27 before 與單一交付
+### P3-B28 before 與單一交付
 
-整體P3仍可用另一個既有、未執行的developer-smoke family前進。repository case-specific artifacts顯示case03／04／05已有output lock，
-case06 `p3-smoke-unknown-topic-ja`沒有case-specific generation artifact；它是B2之前凍結的source-only日文跨session四輪案例，測unknown reference澄清後換話題。
-B27只把case06從原source做exact projection並freeze zero-call-aware dual-condition output lock，不讀annotation，不執行generation。
+依release只執行一次case06四輪兩條件生成：product可有0–16次provider calls，full-history direct必須精確4次，總量最多20；
+每一條件／輪各一個intent與complete，共8／8，automatic retry禁止。使用既有checkpoint與result固定路徑，不看annotation、confirmation，
+不用production DB、不外部部署；任一transport後失敗即保留partial evidence並停止。
 
-B27必須沿用B23 runner與核帳契約：product合法0–16 calls、direct精確4 calls、總量最多20、8 intents／8 completions、no retry；同模型、共同history、
-generation params與surface gate不變。驗收只證明source/config/release前preflight完整，不把case06稱B24 generalization、formal holdout或人評。
+生成成功只代表8個可見outputs按鎖定條件產生且calls／token／latency可核對；仍不打分、不看答案。必須先commit完整output lock，
+下一個獨立步驟才可打開case06 annotation並做既有judge/schema評分，不得看結果後補生成或修改threshold。
 
-只有source digest、未執行證據、config hash、runner hash、model digest與0-call preflight全部通過並先commit，才另建release commit；B27本身0 model／network call。
+B28結束需回報每輪product/direct可見輸出、實際provider calls、token、latency、surface gate、restart/state isolation與任何失敗；
+不可把case06結果混成整體優勢或人類理解證明。
 
 ## 工作環境
 
@@ -61,8 +63,7 @@ generation params與surface gate不變。驗收只證明source/config/release前
 - P3共同歷史目前是system-anchored paired；報告必須揭露其條件性，不能當獨立對話偏好實驗。
 - 正式研究依據上次封存紀錄仍缺真人／真實temporal資料；此輪未新讀私人ledger。M57.9 partial，
   M58沒有新授權。產品比較不能補造正式結果。
-- 只有第一個 product turn 有真實證據；其兩個 baseline 尚未生成，其餘 23 developer turns、評分、Safari、真人與 formal
-  confirmation 仍未執行。
+- developer smoke僅逐案推進，case06在B27仍為0 generation；未執行的cases／turns、case06評分、真人與formal confirmation仍不可宣稱。
 
 ## 回報方式
 

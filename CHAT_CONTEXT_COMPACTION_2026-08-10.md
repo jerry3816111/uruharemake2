@@ -2328,6 +2328,19 @@ JSON Schema `format`，因此最後一個bounded修正候選P3-B19只測同synth
 - 這只證明目前資料庫存不足以提供B24 fresh validation，不代表B24無效。B24仍只能主張exposed bounded repair。
 - 為繼續整體P3，下一步B27可凍結原B2已存在且無case-specific generation artifact的case06 `unknown_and_topic_change`；它只能叫pre-existing unexecuted developer smoke，不是B24 generalization或formal holdout。
 
+### 7.125 P3-B27 case06 output-lock freeze（2026-09-16）
+
+- B26已證明既有B2 source沒有第二個未執行且未被repair曝光的`speaker_qualified_memory`案例；該負結果保留在commit `3fc3e92`，
+  B24不得宣稱fresh generalization。
+- 為繼續整體P3而不造題，B27選B2凍結前已存在、尚未執行的case06 `p3-smoke-unknown-topic-ja`。它測
+  `unknown_and_topic_change`：不明指涉、使用者澄清、跨session換題與最後揭露只想被一起笑；它不是B24同類驗證。
+- `datasets/p3_case06_generation_source_v1.json`逐欄投影原source；未開annotations／targets。config鎖定同模型、同persona、
+  同generation params與system-anchored complete visible prefix。product合法0–16 calls、direct精確4、總量最多20，8 intents／8 completes、no retry。
+- prereg／runner／tests／preflight在commit `34bdcfc`；case06＋case05相鄰14 tests通過，model digest相符，preflight 0 generation／network／paid calls。
+  release `research/p3_b27_case06_output_lock_release_2026-09-16.json`為同任務自審、非獨立審查，只授權B28一次no-retry output lock。
+- 下一步B28不得讀annotation或評分；先封存8個outputs、實際call/token/latency與所有失敗。生成結果仍只是developer-smoke evidence，
+  不是formal holdout、人評、B24 generalization或系統優勢結論。
+
 ## 8. 關鍵檔案，按順序讀取
 
 最新先讀：
