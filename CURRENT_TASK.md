@@ -2,21 +2,18 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B37 prospective case02 strict output-lock contract
+## 唯一下一步：P3-B38 prospective case02 one-time strict output lock
 
-狀態：**P3-B36已將B35共同表面gate更正為FAIL並封存。** B35 result與8/8輸出hash核對成功；strict gate為7 pass／1 fail，
-失敗是full-history direct u1純中文。0 model／network／annotation、未重跑；generic dual-condition engine已接strict日文predicate。
-B35仍是完整執行與負結果證據，但comparison-quality readiness=false，不得開annotation或算winner。
+狀態：**P3-B37 strict generation contract PASS（0 call）。** source-order第二案、四輪paired views、future locks、u3 restart、
+strict Japanese gate、call/token上限與8 intents／8 records都已在commit `d58e50e`前固定；15 preflight checks通過，未生成、未讀annotation。
 
-### P3-B37 before 與單一交付
+### P3-B38 before 與單一交付
 
-B33 source-order第二案`p3-prospective-v2-excitement-en`尚未生成、沒有annotation；它測試「反覆刷新配送頁」可能被誤讀成焦慮，
-後續明示其實是期待存錢買的相機，最後要求不要安撫而要猜第一張會拍什麼。這能直接測跨輪修正、正向高亢與隱含期待，而非重做case01。
+B37 config不自我授權。B38需建立最小execution wrapper，重用既有engine與B35 zero-call-aware accounting，但把phase、case ID、artifact hashes、
+result path與strict success key明確綁到B37。先跑wrapper tests並commit；再建立separate release commit，核對所有hash後只執行一次no-retry run。
 
-B37先只建立第二案projection、strict雙condition config、future-turn lock與0-call preflight。selection固定為B33 source index 1，不依品質挑選；
-兩條件仍用同qwen2.5 digest、相同visible prefix、相同人格與token上限，product於u3跨session重啟並保留同隔離memory path。
-成功條件明確改為strict machine-observable Japanese surface；0 generation／network／annotation。只有contract、tests與preflight先commit後，
-下一步才可另建release並執行一次no-retry run。
+每輪condition intent必須先於transport落盤；成功或terminal failure都要留下。若任何輸出沒有通過strict日文gate，整案保留failed result且停止後續quality grading，
+不重跑、不修prompt追分。若結構PASS，也只代表8個outputs可安全鎖定，仍不得開annotation或宣稱product advantage。
 
 ## 工作環境
 
