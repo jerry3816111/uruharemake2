@@ -2,19 +2,18 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B41 prospective case03 quotation-aware contract
+## 唯一下一步：P3-B42 prospective case03 one-time output lock
 
-狀態：**P3-B40 bounded product repair PASS（exposed development only）。** B38 u4產品回覆由泛用presence改成一個明示為預測的日文猜測；
-0新增model call、0 fact-memory write、graph節點已連接。13 focused＋1隔離四輪runtime＋93相鄰回歸全通過；B38原結果未重跑。
+狀態：**P3-B41 contract PASS（0 call）。** B33 index 2第三案、quotation-aware v2 gate、paired views、future locks、u3 restart、
+同模型／資源與no-retry界線已在commit `ce585b2`前固定；14 preflight gates通過，未生成、未讀annotation。
 
-### P3-B41 before 與單一交付
+### P3-B42 before 與單一交付
 
-B33 source-order第三案`p3-prospective-v2-ambiguous-delay-ja`尚未生成、沒有annotation。它測試前輩說「また今度」的模糊關係訊號，
-結合上個月曾延遲回覆的歷史後，使用者最後明示不要被保證「一定沒問題」，而是希望一起等、一起觀察。
+B42建立最小case03 wrapper，重用B38 accounting與current engine，但把result success key改綁quotation-aware surface；先測試、commit，
+再建立獨立release commit並核對全部hash。只允許一次localhost no-retry run，逐turn先寫intent；任一失敗保留且不重跑。
 
-B41先只固定case03 projection、quotation-aware v2 surface contract、paired history、future locks與0-call preflight；selection必須是B33 index 2，
-不可因前兩案結果挑題。兩條件同模型／人格／資源，u3跨session重啟保留同隔離memory path。不得生成、讀annotation或重跑case01/02。
-contract與tests先commit後，下一步才建立獨立release並執行唯一一次no-retry run。
+成功也只鎖8個outputs與trace／memory／cost證據，不開annotation、不宣稱winner。若產品出現新的明確失敗，先保存為新反例；
+不得回頭改B33 source或用case01/02的repair重跑舊結果。
 
 ## 工作環境
 
