@@ -1,0 +1,110 @@
+{
+  "schema": "uruha_p3_case06_native_diagnostic_grade_v1",
+  "phase": "P3-B29",
+  "status": "preregistered_not_executed",
+  "purpose": "blind_native_ab_ba_diagnosis_of_immutable_case06_outputs_after_successful_output_lock",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "locked_outputs": {
+    "path": "analysis/p3_b28_case06_output_lock_result_2026-09-16.json",
+    "sha256": "f4efe1a3efaf522691d9fa9615b5f561ca31e1396b0c08a220d4a6a610af2b8b",
+    "required_status": "case06_outputs_locked",
+    "locked_commit": "68fcf0f16905f059a904126f76e65e0c1d7275e1",
+    "actual_product_calls": 1,
+    "actual_direct_calls": 4,
+    "actual_total_calls": 5
+  },
+  "case_source": {
+    "path": "datasets/p3_case06_generation_source_v1.json",
+    "sha256": "c421f96f811d3eee2da5a05e8753cbb51ea36e1f133dde84cc0d1b5d3b8a13dc"
+  },
+  "annotations": {
+    "path": "datasets/p3_developer_smoke_annotations_v1.json",
+    "sha256": "aec1f4fbd88a96b180ad5c90f8f2f7a362a01b57d0d26a22b26af3ff25a5a3ea",
+    "case_id": "p3-smoke-unknown-topic-ja",
+    "role": "developer_proxy_rubric_not_gold_reply_or_human_preference",
+    "case_turns_used": 4,
+    "other_case_annotations_used": 0,
+    "opened_only_after_locked_output_commit": true
+  },
+  "native_conformance": {
+    "path": "analysis/p3_b19_native_judge_schema_result_2026-09-15.json",
+    "sha256": "5b01e324116123ceacca0f44eb39bac05cae56b595ec953bd25c00e58b4de6d1",
+    "required_status": "native_judge_schema_conformance_pass"
+  },
+  "conditions": [
+    "product_system",
+    "full_history_direct"
+  ],
+  "transport": {
+    "backend": "native_ollama_chat",
+    "url": "http://127.0.0.1:11434/api/chat",
+    "ollama_version": "0.33.3",
+    "format": "direct_per_item_json_schema",
+    "correction_schema_follows_annotation_eligibility": true
+  },
+  "judge": {
+    "model": "qwen3.5:9b",
+    "digest": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 384,
+    "timeout_seconds": 30,
+    "orders": [
+      "AB",
+      "BA"
+    ],
+    "retries": 0,
+    "condition_names_hidden": true
+  },
+  "rubric": {
+    "dimensions": [
+      "attunement",
+      "grounding",
+      "correction",
+      "continuity"
+    ],
+    "scale": [
+      0,
+      1,
+      2
+    ],
+    "correction_only_if_eligible": true,
+    "unsupported_assertion_boolean": true,
+    "japanese_issue_boolean": true,
+    "identity_issue_boolean": true,
+    "reply_quote_must_be_exact_span": true,
+    "evidence_turn_ids_must_be_currently_visible": true
+  },
+  "execution_boundary": {
+    "judge_calls_exact": 8,
+    "automatic_retry": false,
+    "stop_on_first_transport_or_validation_failure": true,
+    "concurrency": 1,
+    "localhost_only": true,
+    "generation_outputs_mutable": false,
+    "generation_rerun": false,
+    "future_turn_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "other_case_annotations_used": 0,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "success": {
+    "all_eight_judgments_valid": true,
+    "minimum_grading_coverage": 0.95,
+    "minimum_order_agreement": 0.9,
+    "locked_generation_pass_remains_passed": true,
+    "diagnostic_only": true,
+    "single_case_can_pass_quality_gate": false,
+    "human_preference_claim_allowed": false,
+    "formal_advantage_claim_allowed": false
+  }
+}
