@@ -2,22 +2,21 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B35 prospective case01 one-time output lock
+## 唯一下一步：P3-B36 immutable Japanese-surface gate audit
 
-狀態：**P3-B34 case01 output-lock contract PASS（0 call）。** commit `95cb7f6`先固定第一案projection、雙condition config與preflight；
-18 related tests、14 preflight gates通過，四輪source/history paired、future turns locked、session restart與同隔離memory path固定。
-qwen2.5 digest一致，product 0–16＋direct exact 4、total max 20、8 intents／8 records、0 retry；尚未生成、未讀annotation、config不自我授權。
+狀態：**P3-B35一次性output lock已完成，但comparison-quality readiness暫停。** 8 intents／8 completes，product 2＋direct 4＝6次本機呼叫，
+2,323 prompt＋379 completion tokens，43.114338秒，0 retry、0 annotation／confirmation／production DB，隔離workspace已移除。
+四輪雙condition輸出已鎖定，不得重跑追分。
 
-### P3-B35 before 與單一交付
+### P3-B36 before 與單一交付
 
-B34契約已凍結但沒有可執行release；不能直接呼叫既有case06 runner，因其artifact paths、case IDs、phase與result claims皆綁定B27/B28。
-B35需加入最小case01 execution wrapper，重用已驗證的B27/B28 engine與zero-call accounting，不複製或改寫生成邏輯。
+B35 runner回報`all_eight_shared_surface_pass=true`，但direct u1實際為純中文：
+`可能是整理房间累了，坐下来休息一下了。继续整理的话，要注意休息哦。`。原因是既有`has_japanese`把任何Han字元都視為日文，
+這是共同表面條件的false positive。這個問題若不先處理，後續評分會把未遵守相同日文輸出條件的pair誤當成公平比較。
 
-B35先完成wrapper tests、artifact hash review與separate release commit，再只執行release允許的一次no-retry output lock。每個condition-turn先寫intent；成功寫complete，
-transport／validation失敗寫terminal failure並停止。保留visible replies、runtime trace、memory snapshot、call/token/latency與cleanup證據；不得新增annotation、不得修改B33/B34或產品追分。
-
-B35成功需8/8 visible outputs與surface checks、8 intents／8 completes、所有actual provider／network calls逐一核帳、每輪budget通過、session restart保留路徑、
-ephemeral workspace移除、0 annotation／production access。任一gate失敗就保留failed result且不重試；即使PASS也只先鎖outputs，不可看annotation或宣稱advantage。
+B36只對immutable B35 result做離線audit：驗證result hash與8個輸出hash，要求至少有日文kana、拒絕已知中文／非日文字形、保留其餘既有surface條件，
+逐輪輸出fail reasons。預期且必須保留direct u1 failure；0 model、0 network、0 annotation。接著把嚴格predicate接到未來prospective runner的生成後gate，
+但不得回寫或改稱B35通過。B36完成以前不得開annotation、不得算winner。
 
 ## 工作環境
 
