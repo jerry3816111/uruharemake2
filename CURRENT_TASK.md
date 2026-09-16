@@ -2,17 +2,17 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B45 prospective v3 immutable execution contract
+## 唯一下一步：P3-B46 prospective v3 real-adapter release and one-time output lock
 
-狀態：**P3-B44 data＋rubric freeze PASS。** 新的中／英／日三案共12輪已在generation前固定source、逐輪required／forbidden acts、evidence spans、acceptable alternatives與uncertainty boundary；13項凍結測試通過，0 generation。產品快照仍為`0cab07b`，禁止首跑前依題目調整產品。
+狀態：**P3-B45 execution contract PASS。** 24步case→turn→condition順序、source／rubric commitment、qwen2.5:7b參數、107檔product import closure與no-retry recovery均已凍結；9 focused＋105 affected tests通過。fake transport證明complete可續用、intent-only／transport failure／drift皆terminal；仍為0 real generation。
 
-### P3-B45 before 與單一交付
+### P3-B46 before 與單一交付
 
-B44只建立可追溯評測承諾，沒有runner或任何品質結果。source hash為`8980e85d...011d`、annotation hash為`c72c648b...603f`；兩者和產品snapshot必須由後續release逐byte綁定。
-B45建立v3整批的一次性、crash-safe、fail-closed execution contract；不是執行generation，也不能打開annotation。
+B45只驗證通用journal機械性；現有真實product gate尚未逐provider call寫入B45 checkpoint，所以不可直接宣稱crash-safe real run。
+B46實作最小real-adapter：product OpenAI／native與direct transport每次實際call前都落intent，完整checkpoint可重建provider mapping且不重叫；三案使用各自durable isolated workspace，完成前保留、整批完成後移除，不碰production DB。
 
-contract需固定case／condition／turn順序、同模型與generation config、共同可見history、session boundary、token／latency accounting、輸出hash與checkpoint格式；annotation path不得成為runner參數或import依賴。
-每個call在transport前留下invocation intent；complete checkpoint可精確resume，intent-only或不一致狀態必須terminal fail，禁止自動retry與替代provider。先用fake transport證明fresh run、完整checkpoint reuse、intent-only拒絕、source／product／config hash drift拒絕；B45為0 real call，不改產品，不評分。
+先以mocked OpenAI／native responses驗證adapter request hash、usage、output reconstruction、complete reuse、intent-only與failure；也驗證跨process resume時既有case memory／prefix可重建而不讀future或annotation。
+通過後建立separate signed release，逐byte綁B44／B45／runner／tests／preflight與唯一checkpoint／result路徑；只允許localhost、0 retry、0 fallback、最多60 calls。release審查通過才執行一次，先鎖24個outputs與實際token／latency／hash；不在同一步打開rubric或評分，失敗照實保留。
 
 ## 工作環境
 
