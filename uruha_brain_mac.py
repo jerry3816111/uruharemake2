@@ -8409,6 +8409,11 @@ Current input:
     def authorize_literal_topic_m31(self, user_input, projection):
         """Authorize a literal topic from the exact source before surface commit."""
         proposal = deepcopy(projection or {})
+        required_observable_act = str(
+            proposal.get("required_observable_act") or ""
+        ).strip()
+        if required_observable_act not in {"", "frustration_complaint"}:
+            required_observable_act = ""
         contract = {
             "schema": uapm.SEMANTIC_AUTHORIZATION_SCHEMA_M31,
             "status": "not_applicable",
@@ -8419,6 +8424,7 @@ Current input:
             ).hexdigest()[:16],
             "proposal_status": proposal.get("status") or "missing",
             "proposal_surface_authority": bool(proposal.get("surface_authority")),
+            "required_observable_act": required_observable_act or None,
             "verifier_model": M31_SEMANTIC_VERIFIER_MODEL,
             "raw_dialogue_persisted": False,
             "model_response_raw_persisted": False,
@@ -8481,6 +8487,15 @@ Current input:
             proposed_anchors = []
 
         if proposal_components_present:
+            observable_act_instruction = (
+                "- SOURCE visibly performs a frustration/complaint act. Preserve "
+                "that observable act in the canonical summary and safe response "
+                "with a mild Japanese complaint marker such as うざい, だるい, "
+                "いい加減, 勘弁, またかよ, or 止まんない. Do not recast it as "
+                "a neutral acknowledgement and do not claim an unobserved private state."
+                if required_observable_act == "frustration_complaint"
+                else "- No additional observable communicative act is predeclared."
+            )
             prompt = f"""
 Compare the SOURCE utterance with the PROPOSED Japanese representation and
 reply. Judge only observable meaning. A fluent paraphrase is still wrong if it
@@ -8529,6 +8544,7 @@ Hard rules:
 - Use casual Japanese; never use です, ます, ください, なさい, or しましょう.
 - Set proposal_semantics_faithful=false for any semantic mismatch, even if you can repair it.
 - confidence is a numeric verifier confidence, not a placeholder.
+{observable_act_instruction}
 
 SOURCE:
 {user_input}
@@ -8543,6 +8559,15 @@ reply={response_jp}
 declared_surface_anchors={json.dumps(proposed_anchors, ensure_ascii=False)}
 """
         else:
+            observable_act_instruction = (
+                "- SOURCE visibly performs a frustration/complaint act. Preserve "
+                "that observable act in literal_summary_jp and safe_response_jp "
+                "with a mild Japanese complaint marker such as うざい, だるい, "
+                "いい加減, 勘弁, またかよ, or 止まんない. This describes the "
+                "utterance's visible act, not the speaker's private mental state."
+                if required_observable_act == "frustration_complaint"
+                else "- No additional observable communicative act is predeclared."
+            )
             prompt = f"""
 Normalize only the observable meaning of SOURCE into faithful Japanese, then
 write one short casual Japanese reply. There is no prior proposal to diagnose.
@@ -8573,9 +8598,13 @@ Hard rules:
 - Use correct Japanese object counters: pens 本, photos or tickets 枚, apples 個.
 - Every safe_surface_anchors_jp item must occur verbatim in both the normalized
   Japanese fields and safe_response_jp.
+- Return exactly two short safe_surface_anchors_jp copied character-for-character
+  from both literal_summary_jp and safe_response_jp: one observable topic noun
+  and one observable predicate or act marker. Do not use an inflected synonym.
 - Add no promised action, reason, emotion, or private intent.
 - Use casual Japanese; never use です, ます, ください, なさい, or しましょう.
 - confidence must be a JSON number and at least 0.80 only if fully faithful.
+{observable_act_instruction}
 
 SOURCE:
 {user_input}
@@ -8767,6 +8796,29 @@ SOURCE:
             )
         )
         local_unsupported_addition_absent = not locally_unsupported_addition
+        observable_complaint_markers = (
+            "うざ",
+            "だる",
+            "いい加減",
+            "勘弁",
+            "またかよ",
+            "止まん",
+            "終わら",
+        )
+        observable_act_preserved = bool(
+            not required_observable_act
+            or (
+                required_observable_act == "frustration_complaint"
+                and any(
+                    marker in safe_response
+                    for marker in observable_complaint_markers
+                )
+                and any(
+                    marker in canonical_summary
+                    for marker in observable_complaint_markers
+                )
+            )
+        )
         repair_reconstruction = not proposal_semantics_faithful
         proposal_or_repair_path_valid = bool(
             canonical_subject
@@ -8795,6 +8847,7 @@ SOURCE:
                 anchors_grounded_in_canonical
             ),
             "confidence_gte_0_80": confidence >= 0.80,
+            "required_observable_act_preserved": observable_act_preserved,
         }
         error_tags = [
             str(value or "")[:40]
@@ -15945,7 +15998,12 @@ class UruhaBrainV4_Mac:
             if anchor:
                 repaired_logic["core_message_jp"] = f"{anchor}を拾って自然に返す"
         if "non_japanese_leak" in issues:
-            repaired_logic["core_message_jp"] = "日本語だけで、元の意味を落とさず言い直す"
+            # Keep the semantic source available to the next realization.  The
+            # former implementation replaced it with a language instruction,
+            # so a later guard had nothing left to preserve.
+            repaired_logic["semantic_language_repair_requested_m49"] = True
+            logic["semantic_language_repair_requested_m49"] = True
+            repaired_logic["reply_goal"] = "元の意味を保ったまま自然な日本語で言い直す"
         try:
             repaired = self.right_brain.speak(user_input, repaired_logic, memory_data, psyche_after)
         except Exception:
@@ -15961,6 +16019,317 @@ class UruhaBrainV4_Mac:
             logic["human_speech_plan"] = deepcopy(repaired_logic.get("human_speech_plan"))
             logic["dialogue_act"] = repaired_logic.get("dialogue_act", logic.get("dialogue_act"))
         return repaired
+
+    def _repair_user_visible_semantics_m49(
+        self,
+        reply,
+        logic,
+        user_input,
+        memory_data=None,
+    ):
+        """Repair a cross-lingual surface without discarding current meaning.
+
+        This is deliberately narrower than the visible-language firewall.  It
+        first restores an already-valid Japanese core when one exists.  Only
+        an ordinary, non-protected turn may otherwise request the existing M31
+        source-first semantic authorizer.  A rejected or unverifiable proposal
+        never gains surface authority; the caller then keeps the existing
+        fail-closed language fallback.
+        """
+        schema = "uruha_semantic_preserving_japanese_repair_m49"
+        logic = logic if isinstance(logic, dict) else {}
+        reply = str(reply or "").strip()
+        core = str(logic.get("core_message_jp") or "").strip()
+        language_reasons = {
+            "missing_japanese_surface",
+            "cjk_language_leak",
+            "nonstandard_cjk_surface",
+            "foreign_script_leak",
+            "unexpected_ascii_leak",
+            "internal_language_instruction_leak",
+        }
+        language_checker = getattr(
+            self.right_brain,
+            "_user_visible_language_rejection_reasons",
+            None,
+        )
+        initial_reasons = (
+            language_checker(
+                reply,
+                user_input=user_input,
+                logic_data=logic,
+                memory_data=memory_data,
+            )
+            if callable(language_checker)
+            else []
+        )
+        prior_monitor_issues = set(
+            (logic.get("self_monitor_repair") or {}).get("issues") or []
+        )
+        semantic_language_repair_requested = bool(
+            logic.get("semantic_language_repair_requested_m49")
+            or "non_japanese_leak" in prior_monitor_issues
+        )
+        if semantic_language_repair_requested:
+            initial_reasons = list(initial_reasons) + [
+                "planner_non_japanese_semantic_surface"
+            ]
+            language_reasons.add("planner_non_japanese_semantic_surface")
+        trace = {
+            "schema": schema,
+            "status": "not_required",
+            "reason": "surface_did_not_require_crosslingual_semantic_repair",
+            "surface_authority": False,
+            "model_call_attempted": False,
+            "model_call_completed": False,
+            "source_first_authorization": False,
+            "original_reply_digest": hashlib.sha256(
+                reply.encode("utf-8")
+            ).hexdigest()[:16],
+            "semantic_core_digest": (
+                hashlib.sha256(core.encode("utf-8")).hexdigest()[:16]
+                if core
+                else None
+            ),
+            "initial_language_reasons": list(initial_reasons),
+            "raw_dialogue_persisted": False,
+            "claim_boundary": (
+                "bounded source-first Japanese realization repair; model-based "
+                "authorization is not independent translation certification or "
+                "human semantic judgment"
+            ),
+        }
+        if not callable(language_checker):
+            trace.update(
+                {
+                    "status": "not_evaluated",
+                    "reason": "visible_language_checker_capability_unavailable",
+                }
+            )
+            return reply, trace
+        if not language_reasons.intersection(initial_reasons):
+            return reply, trace
+
+        explicit = logic.get("explicit_desired_response_m25") or {}
+        correction = logic.get("correction_aware_surface_m20") or {}
+        intent = str(logic.get("intent") or "")
+        scene = str(logic.get("scene") or "casual")
+        surface_act = str(logic.get("surface_act") or "plain_reply")
+        protected_reason = None
+        if logic.get("memory_use_expected"):
+            protected_reason = "memory_grounded_surface"
+        elif intent in {
+            "self_intro",
+            "crisis_support",
+            "giving_up_support",
+            "memory_uncertain",
+            "recall_name",
+            "recall_preference",
+            "recall_favorite",
+            "recall_dislike",
+            "memory_correction",
+            "recall_recent",
+        }:
+            protected_reason = f"protected_intent:{intent}"
+        elif scene in {"support", "boundary", "refusal", "ooc_defense"}:
+            protected_reason = f"protected_scene:{scene}"
+        elif surface_act in {
+            "protective_brake",
+            "disgust_boundary",
+            "plain_identity",
+        }:
+            protected_reason = f"protected_surface_act:{surface_act}"
+        elif bool(
+            explicit.get("authoritative")
+            or explicit.get("detected")
+            or correction.get("authoritative")
+        ):
+            protected_reason = "explicit_or_correction_authority"
+        if protected_reason:
+            trace.update(
+                {
+                    "status": "protected_route_not_repaired",
+                    "reason": protected_reason,
+                }
+            )
+            return reply, trace
+
+        core_reasons = language_checker(
+            core,
+            user_input=user_input,
+            logic_data=logic,
+            memory_data=memory_data,
+        )
+        if semantic_language_repair_requested:
+            core_reasons = list(core_reasons) + [
+                "planner_non_japanese_semantic_core"
+            ]
+        trace["semantic_core_language_reasons"] = list(core_reasons)
+        if core and not core_reasons:
+            trace.update(
+                {
+                    "status": "existing_japanese_semantic_core_restored",
+                    "reason": "current_plan_already_contains_guard_valid_japanese_core",
+                    "surface_authority": True,
+                    "source_first_authorization": True,
+                    "final_reply_digest": hashlib.sha256(
+                        core.encode("utf-8")
+                    ).hexdigest()[:16],
+                }
+            )
+            return core, trace
+
+        existing_authorization = logic.get("semantic_authorization_m31") or {}
+        if existing_authorization.get("model_call_completed"):
+            trace.update(
+                {
+                    "status": "semantic_repair_rejected",
+                    "reason": "existing_semantic_authorization_not_retried",
+                    "authorization_status": existing_authorization.get("status"),
+                }
+            )
+            return reply, trace
+        if not str(user_input or "").strip():
+            trace.update(
+                {
+                    "status": "semantic_repair_rejected",
+                    "reason": "current_source_unavailable",
+                }
+            )
+            return reply, trace
+
+        source_lower = str(user_input or "").lower()
+        observable_complaint = bool(
+            re.search(
+                r"(?:有完[沒没]完|真(?:的)?(?:很)?[煩烦]|煩死|烦死|受不了|"
+                r"\bannoying\b|\bfed up\b|won['’]?t stop|will it ever stop|"
+                r"いい加減|うざ|だる|止まらない|終わらない)",
+                source_lower,
+                re.IGNORECASE,
+            )
+        )
+        required_observable_act = (
+            "frustration_complaint" if observable_complaint else ""
+        )
+        trace["required_observable_act"] = required_observable_act or None
+        projection = {
+            "schema": schema,
+            "status": "source_first_repair_requested",
+            "projection_required": True,
+            "surface_authority": False,
+            "input_digest": hashlib.sha256(
+                str(user_input).encode("utf-8")
+            ).hexdigest()[:16],
+            "required_observable_act": required_observable_act or None,
+            "raw_dialogue_persisted": False,
+        }
+        trace["model_call_attempted"] = True
+        try:
+            plan, authorization = self.left_brain.authorize_literal_topic_m31(
+                user_input,
+                projection,
+            )
+        except Exception as exc:
+            trace.update(
+                {
+                    "status": "semantic_repair_rejected",
+                    "reason": "source_first_authorizer_raised",
+                    "failure_type": type(exc).__name__,
+                }
+            )
+            return reply, trace
+
+        authorization = authorization or {}
+        trace.update(
+            {
+                "model_call_completed": bool(
+                    authorization.get("model_call_completed")
+                ),
+                "authorization_status": authorization.get("status"),
+                "authorization_reason": authorization.get("reason"),
+                "authorization_confidence": authorization.get("confidence"),
+                "failed_authorization_checks": [
+                    name
+                    for name, passed in (
+                        authorization.get("authorization_checks") or {}
+                    ).items()
+                    if not passed
+                ],
+                "deterministic_repair_candidate_ready": bool(
+                    (authorization.get("m32_repair_candidate") or {}).get(
+                        "canonical_ready"
+                    )
+                ),
+            }
+        )
+        candidate = str(
+            authorization.get("response_jp")
+            or (plan or {}).get("core_message_jp")
+            or ""
+        ).strip()
+        candidate_reasons = language_checker(
+            candidate,
+            user_input=user_input,
+            logic_data=logic,
+            memory_data=memory_data,
+        )
+        anchors = [
+            str(value or "").strip()
+            for value in (authorization.get("surface_anchors_jp") or [])[:4]
+            if str(value or "").strip()
+        ]
+        anchors_visible = bool(anchors) and all(
+            anchor in candidate for anchor in anchors
+        )
+        observable_act_preserved = bool(
+            not required_observable_act
+            or any(
+                marker in candidate
+                for marker in (
+                    "うざ",
+                    "だる",
+                    "いい加減",
+                    "勘弁",
+                    "またかよ",
+                    "止まん",
+                    "終わら",
+                )
+            )
+        )
+        trace["candidate_language_reasons"] = list(candidate_reasons)
+        trace["surface_anchor_count"] = len(anchors)
+        trace["surface_anchors_visible"] = anchors_visible
+        trace["required_observable_act_preserved"] = observable_act_preserved
+        authorized = bool(
+            authorization.get("status") == "semantically_authorized"
+            and authorization.get("surface_authority")
+            and candidate
+            and not candidate_reasons
+            and anchors_visible
+            and observable_act_preserved
+        )
+        if not authorized:
+            trace.update(
+                {
+                    "status": "semantic_repair_rejected",
+                    "reason": "source_first_authorization_or_surface_check_failed",
+                }
+            )
+            return reply, trace
+
+        logic["core_message_jp"] = candidate
+        trace.update(
+            {
+                "status": "source_first_japanese_repair_authorized",
+                "reason": "m31_source_first_authority_and_visible_anchors_passed",
+                "surface_authority": True,
+                "source_first_authorization": True,
+                "final_reply_digest": hashlib.sha256(
+                    candidate.encode("utf-8")
+                ).hexdigest()[:16],
+            }
+        )
+        return candidate, trace
 
     def _next_event_seq(self):
         self._event_seq += 1
@@ -19324,6 +19693,17 @@ class UruhaBrainV4_Mac:
                 bounded_trace["visible_reply_source"] = "bounded_budget_fallback_commitment"
                 logic["bounded_slow_path_m21"] = bounded_trace
         reply_before_language_guard = reply
+        reply, semantic_preserving_japanese_repair_m49 = (
+            self._repair_user_visible_semantics_m49(
+                reply,
+                logic,
+                user_input,
+                memory_data=mems,
+            )
+        )
+        logic["semantic_preserving_japanese_repair_m49"] = deepcopy(
+            semantic_preserving_japanese_repair_m49
+        )
         reply = self.right_brain.enforce_user_visible_japanese(
             reply,
             logic,
@@ -19536,6 +19916,21 @@ class UruhaBrainV4_Mac:
                 else 0.72
             ),
         )
+        self._push_blackboard(
+            "verify",
+            "japanese_semantic_repair_m49",
+            deepcopy(semantic_preserving_japanese_repair_m49),
+            salience=(
+                0.999
+                if semantic_preserving_japanese_repair_m49.get(
+                    "surface_authority"
+                )
+                else 0.94
+                if semantic_preserving_japanese_repair_m49.get("status")
+                == "semantic_repair_rejected"
+                else 0.72
+            ),
+        )
         self._push_blackboard("surface", "utterance", {"reply": reply}, salience=1.0)
         self._push_blackboard("surface", "visible_language_guard", language_guard, salience=0.99)
         self._push_blackboard("surface", "self_monitor", self_monitor, salience=0.89)
@@ -19632,6 +20027,9 @@ class UruhaBrainV4_Mac:
             "adaptive_person_surface_commitment_m18": deepcopy(adaptive_surface_commitment),
             "current_turn_semantic_commit_m48": deepcopy(
                 logic.get("current_turn_semantic_commit_m48") or {}
+            ),
+            "semantic_preserving_japanese_repair_m49": deepcopy(
+                logic.get("semantic_preserving_japanese_repair_m49") or {}
             ),
             "correction_aware_surface_m20": deepcopy(
                 logic.get("correction_aware_surface_m20") or {}

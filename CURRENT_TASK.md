@@ -2,17 +2,17 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B49 semantic-preserving Japanese repair
+## 唯一下一步：P3-B50 explicit conversational-act fidelity
 
-狀態：**P3-B48 current-turn semantic commit完成。** 跨領域的`arousal_regulation` policy可以調整互動形式，但沒有當輪明示／修正授權時，不再把已grounded的當輪語意換成睡眠／腦袋停不下來模板。before `第三版まで来て、また注釈かよ。` -> `寝てないのか…`；after保留`第三版まで来て、また注釈かよ。`，且未實際surface的policy不再假標performed。6專測與164項直接依賴回歸通過；0 model/network call。這是曝光case衍生的mechanism證據，不是fresh比較或人評。
+狀態：**P3-B49 semantic-preserving Japanese repair完成。** self-monitor不再以「請用日文重說」覆蓋原語意；一般非protected turn可在final guard前走既有M31 source-first授權，topic、共享anchors、可觀察conversation act與日文guard全過才取得surface authority。B47 before `ん、その話もう少し聞かせて。`；隔離本機after `また新しい注釈が来たのはうざいだろ`。第一個中性翻譯失敗也保留。8新測、164擴大回歸通過；4次本機dev model calls，沒有外網，token未掛ledger所以不做成本結論。這仍是曝光dev機制證據，不是fresh／人評／正式優勢。
 
-### P3-B49 before 與單一交付
+### P3-B50 before 與單一交付
 
-B47 u3已有含正確抱怨內容的中間核心`連註解都不停，真煩人。`，但它不是日文；既有repair將core設成`日本語だけで、元の意味を落とさず言い直す`，模型仍輸出內部改寫指令後，安全fallback改成泛用`ん、その話もう少し聞かせて。`。日文guard擋住錯誤語言是正確的，缺口是fallback完全遺失當輪可觀察語意。
+B47 u4的當輪明示要求是`陪我吐槽`，但既有cross-lingual desired-response分類只落成泛用`share_arousal`；固定realization成為「うん。今は質問しないで、ちょっとここにいる」，雖然日文與陪伴形式成立，卻沒有執行共同吐槽／抱怨這個conversation act。B48/B49都不應替這個更早的分類錯誤背書。
 
-B49只處理這一個語言邊界：在visible-language fallback前加入可審核的semantic-preserving Japanese repair seam。它只能使用當輪既有core／source evidence，輸出必須通過既有日文guard；不得把中文原句直接洩漏到可見surface、不得以case全文或新固定回覆追分、不得繞過crisis／identity／speaker-recall guards。若無法可靠保留語意，必須明確trace失敗而非假稱理解。
+B50只處理明示conversation-act fidelity：將「要系統一起吐槽／抱怨」與「只要陪伴／聽著」分開，先建立可觀察、跨中英日且有negation boundary的act evidence，再讓既有explicit-current-turn authority選到能執行該act的response policy。不得從一般負面語句自行推斷使用者要共同吐槽，不得新增case全文固定回覆，也不得改弱危機／拒絕／explicit-space guards。
 
-驗收先保留原本錯誤的before證據，再以不使用case全文的合成中文／英文core核對：repair後自然日文仍保留topic與act、generic fallback只在repair真正不可用時啟動、內部指令不可見、既有日文／危機／identity／speaker recall guards不退化。曝光u3只能當dev replay，不得當fresh evidence；不得重跑v3 release追分。完成後下一個獨立變因才是u4 explicit conversational-act taxonomy。
+驗收先保留u4曝光before，再以未使用case全文的中文／英文／日文合成明示要求與相同topic的非要求／否定反例核對：只有明示共同吐槽才取得act authority；可見日文必須同時含當輪topic與共同抱怨行為；泛用陪伴不能假標performed。曝光u4只能當dev replay，不得當fresh evidence；不得重跑v3 release。完成這個最後已知case01根因後，才設計全新source做prospective比較。
 
 ## 工作環境
 

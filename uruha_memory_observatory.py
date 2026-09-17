@@ -1227,6 +1227,11 @@ def _graph_signal(payload):
                 f"{payload.get('scope_domain', 'unknown')} · preserve {str(bool(payload.get('current_turn_semantics_preserved'))).lower()}",
                 42,
             )
+        if schema == "uruha_semantic_preserving_japanese_repair_m49":
+            return _trim(
+                f"{payload.get('status', 'unknown')} · authority {str(bool(payload.get('surface_authority'))).lower()}",
+                42,
+            )
         if schema == "uruha_human_priority_scheduler_m19":
             return _trim(
                 f"{payload.get('last_decision', 'waiting')} · humans {payload.get('human_waiters', 0)}",
@@ -1578,6 +1583,10 @@ def collect_cognitive_graph(result):
     current_semantic_commit_m48_id = node_id_for(
         "current_turn_semantic_commit_m48"
     )
+    semantic_japanese_repair_m49_id = node_id_for(
+        "japanese_semantic_repair_m49"
+    )
+    visible_language_guard_id = node_id_for("visible_language_guard")
     correction_id = node_id_for("correction_aware_surface_m20")
     correction_surface_id = node_id_for("correction_surface_commit_m20")
     surface_delivery_id = node_id_for("surface_delivery_m20")
@@ -1742,6 +1751,17 @@ def collect_cognitive_graph(result):
     add_edge(correction_id, desired_prediction_id, "is-understanding")
     add_edge(action_choice_id or decision_id, current_semantic_commit_m48_id or adaptive_surface_id, "is-personhood")
     add_edge(current_semantic_commit_m48_id, adaptive_surface_id, "is-understanding")
+    add_edge(
+        current_semantic_commit_m48_id or adaptive_surface_id,
+        semantic_japanese_repair_m49_id,
+        "is-understanding",
+    )
+    add_edge(
+        semantic_japanese_repair_m49_id,
+        visible_language_guard_id or "turn-output",
+        "is-understanding",
+    )
+    add_edge(visible_language_guard_id, "turn-output", "is-personhood")
     add_edge(adaptive_surface_id, correction_surface_id or "turn-output", "is-personhood")
     add_edge(desired_mode_id, desired_mode_surface_id, "is-personhood")
     add_edge(desired_mode_surface_id, "turn-output", "is-personhood")
