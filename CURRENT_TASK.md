@@ -2,17 +2,15 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B46 prospective v3 real-adapter release and one-time output lock
+## 唯一下一步：P3-B47 retained case01 rubric audit and single repair target
 
-狀態：**P3-B45 execution contract PASS。** 24步case→turn→condition順序、source／rubric commitment、qwen2.5:7b參數、107檔product import closure與no-retry recovery均已凍結；9 focused＋105 affected tests通過。fake transport證明complete可續用、intent-only／transport failure／drift皆terminal；仍為0 real generation。
+狀態：**P3-B46 真實執行 FAIL，已保留且禁止重跑。** release只執行一次；case01完成8個輸出後，direct baseline 的u2/u3出現中文／中日混合，`eight_quotation_aware_japanese_surfaces=false`，因此依預註冊stop-on-first-failure停止，case02/03未開始。實際5 provider calls、1,857 prompt＋240 completion tokens、40.379055秒；0 annotation access、0 production DB access。產品四輪均為日文，但可見內容顯示u1/u2答到舊題、u3泛化、u4沒有照要求一起吐槽。這些尚未用rubric評分。
 
-### P3-B46 before 與單一交付
+### P3-B47 before 與單一交付
 
-B45只驗證通用journal機械性；現有真實product gate尚未逐provider call寫入B45 checkpoint，所以不可直接宣稱crash-safe real run。
-B46實作最小real-adapter：product OpenAI／native與direct transport每次實際call前都落intent，完整checkpoint可重建provider mapping且不重叫；三案使用各自durable isolated workspace，完成前保留、整批完成後移除，不碰production DB。
+B46只能證明case01的輸出與結構結果；不能把case02/03當0分，也沒有三案優劣結論。B47在輸出已鎖定後，才允許讀B44已凍結annotation，對case01的兩條件×四輪逐項核對五個0/1維度與critical failures；每個判定須連到來源turn、rubric act與實際短句，不能用新寫的標準。
 
-先以mocked OpenAI／native responses驗證adapter request hash、usage、output reconstruction、complete reuse、intent-only與failure；也驗證跨process resume時既有case memory／prefix可重建而不讀future或annotation。
-通過後建立separate signed release，逐byte綁B44／B45／runner／tests／preflight與唯一checkpoint／result路徑；只允許localhost、0 retry、0 fallback、最多60 calls。release審查通過才執行一次，先鎖24個outputs與實際token／latency／hash；不在同一步打開rubric或評分，失敗照實保留。
+交付一個純離線deterministic grader／audit、相稱測試與JSON／MD報告：清楚分開日文surface與semantic success，將case02/03標`not_generated`，禁止彙總成三案勝負。再由case01失敗建立唯一repair target：產品的當輪內容可能被不相干記憶回覆覆蓋，且明示互動行為（一起吐槽）沒有進入最後話語；本步只定位並鎖定before，不修改產品或重跑曝光案例。
 
 ## 工作環境
 
