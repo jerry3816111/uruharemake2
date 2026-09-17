@@ -1,0 +1,33 @@
+{
+  "schema": "uruha_p3_b52_metadata_only_source_selection_v2_implementation_freeze_v1",
+  "frozen_at": "2026-09-17",
+  "status": "frozen_before_second_and_final_live_metadata_retrieval",
+  "single_changed_variable": "replace incomplete flat-playlist transport with six-column allowlisted full metadata output while preserving every selection rule",
+  "v1_failed_attempts_retained": 1,
+  "v2_live_retrieval_count_at_freeze": 0,
+  "target_segment_access_count_at_freeze": 0,
+  "future_response_access_count_at_freeze": 0,
+  "gold_annotation_count_at_freeze": 0,
+  "model_call_count_at_freeze": 0,
+  "formal_m56_artifact_change_count_at_freeze": 0,
+  "frozen_artifacts": {
+    "v2_selection_contract": {
+      "path": "configs/p3_b52_metadata_only_source_selection_v2.json",
+      "sha256": "f167633b545222cef30800b6da07f945c3f1b65c5dd1d6772368421dd1bbb6fe"
+    },
+    "v1_failure": {
+      "path": "analysis/p3_b52_v1_metadata_retrieval_failure_2026-09-17.json",
+      "sha256": "038c802a5ddaa6a54aedc3c668adaecb116ceb11e6e359da6eb7e1f3fdd870ea"
+    },
+    "v2_selection_implementation": {
+      "path": "p3_b52_metadata_only_source_freeze_v2.py",
+      "sha256": "9d4df0d79dba79df9c7a025eb8aa56248174f63e7fda7e7ac082deadc5ca02da"
+    },
+    "v2_selection_tests": {
+      "path": "test_p3_b52_metadata_only_source_freeze_v2.py",
+      "sha256": "9af0fcc8326cdf33d7451b16cd76be71b15e39d6a75dc2baa00b81b1f1e636f6"
+    }
+  },
+  "post_freeze_rule": "Run at most one V2 live metadata retrieval. If it fails or yields no eligible source, retain the result and end B52 without a source. Do not alter filters, exclusions, seed, score, candidate count, or output columns after the run.",
+  "claim_boundary": "This freeze authorizes only one allowlisted-metadata retrieval and deterministic selection attempt. It does not authorize content access, prediction, outcome access, scoring, or formal M56 execution."
+}

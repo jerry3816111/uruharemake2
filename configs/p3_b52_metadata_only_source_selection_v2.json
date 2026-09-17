@@ -1,0 +1,55 @@
+{
+  "schema": "uruha_p3_b52_metadata_only_source_selection_v2",
+  "version": "2.0.0",
+  "status": "preregistered_after_retained_v1_transport_failure_before_v2_retrieval",
+  "single_changed_variable": "replace incomplete flat-playlist rows with full metadata extraction that prints only six allowlisted fields; keep the candidate window, exclusions, seed, score and winner unchanged",
+  "base_contract": {
+    "path": "configs/p3_b52_metadata_only_source_selection_v1.json",
+    "sha256": "bc86d7c3a76b7ff9b2bef1709d54dd388e4995c0f79dfa19f93e2e9524fc6a3f"
+  },
+  "retained_failure": {
+    "path": "analysis/p3_b52_v1_metadata_retrieval_failure_2026-09-17.json",
+    "sha256": "038c802a5ddaa6a54aedc3c668adaecb116ceb11e6e359da6eb7e1f3fdd870ea"
+  },
+  "frozen_unchanged_fields": [
+    "research_task",
+    "target",
+    "candidate_window",
+    "candidate_schema",
+    "selection",
+    "bindings.known_source_exclusions",
+    "bindings.temporal_forecast_bridge",
+    "execution_boundary",
+    "claim_boundary"
+  ],
+  "retrieval_override": {
+    "tool": "yt-dlp",
+    "playlist_surface": "official channel streams page",
+    "flat_playlist": false,
+    "maximum_playlist_entries_requested": 50,
+    "media_download": false,
+    "raw_response_storage": false,
+    "raw_entry_logging": false,
+    "stdout_columns": [
+      "id",
+      "channel_id",
+      "upload_date",
+      "duration",
+      "availability",
+      "live_status"
+    ],
+    "title_output": false,
+    "description_output": false,
+    "caption_or_transcript_access": false,
+    "comment_access": false,
+    "thumbnail_access": false,
+    "model_calls": 0,
+    "production_memory_writes": 0
+  },
+  "second_attempt_policy": {
+    "maximum_additional_live_retrieval_attempts": 1,
+    "empty_or_failed_result": "retain_and_end_b52_without_a_source",
+    "post_result_retuning": false
+  },
+  "claim_boundary": "A V2 pass can establish only deterministic content-blind selection of a new source. The transport repair does not authorize content access, prediction, scoring, or a formal M56 row."
+}
