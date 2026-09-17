@@ -1,0 +1,115 @@
+{
+  "schema": "uruha_p3_b55_reserved_source_context_transport_contract_v2",
+  "version": "2.0.0",
+  "status": "prospective_frozen_after_v1_zero-network-tool-probe-failure_before_v2_media_request",
+  "single_changed_variable": "use ffmpeg -version rather than unsupported ffmpeg --version during the pre-network tool probe",
+  "binding": {
+    "v1_contract": {
+      "path": "configs/p3_b55_reserved_source_context_transport_v1.json",
+      "sha256": "25b8125465ad754247e2b2e8c4258f31cd5068f7c4eaf4b2f450b0b4cbe888f7"
+    },
+    "v1_implementation_freeze": {
+      "path": "research/p3_b55_reserved_source_context_transport_implementation_freeze_2026-09-18.json",
+      "sha256": "9d4aabe7a2d6b4bd5eed97f89adc7badacbcac60b426626b77d17aae1a27711c"
+    },
+    "v1_failure": {
+      "path": "analysis/p3_b55_v1_pre_network_tool_probe_failure_2026-09-18.json",
+      "sha256": "78421de2022e1877b9375754330ed3eb97e7a8e3c0f1a268bef26754b6844330",
+      "result_hash": "c4967bf0f0e9446c58164dab7e8aca11f144786ebf09d75afc51c0bc9472d77c",
+      "network_attempt_count": 0
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9",
+      "boundary_receipt_hash": "0c190de102962657a1ed121fd8ff01853584ed8afdd3b4070ffdb25042f63f5a"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "platform": "youtube",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0
+  },
+  "transport": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "yt_dlp_version_command": [
+      "--version"
+    ],
+    "ffmpeg_required_version_prefix": "ffmpeg version 8.0.1",
+    "ffmpeg_version_command": [
+      "-version"
+    ],
+    "maximum_attempts": 1,
+    "timeout_seconds": 900,
+    "download_section": "*3000-3180",
+    "force_keyframes_at_cuts": true,
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "metadata_sidecars_allowed": false,
+    "subtitles_allowed": false,
+    "comments_allowed": false,
+    "cache_allowed": false,
+    "resume_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "private_output_template": "p3-b54-private-transport-b55-v2.%(ext)s",
+    "provider_may_deliver_unmeasured_segment_buffer": true,
+    "provider_metadata_may_be_received_inside_private_transport": true,
+    "provider_transport_exact_byte_scope_claim_allowed": false,
+    "stdout_or_stderr_content_persistence_allowed": false
+  },
+  "local_private_gate": {
+    "expected_local_duration_seconds": 180.0,
+    "duration_tolerance_seconds": 0.05,
+    "normalization_input_start_seconds": 0.0,
+    "normalization_input_end_seconds": 180.0,
+    "raw_and_staging_delete_before_fresh_public_reader": true,
+    "private_root_mode_during_public_reader": "deleted",
+    "manual_playback_or_semantic_inspection_allowed": false
+  },
+  "public_output": {
+    "root": "external_data/p3_b55_public_context",
+    "preexisting_nonempty_root_allowed": false,
+    "profile": "reserved_source_context",
+    "manifest_and_audio_only": true,
+    "fresh_public_reader_processes": 1,
+    "artifact_hash_revalidation_required": true
+  },
+  "crash_safe_state": {
+    "root": "external_data/p3_b55_v2_transport_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "intent_exclusive_write_before_network": true,
+    "intent_without_result_is_terminal_no_retry": true
+  },
+  "execution_authorization": {
+    "v1_confirmed_network_attempt_count": 0,
+    "v2_reserved_source_media_request_count_max": 1,
+    "observable_context_local_artifact_count_max": 1,
+    "hidden_future_media_request_authorized": false,
+    "title_description_transcript_comment_or_subtitle_storage_authorized": false,
+    "manual_playback_authorized": false,
+    "prediction_execution_authorized": false,
+    "model_call_authorized": false,
+    "formal_m56_write_authorized": false,
+    "production_memory_write_authorized": false,
+    "external_deployment_authorized": false
+  },
+  "failure_policy": {
+    "v2_retry_count": 0,
+    "fallback_count": 0,
+    "additional_correction_after_v2_failure_allowed": false,
+    "source_replacement_allowed": false,
+    "cutoff_change_allowed": false,
+    "partial_public_artifact_allowed": false,
+    "failure_receipt_required": true
+  },
+  "claim_boundary": "B55 V2 changes only the pre-network ffmpeg version flag after V1 recorded zero network attempts. It can establish only whether one frozen transport invocation produced a local 180-second observable-context artifact that passes the unchanged B54 public boundary. Provider overfetch and privately received metadata remain possible and are not exposed. Hidden future, semantic inspection, prediction, model execution, and formal evidence remain unauthorized."
+}
