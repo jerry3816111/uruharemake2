@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p3_b46_prospective_v3_output_lock_implementation_freeze_v1",
+  "phase": "P3-B46",
+  "status": "prospective_v3_real_adapter_implementation_frozen",
+  "implementation_commit": "34e3618d479656213f1266c6a203228a89e3c734",
+  "artifacts": {
+    "adapter": {
+      "path": "p3_prospective_v3_real_adapter.py",
+      "sha256": "46037734620432b77773e8038d88b1cde312c44b7a63a51915011d078a34b8cd"
+    },
+    "runner": {
+      "path": "p3_prospective_v3_output_lock.py",
+      "sha256": "3a16b1de7e4ddf18b3a6ea3daba65fc1d1d8e2a18e5dcfa12abb03b5e438e2cd"
+    },
+    "adapter_tests": {
+      "path": "test_p3_prospective_v3_real_adapter.py",
+      "sha256": "1417d55e9bb75934f8ed0feaedb1b0d906f1c6577f7bfa170ce99a3605cc0d74"
+    },
+    "runner_tests": {
+      "path": "test_p3_prospective_v3_output_lock.py",
+      "sha256": "22a689abdd6d849cbe6902d6ad950d5e3420e091f62d957e6aeb05239f3374e7"
+    },
+    "preflight": {
+      "path": "analysis/p3_b46_prospective_v3_output_lock_preflight_2026-09-17.json",
+      "sha256": "0295de9ae4b6a9368fcb8a468736cbc6d680978325b8fcba62fa8d38a1db83bd",
+      "required_status": "ready_for_real_adapter_release_review"
+    }
+  },
+  "review": {
+    "openai_adapter_complete_reuse_passed": true,
+    "native_adapter_complete_reuse_passed": true,
+    "sdk_and_native_shape_reconstruction_passed": true,
+    "intent_only_terminal_passed": true,
+    "transport_failure_terminal_passed": true,
+    "request_and_checkpoint_drift_rejected": true,
+    "workspace_cleanup_sentinel_gate_passed": true,
+    "adapter_tests_passed": 5,
+    "runner_contract_tests_passed": 6,
+    "focused_and_adjacent_tests_passed": 20,
+    "real_model_calls": 0,
+    "network_calls": 0,
+    "annotations_accessed": 0,
+    "production_database_accessed": false
+  },
+  "authorization": {
+    "real_generation_authorized": false,
+    "separate_release_required": true,
+    "automatic_retry": false,
+    "annotation_access_during_generation": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "The real local transport adapter and batch runner are implementation-frozen and mock-verified. No prospective v3 model output or quality result exists yet."
+}
