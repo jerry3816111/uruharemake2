@@ -2,25 +2,28 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B52 source-metadata transport design review
+## 唯一下一步：P3-B53 content-blind temporal boundary freeze
 
-狀態：**P3-B52 selector工程完成，但實際來源封存為REVIEW_REQUIRED。** V1先封存flat-playlist規則後執行，
-第一筆只得到ID、缺日期與長度，fail-closed；該失敗先提交，V2再保持channel、日期／時長範圍、7個排除ID、
-seed、score與winner不變，只改為六欄allowlisted full metadata transport。V2亦在已提交freeze後執行，
-`yt-dlp exit 1`。依最多兩個修正批次規則停止，不第三次重跑或改規則追結果。
+狀態：**P3-B52完成。** 使用者在REVIEW_REQUIRED後授權繼續，採官方Atom先選ID、單一ID post-check、
+不合格不可換次名的C方案。V3首次Atom存取在0 response bytes處因本機CA失敗並保留；V4只改用已安裝
+certifi CA且維持TLS/hostname驗證，事前36項B51/B52 tests通過後執行成功。
 
-兩次合計：0 selected source、0 receipt、0 title／description／transcript storage、0 target segment access、
-0 future-response access、0 gold、0 model calls、0 formal M56 changes。24項B51/B52 contract測試在V2前通過；
-詳細反例與選項見`analysis/p3_b52_metadata_only_source_freeze_review_required_2026-09-17.md`。
+固定seed由15個Atom candidates中選出`youtube_4y5GiQpgJgo`（published `2026-09-05`）；14筆通過
+preselection，1筆在日期窗外，0已知來源。唯一post-check確認duration 11,497秒、public、was_live、官方頻道，
+沒有replacement。receipt `2c3e7f8e5e45a3b763cffb746a537ac8acfa0e32721119c718234e65294e5805`；
+0 title／description／transcript、0 target segment、0 future response、0 gold、0 model calls、0 M56 changes。
+完整release：`research/p3_b52_metadata_only_source_selection_v4_release_2026-09-17.json`。
 
-### REVIEW_REQUIRED決策
+### P3-B53 before 與單一交付
 
-優先選項是A：若使用者願意提供自己的YouTube Data API credential/quota，以官方結構資料建立V3；不讀取或保存key。
-沒有API credential時建議C：先用官方Atom feed的channel/video/date依原seed選一個ID，再對**該一個ID**做
-duration／completed-livestream post-selection檢查；不合格就保留失敗，不能選次名。C會改變eligibility與selection順序，
-因此必須先另立V3 freeze，不能把它當B52自動retry。B為可信人員提供八欄sanitized manifest。
+B52只固定來源，還沒有可以預測的時間點。B53必須在任何media／transcript／target segment存取前，僅依
+source ID與duration產生一個deterministic時間界線：固定頭尾安全邊界、observable-context長度、hidden-future長度、
+候選cutoff grid、seed與hash排序，選出唯一`observable_input_start_seconds < prediction_cutoff_seconds <
+observable_behavior_start_seconds < observable_behavior_end_seconds`。
 
-未完成此設計選擇前，不新增來源、不進入target segment、不建立B53 event boundary或任何generation。
+先用合成duration驗證同輸入同boundary、改seed／duration會改receipt、太短來源fail-closed、所有區間不重疊且
+落在影片內。實際B53只能輸出秒數與雜湊，不讀取、下載或播放選定來源，不建立behavior label或模型輸入。
+通過後才可另立B54，讓人工／隔離工具只看cutoff前context並把future outcome保持封存。
 
 ## 工作環境
 
