@@ -1,26 +1,28 @@
 # 目前任務卡
 
-更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B54 unidirectional observable-context extraction
+## 唯一下一步：P3-B55 reserved-source observable-context transport
 
-狀態：**P3-B53完成。** 在0 media／title／transcript／segment access下，只依B52的source ID與11,497秒
-duration生成32個合法cutoff候選並固定唯一界線：observable context `3000..3180`、cutoff `3180`、
-hidden future `3181..3241`；前後安全距離為3000／8256秒。receipt
-`0c190de102962657a1ed121fd8ff01853584ed8afdd3b4070ffdb25042f63f5a`。事前19項B51/B52/B53相關測試
-通過後才計算；0 media request、0 playback、0 transcript、0 future access、0 gold、0 model calls。
-完整release：`research/p3_b53_content_blind_temporal_boundary_release_2026-09-17.json`。
+狀態：**P3-B54完成。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
+`1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
+`0.0001`。raw在2個fresh reader process前刪除、private root mode `000`、兩次SHA-256一致、0 forbidden field／
+private canary hit／private import。超長artifact、hash、禁止欄位、symlink、hardlink與permission均fail-closed；
+B52全版本至B54共58項回歸通過。仍為0 reserved-source media、0 hidden future、0 prediction、0 model call。
+完整release：`research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json`。
 
-### P3-B54 before 與單一交付
+### P3-B55 before 與單一交付
 
-B54建立capability-separated context extractor：generation側只能取得`3000 <= t <= 3180`的衍生artifact，
-不能取得、列舉或雜湊`3180`後內容；future `3181..3241`維持另一權限、此步不解鎖。先凍結transport、
-時間裁切容許誤差、原始暫存刪除、ffprobe duration gate、artifact hash與禁止欄位；若供應商／codec為精確裁切而
-多抓buffer，該原始transport只能存在隔離worker，必須先裁成不超過cutoff的artifact，generation process永遠只收
-final artifact與manifest，且報告transport fetch和generation-visible範圍差異。
+B55只對B52／B53凍結來源做一次真實`3000..3180` observable-context transport。先凍結`yt-dlp`／ffmpeg
+精確命令、版本、URL形成規則、private temporary root、timeout、0 retry／fallback、network transport可能在來源端
+overfetch且本機無法證明遠端segment bytes精確界線的揭露、local raw與staging刪除、實際elapsed／bytes／duration、
+stdout/stderr禁止內容，以及成功與失敗receipt。不得把source title／description／transcript／comments／subtitle寫入
+public manifest或報告；不得人工播放、聽取或語意檢查context。
 
-先以合成媒體驗證：cutoff後的已知sentinel不會進artifact、超長輸出fail-closed、manifest不含URL／future metadata、
-重啟後hash可重驗。再決定是否對B53來源執行一次context-only取得；不得在同一步建立future outcome或執行預測。
+成功時只能把B54 exact profile的mono 16 kHz PCM WAV與allowlisted manifest放到一次性public root，啟動fresh
+public reader重驗180秒duration與SHA-256；private transport必須先刪除。失敗則保存分類與0 public artifact，至多一個
+有根據的transport修正，不得換來源、放寬cutoff或取得future。此步仍不得建立`3181..3241` artifact、標註outcome、
+執行prediction／model、寫正式M56或production memory。
 
 ## 工作環境
 
