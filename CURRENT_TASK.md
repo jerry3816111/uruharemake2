@@ -2,27 +2,30 @@
 
 更新：2026-09-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B55 reserved-source observable-context transport
+## 唯一下一步：P3-B55 transport failure design review（REVIEW_REQUIRED）
 
-狀態：**P3-B54完成。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
+狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
 `0.0001`。raw在2個fresh reader process前刪除、private root mode `000`、兩次SHA-256一致、0 forbidden field／
 private canary hit／private import。超長artifact、hash、禁止欄位、symlink、hardlink與permission均fail-closed；
 B52全版本至B54共58項回歸通過。仍為0 reserved-source media、0 hidden future、0 prediction、0 model call。
 完整release：`research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json`。
 
-### P3-B55 before 與單一交付
+B55 V1因ffmpeg version flag錯誤在0 network時fail；保存後V2只把`--version`改為`-version`，offline 24項通過後
+消耗唯一transport invocation。V2在1.978149秒以yt-dlp exit 1結束：1 request、0 local/public artifact、0 future、
+0 playback／semantic inspection／prediction／model。依事前規則不再重試或追加修正。完整反例與選項：
+`analysis/p3_b55_reserved_source_context_transport_review_required_2026-09-18.md`。
 
-B55只對B52／B53凍結來源做一次真實`3000..3180` observable-context transport。先凍結`yt-dlp`／ffmpeg
-精確命令、版本、URL形成規則、private temporary root、timeout、0 retry／fallback、network transport可能在來源端
-overfetch且本機無法證明遠端segment bytes精確界線的揭露、local raw與staging刪除、實際elapsed／bytes／duration、
-stdout/stderr禁止內容，以及成功與失敗receipt。不得把source title／description／transcript／comments／subtitle寫入
-public manifest或報告；不得人工播放、聽取或語意檢查context。
+### 設計審查所需決定
 
-成功時只能把B54 exact profile的mono 16 kHz PCM WAV與allowlisted manifest放到一次性public root，啟動fresh
-public reader重驗180秒duration與SHA-256；private transport必須先刪除。失敗則保存分類與0 public artifact，至多一個
-有根據的transport修正，不得換來源、放寬cutoff或取得future。此步仍不得建立`3181..3241` artifact、標註outcome、
-執行prediction／model、寫正式M56或production memory。
+兩個有根據批次已用完。下一步不得自行重跑；需設計審查以下其一：
+
+1. 建議另凍結單次diagnostic transport，只保存allowlisted error class而不保存stderr文字；若同請求成功，仍走B54 gate。
+2. 使用者提供本機來源媒體，另處理provenance與整段來源隔離。
+3. 重選來源並完整重做B52–B55（高成本且有selection bias，不建議為追分採用）。
+4. 登入／cookies需要使用者明確操作且改變可重現性，不可自行使用。
+
+審查前維持0 public context artifact；不得取得hidden future、執行prediction／model、寫正式M56或production memory。
 
 ## 工作環境
 
