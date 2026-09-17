@@ -2,15 +2,17 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B47 retained case01 rubric audit and single repair target
+## 唯一下一步：P3-B48 current-turn semantic commit design and mechanism repair
 
-狀態：**P3-B46 真實執行 FAIL，已保留且禁止重跑。** release只執行一次；case01完成8個輸出後，direct baseline 的u2/u3出現中文／中日混合，`eight_quotation_aware_japanese_surfaces=false`，因此依預註冊stop-on-first-failure停止，case02/03未開始。實際5 provider calls、1,857 prompt＋240 completion tokens、40.379055秒；0 annotation access、0 production DB access。產品四輪均為日文，但可見內容顯示u1/u2答到舊題、u3泛化、u4沒有照要求一起吐槽。這些尚未用rubric評分。
+狀態：**P3-B47 case01 developer-proxy audit完成。** 兩條件都未通過：產品11/20（日文4/4，但required acts 0/4、source grounding 0/4）；direct 12/20（source grounding 3/4，但自然日文1/4）。兩邊u4都只有2/5並違反明示互動要求；case02/03是`not_generated`，沒有batch winner。6 focused tests通過；此為同專案Codex proxy診斷，不是真人人評或formal holdout。
 
-### P3-B47 before 與單一交付
+### P3-B48 before 與單一交付
 
-B46只能證明case01的輸出與結構結果；不能把case02/03當0分，也沒有三案優劣結論。B47在輸出已鎖定後，才允許讀B44已凍結annotation，對case01的兩條件×四輪逐項核對五個0/1維度與critical failures；每個判定須連到來源turn、rubric act與實際短句，不能用新寫的標準。
+B47 trace顯示不是單純記憶檢索錯誤：u1上游已有當輪grounded候選，卻被`calibrate_need`固定睡眠模板覆蓋；u2正確偵測「不用列方法」，最終仍沿用同一無關模板；u3中文核心經language fallback後遺失語意；u4把「陪我吐槽」壓成`share_arousal`泛用陪伴。共同缺口是最終surface只驗日文／policy形狀，沒有要求當輪topic與明示conversation act仍存在。
 
-交付一個純離線deterministic grader／audit、相稱測試與JSON／MD報告：清楚分開日文surface與semantic success，將case02/03標`not_generated`，禁止彙總成三案勝負。再由case01失敗建立唯一repair target：產品的當輪內容可能被不相干記憶回覆覆蓋，且明示互動行為（一起吐槽）沒有進入最後話語；本步只定位並鎖定before，不修改產品或重跑曝光案例。
+B48先鎖定一個general invariant與最小integration seam：在policy選擇、語言修復之後且寫回／UI之前，建立current-turn semantic commit，使用現有可觀察source evidence、explicit request span與上游grounded candidate核對最後話語；不讀私人心理、不用case-specific全文、不把中文原句洩漏到日文輸出。修復只能針對此commit失敗，優先保留已通過的grounded候選或觸發既有日文realization，不能再以無主題generic presence假裝通過。
+
+驗收先用曝光case01作dev regression與反例定位（不得當fresh evidence），再用未參與規則編寫的合成反例驗證：無關但流暢模板會被拒絕、當輪topic＋act保留、日文surface／危機／identity／speaker recall guards不退化。完成mechanism後另建全新source才可再次做prospective比較；不得重跑v3 release追分。
 
 ## 工作環境
 
