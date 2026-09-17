@@ -2,17 +2,29 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B50 explicit conversational-act fidelity
+## 唯一下一步：P3-B51 prospective temporal forecast protocol freeze
 
-狀態：**P3-B49 semantic-preserving Japanese repair完成。** self-monitor不再以「請用日文重說」覆蓋原語意；一般非protected turn可在final guard前走既有M31 source-first授權，topic、共享anchors、可觀察conversation act與日文guard全過才取得surface authority。B47 before `ん、その話もう少し聞かせて。`；隔離本機after `また新しい注釈が来たのはうざいだろ`。第一個中性翻譯失敗也保留。8新測、164擴大回歸通過；4次本機dev model calls，沒有外網，token未掛ledger所以不做成本結論。這仍是曝光dev機制證據，不是fresh／人評／正式優勢。
+狀態：**P3-B50 explicit conversational-act fidelity 完成。** 曝光輸入
+`現在先別分析，陪我吐槽一下這些註解怎麼會一直長出來。` 的可見輸出由泛用陪伴
+`うん。今は質問しないで、ちょっとここにいる。` 改為隔離本機真實模型輸出
+`これらの注釈、うざい、またかよ`。跨中英日明示共同吐槽、否定、普通負面文字、陪伴、吐槽使用者、
+危機與participant-as-topic邊界均有contract測試；48 focused／125 affected regression通過。
+開發過程共13次本機qwen3.5:9b calls，失敗與`私と君`錯誤輸出保留；token未掛ledger。
+完整證據見`analysis/p3_b50_explicit_conversation_act_acceptance_2026-09-17.md`。
+這仍是曝光dev機制證據，不是fresh holdout、人評、Safari或正式優勢。
 
-### P3-B50 before 與單一交付
+### P3-B51 before 與單一交付
 
-B47 u4的當輪明示要求是`陪我吐槽`，但既有cross-lingual desired-response分類只落成泛用`share_arousal`；固定realization成為「うん。今は質問しないで、ちょっとここにいる」，雖然日文與陪伴形式成立，卻沒有執行共同吐槽／抱怨這個conversation act。B48/B49都不應替這個更早的分類錯誤背書。
+到B50為止，產品已能改善已知對話失敗，但仍不能回答長期研究最重要的問題：加入可追溯的人物狀態、
+記憶與關係模型後，是否能在**看不到未來答案**時，比相同模型的context-only／persona-prompt／retrieval
+條件更準確預測特定人物接下來的response category。若沒有時間切割與預先承諾，對已看過對話的修正只能證明
+工程能修case，不能證明「人類反應方程式」具有預測價值。
 
-B50只處理明示conversation-act fidelity：將「要系統一起吐槽／抱怨」與「只要陪伴／聽著」分開，先建立可觀察、跨中英日且有negation boundary的act evidence，再讓既有explicit-current-turn authority選到能執行該act的response policy。不得從一般負面語句自行推斷使用者要共同吐槽，不得新增case全文固定回覆，也不得改弱危機／拒絕／explicit-space guards。
-
-驗收先保留u4曝光before，再以未使用case全文的中文／英文／日文合成明示要求與相同topic的非要求／否定反例核對：只有明示共同吐槽才取得act authority；可見日文必須同時含當輪topic與共同抱怨行為；泛用陪伴不能假標performed。曝光u4只能當dev replay，不得當fresh evidence；不得重跑v3 release。完成這個最後已知case01根因後，才設計全新source做prospective比較。
+B51只建立不可偷看答案的Task A protocol與機器可檢查schema，依
+`research/2026_related_work_module_map_2026-09-17.md`引用的2026工作，固定：歷史cutoff、future-context、
+四個matched-model條件、response／speech-act機率分布、bounded rationale variables、unlock前後狀態、
+資源上限與失敗判準。此步不得讀取或寫入future response，不執行生成，也不選有利case；先用純合成fixture
+驗證封存、雜湊、機率與leakage fail-closed。真正來源選擇與future unlock留到下一個經設計審查的task。
 
 ## 工作環境
 

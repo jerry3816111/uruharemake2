@@ -1626,6 +1626,7 @@ def _compact_runtime_trace_m24(runtime_trace):
         "adaptive_person_persistence_m18",
         "adaptive_person_surface_commitment_m18",
         "current_turn_semantic_commit_m48",
+        "explicit_conversation_act_p3_b50",
         "semantic_preserving_japanese_repair_m49",
         "runtime_latency_m19",
         "human_priority_scheduler_m19",

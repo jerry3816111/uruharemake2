@@ -8412,7 +8412,11 @@ Current input:
         required_observable_act = str(
             proposal.get("required_observable_act") or ""
         ).strip()
-        if required_observable_act not in {"", "frustration_complaint"}:
+        if required_observable_act not in {
+            "",
+            "frustration_complaint",
+            "joint_complaint",
+        }:
             required_observable_act = ""
         contract = {
             "schema": uapm.SEMANTIC_AUTHORIZATION_SCHEMA_M31,
@@ -8488,7 +8492,20 @@ Current input:
 
         if proposal_components_present:
             observable_act_instruction = (
-                "- SOURCE visibly performs a frustration/complaint act. Preserve "
+                "- SOURCE visibly asks the assistant to join a complaint about "
+                "the observable topic. The canonical summary must preserve that "
+                "request, and safe_response_jp must itself perform one short, mild "
+                "complaint about that topic. Do not merely say you will stay/listen, "
+                "ask a question, recommend complaining, or tease the user. Preserve "
+                "the user's right to disagree and do not claim a private mental state. "
+                "State the request in literal_summary_jp with 一緒に文句を言ってほしい "
+                "or 一緒に愚痴ってほしい. Reuse the same standard-Japanese topic "
+                "noun and predicate phrase verbatim in both literal_summary_jp and "
+                "safe_response_jp, and return those exact two shared strings as anchors. "
+                "subject_jp is the thing being complained about, never the user, the "
+                "assistant, 私, 君, あなた, うち, or a participant pair."
+                if required_observable_act == "joint_complaint"
+                else "- SOURCE visibly performs a frustration/complaint act. Preserve "
                 "that observable act in the canonical summary and safe response "
                 "with a mild Japanese complaint marker such as うざい, だるい, "
                 "いい加減, 勘弁, またかよ, or 止まんない. Do not recast it as "
@@ -8560,7 +8577,23 @@ declared_surface_anchors={json.dumps(proposed_anchors, ensure_ascii=False)}
 """
         else:
             observable_act_instruction = (
-                "- SOURCE visibly performs a frustration/complaint act. Preserve "
+                "- SOURCE explicitly asks the assistant to join a complaint about "
+                "the observable topic. literal_summary_jp must preserve the joint-"
+                "complaint request. safe_response_jp must itself perform one short, "
+                "mild complaint about that topic using natural Japanese such as "
+                "うざい, だるい, いい加減, 勘弁, またかよ, 文句, or 愚痴. Do not "
+                "merely say you will stay/listen, ask a question, tell the user to "
+                "complain, or tease the user. Do not infer a private mental state. "
+                "Write 一緒に文句を言ってほしい or 一緒に愚痴ってほしい in "
+                "literal_summary_jp. Translate every Chinese or English topic noun "
+                "into standard Japanese. Reuse one exact topic noun and one exact "
+                "predicate phrase in both literal_summary_jp and safe_response_jp; "
+                "return exactly those two literal shared strings as anchors. Before "
+                "returning JSON, check that each anchor is a substring of both fields. "
+                "subject_jp must name the object/event being complained about; never "
+                "use 私, 君, あなた, うち, ユーザー, or the two participants."
+                if required_observable_act == "joint_complaint"
+                else "- SOURCE visibly performs a frustration/complaint act. Preserve "
                 "that observable act in literal_summary_jp and safe_response_jp "
                 "with a mild Japanese complaint marker such as うざい, だるい, "
                 "いい加減, 勘弁, またかよ, or 止まんない. This describes the "
@@ -8723,6 +8756,10 @@ SOURCE:
             normalized = str(value or "")
             if "医生" in source_text:
                 normalized = normalized.replace("医生", "医師")
+            if "註解" in source_text or "注解" in source_text:
+                normalized = normalized.replace("註解", "注釈").replace(
+                    "注解", "注釈"
+                )
             if re.search(r"[一二三四五六七八九十\d]+[點点]", source_text):
                 normalized = re.sub(
                     r"([一二三四五六七八九十\d]+)点",
@@ -8748,6 +8785,39 @@ SOURCE:
         safe_anchors = [
             normalize_observable_japanese(anchor) for anchor in safe_anchors
         ]
+        model_proposed_anchor_count = len(safe_anchors)
+        if (
+            required_observable_act == "joint_complaint"
+            and canonical_subject
+            and canonical_subject not in safe_response
+        ):
+            # The act is verified separately below.  Prefixing only the
+            # source-normalized topic prevents a short complaint from dropping
+            # what it is complaining about without inventing a new proposition.
+            safe_response = f"{canonical_subject}、{safe_response}"
+        if required_observable_act == "joint_complaint":
+            canonical_for_joint_anchor = "\n".join(
+                (
+                    canonical_subject,
+                    canonical_predicate,
+                    canonical_time,
+                    canonical_summary,
+                )
+            )
+            shared_anchors = [
+                anchor
+                for anchor in safe_anchors
+                if anchor in canonical_for_joint_anchor
+                and anchor in safe_response
+            ]
+            if (
+                canonical_subject
+                and canonical_subject in canonical_summary
+                and canonical_subject in safe_response
+                and canonical_subject not in shared_anchors
+            ):
+                shared_anchors.insert(0, canonical_subject)
+            safe_anchors = shared_anchors[:2]
         confidence = max(
             0.0,
             min(1.0, self._safe_float(verdict.get("confidence"), 0.0)),
@@ -8804,6 +8874,36 @@ SOURCE:
             "またかよ",
             "止まん",
             "終わら",
+            "文句",
+            "愚痴",
+            "キリ",
+        )
+        joint_complaint_reply_forbidden = bool(
+            re.search(
+                r"(?:[?？]|聞かせて|話して|ここにいる|そばにいる|"
+                r"文句を言えば|愚痴れば|吐き出して)",
+                safe_response,
+            )
+        )
+        joint_complaint_request_preserved = bool(
+            any(
+                marker in canonical_summary
+                for marker in (
+                    "一緒",
+                    "求め",
+                    "依頼",
+                    "文句",
+                    "愚痴",
+                    "ツッコ",
+                    "ぼや",
+                )
+            )
+        )
+        joint_complaint_topic_not_participant = not bool(
+            re.search(
+                r"(?:私|君|あなた|うち|ユーザー|アシスタント|話し手|聞き手)",
+                canonical_subject,
+            )
         )
         observable_act_preserved = bool(
             not required_observable_act
@@ -8817,6 +8917,15 @@ SOURCE:
                     marker in canonical_summary
                     for marker in observable_complaint_markers
                 )
+            )
+            or (
+                required_observable_act == "joint_complaint"
+                and joint_complaint_request_preserved
+                and any(
+                    marker in safe_response
+                    for marker in observable_complaint_markers
+                )
+                and not joint_complaint_reply_forbidden
             )
         )
         repair_reconstruction = not proposal_semantics_faithful
@@ -8848,6 +8957,18 @@ SOURCE:
             ),
             "confidence_gte_0_80": confidence >= 0.80,
             "required_observable_act_preserved": observable_act_preserved,
+            "joint_complaint_topic_anchor_present": bool(
+                required_observable_act != "joint_complaint"
+                or len(safe_anchors) >= 1
+            ),
+            "joint_complaint_not_generic_presence_or_question": bool(
+                required_observable_act != "joint_complaint"
+                or not joint_complaint_reply_forbidden
+            ),
+            "joint_complaint_topic_not_participant": bool(
+                required_observable_act != "joint_complaint"
+                or joint_complaint_topic_not_participant
+            ),
         }
         error_tags = [
             str(value or "")[:40]
@@ -8949,6 +9070,7 @@ SOURCE:
                 "visible_anchor_count": len(safe_anchors),
                 "confidence": round(confidence, 4),
                 "error_tags": error_tags,
+                "model_proposed_anchor_count": model_proposed_anchor_count,
                 "suppresses_new_pending_prediction": True,
             }
         )
@@ -16020,6 +16142,382 @@ class UruhaBrainV4_Mac:
             logic["dialogue_act"] = repaired_logic.get("dialogue_act", logic.get("dialogue_act"))
         return repaired
 
+    def _joint_complaint_surface_signals_p3_b50(self, reply):
+        visible = str(reply or "").strip()
+        complaint_markers = (
+            "うざ",
+            "だる",
+            "いい加減",
+            "勘弁",
+            "またかよ",
+            "止まん",
+            "終わら",
+            "文句",
+            "愚痴",
+            "キリ",
+        )
+        forbidden = bool(
+            re.search(
+                r"(?:[?？]|聞かせて|話して|ここにいる|そばにいる|"
+                r"文句を言えば|愚痴れば|吐き出して)",
+                visible,
+            )
+        )
+        return {
+            "complaint_marker_present": any(
+                marker in visible for marker in complaint_markers
+            ),
+            "generic_presence_question_or_advice_absent": not forbidden,
+        }
+
+    def _realize_explicit_conversation_act_p3_b50(
+        self,
+        reply,
+        logic,
+        user_input,
+        memory_data=None,
+    ):
+        """Perform an explicitly requested joint complaint about this topic.
+
+        M25 still owns the broad response mode (companionship).  P3-B50 adds a
+        narrower observable-act contract so generic presence cannot be counted
+        as performing a request to complain together.  Topic wording is
+        reconstructed through the existing source-first M31 authorizer rather
+        than a case-specific reply template.
+        """
+        schema = uapm.EXPLICIT_CONVERSATION_ACT_SCHEMA_P3_B50
+        logic = logic if isinstance(logic, dict) else {}
+        explicit_m25 = logic.get("explicit_desired_response_m25") or {}
+        requested = deepcopy(
+            explicit_m25.get("explicit_conversation_act_p3_b50") or {}
+        )
+        trace = {
+            "schema": schema,
+            "status": "not_applicable",
+            "reason": "explicit_joint_complaint_not_authorized",
+            "act": requested.get("act"),
+            "authoritative": bool(requested.get("authoritative")),
+            "surface_required": bool(requested.get("surface_required")),
+            "surface_authority": False,
+            "surface_status": "not_applicable",
+            "model_call_attempted": False,
+            "model_call_completed": False,
+            "source_first_authorization": False,
+            "original_reply_digest": hashlib.sha256(
+                str(reply or "").encode("utf-8")
+            ).hexdigest()[:16],
+            "evidence_digest": requested.get("evidence_digest"),
+            "cue_id": requested.get("cue_id"),
+            "matched_language": requested.get("matched_language"),
+            "raw_dialogue_persisted": False,
+            "claim_boundary": (
+                "current-turn explicit conversational act only; model-based "
+                "realization is not evidence of inferred private intent"
+            ),
+        }
+        if not (
+            requested.get("authoritative")
+            and requested.get("act") == "joint_complaint"
+            and explicit_m25.get("authoritative")
+            and explicit_m25.get("selected_policy") == "share_arousal"
+        ):
+            if requested.get("negated"):
+                trace.update(
+                    {
+                        "status": "explicit_joint_complaint_negated",
+                        "reason": "negated_request_cannot_gain_act_authority",
+                    }
+                )
+            return str(reply or "").strip(), trace
+
+        intent = str(logic.get("intent") or "")
+        scene = str(logic.get("scene") or "casual")
+        surface_act = str(logic.get("surface_act") or "plain_reply")
+        protected_reason = None
+        if logic.get("memory_use_expected"):
+            protected_reason = "memory_grounded_surface"
+        elif intent in {
+            "self_intro",
+            "crisis_support",
+            "giving_up_support",
+            "memory_uncertain",
+            "recall_name",
+            "recall_preference",
+            "recall_favorite",
+            "recall_dislike",
+            "memory_correction",
+            "recall_recent",
+        }:
+            protected_reason = f"protected_intent:{intent}"
+        elif scene in {"support", "boundary", "refusal", "ooc_defense", "crisis"}:
+            protected_reason = f"protected_scene:{scene}"
+        elif surface_act in {
+            "protective_brake",
+            "disgust_boundary",
+            "plain_identity",
+        }:
+            protected_reason = f"protected_surface_act:{surface_act}"
+        if protected_reason:
+            trace.update(
+                {
+                    "status": "protected_route_not_realized",
+                    "reason": protected_reason,
+                    "surface_status": "mismatch",
+                }
+            )
+            return str(reply or "").strip(), trace
+
+        authorizer = getattr(
+            getattr(self, "left_brain", None),
+            "authorize_literal_topic_m31",
+            None,
+        )
+        language_checker = getattr(
+            getattr(self, "right_brain", None),
+            "_user_visible_language_rejection_reasons",
+            None,
+        )
+        if not callable(authorizer) or not callable(language_checker):
+            trace.update(
+                {
+                    "status": "joint_complaint_realization_rejected",
+                    "reason": "required_authorizer_or_language_guard_unavailable",
+                    "surface_status": "mismatch",
+                }
+            )
+            return str(reply or "").strip(), trace
+        source = str(user_input or "").strip()
+        if not source:
+            trace.update(
+                {
+                    "status": "joint_complaint_realization_rejected",
+                    "reason": "current_source_unavailable",
+                    "surface_status": "mismatch",
+                }
+            )
+            return str(reply or "").strip(), trace
+
+        projection = {
+            "schema": schema,
+            "status": "source_first_joint_complaint_requested",
+            "projection_required": True,
+            "surface_authority": False,
+            "input_digest": hashlib.sha256(
+                source.encode("utf-8")
+            ).hexdigest()[:16],
+            "required_observable_act": "joint_complaint",
+            "raw_dialogue_persisted": False,
+        }
+        trace["model_call_attempted"] = True
+        try:
+            plan, authorization = authorizer(source, projection)
+        except Exception as exc:
+            trace.update(
+                {
+                    "status": "joint_complaint_realization_rejected",
+                    "reason": "source_first_authorizer_raised",
+                    "failure_type": type(exc).__name__,
+                    "surface_status": "mismatch",
+                }
+            )
+            return str(reply or "").strip(), trace
+
+        authorization = authorization or {}
+        checks = authorization.get("authorization_checks") or {}
+        failed_checks = {
+            name for name, passed in checks.items() if not passed
+        }
+        candidate = str(
+            authorization.get("response_jp")
+            or (plan or {}).get("core_message_jp")
+            or ""
+        ).strip()
+        anchors = [
+            str(value or "").strip()
+            for value in (authorization.get("surface_anchors_jp") or [])[:4]
+            if str(value or "").strip()
+        ]
+        canonical_repair = authorization.get("m32_repair_candidate") or {}
+        canonical_topic = str(
+            canonical_repair.get("subject_jp") or ""
+        ).strip()
+        canonical_summary_for_repair = str(
+            canonical_repair.get("literal_summary_jp") or ""
+        ).strip()
+        canonical_topic_is_participant = bool(
+            re.search(
+                r"(?:私|君|あなた|うち|ユーザー|アシスタント|話し手|聞き手)",
+                canonical_topic,
+            )
+        )
+        canonical_topic_act_repair = bool(
+            authorization.get("status") == "semantic_authority_rejected"
+            and canonical_repair.get("canonical_ready")
+            and canonical_topic
+            and canonical_topic in canonical_summary_for_repair
+            and not canonical_topic_is_participant
+            and checks.get("required_observable_act_preserved") is True
+            and checks.get("safe_surface_anchors_grounded_in_canonical") is True
+            and failed_checks
+            and failed_checks.issubset(
+                {
+                    "proposal_or_repair_path_valid",
+                    "safe_surface_anchors_visible",
+                    "joint_complaint_topic_anchor_present",
+                }
+            )
+        )
+        if canonical_topic_act_repair:
+            candidate = (
+                f"{canonical_topic[:48]}、またかよ。"
+                "いい加減にしてくれって。"
+            )
+            anchors = [canonical_topic[:48]]
+        candidate_reasons = language_checker(
+            candidate,
+            user_input=source,
+            logic_data=logic,
+            memory_data=memory_data,
+        )
+        signals = self._joint_complaint_surface_signals_p3_b50(candidate)
+        anchors_visible = bool(anchors) and all(
+            anchor in candidate for anchor in anchors
+        )
+        required_act_check = checks.get("required_observable_act_preserved")
+        trace.update(
+            {
+                "model_call_completed": bool(
+                    authorization.get("model_call_completed")
+                ),
+                "authorization_status": authorization.get("status"),
+                "authorization_reason": authorization.get("reason"),
+                "authorization_confidence": authorization.get("confidence"),
+                "failed_authorization_checks": [
+                    name for name, passed in checks.items() if not passed
+                ],
+                "canonical_topic_act_repair": canonical_topic_act_repair,
+                "candidate_language_reasons": list(candidate_reasons),
+                "surface_anchor_count": len(anchors),
+                "surface_anchors_visible": anchors_visible,
+                "required_observable_act_preserved": bool(required_act_check),
+                **signals,
+            }
+        )
+        authorized = bool(
+            (
+                (
+                    authorization.get("status") == "semantically_authorized"
+                    and authorization.get("surface_authority")
+                )
+                or canonical_topic_act_repair
+            )
+            and authorization.get("model_call_completed")
+            and candidate
+            and not candidate_reasons
+            and len(anchors) >= 1
+            and anchors_visible
+            and required_act_check is True
+            and signals["complaint_marker_present"]
+            and signals["generic_presence_question_or_advice_absent"]
+        )
+        if not authorized:
+            trace.update(
+                {
+                    "status": "joint_complaint_realization_rejected",
+                    "reason": "source_first_act_or_surface_check_failed",
+                    "surface_status": "mismatch",
+                }
+            )
+            return str(reply or "").strip(), trace
+
+        logic["core_message_jp"] = candidate
+        for decision_key in (
+            "desired_response_decision_m16",
+            "desired_response_decision_m17",
+            "desired_response_decision_m18",
+        ):
+            decision = logic.get(decision_key)
+            if isinstance(decision, dict) and isinstance(
+                decision.get("selected"), dict
+            ):
+                decision["selected"]["core_message_jp"] = candidate
+                decision["selected"]["realization"] = {
+                    **deepcopy(
+                        decision["selected"].get("realization") or {}
+                    ),
+                    "schema": schema,
+                    "reason": (
+                        "explicit_joint_complaint_realized_from_current_source"
+                    ),
+                }
+        trace.update(
+            {
+                "status": "joint_complaint_realized",
+                "reason": (
+                    "source_canonical_topic_deterministic_act_realized"
+                    if canonical_topic_act_repair
+                    else "explicit_act_and_source_first_surface_authorized"
+                ),
+                "surface_authority": True,
+                "surface_status": "pending_final_guard",
+                "source_first_authorization": bool(
+                    not canonical_topic_act_repair
+                ),
+                "canonical_topic_authority": canonical_topic_act_repair,
+                "surface_anchors_jp": anchors,
+                "authorized_reply_digest": hashlib.sha256(
+                    candidate.encode("utf-8")
+                ).hexdigest()[:16],
+            }
+        )
+        return candidate, trace
+
+    def _audit_explicit_conversation_act_p3_b50(self, reply, logic):
+        trace = deepcopy(
+            (logic or {}).get("explicit_conversation_act_p3_b50") or {}
+        )
+        if trace.get("schema") != uapm.EXPLICIT_CONVERSATION_ACT_SCHEMA_P3_B50:
+            return {
+                "schema": uapm.EXPLICIT_CONVERSATION_ACT_SCHEMA_P3_B50,
+                "status": "not_applicable",
+                "surface_status": "not_applicable",
+                "raw_dialogue_persisted": False,
+            }
+        if not trace.get("authoritative"):
+            trace["surface_status"] = "not_applicable"
+            return trace
+        visible = str(reply or "").strip()
+        anchors = [
+            str(value or "").strip()
+            for value in (trace.get("surface_anchors_jp") or [])
+            if str(value or "").strip()
+        ]
+        signals = self._joint_complaint_surface_signals_p3_b50(visible)
+        performed = bool(
+            trace.get("surface_authority")
+            and len(anchors) >= 1
+            and all(anchor in visible for anchor in anchors)
+            and signals["complaint_marker_present"]
+            and signals["generic_presence_question_or_advice_absent"]
+        )
+        trace.update(
+            {
+                **signals,
+                "performed": performed,
+                "surface_status": "matched" if performed else "mismatch",
+                "surface_reason": (
+                    "joint_complaint_and_current_topic_reached_final_japanese"
+                    if performed
+                    else "generic_or_unverified_surface_cannot_count_as_joint_complaint"
+                ),
+                "final_reply_digest": hashlib.sha256(
+                    visible.encode("utf-8")
+                ).hexdigest()[:16],
+                "raw_dialogue_persisted": False,
+            }
+        )
+        return trace
+
     def _repair_user_visible_semantics_m49(
         self,
         reply,
@@ -19692,6 +20190,21 @@ class UruhaBrainV4_Mac:
                 bounded_trace["visible_route_performed"] = True
                 bounded_trace["visible_reply_source"] = "bounded_budget_fallback_commitment"
                 logic["bounded_slow_path_m21"] = bounded_trace
+        reply, explicit_conversation_act_p3_b50 = (
+            self._realize_explicit_conversation_act_p3_b50(
+                reply,
+                logic,
+                user_input,
+                memory_data=mems,
+            )
+        )
+        logic["explicit_conversation_act_p3_b50"] = deepcopy(
+            explicit_conversation_act_p3_b50
+        )
+        if isinstance(logic.get("explicit_desired_response_m25"), dict):
+            logic["explicit_desired_response_m25"][
+                "explicit_conversation_act_p3_b50"
+            ] = deepcopy(explicit_conversation_act_p3_b50)
         reply_before_language_guard = reply
         reply, semantic_preserving_japanese_repair_m49 = (
             self._repair_user_visible_semantics_m49(
@@ -19723,6 +20236,31 @@ class UruhaBrainV4_Mac:
         logic["explicit_desired_response_m25"] = (
             uapm.audit_explicit_desired_response_surface_m25(reply, logic)
         )
+        explicit_conversation_act_p3_b50 = (
+            self._audit_explicit_conversation_act_p3_b50(reply, logic)
+        )
+        logic["explicit_conversation_act_p3_b50"] = deepcopy(
+            explicit_conversation_act_p3_b50
+        )
+        if isinstance(logic.get("explicit_desired_response_m25"), dict):
+            logic["explicit_desired_response_m25"][
+                "explicit_conversation_act_p3_b50"
+            ] = deepcopy(explicit_conversation_act_p3_b50)
+            if (
+                explicit_conversation_act_p3_b50.get("authoritative")
+                and explicit_conversation_act_p3_b50.get("surface_status")
+                != "matched"
+            ):
+                logic["explicit_desired_response_m25"].update(
+                    {
+                        "surface_status": "mismatch",
+                        "performed_policy": None,
+                        "performed_mode": None,
+                        "surface_reason": (
+                            "broad_mode_visible_but_explicit_conversation_act_missing"
+                        ),
+                    }
+                )
         reply, feedback_topic_surface_m28 = (
             uapm.ensure_feedback_topic_transition_m28_reaches_surface(
                 reply,
@@ -19833,6 +20371,20 @@ class UruhaBrainV4_Mac:
                 if (logic.get("explicit_desired_response_m25") or {}).get("surface_status")
                 == "mismatch"
                 else 0.62
+            ),
+        )
+        self._push_blackboard(
+            "surface",
+            "explicit_conversation_act_p3_b50",
+            deepcopy(explicit_conversation_act_p3_b50),
+            salience=(
+                1.0
+                if explicit_conversation_act_p3_b50.get("surface_status")
+                == "matched"
+                else 0.995
+                if explicit_conversation_act_p3_b50.get("surface_status")
+                == "mismatch"
+                else 0.66
             ),
         )
         self._push_blackboard(
@@ -20030,6 +20582,9 @@ class UruhaBrainV4_Mac:
             ),
             "semantic_preserving_japanese_repair_m49": deepcopy(
                 logic.get("semantic_preserving_japanese_repair_m49") or {}
+            ),
+            "explicit_conversation_act_p3_b50": deepcopy(
+                logic.get("explicit_conversation_act_p3_b50") or {}
             ),
             "correction_aware_surface_m20": deepcopy(
                 logic.get("correction_aware_surface_m20") or {}

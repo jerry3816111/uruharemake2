@@ -1586,6 +1586,9 @@ def collect_cognitive_graph(result):
     semantic_japanese_repair_m49_id = node_id_for(
         "japanese_semantic_repair_m49"
     )
+    explicit_conversation_act_p3_b50_id = node_id_for(
+        "explicit_conversation_act_p3_b50"
+    )
     visible_language_guard_id = node_id_for("visible_language_guard")
     correction_id = node_id_for("correction_aware_surface_m20")
     correction_surface_id = node_id_for("correction_surface_commit_m20")
@@ -1753,13 +1756,25 @@ def collect_cognitive_graph(result):
     add_edge(current_semantic_commit_m48_id, adaptive_surface_id, "is-understanding")
     add_edge(
         current_semantic_commit_m48_id or adaptive_surface_id,
-        semantic_japanese_repair_m49_id,
+        explicit_conversation_act_p3_b50_id
+        or semantic_japanese_repair_m49_id,
         "is-understanding",
     )
     add_edge(
-        semantic_japanese_repair_m49_id,
+        explicit_conversation_act_p3_b50_id,
+        semantic_japanese_repair_m49_id or visible_language_guard_id,
+        "is-understanding",
+    )
+    add_edge(
+        semantic_japanese_repair_m49_id
+        or explicit_conversation_act_p3_b50_id,
         visible_language_guard_id or "turn-output",
         "is-understanding",
+    )
+    add_edge(
+        explicit_mode_id,
+        explicit_conversation_act_p3_b50_id,
+        "is-pragmatic",
     )
     add_edge(visible_language_guard_id, "turn-output", "is-personhood")
     add_edge(adaptive_surface_id, correction_surface_id or "turn-output", "is-personhood")

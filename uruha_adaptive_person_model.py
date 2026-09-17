@@ -32,6 +32,9 @@ DIMENSION_SCHEMA = "uruha_composable_response_dimensions_m18"
 CORRECTION_SCHEMA = "uruha_correction_aware_surface_m20"
 DESIRED_RESPONSE_MODE_SCHEMA = "uruha_desired_response_mode_m23"
 EXPLICIT_DESIRED_RESPONSE_SCHEMA_M25 = "uruha_cross_lingual_explicit_desired_response_m25"
+EXPLICIT_CONVERSATION_ACT_SCHEMA_P3_B50 = (
+    "uruha_explicit_conversation_act_p3_b50"
+)
 IMPLICIT_RESPONSE_DISTRIBUTION_SCHEMA_M26 = (
     "uruha_outcome_calibrated_implicit_response_distribution_m26"
 )
@@ -890,6 +893,117 @@ def _compositional_explicit_response_matches_m36(text, negated_policies):
     return rows
 
 
+def classify_explicit_conversation_act_p3_b50(user_input):
+    """Detect an explicit request to complain *with* the user.
+
+    A joint complaint is not equivalent to generic companionship and is also
+    distinct from teasing the user.  Only an observable current-turn request
+    grants authority.  Ordinary negative content and inferred frustration do
+    not activate this contract.
+    """
+    text = str(user_input or "")
+    lowered = text.lower()
+    negative_patterns = {
+        "zh": [
+            r"(?:不要|不用|別|别)(?:再)?(?:陪我|跟我|和我|一起)(?:一起)?(?:來|来)?(?:吐槽|抱怨)",
+            r"不是(?:要|叫)你(?:陪我|跟我|和我|一起)(?:一起)?(?:來|来)?(?:吐槽|抱怨)",
+        ],
+        "en": [
+            r"\b(?:don['’]?t|do\s+not).{0,24}(?:complain|rant).{0,12}(?:with\s+me|together)\b",
+            r"\bnot\s+asking\s+you\s+to.{0,16}(?:complain|rant)\b",
+        ],
+        "ja": [
+            r"一緒に.{0,8}(?:愚痴|文句|ツッコ|ぼや).{0,8}(?:ないで|なくていい)",
+            r"(?:愚痴|文句).{0,8}(?:付き合わなくていい|言わないで)",
+        ],
+    }
+    positive_patterns = {
+        "zh": [
+            r"(?:陪我|跟我|和我)(?:一起)?(?:來|来)?(?:吐槽|抱怨)",
+            r"(?:跟|和)我一起(?:來|来)?(?:吐槽|抱怨)",
+            r"一起(?:來|来)?(?:吐槽|抱怨)(?:一下)?",
+        ],
+        "en": [
+            r"\b(?:complain|rant)\s+with\s+me\b",
+            r"\bjoin\s+me\s+in\s+(?:complaining|ranting)\b",
+            r"\blet['’]?s\s+(?:complain|rant)\b",
+        ],
+        "ja": [
+            r"一緒に.{0,8}(?:愚痴って|文句(?:言って|言おう)|ツッコんで|ぼやいて)",
+            r"(?:愚痴|文句).{0,8}(?:付き合って|一緒に言って)",
+        ],
+    }
+    negated_languages = {
+        language
+        for language, patterns in negative_patterns.items()
+        if any(re.search(pattern, lowered, re.I) for pattern in patterns)
+    }
+    matches = []
+    for language, patterns in positive_patterns.items():
+        if language in negated_languages:
+            continue
+        for pattern_index, pattern in enumerate(patterns, start=1):
+            for match in re.finditer(pattern, lowered, re.I):
+                matches.append(
+                    {
+                        "language": language,
+                        "cue_id": f"joint_complaint:{language}:b50:{pattern_index}",
+                        "position": match.start(),
+                        "specificity": len(match.group(0)),
+                    }
+                )
+    matches.sort(
+        key=lambda row: (row["position"], row["specificity"]),
+        reverse=True,
+    )
+    selected = deepcopy(matches[0]) if matches else {}
+    protected_risk_cue = _contains(
+        lowered,
+        [
+            "想死", "不想活", "自殺", "自杀",
+            "want to die", "kill myself", "end my life",
+            "死にたい", "自殺したい", "消えたい",
+        ],
+    )
+    authoritative = bool(selected and not protected_risk_cue)
+    return {
+        "schema": EXPLICIT_CONVERSATION_ACT_SCHEMA_P3_B50,
+        "status": (
+            "blocked_by_protected_risk_cue"
+            if selected and protected_risk_cue
+            else "explicit_joint_complaint_requested"
+            if selected
+            else "explicit_joint_complaint_negated"
+            if negated_languages
+            else "not_detected"
+        ),
+        "detected": bool(selected),
+        "act": "joint_complaint" if selected else None,
+        "selected_policy": "share_arousal" if selected else None,
+        "authority": (
+            "current_explicit_conversation_act"
+            if authoritative
+            else "protected_risk_route"
+            if selected and protected_risk_cue
+            else "not_applicable"
+        ),
+        "authoritative": authoritative,
+        "negated": bool(negated_languages),
+        "negated_languages": sorted(negated_languages),
+        "matched_language": selected.get("language"),
+        "cue_id": selected.get("cue_id"),
+        "match_position": selected.get("position"),
+        "surface_required": authoritative,
+        "surface_status": "pending" if authoritative else "not_applicable",
+        "evidence_digest": _digest(text),
+        "claim_boundary": (
+            "explicit request to perform a joint complaint only; ordinary "
+            "negative content does not authorize the act"
+        ),
+        "raw_dialogue_persisted": False,
+    }
+
+
 def classify_explicit_desired_response_m25(user_input):
     """Detect an explicitly requested response form across Chinese/English/Japanese.
 
@@ -898,6 +1012,9 @@ def classify_explicit_desired_response_m25(user_input):
     """
     text = str(user_input or "")
     lowered = text.lower()
+    explicit_conversation_act_p3_b50 = (
+        classify_explicit_conversation_act_p3_b50(text)
+    )
     positive = {
         "listen_presence": {
             "zh": ["聽我說", "听我说", "聽我講", "听我讲", "先聽我", "先听我", "只要聽", "只要听"],
@@ -978,6 +1095,22 @@ def classify_explicit_desired_response_m25(user_input):
             negated_policies,
         )
     )
+    if explicit_conversation_act_p3_b50.get("detected"):
+        matches.append(
+            {
+                "policy_id": "share_arousal",
+                "mode": POLICY_TO_RESPONSE_MODE_M23["share_arousal"],
+                "language": explicit_conversation_act_p3_b50.get(
+                    "matched_language"
+                ),
+                "cue_id": explicit_conversation_act_p3_b50.get("cue_id"),
+                "position": int(
+                    explicit_conversation_act_p3_b50.get("match_position")
+                    or 0
+                ),
+                "specificity": 1000,
+            }
+        )
     matches.sort(
         key=lambda row: (row["position"], row["specificity"]),
         reverse=True,
@@ -1037,6 +1170,19 @@ def classify_explicit_desired_response_m25(user_input):
         "compositional_match_count_m36": len(compositional_cue_ids_m36),
         "compositional_cue_ids_m36": compositional_cue_ids_m36[:12],
         "protected_risk_cue": protected_risk_cue,
+        "explicit_conversation_act_p3_b50": {
+            **explicit_conversation_act_p3_b50,
+            "authoritative": bool(
+                explicit_conversation_act_p3_b50.get("authoritative")
+                and not protected_risk_cue
+            ),
+            "authority": (
+                "protected_risk_route"
+                if protected_risk_cue
+                and explicit_conversation_act_p3_b50.get("detected")
+                else explicit_conversation_act_p3_b50.get("authority")
+            ),
+        },
         "evidence_digest": _digest(text),
         "claim_boundary": "explicit surface request only; not private-state inference",
         "raw_dialogue_persisted": False,
@@ -3562,6 +3708,31 @@ def decide_response(state, model):
             "schema": "uruha_explicit_request_realization_m25",
             "reason": "current_cross_lingual_explicit_response_request_is_surface_authority",
         }
+    explicit_conversation_act_p3_b50 = deepcopy(
+        explicit_request_m25.get("explicit_conversation_act_p3_b50") or {}
+    )
+    joint_complaint_authoritative = bool(
+        request_authoritative
+        and selected.get("policy_id") == "share_arousal"
+        and explicit_conversation_act_p3_b50.get("detected")
+        and explicit_conversation_act_p3_b50.get("act")
+        == "joint_complaint"
+        and explicit_conversation_act_p3_b50.get("authority")
+        == "current_explicit_conversation_act"
+    )
+    if explicit_conversation_act_p3_b50:
+        explicit_conversation_act_p3_b50.update(
+            {
+                "authoritative": joint_complaint_authoritative,
+                "surface_required": joint_complaint_authoritative,
+                "surface_status": (
+                    "pending"
+                    if joint_complaint_authoritative
+                    else "not_applicable"
+                ),
+                "raw_dialogue_persisted": False,
+            }
+        )
     explicit_request_m25.update(
         {
             "authoritative": request_authoritative,
@@ -3570,6 +3741,9 @@ def decide_response(state, model):
             "selected_mode": POLICY_TO_RESPONSE_MODE_M23.get(selected.get("policy_id")) if request_authoritative else explicit_request_m25.get("selected_mode"),
             "surface_required": request_authoritative,
             "surface_status": "pending" if request_authoritative else "not_applicable",
+            "explicit_conversation_act_p3_b50": (
+                explicit_conversation_act_p3_b50
+            ),
             "raw_dialogue_persisted": False,
         }
     )
