@@ -2,29 +2,26 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B51 prospective temporal forecast protocol freeze
+## 唯一下一步：P3-B52 metadata-only prospective source freeze
 
-狀態：**P3-B50 explicit conversational-act fidelity 完成。** 曝光輸入
-`現在先別分析，陪我吐槽一下這些註解怎麼會一直長出來。` 的可見輸出由泛用陪伴
-`うん。今は質問しないで、ちょっとここにいる。` 改為隔離本機真實模型輸出
-`これらの注釈、うざい、またかよ`。跨中英日明示共同吐槽、否定、普通負面文字、陪伴、吐槽使用者、
-危機與participant-as-topic邊界均有contract測試；48 focused／125 affected regression通過。
-開發過程共13次本機qwen3.5:9b calls，失敗與`私と君`錯誤輸出保留；token未掛ledger。
-完整證據見`analysis/p3_b50_explicit_conversation_act_acceptance_2026-09-17.md`。
-這仍是曝光dev機制證據，不是fresh holdout、人評、Safari或正式優勢。
+狀態：**P3-B51 temporal forecast bridge完成。** 可執行audit證實新的Task A不應另造runner：既有M55/M56
+已涵蓋current-context、persona-prompt、RAG、同資訊B5與Ours五個角色，且保留temporal cutoff、
+prediction-before-outcome commitment、separate scorer、Brier/NLL、same-model與實際資源帳本。
+14/14 checks true、75 affected tests通過、6個2026 primary sources被pin到模組用途；0 model calls、
+0 target-outcome access、0 formal result。詳見
+`analysis/p3_b51_temporal_forecast_bridge_acceptance_2026-09-17.md`。B51證明協定相容與不需分叉，
+不證明預測能力，也不解除既有M55/M56真人與資料gate。
 
-### P3-B51 before 與單一交付
+### P3-B52 before 與單一交付
 
-到B50為止，產品已能改善已知對話失敗，但仍不能回答長期研究最重要的問題：加入可追溯的人物狀態、
-記憶與關係模型後，是否能在**看不到未來答案**時，比相同模型的context-only／persona-prompt／retrieval
-條件更準確預測特定人物接下來的response category。若沒有時間切割與預先承諾，對已看過對話的修正只能證明
-工程能修case，不能證明「人類反應方程式」具有預測價值。
+下一個真正新增的研究資料必須是全新、未因產品修正而曝光的public source，而且選擇規則不能利用未來回覆
+是否對系統有利。B52只建立metadata-only候選清單與deterministic selection receipt：先固定reference-person、
+允許平台、發布日期範圍、語言／互動型態納入條件、排除條件、排序seed與source metadata hash，再由程式選出
+一個source ID。選擇階段不得下載／轉錄／觀看target segment、不得建立gold、不得執行模型或改正式M56 artifacts。
 
-B51只建立不可偷看答案的Task A protocol與機器可檢查schema，依
-`research/2026_related_work_module_map_2026-09-17.md`引用的2026工作，固定：歷史cutoff、future-context、
-四個matched-model條件、response／speech-act機率分布、bounded rationale variables、unlock前後狀態、
-資源上限與失敗判準。此步不得讀取或寫入future response，不執行生成，也不選有利case；先用純合成fixture
-驗證封存、雜湊、機率與leakage fail-closed。真正來源選擇與future unlock留到下一個經設計審查的task。
+驗收必須用合成metadata證明相同輸入必得相同source、title／description等可能洩漏未來內容的欄位fail-closed、
+替換候選或seed會改receipt、空集合明確失敗。實際網路來源若無法只靠安全metadata取得，就保留B52 blocked，
+不可為了前進而先看內容挑case。
 
 ## 工作環境
 
