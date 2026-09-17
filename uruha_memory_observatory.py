@@ -1222,6 +1222,11 @@ def _graph_signal(payload):
                 f"{payload.get('policy_id') or 'inactive'} · visible {str(bool(payload.get('policy_performed'))).lower()}",
                 42,
             )
+        if schema == "uruha_current_turn_semantic_commit_m48":
+            return _trim(
+                f"{payload.get('scope_domain', 'unknown')} · preserve {str(bool(payload.get('current_turn_semantics_preserved'))).lower()}",
+                42,
+            )
         if schema == "uruha_human_priority_scheduler_m19":
             return _trim(
                 f"{payload.get('last_decision', 'waiting')} · humans {payload.get('human_waiters', 0)}",
@@ -1570,6 +1575,9 @@ def collect_cognitive_graph(result):
     desired_prediction_id = node_id_for("desired_response_prediction_m18", "desired_response_prediction_m17", "desired_response_prediction_m16")
     adaptive_persistence_id = node_id_for("adaptive_person_persistence_m18", "adaptive_person_persistence_m17", "adaptive_person_persistence_m16")
     adaptive_surface_id = node_id_for("adaptive_person_surface_commitment_m18", "adaptive_person_surface_commitment_m17", "adaptive_person_surface_commitment_m16")
+    current_semantic_commit_m48_id = node_id_for(
+        "current_turn_semantic_commit_m48"
+    )
     correction_id = node_id_for("correction_aware_surface_m20")
     correction_surface_id = node_id_for("correction_surface_commit_m20")
     surface_delivery_id = node_id_for("surface_delivery_m20")
@@ -1732,7 +1740,8 @@ def collect_cognitive_graph(result):
     add_edge(bounded_planner_id, action_choice_id or decision_id, "is-active")
     add_edge(desired_prediction_id, action_choice_id or decision_id, "is-personhood")
     add_edge(correction_id, desired_prediction_id, "is-understanding")
-    add_edge(action_choice_id or decision_id, adaptive_surface_id, "is-personhood")
+    add_edge(action_choice_id or decision_id, current_semantic_commit_m48_id or adaptive_surface_id, "is-personhood")
+    add_edge(current_semantic_commit_m48_id, adaptive_surface_id, "is-understanding")
     add_edge(adaptive_surface_id, correction_surface_id or "turn-output", "is-personhood")
     add_edge(desired_mode_id, desired_mode_surface_id, "is-personhood")
     add_edge(desired_mode_surface_id, "turn-output", "is-personhood")

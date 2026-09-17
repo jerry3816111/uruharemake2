@@ -18984,6 +18984,21 @@ class UruhaBrainV4_Mac:
             },
             salience=0.97 if desired_response_decision.get("selected") else 0.68,
         )
+        current_turn_semantic_commit_m48 = deepcopy(
+            logic.get("current_turn_semantic_commit_m48") or {}
+        )
+        if current_turn_semantic_commit_m48:
+            self._push_blackboard(
+                "select",
+                "current_turn_semantic_commit_m48",
+                current_turn_semantic_commit_m48,
+                salience=(
+                    0.995
+                    if current_turn_semantic_commit_m48.get("status")
+                    == "current_turn_semantics_preserved_cross_domain"
+                    else 0.9
+                ),
+            )
         self._push_blackboard(
             "write",
             "adaptive_person_persistence_m18",
@@ -19615,6 +19630,9 @@ class UruhaBrainV4_Mac:
             "desired_response_decision_m18": deepcopy(self.runtime.last_desired_response_decision),
             "adaptive_person_persistence_m18": deepcopy(self.runtime.last_adaptive_person_persistence),
             "adaptive_person_surface_commitment_m18": deepcopy(adaptive_surface_commitment),
+            "current_turn_semantic_commit_m48": deepcopy(
+                logic.get("current_turn_semantic_commit_m48") or {}
+            ),
             "correction_aware_surface_m20": deepcopy(
                 logic.get("correction_aware_surface_m20") or {}
             ),

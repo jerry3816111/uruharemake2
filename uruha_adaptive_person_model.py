@@ -43,6 +43,7 @@ SEMANTIC_AUTHORIZATION_SCHEMA_M31 = "uruha_semantic_authorization_m31"
 SEMANTIC_COMMIT_REPAIR_SCHEMA_M32 = "uruha_deterministic_semantic_commit_m32"
 TRIGGER_RELATION_SCHEMA_M37 = "uruha_pragmatic_trigger_relation_m37"
 TRIGGER_RELATION_UPDATE_SCHEMA_M37 = "uruha_pragmatic_trigger_relation_update_m37"
+CURRENT_TURN_SEMANTIC_COMMIT_SCHEMA_M48 = "uruha_current_turn_semantic_commit_m48"
 STORE_VERSION = 5
 DEFAULT_SCOPE_TTL_REVISIONS = 24
 M37_TRIGGER_RELATION_TTL_REVISIONS = 48
@@ -3933,6 +3934,7 @@ def apply_implicit_response_gate_m26(state, decision, contract):
 def apply_decision_to_plan(plan, decision):
     updated = deepcopy(plan or {})
     selected = (decision or {}).get("selected") or {}
+    original_core = str(updated.get("core_message_jp") or "").strip()
     intent = str(updated.get("intent") or "")
     scene = str(updated.get("scene") or "")
     protected_reason = None
@@ -3970,12 +3972,29 @@ def apply_decision_to_plan(plan, decision):
     explicit_request_m25 = deepcopy(
         (decision or {}).get("explicit_desired_response_m25") or {}
     )
+    decision_state = deepcopy((decision or {}).get("state") or {})
+    context_scope = deepcopy(
+        decision_state.get("context_scope")
+        or (decision or {}).get("context_scope")
+        or {}
+    )
+    scope_domain = str(context_scope.get("domain") or "unspecified")
+    policy_semantic_domain = "arousal_regulation"
+    current_turn_surface_authority = bool(
+        correction_directive.get("authoritative")
+        or explicit_request_m25.get("authoritative")
+    )
+    semantic_template_authorized = bool(
+        scope_domain == policy_semantic_domain
+        or current_turn_surface_authority
+        or not original_core
+    )
     correction_must_surface = bool(
         correction_directive.get("authoritative")
         or updated.get("intent") == "pragmatic_revision"
         or pragmatic_strategy.get("outcome_status") == "contradicted"
     )
-    if correction_directive.get("authoritative"):
+    if correction_directive.get("authoritative") and semantic_template_authorized:
         updated["core_message_jp"] = str(selected.get("core_message_jp") or "").strip()
         updated["reply_goal"] = f"先短く認め、使用者が明示した返され方をそのまま実行する：{selected['instruction']}"
         updated["response_mode"] = "correction_repair"
@@ -3985,7 +4004,10 @@ def apply_decision_to_plan(plan, decision):
             forbidden.extend(SURFACE_VARIANTS[revoked])
         updated["must_avoid"] = list(dict.fromkeys(forbidden))
     elif explicit_request_m25.get("authoritative"):
-        updated["core_message_jp"] = str(selected.get("core_message_jp") or "").strip()
+        if semantic_template_authorized:
+            updated["core_message_jp"] = str(selected.get("core_message_jp") or "").strip()
+        else:
+            updated["core_message_jp"] = original_core
         updated["reply_goal"] = (
             "使用者が今この返され方を明示したため、分析を見せず自然にその形式を実行する："
             f"{selected['instruction']}"
@@ -3998,13 +4020,49 @@ def apply_decision_to_plan(plan, decision):
     elif correction_must_surface and str(updated.get("core_message_jp") or "").strip():
         original_core = str(updated.get("core_message_jp") or "").strip()
         policy_core = str(selected.get("core_message_jp") or "").strip()
-        if policy_core and policy_core not in original_core:
+        if semantic_template_authorized and policy_core and policy_core not in original_core:
             updated["core_message_jp"] = f"{original_core} {policy_core}"
         updated["reply_goal"] = f"先承認上一輪誤解，再依修正後需求回應：{selected['instruction']}"
     else:
-        updated["core_message_jp"] = selected["core_message_jp"]
+        updated["core_message_jp"] = (
+            selected["core_message_jp"]
+            if semantic_template_authorized
+            else original_core
+        )
         updated["reply_goal"] = selected["instruction"]
         updated["response_mode"] = response_modes[policy_id]
+    final_core = str(updated.get("core_message_jp") or "").strip()
+    semantic_commit_m48 = {
+        "schema": CURRENT_TURN_SEMANTIC_COMMIT_SCHEMA_M48,
+        "status": (
+            "policy_semantic_template_authorized_in_domain"
+            if scope_domain == policy_semantic_domain
+            else "policy_semantic_template_authorized_by_current_turn"
+            if current_turn_surface_authority
+            else "policy_semantic_template_fallback_no_existing_core"
+            if not original_core
+            else "current_turn_semantics_preserved_cross_domain"
+        ),
+        "scope_domain": scope_domain,
+        "policy_semantic_domain": policy_semantic_domain,
+        "selected_policy": policy_id,
+        "current_turn_surface_authority": current_turn_surface_authority,
+        "semantic_template_authorized": semantic_template_authorized,
+        "current_turn_semantics_preserved": bool(
+            original_core and final_core == original_core
+        ),
+        "semantic_core_changed": final_core != original_core,
+        "original_core_digest": _digest(original_core) if original_core else None,
+        "final_core_digest": _digest(final_core) if final_core else None,
+        "policy_reference_digest": _digest(selected.get("core_message_jp") or ""),
+        "claim_boundary": (
+            "response policy may shape interaction style, but its arousal-domain "
+            "example sentence cannot replace current-turn semantics in another domain "
+            "without current-turn explicit authority"
+        ),
+        "raw_dialogue_persisted": False,
+    }
+    updated["current_turn_semantic_commit_m48"] = semantic_commit_m48
     updated["desired_response_policy_m16"] = policy_id
     updated["desired_response_decision_m16"] = deepcopy(decision)
     updated["desired_response_policy_m17"] = policy_id
@@ -4019,11 +4077,16 @@ def apply_decision_to_plan(plan, decision):
     )
     updated["adaptive_person_model_m16"] = {
         "applied": True,
-        "reason": "desired_response_prediction_authorized_plan_content",
+        "reason": (
+            "desired_response_prediction_authorized_plan_content"
+            if semantic_template_authorized
+            else "desired_response_policy_applied_without_cross_domain_semantic_override"
+        ),
         "policy_id": policy_id,
         "prediction_id": decision.get("prediction_id"),
         "utility_margin": decision.get("utility_margin"),
         "correction_acknowledgement_preserved": correction_must_surface,
+        "current_turn_semantic_commit_m48": deepcopy(semantic_commit_m48),
     }
     updated["adaptive_person_model_m17"] = deepcopy(
         updated["adaptive_person_model_m16"]

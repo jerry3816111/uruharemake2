@@ -2,17 +2,17 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B48 current-turn semantic commit design and mechanism repair
+## 唯一下一步：P3-B49 semantic-preserving Japanese repair
 
-狀態：**P3-B47 case01 developer-proxy audit完成。** 兩條件都未通過：產品11/20（日文4/4，但required acts 0/4、source grounding 0/4）；direct 12/20（source grounding 3/4，但自然日文1/4）。兩邊u4都只有2/5並違反明示互動要求；case02/03是`not_generated`，沒有batch winner。6 focused tests通過；此為同專案Codex proxy診斷，不是真人人評或formal holdout。
+狀態：**P3-B48 current-turn semantic commit完成。** 跨領域的`arousal_regulation` policy可以調整互動形式，但沒有當輪明示／修正授權時，不再把已grounded的當輪語意換成睡眠／腦袋停不下來模板。before `第三版まで来て、また注釈かよ。` -> `寝てないのか…`；after保留`第三版まで来て、また注釈かよ。`，且未實際surface的policy不再假標performed。6專測與164項直接依賴回歸通過；0 model/network call。這是曝光case衍生的mechanism證據，不是fresh比較或人評。
 
-### P3-B48 before 與單一交付
+### P3-B49 before 與單一交付
 
-B47 trace顯示不是單純記憶檢索錯誤：u1上游已有當輪grounded候選，卻被`calibrate_need`固定睡眠模板覆蓋；u2正確偵測「不用列方法」，最終仍沿用同一無關模板；u3中文核心經language fallback後遺失語意；u4把「陪我吐槽」壓成`share_arousal`泛用陪伴。共同缺口是最終surface只驗日文／policy形狀，沒有要求當輪topic與明示conversation act仍存在。
+B47 u3已有含正確抱怨內容的中間核心`連註解都不停，真煩人。`，但它不是日文；既有repair將core設成`日本語だけで、元の意味を落とさず言い直す`，模型仍輸出內部改寫指令後，安全fallback改成泛用`ん、その話もう少し聞かせて。`。日文guard擋住錯誤語言是正確的，缺口是fallback完全遺失當輪可觀察語意。
 
-B48先鎖定一個general invariant與最小integration seam：在policy選擇、語言修復之後且寫回／UI之前，建立current-turn semantic commit，使用現有可觀察source evidence、explicit request span與上游grounded candidate核對最後話語；不讀私人心理、不用case-specific全文、不把中文原句洩漏到日文輸出。修復只能針對此commit失敗，優先保留已通過的grounded候選或觸發既有日文realization，不能再以無主題generic presence假裝通過。
+B49只處理這一個語言邊界：在visible-language fallback前加入可審核的semantic-preserving Japanese repair seam。它只能使用當輪既有core／source evidence，輸出必須通過既有日文guard；不得把中文原句直接洩漏到可見surface、不得以case全文或新固定回覆追分、不得繞過crisis／identity／speaker-recall guards。若無法可靠保留語意，必須明確trace失敗而非假稱理解。
 
-驗收先用曝光case01作dev regression與反例定位（不得當fresh evidence），再用未參與規則編寫的合成反例驗證：無關但流暢模板會被拒絕、當輪topic＋act保留、日文surface／危機／identity／speaker recall guards不退化。完成mechanism後另建全新source才可再次做prospective比較；不得重跑v3 release追分。
+驗收先保留原本錯誤的before證據，再以不使用case全文的合成中文／英文core核對：repair後自然日文仍保留topic與act、generic fallback只在repair真正不可用時啟動、內部指令不可見、既有日文／危機／identity／speaker recall guards不退化。曝光u3只能當dev replay，不得當fresh evidence；不得重跑v3 release追分。完成後下一個獨立變因才是u4 explicit conversational-act taxonomy。
 
 ## 工作環境
 
