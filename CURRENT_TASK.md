@@ -2,26 +2,25 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B52 metadata-only prospective source freeze
+## 唯一下一步：P3-B52 source-metadata transport design review
 
-狀態：**P3-B51 temporal forecast bridge完成。** 可執行audit證實新的Task A不應另造runner：既有M55/M56
-已涵蓋current-context、persona-prompt、RAG、同資訊B5與Ours五個角色，且保留temporal cutoff、
-prediction-before-outcome commitment、separate scorer、Brier/NLL、same-model與實際資源帳本。
-14/14 checks true、75 affected tests通過、6個2026 primary sources被pin到模組用途；0 model calls、
-0 target-outcome access、0 formal result。詳見
-`analysis/p3_b51_temporal_forecast_bridge_acceptance_2026-09-17.md`。B51證明協定相容與不需分叉，
-不證明預測能力，也不解除既有M55/M56真人與資料gate。
+狀態：**P3-B52 selector工程完成，但實際來源封存為REVIEW_REQUIRED。** V1先封存flat-playlist規則後執行，
+第一筆只得到ID、缺日期與長度，fail-closed；該失敗先提交，V2再保持channel、日期／時長範圍、7個排除ID、
+seed、score與winner不變，只改為六欄allowlisted full metadata transport。V2亦在已提交freeze後執行，
+`yt-dlp exit 1`。依最多兩個修正批次規則停止，不第三次重跑或改規則追結果。
 
-### P3-B52 before 與單一交付
+兩次合計：0 selected source、0 receipt、0 title／description／transcript storage、0 target segment access、
+0 future-response access、0 gold、0 model calls、0 formal M56 changes。24項B51/B52 contract測試在V2前通過；
+詳細反例與選項見`analysis/p3_b52_metadata_only_source_freeze_review_required_2026-09-17.md`。
 
-下一個真正新增的研究資料必須是全新、未因產品修正而曝光的public source，而且選擇規則不能利用未來回覆
-是否對系統有利。B52只建立metadata-only候選清單與deterministic selection receipt：先固定reference-person、
-允許平台、發布日期範圍、語言／互動型態納入條件、排除條件、排序seed與source metadata hash，再由程式選出
-一個source ID。選擇階段不得下載／轉錄／觀看target segment、不得建立gold、不得執行模型或改正式M56 artifacts。
+### REVIEW_REQUIRED決策
 
-驗收必須用合成metadata證明相同輸入必得相同source、title／description等可能洩漏未來內容的欄位fail-closed、
-替換候選或seed會改receipt、空集合明確失敗。實際網路來源若無法只靠安全metadata取得，就保留B52 blocked，
-不可為了前進而先看內容挑case。
+優先選項是A：若使用者願意提供自己的YouTube Data API credential/quota，以官方結構資料建立V3；不讀取或保存key。
+沒有API credential時建議C：先用官方Atom feed的channel/video/date依原seed選一個ID，再對**該一個ID**做
+duration／completed-livestream post-selection檢查；不合格就保留失敗，不能選次名。C會改變eligibility與selection順序，
+因此必須先另立V3 freeze，不能把它當B52自動retry。B為可信人員提供八欄sanitized manifest。
+
+未完成此設計選擇前，不新增來源、不進入target segment、不建立B53 event boundary或任何generation。
 
 ## 工作環境
 
