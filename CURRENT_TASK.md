@@ -2,28 +2,25 @@
 
 更新：2026-09-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B53 content-blind temporal boundary freeze
+## 唯一下一步：P3-B54 unidirectional observable-context extraction
 
-狀態：**P3-B52完成。** 使用者在REVIEW_REQUIRED後授權繼續，採官方Atom先選ID、單一ID post-check、
-不合格不可換次名的C方案。V3首次Atom存取在0 response bytes處因本機CA失敗並保留；V4只改用已安裝
-certifi CA且維持TLS/hostname驗證，事前36項B51/B52 tests通過後執行成功。
+狀態：**P3-B53完成。** 在0 media／title／transcript／segment access下，只依B52的source ID與11,497秒
+duration生成32個合法cutoff候選並固定唯一界線：observable context `3000..3180`、cutoff `3180`、
+hidden future `3181..3241`；前後安全距離為3000／8256秒。receipt
+`0c190de102962657a1ed121fd8ff01853584ed8afdd3b4070ffdb25042f63f5a`。事前19項B51/B52/B53相關測試
+通過後才計算；0 media request、0 playback、0 transcript、0 future access、0 gold、0 model calls。
+完整release：`research/p3_b53_content_blind_temporal_boundary_release_2026-09-17.json`。
 
-固定seed由15個Atom candidates中選出`youtube_4y5GiQpgJgo`（published `2026-09-05`）；14筆通過
-preselection，1筆在日期窗外，0已知來源。唯一post-check確認duration 11,497秒、public、was_live、官方頻道，
-沒有replacement。receipt `2c3e7f8e5e45a3b763cffb746a537ac8acfa0e32721119c718234e65294e5805`；
-0 title／description／transcript、0 target segment、0 future response、0 gold、0 model calls、0 M56 changes。
-完整release：`research/p3_b52_metadata_only_source_selection_v4_release_2026-09-17.json`。
+### P3-B54 before 與單一交付
 
-### P3-B53 before 與單一交付
+B54建立capability-separated context extractor：generation側只能取得`3000 <= t <= 3180`的衍生artifact，
+不能取得、列舉或雜湊`3180`後內容；future `3181..3241`維持另一權限、此步不解鎖。先凍結transport、
+時間裁切容許誤差、原始暫存刪除、ffprobe duration gate、artifact hash與禁止欄位；若供應商／codec為精確裁切而
+多抓buffer，該原始transport只能存在隔離worker，必須先裁成不超過cutoff的artifact，generation process永遠只收
+final artifact與manifest，且報告transport fetch和generation-visible範圍差異。
 
-B52只固定來源，還沒有可以預測的時間點。B53必須在任何media／transcript／target segment存取前，僅依
-source ID與duration產生一個deterministic時間界線：固定頭尾安全邊界、observable-context長度、hidden-future長度、
-候選cutoff grid、seed與hash排序，選出唯一`observable_input_start_seconds < prediction_cutoff_seconds <
-observable_behavior_start_seconds < observable_behavior_end_seconds`。
-
-先用合成duration驗證同輸入同boundary、改seed／duration會改receipt、太短來源fail-closed、所有區間不重疊且
-落在影片內。實際B53只能輸出秒數與雜湊，不讀取、下載或播放選定來源，不建立behavior label或模型輸入。
-通過後才可另立B54，讓人工／隔離工具只看cutoff前context並把future outcome保持封存。
+先以合成媒體驗證：cutoff後的已知sentinel不會進artifact、超長輸出fail-closed、manifest不含URL／future metadata、
+重啟後hash可重驗。再決定是否對B53來源執行一次context-only取得；不得在同一步建立future outcome或執行預測。
 
 ## 工作環境
 
