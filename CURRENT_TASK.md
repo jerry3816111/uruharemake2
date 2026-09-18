@@ -2,7 +2,7 @@
 
 更新：2026-09-19。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B56 allowlisted diagnostic observable-context transport
+## 唯一下一步：P3-B57 split resolver/direct-ffmpeg design review（REVIEW_REQUIRED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -16,7 +16,7 @@ B55 V1因ffmpeg version flag錯誤在0 network時fail；保存後V2只把`--vers
 0 playback／semantic inspection／prediction／model。依事前規則不再重試或追加修正。完整反例與選項：
 `analysis/p3_b55_reserved_source_context_transport_review_required_2026-09-18.md`。
 
-### 2026-09-19 設計審查決定與單一交付
+### B56 執行結果與新設計審查
 
 使用者以「請繼續」授權review建議1，覆蓋B55 `next_execution_authorized=false`，但不改其他邊界。B56另凍結
 一次diagnostic transport，使用相同source、`*3000-3180`、工具、0 retry／fallback與B54 public gate；private worker
@@ -28,6 +28,15 @@ authentication、TLS／network、extractor／format、ffmpeg／postprocessing、
 若失敗，保存category、return code、stderr byte count與elapsed，0 public artifact後停止。不得再次修正／重跑，不得登入、
 cookies、換來源、改cutoff、存stderr文字、人工播放／語意檢查、取得hidden future、執行prediction／model、寫正式M56或
 production memory。
+
+B56事前41項通過後消耗唯一請求：yt-dlp在2.944204秒exit 1，診斷類別`ffmpeg_or_postprocessing`，stderr
+35 bytes只計數後丟棄；private runtime已刪除，0 public artifact、0 future／prediction／model。離線確認yt-dlp可找到
+ffmpeg/ffprobe 8.0.1，direct ffmpeg synthetic pipeline exit 0，因此不是缺少ffmpeg，但現有redacted evidence不足以判定
+postprocessing子原因。完整驗收：`analysis/p3_b56_allowlisted_diagnostic_transport_acceptance_2026-09-19.md`。
+
+B57尚未授權執行。建議單一架構變因：private yt-dlp resolver只把`bestaudio` signed URL留在記憶，direct ffmpeg再裁
+`3000..3180`並走B54 gate。需另行設計審查，因它新增一次provider request與短暫private URL capability；不得把B56
+「請繼續」擴張成B57授權。審查前不再請求來源，不讀future。
 
 ## 工作環境
 
