@@ -1,0 +1,99 @@
+{
+  "schema": "uruha_p3_b56_allowlisted_diagnostic_transport_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_user_authorized_review_option_before_diagnostic_request",
+  "single_changed_variable": "map private transport stderr to one allowlisted diagnostic category without persisting the text",
+  "authorization": {
+    "basis": "2026-09-19 user message: 請繼續",
+    "overrides_b55_next_execution_authorized_false": true,
+    "diagnostic_transport_request_count_max": 1,
+    "additional_retry_or_correction_authorized": false
+  },
+  "bindings": {
+    "b55_review_required": {
+      "path": "research/p3_b55_reserved_source_context_transport_review_required_2026-09-18.json",
+      "sha256": "2296591537c0eb290913b42a36d894a15c1fc7ef32e9bf5371ec2cf0e9132b02"
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9"
+    },
+    "b55_v2_contract": {
+      "path": "configs/p3_b55_reserved_source_context_transport_v2.json",
+      "sha256": "ab1ac9b0c0a4a7f9ef2802b545afd0b09d09e1a26e0a7bd18735cc7e136795c2"
+    }
+  },
+  "unchanged_transport": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "download_section": "*3000-3180",
+    "yt_dlp_version": "2026.02.04",
+    "ffmpeg_version_prefix": "ffmpeg version 8.0.1",
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "cookies_or_browser_session_allowed": false,
+    "source_replacement_allowed": false,
+    "cutoff_change_allowed": false
+  },
+  "diagnostic_classifier": {
+    "input": "private in-memory stderr bytes only",
+    "encoding": "utf-8 with replacement inside private worker",
+    "allowlisted_categories": [
+      "command_or_option",
+      "provider_challenge_or_authentication",
+      "source_unavailable_or_private",
+      "tls_or_network",
+      "ffmpeg_or_postprocessing",
+      "extractor_or_format",
+      "timeout",
+      "unknown",
+      "not_applicable_success"
+    ],
+    "priority": [
+      "command_or_option",
+      "provider_challenge_or_authentication",
+      "source_unavailable_or_private",
+      "tls_or_network",
+      "ffmpeg_or_postprocessing",
+      "extractor_or_format",
+      "unknown"
+    ],
+    "stderr_text_persistence_allowed": false,
+    "stderr_hash_persistence_allowed": false,
+    "stderr_token_or_excerpt_persistence_allowed": false,
+    "stdout_text_persistence_allowed": false,
+    "classification_only_after_process_exit": true
+  },
+  "success_gate": {
+    "expected_private_duration_seconds": 180.0,
+    "duration_tolerance_seconds": 0.05,
+    "public_profile": "reserved_source_context",
+    "raw_and_staging_delete_before_fresh_reader": true,
+    "fresh_reader_count": 1,
+    "public_artifact_hash_revalidation_required": true,
+    "public_forbidden_field_count_required": 0
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b56_diagnostic_state",
+    "public_root": "external_data/p3_b56_public_context",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "diagnostic_result.json",
+    "exclusive_intent_before_network": true,
+    "intent_without_result_is_terminal": true,
+    "preexisting_nonempty_public_root_allowed": false
+  },
+  "denied_actions": {
+    "hidden_future_media_request": true,
+    "title_description_transcript_comment_or_subtitle_persistence": true,
+    "manual_playback_or_semantic_inspection": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "external_deployment": true
+  },
+  "claim_boundary": "B56 can diagnose one unchanged observable-context transport failure using only an allowlisted category, or publish one B54-gated 180-second context artifact if that same request succeeds. It cannot prove provider byte-range exactness, inspect semantics, access the hidden future, execute a prediction or model, or establish system advantage."
+}

@@ -1,8 +1,8 @@
 # 目前任務卡
 
-更新：2026-09-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-19。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B55 transport failure design review（REVIEW_REQUIRED）
+## 唯一下一步：P3-B56 allowlisted diagnostic observable-context transport
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -16,16 +16,18 @@ B55 V1因ffmpeg version flag錯誤在0 network時fail；保存後V2只把`--vers
 0 playback／semantic inspection／prediction／model。依事前規則不再重試或追加修正。完整反例與選項：
 `analysis/p3_b55_reserved_source_context_transport_review_required_2026-09-18.md`。
 
-### 設計審查所需決定
+### 2026-09-19 設計審查決定與單一交付
 
-兩個有根據批次已用完。下一步不得自行重跑；需設計審查以下其一：
+使用者以「請繼續」授權review建議1，覆蓋B55 `next_execution_authorized=false`，但不改其他邊界。B56另凍結
+一次diagnostic transport，使用相同source、`*3000-3180`、工具、0 retry／fallback與B54 public gate；private worker
+只把stderr映射成allowlisted error class，不保存／顯示原文、hash或token。允許類別為availability、provider challenge／
+authentication、TLS／network、extractor／format、ffmpeg／postprocessing、command／option、unknown；分類必須先以fixture
+凍結並涵蓋redaction canary。
 
-1. 建議另凍結單次diagnostic transport，只保存allowlisted error class而不保存stderr文字；若同請求成功，仍走B54 gate。
-2. 使用者提供本機來源媒體，另處理provenance與整段來源隔離。
-3. 重選來源並完整重做B52–B55（高成本且有selection bias，不建議為追分採用）。
-4. 登入／cookies需要使用者明確操作且改變可重現性，不可自行使用。
-
-審查前維持0 public context artifact；不得取得hidden future、執行prediction／model、寫正式M56或production memory。
+若同一請求成功，只可輸出B54 exact 180秒artifact／manifest，private transport刪除後以fresh reader核對duration與hash；
+若失敗，保存category、return code、stderr byte count與elapsed，0 public artifact後停止。不得再次修正／重跑，不得登入、
+cookies、換來源、改cutoff、存stderr文字、人工播放／語意檢查、取得hidden future、執行prediction／model、寫正式M56或
+production memory。
 
 ## 工作環境
 
