@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B66 bound future-outcome unlock and deterministic scoring
+## 唯一下一步：P3-B67 prospective same-source multiwindow replication predictions（FUTURES LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -105,6 +105,17 @@ caption，但只公開`3181.0..3241.0`內完整cue；private full caption取得�
 禁止新model/judge call。評分必須在看future前定案：以可重現的observable behavior mapping取得實際label，再對兩組預測分布計算
 selected-label hit、actual-label probability、Brier score與log loss；文字預測只做有證據的token/phrase overlap描述，不假裝是語意人評。
 單一row無論正負都只算exploratory counterexample，不得宣稱全面優勢或formal M56。
+
+B66在freeze commit後成功揭盲：first 3 cues=`3182.520..3190.559s`，固定marker `?`令actual proxy label=
+`ask_clarification`。baseline/system對actual label機率=`0.05/0.10`、Brier=`1.360/1.235`、log loss=
+`2.9957/2.3026`；依凍結rule system勝，但兩組top-1都錯。0 model/judge/retry/prediction mutation；private full caption在fresh
+future reader前刪除。完整驗收：`analysis/p3_b66_future_outcome_scoring_acceptance_2026-09-20.md`。
+
+B67不使用B66已曝光row調prompt、marker或門檻；事前固定同一來源四個尚未公開給prediction side的time windows：context/future分別為
+`600..780/781..841`、`1200..1380/1381..1441`、`1800..1980/1981..2041`、`2400..2580/2581..2641`。
+先一次private caption acquisition只發布四個context artifact，刪除raw與所有future後，原樣重用B65 joint schema、qwen3.5:9b、
+condition order、seed、temperature、num_ctx及每condition 512 ceiling，封存8條prediction。任一row/call失敗即保留不完整batch，
+不得先讀任何四個future；全部完成才可另立B68一次揭盲aggregate。這是same-source replication development evidence，不是獨立holdout。
 
 ## 工作環境
 
