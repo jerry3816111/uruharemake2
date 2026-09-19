@@ -2,7 +2,7 @@
 
 更新：2026-09-19。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B57 split resolver/direct-ffmpeg design review（REVIEW_REQUIRED）
+## 唯一下一步：P3-B57 split resolver/direct-ffmpeg observable-context transport
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -34,9 +34,11 @@ B56事前41項通過後消耗唯一請求：yt-dlp在2.944204秒exit 1，診斷�
 ffmpeg/ffprobe 8.0.1，direct ffmpeg synthetic pipeline exit 0，因此不是缺少ffmpeg，但現有redacted evidence不足以判定
 postprocessing子原因。完整驗收：`analysis/p3_b56_allowlisted_diagnostic_transport_acceptance_2026-09-19.md`。
 
-B57尚未授權執行。建議單一架構變因：private yt-dlp resolver只把`bestaudio` signed URL留在記憶，direct ffmpeg再裁
-`3000..3180`並走B54 gate。需另行設計審查，因它新增一次provider request與短暫private URL capability；不得把B56
-「請繼續」擴張成B57授權。審查前不再請求來源，不讀future。
+2026-09-19使用者再次以「請繼續」明確授權B57，並確認YouTube公開影片作為未來prediction資料來源方向。B57單一架構
+變因：private yt-dlp resolver只把一個`bestaudio` signed URL留在記憶，direct ffmpeg再裁`3000..3180`並走B54 gate。
+URL／resolver stdout／stderr／metadata不得落盤、hash或進receipt；只記byte count、URL count、allowlisted host category與
+failure category。仍為0 retry／fallback、無cookies／登入、同source/cutoff；成功前不得人工播放／語意檢查，成功後也只
+能把context artifact交給下一個prediction freeze，不得在本步讀`3181..3241`。
 
 ## 工作環境
 
