@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B67 prospective same-source multiwindow replication predictions（FUTURES LOCKED）
+## 唯一下一步：P3-B68 same-source multiwindow future unlock and aggregate scoring
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -116,6 +116,16 @@ B67不使用B66已曝光row調prompt、marker或門檻；事前固定同一來�
 先一次private caption acquisition只發布四個context artifact，刪除raw與所有future後，原樣重用B65 joint schema、qwen3.5:9b、
 condition order、seed、temperature、num_ctx及每condition 512 ceiling，封存8條prediction。任一row/call失敗即保留不完整batch，
 不得先讀任何四個future；全部完成才可另立B68一次揭盲aggregate。這是same-source replication development evidence，不是獨立holdout。
+
+B67事前31項affected suite與freeze commit後完成：四列context cue counts=`77/72/66/72`；同一B65介面8/8 calls完成，
+prompt/completion tokens total=`18,908/1,697`、model latency=`152.907164s`。top-1有三列condition差異，八條prediction均已
+封存；future/outcome/retry/fallback=`0/0/0/0`。完整驗收：
+`analysis/p3_b67_same_source_multiwindow_prediction_acceptance_2026-09-20.md`。
+
+B68必須綁定B67 immutable result hash，以一次private acquisition同時投影四個凍結future windows，raw刪除後才由fresh reader
+讀取。每列原樣重用B66 frozen first-3-cues/12-second target、marker order、actual-label probability、Brier、log loss與winner rule；
+禁止逐列解鎖、改marker/metric、改prediction或呼叫model/human/LLM judge。報告逐列正負與aggregate平均，但四列仍是同一影片的
+development replication，不得外推成independent holdout或全面優勢。
 
 ## 工作環境
 
