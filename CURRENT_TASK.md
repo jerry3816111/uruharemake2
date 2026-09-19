@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B70 source-independent prediction-interface reliability gate
+## 唯一下一步：P3-B71 freeze third public source and windows before caption access
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -161,6 +161,16 @@ B70先在已曝光development fixtures建立與來源無關的介面可靠度gat
 且ranking不變；baseline/system完全同規則。同時把未來schema拒絕原因映射為不含raw response的allowlisted類別。先離線contract/tests/
 failure fixtures與現有合法outputs；若gate通過，另立B71在任何caption內容前選定第三來源，修正版只能在新來源前瞻測試。B69第二來源
 永久保留未完成反例。
+
+B70離線gate已完成：相同adapter把六個finite nonnegative weights以50位decimal／12位輸出精度正規化，residual固定加到label順序中
+第一個最大weight，並確認selected behavior不變。例`[2,3,1,1,1,2]→[0.2,0.3,0.1,0.1,0.1,0.2]`；baseline/system
+同規則。缺label、負值、nonfinite、全零、非日文與缺state仍拒絕；38項affected suite通過。model/network/future/B69 retry均0。
+這不能反推B69 raw失敗原因，也不是效果證據。完整驗收：
+`analysis/p3_b70_prediction_interface_reliability_acceptance_2026-09-20.md`。
+
+B71下一步必須在查caption metadata/content前，用固定搜尋與排名規則選第三支官方長影片，排除`4y5GiQpgJgo`與`Mlk5e3hBnb8`，
+同時事前固定四個context/future windows。選定後才可另做availability；任何prediction都必須事先綁B70 adapter、同一B65模型／prompt／
+token上限與兩condition。因第三來源仍是在先前結果後設計，只算prospective development replication，不假稱正式independent holdout。
 
 ## 工作環境
 

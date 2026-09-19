@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p3_b70_prediction_interface_reliability_gate_contract_v1",
+  "version": "1.0.0",
+  "status": "development_gate_after_b69b_terminal_failure_without_b69_retry_or_future_access",
+  "research_question": "Can a source-independent deterministic adapter convert nonnegative finite model weights into a valid probability simplex while preserving the selected behavior and every non-probability safety gate?",
+  "bindings": {
+    "b69b_terminal_release": {
+      "path": "research/p3_b69b_source2_multiwindow_prediction_release_2026-09-20.json",
+      "sha256": "5e66711ba230d4b6b3df3918709bb39e821a47875ffbd39cb8be67f7ae04be3e"
+    },
+    "b65_contract": {
+      "path": "configs/p3_b65_bounded_joint_prediction_interface_v1.json",
+      "sha256": "35cc6472ed9b68f971b65750271f1d607ff491ba0398bdea39ae9112dc4d5851"
+    },
+    "b65_parser": {
+      "path": "p3_b65_bounded_joint_prediction_interface.py",
+      "sha256": "46380b02c97a65b2c0d3ab40a24570156a1eafe122ed6c5d4107b57a5b14c0d1"
+    },
+    "b62_prediction_validator": {
+      "path": "p3_b62_real_context_prediction_freeze.py",
+      "sha256": "fd8ead6c6a9529efc08ad80f23f547b27b15f6ac3a833377aa0706baba2ed24b"
+    }
+  },
+  "adapter": {
+    "input_kind": "exactly_one_finite_nonnegative_weight_for_each_frozen_behavior_label",
+    "positive_total_required": true,
+    "decimal_precision": 50,
+    "output_decimal_places": 12,
+    "residual_assignment": "first_maximum_input_weight_by_frozen_label_order",
+    "selected_behavior_must_be_preserved": true,
+    "same_adapter_for_both_conditions": true,
+    "model_prompt_schema_options_or_token_budget_change": false
+  },
+  "unchanged_rejections": [
+    "invalid_json_or_joint_shape",
+    "missing_or_extra_behavior_label",
+    "negative_nonfinite_or_non_numeric_weight",
+    "zero_weight_total",
+    "invalid_state_shape_or_bounds",
+    "invalid_or_non_japanese_predicted_content",
+    "invalid_brief_evidence"
+  ],
+  "allowlisted_failure_reasons": [
+    "json_invalid",
+    "joint_shape",
+    "state_shape",
+    "state_field",
+    "state_confidence",
+    "brief_evidence",
+    "probability_labels",
+    "probability_value",
+    "probability_total",
+    "predicted_content",
+    "predicted_content_language",
+    "other_schema"
+  ],
+  "gate": {
+    "development_fixtures_only": true,
+    "model_call_count": 0,
+    "network_request_count": 0,
+    "future_access_count": 0,
+    "b69_retry_count": 0,
+    "success_requires_valid_sum_drift_fixture": true,
+    "success_requires_selected_behavior_preserved": true,
+    "success_requires_all_unchanged_rejections": true,
+    "success_requires_no_raw_response_persistence": true
+  },
+  "denied_actions": {
+    "b69_source_or_row_retry": true,
+    "b69_future_unlock_or_partial_scoring": true,
+    "real_model_or_network_call": true,
+    "prompt_or_token_budget_change": true,
+    "baseline_only_or_system_only_adapter": true,
+    "semantic_content_gate_relaxation": true,
+    "training_formal_m56_or_production_write": true
+  },
+  "claim_boundary": "B70 is an offline interface-reliability mechanism gate. Passing it does not explain the exact unavailable B69B raw failure, complete a prediction batch, access future outcomes, or show system advantage."
+}
