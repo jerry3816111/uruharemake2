@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B63 schema-enforced real-context predictions（FUTURE LOCKED）
+## 唯一下一步：P3-B64 final equal-budget prediction execution（FUTURE LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -74,10 +74,15 @@ B62凍結同一qwen3.5:9b、context、兩call graph、每條512 completion上限
 raw result因call record只在condition成功後append而誤記0 calls；依控制流程operational actual=`1`，tokens/latency=`unavailable`，
 不可填0。完整驗收：`analysis/p3_b62_real_context_prediction_acceptance_2026-09-20.md`。
 
-B63只做execution remediation：以Ollama JSON schema format強制兩種representation與prediction輸出，並在每次provider request
-送出／回傳時立即記錄call count與token／latency；研究問題、input hash、conditions、call graph、模型、options、budget、labels
-與0 retry/fallback全部不變。B63兩條prediction未完整封存前不得取得`3181..3241` outcome。不得把B62 raw 0-call欄位或B63
-schema成功當能力優勢；必須等outcome scoring。
+B63事前22項測試後，以Ollama JSON schema執行；第一個baseline representation call完成並正確記錄：1986 prompt、256
+completion（等於num_predict上限）、22.292540秒，回傳後仍parse失敗；system與prediction未執行，future仍0。這支持output
+被completion ceiling截斷，但未保存raw，不能斷言確切截斷內容。完整驗收：
+`analysis/p3_b63_schema_enforced_prediction_acceptance_2026-09-20.md`。
+
+B64是prediction execution第二個、最後一個修正；保持每個condition總completion ceiling=512與所有研究條件不變，只把兩call
+相同分配由256+256改為320 representation +192 prediction。provider-boundary accounting與JSON schemas不變。B64成功才可封存
+兩條prediction並進separate future unlock；B64失敗則停止prediction修正，不再放寬schema、增加總token或重跑。任何結果都不得
+以單一row宣稱全面優勢或formal M56。
 
 ## 工作環境
 
