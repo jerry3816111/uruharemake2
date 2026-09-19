@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B61 native subtitle downloader cutoff extractor（FINAL CORRECTION / FREEZE REQUIRED）
+## 唯一下一步：P3-B62 real-context prediction contract and freeze（FUTURE LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -64,12 +64,16 @@ B60事前104項affected suite通過；resolver成功選出同一track，但唯�
 0 raw caption／public artifact／prediction-side future access。完整驗收：
 `analysis/p3_b60_private_caption_cutoff_extractor_acceptance_2026-09-20.md`。
 
-B61是caption路徑第二個、最後一個前瞻修正：保持source、`automatic/ja/json3`、cutoff extraction、artifact schema與fresh reader
-不變，只把private URL＋urllib GET換成yt-dlp原生`--write-auto-subs --sub-langs ja --sub-format json3 --skip-download`寫入private
-temporary directory。成功則raw只在private curator暫存、投影`3000 <= cue_start`且`cue_end <= 3180`後刪除，再由fresh reader
-核對；失敗則關閉自動caption path，不再換參數重跑。仍禁止人工顯示／讀字幕、prediction／model／training、future outcome
-publication、正式M56、production memory、付費API／登入／cookies。成功也只表示pre-cutoff context可用，下一步必須先凍結
-prediction才可解鎖future outcome。
+B61事前114項affected suite通過後成功：yt-dlp native downloader exit 0、`1.888588s`；private full caption
+`1,483,058 bytes`投影後刪除，發布65個cue，first/last=`3002.760/3176.079s`；fresh reader exit 0、hash一致、
+不回傳text。prediction-side future／prediction／model仍為0。完整驗收：
+`analysis/p3_b61_native_subtitle_cutoff_extractor_acceptance_2026-09-20.md`。
+
+B62先檢查並重用現有M1/M2/M6 temporal prediction output contract與local model transport，不另發明不可比較的目標；以B61同一
+hash-bound context artifact建立baseline與system兩個condition，凍結相同base model、可用context、generation parameters與token
+上限，以及machine-scorable prediction輸出、實際token／latency記錄。必須在任何`3181..3241` outcome取得前commit immutable
+prediction contract與執行結果；prediction side不得import acquisition module或讀private state。只有兩條prediction都完整封存，
+下一步才可由separate outcome worker解鎖future。不得把單一row當全面優勢或formal M56。
 
 ## 工作環境
 
