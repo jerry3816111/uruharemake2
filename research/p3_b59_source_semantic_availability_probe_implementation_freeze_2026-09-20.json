@@ -1,0 +1,36 @@
+{
+  "schema": "uruha_p3_b59_source_semantic_availability_probe_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b59_metadata_request",
+  "authorization_basis": "2026-09-19 through 2026-09-20 standing user authorization for continuous execution under the existing plan",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b59_source_semantic_availability_probe_v1.json",
+      "sha256": "db53fef2a9793efcd66c9cfe2e4af063090cf7c415e5dfbb78474966f13a55c6"
+    },
+    "implementation": {
+      "path": "p3_b59_source_semantic_availability_probe.py",
+      "sha256": "721fecea999b9bb079bb8b1ca416161e8580e4bf569531389c541198a9749e0a"
+    },
+    "tests": {
+      "path": "test_p3_b59_source_semantic_availability_probe.py",
+      "sha256": "dd5414685c3a6a8dc0f66ed3ad19f29b4cc3944939177d66533bbe218c2dc805"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b59_source_semantic_availability_probe.py -k 'not implementation_freeze'",
+    "passed": 15,
+    "failed": 0
+  },
+  "resolver_process_invocation_count_at_freeze": 0,
+  "caption_content_download_count_at_freeze": 0,
+  "hidden_future_content_access_count_at_freeze": 0,
+  "semantic_inspection_count_at_freeze": 0,
+  "prediction_execution_count_at_freeze": 0,
+  "model_call_count_at_freeze": 0,
+  "paid_api_or_account_access_count_at_freeze": 0,
+  "single_changed_variable": "metadata-only subtitle and automatic-caption track availability instead of direct audio transport",
+  "success_condition": "one resolver process returns a valid redacted availability projection for the Japanese track without downloading or reading caption content",
+  "failure_condition": "any tool, output-contract, persistence, content-download, future-access, retry, account-access, or result-contract violation produces a redacted terminal failure",
+  "claim_boundary": "This freeze authorizes one metadata-only B59 probe. It does not authorize caption content acquisition, hidden-future access, semantic inspection, prediction, model use, training, paid APIs, login/cookies, or external deployment."
+}
