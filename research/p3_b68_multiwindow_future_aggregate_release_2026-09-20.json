@@ -1,0 +1,34 @@
+{
+  "schema": "uruha_p3_b68_multiwindow_future_aggregate_release_v1",
+  "version": "1.0.0",
+  "status": "released_positive_same_source_development_proxy_with_weak_top1",
+  "result": {
+    "row_count": 4,
+    "system_row_wins": 4,
+    "baseline_row_wins": 0,
+    "ties": 0,
+    "baseline_mean_actual_label_probability": 0.2625,
+    "system_mean_actual_label_probability": 0.2875,
+    "baseline_mean_brier": 1.17095,
+    "system_mean_brier": 1.0134,
+    "baseline_top1_hits": 1,
+    "system_top1_hits": 1,
+    "proxy_is_not_human_ground_truth": true,
+    "result_hash": "3593e9bf85a6efbfdf8c290864729708a7263807c3bea9ed3b88da6a73b10f6b"
+  },
+  "bindings": {
+    "implementation_freeze": {"path": "research/p3_b68_multiwindow_future_aggregate_scoring_implementation_freeze_2026-09-20.json", "sha256": "26c9b256f493b02ded4d8ce69d09667fa34aba96e3994499b69badb9ca5c1b8b"},
+    "saved_result": {"path": "analysis/p3_b68_multiwindow_future_aggregate_result_2026-09-20.json", "sha256": "838ddbc7a717b369e340eaa8287c0a7d6852fa8157594bae4ed6e28f09ebb628"},
+    "acceptance": {"path": "analysis/p3_b68_multiwindow_future_aggregate_acceptance_2026-09-20.md", "sha256": "a427f6531ad9a8de70fba259a8396ffce3b9ed57510c074b28a205d8935ab948"},
+    "result_test": {"path": "test_p3_b68_multiwindow_future_aggregate_result.py", "sha256": "65af64afe39c9e21a4635a16d8f368c2dad56ece3895d487397af2d0572c6418"}
+  },
+  "next_stage": {
+    "id": "P3-B69",
+    "kind": "source_level_replication_design_and_availability_freeze",
+    "require_new_public_video_source": true,
+    "reuse_b65_interface_and_b66_proxy_without_tuning": true,
+    "selection_must_precede_caption_content_access": true,
+    "do_not_claim_independent_holdout_if_source_selected_after_b68": true
+  },
+  "claim_boundary": "B68 is a positive same-source development signal with weak top-1 accuracy. It justifies cross-source replication but is not a general advantage result."
+}

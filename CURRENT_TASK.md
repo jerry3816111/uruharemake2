@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B68 same-source multiwindow future unlock and aggregate scoring
+## 唯一下一步：P3-B69 source-level replication design and availability freeze
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -126,6 +126,16 @@ B68必須綁定B67 immutable result hash，以一次private acquisition同時投
 讀取。每列原樣重用B66 frozen first-3-cues/12-second target、marker order、actual-label probability、Brier、log loss與winner rule；
 禁止逐列解鎖、改marker/metric、改prediction或呼叫model/human/LLM judge。報告逐列正負與aggregate平均，但四列仍是同一影片的
 development replication，不得外推成independent holdout或全面優勢。
+
+B68在freeze commit後一次揭盲四列：row wins system/baseline/tie=`4/0/0`，mean actual-label probability=
+`0.2875/0.2625`、mean Brier=`1.0134/1.17095`、top-1 hits兩組皆`1/4`。r0600與r1200的actual-label probability
+相同，system只因Brier稍低取勝；baseline mean log loss被r1800的zero-probability放大。0 model/judge/prediction mutation/retry。
+完整驗收：`analysis/p3_b68_multiwindow_future_aggregate_acceptance_2026-09-20.md`。
+
+B69不得繼續切同一支影片追分。下一必要交付是事前選定另一支公開一ノ瀬うるは長影片，先只做metadata/caption availability與
+duration檢查，不讀字幕內容；選擇規則、source id、context/future windows必須在內容取得前commit。後續原樣重用B65介面與B66 proxy，
+但因新source是在看過B68後選定，仍稱source-level prospective replication，不假稱正式independent holdout。若找不到合法可用caption，
+保存availability負結果，不用登入/cookies/替換到有利來源。
 
 ## 工作環境
 
