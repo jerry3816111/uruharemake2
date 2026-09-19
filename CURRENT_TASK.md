@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B59 source-semantic availability probe（AUTHORIZED / CONTENT LOCKED）
+## 唯一下一步：P3-B60 private caption cutoff extractor（DESIGN AUTHORIZED / FREEZE REQUIRED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -56,11 +56,16 @@ resolver exit 0、`1.560216s`、1個private URL與3個allowlisted header；direc
 `analysis/p3_b58_private_allowlisted_header_transport_acceptance_2026-09-20.md`。
 
 B57 headerless與B58 allowlisted-header是兩個前瞻direct-audio修正批次，均失敗；依流程關閉此分支，不再加header、換小參數或
-重跑。B59改走不同資料路徑，但只做availability probe：同一來源只在private memory解析public subtitle與automatic-caption
-track metadata，保存語言／format可用性與count，不下載或閱讀caption內容、不保存track URL／raw metadata。一次resolver、
-0 retry／fallback；仍不得讀hidden-future內容、人工播放、語意檢查、prediction／model、付費API／登入／cookies。若有可用
-日文track，下一步才另外凍結capability-separated private raw caption→`<=3180` context artifact；若無，將來源標為需要合法本機
-artifact或另凍結替代來源，不再猜transport。
+重跑。B59改走metadata-only caption availability probe；87項affected suite後執行成功：resolver exit 0、`1.598962s`，同一來源
+沒有日文人工字幕，但有`automatic / ja / json3`，0 caption content／future／semantics／prediction／model。完整驗收：
+`analysis/p3_b59_source_semantic_availability_probe_acceptance_2026-09-20.md`。
+
+B60需另外事前凍結capability-separated extractor：private acquisition worker可短暫取得完整raw caption，但不得落盤或把URL、
+raw metadata、`>3180`文字交給prediction side；只發布`3000 <= cue_start`且`cue_end <= 3180`的日文context JSON與無敏感欄位
+manifest，清除private material後再由fresh public reader逐cue核對時間、排序與hash。需分開記`private acquisition raw access`與
+`prediction-side future access=0`，不得謊稱curator完全沒碰future。仍為一次resolver＋一次caption GET、0 retry／fallback，禁止
+人工閱讀／顯示caption內容、prediction／model／training、正式M56、production memory、付費API／登入／cookies。B60成功只表示
+真實pre-cutoff context可用，下一步仍須先凍結prediction才可解鎖future outcome。
 
 ## 工作環境
 
