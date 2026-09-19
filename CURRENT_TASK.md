@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B71 freeze third public source and windows before caption access
+## 唯一下一步：P3-B71A source3 Japanese caption availability（METADATA ONLY）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -171,6 +171,13 @@ B70離線gate已完成：相同adapter把六個finite nonnegative weights以50�
 B71下一步必須在查caption metadata/content前，用固定搜尋與排名規則選第三支官方長影片，排除`4y5GiQpgJgo`與`Mlk5e3hBnb8`，
 同時事前固定四個context/future windows。選定後才可另做availability；任何prediction都必須事先綁B70 adapter、同一B65模型／prompt／
 token上限與兩condition。因第三來源仍是在先前結果後設計，只算prospective development replication，不假稱正式independent holdout。
+
+B71已依freeze唯一搜尋選中official rank 2的`j6Hlk9cY9LQ`，duration=`12,883s`；四組`s3r0600/1200/1800/2400`
+context/future windows已同時固定。搜尋耗時`0.936168s`，raw metadata `15,402 bytes`在記憶解析後丟棄；caption metadata/content、
+model、future、retry、fallback=`0/0/0/0/0/0`。完整驗收：`analysis/p3_b71_source3_selection_acceptance_2026-09-20.md`。
+
+B71A只准對已固定source做一次metadata-only日文caption availability probe，0 caption content/model/future；不可改query、來源或windows。
+若無支援的Japanese track，保存負結果並停止此來源，不使用登入、cookies、替代來源或人工挑選。
 
 ## 工作環境
 
