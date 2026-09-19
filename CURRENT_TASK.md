@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B69 source-level replication design and availability freeze
+## 唯一下一步：P3-B69B source2 context-only acquisition and prediction batch（FUTURES LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -140,6 +140,16 @@ duration檢查，不讀字幕內容；選擇規則、source id、context/future 
 B69 source selection已完成但尚未查caption metadata：固定query與selection rule選中官方頻道rank 1、duration `12,933s`的
 `Mlk5e3hBnb8`，排除原source；四個context/future windows也已固定為600秒間隔的同一組位置。下一步B69A只准一次
 metadata-only日文caption availability probe，0 caption content/model/future；若不可用就保存負結果，不換來源。
+
+B69A事前28項affected suite與freeze commit後完成：唯一一次metadata-only resolver在`1.678007s`成功，第二來源無日文人工字幕、
+有`automatic / ja / json3`；raw metadata `508,363 bytes`只在記憶解析後丟棄。caption content／future／model／retry／fallback=
+`0/0/0/0/0`。完整驗收：`analysis/p3_b69a_source2_caption_availability_acceptance_2026-09-20.md`。
+
+B69B只可使用B69事前固定的第二來源與四個context windows；一次native yt-dlp acquisition後，只發布600..780、1200..1380、
+1800..1980、2400..2580的context artifacts，刪除private full caption與四個future內容，再由fresh reader核對。原樣重用B65
+bounded joint schema、同一qwen3.5:9b、condition order、seed、temperature、num_ctx與每condition 512 completion ceiling，依序完成
+4列×2條prediction。全部8 calls完成前不得讀任何future；任一失敗即保存不完整batch並停止，不重試、不換來源、不調prompt／
+門檻。這仍是source-level prospective replication，不是正式independent holdout。
 
 ## 工作環境
 
