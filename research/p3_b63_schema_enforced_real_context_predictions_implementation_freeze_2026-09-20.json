@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_p3_b63_schema_enforced_real_context_predictions_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b63_model_calls_or_future_access",
+  "authorization_basis": "standing user authorization plus B62 review remediation scope",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b63_schema_enforced_real_context_predictions_v1.json",
+      "sha256": "75bd1474e4d209c4ba96b4abfd1d8a70ad1f4d159a62e8f141f48404b829dcb0"
+    },
+    "implementation": {
+      "path": "p3_b63_schema_enforced_real_context_predictions.py",
+      "sha256": "fb098f4f517ec1271a2e147a0657394bed14bccb0013b0f3765ca3147df639bd"
+    },
+    "tests": {
+      "path": "test_p3_b63_schema_enforced_real_context_predictions.py",
+      "sha256": "3dce06ed3b7a7f635f5a31c3d468fbeb64740076b8701e6bc808edbeedbcc4cd"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b63_schema_enforced_real_context_predictions.py -k 'not implementation_freeze'",
+    "passed": 8,
+    "failed": 0,
+    "provider_failure_accounting_checked": true
+  },
+  "model_call_count_at_freeze": 0,
+  "future_outcome_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "single_changed_variable": "provider-enforced JSON schemas and provider-boundary call accounting",
+  "unchanged": [
+    "research question",
+    "context artifact",
+    "condition definitions and order",
+    "qwen3.5:9b base model",
+    "two calls and 512 completion-token ceiling per condition",
+    "temperature 0, seed 260920, num_ctx 8192",
+    "six behavior labels",
+    "zero retry or fallback",
+    "future outcome lock"
+  ],
+  "success_condition": "four provider-boundary-counted calls complete exact JSON schemas and freeze both predictions with actual token and latency accounting before any future access",
+  "failure_condition": "any provider, schema, probability, language, accounting, call-count, retry, or future-access violation produces a terminal redacted failure with every attempted call counted",
+  "claim_boundary": "B63 is an execution remediation. Even success only freezes one-row predictions; it does not establish correctness or advantage before separate outcome unlock and scoring."
+}
