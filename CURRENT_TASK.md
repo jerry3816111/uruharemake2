@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B71A source3 Japanese caption availability（METADATA ONLY）
+## 唯一下一步：P3-B71B source3 B70-bound prediction batch（FUTURES LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -178,6 +178,16 @@ model、future、retry、fallback=`0/0/0/0/0/0`。完整驗收：`analysis/p3_b7
 
 B71A只准對已固定source做一次metadata-only日文caption availability probe，0 caption content/model/future；不可改query、來源或windows。
 若無支援的Japanese track，保存負結果並停止此來源，不使用登入、cookies、替代來源或人工挑選。
+
+B71A事前39項affected suite與freeze commit後完成：唯一metadata-only resolver在`1.827625s`成功；無日文人工字幕，有
+`automatic / ja / json3`。raw metadata `508,363 bytes`只在記憶解析後丟棄；caption content/model/future/retry/fallback=
+`0/0/0/0/0`。完整驗收：`analysis/p3_b71a_source3_caption_availability_acceptance_2026-09-20.md`。
+
+B71B只可使用B71固定的第三來源與四個context windows；一次native caption acquisition後只發布context artifacts，刪除private full
+caption與future，再由fresh reader核對。模型、prompt、options、condition order與每condition 512 completion ceiling原樣沿用B65；
+唯一新增介面機制是事前B70 deterministic probability normalization，baseline/system完全同規則並記錄是否實際套用。8 calls全部完成前
+不得讀future；任一call或parser失敗即terminal保存，不重試、不換來源、不放寬內容／日文gate。成功也只授權另一步整批future揭盲，
+不能先宣稱修正有效或system有優勢。
 
 ## 工作環境
 
