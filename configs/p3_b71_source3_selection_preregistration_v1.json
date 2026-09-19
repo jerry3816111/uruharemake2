@@ -1,0 +1,43 @@
+{
+  "schema": "uruha_p3_b71_source3_selection_preregistration_v1",
+  "version": "1.0.0",
+  "status": "selection_rule_and_windows_frozen_before_source3_search_or_caption_access",
+  "binding": {
+    "path": "research/p3_b70_prediction_interface_reliability_release_2026-09-20.json",
+    "sha256": "9fcf497c9ae05e978adeb6405b6336c7aabbcc3a6265cc0b5ab0525d1ef619c5"
+  },
+  "discovery": {
+    "query": "ytsearch12:一ノ瀬うるは APEX 配信",
+    "provider_result_limit": 12,
+    "official_channel_id": "UC5LyYg6cCA4yHEYvtUsir3g",
+    "excluded_video_ids": ["4y5GiQpgJgo", "Mlk5e3hBnb8"],
+    "minimum_duration_seconds": 7200,
+    "observable_metadata_fields": ["id", "duration", "channel_id", "title"],
+    "selection_rule": "first provider-ranked result from the official channel, excluding both prior sources, with duration at least 7200 seconds",
+    "caption_metadata_or_content_request_allowed": false,
+    "retry_or_alternate_query_allowed": false
+  },
+  "frozen_rows": [
+    {"row_id": "s3r0600", "context_seconds": [600.0, 780.0], "future_seconds": [781.0, 841.0]},
+    {"row_id": "s3r1200", "context_seconds": [1200.0, 1380.0], "future_seconds": [1381.0, 1441.0]},
+    {"row_id": "s3r1800", "context_seconds": [1800.0, 1980.0], "future_seconds": [1981.0, 2041.0]},
+    {"row_id": "s3r2400", "context_seconds": [2400.0, 2580.0], "future_seconds": [2581.0, 2641.0]}
+  ],
+  "execution": {
+    "state_root": "external_data/p3_b71_source3_selection_state",
+    "intent_filename": "selection_intent.json",
+    "result_filename": "selection_result.json",
+    "provider_search_process_invocation_count_max": 1,
+    "intent_without_result_is_terminal": true
+  },
+  "denied_actions": {
+    "caption_metadata_or_content_access": true,
+    "media_download_or_playback": true,
+    "query_exclusion_duration_channel_or_window_change_after_freeze": true,
+    "retry_fallback_or_manual_favorable_selection": true,
+    "model_prediction_judge_or_future_access": true,
+    "login_cookie_paid_api_or_account_access": true,
+    "training_formal_m56_or_production_write": true
+  },
+  "claim_boundary": "B71 can select and freeze only a third public source using provider metadata. It cannot establish caption availability, prediction reliability, outcome accuracy, holdout independence, or system advantage."
+}
