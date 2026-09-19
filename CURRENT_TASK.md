@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B62 real-context prediction contract and freeze（FUTURE LOCKED）
+## 唯一下一步：P3-B63 schema-enforced real-context predictions（FUTURE LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -69,11 +69,15 @@ B61事前114項affected suite通過後成功：yt-dlp native downloader exit 0�
 不回傳text。prediction-side future／prediction／model仍為0。完整驗收：
 `analysis/p3_b61_native_subtitle_cutoff_extractor_acceptance_2026-09-20.md`。
 
-B62先檢查並重用現有M1/M2/M6 temporal prediction output contract與local model transport，不另發明不可比較的目標；以B61同一
-hash-bound context artifact建立baseline與system兩個condition，凍結相同base model、可用context、generation parameters與token
-上限，以及machine-scorable prediction輸出、實際token／latency記錄。必須在任何`3181..3241` outcome取得前commit immutable
-prediction contract與執行結果；prediction side不得import acquisition module或讀private state。只有兩條prediction都完整封存，
-下一步才可由separate outcome worker解鎖future。不得把單一row當全面優勢或formal M56。
+B62凍結同一qwen3.5:9b、context、兩call graph、每條512 completion上限、seed／temperature與六label；第一個
+`BASELINE_LITERAL` representation call已回傳，但exact schema validation失敗，system未執行、prediction未凍結、future仍0。
+raw result因call record只在condition成功後append而誤記0 calls；依控制流程operational actual=`1`，tokens/latency=`unavailable`，
+不可填0。完整驗收：`analysis/p3_b62_real_context_prediction_acceptance_2026-09-20.md`。
+
+B63只做execution remediation：以Ollama JSON schema format強制兩種representation與prediction輸出，並在每次provider request
+送出／回傳時立即記錄call count與token／latency；研究問題、input hash、conditions、call graph、模型、options、budget、labels
+與0 retry/fallback全部不變。B63兩條prediction未完整封存前不得取得`3181..3241` outcome。不得把B62 raw 0-call欄位或B63
+schema成功當能力優勢；必須等outcome scoring。
 
 ## 工作環境
 
