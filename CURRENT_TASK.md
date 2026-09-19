@@ -137,6 +137,10 @@ duration檢查，不讀字幕內容；選擇規則、source id、context/future 
 但因新source是在看過B68後選定，仍稱source-level prospective replication，不假稱正式independent holdout。若找不到合法可用caption，
 保存availability負結果，不用登入/cookies/替換到有利來源。
 
+B69 source selection已完成但尚未查caption metadata：固定query與selection rule選中官方頻道rank 1、duration `12,933s`的
+`Mlk5e3hBnb8`，排除原source；四個context/future windows也已固定為600秒間隔的同一組位置。下一步B69A只准一次
+metadata-only日文caption availability probe，0 caption content/model/future；若不可用就保存負結果，不換來源。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
