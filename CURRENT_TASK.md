@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B64 final equal-budget prediction execution（FUTURE LOCKED）
+## 唯一下一步：P3-B65 bounded joint prediction interface（FUTURE LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -83,6 +83,17 @@ B64是prediction execution第二個、最後一個修正；保持每個condition
 相同分配由256+256改為320 representation +192 prediction。provider-boundary accounting與JSON schemas不變。B64成功才可封存
 兩條prediction並進separate future unlock；B64失敗則停止prediction修正，不再放寬schema、增加總token或重跑。任何結果都不得
 以單一row宣稱全面優勢或formal M56。
+
+B64事前26項suite通過並凍結提交後執行；第一個baseline representation call完成，`1986/320` prompt/completion tokens、
+`25.001742s`，completion再次精確等於ceiling，回傳後仍parse失敗。model call=`1`，system/prediction/future/outcome/retry/
+fallback=`0`。因此B62 two-call interface兩個修正批次已用完並關閉；不得把後續工作說成第三次修正。完整驗收：
+`analysis/p3_b64_final_equal_budget_prediction_acceptance_2026-09-20.md`。
+
+B65若繼續，必須另立新研究介面：用相同`qwen3.5:9b`、同一real pre-cutoff context、相同condition order、seed、temperature、
+`num_ctx`及每condition completion ceiling `512`，把失敗的free-standing representation→prediction兩call改為一次bounded joint
+representation-and-prediction。兩condition使用同一個有長度上限的JSON schema與相同一call graph；prompt只允許baseline採literal
+state、system採可反駁pragmatic state。先contract/tests/freeze/commit，才可各做一次model call。完成兩條prediction前仍不得讀
+3181秒後future；成功也只授權另一步outcome unlock，不是正確率或優勢結論。失敗原樣保留，不以同一介面追參。
 
 ## 工作環境
 

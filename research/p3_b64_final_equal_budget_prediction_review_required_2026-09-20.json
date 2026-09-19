@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p3_b64_final_equal_budget_prediction_review_required_v1",
+  "version": "1.0.0",
+  "status": "terminal_prediction_execution_failure_future_locked",
+  "result": {
+    "model_call_count": 1,
+    "call_status": "completed",
+    "prompt_tokens": 1986,
+    "completion_tokens": 320,
+    "num_predict": 320,
+    "failure_stage": "model",
+    "failure_category": "provider_or_schema",
+    "future_outcome_access_count": 0
+  },
+  "supported_hypothesis": "the first literal representation again consumed its exact completion ceiling before parse acceptance",
+  "not_observed": "raw response content, exact truncation character, either condition's prediction, or any post-cutoff outcome",
+  "two_call_prediction_correction_batches_consumed": 2,
+  "closed_actions": [
+    "rerun B62, B63, or B64",
+    "increase the frozen per-condition completion budget",
+    "relax the frozen representation schema after seeing this result",
+    "unlock future outcome without a complete prediction pair"
+  ],
+  "next_stage": {
+    "id": "P3-B65",
+    "kind": "new_prospective_joint_prediction_interface_design",
+    "not_a_b62_correction_or_retry": true,
+    "required_design_change": "replace the failed two-call free-standing representation interface with a separately frozen bounded joint representation-and-prediction interface",
+    "same_model_real_context_and_future_boundary_required": true,
+    "same_schema_and_completion_ceiling_for_both_conditions_required": true,
+    "future_outcome_unlock_authorized": false,
+    "execution_authorized_only_after_new_contract_tests_freeze_and_commit": true
+  },
+  "bindings": {
+    "implementation_freeze": {
+      "path": "research/p3_b64_final_equal_budget_prediction_execution_implementation_freeze_2026-09-20.json",
+      "sha256": "ad1922d876570bfb7127b4106fd904c3d6f5fede06f2a4da695173965da3bc69"
+    },
+    "result": {
+      "path": "analysis/p3_b64_final_equal_budget_prediction_result_2026-09-20.json",
+      "sha256": "41df67c28f579713be661aa0b47963fcb77c2bc1b92e13510e1ef99d5c4793f5"
+    },
+    "acceptance": {
+      "path": "analysis/p3_b64_final_equal_budget_prediction_acceptance_2026-09-20.md",
+      "sha256": "e0eeb3d69d6ab4953955b553a720cb315577ad68999629c0fc6eb0740cee3c65"
+    },
+    "result_test": {
+      "path": "test_p3_b64_final_equal_budget_prediction_result.py",
+      "sha256": "abf82ef328d65e57e1b463bfea1519c9ec0c5c9d45440609caa35708ced36f35"
+    }
+  },
+  "claim_boundary": "B64 closes only the failed two-call prediction interface. It neither refutes the pragmatic-prediction hypothesis nor authorizes future scoring; a genuinely new prospective interface must be frozen before any further model call."
+}
