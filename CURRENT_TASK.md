@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B65 bounded joint prediction interface（FUTURE LOCKED）
+## 唯一下一步：P3-B66 bound future-outcome unlock and deterministic scoring
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -94,6 +94,17 @@ B65若繼續，必須另立新研究介面：用相同`qwen3.5:9b`、同一real 
 representation-and-prediction。兩condition使用同一個有長度上限的JSON schema與相同一call graph；prompt只允許baseline採literal
 state、system採可反駁pragmatic state。先contract/tests/freeze/commit，才可各做一次model call。完成兩條prediction前仍不得讀
 3181秒後future；成功也只授權另一步outcome unlock，不是正確率或優勢結論。失敗原樣保留，不以同一介面追參。
+
+B65事前37項affected suite與freeze commit後成功：同一`qwen3.5:9b`完成baseline/system各1 call；實際prompt tokens=
+`2224/2217`、completion=`261/233`、latency=`23.262607/18.687710s`，均低於相同512 ceiling。baseline最高label為
+`accept_support_and_continue=0.65`，system為`acknowledge_then_continue=0.60`；兩條prediction已封存，state文字只留hash。
+future/outcome/retry/fallback仍為0。完整驗收：`analysis/p3_b65_bounded_joint_prediction_acceptance_2026-09-20.md`。
+
+B66先以B65 immutable saved result與canonical result hash綁定prediction，再凍結outcome-only worker：使用同一source的日文automatic
+caption，但只公開`3181.0..3241.0`內完整cue；private full caption取得後刪除，禁止回讀3000..3180 context、禁止改prediction、
+禁止新model/judge call。評分必須在看future前定案：以可重現的observable behavior mapping取得實際label，再對兩組預測分布計算
+selected-label hit、actual-label probability、Brier score與log loss；文字預測只做有證據的token/phrase overlap描述，不假裝是語意人評。
+單一row無論正負都只算exploratory counterexample，不得宣稱全面優勢或formal M56。
 
 ## 工作環境
 
