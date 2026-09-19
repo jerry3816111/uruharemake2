@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p3_b71a_source3_caption_availability_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_source3_caption_metadata_request",
+  "bindings": {
+    "source_selection_release": {
+      "path": "research/p3_b71_source3_selection_release_2026-09-20.json",
+      "sha256": "dcbd7d1d15c67a7688cfbe1c11a7cc995d5a5cbad4e54b06bb096066f49d96b9"
+    },
+    "b59_probe_implementation": {
+      "path": "p3_b59_source_semantic_availability_probe.py",
+      "sha256": "721fecea999b9bb079bb8b1ca416161e8580e4bf569531389c541198a9749e0a"
+    },
+    "b69a_command_implementation": {
+      "path": "p3_b69a_source2_caption_availability.py",
+      "sha256": "b39d873e470fe5741a4735d9d7ca79ec2dc0104de389615eedbb09e9012f684b"
+    }
+  },
+  "source": {
+    "source_id": "youtube_j6Hlk9cY9LQ",
+    "video_id": "j6Hlk9cY9LQ",
+    "locator": "https://www.youtube.com/watch?v=j6Hlk9cY9LQ",
+    "duration_seconds": 12883.0
+  },
+  "probe": {
+    "required_yt_dlp_version": "2026.02.04",
+    "target_language_code": "ja",
+    "preferred_formats_in_order": ["json3", "vtt", "srv3", "srv2", "srv1", "ttml", "srt"],
+    "resolver_process_invocation_count_max": 1,
+    "caption_content_download_count_max": 0,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "raw_stdout_stderr_or_track_url_persistence_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b71a_source3_caption_availability_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "availability_result.json"
+  },
+  "decision": {
+    "available": "freeze source3 context-only acquisition and B70-bound prediction batch before caption content",
+    "unavailable": "preserve negative result and stop source3 without substitution"
+  },
+  "denied_actions": {
+    "caption_content_download": true,
+    "source_query_or_window_substitution": true,
+    "manual_playback_or_semantic_inspection": true,
+    "prediction_model_judge_or_future_access": true,
+    "training_formal_m56_or_product_write": true,
+    "paid_api_login_cookie_or_external_deployment": true
+  },
+  "claim_boundary": "B71A can establish only whether the already frozen third source exposes a supported Japanese caption track. It cannot access caption content, run prediction, or provide replication evidence."
+}
