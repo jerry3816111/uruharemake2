@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_p3_b68_multiwindow_future_aggregate_scoring_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_complete_b67_predictions_before_any_replication_future_access",
+  "claim_level": "four_row_same_source_development_proxy_not_independent_holdout_or_formal_m56",
+  "bindings": {
+    "b67_release": {"path": "research/p3_b67_same_source_multiwindow_prediction_release_2026-09-20.json", "sha256": "9d31438d7fbb87dfb02eafa5223d30217c3ee04523b18e9b68fe92bb2108f051"},
+    "b67_saved_predictions": {"path": "analysis/p3_b67_same_source_multiwindow_prediction_result_2026-09-20.json", "sha256": "93e3eb45b2eac774389138351037d3e6361465704429e09750615cc3e9f658b2"},
+    "b66_metric_contract": {"path": "configs/p3_b66_future_outcome_unlock_scoring_v1.json", "sha256": "afbb2eaa0bab6fd6bed139dded8d51d65a8f49239dbd1625e96bf121114b20e1"},
+    "b66_metric_implementation": {"path": "p3_b66_future_outcome_unlock_scoring.py", "sha256": "63714056d66801f5873f3ff52327816f5b6b3de7b18ed10fec7c568340811704"},
+    "b61_native_downloader_implementation": {"path": "p3_b61_native_subtitle_cutoff_extractor.py", "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"},
+    "b61_native_downloader_contract": {"path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json", "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"}
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "rows": [
+      {"row_id": "r0600", "future_milliseconds": [781000, 841000]},
+      {"row_id": "r1200", "future_milliseconds": [1381000, 1441000]},
+      {"row_id": "r1800", "future_milliseconds": [1981000, 2041000]},
+      {"row_id": "r2400", "future_milliseconds": [2581000, 2641000]}
+    ],
+    "include_rule": "cue_start_gte_future_start_and_cue_end_lte_future_end",
+    "minimum_future_cues_each_row": 1,
+    "unlock_all_rows_together": true
+  },
+  "private_acquisition": {
+    "native_downloader_process_invocation_count_max": 1,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "private_full_caption_deleted_before_public_scoring": true,
+    "raw_full_caption_or_context_cue_persistence_allowed": false
+  },
+  "public_future_batch": {
+    "root": "external_data/p3_b68_public_future_batch",
+    "artifact_schema": "uruha_p3_b68_public_future_row_v1",
+    "manifest_schema": "uruha_p3_b68_public_future_row_manifest_v1",
+    "artifact_count_exact": 4,
+    "fresh_reader_process_count": 1
+  },
+  "scoring": {
+    "reuse_b66_first_three_cues_within_twelve_seconds": true,
+    "reuse_b66_proxy_marker_order_without_change": true,
+    "reuse_b66_per_row_metrics_and_winner_rule_without_change": true,
+    "aggregate_metrics": [
+      "system_row_wins_baseline_row_wins_ties",
+      "mean_actual_label_probability_by_condition",
+      "mean_multiclass_brier_by_condition",
+      "mean_log_loss_by_condition",
+      "top1_hits_by_condition"
+    ],
+    "model_human_or_llm_judge_call_count_required": 0,
+    "prediction_mutation_count_required": 0
+  },
+  "execution": {
+    "state_root": "external_data/p3_b68_multiwindow_scoring_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "aggregate_result.json"
+  },
+  "denied_actions": {
+    "partial_or_sequential_future_unlock": true,
+    "prediction_mutation": true,
+    "proxy_target_marker_metric_or_winner_change": true,
+    "model_human_or_llm_judge_call": true,
+    "retry_or_source_substitution": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B68 can report four preregistered same-source automatic-caption proxy outcomes and their descriptive aggregate. It is not independent holdout, human ground truth, general LLM advantage, human understanding, or a human-response equation."
+}
