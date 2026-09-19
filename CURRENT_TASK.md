@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B60 private caption cutoff extractor（DESIGN AUTHORIZED / FREEZE REQUIRED）
+## 唯一下一步：P3-B61 native subtitle downloader cutoff extractor（FINAL CORRECTION / FREEZE REQUIRED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -60,12 +60,16 @@ B57 headerless與B58 allowlisted-header是兩個前瞻direct-audio修正批次�
 沒有日文人工字幕，但有`automatic / ja / json3`，0 caption content／future／semantics／prediction／model。完整驗收：
 `analysis/p3_b59_source_semantic_availability_probe_acceptance_2026-09-20.md`。
 
-B60需另外事前凍結capability-separated extractor：private acquisition worker可短暫取得完整raw caption，但不得落盤或把URL、
-raw metadata、`>3180`文字交給prediction side；只發布`3000 <= cue_start`且`cue_end <= 3180`的日文context JSON與無敏感欄位
-manifest，清除private material後再由fresh public reader逐cue核對時間、排序與hash。需分開記`private acquisition raw access`與
-`prediction-side future access=0`，不得謊稱curator完全沒碰future。仍為一次resolver＋一次caption GET、0 retry／fallback，禁止
-人工閱讀／顯示caption內容、prediction／model／training、正式M56、production memory、付費API／登入／cookies。B60成功只表示
-真實pre-cutoff context可用，下一步仍須先凍結prediction才可解鎖future outcome。
+B60事前104項affected suite通過；resolver成功選出同一track，但唯一urllib caption GET在取得內容前以`tls_or_network`失敗：
+0 raw caption／public artifact／prediction-side future access。完整驗收：
+`analysis/p3_b60_private_caption_cutoff_extractor_acceptance_2026-09-20.md`。
+
+B61是caption路徑第二個、最後一個前瞻修正：保持source、`automatic/ja/json3`、cutoff extraction、artifact schema與fresh reader
+不變，只把private URL＋urllib GET換成yt-dlp原生`--write-auto-subs --sub-langs ja --sub-format json3 --skip-download`寫入private
+temporary directory。成功則raw只在private curator暫存、投影`3000 <= cue_start`且`cue_end <= 3180`後刪除，再由fresh reader
+核對；失敗則關閉自動caption path，不再換參數重跑。仍禁止人工顯示／讀字幕、prediction／model／training、future outcome
+publication、正式M56、production memory、付費API／登入／cookies。成功也只表示pre-cutoff context可用，下一步必須先凍結
+prediction才可解鎖future outcome。
 
 ## 工作環境
 
