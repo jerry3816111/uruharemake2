@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_p3_b64_final_equal_budget_prediction_execution_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b64_model_calls_or_future_access",
+  "authorization_basis": "standing user authorization plus the bounded final correction authorized by the B63 review",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b64_final_equal_budget_prediction_execution_v1.json",
+      "sha256": "5b89bec1bb55bb9a0ea00ba91f66546167cb9b2f37ed78f18ae799112883f1ba"
+    },
+    "implementation": {
+      "path": "p3_b64_final_equal_budget_prediction_execution.py",
+      "sha256": "37f12cee9613c87482c9a53d5d65cd1448501913af280f881ed7a98142bf7767"
+    },
+    "tests": {
+      "path": "test_p3_b64_final_equal_budget_prediction_execution.py",
+      "sha256": "2144f42992aa3fdc766e3fc6c9ce63eafb9fb55408a2e92360abb0f018ce33be"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b62_real_context_prediction_freeze.py test_p3_b63_schema_enforced_real_context_predictions.py test_p3_b64_final_equal_budget_prediction_execution.py -k 'not implementation_freeze'",
+    "passed": 22,
+    "failed": 0,
+    "equal_total_budget_and_future_lock_checked": true
+  },
+  "model_call_count_at_freeze": 0,
+  "future_outcome_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "single_changed_variable": "reallocate each unchanged 512 completion-token ceiling from 256+256 to 320 representation + 192 prediction",
+  "unchanged": [
+    "research question and one-row exploratory scope",
+    "real pre-cutoff public context artifact",
+    "baseline and system definitions and order",
+    "qwen3.5:9b base model",
+    "512 completion-token ceiling per condition",
+    "temperature 0, seed 260920, num_ctx 8192",
+    "prompts, JSON schemas, and six behavior labels",
+    "zero retry or fallback",
+    "future outcome lock"
+  ],
+  "success_condition": "four provider-boundary-counted calls complete and freeze both predictions before any future access",
+  "failure_condition": "any provider, schema, probability, language, accounting, call-count, retry, or future-access violation closes prediction execution without further correction",
+  "claim_boundary": "B64 is the final execution correction. Even success freezes only one exploratory prediction pair and proves neither prediction correctness nor system advantage before a separately bound future unlock and scoring stage."
+}
