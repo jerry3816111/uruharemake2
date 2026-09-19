@@ -2,7 +2,7 @@
 
 更新：2026-09-19。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B57 split resolver/direct-ffmpeg observable-context transport
+## 唯一下一步：P3-B58 private allowlisted-header transport review（REVIEW_REQUIRED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -39,6 +39,15 @@ postprocessing子原因。完整驗收：`analysis/p3_b56_allowlisted_diagnostic
 URL／resolver stdout／stderr／metadata不得落盤、hash或進receipt；只記byte count、URL count、allowlisted host category與
 failure category。仍為0 retry／fallback、無cookies／登入、同source/cutoff；成功前不得人工播放／語意檢查，成功後也只
 能把context artifact交給下一個prediction freeze，不得在本步讀`3181..3241`。
+
+B57事前52項通過後執行：resolver exit 0，在1.927396秒取得1個private `googlevideo_cdn` URL；URL text/hash/excerpt
+均未保存。direct ffmpeg在0.081831秒exit 8，分類`tls_or_network`；private runtime刪除，0 public artifact、0 future／
+prediction／model。這排除source resolver失敗，但不能把原因斷言為特定HTTP status或header。完整驗收：
+`analysis/p3_b57_split_resolver_direct_ffmpeg_acceptance_2026-09-19.md`。
+
+B58尚未授權。建議只改resolver同時在private memory提供allowlisted HTTP headers，禁止Cookie／Authorization與任何
+header落盤，再由direct ffmpeg執行同一`3000..3180`窗口與B54 gate。此為新provider invocation/capability，不能從B57
+授權外推；審查前不再請求來源、不讀future。
 
 ## 工作環境
 
