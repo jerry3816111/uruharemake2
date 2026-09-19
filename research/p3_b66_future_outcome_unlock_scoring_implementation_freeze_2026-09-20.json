@@ -1,0 +1,57 @@
+{
+  "schema": "uruha_p3_b66_future_outcome_unlock_scoring_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b66_future_outcome_access",
+  "authorization_basis": "B65 immutable prediction release plus standing user authorization",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b66_future_outcome_unlock_scoring_v1.json",
+      "sha256": "afbb2eaa0bab6fd6bed139dded8d51d65a8f49239dbd1625e96bf121114b20e1"
+    },
+    "future_reader": {
+      "path": "p3_b66_future_outcome_reader.py",
+      "sha256": "f918e9634db8dcd4faeaec29b9dc54153fb2f7efbd3e20e405afe5ca0f8a77e1"
+    },
+    "implementation": {
+      "path": "p3_b66_future_outcome_unlock_scoring.py",
+      "sha256": "63714056d66801f5873f3ff52327816f5b6b3de7b18ed10fec7c568340811704"
+    },
+    "tests": {
+      "path": "test_p3_b66_future_outcome_unlock_scoring.py",
+      "sha256": "2f126de6310116e50a2159a81608344df516b160498026689a8e9961602afd88"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b66_future_outcome_unlock_scoring.py -k 'not implementation_freeze'",
+    "passed": 9,
+    "failed": 0,
+    "future_projection_proxy_order_metrics_and_no_judge_boundary_checked": true
+  },
+  "future_outcome_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "prediction_result_hash": "379e0cd852cb3101bc03b593928f2201324e2ee4dd358c749dc1ecba22906abe",
+  "frozen_target": {
+    "future_seconds": [3181.0, 3241.0],
+    "first_behavior_max_cues": 3,
+    "first_behavior_max_seconds_from_first_cue": 12.0
+  },
+  "frozen_proxy_order": [
+    "direct_rejection",
+    "ask_clarification",
+    "defer_commitment",
+    "pause_and_reassess",
+    "accept_support_and_continue",
+    "acknowledge_then_continue_default"
+  ],
+  "frozen_metrics": [
+    "selected_label_hit",
+    "actual_label_probability",
+    "six-class unnormalized Brier score",
+    "log loss",
+    "descriptive character-bigram Jaccard"
+  ],
+  "winner_rule": "higher actual-label probability, then lower Brier, then tie",
+  "success_condition": "one private native-caption acquisition is projected to the exact future window, private full caption is deleted, a fresh future-only reader derives the frozen proxy label, and both immutable predictions are scored with zero model or judge calls",
+  "failure_condition": "any binding, acquisition, projection, deletion, reader, metric, mutation, retry, or accounting violation preserves a terminal failure without score",
+  "claim_boundary": "B66 is one deterministic automatic-caption proxy outcome, not human ground truth. Positive or negative results cannot establish general advantage or a human-response equation."
+}
