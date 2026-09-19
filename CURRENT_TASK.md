@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B69B source2 context-only acquisition and prediction batch（FUTURES LOCKED）
+## 唯一下一步：P3-B70 source-independent prediction-interface reliability gate
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -150,6 +150,17 @@ B69B只可使用B69事前固定的第二來源與四個context windows；一次n
 bounded joint schema、同一qwen3.5:9b、condition order、seed、temperature、num_ctx與每condition 512 completion ceiling，依序完成
 4列×2條prediction。全部8 calls完成前不得讀任何future；任一失敗即保存不完整batch並停止，不重試、不換來源、不調prompt／
 門檻。這仍是source-level prospective replication，不是正式independent holdout。
+
+B69B已terminal失敗且未揭盲：唯一caption acquisition與四個context artifacts成功；cue counts=`69/66/77/55`。本機模型前6 calls
+完成前三列paired conditions，第7個`s2r2400 / BASELINE_LITERAL` provider call完成但prediction parser以`schema`拒絕，第8 call未執行。
+總實際prompt/completion tokens=`15,429/1,650`、model latency=`133.887876s`；future/outcome/retry/fallback=`0/0/0/0`。依事前規則
+禁止同來源重跑、補第8 call或B69C揭盲。完整反例：`analysis/p3_b69b_source2_multiwindow_prediction_acceptance_2026-09-20.md`。
+
+B70先在已曝光development fixtures建立與來源無關的介面可靠度gate，不回頭追B69分數。最小單一機制候選是：保留JSON結構、
+日文與所有內容gate，只對全部finite且非負、總和大於0的label weights做相同的deterministic normalization，再以凍結精度核對sum=1
+且ranking不變；baseline/system完全同規則。同時把未來schema拒絕原因映射為不含raw response的allowlisted類別。先離線contract/tests/
+failure fixtures與現有合法outputs；若gate通過，另立B71在任何caption內容前選定第三來源，修正版只能在新來源前瞻測試。B69第二來源
+永久保留未完成反例。
 
 ## 工作環境
 
