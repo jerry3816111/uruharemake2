@@ -1,8 +1,8 @@
 # 目前任務卡
 
-更新：2026-09-19。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B58 private allowlisted-header transport（FROZEN / EXECUTION AUTHORIZED）
+## 唯一下一步：P3-B59 source-semantic availability probe（AUTHORIZED / CONTENT LOCKED）
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -50,10 +50,17 @@ prediction／model。這排除source resolver失敗，但不能把原因斷言�
 `next_execution_authorized=false`，允許B58唯一一次新provider capability。
 
 B58只改resolver同時在private memory提供allowlisted HTTP headers；明確拒絕Cookie／Authorization／Proxy-Authorization／
-Set-Cookie，丟棄Range與未列入的非敏感header，URL與header name/value/hash都不落盤。direct ffmpeg仍只執行同一
-`3000..3180`窗口與B54 gate，0 retry／fallback。正式執行前契約、實作、測試與freeze需commit；成功才可把context
-artifact交給下一個prediction freeze，失敗則保存redacted反例並依證據設計下一步。B58不得讀future、人工播放／語意檢查、
-執行prediction／model、寫正式M56或production memory。
+Set-Cookie，丟棄Range與未列入的非敏感header，URL與header name/value/hash都不落盤。69項affected suite通過後執行：
+resolver exit 0、`1.560216s`、1個private URL與3個allowlisted header；direct ffmpeg仍在`0.079168s` exit 8、
+`tls_or_network`。0 artifact／future／semantics／prediction／model／paid access。完整驗收：
+`analysis/p3_b58_private_allowlisted_header_transport_acceptance_2026-09-20.md`。
+
+B57 headerless與B58 allowlisted-header是兩個前瞻direct-audio修正批次，均失敗；依流程關閉此分支，不再加header、換小參數或
+重跑。B59改走不同資料路徑，但只做availability probe：同一來源只在private memory解析public subtitle與automatic-caption
+track metadata，保存語言／format可用性與count，不下載或閱讀caption內容、不保存track URL／raw metadata。一次resolver、
+0 retry／fallback；仍不得讀hidden-future內容、人工播放、語意檢查、prediction／model、付費API／登入／cookies。若有可用
+日文track，下一步才另外凍結capability-separated private raw caption→`<=3180` context artifact；若無，將來源標為需要合法本機
+artifact或另凍結替代來源，不再猜transport。
 
 ## 工作環境
 
