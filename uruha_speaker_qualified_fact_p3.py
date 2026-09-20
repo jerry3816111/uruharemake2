@@ -179,6 +179,43 @@ def _preference_values(user_utterance):
     return values
 
 
+_EXPLICIT_PREFERENCE_CORRECTIONS = (
+    re.compile(
+        r"\bI\s+(?:do\s+not|don't)\s+(?:prefer|like)\s+"
+        r"(?P<old>[^.!?\n]{2,80}?)\s+anymore\s*[.!?]+\s*"
+        r"I\s+(?:prefer|like)\s+(?P<new>[^.!?\n]{2,80})(?:[.!?]|$)",
+        re.I,
+    ),
+    re.compile(
+        r"\bI\s+no\s+longer\s+(?:prefer|like)\s+"
+        r"(?P<old>[^.!?\n]{2,80}?)\s*[.!?]+\s*"
+        r"I\s+(?:prefer|like)\s+(?P<new>[^.!?\n]{2,80})(?:[.!?]|$)",
+        re.I,
+    ),
+)
+
+
+def _clean_correction_value(value):
+    value = re.sub(r"\s+", " ", str(value or "")).strip(" 、,，。.!！?")
+    return re.sub(r"\s+now$", "", value, flags=re.I).strip()
+
+
+def _explicit_first_person_preference_corrections(user_utterance):
+    """Return bounded same-utterance corrections for runtime use only."""
+    text = str(user_utterance or "")
+    corrections = []
+    for pattern in _EXPLICIT_PREFERENCE_CORRECTIONS:
+        for match in pattern.finditer(text):
+            old_value = _clean_correction_value(match.group("old"))
+            new_value = _clean_correction_value(match.group("new"))
+            if not old_value or not new_value or _normalize(old_value) == _normalize(new_value):
+                continue
+            pair = (_normalize(old_value), _normalize(new_value))
+            if pair not in {(_normalize(old), _normalize(new)) for old, new in corrections}:
+                corrections.append((old_value, new_value))
+    return corrections
+
+
 def _category_matches(category, value):
     category_norm, value_norm = _normalize(category), _normalize(value)
     if not category_norm or not value_norm:
@@ -201,6 +238,7 @@ def _localize_preference_value(value):
         "plain glass cup": "無地のガラスコップ",
         "black coffee": "ブラックコーヒー",
         "herbal tea": "ハーブティー",
+        "black tea": "紅茶",
         "ceramic mugs": "陶器のマグカップ",
         "ceramic mug": "陶器のマグカップ",
         "透明玻璃杯": "透明なガラスコップ",
@@ -220,8 +258,9 @@ def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
     category = query.pop("_category_runtime_only", "")
     if not query.get("selected"):
         return query
+    evidence_rows = _selected_user_evidence(memory_data or {})
     candidates = []
-    for row in _selected_user_evidence(memory_data or {}):
+    for row in evidence_rows:
         for value in _preference_values(row["user"]):
             if not _category_matches(category, value):
                 continue
@@ -236,6 +275,33 @@ def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
                 "memory_id": row.get("memory_id"),
                 "retrieval_score": round(float(row.get("score") or 0.0), 4),
             })
+    correction_rows = []
+    for row in evidence_rows:
+        for old_value, new_value in _explicit_first_person_preference_corrections(row["user"]):
+            if not (_category_matches(category, old_value) and _category_matches(category, new_value)):
+                continue
+            correction_rows.append({
+                "old_value": old_value,
+                "new_value": new_value,
+                "old_digest": _digest(_normalize(old_value)),
+                "new_digest": _digest(_normalize(new_value)),
+                "old_jp": _localize_preference_value(old_value) or None,
+                "new_jp": _localize_preference_value(new_value) or None,
+                "source": row.get("source"),
+                "trace_id": row.get("trace_id"),
+                "memory_id": row.get("memory_id"),
+                "retrieval_score": round(float(row.get("score") or 0.0), 4),
+            })
+    unique_corrections = {}
+    for correction in correction_rows:
+        key = (correction["old_digest"], correction["new_digest"])
+        previous = unique_corrections.get(key)
+        if previous is None or correction["retrieval_score"] > previous["retrieval_score"]:
+            unique_corrections[key] = correction
+    corrections = sorted(
+        unique_corrections.values(),
+        key=lambda row: (-row["retrieval_score"], row["old_digest"], row["new_digest"]),
+    )
     unique = {}
     for candidate in candidates:
         key = candidate["value_digest"]
@@ -243,7 +309,70 @@ def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
         if previous is None or candidate["retrieval_score"] > previous["retrieval_score"]:
             unique[key] = candidate
     values = sorted(unique.values(), key=lambda row: -row["retrieval_score"])
-    if len(values) == 1 and values[0]["localized_value_jp"]:
+    supersession = None
+    if len(corrections) == 1:
+        correction = corrections[0]
+        historical = sorted(
+            (
+                candidate
+                for candidate in candidates
+                if candidate["value_digest"] == correction["old_digest"]
+                and (candidate.get("memory_id"), candidate.get("trace_id"))
+                != (correction.get("memory_id"), correction.get("trace_id"))
+            ),
+            key=lambda row: -row["retrieval_score"],
+        )
+        if not correction["old_jp"] or not correction["new_jp"]:
+            status = "unsupported_supersession_localization"
+            selected_speaker = None
+            core = "その更新、今の記憶だけじゃ日本語で確実に整理できない。"
+            reason = "explicit_correction_value_cannot_be_safely_localized"
+        elif not historical:
+            status = "missing_superseded_preference_history"
+            selected_speaker = None
+            core = "前の好みの記録まで確認できないから、今は断定しない。"
+            reason = "explicit_correction_has_no_distinct_selected_historical_episode"
+        else:
+            current = {
+                "speaker_role": "user",
+                "value_digest": correction["new_digest"],
+                "localized_value_jp": correction["new_jp"],
+                "localized_value_sha256": _digest(correction["new_jp"]),
+                "source": correction.get("source"),
+                "trace_id": correction.get("trace_id"),
+                "memory_id": correction.get("memory_id"),
+                "retrieval_score": correction["retrieval_score"],
+                "temporal_status": "current",
+            }
+            old = historical[0]
+            values = [current]
+            supersession = {
+                "status": "applied",
+                "current_value_digest": correction["new_digest"],
+                "current_value_jp": correction["new_jp"],
+                "current_value_jp_sha256": _digest(correction["new_jp"]),
+                "revoked_value_digest": correction["old_digest"],
+                "revoked_value_jp": correction["old_jp"],
+                "revoked_value_jp_sha256": _digest(correction["old_jp"]),
+                "correction_source": correction.get("source"),
+                "correction_trace_id": correction.get("trace_id"),
+                "correction_memory_id": correction.get("memory_id"),
+                "historical_source": old.get("source"),
+                "historical_trace_id": old.get("trace_id"),
+                "historical_memory_id": old.get("memory_id"),
+                "history_preserved": True,
+                "database_rewrite_count": 0,
+            }
+            status = "resolved_explicit_preference_supersession"
+            selected_speaker = "user"
+            core = f"今の好みは{correction['new_jp']}。前の{correction['old_jp']}から更新してる。"
+            reason = "one_explicit_same_item_preference_correction_in_selected_memory"
+    elif len(corrections) > 1:
+        status = "ambiguous_conflicting_explicit_corrections"
+        selected_speaker = None
+        core = "好みの更新が複数ある。今はどれが最新か断定しない。"
+        reason = "multiple_conflicting_explicit_corrections_in_selected_memory"
+    elif len(values) == 1 and values[0]["localized_value_jp"]:
         status = "resolved_unique_user_preference"
         selected_speaker = "user"
         core = f"あんたが好みって言ってたのは{values[0]['localized_value_jp']}。"
@@ -263,7 +392,7 @@ def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
         selected_speaker = None
         core = "その好み、今の記憶からは確認できない。"
         reason = "no_category_matching_first_person_preference_in_selected_memory"
-    return {
+    result = {
         **query,
         "status": status,
         "reason": reason,
@@ -279,10 +408,20 @@ def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
         "raw_dialogue_persisted": False,
         "claim_boundary": "first-person preference from already-selected speaker-qualified evidence; category match and bounded localization, not open-domain recall",
     }
+    if supersession:
+        result["supersession"] = supersession
+        result["claim_boundary"] = (
+            "one explicit first-person same-category correction from already-selected evidence; "
+            "old episode retained as historical, not general temporal belief revision"
+        )
+    return result
 
 
 def _plan_from_contract(contract):
-    resolved = contract.get("status") == "resolved_unique_user_preference"
+    resolved = contract.get("status") in {
+        "resolved_unique_user_preference",
+        "resolved_explicit_preference_supersession",
+    }
     return {
         "candidate_label": "p3_speaker_fact",
         "intent": "speaker_qualified_fact_recall",
@@ -391,7 +530,7 @@ def materialize_speaker_qualified_fact_p3(result):
                 "explicit_speaker_qualified_fact_act",
                 "selected_memory_evidence",
                 "speaker_role_and_category_join",
-                "unique_or_abstain",
+                "explicit_supersession_or_unique_or_abstain",
                 "visible_japanese_surface",
             ],
         )
