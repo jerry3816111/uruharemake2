@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-C 單一read-only Function Calling seam
+## 唯一下一步：P4-E 隔離產品跨 process 重啟記憶回溯
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -335,6 +335,22 @@ renderer package、license/provenance、3D canvas入口與既有animation/action
 重散布來路不明角色模型。P4-D只先做到可視3D renderer與truthful load/error node，不接未通過holdout的personality/action decision，
 不執行physical state-changing action，不改P3資料／gate，也不使用登入、付費API或外部部署。
 
+P4-D已完成並 release：同一Safari產品頁新增browser-only Local VRM Stage；初始只顯示`NEUTRAL STAGE · NOT URUHA`中性舞台。
+以隔離runtime內自製4,020-byte VRM 1.0 mannequin實測，canvas真正畫出紫色T-pose且「選擇→驗證→解析→呈現」四節點全綠；
+9-byte破損檔案則parse節點紅、render未完成、placeholder回復，沒有假稱顯示。valid→invalid→valid只做瀏覽器本機解析，conversation rows
+維持`3→3`，server upload／asset persistent write／action／P4-D model/tool call全為0。viewer無remote URL/fetch/XHR且只允許blob/data；
+這是application-level no-network evidence，不是假稱量測Safari其他48個既有分頁。status Function Calling與ordinary chat真實回歸仍通過，
+端到端=`6.3426s/2.842s`；VRM始終可見。第一次raw http-literal proxy失敗亦保留，沒有改dependency或放寬runtime規則。
+完整驗收：`analysis/p4_d_local_vrm_renderer_acceptance_2026-09-20.md`；release：
+`research/p4_d_local_vrm_renderer_release_2026-09-20.json`。這不代表有一ノ瀬うるはasset、角色授權、動作智慧、tool-controlled avatar或研究優勢。
+
+P4-E是唯一下一步，單一變因只驗證一個明示、speaker-qualified事實能否跨真正product process restart保存與回溯。必須在第一輪前固定
+兩session腳本、唯一事實、可接受日文內容、ownership/relationship錯置反例、retrieval provenance、restart證據與失敗判準；只使用P4-B
+既有isolated runtime，不讀production memory。第一session明確告知一個親屬所屬寵物名稱後停止process；以同一isolated root新PID／新session
+重啟，第二session問題不得包含答案。成功需同時有正確名稱、正確speaker/owner關係、實際persisted retrieval trace、自然日文與graph可見，
+且VRM local asset因browser-only不應被server記住。任何錯名、把親屬寵物說成使用者自己的、只靠prompt含答案、沒有retrieval證據或未真正
+換process都算fail。結果一次保存，不因失敗改題、改prompt、手動注入memory或重跑；不把單一成功外推成長對話／open-world memory可靠。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
@@ -343,7 +359,7 @@ renderer package、license/provenance、3D canvas入口與既有animation/action
   不全域安裝依賴。Gradio／Torch／brain 的 import 留在 isolated worker，不放純資料 module 的頂層。
 - 長期目標檔：`LONG_TERM_GOAL.md`。2026-09-09 Goal 工具讀到 usageLimited；文件更新不等於 app 已恢復。
   不清除／假完成／改內部 DB 來換 Goal。使用者手動回合仍可執行已授權工作。
-- 本機 Safari 目前有既知工具拒絕記錄，驗收 pending；不以其他 UI 技術繞過。P3-A 不依賴瀏覽器。
+- 本機 Safari 已完成P4-B、P4-C與P4-D真實驗收；目前沿用1個Uruha頁面、沒有關閉使用者tab。P3-A不依賴瀏覽器。
 
 ## 已完成、不要重做
 
