@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p4_g_multilingual_preference_acknowledgement_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_real_p4_g_product_turn",
+  "implementation_checkpoint": {
+    "commit": "b257437e189e6108ff3b35432356c3f87734a9e3",
+    "contract": {
+      "path": "configs/p4_g_preference_acknowledgement_contract_v1.json",
+      "sha256": "215da08a0f2b90d61d90cbf59f37573f629b73fc8dabbde51e82d06fe2191f9c"
+    },
+    "implementation": {
+      "path": "uruha_explicit_preference_acknowledgement_p4.py",
+      "sha256": "2aee133a73c94311d5e8d6ed50eb97523a01deed676623b6a95a9294423bb187"
+    },
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "3e8bba344eac821ddcd4cca281df1b863a2c4c3e86341522554fd1fd5ac7019d"
+    },
+    "implementation_test": {
+      "path": "test_p4_g_explicit_preference_acknowledgement.py",
+      "sha256": "bd370c297b5191f5c67919f45f75a2ab535f9ca95b40265748946fbedc18db19"
+    }
+  },
+  "acceptance_bindings": {
+    "contract": {
+      "path": "configs/p4_g_multilingual_preference_acknowledgement_acceptance_v1.json",
+      "sha256": "c5d88cdb882eeffef0ef58c87a7736a041af1805c96075afd6562c7974ca1458"
+    },
+    "gate": {
+      "path": "p4_g_preference_acknowledgement_gate.py",
+      "sha256": "7186ef6f30ceacd51fa7e00cb9e849ab633e12d155414904b1765c1a40371aa4"
+    },
+    "gate_test": {
+      "path": "test_p4_g_preference_acknowledgement_gate.py",
+      "sha256": "2237b6f4d56f4e3bf692c563910109b24feb58f5b71dba94eb0cd81018e539d8"
+    }
+  },
+  "pre_execution_evidence": {
+    "focused_implementation_and_gate_tests_passed": 24,
+    "adjacent_regression_tests_passed": 160,
+    "adjacent_regression_warnings": 9,
+    "product_entry_import_install_check_passed": true,
+    "real_p4_g_product_turn_count": 0,
+    "p4_g_process_start_count": 0,
+    "production_memory_access_count": 0,
+    "result_known_before_freeze": false
+  },
+  "execution_order": [
+    "commit and push this acceptance freeze before any real P4-G turn",
+    "stop the P4-F isolated server without reusing its memory as P4-G input",
+    "start one newly created isolated P4-G runtime on localhost",
+    "reuse the existing Uruha Safari tab without closing any user tab",
+    "submit exactly turn 1 once and wait for durable completion",
+    "submit exactly turn 2 once and wait for durable completion",
+    "record both visible surfaces episode ids graph nodes and accounting",
+    "run the frozen gate once and preserve pass or fail"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "prompt_or_expected_surface_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "general_prompt_model_memory_or_allowlist_change_allowed": false,
+    "same_case_rerun_allowed": false,
+    "repair_after_terminal_result": "new separately reviewed case only; this first P4-G result remains immutable"
+  },
+  "authorized_external_effects": {
+    "localhost_product_process_starts": 1,
+    "safari_product_turns": 2,
+    "local_ollama_calls_maximum": 2,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0
+  },
+  "claim_boundary": "This freeze authorizes one no-retry two-turn multilingual product surface case. It cannot establish general persona quality, semantic correction reliability, human preference or research advantage."
+}
