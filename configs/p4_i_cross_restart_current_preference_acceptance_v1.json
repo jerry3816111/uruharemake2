@@ -1,0 +1,111 @@
+{
+  "schema": "uruha_p4_i_cross_restart_current_preference_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "implementation_commit": "e5e6f741f193cf1178236cc6f045d72f75c39f80",
+  "process_1": {
+    "input": "I prefer oolong tea. Please remember that as my current drink preference.",
+    "expected_visible_output": "ん、その好みは覚えとく。",
+    "expected_language": "en",
+    "expected_act": "write",
+    "expected_scope": "drink",
+    "expected_current_value": "oolong tea",
+    "expected_profile_likes": [
+      "oolong tea"
+    ],
+    "expected_profile_dislikes": [],
+    "expected_active_current_count": 1,
+    "expected_historical_current_count": 0,
+    "expected_profile_write_count": 1
+  },
+  "restart": {
+    "old_process_must_exit": true,
+    "new_pid_required": true,
+    "new_product_session_id_required": true,
+    "same_runtime_root_required": true,
+    "same_memory_db_required": true,
+    "reuse_runtime_manifest_required": true,
+    "process_2_start_must_observe_process_1_active_typed_record": true,
+    "post_turn_memory_injection_allowed": false,
+    "production_memory_access_allowed": false
+  },
+  "process_2": {
+    "input": "更正：我現在不喜歡oolong tea了，現在比較喜歡barley tea。",
+    "expected_visible_output": "ん、訂正の内容はそのまま覚えとく。",
+    "expected_language": "zh",
+    "expected_act": "correction",
+    "expected_scope": "drink",
+    "expected_scope_source": "inherited_unique_active_old_value",
+    "expected_previous_value": "oolong tea",
+    "expected_current_value": "barley tea",
+    "expected_profile_likes": [
+      "barley tea"
+    ],
+    "expected_profile_dislikes": [
+      "oolong tea"
+    ],
+    "expected_active_current_count": 1,
+    "expected_historical_current_count": 1,
+    "expected_profile_write_count": 2,
+    "old_positive_record_must_remain_present": true,
+    "old_positive_record_must_be_historical": true,
+    "new_positive_record_must_be_active": true,
+    "negative_old_record_must_be_active": true,
+    "same_scope_predicate_required_for_old_and_new_positive": true
+  },
+  "per_turn_requirements": {
+    "visible_output_language": "Japanese",
+    "p4_h_status": "explicit_preference_memory_act_committed",
+    "p4_h_plan_authority": true,
+    "p4_h_surface_authority": true,
+    "p4_h_graph_label": "explicit_preference_acknowledgement_p4",
+    "p4_h_graph_stage": "select",
+    "p4_h_final_surface_exact": true,
+    "p4_i_status": "typed_current_preference_written",
+    "p4_i_graph_label": "multilingual_current_preference_p4",
+    "p4_i_graph_stage": "memory",
+    "p4_i_raw_dialogue_persisted": false,
+    "p4_i_answer_use_authorized": false,
+    "durable_episode_write_count": 1,
+    "product_planner_model_call_count": 0,
+    "fallback_count": 0,
+    "latency_target_seconds": 20.0
+  },
+  "runtime_requirements": {
+    "fresh_isolated_root": true,
+    "listener": "127.0.0.1:7861",
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "real_product_turns": 2,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "total_profile_record_count": 3,
+    "total_episode_record_count": 2,
+    "closed_user_tab_count": 0
+  },
+  "evidence_to_capture": [
+    "two exact natural Japanese visible outputs and both P4-H select nodes",
+    "two P4-I memory-stage graph nodes with exact source language act scope values and ids",
+    "first typed active record visible before restart and observed by process 2 before correction",
+    "new pid new product session same isolated root and same memory database",
+    "after correction exactly one active current positive one historical old positive and one active explicit negative",
+    "same scope predicate for old and new positive records without deletion or rewrite",
+    "distinct durable episode ids latency process accounting and zero retry",
+    "Safari visibility without closing user tabs"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "input_value_scope_or_expected_surface_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "claim_boundary": "A pass proves one developer-authored cross-process product case in which an English explicit current preference is persisted and a Chinese explicit correction produces a new active same-scope value while preserving the old positive as history. It does not prove conversational recall from typed state, open-world multilingual preference understanding, long-dialogue reliability, felt understanding, human preference, LLM superiority or a human equation."
+}
