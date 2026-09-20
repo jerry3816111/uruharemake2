@@ -1,0 +1,37 @@
+{
+  "schema": "uruha_p4_b_safe_isolated_product_launcher_sandbox_repair_v1",
+  "version": "1.0.0",
+  "trigger": "First frozen real Safari launch exposed a repository annotation path that remained writable by the product child even though chat memory, session and logs were isolated.",
+  "preserved_failure": {
+    "first_real_server_start_count": 1,
+    "http_200": true,
+    "localhost_only": true,
+    "safari_page_visible": true,
+    "chat_or_model_turn_count": 0,
+    "repository_write_count": 0,
+    "acceptance": "failed_product_child_not_fully_write_isolated"
+  },
+  "single_repair": "Run both the product import probe and product server under a macOS sandbox profile that denies file writes to the safe repository and original dirty checkout while allowing the isolated temporary runtime root.",
+  "required": {
+    "sandbox_exec_path": "/usr/bin/sandbox-exec",
+    "profile_location": "inside_isolated_runtime_root",
+    "profile_mode": "0600",
+    "deny_safe_worktree_file_writes": true,
+    "deny_original_checkout_file_writes": true,
+    "allow_isolated_runtime_writes": true,
+    "disable_python_bytecode_writes": true,
+    "sandboxed_dependency_probe_before_server": true
+  },
+  "unchanged": [
+    "product_entry",
+    "brain_and_prompts",
+    "research_data_and_gates",
+    "localhost_host_and_port",
+    "isolated_memory_session_and_logs",
+    "idle_visible_guard",
+    "no_vrm_or_function_calling",
+    "no_public_share_login_or_paid_api"
+  ],
+  "failure_rule": "If the sandboxed import probe or a synthetic write-denial fixture fails, do not launch the server. One post-freeze real rerun is allowed only after this repair passes and is committed.",
+  "claim_boundary": "The sandbox repair protects repository paths from the product child. It is not a malicious-kernel security claim and does not establish chat quality, tool safety, VRM rendering, or research advantage."
+}
