@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B74 isolated two-coder collection site
+## 唯一下一步：P3-B75 prospective real episode sampling frame
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -229,6 +229,16 @@ B74只建立可實際使用的本機雙coder收集平台：兩個不可互看的
 HTML表單、逐欄validation、完成後才可由獨立analyzer讀兩份ledger。先用synthetic packets驗證啟動、提交、重啟保存、跨coder隔離、
 incomplete拒絕與reliability report；不得用synthetic pass解鎖真實來源或宣稱human reliability。Safari若工具仍拒絕則保持UI pending，
 不能改稱通過；也不得在B74先取第四來源內容。
+
+B74已完成：20項affected tests通過；Safari實際新增1 tab顯示synthetic標註頁，提交一題後`0/18→1/18`。private root/ledger
+permissions=`0700/0600`，兩ledger entries=`[1,0]`；完整18×2 synthetic calculation的四個primary alpha均`1.0`，但
+`synthetic_authorizes_human=false`、`real_prediction_authorized=false`。新來源/model/正式human label=`0/0/0`。完整驗收：
+`analysis/p3_b74_isolated_two_coder_collection_site_acceptance_2026-09-20.md`。
+
+B75下一步只設計並凍結real 18-episode sampling frame：來源選擇與slot規則必須在內容review前固定，每個slot需可辨認外部stimulus、
+Uruha response與時間boundary；無清楚stimulus的直播獨白標unusable且不得用鄰近字幕補成對話。frame需包含controlled same-surface
+context pairs與literal/pragmatic context-flip controls，並維持公開來源provenance、acoustic unavailable規則與train/dev/holdout分離。
+先做metadata/source availability，不得在sampling freeze前觀看或標註response內容；B75也不得直接執行model prediction。
 
 ## 工作環境
 
