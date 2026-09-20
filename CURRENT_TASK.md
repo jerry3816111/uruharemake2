@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B76 official-channel inventory selection
+## 唯一下一步：P3-C1 controlled context-flip lane contract
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -248,6 +248,16 @@ B75已terminal不足：唯一一次`ytsearch24:一ノ瀬うるは コラボ 雑�
 B76是此source-discovery的第一個前瞻修正：改為一次直接列舉相同official channel公開uploads的metadata inventory，再套用事前固定的
 排除、duration、title keywords與provider order；不得使用B75 query、人工選片、caption/content或playback。若仍不足三支，保存負結果並
 停止本來源發現分支，不做第二個關鍵字／小參數重試。若足夠，只能建立同一6-relative-region-per-source frame；content review與model仍另 gate。
+
+B76亦terminal不足：official channel `/videos` inventory exit 0、`0.565957s`、raw stdout `8,540 bytes`丟棄，eligible sources=`0`；
+caption/media/model/outcome/retry/fallback全為0。因raw未保存，不能事後斷言是哪個metadata field造成0。B75＋B76已耗盡本source-discovery
+分支原始嘗試與唯一修正；不得擴limit、換tab／keyword或人工挑選。完整驗收：
+`analysis/p3_b76_official_channel_inventory_acceptance_2026-09-20.md`。
+
+P3-C1改走獨立、不讀新Uruha future的controlled pragmatic lane：先凍結同surface form的literal/pragmatic context pairs、expected
+interpretation distributions、overinterpretation controls與same-model公平生成/判讀介面；方法明確對應DRInQ與PaCE。它驗證的是一般context
+sensitivity與過度解讀，不得替代observational reference-person prediction。資料必須新建train/dev/holdout分離，不能重用已曝光B68/B71C
+追分；在contract/fixtures/freeze前不得執行model。
 
 ## 工作環境
 
