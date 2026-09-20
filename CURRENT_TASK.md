@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B75 prospective real episode sampling frame
+## 唯一下一步：P3-B76 official-channel inventory selection
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -239,6 +239,15 @@ B75下一步只設計並凍結real 18-episode sampling frame：來源選擇與sl
 Uruha response與時間boundary；無清楚stimulus的直播獨白標unusable且不得用鄰近字幕補成對話。frame需包含controlled same-surface
 context pairs與literal/pragmatic context-flip controls，並維持公開來源provenance、acoustic unavailable規則與train/dev/holdout分離。
 先做metadata/source availability，不得在sampling freeze前觀看或標註response內容；B75也不得直接執行model prediction。
+
+B75已terminal不足：唯一一次`ytsearch24:一ノ瀬うるは コラボ 雑談` metadata search exit 0、`1.323599s`、raw stdout
+`33,182 bytes`丟棄，但符合official channel＋duration＋keyword＋exclusion的來源為`0`。caption/media/model/outcome/retry/fallback=
+`0/0/0/0/0/0`，0 selected source／slot。這是provider ranked search discovery失敗，不是官方頻道內容不存在，也不是B73否定。
+完整驗收：`analysis/p3_b75_real_episode_sampling_frame_acceptance_2026-09-20.md`。
+
+B76是此source-discovery的第一個前瞻修正：改為一次直接列舉相同official channel公開uploads的metadata inventory，再套用事前固定的
+排除、duration、title keywords與provider order；不得使用B75 query、人工選片、caption/content或playback。若仍不足三支，保存負結果並
+停止本來源發現分支，不做第二個關鍵字／小參數重試。若足夠，只能建立同一6-relative-region-per-source frame；content review與model仍另 gate。
 
 ## 工作環境
 
