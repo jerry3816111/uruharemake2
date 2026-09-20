@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parent
@@ -19,13 +20,22 @@ def _load():
     return json.loads(FREEZE.read_text(encoding="utf-8"))
 
 
+def _sha256_at_commit(commit: str, path: str) -> str:
+    payload = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(payload).hexdigest()
+
+
 def test_freeze_binds_committed_implementation_and_acceptance_gate():
     freeze = _load()
     assert freeze["status"] == "frozen_before_any_real_p4_g_product_turn"
-    assert freeze["implementation_checkpoint"]["commit"] == "b257437e189e6108ff3b35432356c3f87734a9e3"
+    commit = freeze["implementation_checkpoint"]["commit"]
+    assert commit == "b257437e189e6108ff3b35432356c3f87734a9e3"
     for binding in freeze["implementation_checkpoint"].values():
         if isinstance(binding, dict):
-            assert _sha256(ROOT / binding["path"]) == binding["sha256"]
+            assert _sha256_at_commit(commit, binding["path"]) == binding["sha256"]
     for binding in freeze["acceptance_bindings"].values():
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
 

@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parent
@@ -18,6 +19,14 @@ def _sha256(path: Path) -> str:
 
 def _load(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _sha256_at_commit(commit: str, path: str) -> str:
+    payload = subprocess.check_output(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+    )
+    return hashlib.sha256(payload).hexdigest()
 
 
 def test_freeze_binds_the_immutable_p4_g_negative_result():
@@ -57,7 +66,13 @@ def test_contract_adds_fail_closed_safety_and_action_guards():
 def test_freeze_binds_contract_test_prechange_code_and_result():
     freeze = _load(FREEZE)
     assert freeze["status"] == "frozen_before_p4_h_implementation"
-    for binding in freeze["bindings"].values():
+    prechange = freeze["bindings"]["prechange_implementation"]
+    assert _sha256_at_commit(
+        freeze["design_review"]["prechange_commit"], prechange["path"]
+    ) == prechange["sha256"]
+    for name, binding in freeze["bindings"].items():
+        if name == "prechange_implementation":
+            continue
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
     assert freeze["authorized_changes"] == [
         "uruha_explicit_preference_acknowledgement_p4.py",

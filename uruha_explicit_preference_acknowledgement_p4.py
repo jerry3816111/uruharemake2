@@ -1,9 +1,11 @@
-"""Product-only casual acknowledgement for explicit preference memory acts.
+"""Product-only plan and surface authority for explicit preference memory acts.
 
-The general model can produce a linguistically valid but overly formal bare
-acknowledgement.  This adapter owns only that final surface corner: an explicit
-first-person preference write/correction plus an allowlisted generic reply.
-It does not change planning, retrieval, episode writes or correction semantics.
+P4-G first owned only an overly formal bare acknowledgement corner.  Its frozen
+real result showed that arbitrary wording and a legacy intent collision can both
+happen before that narrow repair.  P4-H therefore gives the already-frozen
+explicit first-person preference write/correction classifier one deterministic
+plan and exact acknowledgement surface.  It still does not change retrieval,
+episode writes, preference semantics, ranking, or correction recall.
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ import unicodedata
 LABEL = "explicit_preference_acknowledgement_p4"
 SCHEMA = "uruha_explicit_preference_acknowledgement_p4"
 _INSTALLED = False
+_ORIGINAL_RULE_PLAN = None
 _ORIGINAL_VISIBLE_GUARD = None
 _ORIGINAL_RUN = None
 _ORIGINAL_EMIT = None
@@ -40,6 +43,20 @@ _METALINGUISTIC = re.compile(
 )
 _HYPOTHETICAL = re.compile(
     r"(?:\bif\s+i\s+(?:prefer|preferred|like|liked)\b|如果|假如|假設|假设|もし)",
+    re.I,
+)
+_PROTECTED_RISK = re.compile(
+    r"(?:死にたい|自殺したい|消えたい|不想活|想死|自殺|自杀|"
+    r"kill\s+myself|hurt\s+myself|want\s+to\s+die|end\s+my\s+life)",
+    re.I,
+)
+_ACTION_OR_AVATAR = re.compile(
+    r"(?:open|launch|start|close|run|execute|開|打開|打开|啟動|启动|關閉|关闭|"
+    r"動か|動作|笑顔|表情).{0,72}(?:browser|function|tool|VRM|avatar|"
+    r"瀏覽器|浏览器|函數|函数|工具|モデル|アバター)|"
+    r"(?:browser|function|tool|VRM|avatar|瀏覽器|浏览器|函數|函数|工具|"
+    r"モデル|アバター).{0,72}(?:open|launch|start|close|run|execute|開|"
+    r"打開|打开|啟動|启动|關閉|关闭|動か|動作|笑顔|表情)",
     re.I,
 )
 
@@ -108,6 +125,10 @@ def classify_explicit_preference_acknowledgement_p4(user_input):
     }
     if not text:
         return {**base, "reason": "empty_input"}
+    if _PROTECTED_RISK.search(text):
+        return {**base, "reason": "protected_risk_cue"}
+    if _ACTION_OR_AVATAR.search(text):
+        return {**base, "reason": "function_or_vrm_action_command"}
     if _METALINGUISTIC.search(text):
         return {**base, "reason": "metalinguistic_or_quoted_context"}
     if _HYPOTHETICAL.search(text):
@@ -137,6 +158,98 @@ def classify_explicit_preference_acknowledgement_p4(user_input):
                 "epistemic_status": "known_observable_utterance",
             }
     return {**base, "reason": "explicit_preference_memory_act_not_detected"}
+
+
+def build_explicit_preference_memory_act_contract_p4(user_input):
+    """Promote only a selected P4-G classifier result to P4-H authority."""
+    classification = classify_explicit_preference_acknowledgement_p4(user_input)
+    if not classification.get("selected"):
+        return classification
+    act = classification["act"]
+    return {
+        **classification,
+        "status": "explicit_preference_memory_act_authorized",
+        "classifier_source": "p4_g_frozen_multilingual_classifier",
+        "plan_authority": True,
+        "surface_authority": True,
+        "planner_path": "explicit_preference_memory_act_authority_p4",
+        "selected_core_jp": AUTHORITATIVE_SURFACES[act],
+        "model_call_added": False,
+        "episode_write_count_changed": False,
+        "memory_schema_or_ranking_changed": False,
+        "p4_f_supersession_or_recall_changed": False,
+        "private_state_truth_claimed": False,
+        "raw_dialogue_persisted": False,
+        "claim_boundary": (
+            "bounded explicit preference memory-act plan and surface only; not "
+            "a semantic recall, understanding or research claim"
+        ),
+    }
+
+
+def _plan_from_explicit_preference_memory_act_p4(contract):
+    correction = contract.get("act") == "correction"
+    return {
+        "candidate_label": "p4_preference_memory_act",
+        "intent": (
+            "explicit_preference_memory_correction"
+            if correction
+            else "explicit_preference_memory_write"
+        ),
+        "mood_impact": 0,
+        "trust_impact": 1,
+        "scene": "casual",
+        "listener_state": "現在の好みを明示して記憶への反映を求めている",
+        "reply_goal": "記憶行為を短い自然な日本語で確認する",
+        "jp_summary": (
+            "ユーザーが以前の好みを訂正し、現在の好みを明示した。"
+            if correction
+            else "ユーザーが現在の好みを明示し、覚えるよう求めた。"
+        ),
+        "core_message_jp": contract["selected_core_jp"],
+        "cognitive_mode": "direct",
+        "response_mode": "direct_answer",
+        "uncertainty": 0.02,
+        "premise_check": "accept",
+        "self_check": True,
+        "subjective_note_jp": "明示された記憶行為だけ確認する",
+        "hidden_intent": "memory_probe",
+        "user_belief": "明示した現在の好みを会話記憶に残してほしい。",
+        "my_hidden_knowledge": "好みの内容はユーザー自身の現在発話に由来する。",
+        "user_expectation": "記憶したことが分かる短い自然な確認。",
+        "surface_act": "memory_presence_reply",
+        "grounding": {
+            "source": "current_explicit_user_utterance",
+            "act": contract["act"],
+            "language": contract["language"],
+        },
+        "payload_level": "low",
+        "explicit_preference_memory_act_contract_p4": deepcopy(contract),
+        "planner_path": contract["planner_path"],
+        "constraints": {
+            "first_person": "うち",
+            "sentence_count": 1,
+            "max_chars": 28,
+            "casual_japanese_only": True,
+            "forbid_polite": True,
+            "forbid_knowledge": True,
+            "forbid_lore": True,
+            "forbid_self_variants": True,
+        },
+        "must_avoid": ["私", "了解しました", "わかりました", "承知しました", "AI"],
+    }
+
+
+def rule_plan_with_explicit_preference_memory_act_p4(
+    self,
+    user_input,
+    current_psyche,
+    memory_data=None,
+):
+    contract = build_explicit_preference_memory_act_contract_p4(user_input)
+    if contract.get("selected") and contract.get("plan_authority"):
+        return _plan_from_explicit_preference_memory_act_p4(contract)
+    return _ORIGINAL_RULE_PLAN(self, user_input, current_psyche, memory_data)
 
 
 def apply_explicit_preference_acknowledgement_p4(reply, user_input):
@@ -194,14 +307,40 @@ def visible_guard_with_explicit_preference_acknowledgement_p4(
         user_input=user_input,
         memory_data=memory_data,
     )
-    final, audit = apply_explicit_preference_acknowledgement_p4(visible, user_input)
+    contract = build_explicit_preference_memory_act_contract_p4(user_input)
+    route = str(((logic_data or {}).get("semantic_route_m22") or {}).get("selected_type") or "")
+    before = str(visible or "").strip()
+    if contract.get("selected") and route != "safety_sensitive":
+        final = contract["selected_core_jp"]
+        audit = {
+            **contract,
+            "status": "explicit_preference_memory_act_committed",
+            "reason": "selected_typed_act_owns_plan_and_final_surface",
+            "post_language_guard_generic_formal_acknowledgement": (
+                _normalize_acknowledgement(before) in GENERIC_FORMAL_ACKNOWLEDGEMENTS
+            ),
+            "surface_changed": final != before,
+            "pre_authority_surface_sha256": _digest(before),
+            "final_visible_surface_sha256": _digest(final),
+            "final_visible_surface_jp": final,
+        }
+    else:
+        final, audit = apply_explicit_preference_acknowledgement_p4(visible, user_input)
+        if contract.get("selected") and route == "safety_sensitive":
+            audit.update(
+                status="blocked_by_safety_sensitive_route",
+                reason="safety_surface_remains_authoritative",
+                plan_authority=False,
+                surface_authority=False,
+                surface_changed=False,
+            )
     if not isinstance(logic_data, dict):
         return final
     logic_data[LABEL] = deepcopy(audit)
-    if audit.get("surface_changed"):
+    if audit.get("surface_authority"):
         guard = deepcopy(logic_data.get("visible_language_guard") or {})
         guard.update(
-            changed=True,
+            changed=bool(audit.get("surface_changed")),
             repair_action=LABEL,
             pre_p4_g_final_reply_sha256=_digest(visible),
             final_reply=final,
@@ -222,14 +361,12 @@ def materialize_explicit_preference_acknowledgement_p4(result):
         expected = AUTHORITATIVE_SURFACES.get(payload.get("act"))
         payload.update(
             final_visible_surface_sha256=_digest(final),
-            final_visible_surface_matches_contract=bool(
-                not payload.get("surface_authority") or final == expected
-            ),
+            final_visible_surface_matches_contract=bool(expected and final == expected),
             flow=[
                 "explicit_preference_act",
-                "post_language_guard_surface",
-                "generic_formal_ack_allowlist",
-                "casual_japanese_surface_or_unchanged",
+                "deterministic_memory_act_plan",
+                "current_turn_surface_authority",
+                "bounded_casual_japanese_acknowledgement",
             ],
         )
         logic[LABEL] = deepcopy(payload)
@@ -240,7 +377,7 @@ def materialize_explicit_preference_acknowledgement_p4(result):
         rows.insert(
             index,
             {
-                "stage": "surface",
+                "stage": "select" if payload.get("plan_authority") else "surface",
                 "label": LABEL,
                 "payload": deepcopy(payload),
                 "salience": 1.0 if payload.get("surface_changed") else 0.84,
@@ -251,15 +388,18 @@ def materialize_explicit_preference_acknowledgement_p4(result):
 
 
 def install_explicit_preference_acknowledgement_p4():
-    global _INSTALLED, _ORIGINAL_VISIBLE_GUARD, _ORIGINAL_RUN, _ORIGINAL_EMIT
+    global _INSTALLED, _ORIGINAL_RULE_PLAN, _ORIGINAL_VISIBLE_GUARD
+    global _ORIGINAL_RUN, _ORIGINAL_EMIT
     if _INSTALLED:
         return False
-    from uruha_brain_mac import RightBrain, UruhaBrainV4_Mac
+    from uruha_brain_mac import LeftBrain, RightBrain, UruhaBrainV4_Mac
     from uruha_trace_history_sync_m41_1 import sync_current_history_m41_1
 
+    _ORIGINAL_RULE_PLAN = LeftBrain._rule_based_plan
     _ORIGINAL_VISIBLE_GUARD = RightBrain.enforce_user_visible_japanese
     _ORIGINAL_RUN = UruhaBrainV4_Mac.run_turn_debug
     _ORIGINAL_EMIT = UruhaBrainV4_Mac.emit_response_if_ready
+    LeftBrain._rule_based_plan = rule_plan_with_explicit_preference_memory_act_p4
     RightBrain.enforce_user_visible_japanese = (
         visible_guard_with_explicit_preference_acknowledgement_p4
     )
