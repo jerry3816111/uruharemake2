@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-E 隔離產品跨 process 重啟記憶回溯
+## 唯一下一步：P4-F 明示偏好更正／撤銷跨重啟
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -350,6 +350,21 @@ P4-E是唯一下一步，單一變因只驗證一個明示、speaker-qualified�
 重啟，第二session問題不得包含答案。成功需同時有正確名稱、正確speaker/owner關係、實際persisted retrieval trace、自然日文與graph可見，
 且VRM local asset因browser-only不應被server記住。任何錯名、把親屬寵物說成使用者自己的、只靠prompt含答案、沒有retrieval證據或未真正
 換process都算fail。結果一次保存，不因失敗改題、改prompt、手動注入memory或重跑；不把單一成功外推成長對話／open-world memory可靠。
+
+P4-E已依事前freeze一次通過：全新隔離root第一個PID `62778`收到「Rina喜歡black coffee、使用者偏好herbal tea」，日文回覆
+`記憶に残すよ`後真正退出；同一root／memory DB以新PID `62949`與新session重啟。答案不在第二題時，Safari回覆
+`あんたが好みって言ってたのはハーブティー。`；唯一candidate的persisted episode ID=
+`b992ec7e-cea9-4dca-81eb-e0760050b140`，來源時間早於新process，selected speaker=`user`而非Rina，圖上有
+`speaker_qualified_fact_p3`，general planner model call=0。VRM stage在新page回到waiting，證明browser-local asset未被server持久化。
+兩process／兩turn合計只有第一輪1次本機planner call，0 retry／tool／VRM action／paid API／production memory。完整驗收：
+`analysis/p4_e_cross_restart_memory_recall_acceptance_2026-09-20.md`。這是developer-authored bounded product integration，不是open-domain、
+長對話、人類記憶或研究優勢證據。
+
+P4-F是唯一下一步，處理目前尚未驗證且直接對應長期Goal「接受誤解修正並之後適用」的產品缺口：同一speaker與同一偏好類別先有舊值，
+之後使用者明確說「更正／不再是舊值／現在是新值」，真正process restart後只能把新值當current，舊值必須保留為可追溯historical／revoked，
+不能刪除證據、任選一個或永久回答ambiguous。先以純fixture定位現有selected-memory adapter是否能辨識時間與撤銷；再固定一個三輪隔離案例、
+owner、correction cue、current query與fail controls。若現況失敗，只准新增typed speaker-qualified preference supersession，不改general memory
+ranking、研究資料、模型、persona或baseline；先離線測試，commit後才做一次真實Safari跨重啟驗收。不得把單案例外推成一般事實更新能力。
 
 ## 工作環境
 
