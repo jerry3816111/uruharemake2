@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B73 prospective response-target redesign
+## 唯一下一步：P3-B74 isolated two-coder collection site
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -218,6 +218,17 @@ B73下一步不是修改已曝光marker，而是先凍結新的prospective targe
 把直接可觀察行為與需要人類判讀的語用／被理解感分層；automatic proxy只能在與盲化真人標註達到事前可靠度後使用。B73先建立schema、
 annotation packet、雙coder reliability gate、missing/ambiguous處理及同模型公平比較欄位，並用synthetic fixtures驗證工具；不得讀第四來源內容、
 執行新prediction或用Codex/LLM標註冒充真人。已曝光B68/B71C只作失敗例，不可作新量尺的成功驗證資料。
+
+B73已完成protocol/tooling：prediction view不含outcome，coder view不含condition/prediction；不可辨認boundary的episode fail-closed，
+acoustics缺少只能標unavailable。target分成observable moves、goal、stance、literal/pragmatic relation、surface text與另行主觀人評；兩位
+不同真人各18 episodes、四個primary alpha均需`>=0.667`且至少兩種observed categories。27項affected suite通過；新來源內容/
+prediction/outcome/model/human labels=`0/0/0/0/0`。完整驗收：
+`analysis/p3_b73_prospective_response_target_protocol_acceptance_2026-09-20.md`。
+
+B74只建立可實際使用的本機雙coder收集平台：兩個不可互看的private ledgers、同一frozen packet manifest、無condition/prediction欄位的
+HTML表單、逐欄validation、完成後才可由獨立analyzer讀兩份ledger。先用synthetic packets驗證啟動、提交、重啟保存、跨coder隔離、
+incomplete拒絕與reliability report；不得用synthetic pass解鎖真實來源或宣稱human reliability。Safari若工具仍拒絕則保持UI pending，
+不能改稱通過；也不得在B74先取第四來源內容。
 
 ## 工作環境
 
