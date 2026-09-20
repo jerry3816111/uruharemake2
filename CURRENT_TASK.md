@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-A 統一本機入口的現況盤點與最小整合邊界
+## 唯一下一步：P4-B safe isolated product launcher
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -290,6 +290,19 @@ owner、共用session與既有Safari驗收，列出「已經整合／存在但�
 改研究資料／gate、碰原始dirty checkout、外部部署、登入或付費API。盤點完成後，若四項已有同一入口，先以啟動／重啟／長對話／工具成功
 與失敗／3D顯示建立最小acceptance contract；若尚未整合，只准選一個阻擋統一入口的最小連線作為P4-B單一變因。P3的負／混合結論、
 C1 holdout鎖定與M55/M56正式門檻不因P4產品工作改變。
+
+P4-A已完成可重跑source inventory：Chat與truthful runtime node graph都已接在`uruha_web_ui_product.py`同一產品入口與同一turn output；
+但Git tracked 3D asset=`0`，沒有VRM renderer或physical action executor。`vrm_action_policy_v34.py`只存在於research/eval路徑，
+product/web/brain均未import，也沒有runtime tool schema或tool-result loop，因此Function Calling狀態為
+`research_policy_only_not_product_runtime`，不能說是「既有功能」。safe worktree預期的`Style-Bert-VITS2/venv/bin/python`不存在，
+system Python也沒有Gradio，故direct launch尚未ready。4項focused tests與inventory validation通過；runtime/Safari/model/production memory/
+tool/physical action均0。完整驗收：`analysis/p4_a_unified_local_entry_inventory_acceptance_2026-09-20.md`。
+
+P4-B是唯一下一步，單一變因只新增safe isolated product launcher，不改brain、prompt、研究資料、VRM或Function Calling。launcher必須
+明確解析操作員指定或已知可用Python、檢查Gradio與entry，但不複製／修改原始dirty checkout；每次預設建立獨立temporary memory DB、
+session DB與Web logs，只綁`127.0.0.1`，拒絕public host/share、登入與付費API。先以fixtures驗證interpreter缺失、dependency缺失、
+public bind、路徑碰撞、child command/env與cleanup／preserve規則；offline contract通過才可真實啟動。真實啟動後核對health、隔離路徑、
+聊天＋同輪graph與重啟；Safari是獨立可見驗收。P4-B不得把啟動成功擴張成VRM／Function Calling已整合。
 
 ## 工作環境
 
