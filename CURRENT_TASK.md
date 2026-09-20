@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-C1 controlled context-flip lane contract
+## 唯一下一步：P4-A 統一本機入口的現況盤點與最小整合邊界
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -276,6 +276,20 @@ answers、執行模型、取得新Uruha來源／future或把C1 developer cases�
 條件比較direct baseline和system，必須同時量context sensitivity與literal overinterpretation，必須有可合法重現的split/provenance；若官方
 artifact不可得、license不允許或任務只測另一種能力，保存負結果而不自行重建答案。P3-C3輸出只能是候選資源與是否適合的決策，不能先宣稱
 外部benchmark優勢；若有合格資源，另立contract/freeze後才可取允許的train/dev部分，test仍鎖定。
+
+P3-C3已完成並保存`no_executable_external_benchmark_now`。DRInQ具同surface context variation且作者repo有單一validated CSV，
+但未見dataset license與train/dev/test split，因此只列`conditionally_eligible_blocked`，0 CSV下載／row read。PaCE的方法最符合
+literal/pragmatic context-flip，但本次從ACL官方頁與官方來源搜尋未發現可核對的dataset artifact，列
+`method_fit_artifact_blocked`；這不斷言資料永不存在。PUB有MIT artifact，但不是same-surface literal/pragmatic pair且專案以前已用過，
+不能當新independent holdout。三者合計executable candidate=`0`；benchmark dataset download／row／hidden answer、model、new Uruha
+source/future、human label、production write均為0。完整驗收：
+`analysis/p3_c3_external_pragmatic_benchmark_discovery_acceptance_2026-09-20.md`。
+
+P4-A是唯一下一步。先只讀盤點既有本機聊天入口、真實runtime node graph、VRM 3D與Function Calling的啟動方式、資料源、port／process
+owner、共用session與既有Safari驗收，列出「已經整合／存在但分離／真的缺少」的可重現證據。不得先新增dashboard、複製HTTP handler、
+改研究資料／gate、碰原始dirty checkout、外部部署、登入或付費API。盤點完成後，若四項已有同一入口，先以啟動／重啟／長對話／工具成功
+與失敗／3D顯示建立最小acceptance contract；若尚未整合，只准選一個阻擋統一入口的最小連線作為P4-B單一變因。P3的負／混合結論、
+C1 holdout鎖定與M55/M56正式門檻不因P4產品工作改變。
 
 ## 工作環境
 

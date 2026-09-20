@@ -1,0 +1,138 @@
+{
+  "schema": "uruha_p3_c3_external_pragmatic_benchmark_discovery_result_v1",
+  "version": "1.0.0",
+  "created_at": "2026-09-20",
+  "status": "no_executable_external_benchmark_now",
+  "scope": {
+    "purpose": "Identify an official, externally authored controlled pragmatic benchmark that can test context sensitivity and literal overinterpretation under the frozen same-model comparison without opening hidden answers.",
+    "metadata_and_public_documentation_only": true,
+    "fit_criteria": {
+      "same_surface_context_variation": true,
+      "supports_context_sensitivity_and_literal_overinterpretation": true,
+      "same_model_full_context_baseline_compatible": true,
+      "reproducible_provenance_and_license": true,
+      "prospective_train_dev_test_boundary": true
+    }
+  },
+  "candidates": [
+    {
+      "id": "DRInQ",
+      "official_paper": "https://aclanthology.org/2026.acl-long.1597/",
+      "official_artifact": "https://github.com/hjarai/drinq",
+      "task_summary": "Conversational implicature evaluation with question surface form held fixed while context and intended implication vary.",
+      "public_repository_metadata": {
+        "default_branch": "main",
+        "root_files_observed": [
+          "README.md",
+          "drinq_validated.csv"
+        ],
+        "dataset_file_size_bytes_from_api_metadata": 104175,
+        "repository_license_field": null,
+        "split_files_observed": []
+      },
+      "fit": {
+        "same_surface_context_variation": true,
+        "context_sensitivity": true,
+        "literal_overinterpretation": "partial_not_symmetric_literal_pragmatic_control",
+        "same_model_full_context_baseline_compatible": true,
+        "reproducible_provenance": true,
+        "explicit_dataset_license": false,
+        "prospective_train_dev_test_boundary": false
+      },
+      "decision": "conditionally_eligible_blocked",
+      "blocking_dependencies": [
+        "An explicit dataset reuse license or author clarification is required before copying or executing on the CSV.",
+        "A prospective family-level split must be frozen before any row content is read because the repository exposes one validated CSV and no split files were observed.",
+        "A literal-versus-pragmatic guard design would still be required; the published task primarily evaluates implicature alternatives."
+      ],
+      "dataset_content_read_count": 0,
+      "test_answer_access_count": 0
+    },
+    {
+      "id": "PaCE",
+      "official_paper": "https://aclanthology.org/2026.findings-acl.959/",
+      "official_artifact": null,
+      "task_summary": "A manually verified literal-versus-pragmatic context-flip benchmark designed to measure context sensitivity and pragmatic overinterpretation.",
+      "public_documentation": {
+        "reported_pair_count": 3125,
+        "language_scope": "English",
+        "task_form": "binary_natural_language_inference",
+        "data_origin": "synthetic_with_expert_verification",
+        "official_dataset_artifact_discovered": false
+      },
+      "fit": {
+        "same_surface_context_variation": true,
+        "context_sensitivity": true,
+        "literal_overinterpretation": true,
+        "same_model_full_context_baseline_compatible": true,
+        "reproducible_provenance": "paper_only",
+        "explicit_dataset_license": "paper_states_academic_release_but_no_artifact_was_discovered",
+        "prospective_train_dev_test_boundary": "cannot_verify_without_artifact"
+      },
+      "decision": "method_fit_artifact_blocked",
+      "blocking_dependencies": [
+        "No official dataset repository or downloadable supplement was discoverable through the frozen official-source search.",
+        "The exact released schema, license file, and split boundary therefore cannot be independently verified or executed."
+      ],
+      "dataset_content_read_count": 0,
+      "test_answer_access_count": 0
+    },
+    {
+      "id": "PUB",
+      "official_paper": "https://aclanthology.org/2024.findings-acl.719/",
+      "official_artifact": "https://huggingface.co/datasets/cfilt/PUB",
+      "task_summary": "A broad multiple-choice pragmatics benchmark covering multiple tasks and phenomena.",
+      "public_documentation": {
+        "reported_task_count": 14,
+        "reported_phenomenon_count": 4,
+        "reported_question_scale": "approximately_28000",
+        "dataset_license": "MIT"
+      },
+      "fit": {
+        "same_surface_context_variation": false,
+        "context_sensitivity": true,
+        "literal_overinterpretation": false,
+        "same_model_full_context_baseline_compatible": true,
+        "reproducible_provenance": true,
+        "explicit_dataset_license": true,
+        "prospective_train_dev_test_boundary": "not_evaluated_because_task_fit_failed"
+      },
+      "decision": "rejected_for_p3_c3",
+      "blocking_dependencies": [
+        "The task does not provide the paired same-surface literal-versus-pragmatic context intervention required by P3-C3.",
+        "PUB was already used by this project in earlier development and cannot become a fresh independent holdout by relabeling it."
+      ],
+      "dataset_content_read_count": 0,
+      "test_answer_access_count": 0
+    }
+  ],
+  "aggregate_decision": {
+    "executable_candidate_count": 0,
+    "conditionally_eligible_candidate_count": 1,
+    "artifact_blocked_candidate_count": 1,
+    "task_mismatch_or_exposed_candidate_count": 1,
+    "download_or_execution_authorized": false,
+    "reason": "No candidate simultaneously satisfies task fit, executable official artifact access, explicit reuse permission, and a prospective split boundary."
+  },
+  "access_accounting": {
+    "official_paper_or_repository_metadata_access_occurred": true,
+    "metadata_request_count": null,
+    "metadata_request_count_reason": "The browser and provider layers do not expose one authoritative cross-tool request count; no exact count is invented.",
+    "benchmark_dataset_file_download_count": 0,
+    "benchmark_dataset_row_read_count": 0,
+    "benchmark_hidden_test_answer_access_count": 0,
+    "model_call_count": 0,
+    "new_uruha_source_access_count": 0,
+    "new_uruha_future_access_count": 0,
+    "human_label_count": 0,
+    "production_write_count": 0
+  },
+  "claims": {
+    "external_benchmark_advantage_established": false,
+    "c1_holdout_execution_authorized": false,
+    "formal_m56_authorized": false,
+    "human_preference_authorized": false,
+    "general_human_understanding_authorized": false,
+    "future_author_releases_may_change_this_decision": true
+  }
+}
