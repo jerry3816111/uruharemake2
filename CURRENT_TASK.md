@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B71C source3 all-at-once future scoring
+## 唯一下一步：P3-B72 cross-source proxy validity audit
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -197,6 +197,17 @@ B70，只能證明adapter未破壞合法輸出。兩condition top-1在2/4列不�
 B71C必須綁定B71B immutable result hash，一次private caption acquisition同時投影四個固定future windows；raw刪除後才由fresh reader
 讀取。逐列原樣重用B66/B68的first-three-cues-within-12s、marker order、actual-label probability、Brier、log loss與winner rule；
 禁止逐列解鎖、改prediction/marker/metric或呼叫model/human/LLM judge。正負結果都保存；仍是development proxy，不是人類真值或正式holdout。
+
+B71C已一次揭盲第三來源四列：row wins baseline/system/tie=`2/2/0`；平均actual-label probability=
+`0.375/0.2375`、平均Brier=`0.81845/0.95215`、top-1 hits=`2/4`與`1/4`，均是baseline較好。
+更重要的是四列均無marker命中，全部落到default `acknowledge_then_continue`，actual label diversity=`1`。這沒有重現
+B68第一來源的system 4/4 row wins，也暴露目前caption-marker proxy在第三來源缺乏區分力。完整驗收：
+`analysis/p3_b71c_source3_future_aggregate_acceptance_2026-09-20.md`。
+
+B72不得新增來源、字幕、future或模型呼叫，也不得用已曝光B68/B71C結果調marker後回報優勢。下一必要交付是綁定兩份immutable
+result/release，計算跨來源描述統計、label diversity、marker hit、來源方向反轉及不同metrics是否同向；明確判定現有proxy是否足以支撐
+system advantage claim。若量尺失效，保存`proxy_not_adequate`，停止累加同類影片，另立尚未看新prediction/outcome的評價目標重設計；
+不得只報對system有利的row wins或Brier而隱藏actual-label probability/top-1反向結果。
 
 ## 工作環境
 
