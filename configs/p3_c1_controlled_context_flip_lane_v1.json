@@ -1,0 +1,177 @@
+{
+  "schema": "uruha_p3_c1_controlled_context_flip_lane_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_offline_contract_before_any_p3_c_model_call",
+  "research_question": "With the same base model, identical observable input, persona boundary, hardware, decoding settings, and per-item completion ceiling, does an explicit falsifiable pragmatic-state interface improve context-conditioned interpretation without increasing literal-control overinterpretation compared with direct generation?",
+  "falsifiable_hypothesis": {
+    "primary": "On the prospectively frozen developer-authored holdout, SYSTEM_PRAGMATIC_STATE has mean multiclass Brier score at least 0.03 lower than BASELINE_DIRECT.",
+    "co_primary_guard": "SYSTEM_PRAGMATIC_STATE literal-control overinterpretation rate is no greater than BASELINE_DIRECT and paired context-flip top-1 accuracy is no lower.",
+    "failure": "If the primary effect is below 0.03, the literal-control guard is worse, or paired flip accuracy is lower, this lane does not support retaining the mechanism as a general context-sensitivity advantage.",
+    "claim_if_passed": "development proxy evidence for controlled context sensitivity under this dataset and model only",
+    "claim_if_failed": "negative or mixed result retained; do not weaken the baseline, edit exposed holdout targets, or relabel the result as observational person prediction"
+  },
+  "bindings": {
+    "b72_proxy_validity_release": {
+      "path": "research/p3_b72_cross_source_proxy_validity_audit_release_2026-09-20.json",
+      "sha256": "662dddcbc3b512c72914b495b8673be979bad4a179d942895adcd1490ddd18dc"
+    },
+    "b73_target_protocol_release": {
+      "path": "research/p3_b73_prospective_response_target_protocol_release_2026-09-20.json",
+      "sha256": "73dc3cfb03d1f788b8845b4ce3900241199814e36e078447cc56b079978a9a71"
+    },
+    "b65_same_model_interface": {
+      "path": "configs/p3_b65_bounded_joint_prediction_interface_v1.json",
+      "sha256": "35cc6472ed9b68f971b65750271f1d607ff491ba0398bdea39ae9112dc4d5851"
+    },
+    "b70_probability_adapter": {
+      "path": "configs/p3_b70_prediction_interface_reliability_gate_v1.json",
+      "sha256": "a1ffec91fa06f4d95bb6e4c25482ab2830d5ca2dfa71bc23177a39fd785b8245"
+    }
+  },
+  "method_correspondence": {
+    "DRInQ": "hold the surface utterance byte-identical inside each pair while systematically changing only observable context; measure whether the inferred interpretation distribution changes in the expected direction",
+    "PaCE": "include a literal-control side for every pragmatic side and score overinterpretation explicitly, so more inference is not automatically better",
+    "PUB": "stratify coverage over implicature, presupposition, reference, and deixis without treating PUB multiple-choice accuracy as a real-response target",
+    "human_variability_boundary": "expected distributions include UNCERTAIN and are developer-authored proxy targets, not unique private-mind truth or human consensus",
+    "acoustic_boundary": "all P3-C1 items are text-only and acoustic evidence is marked unavailable; tone, pause, volume, or prosody may not be invented"
+  },
+  "dataset": {
+    "path": "datasets/p3_c1_controlled_context_flip_pairs_v1.json",
+    "pair_count_exact": 18,
+    "variant_count_each_pair_exact": 2,
+    "split_pair_counts": {
+      "train": 6,
+      "dev": 6,
+      "holdout": 6
+    },
+    "language_pair_counts": {
+      "zh": 6,
+      "en": 6,
+      "ja": 6
+    },
+    "split_unit": "surface_family_id",
+    "same_surface_form_required_within_pair": true,
+    "surface_family_overlap_across_splits_allowed": false,
+    "target_labels": [
+      "LITERAL_READING",
+      "PRAGMATIC_READING",
+      "UNCERTAIN"
+    ],
+    "target_distribution_sum_tolerance": 0.000001,
+    "developer_authored": true,
+    "human_validated": false,
+    "independent_holdout": false,
+    "holdout_boundary": "prospectively frozen against model/prompt tuning, but authored and visible to the developer; it is not independent human evidence"
+  },
+  "conditions": {
+    "BASELINE_DIRECT": {
+      "instruction": "Infer the interpretation distribution and write the natural Japanese reply directly from the complete observable context. The model may use its normal internal reasoning; it is not denied any input or forced to be literal.",
+      "evaluated_output_fields": [
+        "probabilities",
+        "selected_interpretation",
+        "visible_reply_ja",
+        "brief_evidence_anchor_ids"
+      ]
+    },
+    "SYSTEM_PRAGMATIC_STATE": {
+      "instruction": "From the same complete observable context, explicitly separate literal content, communicative intent, affect or stance, relationship signal, implicit need or action tendency, evidence, alternative, unknowns, and confidence before producing the same evaluated output fields.",
+      "evaluated_output_fields": [
+        "probabilities",
+        "selected_interpretation",
+        "visible_reply_ja",
+        "brief_evidence_anchor_ids"
+      ],
+      "additional_observable_state_fields": [
+        "literal_content",
+        "communicative_intent",
+        "affect_or_stance",
+        "relationship_signal",
+        "implicit_need_or_action_tendency",
+        "alternative_hypothesis",
+        "unknowns",
+        "confidence"
+      ]
+    }
+  },
+  "fairness": {
+    "same_base_model": true,
+    "same_complete_observable_input": true,
+    "same_interpretation_options": true,
+    "same_persona_and_visible_language_boundary": true,
+    "same_provider_hardware_and_condition_order_schedule": true,
+    "same_decoding_options_and_completion_ceiling": true,
+    "same_call_count_each_item": 1,
+    "total_completion_token_ceiling_each_condition_item": 384,
+    "condition_order_balanced_by_pair": true,
+    "actual_prompt_completion_tokens_latency_and_failures_recorded": true,
+    "extra_system_state_tokens_count_toward_same_ceiling": true,
+    "baseline_may_reason_normally": true,
+    "baseline_literal_restriction": false
+  },
+  "model": {
+    "provider": "local_ollama",
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "name": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "think": false,
+    "options": {
+      "temperature": 0,
+      "seed": 260920,
+      "top_p": 1,
+      "num_ctx": 8192,
+      "num_predict": 384
+    }
+  },
+  "evaluation": {
+    "primary_metric": "mean_multiclass_brier_holdout",
+    "secondary_metrics": [
+      "mean_log_loss",
+      "target_top1_accuracy",
+      "paired_context_flip_top1_accuracy",
+      "context_delta_direction_accuracy",
+      "literal_control_overinterpretation_rate",
+      "pragmatic_underreading_rate",
+      "wrong_top1_at_or_above_0_70_rate"
+    ],
+    "report_strata": [
+      "split",
+      "language",
+      "phenomenon"
+    ],
+    "all_metrics_reported_even_if_directions_conflict": true,
+    "visible_reply_scoring_in_c1": false,
+    "visible_reply_future_gate": "blinded human evaluation or a separately frozen proxy may be added later; C1 does not convert Japanese-language validation into felt-understanding evidence"
+  },
+  "execution_limits": {
+    "model_call_count": 0,
+    "network_request_count": 0,
+    "new_uruha_source_content_access_count": 0,
+    "uruha_future_access_count": 0,
+    "human_label_count": 0,
+    "production_memory_write_count": 0,
+    "formal_m56_write_count": 0
+  },
+  "freeze_sequence": [
+    "contract",
+    "dataset_and_targets",
+    "prediction_view_and_validation_code",
+    "metric_fixtures",
+    "offline_tests",
+    "implementation_hash_freeze",
+    "only_then_separately_authorize_model_execution"
+  ],
+  "denied_actions": {
+    "reuse_exposed_b68_or_b71c_rows_as_success_data": true,
+    "new_uruha_video_caption_or_future_access": true,
+    "model_call_before_freeze": true,
+    "holdout_target_edit_after_exposure_to_results": true,
+    "baseline_input_or_reasoning_capability_weakening": true,
+    "tone_or_acoustics_invention": true,
+    "private_motive_or_unique_mind_truth_claim": true,
+    "observational_reference_person_prediction_substitution": true,
+    "human_preference_or_understanding_claim": true,
+    "formal_m56_or_production_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "P3-C1 can freeze and validate a controlled multilingual context-flip experiment. It cannot show that UruhaBrain predicts a real person's future response, understands a private mind, feels human, wins human preference, or outperforms a strong LLM before a separately frozen execution and evaluation."
+}

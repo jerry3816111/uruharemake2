@@ -254,10 +254,20 @@ caption/media/model/outcome/retry/fallback全為0。因raw未保存，不能事�
 分支原始嘗試與唯一修正；不得擴limit、換tab／keyword或人工挑選。完整驗收：
 `analysis/p3_b76_official_channel_inventory_acceptance_2026-09-20.md`。
 
-P3-C1改走獨立、不讀新Uruha future的controlled pragmatic lane：先凍結同surface form的literal/pragmatic context pairs、expected
-interpretation distributions、overinterpretation controls與same-model公平生成/判讀介面；方法明確對應DRInQ與PaCE。它驗證的是一般context
-sensitivity與過度解讀，不得替代observational reference-person prediction。資料必須新建train/dev/holdout分離，不能重用已曝光B68/B71C
-追分；在contract/fixtures/freeze前不得執行model。
+P3-C1已完成離線contract/data/metrics freeze：18個surface families、36 variants；train/dev/holdout各6 families，中文／英文／日文
+各6 families。每組literal/pragmatic context保持byte-identical surface，family不跨split；prediction packet不含target，聲學固定unavailable。
+baseline取得完整context且可正常推理，system唯一介入是顯式可反駁pragmatic state；兩組同模型、同一call、每item同384 completion ceiling，
+額外system state token計入同budget。primary為holdout mean multiclass Brier至少改善0.03，且literal overinterpretation不得更差、paired
+context-flip top-1不得更差。11項focused與43項B65/B70/B73/C1 adjacent通過；model/network/Uruha source/future/human label/production/
+formal write全為0。完整驗收：`analysis/p3_c1_controlled_context_flip_acceptance_2026-09-20.md`。這只是developer-authored prospective
+proxy contract，不是model效果、人評、獨立holdout或reference-person prediction。
+
+P3-C2是唯一下一步：先綁定C1 release與implementation freeze，實作一次call的same-model provider runner、condition-order平衡、provider
+exact schema、B70 deterministic normalization、crash-safe intent/checkpoint與實際token/latency/failure accounting。先用事前固定的兩個train
+families做介面smoke；只有全部完成才可在同一凍結介面執行完整dev 6 families。每個condition/item至多一次call，0 retry/fallback；任一
+provider/schema失敗保存terminal incomplete batch，holdout仍鎖定。P3-C2不得讀holdout target來改prompt、執行holdout、取新Uruha資料／future、
+修改C1資料／SESOI／baseline或宣稱system advantage。所有runner、tests、failure fixtures與execution contract必須在第一個model call前
+freeze/commit；dev不論正負都完整報告，僅用於決定介面是否可凍結進下一個single-use holdout stage。
 
 ## 工作環境
 
