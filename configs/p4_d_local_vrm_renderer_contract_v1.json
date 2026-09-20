@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_p4_d_local_vrm_renderer_contract_v1",
+  "version": "1.0.0",
+  "purpose": "Add one truthful client-side VRM renderer boundary to the existing localhost product without bundling a persona asset or enabling actions.",
+  "single_changed_variable": "local_client_side_vrm_rendering",
+  "existing_inventory_expectation": {
+    "safe_worktree_vrm_glb_gltf_assets": 0,
+    "original_checkout_vrm_glb_gltf_assets": 0,
+    "safe_worktree_frontend_package_manifests": 0,
+    "original_checkout_frontend_package_manifests": 0,
+    "existing_product_vrm_renderer": false,
+    "existing_research_action_policy_is_a_renderer": false
+  },
+  "pinned_dependencies": {
+    "@pixiv/three-vrm": {
+      "version": "3.5.5",
+      "license": "MIT",
+      "npm_integrity": "sha512-RPXy7jYAXs704NIpZlosB0U2ENu21G9DrqGWdQgRe8dShaCo1ugpj+6BVPRCy91nt+MPMA96j5rbsSzEl0HlQA==",
+      "official_repository": "https://github.com/pixiv/three-vrm"
+    },
+    "three": {
+      "version": "0.180.0",
+      "license": "MIT",
+      "npm_integrity": "sha512-o+qycAMZrh+TsE01GqWUxUIKR1AL0S8pq7zDkYOQw8GqfX8b8VoCKYUoHbhiX5j+7hr8XsuHDVU6+gkQJQKg9w==",
+      "official_repository": "https://github.com/mrdoob/three.js"
+    },
+    "esbuild": {
+      "version": "0.25.10",
+      "license": "MIT",
+      "npm_integrity": "sha512-9RiGKvCwaqxO2owP61uQ4BgNborAQskMR6QusfWzQqv7AZOg5oGehdY2pRJMTKuwxd1IDBP4rSbI5lHzU7SMsQ==",
+      "role": "build_time_only"
+    }
+  },
+  "asset_boundary": {
+    "bundled_character_or_persona_asset_allowed": false,
+    "download_character_asset_allowed": false,
+    "accepted_user_extension": ".vrm",
+    "maximum_file_bytes": 104857600,
+    "file_transport": "browser_local_object_url_only",
+    "server_upload_allowed": false,
+    "persistent_asset_write_allowed": false,
+    "license_or_usage_rights_automatically_inferred": false
+  },
+  "renderer_surface": {
+    "existing_product_page_only": true,
+    "external_runtime_cdn_allowed": false,
+    "external_runtime_network_allowed": false,
+    "collapsed_by_default": false,
+    "neutral_non_persona_placeholder_before_load": true,
+    "required_statuses": [
+      "waiting_for_local_vrm",
+      "validating_local_file",
+      "loading_vrm",
+      "rendering_vrm",
+      "load_failed"
+    ],
+    "required_visible_flow_nodes": [
+      "local_asset_selected",
+      "local_asset_validated",
+      "vrm_parsed",
+      "vrm_rendered"
+    ],
+    "failure_must_not_claim_rendered": true,
+    "object_url_must_be_revoked_on_replace_or_clear": true
+  },
+  "forbidden_connections": {
+    "vrm_action_policy_import": true,
+    "function_calling_action_tool": true,
+    "automatic_pose_expression_or_gaze_change": true,
+    "microphone_camera_or_motion_capture": true,
+    "brain_memory_or_research_data_change": true,
+    "physical_or_state_changing_execution": true
+  },
+  "offline_acceptance": {
+    "bundle_contains_no_http_or_https_literal": true,
+    "bundle_contains_pinned_three_vrm_loader": true,
+    "success_and_failure_state_machine_tests": true,
+    "oversize_wrong_extension_and_parse_failure_fail_closed": true,
+    "product_import_and_existing_p4_c_tests_remain_green": true
+  },
+  "post_commit_acceptance": {
+    "restart_existing_isolated_localhost_product": true,
+    "safari_panel_and_canvas_visible": true,
+    "local_fixture_load_required": true,
+    "invalid_file_failure_required": true,
+    "ordinary_chat_and_status_tool_regression_required": true,
+    "model_call_ceiling_added_by_p4_d": 0,
+    "tool_execution_ceiling_added_by_p4_d": 0,
+    "production_memory_access_ceiling": 0
+  },
+  "claim_boundary": "Passing P4-D would establish a local VRM renderer surface only. It would not establish an Uruha persona model, licensed character asset, animation intelligence, Function Calling action, voice, motion capture or research advantage."
+}

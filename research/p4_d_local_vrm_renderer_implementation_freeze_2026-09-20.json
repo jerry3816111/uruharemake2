@@ -1,0 +1,96 @@
+{
+  "schema": "uruha_p4_d_local_vrm_renderer_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_package_install_or_renderer_implementation",
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_d_local_vrm_renderer_contract_v1.json",
+      "sha256": "7be93ff6a3ea4068ad15aa38d80139add03d3835c211c532409a89746abe7c03"
+    },
+    "package_manifest": {
+      "path": "package.json",
+      "sha256": "2354fb068d68c8ed7d99360ae76445e882ec653c1ccbf1d4f9bef57396748f4f"
+    },
+    "inventory_implementation": {
+      "path": "p4_d_local_vrm_renderer_inventory.py",
+      "sha256": "6cf15b2c016bd9f561513c15e44bdf185f10c84e0dda40802761a7304965c792"
+    },
+    "inventory_test": {
+      "path": "test_p4_d_local_vrm_renderer_inventory.py",
+      "sha256": "e4ab52f23a327c84c4d84baea478b41cdd484bc7a98e16b004ce098b1ddfaedc"
+    },
+    "inventory_result": {
+      "path": "analysis/p4_d_local_vrm_renderer_inventory_result_2026-09-20.json",
+      "sha256": "dd2753381f744d66cf281cad92e3de7bc81e0604e86a42df4df609e4f40d3dcd"
+    }
+  },
+  "official_source_review": {
+    "@pixiv/three-vrm_npm": "https://www.npmjs.com/package/@pixiv/three-vrm",
+    "@pixiv/three-vrm_license": "https://github.com/pixiv/three-vrm/blob/dev/LICENSE",
+    "vrm_feature_boundary": "https://vrm.dev/en/vrm/vrm_features/",
+    "vrm_implementation_listing": "https://vrm.dev/en/vrm/vrm_applications/",
+    "reviewed_fact": "@pixiv/three-vrm is MIT licensed, loads VRM 0.x and 1.0 in Three.js, and VRM is a single-file runtime-loadable avatar format."
+  },
+  "authorized_external_access_after_this_freeze": {
+    "npm_registry_package_install_count": 1,
+    "packages_exact": [
+      "@pixiv/three-vrm@3.5.5",
+      "three@0.180.0",
+      "esbuild@0.25.10"
+    ],
+    "character_or_persona_asset_download_count": 0,
+    "other_external_network_count": 0,
+    "login_or_paid_api_count": 0
+  },
+  "authorized_files": [
+    "package-lock.json",
+    "web_assets/uruha_vrm_viewer_p4_entry.js",
+    "web_assets/uruha_vrm_viewer_p4.bundle.js",
+    "web_assets/uruha_vrm_viewer_p4.bundle.js.LEGAL.txt",
+    "web_assets/THIRD_PARTY_NOTICES_P4_D.md",
+    "uruha_product_vrm_renderer_p4.py",
+    "uruha_web_ui_product.py",
+    "test_uruha_product_vrm_renderer_p4.py",
+    "test_p4_d_local_vrm_renderer_implementation_freeze.py"
+  ],
+  "implementation_contract": {
+    "injection": "product-only WEB_HEAD extension; frozen research entrypoints unchanged",
+    "renderer_runtime": "one self-contained local IIFE bundle; no CDN or runtime network",
+    "asset_transport": "native browser file input to object URL; no Gradio upload and no server write",
+    "initial_scene": "neutral wireframe stage explicitly labeled as not a loaded VRM",
+    "success_truth": "rendering_vrm only after VRMLoaderPlugin returns a VRM instance and a rendered frame is observed",
+    "failure_truth": "wrong extension, over-limit file, parse failure or missing VRM instance ends in load_failed and never vrm_rendered",
+    "replacement_cleanup": "remove old scene and revoke prior object URL before replacement or clear",
+    "persona_asset": "none",
+    "action_policy_connection": "none",
+    "model_function_call_memory_voice_connection": "none"
+  },
+  "fixture_boundary": {
+    "browser_success_fixture": "temporary neutral untextured VRM 1.0 fixture generated from the public schema",
+    "repository_character_asset": false,
+    "third_party_character_content": false,
+    "claims_uruha_likeness": false,
+    "invalid_fixture": "temporary non-VRM bytes",
+    "fixture_persistence_after_acceptance": false
+  },
+  "resource_ceiling": {
+    "runtime_bundle_max_bytes": 3145728,
+    "package_install_attempts": 1,
+    "bundle_build_attempts_before_review": 2,
+    "model_call_count": 0,
+    "tool_execution_count": 0,
+    "production_memory_access_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "success_criteria": {
+    "dependency_integrities_match_contract": true,
+    "offline_bundle_has_no_http_or_https_literal": true,
+    "unit_and_integration_tests_pass": true,
+    "product_import_probe_passes": true,
+    "post_commit_safari_panel_canvas_and_local_fixture_pass": true,
+    "invalid_file_fail_closed_in_safari": true,
+    "p4_c_status_and_ordinary_chat_still_pass": true
+  },
+  "terminal_failure": "After two bounded bundle or renderer repair attempts, preserve the minimal counterexample and mark REVIEW_REQUIRED without changing dependency versions, downloading a model, enabling a CDN or weakening the truthfulness checks.",
+  "claim_boundary": "This freeze authorizes implementation of a local rendering surface, not an avatar identity, animation intelligence, tool-controlled body, voice avatar or reference-person replica."
+}
