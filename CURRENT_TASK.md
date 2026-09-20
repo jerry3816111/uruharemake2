@@ -1,8 +1,8 @@
 # 目前任務卡
 
-更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-F 明示偏好更正／撤銷跨重啟
+## 唯一下一步：P4-G 明示記憶寫入／更正的自然角色回覆
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -360,11 +360,25 @@ P4-E已依事前freeze一次通過：全新隔離root第一個PID `62778`收到�
 `analysis/p4_e_cross_restart_memory_recall_acceptance_2026-09-20.md`。這是developer-authored bounded product integration，不是open-domain、
 長對話、人類記憶或研究優勢證據。
 
-P4-F是唯一下一步，處理目前尚未驗證且直接對應長期Goal「接受誤解修正並之後適用」的產品缺口：同一speaker與同一偏好類別先有舊值，
-之後使用者明確說「更正／不再是舊值／現在是新值」，真正process restart後只能把新值當current，舊值必須保留為可追溯historical／revoked，
-不能刪除證據、任選一個或永久回答ambiguous。先以純fixture定位現有selected-memory adapter是否能辨識時間與撤銷；再固定一個三輪隔離案例、
-owner、correction cue、current query與fail controls。若現況失敗，只准新增typed speaker-qualified preference supersession，不改general memory
-ranking、研究資料、模型、persona或baseline；先離線測試，commit後才做一次真實Safari跨重啟驗收。不得把單案例外推成一般事實更新能力。
+P4-F已依事前freeze一次通過：第一個process保存「偏好herbal tea」與另一筆「不再偏好herbal tea，現在偏好black tea」；舊process
+真正退出後以同一isolated root／memory DB、新PID／新session重啟。答案不在recall問題時，Safari回覆
+`今の好みは紅茶。前のハーブティーから更新してる。`。graph狀態=`resolved_explicit_preference_supersession`，兩個immutable episode
+分別綁定historical／correction trace，current／revoked digest不同，DB rewrite=0。舊episode retrieval score=`1.4813`仍略高於更正
+episode=`1.4801`，因此結果不是任選最高分。3 turns／2 processes／1 restart／2 write-turn planner calls，0 retry／fallback／paid API／
+production memory；frozen gate failed=`0`。完整驗收：
+`analysis/p4_f_cross_restart_preference_supersession_acceptance_2026-09-21.md`。這只證明一個bounded English tea correction case，
+不等於一般信念修正、長對話、人類式記憶或研究優勢。
+
+P4-G是唯一下一步，原因來自同一真實P4-F執行暴露的可見產品缺口：兩個寫入輪分別回`了解しました`與`了解しました。`，雖然是日文，
+卻過度禮貌且制式，不符合既有casual Uruha surface要求。先把這兩個raw輸出、原planner route與P4-F memory semantics凍結為before；定位
+現有full-planner輸出到visible surface之間最窄的authority。唯一允許變因是「使用者明示請系統記住偏好」與「使用者明示更正同一偏好」
+兩類 acknowledgement 的自然、簡短、casual日文表達；不得改general persona prompt、模型、memory ranking、episode寫入、supersession／
+recall adapter、P3研究資料或baseline。
+
+成功需先用offline fixtures證明中／英／日三語的明示記憶與更正輸入都不再顯示`了解しました`系模板，仍只輸出自然日文、保留うるは公開
+人格邊界，且普通聊天、拒絕、求助、身份、回溯與P4-F current／revoked均不退化。必須有negative guards，避免把普通「了解嗎？」、第三人稱
+偏好、假設句或非偏好更正誤套成確認。P4-F同一真實案例不得重跑；離線contract、tests、freeze及commit完成後，另用未曝光的isolated新案例
+做一次真實runtime／Safari驗收，並核對episode write、graph、語言與0 retry。這一步只改善可見surface，不得宣稱研究優勢或更深理解。
 
 ## 工作環境
 
