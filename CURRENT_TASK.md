@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B72 cross-source proxy validity audit
+## 唯一下一步：P3-B73 prospective response-target redesign
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -208,6 +208,16 @@ B72不得新增來源、字幕、future或模型呼叫，也不得用已曝光B6
 result/release，計算跨來源描述統計、label diversity、marker hit、來源方向反轉及不同metrics是否同向；明確判定現有proxy是否足以支撐
 system advantage claim。若量尺失效，保存`proxy_not_adequate`，停止累加同類影片，另立尚未看新prediction/outcome的評價目標重設計；
 不得只報對system有利的row wins或Brier而隱藏actual-label probability/top-1反向結果。
+
+B72已完成read-only audit並判定`proxy_not_adequate_for_system_advantage_claim`：跨兩來源8列的row wins雖為system 6、baseline 2，
+actual-label probability卻為baseline/system=`0.31875/0.2625`，top-1=`3/8`與`2/8`；Brier/log loss反向偏system。
+第三來源actual label diversity=`1`且marker hit=`0/4`，三個metrics發生source direction reversal。0新來源/future/model/judge；
+完整驗收：`analysis/p3_b72_cross_source_proxy_validity_audit_acceptance_2026-09-20.md`。
+
+B73下一步不是修改已曝光marker，而是先凍結新的prospective target設計與評價方法：target必須有可辨認的stimulus→response單位，
+把直接可觀察行為與需要人類判讀的語用／被理解感分層；automatic proxy只能在與盲化真人標註達到事前可靠度後使用。B73先建立schema、
+annotation packet、雙coder reliability gate、missing/ambiguous處理及同模型公平比較欄位，並用synthetic fixtures驗證工具；不得讀第四來源內容、
+執行新prediction或用Codex/LLM標註冒充真人。已曝光B68/B71C只作失敗例，不可作新量尺的成功驗證資料。
 
 ## 工作環境
 
