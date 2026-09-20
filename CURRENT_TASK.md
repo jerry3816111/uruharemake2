@@ -320,6 +320,21 @@ memory isolation、tool capability狀態。offline fake-provider先驗證valid c
 不得做real model call；real call通過與negative guards通過後才可整合product。shell、file write、external network、login、paid API與VRM execution
 一律不授權。P4產品工作不改P3/M55/M56研究結論。
 
+P4-C已完成產品真實驗收：status輪在全新session、brain仍lazy時以英文詢問，模型1 call選中唯一
+`get_runtime_status({})`，tool 1 execution、side effect/memory-content read/brain initialization/retry=`0/0/0/0`；日文回覆正確顯示
+brain待機、0 turn、isolated memory及read-only能力。同輪graph有request→model decision→validated call→tool result→surface五個
+function nodes，共7 nodes，端到端=`6.2512s`。下一輪普通英文聊天仍回`うん。今は方法出さないから、そのまま話して。`，走原本
+69-node path，P4-C新增model/tool/function-node=`0/0/0`，端到端=`2.697s`。後續4次background cycle未新增visible idle prompt。
+core gate＋產品Safari真實本機model calls合計2，0 paid/external/retry。完整驗收：
+`analysis/p4_c_product_function_calling_acceptance_2026-09-20.md`。這只證明一個read-only status tool，不是一般Function Calling、
+state-changing action、VRM或研究優勢。
+
+P4-D是唯一下一步。先做read-only local capability inventory，確認safe worktree與原始checkout是否已有可合法重用的VRM/GLB/GLTF asset、
+renderer package、license/provenance、3D canvas入口與既有animation/action transport；原始dirty checkout只讀不改。若有合法asset與renderer，
+凍結同一localhost產品入口的最小render contract；若沒有，保存缺口並只設計user-supplied `.vrm` 邊界與離線synthetic fixture，不下載或
+重散布來路不明角色模型。P4-D只先做到可視3D renderer與truthful load/error node，不接未通過holdout的personality/action decision，
+不執行physical state-changing action，不改P3資料／gate，也不使用登入、付費API或外部部署。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
