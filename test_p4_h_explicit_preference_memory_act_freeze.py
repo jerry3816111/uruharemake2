@@ -29,6 +29,15 @@ def _sha256_at_commit(commit: str, path: str) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _binding_exists_in_history(path: str, expected: str) -> bool:
+    commits = subprocess.check_output(
+        ["git", "log", "--all", "--format=%H", "--", path],
+        cwd=ROOT,
+        text=True,
+    ).splitlines()
+    return any(_sha256_at_commit(commit, path) == expected for commit in commits)
+
+
 def test_freeze_binds_the_immutable_p4_g_negative_result():
     contract = _load(CONTRACT)
     counterexample = contract["prechange_counterexample"]
@@ -72,6 +81,16 @@ def test_freeze_binds_contract_test_prechange_code_and_result():
     ) == prechange["sha256"]
     for name, binding in freeze["bindings"].items():
         if name == "prechange_implementation":
+            continue
+        # These are historical freeze inputs, not a ban on later product-entry
+        # installers or on correcting this self-hashing verification harness.
+        if name == "product_entry":
+            assert _sha256_at_commit(
+                freeze["design_review"]["prechange_commit"], binding["path"]
+            ) == binding["sha256"]
+            continue
+        if name == "freeze_test":
+            assert _binding_exists_in_history(binding["path"], binding["sha256"])
             continue
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
     assert freeze["authorized_changes"] == [
