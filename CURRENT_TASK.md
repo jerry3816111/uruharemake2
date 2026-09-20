@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P3-B71B source3 B70-bound prediction batch（FUTURES LOCKED）
+## 唯一下一步：P3-B71C source3 all-at-once future scoring
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -188,6 +188,15 @@ caption與future，再由fresh reader核對。模型、prompt、options、condit
 唯一新增介面機制是事前B70 deterministic probability normalization，baseline/system完全同規則並記錄是否實際套用。8 calls全部完成前
 不得讀future；任一call或parser失敗即terminal保存，不重試、不換來源、不放寬內容／日文gate。成功也只授權另一步整批future揭盲，
 不能先宣稱修正有效或system有優勢。
+
+B71B已完成8/8 predictions：四列context cue counts=`72/60/58/68`；prompt/completion tokens=`17,312/1,763`，model latency=
+`149.1632s`。B70 adapter綁定兩condition，但8個input weight sums全為`1.0`，normalization applied=`0/8`；因此成功不能歸因於
+B70，只能證明adapter未破壞合法輸出。兩condition top-1在2/4列不同；future/outcome/retry/fallback=`0/0/0/0`。完整驗收：
+`analysis/p3_b71b_source3_b70_prediction_acceptance_2026-09-20.md`。
+
+B71C必須綁定B71B immutable result hash，一次private caption acquisition同時投影四個固定future windows；raw刪除後才由fresh reader
+讀取。逐列原樣重用B66/B68的first-three-cues-within-12s、marker order、actual-label probability、Brier、log loss與winner rule；
+禁止逐列解鎖、改prediction/marker/metric或呼叫model/human/LLM judge。正負結果都保存；仍是development proxy，不是人類真值或正式holdout。
 
 ## 工作環境
 
