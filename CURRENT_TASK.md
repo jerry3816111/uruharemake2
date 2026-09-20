@@ -262,12 +262,20 @@ context-flip top-1不得更差。11項focused與43項B65/B70/B73/C1 adjacent通�
 formal write全為0。完整驗收：`analysis/p3_c1_controlled_context_flip_acceptance_2026-09-20.md`。這只是developer-authored prospective
 proxy contract，不是model效果、人評、獨立holdout或reference-person prediction。
 
-P3-C2是唯一下一步：先綁定C1 release與implementation freeze，實作一次call的same-model provider runner、condition-order平衡、provider
-exact schema、B70 deterministic normalization、crash-safe intent/checkpoint與實際token/latency/failure accounting。先用事前固定的兩個train
-families做介面smoke；只有全部完成才可在同一凍結介面執行完整dev 6 families。每個condition/item至多一次call，0 retry/fallback；任一
-provider/schema失敗保存terminal incomplete batch，holdout仍鎖定。P3-C2不得讀holdout target來改prompt、執行holdout、取新Uruha資料／future、
-修改C1資料／SESOI／baseline或宣稱system advantage。所有runner、tests、failure fixtures與execution contract必須在第一個model call前
-freeze/commit；dev不論正負都完整報告，僅用於決定介面是否可凍結進下一個single-use holdout stage。
+P3-C2已完整執行但未通過事前效果量：8個train smoke後24個dev calls，32/32 validated，0 retry/fallback/holdout/Uruha future。
+總成本=`22,952` prompt、`6,497` completion、`326.528142s` model latency。baseline/system mean Brier=`0.13305/0.120717`，
+system改善`0.012333`，低於SESOI `0.03`；兩組dev top-1與paired flip皆100%，literal overinterpretation皆0，顯示developer題有ceiling。
+English/Chinese system Brier較低，但Japanese=`0.1058/0.1583`與deixis=`0.0608/0.1658`反向。system相對baseline耗用
+`1.2851×` prompt、`3.112×` completion與`2.3136×` latency；沒有成本優勢替代結論。依freeze判`controlled_lane_success=false`，
+C1 holdout保持0 access，不以改門檻、改target或偷跑holdout追分。完整驗收：
+`analysis/p3_c2_controlled_context_flip_acceptance_2026-09-20.md`。
+
+P3-C3是唯一下一步：只做官方、外部作者的controlled pragmatic benchmark／stimulus資源discovery，先查DRInQ、PaCE及直接相關官方
+artifact的paper supplement、repository、license、資料schema、same-surface context pair與train/dev/test邊界；不得下載／讀取hidden test
+answers、執行模型、取得新Uruha來源／future或把C1 developer cases改名獨立holdout。事前列fit criteria：必須能在相同完整context與同模型
+條件比較direct baseline和system，必須同時量context sensitivity與literal overinterpretation，必須有可合法重現的split/provenance；若官方
+artifact不可得、license不允許或任務只測另一種能力，保存負結果而不自行重建答案。P3-C3輸出只能是候選資源與是否適合的決策，不能先宣稱
+外部benchmark優勢；若有合格資源，另立contract/freeze後才可取允許的train/dev部分，test仍鎖定。
 
 ## 工作環境
 

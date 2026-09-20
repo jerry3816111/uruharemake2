@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_p3_c2_controlled_context_flip_result_summary_v1",
+  "version": "1.0.0",
+  "status": "complete_development_batch_primary_sesoi_not_met_holdout_locked",
+  "source_result": {
+    "path": "external_data/p3_c2_controlled_context_flip_state/result.json",
+    "result_sha256_field": "41f17f8bf67d05fada4cbbf767d01c4da717718d8ef2c916db269979828e12c8"
+  },
+  "execution": {
+    "model": "qwen3.5:9b",
+    "model_calls": 32,
+    "validated_predictions": 32,
+    "train_format_smoke_predictions": 8,
+    "development_predictions": 24,
+    "prompt_tokens": 22952,
+    "completion_tokens": 6497,
+    "model_latency_seconds": 326.528142,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "holdout_input_access_count": 0,
+    "holdout_target_access_count": 0,
+    "new_uruha_source_or_future_access_count": 0
+  },
+  "condition_resources": {
+    "BASELINE_DIRECT": {
+      "calls": 16,
+      "prompt_tokens": 10044,
+      "completion_tokens": 1580,
+      "model_latency_seconds": 98.540641
+    },
+    "SYSTEM_PRAGMATIC_STATE": {
+      "calls": 16,
+      "prompt_tokens": 12908,
+      "completion_tokens": 4917,
+      "model_latency_seconds": 227.987501
+    },
+    "system_to_baseline_ratios": {
+      "prompt_tokens": 1.2851,
+      "completion_tokens": 3.112,
+      "model_latency": 2.3136
+    }
+  },
+  "development_metrics": {
+    "BASELINE_DIRECT": {
+      "mean_multiclass_brier": 0.13305,
+      "mean_log_loss": 0.84728,
+      "target_top1_accuracy": 1.0,
+      "paired_context_flip_top1_accuracy": 1.0,
+      "context_delta_direction_accuracy": 1.0,
+      "literal_control_overinterpretation_rate": 0.0,
+      "pragmatic_underreading_rate": 0.0,
+      "wrong_top1_at_or_above_0_70_rate": 0.0
+    },
+    "SYSTEM_PRAGMATIC_STATE": {
+      "mean_multiclass_brier": 0.120717,
+      "mean_log_loss": 0.826137,
+      "target_top1_accuracy": 1.0,
+      "paired_context_flip_top1_accuracy": 1.0,
+      "context_delta_direction_accuracy": 1.0,
+      "literal_control_overinterpretation_rate": 0.0,
+      "pragmatic_underreading_rate": 0.0,
+      "wrong_top1_at_or_above_0_70_rate": 0.0
+    }
+  },
+  "comparison": {
+    "baseline_minus_system_mean_brier": 0.012333,
+    "primary_sesoi_required": 0.03,
+    "primary_sesoi_passed": false,
+    "literal_overinterpretation_not_worse": true,
+    "paired_context_flip_top1_not_worse": true,
+    "controlled_lane_success": false
+  },
+  "brier_by_language": {
+    "zh": {
+      "BASELINE_DIRECT": 0.12335,
+      "SYSTEM_PRAGMATIC_STATE": 0.10335
+    },
+    "en": {
+      "BASELINE_DIRECT": 0.17,
+      "SYSTEM_PRAGMATIC_STATE": 0.1005
+    },
+    "ja": {
+      "BASELINE_DIRECT": 0.1058,
+      "SYSTEM_PRAGMATIC_STATE": 0.1583
+    }
+  },
+  "brier_by_phenomenon": {
+    "implicature": {
+      "BASELINE_DIRECT": 0.142925,
+      "SYSTEM_PRAGMATIC_STATE": 0.098175,
+      "row_count_each_condition": 8
+    },
+    "deixis": {
+      "BASELINE_DIRECT": 0.0608,
+      "SYSTEM_PRAGMATIC_STATE": 0.1658,
+      "row_count_each_condition": 2
+    },
+    "presupposition": {
+      "BASELINE_DIRECT": 0.1658,
+      "SYSTEM_PRAGMATIC_STATE": 0.1658,
+      "row_count_each_condition": 2
+    }
+  },
+  "normalization": {
+    "adapter_bound_to_both_conditions": true,
+    "normalization_applied_count": 0,
+    "valid_unit_sum_output_count": 32
+  },
+  "decision": {
+    "holdout_execution_authorized": false,
+    "holdout_reason": "The preregistered development SESOI was not met, both conditions saturated top-1 on the easy developer-authored dev set, Japanese and deixis strata reversed direction, and the system used materially more resources.",
+    "system_advantage_claim_authorized": false,
+    "negative_or_mixed_result_preserved": true,
+    "c1_targets_or_thresholds_changed": false
+  },
+  "claim_boundary": "This is a complete development result under developer-authored proxy targets. It is not an independent holdout, human preference result, real-person prediction, or evidence that the system generally understands better than a strong LLM."
+}
