@@ -2,7 +2,7 @@
 
 更新：2026-09-20。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-B safe isolated product launcher
+## 唯一下一步：P4-C 單一read-only Function Calling seam
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -303,6 +303,22 @@ P4-B是唯一下一步，單一變因只新增safe isolated product launcher，�
 session DB與Web logs，只綁`127.0.0.1`，拒絕public host/share、登入與付費API。先以fixtures驗證interpreter缺失、dependency缺失、
 public bind、路徑碰撞、child command/env與cleanup／preserve規則；offline contract通過才可真實啟動。真實啟動後核對health、隔離路徑、
 聊天＋同輪graph與重啟；Safari是獨立可見驗收。P4-B不得把啟動成功擴張成VRM／Function Calling已整合。
+
+P4-B已完成，保留一次真實失敗與一次sandbox修正。v1雖localhost HTTP 200與Safari可見，但Human Annotation path仍指向repo，故在0聊天、
+0 repo write時判fail。v2以macOS sandbox拒絕child寫safe worktree與原始dirty checkout，synthetic deny／isolated allow通過；32項完整相鄰
+suite後，以同manifest及明確reuse重開。Safari維持48個tabs且沿用既有tab，真實英文輸入要求只聽、不給建議，最終日文為
+`うん。今は方法出さないから、そのまま話して。`；trace選`listening/listen_presence`、否定`solve_regulation`、surface matched，
+同輪graph有69節點，user wait=`3.3884s`。1筆`1,353,575 bytes`JSONL、memory DB與adaptive model都只在isolated root；Git clean，
+沉默後0可見催促。server仍在`127.0.0.1:7860`供使用者查看。完整驗收：
+`analysis/p4_b_safe_isolated_product_launcher_acceptance_2026-09-20.md`。尚未驗post-chat process restart recall、voice、VRM或Function Calling。
+
+P4-C是唯一下一步：新增一個allowlisted、read-only、零副作用的`get_runtime_status` Function Calling seam，作為未來VRM action transport的
+前置，但不可接physical VRM。先凍結explicit status-request與ordinary conversation／negation／hypothetical／prompt-injection guards、唯一tool
+schema、空argument、single-call、bounded result與日文surface contract；tool只能回傳不含路徑／對話／secret的brain-loaded、turn count、
+memory isolation、tool capability狀態。offline fake-provider先驗證valid call、no-call、wrong tool、extra args、duplicate、malformed與executor exception
+全部fail-closed，並把request→model decision→validated call→tool result→Japanese surface加入現有node graph。contract/tests/freeze/commit前
+不得做real model call；real call通過與negative guards通過後才可整合product。shell、file write、external network、login、paid API與VRM execution
+一律不授權。P4產品工作不改P3/M55/M56研究結論。
 
 ## 工作環境
 
