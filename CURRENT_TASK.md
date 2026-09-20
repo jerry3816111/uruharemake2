@@ -2,7 +2,7 @@
 
 更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-G 明示記憶寫入／更正的自然角色回覆
+## 唯一下一步：P4-H 明示偏好記憶行為的 plan-level authority
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -379,6 +379,23 @@ recall adapter、P3研究資料或baseline。
 人格邊界，且普通聊天、拒絕、求助、身份、回溯與P4-F current／revoked均不退化。必須有negative guards，避免把普通「了解嗎？」、第三人稱
 偏好、假設句或非偏好更正誤套成確認。P4-F同一真實案例不得重跑；離線contract、tests、freeze及commit完成後，另用未曝光的isolated新案例
 做一次真實runtime／Safari驗收，並核對episode write、graph、語言與0 retry。這一步只改善可見surface，不得宣稱研究優勢或更深理解。
+
+P4-G已完成但正式gate為`fail`，且負結果不可重跑／追分。全新isolated root的中文寫入輪正確辨識`zh/write`，但模型回
+`了解。茉莉花茶が今の飲み物だ`，因不在frozen formal-ack allowlist，post-guard authority沒有啟動；等待`25.2079s`亦超過20秒。
+日文更正輪的P4-G classifier正確辨識`ja/correction`，但既有rule route誤判`ask_like_me`，顯示與偏好更正無關的
+`はいはい、全くじゃないとは言わない。そこ聞いて安心したいだけだろ。`。兩輪graph node與不同episode均存在、模型call=`1/0`、
+retry/fallback=`0/0`，但frozen gate共10項surface失敗。完整負結果：
+`analysis/p4_g_multilingual_preference_acknowledgement_acceptance_2026-09-21.md`。
+
+P4-H是唯一下一步，單一變因從失敗診斷直接收斂為「明示偏好記憶act在general planner與舊intent碰撞之前取得deterministic plan／surface
+authority」。先綁定P4-G immutable result，沿用已通過的中／英／日classifier，不擴allowlist、不改general persona prompt；對write與
+correction各建立一個bounded rule plan，明確intent、dialogue act、core Japanese與0新增推測，讓寫入行為不需要任意模型措辭且不會被
+`ask_like_me`先攔走。最終surface須由同一typed act contract接管，而不是只在reply剛好等於制式敬語時接管。
+
+P4-H不可改episode/schema、memory ranking、P4-F parser／localization／recall、研究資料或baseline；「記住訂正內容」只代表原episodic
+turn確實保存，不宣稱所有語言都已形成typed current preference。需把P4-G trace中未啟動authority卻顯示
+`final_visible_surface_matches_contract=true`的誤導欄位修正。先以六個正例及普通聊天／第三人稱／假設／引文／安全路由做offline regression，
+commit後另凍結全新案例才可真實執行；P4-G茉莉花茶／冰咖啡案例不得重跑。成功只代表bounded product act與surface，不代表人類理解或研究優勢。
 
 ## 工作環境
 
