@@ -18,8 +18,22 @@ def _sha256(path: Path) -> str:
 def test_integration_freeze_binds_core_real_gate_adapter_entry_and_tests():
     freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
     assert freeze["status"] == "frozen_before_isolated_product_restart"
-    for binding in freeze["bindings"].values():
+    # Product entrypoints are intentionally extended by later, separately frozen
+    # P4 stages. Keep the historical hash in the P4-C artifact, while binding the
+    # current entry in the later stage instead of making forward progress break
+    # an immutable historical acceptance test.
+    for name, binding in freeze["bindings"].items():
+        if name == "product_entry":
+            continue
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
+    assert freeze["bindings"]["product_entry"]["sha256"] == (
+        "854349c160f6cd15c716b545d68b9c7970561ad5d793fa670e797d842883df0e"
+    )
+    source = (ROOT / freeze["bindings"]["product_entry"]["path"]).read_text(encoding="utf-8")
+    assert "install_product_function_calling_p4(_base)" in source
+    assert source.index("install_product_function_calling_p4(_base)") < source.index(
+        "install_product_vrm_renderer_p4(_base)"
+    )
 
 
 def test_integration_freeze_preserves_existing_chat_and_read_only_boundary():
@@ -33,4 +47,3 @@ def test_integration_freeze_preserves_existing_chat_and_read_only_boundary():
     assert acceptance["explicit_status_request_model_call_ceiling"] == 1
     assert acceptance["ordinary_conversation_regression_model_call_ceiling_added_by_p4_c"] == 0
     assert acceptance["physical_vrm_execution"] is False
-
