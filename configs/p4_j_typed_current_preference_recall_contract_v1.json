@@ -1,0 +1,156 @@
+{
+  "schema": "uruha_p4_j_typed_current_preference_recall_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "single_changed_variable": "bounded_active_typed_current_preference_read_authority_for_explicit_first_person_exact_scope_queries",
+  "p4_i_evidence_binding": {
+    "result": {
+      "path": "analysis/p4_i_cross_restart_current_preference_result_2026-09-21.json",
+      "sha256": "7309bc34b832fc7a3c1f3d6c945c2d0c46680beb69976fe8eb39528cdf792222"
+    },
+    "release": {
+      "path": "research/p4_i_cross_restart_current_preference_release_2026-09-21.json",
+      "sha256": "18642d4c3994149882e060740fea80e1284facfb960ab3d118c9368728c7cece"
+    },
+    "required_p4_i_status": "released_bounded_cross_restart_typed_state_pass"
+  },
+  "supported_scope": {
+    "canonical": "drink",
+    "surface_jp": "飲み物",
+    "aliases": {
+      "en": [
+        "drink",
+        "beverage"
+      ],
+      "zh": [
+        "飲料",
+        "饮料",
+        "飲品",
+        "饮品"
+      ],
+      "ja": [
+        "飲み物"
+      ]
+    }
+  },
+  "positive_query_fixtures": [
+    {
+      "id": "en_exact_current_drink",
+      "language": "en",
+      "input": "What is my current drink preference?",
+      "scope": "drink"
+    },
+    {
+      "id": "zh_exact_current_drink",
+      "language": "zh",
+      "input": "我現在的飲料偏好是什麼？",
+      "scope": "drink"
+    },
+    {
+      "id": "ja_exact_current_drink",
+      "language": "ja",
+      "input": "私の今の飲み物の好みは何？",
+      "scope": "drink"
+    }
+  ],
+  "development_state_fixture": {
+    "active_value": "rooibos tea",
+    "active_value_jp": "ルイボスティー",
+    "active_memory_id": "p4-j-dev-current",
+    "historical_value": "herbal tea",
+    "historical_memory_id": "p4-j-dev-historical",
+    "negative_value": "herbal tea",
+    "negative_memory_id": "p4-j-dev-negative",
+    "expected_status": "resolved_unique_active_typed_current_preference",
+    "expected_visible_output": "今の飲み物の好みはルイボスティー。前のじゃなくて、今の方ね。"
+  },
+  "selected_query_outcomes": {
+    "unique_active_supported_localization": "answer_with_bounded_natural_japanese_surface",
+    "zero_active": "abstain_without_episode_or_profile_guess",
+    "multiple_active_same_scope": "abstain_without_score_selection",
+    "unsupported_value_localization": "abstain_without_exposing_raw_non_japanese_value"
+  },
+  "negative_query_fixtures": [
+    {
+      "id": "missing_scope",
+      "input": "What do I currently prefer?"
+    },
+    {
+      "id": "unsupported_scope",
+      "input": "What is my current activity preference?"
+    },
+    {
+      "id": "third_person",
+      "input": "What is Rina's current drink preference?"
+    },
+    {
+      "id": "past_episode_query_reserved_for_p4_f",
+      "input": "What kind of tea did I say I prefer?"
+    },
+    {
+      "id": "quoted_query",
+      "input": "Quote: What is my current drink preference?"
+    },
+    {
+      "id": "hypothetical_query",
+      "input": "If I asked what my current drink preference is, what would happen?"
+    },
+    {
+      "id": "metalinguistic_query",
+      "input": "Translate 'What is my current drink preference?'"
+    }
+  ],
+  "read_contract": {
+    "source_collection": "user_profile",
+    "source_semantics_schema": "uruha_current_preference_typed_state_p4_v1",
+    "source_semantics": "current_preference",
+    "allowed_partition": "active_only",
+    "exact_scope_match_required": true,
+    "historical_answer_use_allowed": false,
+    "explicit_negative_answer_use_allowed": false,
+    "episode_answer_use_allowed": false,
+    "retrieval_score_selection_allowed": false,
+    "profile_write_count": 0,
+    "episode_write_change": false,
+    "raw_dialogue_persisted_in_trace": false,
+    "graph_label": "typed_current_preference_recall_p4",
+    "graph_stage": "select",
+    "model_call_added": false
+  },
+  "required_provenance": [
+    "active_memory_id",
+    "source_language",
+    "source_input_sha256",
+    "preference_scope_sha256",
+    "validity_reason",
+    "value_sha256"
+  ],
+  "implementation_boundary": {
+    "allowed_files": [
+      "uruha_typed_current_preference_recall_p4.py",
+      "uruha_web_ui_product.py",
+      "test_p4_j_typed_current_preference_recall.py"
+    ],
+    "p4_i_writer_or_semantics_change_allowed": false,
+    "p4_h_plan_or_surface_change_allowed": false,
+    "p4_f_episode_parser_localization_or_recall_change_allowed": false,
+    "general_memory_ranking_change_allowed": false,
+    "general_profile_shadow_answer_authority_allowed": false,
+    "general_planner_prompt_change_allowed": false,
+    "database_schema_or_record_rewrite_allowed": false,
+    "research_data_baseline_metric_or_holdout_change_allowed": false,
+    "production_memory_access_allowed": false,
+    "external_deployment_allowed": false
+  },
+  "post_implementation_acceptance": {
+    "separate_freeze_required_before_real_turn": true,
+    "fresh_isolated_runtime_required": true,
+    "actual_process_restart_required": true,
+    "new_unexposed_write_value_required": true,
+    "answer_absent_from_recall_question_required": true,
+    "real_product_turn_retry_count": 0,
+    "local_product_planner_model_calls_maximum": 0,
+    "production_memory_access_count": 0
+  },
+  "claim_boundary": "A passing implementation contract would establish only a read-only active typed current-preference answer path for explicit first-person exact-scope queries. It would not establish open-domain recall, long-dialogue reliability, pragmatic understanding, felt understanding, human preference, LLM superiority or a human equation."
+}
