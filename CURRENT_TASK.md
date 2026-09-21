@@ -2,22 +2,22 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-O 持久資料 reference-time 修正
+## 唯一下一步：P4-O-REAL 持久資料真實重啟交付
 
-P4-N-REAL 已依事前 freeze 執行並保留為 terminal fail。新值 `そば茶` 的日文 typed write 與第一輪可見回答成功；真正關閉 listener、
-以同一隔離 DB 啟動新 process 後，active record ID、內容 hash、source language 與兩個 provenance hash 都未改變。但英文 recall 在 P4-N
-adapter 把 `reference_time=None` 傳入 validity resolver 時拋出 `ValueError`，因此沒有日文回答、P4-J graph 或第二筆 episode。這不是記憶
-消失或選到錯值；同一 `そば茶` case 不重跑、不改 gate，也不加入有限 map。完整結果：
-`analysis/p4_n_real_source_bound_japanese_delivery_acceptance_2026-09-22.md`。
+P4-N-REAL 的 `そば茶` terminal fail 已保留，不重跑。P4-O 以新開發值 `ごぼう茶` 在真實暫存 Persistent Chroma
+重現同一 `reference_time=None` 例外，再透過新的 additive adapter 只 default 一次時間並傳入完整 P4-N path。直接改
+P4-N adapter 與原 product entry 會各自破壞已發布 hash，兩個嘗試均撤回並保留為 rejected evidence；最終新增
+`uruha_persisted_reference_time_p4.py` 與 `uruha_web_ui_product_p4_o.py`，舊檔 hash 未改。
 
-P4-N offline 邊界仍有效：只有 explicit Japanese self-report、完整 typed provenance、1–24 codepoints 且僅含日文安全字元的 value 可用
-identity surface；其他語言、ASCII／混合字串、newline、句子標點、超長與 provenance 缺失均 abstain。離線 positive test 以 monkeypatch
-繞過 `_current_preference_rows`，所以沒有覆蓋這次真實持久 Chroma path，不能再用原 `166 passed` 代替 integration。
+P4-O offline 專屬=`6 passed`，P4-I→P4-O 受影響回歸=`45 files / 196 passed`，隔離 product import 確認新 builder 已安裝且沿用同一
+runtime。明示 caller time 原樣傳入，`valid_until` 前可用、後過期，讀取無寫入、無 model call。P4-N 的 provenance／script／
+length／injection 邊界與 P4-M/P4-N-REAL 失敗證據皆未改。完整 offline 驗收：
+`analysis/p4_o_persisted_reference_time_acceptance_2026-09-22.md`。
 
-下一步 P4-O 先凍結 real temporary Chroma regression，用未曝光的 development value 重現 `reference_time=None` crash；單一實作變因是 adapter
-入口只 default 一次 non-null reference time，並把同一值傳給 P4-J base read 與 additive re-read。需驗證 caller 明示時間不變、expiry／validity
-語意不漂移、P4-N provenance／script／injection 邊界與 P4-M/P4-N-REAL terminal failure全保留。offline 通過後才可另凍結不同新值的
-P4-O-REAL Safari case；不可重跑 `そば茶`、不可補 lookup、不可先宣稱 product delivery。
+下一步 P4-O-REAL 先凍結一個不在 development、舊 product case 與 finite map 的新日文飲料值。使用新 mode-0700 隔離
+runtime，process 1 寫一次，關 listener 後 process 2 以 Safari 發送不含答案的英文 exact-scope query 一次。必須驗證逐字日文值、
+`bounded_japanese_identity`、P4-J graph、record ID/hash/provenance 未改、每個成功 turn 一筆 episode、0 retry/fallback/model。失敗也終端保留，
+不重跑、不改答案、不補 lookup。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
