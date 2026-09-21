@@ -467,6 +467,17 @@ surface scope `飲料` 或退成 `general`，但 P4-J query 已 canonicalize 為
 canonical scope，同時保留 source language／hash／provenance；不可同時改 value extraction、value localization、P4-J query／surface、
 研究 baseline 或 frozen real cases。先做 before regression、contract與freeze；另立新 product acceptance freeze 前 real turn=`0`。
 
+P4-L offline implementation 已完成。Before 證據顯示繁中 `飲料`、簡中 `饮料`、日文 `飲み物` 與 P4-J canonical
+`drink` 形成不同 predicate；新 product-only adapter 只對 P4-I 已選中且 explicit-scope 的三個 frozen exact aliases 投影成
+`drink`，不依 value 猜 `general`，不改 `snack`／未選中句。P4-I、P4-J 原檔未改；source language／input hash／value hash保留，
+typed metadata另留alias id與source alias hash，graph新增 raw-free P4-L memory node且無 answer authority／model call。
+
+Prospective test由implementation前collection error轉為P4-L=`9 passed`；P4-I～P4-L affected regression=`98 passed`，只有既有
+Chroma SWIG warnings 2項。安裝後 temporary-Chroma smoke確認繁中 `桂花茶` 寫成 `scope=drink`、canonical predicate與
+`drink:zh-Hant:v1` provenance，而 direct P4-I frozen tests不安裝adapter時仍保留舊結果。完整驗收：
+`analysis/p4_l_preference_scope_canonicalization_acceptance_2026-09-21.md`。此層尚未有真實Safari證據；下一步P4-L-REAL必須先
+凍結全新 Chinese explicit-scope write → real restart → English answer-absent query，freeze commit前 real turn=`0`。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
