@@ -2,7 +2,16 @@
 
 更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-K typed recall contract 最終交付修正
+## 唯一下一步：P4-M 跨語 canonical scope 更正與新舊值 lineage
+
+目前 P4-L-REAL 已完成並封存為 pass。下一步先做隔離、非產品的 before probe：第一句以一種已支援明示 scope 寫入 current
+preference，第二句用另一種語言／scope alias 明示更正，核對相同 canonical predicate 下是否恰有新值 active、舊值
+historical，且兩筆各保留自己的 source language／input hash／alias provenance。若 before 已符合，不為了產生 commit 而改產品，
+直接先凍結新三輪產品驗收；若不符合，只准修正 `cross_language_canonical_scope_correction_supersession_lineage` 這一個變因。
+
+P4-M 成功還必須經 real restart 後，用答案不在題目的 exact-scope query 只回答新值，顯示自然日文與 truthful graph；
+profile write lineage、active/historical count、0 retry／fallback／planner model call 都要核對。不得改 value extraction、localization、
+P4-J answer authority、baseline或研究 claim，也不得重跑 P4-L 的 `麦茶` 案例追分。新 acceptance freeze 前 real product turn=`0`。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -477,6 +486,17 @@ Chroma SWIG warnings 2項。安裝後 temporary-Chroma smoke確認繁中 `桂花
 `drink:zh-Hant:v1` provenance，而 direct P4-I frozen tests不安裝adapter時仍保留舊結果。完整驗收：
 `analysis/p4_l_preference_scope_canonicalization_acceptance_2026-09-21.md`。此層尚未有真實Safari證據；下一步P4-L-REAL必須先
 凍結全新 Chinese explicit-scope write → real restart → English answer-absent query，freeze commit前 real turn=`0`。
+
+P4-L-REAL 已依事前 freeze 一次通過，failed gates=`0`。第一個 process 以繁中明示 scope `飲料` 寫入 `麦茶`，P4-L
+投影成 canonical `drink` 並保存 `drink:zh-Hant:v1` 與 source alias hash；Safari 顯示 `ん、その好みは覚えとく。`，graph
+同時有 P4-I/P4-L memory nodes，active id=`c62640d7-ab6a-4edc-8f42-d44f8fd4fa01`。真正退出並關閉 listener 後，第二個
+process 重用同一 mode-0700 root／DB，以新 PID/session 接受英文 answer-absent query，Safari 精確顯示
+`今の飲み物の好みは麦茶。前のじゃなくて、今の方ね。`，graph 有 P4-J select node，使用同一 active id。
+
+profile count／id／content hash、canonical scope與alias provenance在recall前後不變，episode `1->2`；2 process／2 turn／
+0 retry／fallback／planner model call，等待 `2.2757s／2.2885s`。`麦茶` 與舊 P4-I barley-tea 語意重疊已事前揭露，
+所以只證明 bounded跨語scope alignment與delivery，不證明novel value semantics或一般理解。完整驗收：
+`analysis/p4_l_cross_language_scope_delivery_acceptance_2026-09-21.md`；下一步是上方 P4-M，不再重跑本案。
 
 ## 工作環境
 
