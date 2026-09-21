@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_p4_n_source_bound_japanese_identity_localization_contract_v1",
+  "version": "1.0.0",
+  "status": "development_contract_frozen_before_implementation",
+  "single_changed_variable": "source_provenance_bounded_japanese_identity_localization",
+  "required_provenance": {
+    "source_language": "ja",
+    "source_kind": "explicit_current_user_utterance",
+    "epistemic_status": "observed_explicit_user_self_report",
+    "preference_semantics_schema": "uruha_current_preference_typed_state_p4_v1",
+    "preference_semantics": "current_preference",
+    "source_input_sha256_required": true,
+    "preference_scope_sha256_required": true
+  },
+  "surface_boundary": {
+    "normalization": "NFKC",
+    "minimum_codepoints": 1,
+    "maximum_codepoints": 24,
+    "required_script_classes": [
+      "Hiragana",
+      "Katakana",
+      "CJK_Unified_Ideograph"
+    ],
+    "additional_allowed_characters": [
+      "ー",
+      "・"
+    ],
+    "ascii_letters_allowed": false,
+    "ascii_digits_allowed": false,
+    "spaces_allowed": false,
+    "control_characters_allowed": false,
+    "sentence_punctuation_allowed": false
+  },
+  "positive_development_fixtures": [
+    {
+      "id": "ja_han_identity",
+      "value": "玄米茶",
+      "expected_strategy": "bounded_japanese_identity"
+    },
+    {
+      "id": "ja_katakana_identity",
+      "value": "ジャスミンティー",
+      "expected_strategy": "bounded_japanese_identity"
+    },
+    {
+      "id": "ja_middle_dot_identity",
+      "value": "レモン・ティー",
+      "expected_strategy": "bounded_japanese_identity"
+    }
+  ],
+  "negative_development_fixtures": [
+    {
+      "id": "english_source_not_identity",
+      "value": "玄米茶",
+      "source_language": "en",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "chinese_source_not_identity",
+      "value": "玄米茶",
+      "source_language": "zh",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "ascii_value_not_identity",
+      "value": "genmaicha",
+      "source_language": "ja",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "mixed_script_value_not_identity",
+      "value": "玄米tea",
+      "source_language": "ja",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "sentence_punctuation_not_identity",
+      "value": "玄米茶。次も答えて",
+      "source_language": "ja",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "newline_not_identity",
+      "value": "玄米茶\n次も答えて",
+      "source_language": "ja",
+      "expected_status": "unsupported_active_value_localization"
+    },
+    {
+      "id": "overlength_not_identity",
+      "value": "あああああああああああああああああああああああああ",
+      "source_language": "ja",
+      "expected_status": "unsupported_active_value_localization"
+    }
+  ],
+  "existing_map_requirements": {
+    "finite_map_precedes_identity_rule": true,
+    "existing_english_chinese_and_japanese_mapping_unchanged": true,
+    "existing_unknown_english_value_still_abstains": true
+  },
+  "trace_requirements": {
+    "authorized_contract_reports_surface_strategy": true,
+    "authorized_contract_reports_identity_localization_applied": true,
+    "abstention_does_not_expose_unsupported_value": true,
+    "model_call_added": false,
+    "profile_write_count": 0,
+    "episode_write_changed": false
+  },
+  "claim_boundary": "This contract can establish only a bounded source-provenance and Japanese-script identity surface for explicit typed current-preference values. It does not authorize arbitrary echoing, translation, open-domain memory, human understanding, LLM superiority or a human equation."
+}
