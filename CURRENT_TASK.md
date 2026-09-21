@@ -2,7 +2,7 @@
 
 更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-I 多語 current-preference 的 typed semantics 與 supersession
+## 唯一下一步：P4-J 跨重啟 typed current-preference recall
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -412,6 +412,19 @@ P4-I先只讀定位既有 profile extraction、episode write 與 P4-F typed supe
 Japanese write與correction的 typed contract。current preference 與 superseded history必須分開，來源、時間、語言與更正鏈可查；不得只把舊項目
 粗暴加入dislikes、不得抹掉原episode、不得把偏好內容當心理推測。先做offline parser／writeback／negative guard與受影響回歸，commit後才可另立
 全新cross-restart real case；P4-H氣泡水／熱可可與P4-G舊案例都不得重跑。這一步仍不碰研究baseline、production memory、外部部署或人類優勢claim。
+
+P4-I已依事前freeze一次通過：第一個process以English寫入scope=`drink`的`oolong tea` active typed positive，真正退出後，第二個process
+以相同isolated root／memory DB及新PID／新session啟動，送出Chinese correction為`barley tea`。最終P4-I validity resolver得到一筆
+active新positive、一筆historical舊positive及一筆active明示negative；舊record沒有刪除或改寫，兩個positive共用相同scope predicate。
+Safari兩輪顯示自然日文與P4-H `select`／P4-I `memory` nodes；2 process／2 turn／0 retry／0 planner model call，等待
+`2.3411s／16.2815s`，frozen gate failed=`0`。完整驗收：
+`analysis/p4_i_cross_restart_current_preference_acceptance_2026-09-21.md`。
+
+P4-J只處理仍明確未授權的read path：目前P4-I profile shadow仍是`answer_use_authorized=false`、`affects_working_memory=false`，所以typed state
+持久化成功不等於產品會用它回答「我現在喜歡什麼？」。先凍結一條read-only adapter：僅對明示第一人稱、current-preference、exact supported
+scope的問題讀取active P4-I current record；scope缺失／不支援／多active候選必須fail closed，historical與negative不能當current answer。
+非selected問題完全保留P4-F episode recall。回覆仍須自然日文，graph要顯示typed source id與active-only決策；回答本身不得寫profile。
+P4-I oolong／barley案例不得重跑。contract／tests／freeze／commit前不得送新real turn，也不得把這一步外推成一般記憶、人評或研究優勢。
 
 ## 工作環境
 
