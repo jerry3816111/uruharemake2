@@ -2,20 +2,22 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-N-REAL 新值的真實重啟交付
+## 唯一下一步：P4-O 持久資料 reference-time 修正
 
-P4-M 已依事前 freeze 執行並保留為 terminal fail：Chinese write→Japanese correction 的 canonical lineage 正確，真正重啟後仍為
-新值唯一 active、舊值 historical、另有 explicit negative，三筆 record hash 未變；但 P4-J 因 `柚子茶` 不在有限 localization table，
-只交付安全 abstention。這不是記憶消失或舊值回流，同一 case 不重跑、不改答案，也不把已曝光值補進白名單追分。
+P4-N-REAL 已依事前 freeze 執行並保留為 terminal fail。新值 `そば茶` 的日文 typed write 與第一輪可見回答成功；真正關閉 listener、
+以同一隔離 DB 啟動新 process 後，active record ID、內容 hash、source language 與兩個 provenance hash 都未改變。但英文 recall 在 P4-N
+adapter 把 `reference_time=None` 傳入 validity resolver 時拋出 `ValueError`，因此沒有日文回答、P4-J graph 或第二筆 episode。這不是記憶
+消失或選到錯值；同一 `そば茶` case 不重跑、不改 gate，也不加入有限 map。完整結果：
+`analysis/p4_n_real_source_bound_japanese_delivery_acceptance_2026-09-22.md`。
 
-P4-N offline 已通過：新增 additive adapter，只有 explicit Japanese self-report、完整 typed provenance、1–24 codepoints 且僅含日文安全
-字元的 value 可用 identity surface；其他語言、ASCII／混合字串、newline、句子標點、超長與 provenance 缺失均 abstain。P4-I 到 P4-N
-受影響 suite=`166 passed`，隔離 product preflight=`ready`；P4-J 歷史 hash 未變，P4-M fail 未重跑且 `柚子茶` 未加入 lookup。
+P4-N offline 邊界仍有效：只有 explicit Japanese self-report、完整 typed provenance、1–24 codepoints 且僅含日文安全字元的 value 可用
+identity surface；其他語言、ASCII／混合字串、newline、句子標點、超長與 provenance 缺失均 abstain。離線 positive test 以 monkeypatch
+繞過 `_current_preference_rows`，所以沒有覆蓋這次真實持久 Chroma path，不能再用原 `166 passed` 代替 integration。
 
-下一步 P4-N-REAL 必須先凍結一個未出現在 P4-M、P4-N development fixtures或有限 map 的新日文飲料值；用全新 mode-0700 runtime，
-process 1 寫入一次，真正關閉 listener 後以 process 2 用答案不在問題內的英文 exact-scope query 回想一次。成功需逐字日文值、
-`bounded_japanese_identity`、P4-J node、profile id/hash 不變、每輪一筆 episode、0 retry/fallback/model；失敗也原樣封存。freeze 前 real
-product turn=`0`。完整 offline 驗收：`analysis/p4_n_source_bound_japanese_identity_localization_acceptance_2026-09-22.md`。
+下一步 P4-O 先凍結 real temporary Chroma regression，用未曝光的 development value 重現 `reference_time=None` crash；單一實作變因是 adapter
+入口只 default 一次 non-null reference time，並把同一值傳給 P4-J base read 與 additive re-read。需驗證 caller 明示時間不變、expiry／validity
+語意不漂移、P4-N provenance／script／injection 邊界與 P4-M/P4-N-REAL terminal failure全保留。offline 通過後才可另凍結不同新值的
+P4-O-REAL Safari case；不可重跑 `そば茶`、不可補 lookup、不可先宣稱 product delivery。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
