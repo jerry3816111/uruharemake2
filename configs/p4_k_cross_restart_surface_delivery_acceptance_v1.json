@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_k_cross_restart_surface_delivery_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "implementation_commit": "c9f1a8b065c60a7d73f8571e077b5cdd4e21ecff",
+  "process_1": {
+    "input": "I prefer 紅茶. Please remember that as my current drink preference.",
+    "expected_visible_output": "ん、その好みは覚えとく。",
+    "expected_language": "en",
+    "expected_act": "write",
+    "expected_scope": "drink",
+    "expected_current_value": "紅茶",
+    "expected_profile_likes": [
+      "紅茶"
+    ],
+    "expected_profile_dislikes": [],
+    "expected_profile_write_count": 1
+  },
+  "restart": {
+    "old_process_must_exit": true,
+    "new_pid_required": true,
+    "new_product_session_id_required": true,
+    "same_runtime_root_required": true,
+    "same_memory_db_required": true,
+    "process_2_start_must_observe_process_1_active_typed_record": true,
+    "post_turn_memory_injection_allowed": false
+  },
+  "process_2": {
+    "input": "私の今の飲み物の好みは何？",
+    "input_must_not_contain_answer": true,
+    "expected_visible_output": "今の飲み物の好みは紅茶。前のじゃなくて、今の方ね。",
+    "expected_query_language": "ja",
+    "expected_scope": "drink",
+    "expected_localized_value_jp": "紅茶",
+    "expected_contract_status": "resolved_unique_active_typed_current_preference",
+    "expected_answer_use_authorized": true,
+    "expected_p4_j_graph_label": "typed_current_preference_recall_p4",
+    "expected_p4_j_graph_stage": "select",
+    "profile_write_count": 0,
+    "historical_answer_use_count": 0,
+    "explicit_negative_answer_use_count": 0,
+    "episode_answer_use_count": 0
+  },
+  "per_turn_requirements": {
+    "visible_output_language": "Japanese",
+    "durable_episode_write_count": 1,
+    "product_planner_model_call_count": 0,
+    "fallback_count": 0,
+    "latency_target_seconds": 20.0
+  },
+  "persistent_state_requirements": {
+    "profile_record_count_before_recall": 1,
+    "profile_record_count_after_recall": 1,
+    "episode_record_count_before_recall": 1,
+    "episode_record_count_after_recall": 2,
+    "active_current_count_before_recall": 1,
+    "active_current_count_after_recall": 1,
+    "historical_current_count_after_recall": 0,
+    "current_memory_id_unchanged": true,
+    "typed_record_content_hash_unchanged": true
+  },
+  "runtime_requirements": {
+    "fresh_isolated_root": true,
+    "listener": "127.0.0.1:7863",
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "real_product_turns": 2,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "closed_user_tab_count": 0
+  },
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "input_value_scope_expected_surface_or_gate_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "p4_j_rooibos_case_rerun_allowed": false,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "claim_boundary": "A pass proves one newly frozen cross-process product case in which the P4-K propagation fix delivers an already-authorized active typed current-preference contract into the exact Japanese surface and a truthful P4-J graph node without profile mutation or a planner model call. It does not prove open-domain recall, long-dialogue reliability, felt understanding, human preference, LLM superiority or a human equation."
+}
