@@ -26,9 +26,14 @@ def test_freeze_binds_design_implementation_acceptance_and_launcher():
     assert _sha256(ROOT / freeze["design_freeze"]["path"]) == freeze["design_freeze"][
         "sha256"
     ]
-    for binding in freeze["implementation_checkpoint"].values():
+    checkpoint = freeze["implementation_checkpoint"]
+    for binding in checkpoint.values():
         if isinstance(binding, dict):
-            assert _sha256(ROOT / binding["path"]) == binding["sha256"]
+            payload = subprocess.check_output(
+                ["git", "show", f"{checkpoint['commit']}:{binding['path']}"],
+                cwd=ROOT,
+            )
+            assert hashlib.sha256(payload).hexdigest() == binding["sha256"]
     for binding in freeze["acceptance_bindings"].values():
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
 

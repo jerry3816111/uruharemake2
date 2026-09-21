@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parent
@@ -20,6 +21,11 @@ def _load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _sha256_at_commit(commit: str, path: str) -> str:
+    content = subprocess.check_output(["git", "show", f"{commit}:{path}"], cwd=ROOT)
+    return hashlib.sha256(content).hexdigest()
+
+
 def test_p4_k_contract_binds_the_terminal_p4_j_failure():
     contract = _load(CONTRACT)
     assert contract["status"] == "prospectively_frozen_before_implementation"
@@ -36,9 +42,11 @@ def test_p4_k_contract_binds_the_terminal_p4_j_failure():
 def test_p4_k_freeze_binds_contract_red_regression_and_before_implementation():
     freeze = _load(FREEZE)
     assert freeze["status"] == "frozen_before_p4_k_implementation"
-    for key in ("contract", "regression_specification", "before_implementation"):
+    for key in ("contract", "regression_specification"):
         binding = freeze[key]
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
+    before = freeze["before_implementation"]
+    assert _sha256_at_commit(freeze["base_commit"], before["path"]) == before["sha256"]
     assert freeze["regression_specification"]["before_result"] == "2_failed_3_passed"
 
 

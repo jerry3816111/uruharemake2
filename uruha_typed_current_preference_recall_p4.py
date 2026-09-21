@@ -353,6 +353,21 @@ def rule_plan_with_typed_current_preference_recall_p4(
     return _ORIGINAL_RULE_PLAN(self, user_input, current_psyche, memory_data)
 
 
+def _selected_surface_contract(source):
+    """Return one already-authorized P4-J contract from a current-turn payload."""
+    if not isinstance(source, dict):
+        return {}
+    contract = deepcopy(source.get(LABEL) or {})
+    if (
+        contract.get("schema") != SCHEMA
+        or contract.get("selected") is not True
+        or contract.get("surface_authority") is not True
+        or not str(contract.get("selected_core_jp") or "").strip()
+    ):
+        return {}
+    return contract
+
+
 def visible_guard_with_typed_current_preference_recall_p4(
     self, reply, logic_data, user_input="", memory_data=None
 ):
@@ -363,11 +378,11 @@ def visible_guard_with_typed_current_preference_recall_p4(
         user_input=user_input,
         memory_data=memory_data,
     )
-    contract = deepcopy((logic_data or {}).get(LABEL) or {})
     route = str(((logic_data or {}).get("semantic_route_m22") or {}).get("selected_type") or "")
-    if contract.get("schema") != SCHEMA or not contract.get("surface_authority"):
-        return visible
     if route == "safety_sensitive":
+        return visible
+    contract = _selected_surface_contract(logic_data) or _selected_surface_contract(memory_data)
+    if not contract:
         return visible
     selected = str(contract.get("selected_core_jp") or "").strip()
     before = str(visible or "").strip()
@@ -380,6 +395,9 @@ def visible_guard_with_typed_current_preference_recall_p4(
         final_visible_surface_matches_contract=bool(selected and visible == selected),
         visible_surface_changed=visible != before,
     )
+    # Planner normalization intentionally keeps only known plan fields.  The
+    # query-stage P4-J contract therefore has to be reattached from this same
+    # turn's memory payload before final trace materialization.
     logic_data[LABEL] = contract
     language_guard = deepcopy(logic_data.get("visible_language_guard") or {})
     language_guard.update(

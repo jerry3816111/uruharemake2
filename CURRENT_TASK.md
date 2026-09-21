@@ -443,6 +443,17 @@ final logic 再套用 exact surface authority，最後產生 select-stage graph 
 P4-I oolong/barley、P4-H sparkling-water/hot-cocoa及P4-G案例都不得重跑。成功也只代表bounded跨重啟typed recall交付，不是一般記憶、
 長對話、人評、強LLM優勢或人類方程式。
 
+P4-K 離線實作已完成：visible guard 先沿用 final logic 內合法 contract，若 planner normalization 已移除自訂欄位，才從同一輪
+`memory_data` 恢復並複製到 final logic；safety route 在恢復前就返回。事前紅燈=`2 failed, 3 passed`，修正後 P4-K=`5 passed`，
+P4-F～P4-K affected suite=`179 passed`。freeze verifier 的 current-file hash 假失敗已改為讀 freeze commit 的 immutable Git blob；
+freeze JSON、contract與產品案例皆未改。完整離線驗收：
+`analysis/p4_k_typed_recall_surface_propagation_acceptance_2026-09-21.md`。
+
+唯一下一步是 P4-K-REAL：在任何新real turn前另凍結全新兩程序案例；使用未在P4-J真實案例執行的exact source value與query language form，
+第一程序明示寫入，真正退出後第二程序以答案不在題目的exact-scope current query回溯。需同時通過exact自然日文、P4-J select node綁同一
+active id、profile count/id/content hash不變、不同PID/session、0 retry／planner model call／production memory／external deployment。
+P4-J rooibos失敗仍為fail，不得重跑或改寫。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
