@@ -2,7 +2,7 @@
 
 更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-J 跨重啟 typed current-preference recall
+## 唯一下一步：P4-K typed recall contract 最終交付修正
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
@@ -425,6 +425,23 @@ P4-J只處理仍明確未授權的read path：目前P4-I profile shadow仍是`an
 scope的問題讀取active P4-I current record；scope缺失／不支援／多active候選必須fail closed，historical與negative不能當current answer。
 非selected問題完全保留P4-F episode recall。回覆仍須自然日文，graph要顯示typed source id與active-only決策；回答本身不得寫profile。
 P4-I oolong／barley案例不得重跑。contract／tests／freeze／commit前不得送新real turn，也不得把這一步外推成一般記憶、人評或研究優勢。
+
+P4-J 已依事前 freeze 做完唯一 cross-restart 案例並判定 `fail`，不得重跑。第一個 process 以 English 寫入
+`drink=rooibos tea`，active typed memory id=`b1ae941d-5120-47c2-81fb-77194545ce78`；第二個 process 重用同一隔離 DB，
+Chinese answer-absent query 成功把同一 id 讀進 `typed_current_preference_recall_authority_p4` plan，且 planned core 正確為
+`今の飲み物の好みはルイボスティー。前のじゃなくて、今の方ね。`。但 Safari／JSONL 最終顯示 episode timestamp 回覆
+`前に: 2026-09-21 13:15:5って言ってたろ。そこは忘れてない。`，graph 也缺 P4-J node。profile 仍為1筆且 hash 前後一致；
+2 process／2 turn／0 retry／0 planner model call，frozen gate 7項失敗。完整負結果：
+`analysis/p4_j_cross_restart_typed_recall_acceptance_2026-09-21.md`。
+
+P4-K 只修這個已定位的 propagation seam：planner normalization 會保留 P4-J intent/core，卻丟掉自訂 contract，導致 visible guard 只查
+final logic 時無法接管 surface，materializer 也沒有 payload 可畫。允許從當輪 `memory_data` 恢復已選中、已授權的 P4-J contract，先複製到
+final logic 再套用 exact surface authority，最後產生 select-stage graph node。必須新增模擬 normalized logic 缺少自訂欄位的回歸；safety route
+仍不得被覆寫，非selected query、P4-F、typed storage、active resolver、localization、expected surface與P4-J舊freeze一律不改。
+
+先完成implementation與受影響回歸；在另立新acceptance freeze前真實產品輪次=`0`。之後只可用未執行的新值／新語言案例，P4-J rooibos、
+P4-I oolong/barley、P4-H sparkling-water/hot-cocoa及P4-G案例都不得重跑。成功也只代表bounded跨重啟typed recall交付，不是一般記憶、
+長對話、人評、強LLM優勢或人類方程式。
 
 ## 工作環境
 
