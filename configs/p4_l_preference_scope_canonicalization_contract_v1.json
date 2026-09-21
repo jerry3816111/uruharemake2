@@ -1,0 +1,135 @@
+{
+  "schema": "uruha_p4_l_preference_scope_canonicalization_contract_v1",
+  "version": "1.0.0",
+  "single_changed_variable": "canonical_scope_alias_projection_for_explicit_p4_i_current_preference_writes",
+  "prechange_evidence": {
+    "path": "analysis/p4_l_preference_scope_alias_prechange_2026-09-21.json",
+    "sha256": "8e81048e125883d3674f87c4ead213f27decf1a50a4999edce9a121c4f535c3d"
+  },
+  "supported_aliases": [
+    {
+      "id": "zh_traditional_drink",
+      "language": "zh",
+      "source_scope": "飲料",
+      "canonical_scope": "drink",
+      "alias_id": "drink:zh-Hant:v1"
+    },
+    {
+      "id": "zh_simplified_drink",
+      "language": "zh",
+      "source_scope": "饮料",
+      "canonical_scope": "drink",
+      "alias_id": "drink:zh-Hans:v1"
+    },
+    {
+      "id": "ja_drink",
+      "language": "ja",
+      "source_scope": "飲み物",
+      "canonical_scope": "drink",
+      "alias_id": "drink:ja:v1"
+    }
+  ],
+  "positive_inputs": [
+    {
+      "id": "zh_traditional_write",
+      "input": "我喜歡桂花茶，請記住這是我現在的飲料偏好。",
+      "expected_language": "zh",
+      "expected_value": "桂花茶",
+      "expected_original_scope": "飲料",
+      "expected_canonical_scope": "drink",
+      "expected_alias_id": "drink:zh-Hant:v1"
+    },
+    {
+      "id": "zh_simplified_write",
+      "input": "我喜欢桂花茶，请记住这是我现在的饮料偏好。",
+      "expected_language": "zh",
+      "expected_value": "桂花茶",
+      "expected_original_scope": "饮料",
+      "expected_canonical_scope": "drink",
+      "expected_alias_id": "drink:zh-Hans:v1"
+    },
+    {
+      "id": "ja_explicit_write",
+      "input": "今は麦茶が好き。今の好みとして覚えといて。今の飲み物の好みとして記録して。",
+      "expected_language": "ja",
+      "expected_value": "麦茶",
+      "expected_original_scope": "飲み物",
+      "expected_canonical_scope": "drink",
+      "expected_alias_id": "drink:ja:v1"
+    }
+  ],
+  "nonselected_or_unchanged_cases": [
+    {
+      "id": "english_already_canonical",
+      "language": "en",
+      "scope": "drink",
+      "scope_source": "explicit_utterance"
+    },
+    {
+      "id": "japanese_general_not_inferred",
+      "language": "ja",
+      "scope": "general",
+      "scope_source": "default_general"
+    },
+    {
+      "id": "unsupported_english_snack",
+      "language": "en",
+      "scope": "snack",
+      "scope_source": "explicit_utterance"
+    },
+    {
+      "id": "not_selected_alias_text",
+      "language": "zh",
+      "scope": "飲料",
+      "scope_source": "explicit_utterance",
+      "selected": false
+    }
+  ],
+  "canonicalization_contract": {
+    "activation": "selected P4-I explicit write or correction with explicit_utterance scope and an exact frozen language-plus-alias pair",
+    "canonical_scope": "drink",
+    "canonical_predicate": "current_preference_scope:218ae6b44966c8a9",
+    "scope_source_after_projection": "canonical_alias_projection",
+    "source_scope_alias_raw_persisted": false,
+    "source_scope_alias_sha256_required": true,
+    "source_language_and_input_sha256_preserved": true,
+    "value_and_value_sha256_preserved": true,
+    "model_call_added": false,
+    "answer_authority_added": false
+  },
+  "required_trace": {
+    "schema": "uruha_preference_scope_canonicalization_p4",
+    "label": "preference_scope_canonicalization_p4",
+    "stage": "memory",
+    "raw_dialogue_persisted": false,
+    "fields": [
+      "canonicalization_applied",
+      "alias_id",
+      "source_scope_alias_sha256",
+      "canonical_scope",
+      "source_language",
+      "current_memory_id"
+    ]
+  },
+  "success_criteria": {
+    "three_supported_aliases_project_to_drink": true,
+    "three_supported_aliases_share_canonical_predicate": true,
+    "typed_record_stores_canonical_scope": true,
+    "source_language_input_digest_and_alias_digest_remain_auditable": true,
+    "p4_l_memory_graph_node_is_truthful_and_raw_free": true,
+    "general_and_unsupported_scopes_remain_unchanged": true,
+    "p4_i_direct_frozen_behavior_without_product_install_remains_unchanged": true,
+    "p4_j_query_classifier_and_surface_remain_unchanged": true
+  },
+  "invariants": {
+    "p4_i_frozen_contract_or_old_result_edited": false,
+    "preference_value_extraction_or_localization_changed": false,
+    "p4_j_query_classification_resolution_or_surface_changed": false,
+    "episode_schema_or_write_changed": false,
+    "profile_shadow_answer_use_activated": false,
+    "research_dataset_baseline_or_gate_changed": false,
+    "production_memory_accessed": false,
+    "private_psychological_state_inferred": false
+  },
+  "claim_boundary": "A pass establishes only a bounded product alias projection for three already-extractable explicit drink scopes. It does not establish open-domain multilingual ontology alignment, arbitrary preference recall, long-dialogue reliability, felt understanding, strong-LLM superiority or a human equation."
+}
