@@ -1,17 +1,18 @@
 # 目前任務卡
 
-更新：2026-09-21。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-M 跨語 canonical scope 更正與新舊值 lineage
+## 唯一下一步：P4-N 來源綁定的安全日文 value identity-localization
 
-目前 P4-L-REAL 已完成並封存為 pass。下一步先做隔離、非產品的 before probe：第一句以一種已支援明示 scope 寫入 current
-preference，第二句用另一種語言／scope alias 明示更正，核對相同 canonical predicate 下是否恰有新值 active、舊值
-historical，且兩筆各保留自己的 source language／input hash／alias provenance。若 before 已符合，不為了產生 commit 而改產品，
-直接先凍結新三輪產品驗收；若不符合，只准修正 `cross_language_canonical_scope_correction_supersession_lineage` 這一個變因。
+P4-M 已依事前 freeze 執行並保留為 terminal fail：Chinese write→Japanese correction 的 canonical lineage 正確，真正重啟後仍為
+新值唯一 active、舊值 historical、另有 explicit negative，三筆 record hash 未變；但 P4-J 因 `柚子茶` 不在有限 localization table，
+只交付安全 abstention。這不是記憶消失或舊值回流，同一 case 不重跑、不改答案，也不把已曝光值補進白名單追分。
 
-P4-M 成功還必須經 real restart 後，用答案不在題目的 exact-scope query 只回答新值，顯示自然日文與 truthful graph；
-profile write lineage、active/historical count、0 retry／fallback／planner model call 都要核對。不得改 value extraction、localization、
-P4-J answer authority、baseline或研究 claim，也不得重跑 P4-L 的 `麦茶` 案例追分。新 acceptance freeze 前 real product turn=`0`。
+P4-N 只改 `source_provenance_bounded_japanese_identity_localization`：先以離線 passing/failing fixtures 凍結來源語言、P4-I provenance、
+Unicode script、長度、控制字元與句子標點邊界；只有 explicit Japanese self-report 的短安全日文字串可原樣進日文 surface。其他語言、
+混合可疑字串與不安全內容仍走有限 mapping 或 abstain，active-only／historical／negative guard 不變。若離線通過，再用未曝光新值另立
+product freeze，真正重啟後只送一次 answer-absent query；freeze 前 real product turn=`0`。完整 P4-M 反例：
+`analysis/p4_m_cross_language_correction_delivery_acceptance_2026-09-22.md`。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
