@@ -2,22 +2,19 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-O-REAL 持久資料真實重啟交付
+## 唯一下一步：P4-P 跨語言更正生命週期
 
-P4-N-REAL 的 `そば茶` terminal fail 已保留，不重跑。P4-O 以新開發值 `ごぼう茶` 在真實暫存 Persistent Chroma
-重現同一 `reference_time=None` 例外，再透過新的 additive adapter 只 default 一次時間並傳入完整 P4-N path。直接改
-P4-N adapter 與原 product entry 會各自破壞已發布 hash，兩個嘗試均撤回並保留為 rejected evidence；最終新增
-`uruha_persisted_reference_time_p4.py` 與 `uruha_web_ui_product_p4_o.py`，舊檔 hash 未改。
+P4-O-REAL 已依事前 freeze 通過。新值 `たんぽぽ茶` 在 process 1 以日文 typed write，Safari 答 `ん、その好みは覚えとく。`；
+真正關閉 listener 並以同一隔離 DB 啟動 process 2 後，不含答案的英文 query 答 `今の飲み物の好みはたんぽぽ茶。前のじゃなくて、今の方ね。`。
+gate=`pass / 0 failed`；2 process starts、1 restart、2 successful Safari turns、0 retry/model/fallback。
 
-P4-O offline 專屬=`6 passed`，P4-I→P4-O 受影響回歸=`45 files / 196 passed`，隔離 product import 確認新 builder 已安裝且沿用同一
-runtime。明示 caller time 原樣傳入，`valid_until` 前可用、後過期，讀取無寫入、無 model call。P4-N 的 provenance／script／
-length／injection 邊界與 P4-M/P4-N-REAL 失敗證據皆未改。完整 offline 驗收：
-`analysis/p4_o_persisted_reference_time_acceptance_2026-09-22.md`。
+active profile record ID 與 canonical hash 跨重啟和recall不變，source language、input hash、scope hash 不變；profile 1→1、episode 1→2。
+runtime graph 實際顯示 `typed_current_preference_recall_p4 / select`、`bounded_japanese_identity`與 exact final surface。完整結果：
+`analysis/p4_o_real_persisted_reference_time_delivery_acceptance_2026-09-22.md`。隔離 process 2 仍留在 `127.0.0.1:7867`供檢視，Safari 分頁未關。
 
-下一步 P4-O-REAL 先凍結一個不在 development、舊 product case 與 finite map 的新日文飲料值。使用新 mode-0700 隔離
-runtime，process 1 寫一次，關 listener 後 process 2 以 Safari 發送不含答案的英文 exact-scope query 一次。必須驗證逐字日文值、
-`bounded_japanese_identity`、P4-J graph、record ID/hash/provenance 未改、每個成功 turn 一筆 episode、0 retry/fallback/model。失敗也終端保留，
-不重跑、不改答案、不補 lookup。
+下一步 P4-P 不只測單筆寫入。先在真實暫存 Chroma 凍結一組全新 development value pair，依序以一種語言寫舊值、另一種語言明確更正，
+證明舊 positive 留為 historical、新增 linked explicit negative、新值是唯一 active；重啟後的不含答案 query 只能回新值，且 graph 如實顯示 lineage。
+先診斷已發布 P4-O stack 是否已滿足；只有定位出單一機制缺口才允許新實作。不得重用曝光值、刪除歷史紀錄、改弱 answer-absence/provenance/expiry/no-retry/graph gate。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
