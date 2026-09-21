@@ -454,6 +454,19 @@ freeze JSON、contract與產品案例皆未改。完整離線驗收：
 active id、profile count/id/content hash不變、不同PID/session、0 retry／planner model call／production memory／external deployment。
 P4-J rooibos失敗仍為fail，不得重跑或改寫。
 
+P4-K-REAL 已依事前 freeze 一次通過，failed gates=`0`。第一個 process 以 English 明示寫入 `drink=紅茶`，Safari 顯示
+`ん、その好みは覚えとく。`，active typed id=`15d6830f-10cf-4b08-9935-3f69624d3a9d`；真正退出後，第二個
+process 重用同一 mode-0700 isolated root／DB，以新 PID／session 回答 Japanese answer-absent query，Safari 精確顯示
+`今の飲み物の好みは紅茶。前のじゃなくて、今の方ね。`，graph 有 `typed_current_preference_recall_p4` select node，
+且使用同一 active id。profile count／id／content hash 前後不變，episode `1->2`；2 process／2 turn／0 retry／fallback／planner model call，
+等待 `2.1570s／2.1684s`。完整證據：`analysis/p4_k_cross_restart_surface_delivery_acceptance_2026-09-21.md`。
+
+這只證明 P4-K propagation 與跨重啟 delivery；`紅茶` 和舊 P4-F black-tea 語意重疊已事前揭露，不能宣稱 unseen semantic
+generalization。下一步 P4-L 只處理目前已知的 cross-language exact-scope gap：Chinese／Japanese 明示 current-preference write 可能保留
+surface scope `飲料` 或退成 `general`，但 P4-J query 已 canonicalize 為 `drink`。單一變因是把既有 supported write aliases 映射到
+canonical scope，同時保留 source language／hash／provenance；不可同時改 value extraction、value localization、P4-J query／surface、
+研究 baseline 或 frozen real cases。先做 before regression、contract與freeze；另立新 product acceptance freeze 前 real turn=`0`。
+
 ## 工作環境
 
 - 安全 worktree：`/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance`。
