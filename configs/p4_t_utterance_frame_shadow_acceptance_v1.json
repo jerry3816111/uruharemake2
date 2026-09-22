@@ -1,0 +1,51 @@
+{
+  "schema": "uruha_p4_t_utterance_frame_shadow_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_t_utterance_frame_shadow_v1.json",
+    "sha256": "2bd6eeffdcabb88e81635efdc1643701b879db3d10cbc698e908b7e90611dcbb",
+    "development_case_count": 4,
+    "holdout_case_count": 12,
+    "plain_control_count": 8
+  },
+  "single_changed_variable": "Add one deterministic, language-aware utterance-frame projection and compare that frame with the final Japanese surface in shadow mode.",
+  "implementation_boundary": {
+    "visible_reply_change_allowed": false,
+    "existing_m39_file_change_allowed": false,
+    "prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "memory_write_added_allowed": false,
+    "new_trace_and_graph_node_allowed": true,
+    "allowed_product_files": [
+      "uruha_utterance_frame_shadow_p4.py",
+      "uruha_web_ui_product.py",
+      "test_p4_t_utterance_frame_shadow.py",
+      "test_p4_t_utterance_frame_shadow_result.py"
+    ]
+  },
+  "gates": {
+    "development_case_count": 4,
+    "development_exact_frame_count": 4,
+    "development_exact_violation_count": 4,
+    "holdout_case_count": 12,
+    "holdout_exact_frame_count": 12,
+    "holdout_exact_violation_count": 12,
+    "plain_control_count": 8,
+    "plain_control_false_positive_count": 0,
+    "candidate_unchanged_count": 24,
+    "shadow_trace_count": 24,
+    "raw_source_or_reply_trace_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "failure_policy": {
+    "dataset_or_expected_label_change_after_implementation": false,
+    "maximum_informed_correction_batches": 2,
+    "failed_results_must_be_preserved": true,
+    "p4_u_visible_repair_authorized_only_after_pass": true
+  },
+  "claim_boundary": "A pass proves bounded deterministic shadow detection on 4 exposed development failures, 12 prospectively frozen developer-authored multilingual failures and 8 controls. It does not prove visible repair, open-domain pragmatics, human preference, felt understanding, strong-LLM advantage or a human equation."
+}
