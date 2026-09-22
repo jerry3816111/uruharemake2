@@ -2,23 +2,22 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-R 多輪干擾下的 current-memory 保持設計
+## 唯一下一步：P4-S 完整產品的多輪干擾驗收
 
-P4-Q-REAL 已依事前 freeze 一次通過，failed gates=`0`。第一個 process 在 Safari 以中文寫入 `drink=蓮花茶`，再以日文訂正為
-`びわ茶`；可見回覆依序為 `ん、その好みは覚えとく。` 與 `ん、訂正の内容はそのまま覚えとく。`。typed profile 同時保留一筆
-active 新值、一筆 historical 舊值及一筆連到新值的 explicit negative，P4-I/P4-L graph 可見。真正停止 listener 並換新 PID／session
-後，同一隔離 DB 接受不含答案的英文 query，Safari 精確回 `今の飲み物の好みはびわ茶。前のじゃなくて、今の方ね。`；P4-J select
-node 可展開，historical／negative answer use=`0/0`。3 turns／2 processes／0 retry／model／fallback，等待
-`2.7496s／16.6676s／2.5934s`，profile `3→3`、episode `2→3`。完整證據：
-`analysis/p4_q_real_safari_correction_lifecycle_acceptance_2026-09-22.md`。
+P4-R 已依事前 freeze 執行唯一一次 12 輪 temporary-Chroma holdout，failed gates=`0`。相同 transcript 的最近五輪詞面診斷基準在
+T6/T12 都選到較新的 `紫蘇茶`，exact=`0/2`；P4 typed-state system 分別精確回
+`今の飲み物の好みは月桃茶。前のじゃなくて、今の方ね。`與
+`今の飲み物の好みはよもぎ茶。前のじゃなくて、今の方ね。`，exact=`2/2`。6個非寫入干擾輪誤寫=`0`；最終同時保留
+drink active/historical/negative=`1/1/1`與game active=`1`，cross-scope不串值，0 model/retry/mental-fact write。完整證據：
+`analysis/p4_r_multiturn_interference_acceptance_2026-09-22.md`。
 
-P4-Q 仍只有三個相鄰任務輪，不能外推成長對話。P4-R 先只做設計與離線可重現驗證，單一問題是：在多輪無關內容、其他 scope
-記憶與一次同 scope 更正穿插後，active current-preference 是否仍由 typed lineage 決定，而非最近文字、episode 相似度或答案洩漏。
-先事前凍結一組至少 12 輪的 deterministic transcript、每輪預期 state transition、明示干擾類型與 recall probes；同一組分別跑
-`current-turn／recent-episode baseline`與P4 typed-state system，資料、回答規則與資源上限相同，只讓 memory mechanism 不同。
-成功必須同時滿足 active/historical/negative lineage、跨 scope 不串值、答案不在 query、日文 surface、每輪 trace、0未驗證心理事實寫入，
-並報告 baseline／system 的 exact error，不只報 system 成功。先用 temporary Chroma 跑離線 gate；在 freeze、測試與結果 review 前，
-不得直接把同案例送進 Safari，也不得把 12 輪稱作 50 輪、open-domain 長對話、人評、強LLM優勢或人類方程式。
+P4-R 的 baseline 是零模型的因果診斷，不是強LLM；不得用 +100pp 宣稱LLM優勢。既有V2.22的強full-context LLM與UruhaBrain皆4/5、
+而UruhaBrain成本較高的混合結果繼續有效。P4-S下一步只補尚缺的full-pipeline層：事前另凍結全新的12輪product transcript與值，至少含
+write、其他scope、第三人稱／引用／假設干擾、recall、correction、真process restart及post-correction recall；在Safari逐輪送出，不能把
+P4-R同案重跑成Web成功。每輪需有自然日文、唯一episode、實際node graph與延遲；兩次recall答案不得出現在query，只能使用active exact-scope
+typed ID，profile lineage與其他scope不變。凍結前先盤點ordinary distractor會走的本機model路徑並設定總call/token/latency上限；0 retry、
+0付費／外部部署／production memory／tool／VRM action。P4-S通過仍只代表一個12輪product case，不是50輪、open-domain、人評、強LLM優勢
+或人類方程式；之後才決定是否值得另凍結same-model full-context比較。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
