@@ -2,22 +2,26 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-S 完整產品的多輪干擾驗收
+## 唯一下一步：P4-T 語境框架與說話者視角 shadow gate
 
-P4-R 已依事前 freeze 執行唯一一次 12 輪 temporary-Chroma holdout，failed gates=`0`。相同 transcript 的最近五輪詞面診斷基準在
-T6/T12 都選到較新的 `紫蘇茶`，exact=`0/2`；P4 typed-state system 分別精確回
-`今の飲み物の好みは月桃茶。前のじゃなくて、今の方ね。`與
-`今の飲み物の好みはよもぎ茶。前のじゃなくて、今の方ね。`，exact=`2/2`。6個非寫入干擾輪誤寫=`0`；最終同時保留
-drink active/historical/negative=`1/1/1`與game active=`1`，cross-scope不串值，0 model/retry/mental-fact write。完整證據：
-`analysis/p4_r_multiturn_interference_acceptance_2026-09-22.md`。
+P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
+episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
+`30321→30585`、session `20260922_183428_41a5a0e9→20260922_184133_5916e29d`，最終 profile 恰有 active drink/game、
+historical drink、negative drink 各一筆。最慢一輪=`16.3151s`、總等待=`121.1807s`。product planner追加model call=`0`，但
+一般語意授權另有9次本機模型call、provider elapsed=`86.457s`且token accounting unavailable；不得把它寫成零模型系統。
+完整證據：`analysis/p4_s_real_product_multiturn_acceptance_2026-09-22.md`。
 
-P4-R 的 baseline 是零模型的因果診斷，不是強LLM；不得用 +100pp 宣稱LLM優勢。既有V2.22的強full-context LLM與UruhaBrain皆4/5、
-而UruhaBrain成本較高的混合結果繼續有效。P4-S下一步只補尚缺的full-pipeline層：事前另凍結全新的12輪product transcript與值，至少含
-write、其他scope、第三人稱／引用／假設干擾、recall、correction、真process restart及post-correction recall；在Safari逐輪送出，不能把
-P4-R同案重跑成Web成功。每輪需有自然日文、唯一episode、實際node graph與延遲；兩次recall答案不得出現在query，只能使用active exact-scope
-typed ID，profile lineage與其他scope不變。凍結前先盤點ordinary distractor會走的本機model路徑並設定總call/token/latency上限；0 retry、
-0付費／外部部署／production memory／tool／VRM action。P4-S通過仍只代表一個12輪product case，不是50輪、open-domain、人評、強LLM優勢
-或人類方程式；之後才決定是否值得另凍結same-model full-context比較。
+P4-S同時暴露4個凍結gate外的可見失敗：T4丟掉引用框架、T7把使用者第一人稱行為改成角色行為、T9把第三人稱傳聞陳述改成向對方
+提問、T10完全誤解「將內嵌句視為假設」的指令；現有M39 verifier四次都接受，屬可驗證false negative。P4-T只改一個核心變因：
+在既有source frame增加與語言無關、可追溯的`utterance frame`，分開記錄speaker ownership、reported/quoted/hypothetical embedding、
+evidential stance及speech act，並讓surface verifier在shadow模式核對輸出是否保留這些欄位。它不得靠增加prompt、模型call或固定完整句
+回覆，不在本步改可見輸出。
+
+先用P4-S四個已曝光failure作development診斷，再事前凍結未曝光的中文／英文／日文holdout與plain-control；成功標準至少包括
+development violation detection=`4/4`、holdout frame/violation判定全對、plain-control false positive=`0`、0新增model call、
+0 fact/profile write，且trace可生成graph node。P4-T只證明detector，不證明回覆已修好；通過後P4-U才可另凍結同一frame驅動的
+最小surface correction與Safari驗收。既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高的混合結果繼續有效；
+P4-R baseline仍只是零模型詞面診斷。P4-S/P4-T皆不能宣稱強LLM優勢、felt understanding、人類偏好或人類方程式。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
