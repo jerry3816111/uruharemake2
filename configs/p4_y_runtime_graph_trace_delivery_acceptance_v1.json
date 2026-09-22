@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_p4_y_runtime_graph_trace_delivery_acceptance_v1",
+  "version": "1.0.0",
+  "dataset": {
+    "path": "datasets/p4_y_runtime_graph_trace_delivery_fixtures_v1.json",
+    "sha256": "e36c471230fecc58ef493adff824551ddc02d728d2de802087991688b0ae16ac",
+    "case_count": 3
+  },
+  "predecessor": {
+    "repair_module": "uruha_frame_preserving_visible_repair_p4.py",
+    "repair_module_sha256": "67a360b1c00deccf402877295818a42005cb8b1c0ff075f54733d5e61ab81f30",
+    "entry": "uruha_web_ui_product_p4_w.py",
+    "entry_sha256": "8d7fe84d3044da74fff176197c675720e79963f3a6fdaaa1901ba0003bede100",
+    "released_product_entry": "uruha_web_ui_product.py",
+    "released_product_entry_sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694"
+  },
+  "surface_chain": [
+    "utterance_frame_shadow_p4",
+    "utterance_frame_coverage_extension_p4",
+    "frame_preserving_visible_repair_p4",
+    "utterance"
+  ],
+  "gates": {
+    "case_count": 3,
+    "exact_surface_chain_count": 3,
+    "exact_trace_payload_count": 8,
+    "visible_reply_unchanged_count": 3,
+    "logic_unchanged_count": 3,
+    "complete_delivery_count": 2,
+    "incomplete_delivery_count": 1,
+    "duplicate_trace_label_count": 0,
+    "missing_trace_synthesized_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "integration": {
+    "delivery_runs_after_run_turn_debug_final_blackboard_refresh": true,
+    "additive_product_entry": true,
+    "predecessor_hashes_preserved": true
+  },
+  "failure_policy": {
+    "missing_trace_may_be_synthesized": false,
+    "visible_reply_change_allowed": false,
+    "logic_change_allowed": false,
+    "p4_x_same_case_rerun_allowed": false
+  },
+  "claim_boundary": "A pass proves deterministic delivery of already-existing P4-T/P4-V/P4-W logic traces into the post-run_turn_debug runtime graph for three synthetic integration fixtures. It does not prove trace correctness, semantic preservation, real-browser delivery, felt understanding, strong-LLM advantage or a human equation."
+}

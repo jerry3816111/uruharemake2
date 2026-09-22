@@ -1,0 +1,66 @@
+{
+  "schema": "uruha_p4_y_runtime_graph_trace_delivery_fixtures_v1",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "case_id": "complete_clean",
+      "logic_trace_ids": {
+        "utterance_frame_shadow_p4": "t-clean",
+        "utterance_frame_coverage_extension_p4": "v-clean",
+        "frame_preserving_visible_repair_p4": "w-clean"
+      },
+      "initial_blackboard_labels": ["perception", "utterance", "post_check"],
+      "expected_surface_chain": [
+        "utterance_frame_shadow_p4",
+        "utterance_frame_coverage_extension_p4",
+        "frame_preserving_visible_repair_p4",
+        "utterance"
+      ],
+      "expected_complete": true
+    },
+    {
+      "case_id": "complete_stale_duplicates",
+      "logic_trace_ids": {
+        "utterance_frame_shadow_p4": "t-current",
+        "utterance_frame_coverage_extension_p4": "v-current",
+        "frame_preserving_visible_repair_p4": "w-current"
+      },
+      "initial_blackboard_labels": [
+        "utterance_frame_shadow_p4",
+        "utterance_frame_shadow_p4",
+        "utterance",
+        "frame_preserving_visible_repair_p4"
+      ],
+      "expected_surface_chain": [
+        "utterance_frame_shadow_p4",
+        "utterance_frame_coverage_extension_p4",
+        "frame_preserving_visible_repair_p4",
+        "utterance"
+      ],
+      "expected_complete": true
+    },
+    {
+      "case_id": "missing_extension_trace",
+      "logic_trace_ids": {
+        "utterance_frame_shadow_p4": "t-only",
+        "frame_preserving_visible_repair_p4": "w-only"
+      },
+      "initial_blackboard_labels": ["utterance"],
+      "expected_surface_chain": [
+        "utterance_frame_shadow_p4",
+        "frame_preserving_visible_repair_p4",
+        "utterance"
+      ],
+      "expected_complete": false
+    }
+  ],
+  "invariants": {
+    "visible_reply_byte_unchanged": true,
+    "logic_byte_unchanged": true,
+    "missing_trace_must_not_be_synthesized": true,
+    "duplicate_label_count_after_delivery": 0,
+    "model_call_added": false,
+    "memory_write_added": false,
+    "product_entry_is_additive": true
+  }
+}
