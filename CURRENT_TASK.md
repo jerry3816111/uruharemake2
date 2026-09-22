@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AD current-turn desired-response ambiguity ledger
+## 唯一下一步：P4-AE fresh post-correction ambiguity generalization
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -28,13 +28,18 @@ exact=`1/1`，unsupported control誠實顯示「來源／歸屬未知、欄位�
 `22.8006s`、token unavailable。P4-M→AC與M24 graph回歸=`273 passed`。完整證據：
 `analysis/p4_ac_real_readable_graph_acceptance_2026-09-23.md`。Safari與server保留，0 tab關閉。
 
-P4-AD不能只是增加另一張圖。下一個單一能力變因是：對同一個當輪訊號建立**可反駁的 desired-response ambiguity ledger**，
-把observable wording、候選期待（例如實際解法／被理解與陪伴／輕度吐槽／需要澄清）、反證條件與unknown private state分開；
-候選必須共存，不能把最高分候選寫成使用者心理事實或長期記憶。先用使用者已提出的「從早上坐不住、腦子停不下來」只作
-development反例抽象規格，再凍結新的中／英／日holdout與literal controls；先shadow-only，不改可見回覆、prompt、模型、記憶、
-人格或P4 released hashes。成功門檻至少包含：多候選完整、證據指向輸入可見訊號、unknown明示、候選互斥但不提前定真、
-false positive control、candidate/reply逐字不變、0 model/fact/profile/episode write。只有shadow contract在事前freeze後通過，才另立
-visible planner intervention；不能用固定關鍵詞直接宣稱知道使用者最想要什麼。
+P4-AD已完成additive shadow ledger：它把observable evidence、六種response action candidates、選出的operational action、下一輪
+support/contradict/unknown驗證與private reason unknown分開；action score明定不是心理真值機率，選擇也不是private truth commitment。
+第一次事前凍結9題中／英／日validation只有`5/9`啟動，四個失敗雖都已有舊M37 `cognitive_overactivity` typed trigger，較舊語用層卻
+未啟動。負結果完整保存。唯一一次informed correction不加關鍵詞、不改題／gate／舊M18/M54，只在additive shadow內接通既有typed
+trigger；同組修復回歸=`9/9`、6個literal controls false positive=`0`、12/12 candidate contract，0 reply/model/memory change；
+P4-M→AD與M24=`286 passed`。因為這9題答案已被用來決定修正，修後`9/9`只算exposed development regression，不能再稱獨立
+holdout泛化。完整證據：`analysis/p4_ad_desired_response_ambiguity_acceptance_2026-09-23.md`。
+
+P4-AE必須在P4-AD修正固定後另建全新、執行前commit的中／英／日paraphrase與near-miss controls，只驗證既有M37 typed
+`cognitive_overactivity` bridge是否泛化；不得再改P4-AD實作、關鍵詞、threshold或gate。第一次結果無論正負都保存：若PASS，只能主張
+developer-authored、fresh lexical/compositional generalization，不是自然分布、真人偏好或強LLM優勢；若FAIL，不用同組追分，回到新的
+development task分析。P4-AE完成後才可另立多輪outcome binding，驗證候選會被後續接受／否定／未知正確更新，而不是每輪重新猜。
 
 ## 已完成的 P4 前置歷史
 
