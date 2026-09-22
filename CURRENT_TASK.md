@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-T 語境框架與說話者視角 shadow gate
+## 唯一下一步：P4-U 語境框架保真的可見日文修復
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -12,16 +12,19 @@ historical drink、negative drink 各一筆。最慢一輪=`16.3151s`、總等�
 完整證據：`analysis/p4_s_real_product_multiturn_acceptance_2026-09-22.md`。
 
 P4-S同時暴露4個凍結gate外的可見失敗：T4丟掉引用框架、T7把使用者第一人稱行為改成角色行為、T9把第三人稱傳聞陳述改成向對方
-提問、T10完全誤解「將內嵌句視為假設」的指令；現有M39 verifier四次都接受，屬可驗證false negative。P4-T只改一個核心變因：
-在既有source frame增加與語言無關、可追溯的`utterance frame`，分開記錄speaker ownership、reported/quoted/hypothetical embedding、
-evidential stance及speech act，並讓surface verifier在shadow模式核對輸出是否保留這些欄位。它不得靠增加prompt、模型call或固定完整句
-回覆，不在本步改可見輸出。
+提問、T10完全誤解「將內嵌句視為假設」的指令；現有M39 verifier四次都接受。P4-T已把speaker ownership、embedding mode、
+evidential stance、speech act分開，shadow gate在4個曝光development failure=`4/4`、12個事前凍結中／英／日failure=`12/12`、
+8個faithful control false positive=`0`；24/24 visible candidate逐字不變，0 model/fact/profile/episode write，trace node位於utterance前。
+第一次integration修改released product entry，正確觸發5個immutable-hash failure；最後修正改用`uruha_web_ui_product_p4_t.py` additive
+entry，舊hash恢復，P4-M..T=`181/181 passed`。完整證據：
+`analysis/p4_t_utterance_frame_shadow_acceptance_2026-09-22.md`。
 
-先用P4-S四個已曝光failure作development診斷，再事前凍結未曝光的中文／英文／日文holdout與plain-control；成功標準至少包括
-development violation detection=`4/4`、holdout frame/violation判定全對、plain-control false positive=`0`、0新增model call、
-0 fact/profile write，且trace可生成graph node。P4-T只證明detector，不證明回覆已修好；通過後P4-U才可另凍結同一frame驅動的
-最小surface correction與Safari驗收。既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高的混合結果繼續有效；
-P4-R baseline仍只是零模型詞面診斷。P4-S/P4-T皆不能宣稱強LLM優勢、felt understanding、人類偏好或人類方程式。
+P4-U只改一個核心變因：P4-T已判定frame violation時，以frame-preserving Japanese surface correction取代原surface；不得重做frame
+分類、加模型call、寫記憶或改舊P4-S/P4-T資料。先另凍結新中／英／日source、故意錯誤candidate、允許的語意欄位與faithful-control；
+成功需每個修復保留speaker／embedding／stance／speech act、自然日文、不得補來源沒有的命題，control逐字不變，0 model/memory write，
+graph顯示before violations與after 0 unresolved。單元與隔離product通過後才啟動新port做Safari真輪次，不能重跑P4-S同案宣稱修復。
+若兩個前瞻修正批次仍失敗，保留反例並停止本方向。既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高的結果、
+P4-R零模型詞面baseline邊界繼續有效；P4-U仍不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
