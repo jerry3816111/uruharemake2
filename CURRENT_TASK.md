@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AC real Safari readable-graph delivery
+## 唯一下一步：P4-AD current-turn desired-response ambiguity ledger
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -21,11 +21,20 @@ memory change=`0`；P4-M→AB與M24 graph=`266 passed`。圖上訊號從`18 fiel
 immutable gate失敗已保存並改為additive entry；另發現branch既存P4-D product-entry hash mismatch，本次不修改也不宣稱repo全綠。
 完整證據：`analysis/p4_ab_source_proposition_graph_summary_acceptance_2026-09-23.md`。
 
-P4-AC只驗證P4-AB是否真的送到Safari畫面。使用private root、port `7873`、兩個不重用P4-AA的全新輸入：一個英文引用與
-一個日文unsupported control。surface chain事前直接凍結canonical P4-V label
-`utterance_frame_coverage_extension_p4`。每輪必須自然日文、durable episode、graph/P4-Z可見；graph summary必須與同輪logic
-導出的summary逐字相同、包含事前要求片段且不是`N fields`。只允許一次、0 retry/fallback、0手工candidate/trace injection；
-P4-AB追加model/memory/tool call必須為0。unit preflight通過後freeze／commit，才可啟動產品與操作Safari。
+P4-AC已依freeze完成唯一一次private root／port `7873`真實產品與Safari兩輪：2/2自然日文、2/2 durable episode、2/2 graph與
+P4-Z node；可讀摘要與同輪logic exact=`2/2`、canonical surface chain=`2/2`、generic `N fields`摘要=`0/2`。supported引用
+exact=`1/1`，unsupported control誠實顯示「來源／歸屬未知、欄位無、保留原文」=`1/1`。最大單輪`16.5364s`、總和
+`27.7068s`；P4-AB新增model/memory/tool call=`0/0/0`，既有semantic authorization實際本機model call=`2`、elapsed
+`22.8006s`、token unavailable。P4-M→AC與M24 graph回歸=`273 passed`。完整證據：
+`analysis/p4_ac_real_readable_graph_acceptance_2026-09-23.md`。Safari與server保留，0 tab關閉。
+
+P4-AD不能只是增加另一張圖。下一個單一能力變因是：對同一個當輪訊號建立**可反駁的 desired-response ambiguity ledger**，
+把observable wording、候選期待（例如實際解法／被理解與陪伴／輕度吐槽／需要澄清）、反證條件與unknown private state分開；
+候選必須共存，不能把最高分候選寫成使用者心理事實或長期記憶。先用使用者已提出的「從早上坐不住、腦子停不下來」只作
+development反例抽象規格，再凍結新的中／英／日holdout與literal controls；先shadow-only，不改可見回覆、prompt、模型、記憶、
+人格或P4 released hashes。成功門檻至少包含：多候選完整、證據指向輸入可見訊號、unknown明示、候選互斥但不提前定真、
+false positive control、candidate/reply逐字不變、0 model/fact/profile/episode write。只有shadow contract在事前freeze後通過，才另立
+visible planner intervention；不能用固定關鍵詞直接宣稱知道使用者最想要什麼。
 
 ## 已完成的 P4 前置歷史
 
