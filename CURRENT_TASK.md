@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-W 語境框架保真的可見日文修復
+## 唯一下一步：P4-X 隔離真實產品與 Safari 語境修復驗收
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -32,12 +32,18 @@ base/evidence/effective exact=`7/7`、9個新中／英／日holdout=`9/9`、9個
 system transformers置於product peft前而collection error，改用system pytest＋product site-packages優先後完整通過，未安裝或修改
 環境。完整證據：`analysis/p4_v_utterance_frame_coverage_extension_acceptance_2026-09-22.md`。
 
-P4-W才重新做可見日文修復：只允許在P4-V effective trace已有violation時，把candidate轉成保留speaker ownership、quote／hypothetical
-embedding、evidential stance與speech act的自然日文；不得在repair裡重做分類、改detector、加model call、寫記憶或變更無violation
-candidate。P4-U與P4-V所有案例都已曝光，只可當development；必須先另凍結一批全新中／英／日failure與faithful control，再實作
-generic frame transform。unit與隔離product通過後，另立Safari真輪次契約驗證畫面與graph；不得重跑舊案例宣稱新holdout。
-既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高、P4-R零模型詞面baseline邊界繼續有效；P4-W即使通過也只證明
-有限框架的deterministic visible repair，不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
+P4-W只在P4-V effective trace已有violation時修正可見日文，沒有violation嚴格no-op；不重做before分類、不改detector、模型／prompt／
+memory或released hashes。4個曝光development與12個新中／英／日holdout的before／exact reply／after-zero全部通過，8個faithful control
+逐字不變；24/24 Japanese、0 raw trace、0 model/fact/profile/episode write。graph順序固定為P4-T→P4-V→P4-W→utterance，P4-M..W
+完整回歸=`212 passed`。這已證明有限developer-authored frame family的deterministic visible repair，但尚未證明真模型或Safari會走到它。
+完整證據：`analysis/p4_w_frame_preserving_visible_repair_acceptance_2026-09-22.md`。
+
+P4-X先凍結另一批未曝光、非偏好寫入的中／英／日真實prompt與雙分支契約，再於新private runtime root／新port啟動
+`uruha_web_ui_product_p4_w.py`。每輪不論模型原candidate是否犯錯，都必須有P4-T／P4-V／P4-W／utterance graph；若P4-V無violation，
+P4-W必須unchanged，若有violation則必須changed且after violations=`0`，畫面文字需與repair after digest一致。至少一輪自然觸發repair才可稱
+real-product repair evidence；若四輪皆未觸發，保存negative trigger result，不以測試注入冒充真模型。Safari只開新tab，不關既有tab，
+不得碰P4-S runtime或正式DB；0付費／外部部署。既有V2.22與P4-R邊界繼續有效，P4-X通過也不代表強LLM優勢、felt understanding、
+人類偏好或人類方程式。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
