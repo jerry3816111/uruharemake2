@@ -1,8 +1,27 @@
 # 目前任務卡
 
-更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-Z source-bound proposition preservation
+## 唯一下一步：P4-AB readable source-proposition graph summary
+
+P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
+unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
+open-domain semantics、felt understanding 或強 LLM 優勢。
+
+P4-AA 依 freeze 在private root／port `7872`完成唯一一次四輪真實產品與 Safari 執行：4/4自然日文、4/4 durable
+episode、supported exact=`3/3`、unsupported no-op=`1/1`、P4-T/V/W/Z logic→graph payload=`16/16`，最大單輪
+`17.5013s`；P4-Z新增model call=`0`，既有semantic authorization實際本機model call=`4`。但是正式凍結 gate 必須保留
+**FAIL**：合約把實際P4-V node `utterance_frame_coverage_extension_p4`誤寫為
+`utterance_frame_shadow_extension_p4`，所以逐字 frozen surface chain=`0/4`。不得事後改 gate 或重跑同題；工程觀察不能
+取代正式 PASS。完整負結果：`analysis/p4_aa_real_product_source_proposition_acceptance_2026-09-23.md`。
+
+P4-AB只改`uruha_memory_observatory._graph_signal`的presentation：使用既有P4-Z typed trace，把目前的`18 fields`
+變為可直接讀懂的「來源框架｜說話者歸屬｜已知命題欄位｜動作｜違規數 before→after」。不得改可見回覆、P4-Z logic、
+trace detail、模型或記憶；不得放raw source/reply。四個事前fixture涵蓋修正成功、verified no-op、repair failed-closed與
+unsupported abstain，另有unrelated schema no-regression。先freeze／commit，才實作；unit pass只算presentation evidence，
+若要宣稱真實網站可見，需另立全新Safari案例，且不得重用P4-AA題目。
+
+## 已完成的 P4 前置歷史
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
