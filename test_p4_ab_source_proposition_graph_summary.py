@@ -111,7 +111,9 @@ def test_p4_ab_committed_evidence_and_result_are_reproducible():
 
 def test_p4_ab_product_entry_installs_additively_after_core_hash_is_preserved():
     source = (ROOT / "uruha_web_ui_product_p4_ab.py").read_text(encoding="utf-8")
-    assert source.index("install_source_proposition_graph_summary_p4()") < source.index("from uruha_web_ui_product_p4_z import demo")
+    assert "import uruha_web_ui_product_p4_z as _p4_z" in source
+    assert source.index("install_source_proposition_graph_summary_p4()") < source.index("if __name__ == \"__main__\":")
+    assert "RUNTIME = _p4_z.RUNTIME" in source
     assert hashlib.sha256((ROOT / "uruha_memory_observatory.py").read_bytes()).hexdigest() == (
         "c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76"
     )

@@ -9,6 +9,8 @@ P4-AB 通過事前凍結的 presentation-only gate。P4-Z 節點不再只顯示 
 實作採 additive `uruha_web_ui_product_p4_ab.py` entry，在 runtime 只包裝 graph signal；核心
 `uruha_memory_observatory.py` 維持既有 SHA-256
 `c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76`，避免破壞舊 release binding。
+P4-AC preflight前發現第一版entry錯把P4-Z的main-only `demo`當作可import符號；當時尚未啟動server或執行案例。entry已改為
+沿用其他additive entry的`_base.build_demo()`與`RUNTIME = _p4_z.RUNTIME`，sandbox probe確認P4-Z與P4-AB均已安裝。
 
 ## 實際圖上摘要
 
