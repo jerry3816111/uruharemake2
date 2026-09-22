@@ -1,0 +1,272 @@
+{
+  "schema": "uruha_p4_z_source_bound_proposition_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "development_failures": [
+    {
+      "case_id": "p4_z_dev_quote_zh_001",
+      "source": "這只是引用：「冬季入口八點關門」，不是我的資訊。",
+      "candidate": "「今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い」っていう記載なんだね。",
+      "expected_contract": {
+        "family": "quoted_report",
+        "embedding_stance": "quotation",
+        "speaker_owner": "quoted_proposition",
+        "subject_jp": "冬季入口",
+        "predicate_jp": "閉まる",
+        "object_jp": null,
+        "time_jp": "八時",
+        "location_jp": null
+      },
+      "expected_reply": "「冬季入口は八時に閉まる」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_dev_hearsay_ja_001",
+      "source": "後輩は紫のマグカップをなくしたらしい。",
+      "candidate": "後輩が紫のマグカップらしいって話ね。",
+      "expected_contract": {
+        "family": "hearsay_statement",
+        "embedding_stance": "hearsay",
+        "speaker_owner": "third_party",
+        "subject_jp": "後輩",
+        "predicate_jp": "なくした",
+        "object_jp": "紫のマグカップ",
+        "time_jp": null,
+        "location_jp": null
+      },
+      "expected_reply": "後輩が紫のマグカップをなくしたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_dev_hypothetical_en_001",
+      "source": "If I said \"I will cancel the morning train,\" keep it only as a hypothetical.",
+      "candidate": "うちは朝の電車を取り消すと仮定するんだね。",
+      "expected_contract": {
+        "family": "hypothetical_instruction",
+        "embedding_stance": "hypothetical",
+        "speaker_owner": "user_first_person",
+        "subject_jp": "そっち",
+        "predicate_jp": "キャンセルする",
+        "object_jp": "朝の電車",
+        "time_jp": null,
+        "location_jp": null
+      },
+      "expected_reply": "「そっちが朝の電車をキャンセルする」っていう仮定の話ね。"
+    }
+  ],
+  "holdout_failures": [
+    {
+      "case_id": "p4_z_holdout_quote_zh_001",
+      "source": "這只是引用：「北側窗口六點停止受理」，不是我的安排。",
+      "candidate": "「用途を先に確認したい」っていう記載なんだね。",
+      "expected_contract": {
+        "family": "quoted_report",
+        "embedding_stance": "quotation",
+        "speaker_owner": "quoted_proposition",
+        "subject_jp": "北側の窓口",
+        "predicate_jp": "受付を終了する",
+        "object_jp": null,
+        "time_jp": "六時",
+        "location_jp": null
+      },
+      "expected_reply": "「北側の窓口は六時に受付を終了する」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hearsay_zh_001",
+      "source": "聽說林小姐把紅色雨傘忘在公車上。",
+      "candidate": "林さんは赤い傘らしいって話ね。",
+      "expected_contract": {
+        "family": "hearsay_statement",
+        "embedding_stance": "hearsay",
+        "speaker_owner": "third_party",
+        "subject_jp": "林さん",
+        "predicate_jp": "置き忘れた",
+        "object_jp": "赤い傘",
+        "time_jp": null,
+        "location_jp": "バス"
+      },
+      "expected_reply": "林さんが赤い傘をバスに置き忘れたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hypothetical_zh_001",
+      "source": "如果我說「我會把晚上的會議取消」，請只當成假設。",
+      "candidate": "うちは夜の会議をキャンセルするっていう仮定の話ね。",
+      "expected_contract": {
+        "family": "hypothetical_instruction",
+        "embedding_stance": "hypothetical",
+        "speaker_owner": "user_first_person",
+        "subject_jp": "そっち",
+        "predicate_jp": "キャンセルする",
+        "object_jp": "夜の会議",
+        "time_jp": null,
+        "location_jp": null
+      },
+      "expected_reply": "「そっちが夜の会議をキャンセルする」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "p4_z_holdout_quote_en_001",
+      "source": "This is only a quote: \"the east gate closes at seven,\" not my information.",
+      "candidate": "「少し休んだほうがいい」っていう記載なんだね。",
+      "expected_contract": {
+        "family": "quoted_report",
+        "embedding_stance": "quotation",
+        "speaker_owner": "quoted_proposition",
+        "subject_jp": "東門",
+        "predicate_jp": "閉まる",
+        "object_jp": null,
+        "time_jp": "七時",
+        "location_jp": null
+      },
+      "expected_reply": "「東門は七時に閉まる」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hearsay_en_001",
+      "source": "Apparently Maya left the green folder in the taxi.",
+      "candidate": "マヤが緑のフォルダーらしいって話ね。",
+      "expected_contract": {
+        "family": "hearsay_statement",
+        "embedding_stance": "hearsay",
+        "speaker_owner": "third_party",
+        "subject_jp": "マヤ",
+        "predicate_jp": "置き忘れた",
+        "object_jp": "緑のフォルダー",
+        "time_jp": null,
+        "location_jp": "タクシー"
+      },
+      "expected_reply": "マヤが緑のフォルダーをタクシーに置き忘れたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hypothetical_en_001",
+      "source": "If I said \"I will return the blue key tomorrow,\" keep it hypothetical.",
+      "candidate": "うちは明日青い鍵を返すっていう仮定の話ね。",
+      "expected_contract": {
+        "family": "hypothetical_instruction",
+        "embedding_stance": "hypothetical",
+        "speaker_owner": "user_first_person",
+        "subject_jp": "そっち",
+        "predicate_jp": "返す",
+        "object_jp": "青い鍵",
+        "time_jp": "明日",
+        "location_jp": null
+      },
+      "expected_reply": "「そっちが明日青い鍵を返す」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "p4_z_holdout_quote_ja_001",
+      "source": "これは引用で、「西口は五時に閉まる」という記載であって、私の予定じゃない。",
+      "candidate": "「今日はもう終わりにする」っていう記載なんだね。",
+      "expected_contract": {
+        "family": "quoted_report",
+        "embedding_stance": "quotation",
+        "speaker_owner": "quoted_proposition",
+        "subject_jp": "西口",
+        "predicate_jp": "閉まる",
+        "object_jp": null,
+        "time_jp": "五時",
+        "location_jp": null
+      },
+      "expected_reply": "「西口は五時に閉まる」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hearsay_ja_001",
+      "source": "先輩は黄色い手帳を駅に置き忘れたらしい。",
+      "candidate": "先輩が黄色い手帳らしいって話ね。",
+      "expected_contract": {
+        "family": "hearsay_statement",
+        "embedding_stance": "hearsay",
+        "speaker_owner": "third_party",
+        "subject_jp": "先輩",
+        "predicate_jp": "置き忘れた",
+        "object_jp": "黄色い手帳",
+        "time_jp": null,
+        "location_jp": "駅"
+      },
+      "expected_reply": "先輩が黄色い手帳を駅に置き忘れたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_holdout_hypothetical_ja_001",
+      "source": "もし「明日、白い箱を片づける」と私が言ったとしても、仮定として扱って。",
+      "candidate": "うちは明日白い箱を片づけるっていう仮定の話ね。",
+      "expected_contract": {
+        "family": "hypothetical_instruction",
+        "embedding_stance": "hypothetical",
+        "speaker_owner": "user_first_person",
+        "subject_jp": "そっち",
+        "predicate_jp": "片づける",
+        "object_jp": "白い箱",
+        "time_jp": "明日",
+        "location_jp": null
+      },
+      "expected_reply": "「そっちが明日白い箱を片づける」っていう仮定の話ね。"
+    }
+  ],
+  "faithful_controls": [
+    {
+      "case_id": "p4_z_control_quote_zh_001",
+      "source": "這只是引用：「東側入口九點關門」，不是我的資訊。",
+      "candidate": "「東側入口は九時に閉まる」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_control_hearsay_zh_001",
+      "source": "聽說陳先生把黑色外套忘在火車上。",
+      "candidate": "陳さんが黒いコートを電車に置き忘れたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_control_hypothetical_en_001",
+      "source": "If I said \"I will move the red chair tomorrow,\" keep it hypothetical.",
+      "candidate": "「そっちが明日赤い椅子を動かす」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "p4_z_control_quote_en_001",
+      "source": "This is only a quote: \"the north window closes at eight,\" not my information.",
+      "candidate": "「北側の窓口は八時に閉まる」っていう引用なんだね。"
+    },
+    {
+      "case_id": "p4_z_control_hearsay_ja_001",
+      "source": "同僚は青い書類を事務所に置き忘れたらしい。",
+      "candidate": "同僚が青い書類を事務所に置き忘れたらしいって話ね。"
+    },
+    {
+      "case_id": "p4_z_control_hypothetical_ja_001",
+      "source": "もし「来週、黒い鞄を返す」と私が言ったとしても、仮定として扱って。",
+      "candidate": "「そっちが来週黒い鞄を返す」っていう仮定の話ね。"
+    }
+  ],
+  "unsupported_controls": [
+    {
+      "case_id": "p4_z_unsupported_zh_001",
+      "source": "他好像不是完全反對，但也沒有真的答應。",
+      "candidate": "まだ完全には決めてない感じなんだね。"
+    },
+    {
+      "case_id": "p4_z_unsupported_en_001",
+      "source": "She said something complicated about whether the plan might change.",
+      "candidate": "計画が変わるかもしれないっていう複雑な話なんだね。"
+    },
+    {
+      "case_id": "p4_z_unsupported_ja_001",
+      "source": "たぶんそういう意味ではない気もする。",
+      "candidate": "まだ意味を決めきれない感じなんだね。"
+    }
+  ],
+  "proposition_contract": {
+    "required_fields": [
+      "family",
+      "embedding_stance",
+      "speaker_owner",
+      "subject_jp",
+      "predicate_jp",
+      "object_jp",
+      "time_jp",
+      "location_jp"
+    ],
+    "known_inferred_unknown_separated": true,
+    "source_only": true,
+    "candidate_may_not_supply_missing_source_fields": true,
+    "unsupported_patterns_fail_closed_unchanged": true
+  },
+  "novelty": {
+    "holdout_input_occurrences_before_dataset_creation": 0,
+    "p4_x_inputs_reused_as_holdout": false,
+    "p4_y_inputs_reused_as_holdout": false
+  },
+  "claim_boundary": "This prospectively frozen synthetic contract tests deterministic preservation of subject, predicate, object, embedding stance and speaker ownership in three bounded grammar families. It is not natural-distribution evidence, open-domain semantic equivalence, translation quality, human preference, felt understanding, strong-LLM advantage or a human equation."
+}
