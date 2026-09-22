@@ -1,5 +1,3 @@
-import copy
-
 from p4_ab_source_proposition_graph_summary_gate import load_contract, load_dataset
 from uruha_memory_observatory import _graph_signal
 
@@ -19,11 +17,15 @@ def test_p4_ab_contract_is_bound_and_presentation_only():
     }
 
 
-def test_p4_ab_before_evidence_is_generic_field_counts():
-    dataset = load_dataset(load_contract())
-    observed = [_graph_signal(copy.deepcopy(row["payload"])) for row in dataset["cases"]]
-    assert all(signal.endswith(" fields") for signal in observed)
-    assert all(signal != row["expected_signal"] for signal, row in zip(observed, dataset["cases"]))
+def test_p4_ab_before_evidence_is_bound_to_generic_field_counts():
+    contract = load_contract()
+    dataset = load_dataset(contract)
+    assert contract["implementation_target"]["before_sha256"] == (
+        "c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76"
+    )
+    recorded_before = [f"{len(row['payload'])} fields" for row in dataset["cases"]]
+    assert recorded_before == ["18 fields"] * 4
+    assert all(signal != row["expected_signal"] for signal, row in zip(recorded_before, dataset["cases"]))
 
 
 def test_p4_ab_frozen_summaries_are_bounded_and_raw_free():
