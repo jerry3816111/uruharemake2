@@ -1,0 +1,144 @@
+{
+  "schema": "uruha_p4_af_desired_response_eligibility_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "development_cases": [
+    {
+      "case_id": "af_dev_ae_false_positive_zh",
+      "input": "風扇一直轉，但我已經把報告寫完了。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_dev_task_topic_only_zh",
+      "input": "今天桌上有一份報告。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_dev_explicit_solution_zh",
+      "input": "我真的想知道怎麼把這份報告寫完，先給我一個方法。",
+      "expected_status": "explicit_response_form_observed",
+      "expected_authority": "current_explicit_response_form",
+      "expected_selected_action_mode": "practical_help"
+    },
+    {
+      "case_id": "af_dev_cognitive_ambiguity_zh",
+      "input": "我從早上就一直坐不住，腦子停不下來。",
+      "expected_status": "ambiguity_preserved",
+      "expected_authority": "typed_cognitive_overactivity",
+      "expected_selected_action_mode": "low_pressure_clarification"
+    }
+  ],
+  "fresh_positive_cases": [
+    {
+      "case_id": "af_positive_cognitive_zh",
+      "language": "zh",
+      "input": "思緒從午餐後就一直打轉，怎麼也停不住。",
+      "expected_status": "ambiguity_preserved",
+      "expected_authority": "typed_cognitive_overactivity",
+      "expected_selected_action_mode": "low_pressure_clarification"
+    },
+    {
+      "case_id": "af_positive_cognitive_en",
+      "language": "en",
+      "input": "My mind keeps circling and will not stop tonight.",
+      "expected_status": "ambiguity_preserved",
+      "expected_authority": "typed_cognitive_overactivity",
+      "expected_selected_action_mode": "low_pressure_clarification"
+    },
+    {
+      "case_id": "af_positive_cognitive_ja",
+      "language": "ja",
+      "input": "考えがぐるぐるして、まだ止まらない。",
+      "expected_status": "ambiguity_preserved",
+      "expected_authority": "typed_cognitive_overactivity",
+      "expected_selected_action_mode": "low_pressure_clarification"
+    },
+    {
+      "case_id": "af_positive_explicit_listen_zh",
+      "language": "zh",
+      "input": "先別分析，聽我說就好。",
+      "expected_status": "explicit_response_form_observed",
+      "expected_authority": "current_explicit_response_form",
+      "expected_selected_action_mode": "listening"
+    },
+    {
+      "case_id": "af_positive_explicit_listen_en",
+      "language": "en",
+      "input": "Just listen to me; I do not want advice.",
+      "expected_status": "explicit_response_form_observed",
+      "expected_authority": "current_explicit_response_form",
+      "expected_selected_action_mode": "listening"
+    },
+    {
+      "case_id": "af_positive_explicit_tease_ja",
+      "language": "ja",
+      "input": "解決策はいらない。いつもみたいにツッコんでほしい。",
+      "expected_status": "explicit_response_form_observed",
+      "expected_authority": "current_explicit_response_form",
+      "expected_selected_action_mode": "playful_tease"
+    }
+  ],
+  "fresh_negative_cases": [
+    {
+      "case_id": "af_negative_task_topic_zh",
+      "language": "zh",
+      "input": "我把報告印好放在桌上了。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_negative_physical_stuck_zh",
+      "language": "zh",
+      "input": "報告卡在藍色筆記本下面。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_negative_task_topic_en",
+      "language": "en",
+      "input": "I printed the project report and put it on the desk.",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_negative_physical_stuck_en",
+      "language": "en",
+      "input": "The report is stuck under the blue notebook.",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_negative_task_topic_ja",
+      "language": "ja",
+      "input": "レポートを印刷して机の上に置いた。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    },
+    {
+      "case_id": "af_negative_physical_stuck_ja",
+      "language": "ja",
+      "input": "レポートが青いノートの下に詰まっている。",
+      "expected_status": "not_applicable",
+      "expected_authority": "none_topic_only"
+    }
+  ],
+  "authority_contract": {
+    "allowed": [
+      "typed_cognitive_overactivity",
+      "current_explicit_response_form",
+      "bounded_emotional_or_support_signal",
+      "matched_verified_trigger_relation"
+    ],
+    "forbidden_as_solo_authority": [
+      "task_topic",
+      "task_pressure_atom",
+      "domain_label",
+      "unverified_historical_preference"
+    ],
+    "candidate_ranking_change_allowed": false,
+    "visible_reply_change_allowed": false
+  },
+  "claim_boundary": "This dataset tests whether a desired-response ambiguity ledger is causally authorized by current interaction evidence rather than a topic word. It does not test the truth of private desire, visible reply quality, human preference, or strong-LLM advantage."
+}
