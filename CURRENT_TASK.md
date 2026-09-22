@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-U 語境框架保真的可見日文修復
+## 唯一下一步：P4-V 語境框架偵測覆蓋擴充
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -19,12 +19,19 @@ evidential stance、speech act分開，shadow gate在4個曝光development failu
 entry，舊hash恢復，P4-M..T=`181/181 passed`。完整證據：
 `analysis/p4_t_utterance_frame_shadow_acceptance_2026-09-22.md`。
 
-P4-U只改一個核心變因：P4-T已判定frame violation時，以frame-preserving Japanese surface correction取代原surface；不得重做frame
-分類、加模型call、寫記憶或改舊P4-S/P4-T資料。先另凍結新中／英／日source、故意錯誤candidate、允許的語意欄位與faithful-control；
-成功需每個修復保留speaker／embedding／stance／speech act、自然日文、不得補來源沒有的命題，control逐字不變，0 model/memory write，
-graph顯示before violations與after 0 unresolved。單元與隔離product通過後才啟動新port做Safari真輪次，不能重跑P4-S同案宣稱修復。
-若兩個前瞻修正批次仍失敗，保留反例並停止本方向。既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高的結果、
-P4-R零模型詞面baseline邊界繼續有效；P4-U仍不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
+P4-U先凍結「只有P4-T已報出frame violation才修表面」的單一變因；development前置條件=`4/4`，但12個新holdout只有`5/12`
+得到凍結標註的P4-T violations，第一個repair prototype因此只有exact reply=`6/12`。差異是三個新user→agent動詞、一個英文
+`The memo says`報告標記與三個hypothetical／frame-instruction缺口。若在P4-U再寫第二套分類器，會同時改detector與repair並破壞
+凍結契約，所以在product integration前判FAIL：0 model／memory／product／Safari。12案已曝光，只能降為development；不得修完再稱
+holdout。完整負結果：`analysis/p4_u_preimplementation_compatibility_failure_2026-09-22.md`。
+
+P4-V只改一個核心變因：以additive entry擴充P4-T的可觀察語境框架覆蓋，不修可見回覆、不改模型／prompt／memory，也不修改released
+P4-T entry或hash。先把P4-U七個不相容案例當development反例，再事前凍結另一批未曝光中／英／日failure與faithful control；擴充應
+一般化處理時間錨點下的speaker ownership、來源報告標記及hypothetical frame instruction，而不是按題目／動詞硬編case route。
+成功需development七案與fresh holdout的預期violations完全一致、controls false positive=`0`、所有candidate逐字不變、0 model/memory
+write，並有獨立graph trace。P4-V通過後，surface repair仍必須另用一批全新資料，不能重用P4-U或P4-V已曝光案例。
+既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高、P4-R零模型詞面baseline邊界繼續有效；P4-V即使通過也只證明
+deterministic frame coverage擴大，不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
