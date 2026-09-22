@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AE fresh post-correction ambiguity generalization
+## 唯一下一步：P4-AF desired-response eligibility causal boundary
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -36,10 +36,18 @@ trigger；同組修復回歸=`9/9`、6個literal controls false positive=`0`、1
 P4-M→AD與M24=`286 passed`。因為這9題答案已被用來決定修正，修後`9/9`只算exposed development regression，不能再稱獨立
 holdout泛化。完整證據：`analysis/p4_ad_desired_response_ambiguity_acceptance_2026-09-23.md`。
 
-P4-AE必須在P4-AD修正固定後另建全新、執行前commit的中／英／日paraphrase與near-miss controls，只驗證既有M37 typed
-`cognitive_overactivity` bridge是否泛化；不得再改P4-AD實作、關鍵詞、threshold或gate。第一次結果無論正負都保存：若PASS，只能主張
-developer-authored、fresh lexical/compositional generalization，不是自然分布、真人偏好或強LLM優勢；若FAIL，不用同組追分，回到新的
-development task分析。P4-AE完成後才可另立多輪outcome binding，驗證候選會被後續接受／否定／未知正確更新，而不是每輪重新猜。
+P4-AE已在P4-AD修正固定後另建並commit六個全新中／英／日paraphrase與六個near-miss controls，再執行唯一一次。真ambiguity的
+status／selected clarification／required candidates／private unknown均=`6/6`，但near-miss只有`5/6`，正式gate **FAIL**，0 retry／fallback。
+反例`風扇一直轉，但我已經把報告寫完了。`被錯誤建立六個候選。靜態根因是舊`_explicit_atom_assignments`只要看到`報告`就建立
+`task_pressure`，而`build_current_state`把任何explicit atom當成desired-response activation；它也沒有理解`已經…寫完`的completion。
+這代表topic cue被誤當need signal，不是P4-AD cognitive-overactivity bridge的主體判定。完整負結果：
+`analysis/p4_ae_fresh_ambiguity_generalization_failure_2026-09-23.md`。P4-AE關閉，不改同組追分。
+
+P4-AF先把P4-AE反例降為development，只修**是否應建立desired-response ledger**的因果邊界，不改M18候選分數／排序、可見回覆、
+prompt、模型或記憶。eligible正證據限於：typed cognitive-overactivity、當輪明示response-form authority、既有明確emotional/support cue；
+`task_pressure`、topic/domain或單一名詞不得獨立授權。development必須同時有物體持續運動＋已完成任務、只提任務、真正未完成且明示求方法、
+真emotional ambiguity；修正後另凍結全新中／英／日near-miss與positive cases。先證明eligibility precision且不犧牲P4-AE六個真陽性，
+再進多輪outcome binding。不能用`已經寫完`一條句型當補丁，應依typed evidence authority決定。
 
 ## 已完成的 P4 前置歷史
 
