@@ -1,0 +1,239 @@
+{
+  "schema": "uruha_p4_v_utterance_frame_coverage_extension_dataset_v1",
+  "status": "prospectively_frozen_before_implementation",
+  "development_failures": [
+    {
+      "case_id": "dev_p4u_owner_zh",
+      "source": "我今晚要整理橘色資料夾。",
+      "candidate": "うちは今夜オレンジのフォルダを整理する。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "dev_p4u_owner_en",
+      "source": "I will water the white orchid tonight.",
+      "candidate": "うちは今夜白い蘭に水をやる。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "dev_p4u_owner_ja",
+      "source": "私は明日木製の棚を直す。",
+      "candidate": "うちは明日木の棚を直す。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "dev_p4u_quote_en",
+      "source": "The memo says, \"the blue room is closed\".",
+      "candidate": "青い部屋は閉まってるんだね。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "dev_p4u_hypothetical_zh",
+      "source": "假如我說「我想換成夜班」，也只是個假設。",
+      "candidate": "夜勤に変えたいんだね。",
+      "language": "zh",
+      "expected_base_violations": ["hypothetical_content_promoted_to_assertion"],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "dev_p4u_hypothetical_en",
+      "source": "If I said \"I would move to Osaka\", it would only be hypothetical.",
+      "candidate": "大阪に引っ越すんだね。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "dev_p4u_hypothetical_ja",
+      "source": "もし「来月休学する」と言っても、仮定として聞いて。",
+      "candidate": "来月休学するんだね。",
+      "language": "ja",
+      "expected_base_violations": ["hypothetical_instruction_dropped"],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    }
+  ],
+  "holdout_failures": [
+    {
+      "case_id": "holdout_owner_zh_v01",
+      "source": "我後天要擦乾紫色滑板。",
+      "candidate": "うちは明後日紫のスケートボードを拭く。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_owner_en_v01",
+      "source": "I will pack the copper kettle tomorrow morning.",
+      "candidate": "うちは明日の朝、銅のやかんを箱に詰める。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_owner_ja_v01",
+      "source": "私は今週末、青い傘を縫い直す。",
+      "candidate": "うちは今週末、青い傘を縫い直す。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_quote_zh_v01",
+      "source": "公告顯示「北門星期三關閉」。",
+      "candidate": "北門は水曜閉まるんだね。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_quote_en_v01",
+      "source": "The notice reads, \"the silver elevator stops at six\".",
+      "candidate": "銀色のエレベーターは六時に止まるんだね。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_quote_ja_v01",
+      "source": "説明書には「緑のボタンを二回押す」と記載されている。",
+      "candidate": "緑のボタンを二回押すんだね。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_hypothetical_zh_v01",
+      "source": "假設我說「週末要退掉白色桌子」，不要把它當成現在的決定。",
+      "candidate": "週末に白い机を返品するんだね。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "holdout_hypothetical_en_v01",
+      "source": "Suppose I said \"I would cancel the red ticket\"; keep that as an assumption.",
+      "candidate": "赤いチケットをキャンセルするんだね。",
+      "language": "en",
+      "expected_base_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "holdout_hypothetical_ja_v01",
+      "source": "「来週赤い車を売る」は単なる仮の話として聞いて。",
+      "candidate": "来週赤い車を売るんだね。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_assertive_promotion"],
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    }
+  ],
+  "faithful_controls": [
+    {
+      "case_id": "control_owner_zh_v01",
+      "source": "我後天要擦乾紫色滑板。",
+      "candidate": "明後日、紫のスケートボードを拭くんだね。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_owner_agent_action_v01",
+      "source": "我後天要擦乾紫色滑板。",
+      "candidate": "うちは明後日ここで待ってる。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["temporal_alignment"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_owner_en_v01",
+      "source": "I will pack the copper kettle tomorrow morning.",
+      "candidate": "明日の朝、銅のやかんを箱に詰めるんだね。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["crosslingual_action_alignment", "temporal_alignment"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_quote_zh_v01",
+      "source": "公告顯示「北門星期三關閉」。",
+      "candidate": "公告には「北門は水曜閉まる」って出てるんだね。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_quote_en_v01",
+      "source": "The notice reads, \"the silver elevator stops at six\".",
+      "candidate": "告知に「銀色のエレベーターは六時に止まる」ってあるんだね。",
+      "language": "en",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_quote_ja_v01",
+      "source": "説明書には「緑のボタンを二回押す」と記載されている。",
+      "candidate": "説明書に「緑のボタンを二回押す」って書いてあるんだね。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["quoted_span", "report_source_marker"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hypothetical_zh_v01",
+      "source": "假設我說「週末要退掉白色桌子」，不要把它當成現在的決定。",
+      "candidate": "白い机を返品するっていう仮の話ね。",
+      "language": "zh",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_hypothetical_preserved"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hypothetical_en_v01",
+      "source": "Suppose I said \"I would cancel the red ticket\"; keep that as an assumption.",
+      "candidate": "赤いチケットの話は仮定として扱う。",
+      "language": "en",
+      "expected_base_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_hypothetical_preserved"],
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hypothetical_ja_v01",
+      "source": "「来週赤い車を売る」は単なる仮の話として聞いて。",
+      "candidate": "赤い車を売るっていう仮の話ね。",
+      "language": "ja",
+      "expected_base_violations": [],
+      "expected_extension_evidence": ["hypothetical_frame_marker", "candidate_hypothetical_preserved"],
+      "expected_violations": []
+    }
+  ],
+  "novelty": {
+    "holdout_source_occurrences_before_dataset_creation": 0
+  },
+  "claim_boundary": "Developer-authored cases test one bounded deterministic extension for observable action/time alignment, report markers and hypothetical framing. They are not open-domain semantic equivalence, natural-distribution evidence, visible repair, felt-understanding evidence, human preference or a strong-LLM comparison."
+}
