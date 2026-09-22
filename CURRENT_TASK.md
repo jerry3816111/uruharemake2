@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-X 隔離真實產品與 Safari 語境修復驗收
+## 唯一下一步：P4-Y 真實 runtime graph trace delivery
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -38,12 +38,17 @@ memory或released hashes。4個曝光development與12個新中／英／日holdou
 完整回歸=`212 passed`。這已證明有限developer-authored frame family的deterministic visible repair，但尚未證明真模型或Safari會走到它。
 完整證據：`analysis/p4_w_frame_preserving_visible_repair_acceptance_2026-09-22.md`。
 
-P4-X先凍結另一批未曝光、非偏好寫入的中／英／日真實prompt與雙分支契約，再於新private runtime root／新port啟動
-`uruha_web_ui_product_p4_w.py`。每輪不論模型原candidate是否犯錯，都必須有P4-T／P4-V／P4-W／utterance graph；若P4-V無violation，
-P4-W必須unchanged，若有violation則必須changed且after violations=`0`，畫面文字需與repair after digest一致。至少一輪自然觸發repair才可稱
-real-product repair evidence；若四輪皆未觸發，保存negative trigger result，不以測試注入冒充真模型。Safari只開新tab，不關既有tab，
-不得碰P4-S runtime或正式DB；0付費／外部部署。既有V2.22與P4-R邊界繼續有效，P4-X通過也不代表強LLM優勢、felt understanding、
-人類偏好或人類方程式。
+P4-X已依事前freeze在新private runtime／port `7870`完成唯一一次4輪Safari執行，原案例不得重跑。4/4日文、4/4 durable
+episode、4/4 generic graph可見；三輪自然觸發P4-W，logic內P4-T／P4-V／P4-W均為4/4，branch consistency與visible digest均4/4，
+但Safari graph的三種P4 node皆為`0/4`，凍結gate為FAIL。另有三個gate外語意反例：T1修復引用框架卻包住無關命題、T3恢復傳聞
+卻漏掉`なくした`事件、T4保留假設卻把使用者的I改成角色`うちは`且未被偵測。完整負結果：
+`analysis/p4_x_real_product_frame_repair_failure_2026-09-22.md`。
+
+P4-Y只處理trace delivery：把已存在於同輪`logic`的P4-T／P4-V／P4-W資料送入真實`runtime_trace.blackboard`，順序固定在
+`utterance`前。不改可見回覆、P4-T/V/W判定或修復、模型／prompt、memory、facts、episodes或released product entry；P4-X保存為
+development反例，不用原prompt重跑。先凍結合成full-product integration fixture與fail-closed graph contract，再做additive entry與受影響回歸。
+P4-Y只證明可視化交付，不解決命題保存。其後P4-Z另以全新holdout檢驗source-bound proposition preservation與hypothetical ownership，
+不得以frame after-zero冒充語意正確。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
