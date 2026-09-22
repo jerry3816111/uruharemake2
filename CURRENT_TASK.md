@@ -2,19 +2,18 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-Q 更正生命週期 protocol 修正版
+## 唯一下一步：P4-Q-REAL 真實 Safari 更正生命週期
 
-P4-P 已依事前 freeze 執行唯一一次並終端保留為 `terminal_protocol_failure`，不得重跑。中文寫入 `菊花茶`、日文更正為
-`クロモジ茶` 後，舊 positive、linked explicit negative、新 positive 共三筆跨真正 Python-process restart 完整保留；新值唯一 active、
-舊值唯一 historical，三個 record ID／canonical hash 在重啟及 recall 前後均未改。PID=`14370→14371`，0 retry/model/fallback。
+P4-P 的 future-timestamp protocol failure 已終端保留，不重跑。P4-Q 只把 timestamps 改為已過去的 `06:30/06:31`，產品碼與
+write/recall phase functions 完全不變；全新 `洛神花茶→はと麦茶` case 得到 `pass / 0 failed`。三筆 lineage 跨 PID
+`14814→14815` 完整保留，IDs／canonical hashes 在 restart/recall 前後不變；不含答案的英文 query 只使用新 active，回
+`今の飲み物の好みははと麦茶。前のじゃなくて、今の方ね。`，0 historical/negative answer use、0 retry/model/fallback。
+完整結果：`analysis/p4_q_correction_lifecycle_protocol_repair_acceptance_2026-09-22.md`。
 
-delivery gate fail 不是已證實產品缺口：freeze 將 `valid_from` 固定為 `08:00/08:01`，但執行後觀察 wall clock 仍是 `07:57:12 +08:00`。
-process-start probe 用明示 `08:02` 所以看見新值 active；P4-O default-time recall 正確使用真實時鐘，因此兩值都為 `not_yet_valid`並回 no-active。
-完整結果：`analysis/p4_p_cross_language_correction_lifecycle_acceptance_2026-09-22.md`。
-
-下一步 P4-Q 必須另立 freeze、用全新 value pair；唯一變因是把兩個寫入時間固定在已經過去的時刻。P4-O 產品碼、answer-absence、
-三筆 lineage、record-hash、Japanese identity surface、兩 process、零重試與資料不刪除 gate 全部不變。先重新取得有效 offline lifecycle
-結論；通過才可另立 Safari 三輪 case，失敗則依新證據定位單一產品機制，不得把 protocol 錯誤包裝成產品失敗。
+下一步 P4-Q-REAL 事前凍結另一組全新 old/new values，使用新 mode-0700 隔離 runtime 與新 listener。process 1 必須在 Safari
+實際送出中文 write 與日文 correction 兩輪，兩輪皆顯示 P4-I/P4-L graph 與正確日文 acknowledgement；關閉 listener 後 process 2
+使用同一 DB，以 Safari 送出不含答案的英文 query，逐字回覆新值並顯示 P4-J/P4-N graph。三筆 profile lineage/hash不變、每個成功
+turn恰一筆episode、舊值不得出現在最終答案，0 retry/model/fallback/tool/VRM。P4-Q offline pass 不可代替這個 Web/Safari 層。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
