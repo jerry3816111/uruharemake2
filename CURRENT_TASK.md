@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-V 語境框架偵測覆蓋擴充
+## 唯一下一步：P4-W 語境框架保真的可見日文修復
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -25,13 +25,19 @@ P4-U先凍結「只有P4-T已報出frame violation才修表面」的單一變因
 凍結契約，所以在product integration前判FAIL：0 model／memory／product／Safari。12案已曝光，只能降為development；不得修完再稱
 holdout。完整負結果：`analysis/p4_u_preimplementation_compatibility_failure_2026-09-22.md`。
 
-P4-V只改一個核心變因：以additive entry擴充P4-T的可觀察語境框架覆蓋，不修可見回覆、不改模型／prompt／memory，也不修改released
-P4-T entry或hash。先把P4-U七個不相容案例當development反例，再事前凍結另一批未曝光中／英／日failure與faithful control；擴充應
-一般化處理時間錨點下的speaker ownership、來源報告標記及hypothetical frame instruction，而不是按題目／動詞硬編case route。
-成功需development七案與fresh holdout的預期violations完全一致、controls false positive=`0`、所有candidate逐字不變、0 model/memory
-write，並有獨立graph trace。P4-V通過後，surface repair仍必須另用一批全新資料，不能重用P4-U或P4-V已曝光案例。
-既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高、P4-R零模型詞面baseline邊界繼續有效；P4-V即使通過也只證明
-deterministic frame coverage擴大，不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
+P4-V以additive entry擴充P4-T，不改可見回覆、模型／prompt／memory或released hashes。結果為7個曝光development反例的
+base/evidence/effective exact=`7/7`、9個新中／英／日holdout=`9/9`、9個faithful control false positive=`0`；25/25 candidate逐字
+不變，0 raw source/reply trace、0 model/fact/profile/episode write。英文`Suppose I said ...`的舊quote false positive仍留在base trace，
+但新effective frame正確撤銷，能看出判定被校正而非掩蓋。P4-M..V回歸=`200 passed`；第一次回歸命令因測試環境把不相容的
+system transformers置於product peft前而collection error，改用system pytest＋product site-packages優先後完整通過，未安裝或修改
+環境。完整證據：`analysis/p4_v_utterance_frame_coverage_extension_acceptance_2026-09-22.md`。
+
+P4-W才重新做可見日文修復：只允許在P4-V effective trace已有violation時，把candidate轉成保留speaker ownership、quote／hypothetical
+embedding、evidential stance與speech act的自然日文；不得在repair裡重做分類、改detector、加model call、寫記憶或變更無violation
+candidate。P4-U與P4-V所有案例都已曝光，只可當development；必須先另凍結一批全新中／英／日failure與faithful control，再實作
+generic frame transform。unit與隔離product通過後，另立Safari真輪次契約驗證畫面與graph；不得重跑舊案例宣稱新holdout。
+既有V2.22強full-context LLM與UruhaBrain皆4/5且UruhaBrain成本較高、P4-R零模型詞面baseline邊界繼續有效；P4-W即使通過也只證明
+有限框架的deterministic visible repair，不代表強LLM優勢、felt understanding、人類偏好或人類方程式。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
