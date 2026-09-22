@@ -2,7 +2,7 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-Y 真實 runtime graph trace delivery
+## 唯一下一步：P4-Z source-bound proposition preservation
 
 P4-S 已依事前 freeze 完成唯一一次真實 Safari 12 輪、兩 process lifecycle，failed gates=`0`。12/12 日文、12/12 durable
 episode、12/12 graph；七個非寫入干擾誤寫=`0`，兩次答案不在 query 的 recall exact=`2/2`。真 restart 為 PID
@@ -44,11 +44,17 @@ episode、4/4 generic graph可見；三輪自然觸發P4-W，logic內P4-T／P4-V
 卻漏掉`なくした`事件、T4保留假設卻把使用者的I改成角色`うちは`且未被偵測。完整負結果：
 `analysis/p4_x_real_product_frame_repair_failure_2026-09-22.md`。
 
-P4-Y只處理trace delivery：把已存在於同輪`logic`的P4-T／P4-V／P4-W資料送入真實`runtime_trace.blackboard`，順序固定在
-`utterance`前。不改可見回覆、P4-T/V/W判定或修復、模型／prompt、memory、facts、episodes或released product entry；P4-X保存為
-development反例，不用原prompt重跑。先凍結合成full-product integration fixture與fail-closed graph contract，再做additive entry與受影響回歸。
-P4-Y只證明可視化交付，不解決命題保存。其後P4-Z另以全新holdout檢驗source-bound proposition preservation與hypothetical ownership，
-不得以frame after-zero冒充語意正確。
+P4-Y只處理trace delivery：把已存在於同輪`logic`的P4-T／P4-V／P4-W資料送入最後一次blackboard refresh之後，不改可見回覆、
+detector／repair、模型、prompt或memory。合成complete／stale duplicate／missing trace三案通過，visible與logic逐位元不變、exact payload
+`8/8`、missing synthesized=`0`；P4-M..Y回歸=`227 passed`。另以兩個全新日／英prompt在private runtime、port `7871`與新Safari tab
+完成唯一一次實機驗收：2/2日文、2/2 durable episode、2/2 graph，P4-T/V/W各2/2，logic→graph exact payload=`6/6`，固定順序
+2/2，failed gates=`0`；單輪=`16.1522/11.8162s`。P4-Y新增model call=`0`，但產品semantic authorization實際本機call=`2`，
+token accounting unavailable。完整證據：`analysis/p4_y_real_product_graph_delivery_acceptance_2026-09-22.md`。
+
+P4-Z不得重用P4-X或P4-Y輸入追分。先從P4-X已曝光反例抽象出source-bound proposition contract：輸入中的核心subject／predicate／object／
+embedding stance／speaker ownership必須在visible reply有可追溯對應，不能只看quote／hearsay／hypothetical外框是否存在。先建立已曝光development
+fixture與全新中／英／日holdout、faithful controls和no-op邊界；單一變因必須放在P4-W之後、可見回覆前，或證明現有M33/M39足以提供權威
+source atoms後再修復。不得由關鍵詞自行造出來源沒有的命題，也不得把P4-X frame after-zero重新包裝成語意成功。先freeze／commit，才實作與驗收。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
