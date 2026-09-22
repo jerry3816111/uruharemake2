@@ -1,0 +1,202 @@
+{
+  "schema": "uruha_p4_w_frame_preserving_visible_repair_dataset_v1",
+  "status": "prospectively_frozen_before_implementation",
+  "development_failures": [
+    {
+      "case_id": "dev_p4s_quote",
+      "source": "引用として「今は甜茶が好き」と書いた。",
+      "candidate": "甜茶が好きなんだ",
+      "expected_before_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_reply": "「甜茶が好き」っていう記載なんだね。"
+    },
+    {
+      "case_id": "dev_p4s_owner",
+      "source": "重啟後我先確認一下圖還有沒有正常顯示。",
+      "candidate": "うちは図が正常に表示されているか確認するんだね。",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "expected_reply": "そっちは図が正常に表示されているか確認するんだね。"
+    },
+    {
+      "case_id": "dev_p4s_hearsay",
+      "source": "先生は松葉茶が好きらしい。",
+      "candidate": "先生、松葉茶好き？",
+      "expected_before_violations": ["hearsay_stance_dropped", "statement_changed_to_question"],
+      "expected_reply": "先生が松葉茶好きらしいって話ね。"
+    },
+    {
+      "case_id": "dev_p4s_hypothetical_instruction",
+      "source": "もし私が「今は甘茶が好き」と言ったら、その文は仮定として扱って。",
+      "candidate": "一回、別に嫌いではないし。そこまで身構えるなって。",
+      "expected_before_violations": ["hypothetical_instruction_dropped"],
+      "expected_reply": "その内容は仮定として扱う。"
+    }
+  ],
+  "holdout_failures": [
+    {
+      "case_id": "holdout_owner_zh_w01",
+      "source": "我明天要整理灰色工具箱。",
+      "candidate": "うちは明日、灰色の工具箱を整理する。",
+      "language": "zh",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "expected_reply": "そっちは明日、灰色の工具箱を整理するんだね。"
+    },
+    {
+      "case_id": "holdout_owner_en_w01",
+      "source": "I will repair the brass lamp this weekend.",
+      "candidate": "うちは今週末、真鍮のランプを直す。",
+      "language": "en",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "expected_reply": "そっちは今週末、真鍮のランプを直すんだね。"
+    },
+    {
+      "case_id": "holdout_owner_ja_w01",
+      "source": "私は今夜、白いコートを縫い直す。",
+      "candidate": "うちは今夜、白いコートを縫い直す。",
+      "language": "ja",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "expected_reply": "そっちは今夜、白いコートを縫い直すんだね。"
+    },
+    {
+      "case_id": "holdout_quote_zh_w01",
+      "source": "備忘錄顯示「西側電梯七點停止」。",
+      "candidate": "西側のエレベーターは七時に止まるんだね。",
+      "language": "zh",
+      "expected_before_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_reply": "「西側のエレベーターは七時に止まる」っていう記載なんだね。"
+    },
+    {
+      "case_id": "holdout_quote_en_w01",
+      "source": "The manual states, \"the orange switch stays down\".",
+      "candidate": "オレンジのスイッチは下がったままなんだね。",
+      "language": "en",
+      "expected_before_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_reply": "「オレンジのスイッチは下がったまま」っていう記載なんだね。"
+    },
+    {
+      "case_id": "holdout_quote_ja_w01",
+      "source": "告知には「南口は金曜休み」と記載されている。",
+      "candidate": "南口は金曜休みなんだね。",
+      "language": "ja",
+      "expected_before_violations": ["quoted_content_promoted_to_assertion"],
+      "expected_reply": "「南口は金曜休み」っていう記載なんだね。"
+    },
+    {
+      "case_id": "holdout_hypothetical_zh_w01",
+      "source": "假如我說「明天賣掉綠色相機」，不要把它當成現在的決定。",
+      "candidate": "明日、緑のカメラを売るんだね。",
+      "language": "zh",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "expected_reply": "「明日、緑のカメラを売る」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "holdout_hypothetical_en_w01",
+      "source": "Assuming I said \"I would leave the club\", keep that as an assumption.",
+      "candidate": "クラブを辞めるんだね。",
+      "language": "en",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "expected_reply": "「クラブを辞める」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "holdout_hypothetical_ja_w01",
+      "source": "「来月コースを辞める」は単なる仮の話として扱って。",
+      "candidate": "来月コースを辞めるんだね。",
+      "language": "ja",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "expected_reply": "「来月コースを辞める」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "holdout_hearsay_zh_w01",
+      "source": "聽說妹妹換了一台紅色手機。",
+      "candidate": "妹、赤いスマホに変えた？",
+      "language": "zh",
+      "expected_before_violations": ["hearsay_stance_dropped", "statement_changed_to_question"],
+      "expected_reply": "妹が赤いスマホに変えたらしいって話ね。"
+    },
+    {
+      "case_id": "holdout_hearsay_en_w01",
+      "source": "Apparently my teacher ordered a purple bag.",
+      "candidate": "先生、紫のバッグを注文した？",
+      "language": "en",
+      "expected_before_violations": ["hearsay_stance_dropped", "statement_changed_to_question"],
+      "expected_reply": "先生が紫のバッグを注文したらしいって話ね。"
+    },
+    {
+      "case_id": "holdout_hearsay_ja_w01",
+      "source": "同僚は青い机を買ったらしい。",
+      "candidate": "同僚、青い机を買った？",
+      "language": "ja",
+      "expected_before_violations": ["hearsay_stance_dropped", "statement_changed_to_question"],
+      "expected_reply": "同僚が青い机を買ったらしいって話ね。"
+    }
+  ],
+  "faithful_controls": [
+    {
+      "case_id": "control_owner_zh_w01",
+      "source": "我明天要整理灰色工具箱。",
+      "candidate": "明日、灰色の工具箱を整理するんだね。",
+      "language": "zh",
+      "expected_before_violations": [],
+      "expected_reply": "明日、灰色の工具箱を整理するんだね。"
+    },
+    {
+      "case_id": "control_owner_agent_w01",
+      "source": "我明天要整理灰色工具箱。",
+      "candidate": "うちは明日ここで待ってる。",
+      "language": "zh",
+      "expected_before_violations": [],
+      "expected_reply": "うちは明日ここで待ってる。"
+    },
+    {
+      "case_id": "control_quote_en_w01",
+      "source": "The manual states, \"the orange switch stays down\".",
+      "candidate": "「オレンジのスイッチは下がったまま」っていう記載なんだね。",
+      "language": "en",
+      "expected_before_violations": [],
+      "expected_reply": "「オレンジのスイッチは下がったまま」っていう記載なんだね。"
+    },
+    {
+      "case_id": "control_quote_ja_w01",
+      "source": "告知には「南口は金曜休み」と記載されている。",
+      "candidate": "「南口は金曜休み」っていう記載なんだね。",
+      "language": "ja",
+      "expected_before_violations": [],
+      "expected_reply": "「南口は金曜休み」っていう記載なんだね。"
+    },
+    {
+      "case_id": "control_hypothetical_zh_w01",
+      "source": "假如我說「明天賣掉綠色相機」，不要把它當成現在的決定。",
+      "candidate": "「明日、緑のカメラを売る」っていう仮定の話ね。",
+      "language": "zh",
+      "expected_before_violations": [],
+      "expected_reply": "「明日、緑のカメラを売る」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "control_hypothetical_ja_w01",
+      "source": "「来月コースを辞める」は単なる仮の話として扱って。",
+      "candidate": "「来月コースを辞める」っていう仮定の話ね。",
+      "language": "ja",
+      "expected_before_violations": [],
+      "expected_reply": "「来月コースを辞める」っていう仮定の話ね。"
+    },
+    {
+      "case_id": "control_hearsay_en_w01",
+      "source": "Apparently my teacher ordered a purple bag.",
+      "candidate": "先生が紫のバッグを注文したらしいって話ね。",
+      "language": "en",
+      "expected_before_violations": [],
+      "expected_reply": "先生が紫のバッグを注文したらしいって話ね。"
+    },
+    {
+      "case_id": "control_hearsay_ja_w01",
+      "source": "同僚は青い机を買ったらしい。",
+      "candidate": "同僚が青い机を買ったらしいって話ね。",
+      "language": "ja",
+      "expected_before_violations": [],
+      "expected_reply": "同僚が青い机を買ったらしいって話ね。"
+    }
+  ],
+  "novelty": {
+    "holdout_source_occurrences_before_dataset_creation": 0
+  },
+  "claim_boundary": "Developer-authored cases test one bounded deterministic frame-preserving Japanese surface repair. They are not open-domain semantic equivalence, natural-distribution evidence, human preference, felt understanding or a strong-LLM comparison."
+}
