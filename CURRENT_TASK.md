@@ -2,19 +2,19 @@
 
 更新：2026-09-22。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-P 跨語言更正生命週期
+## 唯一下一步：P4-Q 更正生命週期 protocol 修正版
 
-P4-O-REAL 已依事前 freeze 通過。新值 `たんぽぽ茶` 在 process 1 以日文 typed write，Safari 答 `ん、その好みは覚えとく。`；
-真正關閉 listener 並以同一隔離 DB 啟動 process 2 後，不含答案的英文 query 答 `今の飲み物の好みはたんぽぽ茶。前のじゃなくて、今の方ね。`。
-gate=`pass / 0 failed`；2 process starts、1 restart、2 successful Safari turns、0 retry/model/fallback。
+P4-P 已依事前 freeze 執行唯一一次並終端保留為 `terminal_protocol_failure`，不得重跑。中文寫入 `菊花茶`、日文更正為
+`クロモジ茶` 後，舊 positive、linked explicit negative、新 positive 共三筆跨真正 Python-process restart 完整保留；新值唯一 active、
+舊值唯一 historical，三個 record ID／canonical hash 在重啟及 recall 前後均未改。PID=`14370→14371`，0 retry/model/fallback。
 
-active profile record ID 與 canonical hash 跨重啟和recall不變，source language、input hash、scope hash 不變；profile 1→1、episode 1→2。
-runtime graph 實際顯示 `typed_current_preference_recall_p4 / select`、`bounded_japanese_identity`與 exact final surface。完整結果：
-`analysis/p4_o_real_persisted_reference_time_delivery_acceptance_2026-09-22.md`。隔離 process 2 仍留在 `127.0.0.1:7867`供檢視，Safari 分頁未關。
+delivery gate fail 不是已證實產品缺口：freeze 將 `valid_from` 固定為 `08:00/08:01`，但執行後觀察 wall clock 仍是 `07:57:12 +08:00`。
+process-start probe 用明示 `08:02` 所以看見新值 active；P4-O default-time recall 正確使用真實時鐘，因此兩值都為 `not_yet_valid`並回 no-active。
+完整結果：`analysis/p4_p_cross_language_correction_lifecycle_acceptance_2026-09-22.md`。
 
-下一步 P4-P 不只測單筆寫入。先在真實暫存 Chroma 凍結一組全新 development value pair，依序以一種語言寫舊值、另一種語言明確更正，
-證明舊 positive 留為 historical、新增 linked explicit negative、新值是唯一 active；重啟後的不含答案 query 只能回新值，且 graph 如實顯示 lineage。
-先診斷已發布 P4-O stack 是否已滿足；只有定位出單一機制缺口才允許新實作。不得重用曝光值、刪除歷史紀錄、改弱 answer-absence/provenance/expiry/no-retry/graph gate。
+下一步 P4-Q 必須另立 freeze、用全新 value pair；唯一變因是把兩個寫入時間固定在已經過去的時刻。P4-O 產品碼、answer-absence、
+三筆 lineage、record-hash、Japanese identity surface、兩 process、零重試與資料不刪除 gate 全部不變。先重新取得有效 offline lifecycle
+結論；通過才可另立 Safari 三輪 case，失敗則依新證據定位單一產品機制，不得把 protocol 錯誤包裝成產品失敗。
 
 狀態：**P3-B54完成；P3-B55 REVIEW_REQUIRED。** capability-separated extractor在事前freeze後，以5秒合成raw驗證generation只取得
 `1..3`秒artifact；3秒後2000 Hz sentinel／可見440 Hz能量比`6.781521697810383e-31`，低於凍結門檻
