@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AF desired-response eligibility causal boundary
+## 唯一下一步：P4-AG multi-turn ambiguity outcome binding
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -43,11 +43,18 @@ status／selected clarification／required candidates／private unknown均=`6/6`
 這代表topic cue被誤當need signal，不是P4-AD cognitive-overactivity bridge的主體判定。完整負結果：
 `analysis/p4_ae_fresh_ambiguity_generalization_failure_2026-09-23.md`。P4-AE關閉，不改同組追分。
 
-P4-AF先把P4-AE反例降為development，只修**是否應建立desired-response ledger**的因果邊界，不改M18候選分數／排序、可見回覆、
-prompt、模型或記憶。eligible正證據限於：typed cognitive-overactivity、當輪明示response-form authority、既有明確emotional/support cue；
-`task_pressure`、topic/domain或單一名詞不得獨立授權。development必須同時有物體持續運動＋已完成任務、只提任務、真正未完成且明示求方法、
-真emotional ambiguity；修正後另凍結全新中／英／日near-miss與positive cases。先證明eligibility precision且不犧牲P4-AE六個真陽性，
-再進多輪outcome binding。不能用`已經寫完`一條句型當補丁，應依typed evidence authority決定。
+P4-AF已把P4-AE反例降為development，並以additive guard只修**是否應建立desired-response ledger**的因果邊界；M18/P4-AD、
+候選分數／排序、可見回覆、prompt、模型與記憶均不改。current-turn authority限於typed cognitive-overactivity、明示response-form、
+bounded emotional/support signal或當輪matched verified trigger relation；task topic／task_pressure／domain不能單獨授權。結果為4個development
+status/authority/action=`4/4`；6個fresh positive=`6/6`，6個fresh negative=`6/6`；8個eligible case候選policy/order/score保持
+`8/8`，topic-only authorization=`0`，0 reply/model/memory change。P4-M→AF與M24=`304 passed`。完整證據：
+`analysis/p4_af_desired_response_eligibility_acceptance_2026-09-23.md`。
+
+P4-AG下一個單一能力變因是**跨輪outcome binding**。先凍結至少三條兩輪序列：第一輪ambiguity ledger後，第二輪明示接受其中一種
+response form、明示否定並指定另一種、以及完全換題而只能保持unknown。第二輪必須引用第一輪prediction/ledger identity，更新對應
+candidate為supported／contradicted／unknown；unknown不得算成功，否定後舊candidate不可繼續作為當輪private truth或未經標記的優先項。
+不得只重跑第二輪分類器後聲稱有學習；必須有before candidate、observed outcome evidence、binding、更新與下一輪可用但可撤銷的trace。
+先shadow-only且0 visible/model/factual-memory change；通過fresh多輪contract後，才決定是否把已驗證結果接入下一次reply planner。
 
 ## 已完成的 P4 前置歷史
 
