@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AI fresh end-to-end ambiguity learning chain
+## 唯一下一步：P4-AJ Japanese morphological trigger coverage
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -73,6 +73,15 @@ P4-AI下一個單一驗收目標是**固定後的整鏈可達性**，不再改�
 六候選→P4-AG exact prediction/ledger binding→candidate outcome與reversible next-use；unknown不得算成功，contradiction不得保留舊候選
 priority。只允許compose既有固定模組，不改detector／classifier／threshold／prompt／reply／memory。PASS仍只算synthetic chain contract，
 之後才決定是否授權real product/Safari與visible reply planner接線。
+
+P4-AI已依freeze做唯一一次、0 correction／retry，正式結果 **FAIL**：typed P4-AH path=`8/9`，但P4-AF authority／六候選／exact identity
+binding／exact outcome均=`9/9`；support=`3/3`、contradiction+replacement=`3/3`、unknown=`3/3`、unknown誤算成功=`0`。失敗案日文
+`止められなくて`沒有命中P4-AH固定的`止められない`終止形，雖被舊bounded-emotional路徑授權而得到正確outcome，仍不能冒充指定
+因果路徑PASS。完整負結果：`analysis/p4_ai_fresh_ambiguity_learning_chain_failure_2026-09-24.md`。
+
+P4-AJ下一個單一變因是**日文形態覆蓋**：把P4-AI漏判降為development，事前凍結新的否定／接續／口語活用正例與已平息、引用字詞、
+身體動作近鄰反例；只能擴充typed predicate morphology，不得改P4-AI chain、P4-AF authority、feedback、候選或可見回覆。通過後仍需
+再用完全新的P4-AK兩輪集確認整鏈；不可重跑P4-AI後宣稱獨立PASS。
 
 ## 已完成的 P4 前置歷史
 
