@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AG multi-turn ambiguity outcome binding
+## 唯一下一步：P4-AH multilingual observable-trigger coverage
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -50,11 +50,17 @@ status/authority/action=`4/4`；6個fresh positive=`6/6`，6個fresh negative=`6
 `8/8`，topic-only authorization=`0`，0 reply/model/memory change。P4-M→AF與M24=`304 passed`。完整證據：
 `analysis/p4_af_desired_response_eligibility_acceptance_2026-09-23.md`。
 
-P4-AG下一個單一能力變因是**跨輪outcome binding**。先凍結至少三條兩輪序列：第一輪ambiguity ledger後，第二輪明示接受其中一種
-response form、明示否定並指定另一種、以及完全換題而只能保持unknown。第二輪必須引用第一輪prediction/ledger identity，更新對應
-candidate為supported／contradicted／unknown；unknown不得算成功，否定後舊candidate不可繼續作為當輪private truth或未經標記的優先項。
-不得只重跑第二輪分類器後聲稱有學習；必須有before candidate、observed outcome evidence、binding、更新與下一輪可用但可撤銷的trace。
-先shadow-only且0 visible/model/factual-memory change；通過fresh多輪contract後，才決定是否把已驗證結果接入下一次reply planner。
+P4-AG已凍結9條兩輪序列後執行；正式結果 **FAIL**。在7個有第一輪authorized ledger的序列中，prediction/ledger identity
+binding=`7/7`，support selected=`3/3`，contradiction舊候選撤銷且明示replacement取得可撤銷權威=`2/2`，unknown誤算成功=`0`，
+0 visible/model/factual-memory change。但兩個fresh first turn（日文`頭の中が回り続けて…`與英文`thoughts will not slow down…`）
+在舊M37均為`no_bounded_observable_trigger`，所以整體first-turn eligible=`7/9`、正式gate不可寫PASS。完整負結果：
+`analysis/p4_ag_multiturn_outcome_binding_failure_2026-09-24.md`。這兩題已曝光，只能作development regression。
+
+P4-AH下一個單一能力變因是**multilingual observable-trigger coverage**，不得改P4-AG binding／feedback classifier／P4-AF authority或
+可見回覆。先把兩個P4-AG upstream failure降為development，再凍結未看過的中／英／日compositional cognitive-overactivity正例與
+literal／completed-task／ordinary-motion近鄰反例；修正必須是typed head+predicate composition或等價結構，不可只加兩句完整字串。
+先證明trigger predicate與private-state boundary，0 candidate rerank／model／memory／visible change；通過後另開全新多輪集，才能驗證
+P4-AH→AF→AG完整鏈，不能把P4-AG原fresh題修後重跑包裝成獨立泛化。
 
 ## 已完成的 P4 前置歷史
 
