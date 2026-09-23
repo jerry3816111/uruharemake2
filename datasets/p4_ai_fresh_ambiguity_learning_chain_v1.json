@@ -1,0 +1,96 @@
+{
+  "schema": "uruha_p4_ai_fresh_ambiguity_learning_chain_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_after_p4_ah_implementation_before_chain_execution",
+  "fresh_sequences": [
+    {
+      "case_id": "ai_support_zh",
+      "language": "zh",
+      "turn_1": "我的念頭怎麼都歇不下來，整晚一直換姿勢。",
+      "turn_2": "對，先確認我要什麼再回。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ai_support_en",
+      "language": "en",
+      "turn_1": "The thoughts in my head won't switch off tonight.",
+      "turn_2": "Yes, clarify with me first before choosing a response.",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ai_support_ja",
+      "language": "ja",
+      "turn_1": "考えが落ち着かないままで、まだ眠れない。",
+      "turn_2": "うん、先に確認してから返して。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ai_contradict_zh",
+      "language": "zh",
+      "turn_1": "腦海裡一直冒出想法，我完全靜不下來。",
+      "turn_2": "不是要你先問，我想要你聽我說。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "listen_presence"
+    },
+    {
+      "case_id": "ai_contradict_en",
+      "language": "en",
+      "turn_1": "My mind does not rest even though the deadline is over.",
+      "turn_2": "No, I wanted you to give me one step I can do now.",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "solve_regulation"
+    },
+    {
+      "case_id": "ai_contradict_ja",
+      "language": "ja",
+      "turn_1": "思いが止められなくて、ずっとそわそわしている。",
+      "turn_2": "違う、先に聞くんじゃなくて、そばにいて。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "share_arousal"
+    },
+    {
+      "case_id": "ai_unknown_zh",
+      "language": "zh",
+      "turn_1": "想法完全安靜不下來，現在還在腦中打轉。",
+      "turn_2": "樓下的便利商店換了招牌。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ai_unknown_en",
+      "language": "en",
+      "turn_1": "Ideas keep churning in my mind after the meeting.",
+      "turn_2": "The library closes at nine on Fridays.",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ai_unknown_ja",
+      "language": "ja",
+      "turn_1": "アイデアが休まらないまま、夜になった。",
+      "turn_2": "駅前の信号が新しくなった。",
+      "expected_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    }
+  ],
+  "chain_contract": [
+    "p4_ah_typed_observable_trigger",
+    "p4_af_current_interaction_authority",
+    "p4_ad_competing_action_hypotheses",
+    "p4_ag_exact_prediction_and_ledger_binding",
+    "candidate_outcome_and_reversible_next_use"
+  ],
+  "claim_boundary": "A pass shows fixed-module reachability across a newly frozen developer-authored multilingual two-turn chain. It does not prove natural dialogue performance, visible reply quality, felt understanding, a human equation, or advantage over a strong LLM."
+}
