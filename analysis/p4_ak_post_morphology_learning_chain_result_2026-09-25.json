@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p4_ak_post_morphology_learning_chain_formal_result_v1",
+  "date": "2026-09-25",
+  "status": "fail",
+  "freeze_commits": [
+    "cc6c9ab",
+    "58cfde7"
+  ],
+  "formal_execution": {
+    "command": "python3 -m pytest -q test_p4_ak_post_morphology_learning_chain.py",
+    "passed_tests": 1,
+    "failed_tests": 1,
+    "failed_gates": [
+      "metric_mismatch:japanese_morphology_extension_count"
+    ],
+    "correction_batches_after_result": 0,
+    "retry_as_formal_execution": 0
+  },
+  "observed_metrics": {
+    "sequence_count": 9,
+    "typed_trigger_count": 9,
+    "japanese_morphology_extension_count": 2,
+    "eligibility_authorized_count": 9,
+    "six_candidate_ledger_count": 9,
+    "exact_identity_binding_count": 9,
+    "exact_outcome_count": 9,
+    "supported_selected_count": 3,
+    "contradicted_selected_revoked_count": 3,
+    "explicit_replacement_supported_count": 3,
+    "unknown_all_candidates_unknown_count": 3,
+    "unknown_counted_as_success_count": 0,
+    "visible_reply_changed_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0,
+    "raw_dialogue_persisted_count": 0
+  },
+  "static_failure_diagnosis": {
+    "case_id": "ak_unknown_ja",
+    "reason": "The frozen phrase contains the pre-existing M37 cue 次々, so the trigger was retained by the predecessor rather than newly matched by P4-AJ morphology.",
+    "behavioral_outcome_correct": true,
+    "designated_path_gate_met": false
+  },
+  "post_failure_capture": {
+    "kind": "deterministic_regression_capture_not_formal_retry",
+    "same_failure_reproduced": true,
+    "gate_changed": false,
+    "dataset_changed": false,
+    "predecessor_changed": false
+  },
+  "claim_boundary": "P4-AK is a preserved formal FAIL. Correct downstream outcomes do not authorize a chain PASS when the prospectively frozen causal-path gate misses."
+}
