@@ -2,7 +2,7 @@
 
 更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AJ Japanese morphological trigger coverage
+## 唯一下一步：P4-AK fresh post-morphology end-to-end chain
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
@@ -82,6 +82,14 @@ binding／exact outcome均=`9/9`；support=`3/3`、contradiction+replacement=`3/
 P4-AJ下一個單一變因是**日文形態覆蓋**：把P4-AI漏判降為development，事前凍結新的否定／接續／口語活用正例與已平息、引用字詞、
 身體動作近鄰反例；只能擴充typed predicate morphology，不得改P4-AI chain、P4-AF authority、feedback、候選或可見回覆。通過後仍需
 再用完全新的P4-AK兩輪集確認整鏈；不可重跑P4-AI後宣稱獨立PASS。
+
+P4-AJ已依freeze一次通過：P4-AI曝光miss=`1/1`、全新日文活用正例=`6/6`、已平息／引用／身體／物體controls abstain=`8/8`；
+predecessor mutation／完整句patch／private truth claim=`0/0/0`，0 visible/model/memory change。它不回溯改寫P4-AI FAIL。完整證據：
+`analysis/p4_aj_japanese_morphology_acceptance_2026-09-24.md`。
+
+P4-AK下一步必須在P4-AJ固定後另凍結完全新的中／英／日兩輪序列，compose AH→AJ→AF→AD→AG，至少support／contradiction／unknown
+各3條；不得再改任何detector、classifier或門檻。只有指定typed path、六候選、identity binding與outcome全通過，才可稱synthetic
+end-to-end chain PASS；仍不等於Safari可見品質、自然分布、人評或強LLM優勢。
 
 ## 已完成的 P4 前置歷史
 
