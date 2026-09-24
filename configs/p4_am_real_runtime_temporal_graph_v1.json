@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_p4_am_real_runtime_temporal_graph_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation_or_runtime_execution",
+  "dataset": {
+    "path": "datasets/p4_am_real_runtime_temporal_graph_v1.json",
+    "sha256": "e54e1ad6bce7cf65343c29c5f1a18fec15f57a56f70c0f6cffa70981b17499c0",
+    "turn_count": 3
+  },
+  "predecessors": {
+    "product_entry": ["uruha_web_ui_product_p4_ah.py", "2bbfffca30ca7d14b99a54d524d4adea0fb87da00bd59c8efe32cd7b4fc4f566"],
+    "temporal_commitment": ["uruha_past_present_future_commitment_p4.py", "cd17c659705727b8d95803db170b3f4d3c5a5676ac3482c1e5f1aeaca21d2a8f"],
+    "outcome_binding": ["uruha_desired_response_outcome_binding_p4.py", "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181"],
+    "graph_renderer": ["uruha_memory_observatory.py", "c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76"],
+    "web_pipeline": ["uruha_web_ui.py", "e6ffec9094ab824e49faa97c89268fd9d2771297491307694c7c99e70a75e046"]
+  },
+  "implementation_boundary": {
+    "allowed_new_files": [
+      "uruha_runtime_temporal_graph_delivery_p4.py",
+      "uruha_web_ui_product_p4_am.py",
+      "p4_am_safe_isolated_product_launcher.py",
+      "tests_and_evidence_only"
+    ],
+    "predecessor_change_allowed": false,
+    "detector_or_classifier_change_allowed": false,
+    "candidate_ranking_change_allowed": false,
+    "reply_or_prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "factual_memory_write_allowed": false,
+    "raw_dialogue_in_graph_allowed": false,
+    "p4_ak_status_rewrite_allowed": false
+  },
+  "offline_gates": {
+    "turn_count": 3,
+    "temporal_node_count": 3,
+    "node_before_utterance_count": 3,
+    "logic_graph_payload_exact_count": 3,
+    "first_turn_empty_past_count": 1,
+    "second_turn_current_verification_not_past_count": 1,
+    "third_turn_verified_past_count": 1,
+    "six_candidate_present_count": 3,
+    "current_future_locked_count": 3,
+    "previous_supported_transition_count": 2,
+    "same_turn_outcome_promoted_to_past_count": 0,
+    "raw_or_private_payload_leak_count": 0,
+    "visible_reply_changed_count": 0,
+    "model_call_added_count": 0,
+    "factual_memory_write_count": 0
+  },
+  "real_gates": {
+    "turn_count": 3,
+    "japanese_visible_reply_count": 3,
+    "durable_episode_count": 3,
+    "graph_visible_count": 3,
+    "temporal_node_count": 3,
+    "node_before_utterance_count": 3,
+    "logic_graph_payload_exact_count": 3,
+    "first_turn_empty_past_count": 1,
+    "second_turn_current_verification_not_past_count": 1,
+    "third_turn_verified_past_count": 1,
+    "six_candidate_present_count": 3,
+    "current_future_locked_count": 3,
+    "previous_supported_transition_count": 2,
+    "same_turn_outcome_promoted_to_past_count": 0,
+    "raw_or_private_payload_leak_count": 0,
+    "p4_am_added_model_call_count": 0,
+    "p4_am_factual_memory_write_count": 0,
+    "maximum_turn_latency_seconds": 30.0,
+    "maximum_total_latency_seconds": 90.0
+  },
+  "failure_policy": {
+    "maximum_informed_correction_batches_before_real_execution": 1,
+    "same_real_case_rerun_allowed": false,
+    "gate_change_after_real_result_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "external_deployment_authorized": false
+  },
+  "claim_boundary": "A pass shows isolated real-product delivery of a strict three-turn P4-AL temporal graph transition: commitment, current verification, and only then promotion to past evidence. It does not establish future-prediction accuracy, human preference, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}
