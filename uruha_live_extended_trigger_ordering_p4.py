@@ -74,6 +74,18 @@ def append_live_ordering_node_p4(result, payload):
     return result
 
 
+def deliver_existing_live_ordering_payload_after_turn_p4(result):
+    """Reinsert the emit-time P4-AQ payload after the final trace refresh."""
+
+    result = result or {}
+    runtime = result.get("runtime_trace") or {}
+    logic = result.get("logic") or {}
+    payload = deepcopy(runtime.get(LABEL) or logic.get(LABEL) or {})
+    if payload.get("schema") != SCHEMA:
+        return result
+    return append_live_ordering_node_p4(result, payload)
+
+
 def rebuild_late_extended_trigger_chain_p4(result, temporal_state_before=None):
     """Return a repaired result plus state artifacts, or a strict no-op trace."""
 
@@ -272,15 +284,17 @@ def rebuild_late_extended_trigger_chain_p4(result, temporal_state_before=None):
 
 _INSTALLED_P4_AQ = False
 _ORIGINAL_EMIT_RESPONSE_P4_AQ = None
+_ORIGINAL_RUN_TURN_P4_AQ = None
 
 
 def install_live_extended_trigger_ordering_p4():
-    global _INSTALLED_P4_AQ, _ORIGINAL_EMIT_RESPONSE_P4_AQ
+    global _INSTALLED_P4_AQ, _ORIGINAL_EMIT_RESPONSE_P4_AQ, _ORIGINAL_RUN_TURN_P4_AQ
     if _INSTALLED_P4_AQ:
         return False
     from uruha_brain_mac import UruhaBrainV4_Mac
 
     _ORIGINAL_EMIT_RESPONSE_P4_AQ = UruhaBrainV4_Mac.emit_response_if_ready
+    _ORIGINAL_RUN_TURN_P4_AQ = UruhaBrainV4_Mac.run_turn_debug
 
     def emit_with_p4_aq(self, event, tick_result):
         temporal_state_before = deepcopy(
@@ -303,6 +317,19 @@ def install_live_extended_trigger_ordering_p4():
         return result
 
     UruhaBrainV4_Mac.emit_response_if_ready = emit_with_p4_aq
+
+    def run_turn_with_p4_aq(self, user_input, input_context=None):
+        result = _ORIGINAL_RUN_TURN_P4_AQ(
+            self,
+            user_input,
+            input_context=input_context,
+        )
+        result = deliver_existing_live_ordering_payload_after_turn_p4(result)
+        if getattr(self.runtime, "turn_traces", None):
+            self.runtime.turn_traces[-1] = deepcopy(result["runtime_trace"])
+        return result
+
+    UruhaBrainV4_Mac.run_turn_debug = run_turn_with_p4_aq
     _INSTALLED_P4_AQ = True
     return True
 

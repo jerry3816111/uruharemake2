@@ -73,3 +73,27 @@ def test_repair_preserves_previous_resolution_and_does_not_mutate_inputs():
     assert rebuilt["trace"]["previous_resolution_preserved"] is True
     assert rebuilt["trace"]["source_state_mutated"] is False
     assert rebuilt["trace"]["source_temporal_state_mutated"] is False
+
+
+def test_post_turn_delivery_restores_existing_ordering_node_before_utterance():
+    payload = {
+        "schema": ordering.SCHEMA,
+        "status": "repaired_extended_trigger_downstream_order",
+        "raw_dialogue_persisted": False,
+    }
+    result = {
+        "reply": "そのまま",
+        "logic": {ordering.LABEL: deepcopy(payload)},
+        "runtime_trace": {
+            ordering.LABEL: deepcopy(payload),
+            "blackboard": [
+                {"stage": "predict", "label": temporal.LABEL, "payload": {}},
+                {"stage": "surface", "label": "utterance", "payload": {}},
+            ],
+        },
+    }
+    delivered = ordering.deliver_existing_live_ordering_payload_after_turn_p4(result)
+    labels = [row["label"] for row in delivered["runtime_trace"]["blackboard"]]
+    assert labels.index(temporal.LABEL) < labels.index(ordering.LABEL)
+    assert labels.index(ordering.LABEL) < labels.index("utterance")
+    assert delivered["reply"] == "そのまま"
