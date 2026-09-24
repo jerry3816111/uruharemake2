@@ -2,24 +2,32 @@
 
 更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AM real runtime past-present-future graph delivery
+## 唯一下一步：P4-AQ live extended-trigger ordering repair
 
-P4-AK已依事前freeze執行並保留正式 **FAIL**。9條全新中／英／日兩輪序列的typed trigger、authority、六候選、prediction/ledger
-identity與support／contradict／unknown結果皆=`9/9`，但凍結要求3個日文案例都必須由P4-AJ新形態擴充命中，實際只有`2/3`；
-`ak_unknown_ja`的`次々`已被舊M37辨識，因此是`baseline_retained`。不得因下游結果正確而把指定因果路徑改寫PASS，也不得重用
-該組追分。完整負結果：`analysis/p4_ak_post_morphology_learning_chain_failure_2026-09-25.md`。
+P4-AM與P4-AN各保存一個不同的真實產品FAIL：P4-AM的temporal payload存在於logic但被最後一次blackboard refresh覆蓋；P4-AN已修好
+post-turn delivery，Safari也能在utterance前看到節點，但全新P4-AH trigger在P4-AD／AF／AG之後才建立，因此當輪仍是0候選、無future
+commitment。不得把「圖有顯示」改寫成認知整鏈通過。完整負結果：
+`analysis/p4_am_real_runtime_temporal_graph_failure_2026-09-25.md`、
+`analysis/p4_an_post_turn_temporal_graph_failure_2026-09-25.md`。
 
-P4-AL已在P4-AK FAIL內容定址保留後，完成最小past→present→future→next-past時間循環：3個structured developer fixtures均確認
-past嚴格早於present、future outcome在commit前不可見、六候選與prediction identity被SHA-256封存、後續support／contradiction／unknown
-各1條可精確綁定，篡改commit=`3/3`拒絕、unknown算成功=`0`、raw/private/factual-memory/model/visible side effect=`0`。graph-ready
-三時間node contract位於utterance前。這只證明deterministic tamper-evident temporal mechanism，不是Uruha／真人預測準確率、長期未來、
-校準機率或強LLM優勢。完整證據：`analysis/p4_al_past_present_future_commitment_acceptance_2026-09-25.md`。
+P4-AO改用舊M37已可達的全新三輪case，不改產品程式。第一輪真實Safari成功顯示`過去 0｜現在 6候選/選択 calibrate_need｜本輪未來 已封存`，
+但第二輪在P4-AG把真實`p1-2`事件放進每輪重建的sequence floor=0空白shadow時，被P1正確拒絕為跳號，正式 **FAIL** 並停止；不得重跑。
+完整負結果：`analysis/p4_ao_reachable_temporal_graph_failure_2026-09-25.md`。
 
-P4-AM只做**真實產品runtime的資料流接線與Safari可見交付**：在全新隔離session中，從既有P4-AG current binding與後續resolution
-建立P4-AL node，至少顯示第一輪past empty／present candidates／future locked，以及下一輪outcome verified後轉成next-past evidence。
-不得新增或修改detector、classifier、candidate ranking、reply、prompt、model call、factual memory或P4-AK gate；第一輪無歷史必須誠實顯示
-empty，不得造資料。先freeze可見欄位、node順序、兩輪case與0 raw/private leakage，再做additive product entry；單元通過後才授權private
-runtime與Safari。PASS仍只代表真實產品接線與圖像可追溯，不代表forecast accuracy或human-equation validity。
+P4-AP只修classifier-only shadow的prediction identity continuity，不降低P1 guard、不複製product ledger。事前freeze後離線／相鄰回歸=`75 passed`；
+唯一一次全新隔離Safari三輪正式 **PASS**：prediction sequence=`1→2→3`、shadow floor=`0→1→2`、identity-bound supported=`2/2`；三輪
+past=`0→0→1`、present六候選=`3/3`、future locked=`3/3`、identity／temporal node均在utterance前=`3/3`、日文／durable episode／graph
+=`3/3`，最大單輪`3.7837s`、總和`10.4651s`，新增model／factual memory／raw graph leakage=`0/0/0`。這只證明一條真實產品路徑能以
+精確事件identity完成commit→next-turn verification→later-past promotion；不證明心理預測正確、人評、自然分布泛化、人類方程式或強LLM優勢。
+另保留gate外觀察：T2/T3表面回覆相同，不能用mechanism PASS宣稱felt understanding。完整證據：
+`analysis/p4_ap_shadow_identity_continuity_acceptance_2026-09-25.md`。
+
+P4-AQ下一個單一能力變因是**讓既有P4-AH extension在同一真實輪次、建立P4-AD/AF/AG之前生效**。先把P4-AN曝光case降為development；
+再凍結未用過的中／英／日extended-only正例與literal／resolved／ordinary-motion controls。修正只可調整資料流順序或用同一P4-AH raw-free
+trace重建下游shadow，不可改AH detector、AF authority、AD候選分數／排序、AG feedback classifier、visible reply、prompt、模型、factual memory
+或P4-AP temporal/identity規則。離線須證明base M37 miss但AH命中時，AD六候選、AF authority、AG binding、AM future commitment在同輪一致；
+control仍0候選。通過後另凍結全新三輪private runtime／Safari case；原P4-AN／AO／AP輸入皆不可重用。PASS仍只算live integration coverage，
+不外推為理解準確率或研究優勢。
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
