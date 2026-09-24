@@ -1,0 +1,47 @@
+{
+  "schema": "uruha_p4_ar_executed_action_identity_gate_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_p4_ar_implementation",
+  "dataset": {
+    "path": "datasets/p4_ar_executed_action_identity_gate_v1.json",
+    "sha256": "6c015acb7b425af71699eec5261b999c66571cc31df978637fd7ea8adf30c7a8",
+    "case_count": 11
+  },
+  "predecessors": {
+    "p4_aq_ordering": ["uruha_live_extended_trigger_ordering_p4.py", "96190a7d7ccea6ba729d68194e078a985f1870a68100fa07be6a89b005d91df4"],
+    "p4_ag_binding": ["uruha_desired_response_outcome_binding_p4.py", "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181"],
+    "p4_ap_identity_continuity": ["uruha_shadow_feedback_identity_continuity_p4.py", "434ebc63ca28eb849bfcc7ea9ac8f3b3dafe437b033d58bd51f64685f0e8cee4"],
+    "m44_executed_action_receipt": ["uruha_executed_action_receipt_m44.py", "bd60a05a4617cc41fd2917a0ff9131fdc8f7dc96de9a0a580bfe2b00d71268b9"],
+    "p1_prediction_identity": ["uruha_prediction_identity_p1.py", "78ba82d05d52dc4e54b176b06b0875e7a3416fd4304ba4fedc2bf621ea595ed4"],
+    "p4_aq_real_failure": ["analysis/p4_aq_real_live_extended_trigger_ordering_result_2026-09-25.json", "8db5f79191635a0c8668b8e4397e9bf28dfe39f39e15d957c31f7d7727b31d25"]
+  },
+  "offline_gates": {
+    "case_count": 11,
+    "development_blocked_count": 1,
+    "fresh_authorized_count": 3,
+    "fresh_blocked_count": 5,
+    "control_noop_count": 2,
+    "expected_status_exact_count": 11,
+    "fallback_without_execution_blocked_count": 2,
+    "inactive_or_unapplied_blocked_count": 4,
+    "identity_or_policy_mismatch_blocked_count": 2,
+    "authorized_non_p1_identity_count": 0,
+    "false_authorization_count": 0,
+    "visible_reply_changed_count": 0,
+    "model_call_added_count": 0,
+    "factual_memory_write_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "source_payload_mutated_count": 0
+  },
+  "failure_policy": {
+    "dataset_change_after_implementation_allowed": false,
+    "gate_change_after_implementation_allowed": false,
+    "weaken_p1_identity_allowed": false,
+    "fallback_id_may_be_promoted_to_p1": false,
+    "unexecuted_action_may_enter_outcome_verification": false,
+    "visible_reply_change_allowed": false,
+    "model_call_allowed": false,
+    "factual_memory_write_allowed": false
+  },
+  "claim_boundary": "A pass shows that a deterministic guard distinguishes an exact executed product action event from a shadow-only candidate and prevents unexecuted actions from entering outcome verification. It does not establish action quality, user preference, psychological truth, a human equation, or advantage over a strong LLM."
+}
