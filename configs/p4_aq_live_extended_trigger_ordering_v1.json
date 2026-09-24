@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_p4_aq_live_extended_trigger_ordering_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_after_p4_an_failure_before_p4_aq_implementation",
+  "dataset": {
+    "path": "datasets/p4_aq_live_extended_trigger_ordering_v1.json",
+    "sha256": "db69203fc1b1edb1fdb0068645c2805081ab1070cd88ca25485ace9806de3183",
+    "development_case_count": 1,
+    "fresh_positive_case_count": 3,
+    "fresh_control_case_count": 6,
+    "languages": ["zh", "en", "ja"]
+  },
+  "predecessors": {
+    "adaptive_model": ["uruha_adaptive_person_model.py", "96c2557b52dee307ee455c1ad61500223df2c981922b68fc94b31842015563bf"],
+    "p4_ah_trigger": ["uruha_multilingual_observable_trigger_p4.py", "8068049108045744bb6bd6153c4e8f5c7a9a6a7e5302fc6e41c46faf3849e31a"],
+    "p4_ad_ledger": ["uruha_desired_response_ambiguity_p4.py", "f2cee31c080adce0199cfe60cda7f1809252b80815fdc18ce1de68f2fe4c95c5"],
+    "p4_af_authority": ["uruha_desired_response_eligibility_p4.py", "a386fc65c7b70ccd8a986a6f7db53c04d3aeee2dfdca0886e309b0d2cac32c7a"],
+    "p4_ag_binding": ["uruha_desired_response_outcome_binding_p4.py", "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181"],
+    "p4_am_temporal": ["uruha_runtime_temporal_graph_delivery_p4.py", "16b44620654be97789967fead4357ccbe0165b55b6f43b177090d65ef06e5fa2"],
+    "p4_an_delivery": ["uruha_post_turn_temporal_graph_delivery_p4.py", "ad6d612eb82c021bd5860c12d1b368f5c062e37d07262e3ff76fb6bc9838a7ba"],
+    "p4_ap_identity": ["uruha_shadow_feedback_identity_continuity_p4.py", "434ebc63ca28eb849bfcc7ea9ac8f3b3dafe437b033d58bd51f64685f0e8cee4"],
+    "product_entry": ["uruha_web_ui_product_p4_ap.py", "5f10f5df020a7736ead8b4f0f201da6f4571da2768145c21d1a6f75ee6d8cb8f"]
+  },
+  "implementation_boundary": {
+    "allowed_new_files": [
+      "uruha_live_extended_trigger_ordering_p4.py",
+      "uruha_web_ui_product_p4_aq.py",
+      "p4_aq_safe_isolated_product_launcher.py",
+      "tests_and_evidence_only"
+    ],
+    "predecessor_change_allowed": false,
+    "trigger_detector_change_allowed": false,
+    "eligibility_authority_change_allowed": false,
+    "candidate_score_or_order_change_allowed": false,
+    "feedback_classifier_change_allowed": false,
+    "temporal_or_identity_rule_change_allowed": false,
+    "visible_reply_or_prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "factual_memory_write_allowed": false,
+    "raw_dialogue_in_graph_allowed": false,
+    "p4_an_failure_status_rewrite_allowed": false
+  },
+  "offline_gates": {
+    "case_count": 10,
+    "development_reproduction_count": 1,
+    "fresh_positive_base_miss_count": 3,
+    "fresh_positive_extended_hit_count": 3,
+    "fresh_control_extended_abstention_count": 6,
+    "positive_repaired_status_count": 4,
+    "positive_six_candidate_count": 4,
+    "positive_typed_authority_count": 4,
+    "positive_pending_binding_count": 4,
+    "positive_future_locked_count": 4,
+    "control_not_applicable_count": 6,
+    "control_zero_candidate_count": 6,
+    "control_no_binding_count": 6,
+    "control_no_future_commitment_count": 6,
+    "candidate_ranking_changed_count": 0,
+    "source_state_mutation_count": 0,
+    "source_temporal_state_mutation_count": 0,
+    "visible_reply_changed_count": 0,
+    "model_call_added_count": 0,
+    "factual_memory_write_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "exact_graph_order_count": 10
+  },
+  "failure_policy": {
+    "maximum_informed_correction_batches_before_offline_result": 2,
+    "fresh_case_or_gate_change_after_result_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "real_product_or_safari_execution_authorized": false,
+    "external_deployment_authorized": false
+  },
+  "claim_boundary": "A pass shows that one fixed multilingual typed trigger is available to the existing desired-response ledger, authority, binding, and temporal commitment in the same deterministic turn. It does not prove that the trigger is psychologically true, that the selected response is preferred, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}
