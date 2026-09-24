@@ -58,6 +58,7 @@ def test_dataset_turns_are_exactly_disjoint_from_prior_chain_datasets():
 
 def test_contract_forbids_post_result_tuning_and_overclaiming():
     contract = gate.load_contract()
+    assert contract["gates"]["japanese_morphology_extension_count"] == 3
     assert contract["failure_policy"]["maximum_informed_correction_batches"] == 0
     assert contract["failure_policy"]["failed_result_must_be_preserved"] is True
     assert contract["failure_policy"]["real_product_or_safari_execution_authorized"] is False
