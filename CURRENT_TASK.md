@@ -1,8 +1,25 @@
 # 目前任務卡
 
-更新：2026-09-23。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AK fresh post-morphology end-to-end chain
+## 唯一下一步：P4-AM real runtime past-present-future graph delivery
+
+P4-AK已依事前freeze執行並保留正式 **FAIL**。9條全新中／英／日兩輪序列的typed trigger、authority、六候選、prediction/ledger
+identity與support／contradict／unknown結果皆=`9/9`，但凍結要求3個日文案例都必須由P4-AJ新形態擴充命中，實際只有`2/3`；
+`ak_unknown_ja`的`次々`已被舊M37辨識，因此是`baseline_retained`。不得因下游結果正確而把指定因果路徑改寫PASS，也不得重用
+該組追分。完整負結果：`analysis/p4_ak_post_morphology_learning_chain_failure_2026-09-25.md`。
+
+P4-AL已在P4-AK FAIL內容定址保留後，完成最小past→present→future→next-past時間循環：3個structured developer fixtures均確認
+past嚴格早於present、future outcome在commit前不可見、六候選與prediction identity被SHA-256封存、後續support／contradiction／unknown
+各1條可精確綁定，篡改commit=`3/3`拒絕、unknown算成功=`0`、raw/private/factual-memory/model/visible side effect=`0`。graph-ready
+三時間node contract位於utterance前。這只證明deterministic tamper-evident temporal mechanism，不是Uruha／真人預測準確率、長期未來、
+校準機率或強LLM優勢。完整證據：`analysis/p4_al_past_present_future_commitment_acceptance_2026-09-25.md`。
+
+P4-AM只做**真實產品runtime的資料流接線與Safari可見交付**：在全新隔離session中，從既有P4-AG current binding與後續resolution
+建立P4-AL node，至少顯示第一輪past empty／present candidates／future locked，以及下一輪outcome verified後轉成next-past evidence。
+不得新增或修改detector、classifier、candidate ranking、reply、prompt、model call、factual memory或P4-AK gate；第一輪無歷史必須誠實顯示
+empty，不得造資料。先freeze可見欄位、node順序、兩輪case與0 raw/private leakage，再做additive product entry；單元通過後才授權private
+runtime與Safari。PASS仍只代表真實產品接線與圖像可追溯，不代表forecast accuracy或human-equation validity。
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
