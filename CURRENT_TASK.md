@@ -2,7 +2,7 @@
 
 更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 唯一下一步：P4-AQ live extended-trigger ordering repair
+## P4-AQ 已封存；唯一下一步：P4-AR late-trigger product identity bridge
 
 P4-AM與P4-AN各保存一個不同的真實產品FAIL：P4-AM的temporal payload存在於logic但被最後一次blackboard refresh覆蓋；P4-AN已修好
 post-turn delivery，Safari也能在utterance前看到節點，但全新P4-AH trigger在P4-AD／AF／AG之後才建立，因此當輪仍是0候選、無future
@@ -22,12 +22,25 @@ past=`0→0→1`、present六候選=`3/3`、future locked=`3/3`、identity／tem
 另保留gate外觀察：T2/T3表面回覆相同，不能用mechanism PASS宣稱felt understanding。完整證據：
 `analysis/p4_ap_shadow_identity_continuity_acceptance_2026-09-25.md`。
 
-P4-AQ下一個單一能力變因是**讓既有P4-AH extension在同一真實輪次、建立P4-AD/AF/AG之前生效**。先把P4-AN曝光case降為development；
-再凍結未用過的中／英／日extended-only正例與literal／resolved／ordinary-motion controls。修正只可調整資料流順序或用同一P4-AH raw-free
-trace重建下游shadow，不可改AH detector、AF authority、AD候選分數／排序、AG feedback classifier、visible reply、prompt、模型、factual memory
-或P4-AP temporal/identity規則。離線須證明base M37 miss但AH命中時，AD六候選、AF authority、AG binding、AM future commitment在同輪一致；
-control仍0候選。通過後另凍結全新三輪private runtime／Safari case；原P4-AN／AO／AP輸入皆不可重用。PASS仍只算live integration coverage，
-不外推為理解準確率或研究優勢。
+P4-AQ完成上述單一ordering修正：development=`1/1`、全新中／英／日base-M37-miss正例=`3/3`均由固定P4-AH命中並在同輪形成
+六候選／typed authority／pending binding／locked future；六個literal／resolved／ordinary-motion controls=`6/6` abstain，候選排序、detector、
+classifier、visible reply、model call、factual memory、source state與既有temporal/identity規則變更=`0`。P4-AD→AQ相鄰回歸=`104 passed`。
+
+事前另凍結全新三輪private runtime／Safari case後執行唯一一次，正式 **FAIL** 並於第一輪停止。ordering本身在真實產品成功：0→6候選、
+`calibrate_need`、typed `cognitive_overactivity`、pending binding、future locked；Safari可見P4-AQ節點與
+`過去 0｜現在 6候選/選択 calibrate_need｜本輪未來 已封存`，日文／durable episode／graph=`1/1`、latency=`17.2761s`、新增model／
+factual memory／raw leakage=`0/0/0`。但released M18 decision仍為`not_applied`且無product prediction ID，P4-AG只可建立
+`additive_shadow_identity` fallback；P4-AP正確拒絕把fallback冒充`p1-N`事件，因此identity node、sequence與floor均不存在。凍結三輪
+identity gate已不可能通過，T2/T3未送出、同題不得重跑。可見日文`考えが湧き続けるのは無理だよ`也只過語言guard，語氣生硬，不能宣稱
+felt understanding。完整負結果：`analysis/p4_aq_real_live_extended_trigger_ordering_failure_2026-09-25.md`。
+
+P4-AR下一個唯一能力變因是**late-trigger product prediction identity bridge**。先用P4-AQ已曝光T1作before/development，不修改或重跑正式case；
+再凍結新的中／英／日late-only離線正例與inactive／literal controls。修正必須讓「P4-AH後才成立的同一個corrected shadow decision」取得由既有
+P1規則簽發、且與product model sequence floor一致的真正`p1-N-*`事件，再交給既有P4-AG/P4-AP；不得把fallback字串解析成sequence、手寫
+`p1-*`、跳過P1 guard、複製已驗證ledger、改AH detector、AF authority、AD候選分數／排序、AG feedback classifier、temporal promotion、
+visible reply、prompt、模型call或factual memory。離線須證明P4-AQ before為fallback／無identity，after為exact product P1 identity且control no-op；
+通過後另凍結完全新的三輪private runtime／Safari case，P4-AQ輸入永不再用。即使P4-AR通過，也只證明一條late-trigger產品事件能跨輪保持
+identity，不等於預測準確、被理解感、人類方程式或強LLM優勢。
 
 P4-Z deterministic contract 已完成：development=`3/3`、全新 synthetic holdout=`9/9`、faithful no-op=`6/6`、
 unsupported abstain=`3/3`，P4-M..Z=`247 passed`。它只支援 quote／hearsay／hypothetical 三種受限文法，不能寫成
