@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_p4_al_past_present_future_commitment_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "case_origin": "developer_authored_structured_temporal_contract_fixture",
+  "cases": [
+    {
+      "case_id": "al_supported_transition",
+      "current_turn": 12,
+      "selected_policy": "calibrate_need",
+      "past_records": [
+        {
+          "evidence_id": "past-support-01",
+          "observed_turn": 3,
+          "source_kind": "linked_interaction_feedback",
+          "epistemic_status": "supported",
+          "provenance_digest": "1111111111111111"
+        },
+        {
+          "evidence_id": "past-revoked-01",
+          "observed_turn": 8,
+          "source_kind": "linked_interaction_feedback",
+          "epistemic_status": "revoked",
+          "provenance_digest": "2222222222222222"
+        }
+      ],
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "al_contradicted_transition",
+      "current_turn": 22,
+      "selected_policy": "calibrate_need",
+      "past_records": [
+        {
+          "evidence_id": "past-unknown-02",
+          "observed_turn": 14,
+          "source_kind": "linked_interaction_feedback",
+          "epistemic_status": "unknown",
+          "provenance_digest": "3333333333333333"
+        },
+        {
+          "evidence_id": "past-support-02",
+          "observed_turn": 19,
+          "source_kind": "explicit_user_correction",
+          "epistemic_status": "supported",
+          "provenance_digest": "4444444444444444"
+        }
+      ],
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "listen_presence"
+    },
+    {
+      "case_id": "al_unknown_transition",
+      "current_turn": 32,
+      "selected_policy": "calibrate_need",
+      "past_records": [
+        {
+          "evidence_id": "past-support-03",
+          "observed_turn": 21,
+          "source_kind": "linked_interaction_feedback",
+          "epistemic_status": "supported",
+          "provenance_digest": "5555555555555555"
+        },
+        {
+          "evidence_id": "past-revoked-03",
+          "observed_turn": 29,
+          "source_kind": "explicit_user_correction",
+          "epistemic_status": "revoked",
+          "provenance_digest": "6666666666666666"
+        }
+      ],
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    }
+  ],
+  "temporal_definition": {
+    "past": "provenance-bearing observations whose observed_turn is strictly earlier than the present turn",
+    "present": "current observable evidence plus competing operational response hypotheses; private mental truth remains unknown",
+    "future": "a hash-committed next-turn operational prediction whose outcome is unavailable until a later turn",
+    "transition": "a later linked outcome becomes a provenance-bearing past record for subsequent turns without becoming a private-state fact"
+  },
+  "claim_boundary": "A pass establishes a deterministic temporal commitment and correction mechanism on structured developer fixtures. It does not establish predictive accuracy on a real person, long-horizon forecasting, calibrated probabilities, biological cognition, or advantage over a strong LLM."
+}

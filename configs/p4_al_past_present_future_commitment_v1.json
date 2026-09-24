@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p4_al_past_present_future_commitment_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_al_past_present_future_commitment_v1.json",
+    "sha256": "a616df3d27551fe7770e5e818ac845b573c284afee2f434298b86ea56cda4b25",
+    "case_count": 3
+  },
+  "bindings": {
+    "m55_temporal_row_contract": ["configs/m55_temporal_row_contract_v1.json", "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"],
+    "p3_b51_temporal_forecast_bridge": ["configs/p3_b51_temporal_forecast_bridge_v1.json", "23b1f95a84531692abab4700669153a4881be3574173e61ec0ab3803df6e755d"],
+    "p4_ag_outcome_binding": ["uruha_desired_response_outcome_binding_p4.py", "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181"],
+    "p4_ak_preserved_failure": ["analysis/p4_ak_post_morphology_learning_chain_result_2026-09-25.json", "8b070f749229f7f2dcf48976f3842fa5ba3bb585b966aa6f8d092535129cbcd2"]
+  },
+  "implementation_boundary": {
+    "mode": "additive_temporal_commitment_bridge",
+    "bound_predecessor_change_allowed": false,
+    "prediction_after_outcome_access_allowed": false,
+    "outcome_in_commitment_allowed": false,
+    "private_state_truth_claim_allowed": false,
+    "raw_dialogue_persistence_allowed": false,
+    "visible_reply_change_allowed": false,
+    "model_call_added_allowed": false,
+    "factual_memory_write_allowed": false,
+    "p4_ak_status_rewrite_allowed": false
+  },
+  "gates": {
+    "case_count": 3,
+    "past_before_present_count": 3,
+    "outcome_absent_before_unlock_count": 3,
+    "six_candidate_present_count": 3,
+    "stable_commitment_hash_count": 3,
+    "exact_identity_binding_count": 3,
+    "supported_transition_count": 1,
+    "contradicted_transition_count": 1,
+    "unknown_transition_count": 1,
+    "unknown_counted_as_success_count": 0,
+    "next_past_record_count": 3,
+    "tampered_commitment_rejected_count": 3,
+    "raw_or_private_content_persisted_count": 0,
+    "visible_reply_changed_count": 0,
+    "model_call_added_count": 0,
+    "factual_memory_write_count": 0
+  },
+  "failure_policy": {
+    "maximum_informed_correction_batches": 1,
+    "failed_result_must_be_preserved": true,
+    "real_person_prediction_authorized": false,
+    "safari_or_product_integration_authorized_by_contract_alone": false
+  },
+  "claim_boundary": "A pass establishes a deterministic temporal commitment and correction mechanism on structured developer fixtures. It does not establish predictive accuracy on a real person, long-horizon forecasting, calibrated probabilities, biological cognition, or advantage over a strong LLM."
+}
