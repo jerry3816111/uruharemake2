@@ -2,7 +2,32 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AT 正式結果已凍結；唯一下一步：P4-AU source-bound current-action delivery
+## P4-AU 正式結果已凍結；唯一下一步：P4-AV neutral operational-role authorization
+
+P4-AU offline freeze與修正後固定結果通過：development=`1/1`、全新中／英／日positive source handoff=`6/6`、9個false-link control正確阻擋=`9/9`，
+deterministic fake M45 downstream structural contract=`6/6`，predecessor mutation／candidate order／新增model／factual memory／assistant或private來源／raw trace=`0`；
+相鄰回歸=`85 passed`。它只把exact previous-user problem接到本輪action delivery，沒有放寬M45/M46/M53/M39。
+
+`9c33ccc`事前凍結的全新中文private runtime／Safari兩輪已於port `7884`唯一執行，正式 **FAIL**，不得重跑、改題或改gate。前半整鏈通過：
+T1 executed `calibrate_need`、exact M44 receipt=`p1-1-c47bcaefa644b5b4`、P4-AG六候選與future lock；T2 P4-AT=`closed_supported`，並把當輪
+新要求分開判定為`solve_regulation/practical_help`。P4-AU=`prior_source_linked`，`prior:1` digest=`e0fcdf502c58532a`與T1 exact user source相同，
+assistant/private fallback=`0/0`、raw trace／新增model／factual memory=`0/0/0`。P4-AU node index=`50`，在M50/M53/M46/M45/utterance
+`51/55/56/57/69`前；Safari已展開核對。2/2自然日文、2/2 durable episode、isolated Chroma=`2`。
+
+正式交付仍失敗：M45一次model call產生2個不同候選，但structurally valid=`0/2`；選中候選含2個quoted scaffold labels，M53判定
+exact source=`0`、neutral role=`0`、unsupported=`2`，觸發`unsupported_concrete_scaffold_label_m53`。因此M46=`plan_rejected`、
+M45=`withheld_goal_plan_failed`、M39對`practical_action_not_delivered_m45` fail closed，最後再次詢問而沒有交付立即步驟。凍結failed gates為
+M45 delivery、M46 verified/content/surface、M39 practical act與generic clarification prohibition；T2=`711+288` tokens、`20.7275s`。
+這證明exact跨輪來源接通與真正source-safe action delivery是不同gate；前者通過、後者失敗，不能宣稱felt understanding、人類方程式或強LLM優勢。
+完整證據：`analysis/p4_au_real_source_bound_current_action_delivery_failure_2026-09-26.md`。
+
+P4-AV唯一能力變因是**區分中性操作角色標籤與自行發明的具體主題分類**。P4-AU正式題只能作exposed development，不得重跑。先事前凍結
+M53 development反例、新的中／英／日source-neutral operational-role positives，以及invented topical categories、hidden-priority／emotion／diagnosis labels、
+source-quoted labels與unquoted controls。只允許對來源無關且不聲稱內容真值的操作角色做typed authorization；任意`「環境」「經濟」「社會」`或
+`「重要」「不重要」`等具體分類仍須阻擋。不得改plan文字、M46 review、M45/M39 gate、候選分數／排序、prompt、model call、記憶或visible reply。
+offline通過並commit後，才能凍結完全新的real Safari兩輪；PASS仍只證明一條source-safe action delivery產品路徑，不證明建議對真人有用。
+
+## P4-AT 正式結果已凍結；P4-AU 的來源依據（保存歷史，不是當前下一步）
 
 P4-AT offline在事前freeze後通過：17案的上一個action outcome與本輪request policy=`17/17`、development=`1/1`、全新中／英／日
 positive=`9/9`、false-prior-link controls=`0/7`、unrelated unknown=`3/3`、exact receipt identity=`17/17`，候選分數／排序、model call、
