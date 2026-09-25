@@ -1,0 +1,55 @@
+{
+  "schema": "uruha_p4_at_dual_act_development_failure_v1",
+  "status": "development_failure_preserved",
+  "date": "2026-09-25",
+  "partition": "exposed_development_only_not_fresh_or_formal",
+  "runtime": {
+    "entrypoint": "uruha_web_ui_product_p4_as.py",
+    "port": 7881,
+    "private_runtime_root": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-y19q2ock",
+    "conversation_log_sha256": "12b29fdc6c27d70bff212793068dbbfcaa42b1030d96fb9e525d275241f957d3"
+  },
+  "turn_1": {
+    "input": "My mind keeps churning and cannot switch off at all.",
+    "visible_reply": "今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？",
+    "selected_policy": "calibrate_need",
+    "p4_as_status": "executed_and_committed",
+    "prediction_id": "p1-1-59401c9870bf6d5f",
+    "receipt_status": "registered_for_next_user_turn",
+    "temporal_summary": "過去 0｜現在 6候選/選択 calibrate_need｜本輪未來 已封存"
+  },
+  "turn_2": {
+    "input": "Yes—that question was right. I want a practical method now.",
+    "visible_reply": "ん、そこもう少しだけ聞かせて。",
+    "observed_failure": {
+      "previous_action_feedback_expected": "supported",
+      "previous_action_feedback_actual": "unknown",
+      "current_request_policy_expected": "solve_regulation",
+      "current_request_policy_actual": null,
+      "m44_outcome": "uncertain",
+      "m44_linked": false,
+      "p4_ag_identity_bound": true,
+      "p4_ag_feedback_linked": false,
+      "p4_ag_outcome": "unknown",
+      "p4_ag_linkage_reason": "new_request_or_unresolved",
+      "current_binding_status": "not_available",
+      "current_binding_candidate_count": 0,
+      "temporal_summary": "過去 0｜現在 0候選/選択 なし｜前輪 unknown→本輪驗證｜本輪未來 無承諾",
+      "visible_action_act_expected": "practical_help",
+      "visible_action_act_actual": "generic_clarification"
+    },
+    "latency_seconds": 36.4479,
+    "provider_observation": "local_model_timeout_then_existing_fallback_surface"
+  },
+  "root_cause": {
+    "class": "dual_act_feedback_and_current_request_collapsed",
+    "details": [
+      "The first clause explicitly evaluates the previously executed clarification question.",
+      "The second clause supplies a new current desired-response policy.",
+      "The released classifier neither recognized the action-directed support wording nor the paraphrase practical method.",
+      "Even a single explicit target is insufficient for calibrate_need because the previous action outcome and the new requested policy are different variables."
+    ]
+  },
+  "claim_boundary": "This is one exposed real-product development failure. It does not estimate natural-distribution frequency, human preference, or general pragmatic understanding.",
+  "rerun_allowed_as_fresh_or_formal": false
+}

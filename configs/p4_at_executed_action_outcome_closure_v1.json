@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_p4_at_executed_action_outcome_closure_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_p4_at_implementation",
+  "dataset": {
+    "path": "datasets/p4_at_executed_action_outcome_closure_v1.json",
+    "sha256": "4f8a226b03fe8bc3ffb11fc0bfedb15e100fb385aa3427dd1820df64094dd436",
+    "case_count": 17,
+    "development_count": 1,
+    "fresh_positive_count": 9,
+    "fresh_control_count": 7
+  },
+  "predecessors": {
+    "adaptive_person_model": ["uruha_adaptive_person_model.py", "96c2557b52dee307ee455c1ad61500223df2c981922b68fc94b31842015563bf"],
+    "m44_executed_receipt": ["uruha_executed_action_receipt_m44.py", "bd60a05a4617cc41fd2917a0ff9131fdc8f7dc96de9a0a580bfe2b00d71268b9"],
+    "p4_ag_outcome_binding": ["uruha_desired_response_outcome_binding_p4.py", "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181"],
+    "p4_am_temporal_delivery": ["uruha_runtime_temporal_graph_delivery_p4.py", "16b44620654be97789967fead4357ccbe0165b55b6f43b177090d65ef06e5fa2"],
+    "p4_as_selected_action_execution": ["uruha_selected_action_surface_execution_p4.py", "d872d2eec707d9364a9488612bdd93058367d7d1846878c5dab5b4258db9ea8a"],
+    "development_failure": ["analysis/p4_at_dual_act_development_failure_2026-09-25.json", "4c3357bebcf4736ac3d1ea5c3661fe3f0cd812ddee3621e746cef6d13ac01c85"]
+  },
+  "offline_gates": {
+    "case_count": 17,
+    "expected_previous_outcome_exact_count": 17,
+    "expected_current_request_exact_count": 17,
+    "development_dual_act_closed_count": 1,
+    "fresh_positive_dual_act_closed_count": 9,
+    "fresh_control_prior_false_link_count": 0,
+    "unrelated_unknown_count": 3,
+    "third_party_quote_meta_false_link_count": 0,
+    "exact_receipt_identity_count": 17,
+    "strictly_earlier_performed_action_count": 17,
+    "same_turn_outcome_relabelled_as_old_past_count": 0,
+    "unknown_counted_as_success_count": 0,
+    "base_candidate_score_or_order_change_count": 0,
+    "new_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "raw_dialogue_persisted_count": 0
+  },
+  "failure_policy": {
+    "dataset_change_after_implementation_allowed": false,
+    "gate_change_after_implementation_allowed": false,
+    "p4_ag_base_classifier_change_allowed": false,
+    "p1_or_m44_identity_weakening_allowed": false,
+    "candidate_score_or_order_change_allowed": false,
+    "language_guard_or_persona_prompt_change_allowed": false,
+    "factual_memory_write_allowed": false,
+    "private_state_truth_claim_allowed": false,
+    "model_call_allowed": false,
+    "two_independent_acts_required_for_dual_act_cases": true,
+    "exact_executed_receipt_required_for_prior_action_outcome": true,
+    "unknown_must_not_count_as_success": true,
+    "same_turn_verification_must_not_be_backdated": true
+  },
+  "surface_rubric": {
+    "score_action_act_separately_from_exact_wording": true,
+    "natural_japanese_required_in_product_acceptance": true,
+    "exact_visible_string_recorded_but_not_action_equivalence_gate": true
+  },
+  "claim_boundary": "A pass shows that a bounded next-turn utterance can separately evaluate one exact previously executed clarification action and express a current response request, while unrelated, third-party, quoted, and metalinguistic controls do not create false prior-action feedback. It does not establish private intent truth, human preference, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}
