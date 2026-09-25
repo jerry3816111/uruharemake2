@@ -2,7 +2,34 @@
 
 更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AR 已通過；唯一下一步：P4-AS selected-action surface execution
+## P4-AS 正式結果已凍結；唯一下一步：P4-AT executed-action outcome closure
+
+P4-AS已完成offline、產品接線、開發Safari及正式one-shot驗收。offline prospective gate=`13/13`：development=`1/1`、
+全新中／英／日positive=`6/6`、third-party／metalinguistic／resolved／ordinary-motion controls=`6/6`，M39 surface、M44 receipt、
+product pending及P4-AR authority=`7/7`，false execution／role violation／新增model／factual memory=`0`。第一次開發Safari保留一個真實
+FAIL：產品已先建立exact P1 pending，但P4-AS誤要求pending必須為空，所以receipt缺失、P4-AR阻擋。唯一一次informed correction只允許
+pending absent或prediction/policy/turn/input全部exact；exact pending與ledger逐字保留，只補missing receipt，mismatch仍fail closed。
+修正後全新開發Safari通過，完整正負證據保存在`analysis/p4_as_product_development_*_2026-09-25.*`。
+
+實作commit=`81e6ba6`後另於`83bcb2c`事前凍結全新中文private runtime／Safari題，port `7882`唯一一次正式執行為 **FAIL**，不得重跑或改gate。
+真正機制鏈通過：P4-AS=`executed_and_committed`、M39=`accepted_verified_surface`、M44 exact receipt、P4-AR=
+`authorized_executed_product_event`、六候選pending、P1 sequence=`1`、temporal=`過去 0｜現在 6候選/選択 calibrate_need｜本輪未來 已封存`；
+Safari展開P4-AS／P4-AR／temporal，graph index=`65/66/67`均在utterance `69`前，logic→runtime exact，日文／durable embedding=`1/1`，
+latency=`3.216s`，P4-AS新增model/factual memory=`0/0`。但凍結要求逐字
+`今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？`，實際為
+`しんどくて止まらないのと、楽しみで止まらないの、今はどっち寄り？`；兩句都實現`calibrate_need`，但exact surface=`0/1`，所以正式
+failed gates=`turn:visible_reply`,`metric_mismatch:exact_visible_reply_count`。這證明action-level因果正確與逐字可重現是不同主張，不能用前者
+洗掉後者FAIL。完整結果：`analysis/p4_as_real_selected_action_surface_execution_failure_2026-09-25.md`。
+
+P4-AT唯一能力目標是**已執行行動的下一輪因果閉環**，不是追逐P4-AS逐字答案。先以P4-AS正式題作已曝光development，只讀驗證其M44 receipt
+可被下一輪observable feedback精確連結；不得重跑該正式輸入。再事前凍結全新的兩輪中／英／日序列，至少包含：使用者確認要方法、確認只想被聽、
+否定兩個選項／轉向其他需求，以及無關訊息保持unknown。T1必須有released visible `calibrate_need`、exact M44/P1/binding；T2必須把支持／否定／
+未知綁回同一performed action，將T1 commitment從future移入strictly-earlier past，並在需要時撤銷或換policy，unknown不得算成功。表面驗收以事前固定的
+action-act rubric與M39 observable surface contract為準，另記exact string但不把單一措辭混同理解；不得改P4-AG classifier、P1 identity、M44 outcome、
+候選分數、語言guard、prompt或記憶真值。offline通過並commit後，才能另凍結完全新的private runtime／Safari兩輪；即使PASS也只證明一條
+action→feedback→calibration產品閉環，不等於使用者偏好、人評、自然分布、人類方程式或強LLM優勢。
+
+## P4-AS／P4-AR 保存歷史（不是當前下一步）
 
 P4-AR在重新檢查產品因果語意後，沒有把P4-AQ的fallback硬升成P1 identity：P4-AQ所選`calibrate_need`只存在於late shadow，
 released M18 decision仍是`not_applied`，M44 action receipt是`not_registered`，可見回覆也沒有執行澄清。若直接簽P1事件，下一輪會把
