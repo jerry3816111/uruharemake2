@@ -1,8 +1,36 @@
 # 目前任務卡
 
-更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AS 正式結果已凍結；唯一下一步：P4-AT executed-action outcome closure
+## P4-AT 正式結果已凍結；唯一下一步：P4-AU source-bound current-action delivery
+
+P4-AT offline在事前freeze後通過：17案的上一個action outcome與本輪request policy=`17/17`、development=`1/1`、全新中／英／日
+positive=`9/9`、false-prior-link controls=`0/7`、unrelated unknown=`3/3`、exact receipt identity=`17/17`，候選分數／排序、model call、
+factual memory與raw dialogue leakage變更=`0`。P4-AT只把上一輪observable action feedback與本輪response request分開，不改P4-AG classifier、
+P1 identity、M44 truth、候選排名或visible reply；實作commit=`a1600e2`，相鄰回歸=`51 passed`。
+
+另於`f2d1ecd`事前凍結完全新的中文兩輪private runtime／Safari case，port `7883`唯一一次正式執行為 **FAIL**，不得重跑、改題或改gate。
+真正的因果閉環通過：T1以`calibrate_need`建立exact M44 receipt、P4-AG六候選與future commitment；T2把使用者支持精確綁回同一
+`p1-1-54b3425d01de0b33`事件，P4-AT=`closed_supported`、M44/P4-AG=`supported`，並把當輪新要求另外辨識為
+`solve_regulation/practical_help`。performed action strictly-earlier、prior future consumed、same-turn backdating=`true/true/false`；P4-AT／P4-AG／
+temporal／utterance graph index=`66/67/68/69`，Safari可見；2/2自然日文、2/2 durable episode、P4-AT新增model/factual memory=`0/0`。
+
+凍結的T2 action-act gate失敗：候選表面原為`今すぐできる一個だけ、一緒に決めよ。`，沒有真正交付步驟；M45嘗試兩次、完成一次model call後
+`TimeoutError`，成為`withheld_model_unavailable`，M46=`counterfactual_review_unavailable`。M39因此對
+`practical_action_not_delivered_m45` fail closed，最後可見為`今の情報だけで適当な方法は言いたくない。どこで止まってるか教えて。`；
+T2 latency=`37.9706s`，高於20秒。唯一failed gate=`turn_2_m39_practical_act_count`。這證明「理解前一個行動的回饋」、「辨識現在要什麼」與
+「真的做出現在要的行動」是三個不同gate；前兩個通過、第三個失敗，不能宣稱felt understanding、人類方程式或強LLM優勢。完整證據：
+`analysis/p4_at_real_executed_action_outcome_closure_failure_2026-09-26.md`。
+
+P4-AU唯一能力變因是**把剛才問題的source-bound context接給本輪明示action request**，不是放寬M39/M45或把timeout當成功。P4-AT正式兩輪已曝光，
+只能作before/development，不能重跑。先事前凍結新的中／英／日兩輪：T1需有direct first-person problem context與真正executed receipt；T2需同時
+包含exact action feedback與明示`practical_help` request。只有exact receipt identity、strict next-turn window、direct first-person ownership且本輪沒有
+observable topic correction時，才可把T1的最小source atoms交給既有M45/M46；不得把persona推測、內部candidate、第三人稱、引用、過期或跨題內容當source。
+fresh positive必須實際產生一個source-consistent、自然日文、可立即執行的步驟；controls需涵蓋topic correction、unrelated feedback、third-party、
+receipt mismatch與timeout，全部fail closed。不得改P4-AT outcome、P4-AG/M44、候選分數、M39 action-act gate、語言guard、prompt、記憶真值或把 generic
+promise-to-help算實際action。先freeze／commit，再offline implementation與回歸；只有另凍結全新real Safari兩輪後才能主張一條產品action delivery閉環。
+
+## P4-AS／P4-AT 保存歷史（不是當前下一步）
 
 P4-AS已完成offline、產品接線、開發Safari及正式one-shot驗收。offline prospective gate=`13/13`：development=`1/1`、
 全新中／英／日positive=`6/6`、third-party／metalinguistic／resolved／ordinary-motion controls=`6/6`，M39 surface、M44 receipt、
