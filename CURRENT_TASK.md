@@ -34,7 +34,22 @@ raw label trace、M46 bypass、M45/M39 weakening、visible reply及完整題字�
 product preflight=`ready`、0 model／Safari operation。完整證據：
 `analysis/p4_av_neutral_operational_role_authorization_acceptance_2026-09-26.md`。
 
-P4-AV現在唯一下一步是先commit固定實作，再事前凍結**完全新的**兩輪private runtime／Safari case；不得重跑P4-AU正式題。正式gate仍須
+P4-AV實作commit=`83ea808`。另於`2fdfbdd`事前凍結**完全新的**兩輪private runtime／Safari case，port `7885`正式執行在T1即 **FAIL**
+並停止，T2未送、同題不得重跑。T1可見日文`ん、寝てないのか、考え事で止まんないのか、まずそこだけどっち？`確實執行澄清，M39=
+`accepted_verified_surface`且policy act=`true→true`；但中文省略第一人稱使source frame=`unspecified`，P4-AS因`early_authority_exact`與
+`direct_user_first_person`失敗為`not_applicable`，M44=`not_registered`，P4-AR=`blocked_unexecuted_shadow_action`。雖P4-AG仍有六個shadow
+候選，temporal正確顯示current candidates=`0`、future=`not_available`。P4-AS／P4-AR／P4-AG／temporal／utterance index=
+`64/65/66/68/69`，Safari已展開P4-AS節點；1輪自然日文／durable／graph=`1/1/1`、latency=`3.0913s`、0 model call。
+P4-AV／M53未到達，所以不能把本次寫成P4-AV產品效果。完整證據：
+`analysis/p4_av_real_neutral_operational_role_delivery_failure_2026-09-26.md`。
+
+P4-AW唯一能力變因是**CJK省略第一人稱時的executed-action authority**。P4-AV正式T1只能作exposed development，不得重跑。先凍結新的中／日
+主詞省略direct-user cognitive-overactivity正例，以及third-party、quoted／metalinguistic、news/report、physical-object motion、resolved-state與
+ambiguous-role controls；只能在existing typed trigger、direct source、third_party=false、M39已驗證可見`calibrate_need`、exact P1 pending與plan identity
+均成立時，將`unspecified`視為本輪direct-user ellipsis，不得把一般無主詞句都升成user-first-person。不得改trigger detector、candidate ranking、P1/P4-AR
+guard、feedback、visible reply、prompt、model call、記憶或private truth。offline通過並commit後，P4-AV仍需另一組全新Safari pair。
+
+原P4-AV real gate要求如下，保存作為失敗邊界：正式gate仍須
 同時通過P4-AS→AT→AU exact來源鏈、P4-AV node在M53/M46/M45/utterance前、M53不阻擋中性workflow role、M46 content/surface verified、
 M45 delivered、M39 practical act與自然日文／durable graph；generic promise、再澄清、model unavailable或只有internal plan都算FAIL。即使PASS也
 只證明一條產品action-delivery path，不是建議有用的人評、自然分布、強LLM優勢或人類方程式。
