@@ -27,6 +27,18 @@ source-quoted labels與unquoted controls。只允許對來源無關且不聲稱�
 `「重要」「不重要」`等具體分類仍須阻擋。不得改plan文字、M46 review、M45/M39 gate、候選分數／排序、prompt、model call、記憶或visible reply。
 offline通過並commit後，才能凍結完全新的real Safari兩輪；PASS仍只證明一條source-safe action delivery產品路徑，不證明建議對真人有用。
 
+P4-AV已於`3c5437d`事前freeze後0 correction一次通過offline：development=`1/1`；新的中／英／日source-neutral workflow-role
+positive=`6/6`且predecessor M53原本全阻擋；invented topic／priority／emotion／diagnosis／preference／feasibility／attribute controls=`7/7`
+仍阻擋；exact-source／existing-neutral／unquoted predecessor controls=`3/3`保持。plan mutation、candidate rerank、新增model、factual memory、
+raw label trace、M46 bypass、M45/M39 weakening、visible reply及完整題字串patch=`0`。聚焦與相鄰回歸=`56 passed`；port `7885` sandbox
+product preflight=`ready`、0 model／Safari operation。完整證據：
+`analysis/p4_av_neutral_operational_role_authorization_acceptance_2026-09-26.md`。
+
+P4-AV現在唯一下一步是先commit固定實作，再事前凍結**完全新的**兩輪private runtime／Safari case；不得重跑P4-AU正式題。正式gate仍須
+同時通過P4-AS→AT→AU exact來源鏈、P4-AV node在M53/M46/M45/utterance前、M53不阻擋中性workflow role、M46 content/surface verified、
+M45 delivered、M39 practical act與自然日文／durable graph；generic promise、再澄清、model unavailable或只有internal plan都算FAIL。即使PASS也
+只證明一條產品action-delivery path，不是建議有用的人評、自然分布、強LLM優勢或人類方程式。
+
 ## P4-AT 正式結果已凍結；P4-AU 的來源依據（保存歷史，不是當前下一步）
 
 P4-AT offline在事前freeze後通過：17案的上一個action outcome與本輪request policy=`17/17`、development=`1/1`、全新中／英／日
