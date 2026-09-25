@@ -30,6 +30,19 @@ fresh positive必須實際產生一個source-consistent、自然日文、可立�
 receipt mismatch與timeout，全部fail closed。不得改P4-AT outcome、P4-AG/M44、候選分數、M39 action-act gate、語言guard、prompt、記憶真值或把 generic
 promise-to-help算實際action。先freeze／commit，再offline implementation與回歸；只有另凍結全新real Safari兩輪後才能主張一條產品action delivery閉環。
 
+P4-AU已完成offline freeze與實作。第一批凍結測試失敗保留：fresh positive=`4/6`、control正確阻擋=`6/9`；根因是日文省略主詞、M47 ref未切細、
+metalinguistic predecessor guard未compose，以及expired fixture改了會被M44重算的衍生欄位。唯一一次informed correction不改題／gate／prompt／M39／M45，
+只compose既有P4-AT direct-source guard、細分ref、為無third-party/meta的日文direct user turn處理主詞省略，並讓fixture真正改authoritative created turn。
+修後development=`1/1`、全新中／英／日source linked與exact identity=`6/6`，九個third-party／meta／unrelated／new-task／identity／window／no-feedback／
+wrong-policy／oversize controls誤加=`0/9`且block reason=`9/9`；六個positive以fake generation/review通過既有M45 structural contract=`6/6`，但這不是
+live model品質或人評。候選score/order、predecessor source、model call、factual memory、assistant/private-inference source、raw trace變更=`0`；相鄰回歸
+=`84 passed`，sandbox product preflight=`ready`。完整證據：`analysis/p4_au_source_bound_current_action_delivery_acceptance_2026-09-26.md`。
+
+P4-AU唯一下一步是另commit本offline結果後，事前凍結**完全新的**private runtime／Safari兩輪，不得使用P4-AT或P4-AU任何已曝光句子。正式gate需同時看：
+T1真正executed `calibrate_need`與exact receipt；T2 P4-AT支持閉環、P4-AU exact prior source handoff、M45/M46實際交付一個source-consistent且可立即開始的日文步驟、
+M39 action-act match、P4-AU node在M50/M45/utterance前、2/2 durable與日文、實際model call/token/latency。timeout、generic promise、再問一次或只有內部policy正確都算FAIL；
+即使PASS也只是一條fresh產品閉環，不等於人評、自然泛化、人類方程式或強LLM優勢。
+
 ## P4-AS／P4-AT 保存歷史（不是當前下一步）
 
 P4-AS已完成offline、產品接線、開發Safari及正式one-shot驗收。offline prospective gate=`13/13`：development=`1/1`、
