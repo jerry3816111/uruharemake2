@@ -2,7 +2,32 @@
 
 更新：2026-09-25。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AQ 已封存；唯一下一步：P4-AR late-trigger product identity bridge
+## P4-AR 已通過；唯一下一步：P4-AS selected-action surface execution
+
+P4-AR在重新檢查產品因果語意後，沒有把P4-AQ的fallback硬升成P1 identity：P4-AQ所選`calibrate_need`只存在於late shadow，
+released M18 decision仍是`not_applied`，M44 action receipt是`not_registered`，可見回覆也沒有執行澄清。若直接簽P1事件，下一輪會把
+使用者反應錯誤歸因給未曾顯示的行動。P4-AR因此改為**executed-action authority gate**：只有existing desired decision、applied
+decision／plan、exact product pending及registered receipt全部綁同一真正P1事件與policy時才允許outcome verification；fallback不能升P1，
+P1 guard不降低。
+
+offline freeze／implementation與相鄰P4-AD～AR回歸=`144 passed`。事前另凍結一個全新English one-turn private runtime／Safari case，
+唯一一次正式執行為 **PASS**：P4-AQ先`0→6`候選並選`calibrate_need`；P4-AR正確得到
+`blocked_unexecuted_shadow_action`，保留6個候選供查看，但current binding=`not_available/0`、temporal=`過去 0｜現在 0候選/選択 なし｜
+本輪未來 無承諾`，fallback→P1=`0`。graph index為guard/order/binding/temporal/utterance=`64/65/66/67/68`，四個logic→graph
+payload exact且Safari可展開guard；日文／durable episode／graph=`1/1`，等待`17.6066s`，P4-AR新增model／factual memory=`0/0`。
+完整證據：`analysis/p4_ar_real_executed_action_identity_gate_acceptance_2026-09-25.md`。
+
+這個PASS只證明**不替未執行的內部候選造假後續驗證**。可見回覆
+`うちの頭は考えで埋まって今夜落ち着かないんだね。`雖為日文，卻把使用者第一人稱誤成角色的`うちの頭`，也沒有真的執行
+`calibrate_need`；因此不是felt understanding、語意忠實、使用者偏好、預測正確、人類方程式或強LLM優勢證據。
+
+P4-AS下一個唯一能力變因是**selected-action surface execution**。先把P4-AR已曝光case當development反例，不重跑正式題；再事前凍結
+新的中／英／日cognitive-overactivity正例與speaker-ownership／resolved／literal controls。只有當P4-AF/AD已授權且選出一個bounded action，
+才允許在M39之後以source-bound proposition與persona約束把該action實現為自然日文；`calibrate_need`必須是短、低壓、可否定的澄清，
+不得把候選心理狀態說成事實。visible surface真的表達該policy後，M44才可登記exact executed receipt並由既有P1簽發下一輪事件；若surface
+未表達、ownership錯、M39拒絕或receipt不一致，一律fail closed且不得建立future commitment。不得改AH detector、AF authority、AD候選
+分數／排序、AG feedback classifier、P1 guard、記憶內容、persona facts或新增模型call。離線通過並commit後，才能另凍結全新real
+Safari case；即使通過也只證明選擇→表達→receipt→可驗證事件的單一路徑，不等於使用者喜歡、預測正確或研究全面優勢。
 
 P4-AM與P4-AN各保存一個不同的真實產品FAIL：P4-AM的temporal payload存在於logic但被最後一次blackboard refresh覆蓋；P4-AN已修好
 post-turn delivery，Safari也能在utterance前看到節點，但全新P4-AH trigger在P4-AD／AF／AG之後才建立，因此當輪仍是0候選、無future
