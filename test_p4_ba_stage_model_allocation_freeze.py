@@ -85,6 +85,13 @@ def test_p4_ba_product_eligibility_requires_quality_cost_and_complete_accounting
     assert gates["token_accounting_complete"] is True
 
 
+def test_p4_ba_contract_binds_the_frozen_candidate_review_and_transport_code():
+    contract, _dataset = _load()
+
+    for _name, (relative, expected) in contract["implementation"].items():
+        assert _sha(ROOT / relative) == expected
+
+
 def test_p4_ba_failure_policy_forbids_retries_gate_changes_and_runtime_mutation():
     contract, _dataset = _load()
     failure = contract["failure_policy"]
