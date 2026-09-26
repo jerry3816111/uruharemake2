@@ -2,7 +2,17 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BC raw-dialogue typed-task-spec producer freeze
+## 當前唯一工作：P4-BD role-aware evidence span evaluation freeze
+
+P4-BC已依freeze=`1424f24`、runner=`4045947`唯一執行28 calls，正式 **FAIL**，不得重跑或改原gate。28/28 completed、JSON parse成功、token完整。9B的template／slots／downstream compile／mechanism／自然日文=`6/6`，controls unavailable=`8/8`，但gold-boundary exact evidence=`0/6`、control reason=`7/8`、max=`21.71181s`；4B controls reason=`8/8`且max／median=`14.39932/9.32895s`，但positive normalized／compile=`5/6`，日文atomic raw output雖選對template，漏掉required `unknown_constraint_jp`而fail closed。兩者false control spec=`0`，產品runtime未改。完整證據：`analysis/p4_bc_raw_dialogue_typed_spec_failure_2026-09-27.md`。
+
+重要診斷：兩模型12組positive evidence atoms的required role set都正確，atom也全是原source exact substring，但與唯一gold邊界逐字不同，所以formal exact=`0/6`。部分是明顯合理的短／長span（`空白` vs `還是空白`、`收據` vs `桌上的收據`），部分仍可能角色不精確（`email` vs `subject`）。因此不能把P4-BC洗成PASS，也不能只要substring就算對。
+
+P4-BD唯一變因是**evidence span評價**。P4-BC只作exposed development；用完全新raw-dialogue cases，在模型執行前為每個role凍結一組acceptable exact spans、允許的containment關係與語意改變的hard negatives。template、full slots、controls、9B/4B、prompt/schema、硬體、0 retry與20秒gate保持；不得同時把canonical slots移進deterministic compiler。正式判定同時報strict single-gold exact與role-aware score，前者不刪除。
+
+先設計annotation contract與inter-annotation consistency proxy（至少兩組獨立規則標註或可重現雙標註；若沒有獨立人類只能稱developer-authored），commit freeze後才可新跑。若role-aware仍失敗，保留semantic grounding缺口；若通過，只能說span evaluator不再懲罰預先承認的等價邊界，不能直接接產品。canonical slot responsibility另留下一卡。
+
+## P4-BC raw dialogue typed spec freeze 與結果（保存歷史，不是當前下一步）
 
 P4-BB 已在 freeze commit=`a4dd116` 後 0 correction 一次完整 **PASS**：繁中／英文／日文 6 positive 覆蓋 M46 六種 allowed progress mechanism；compiled／exact expected plan／M46 structural／source exact／mechanism exact／自然日文／deterministic repeat 全為`6/6`。12 個 identity／provenance／schema／language／safety／unsupported controls 依預定原因 blocked=`12/12`，false plan=`0`。model call／raw dialogue trace／factual memory write=`0/0/0`，最大 compile=`0.00090479s`。產品 runtime 未改。完整證據：`analysis/p4_bb_typed_action_compiler_acceptance_2026-09-27.md`。
 
