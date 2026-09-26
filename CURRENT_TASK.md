@@ -2,7 +2,19 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BA stage-specific local model allocation
+## 當前唯一工作：P4-BB typed action compiler boundary freeze
+
+P4-BA 已依事前凍結的 2×2 配置各唯一執行一次，正式 **FAIL**，不得重跑或在結果後改 gate。20 個 scored model calls 全部 completed、JSON 可解析、token accounting 完整，所以這次不是 transport failure。四個 arm 都不具產品資格：`g9_r9` 的 generation structural／allowed mechanism=`1/2,0/2`、review fixture=`3/4`、full accept=`0/2`、max=`35.71618s`；`g9_r08`=`1/2,0/2,2/4,0/2,22.22539s`；`g4_r9`=`0/2,0/2,3/4,0/2,29.86752s`；`g4_r08` 雖唯一通過 latency（max=`16.78266s`），但品質為`0/2,0/2,2/4,0/2`。
+
+兩個 generator 在兩案都選 `group_by_rule`，allowed mechanism=`0/2`；0.8B reviewer 接受=`0/4`，退化成 always-reject；9B reviewer 的 report relabel content checks 全通過，只因 surface flag 拒絕，不能證明真正辨別 task progress。exact source、自然日文、0 raw dialogue trace、0 factual-memory write仍保持。產品 runtime 未改。完整證據：`analysis/p4_ba_stage_model_allocation_failure_2026-09-26.md`。
+
+這否定的只有「單靠較小的 stage model allocation 可同時保住既有品質與 20 秒成本」；不是人評、自然分布、強 LLM 比較、人類方程式或所有小模型的結論。
+
+下一個單一架構變因是 P4-BB **typed action compiler boundary**。先事前凍結新 dataset／contract：deterministic 層只根據已授權 source、task kind 與明列 allowed mechanisms 產生可審計 slots；模型不能自行發明 mechanism，只能填寫或實現允許欄位。semantic progress 與 persona-surface 分開記分，但任一失敗仍 fail closed；unknown task 必須保持 uncovered，不得硬套模板。P4-BA cases只能作 exposed development，正式需全新中／英／日 action cases與 false-source／unsupported-task controls。
+
+先定義 coverage、source exact、slot validity、semantic counterexample rejection、surface Japanese、model calls/tokens/latency與0 memory/raw-trace gates，commit freeze後才能實作。不得先改產品M51/M46/M45/M39或runtime model；offline全通過後才有資格凍結 fresh Safari pair。
+
+## P4-BA stage allocation freeze 與結果（保存歷史，不是當前下一步）
 
 P4-AZ real pair 已唯一執行並正式 **FAIL**，但把最早因果缺口往後推進：P4-AY 找到 1 個response-form／feedback ref、0 個genuine replacement task並只停在prior role；P4-AZ=`authorized_previous_turn_cjk_ellipsis`，source role仍為`unspecified`且0 rewrite；P4-AU=`prior_source_linked`，新增`prior:1` digest與T1 exact相同，assistant/private source=`0/0`。P4-AV/M53 integrity、graph ordering、2/2自然日文、2/2 durable、isolated Chroma=`2`均通過。
 
