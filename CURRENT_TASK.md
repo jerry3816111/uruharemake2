@@ -2,7 +2,30 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AW offline 已通過；唯一下一步：全新 P4-AW→P4-AV real Safari pair
+## P4-AW real T1 通過、完整兩輪正式 FAIL；唯一下一步：複合 feedback＋request 分解
+
+P4-AW offline結果、實作與事前凍結pair分別固定於`a0e8c4a`、`8487644`、`acb562e`。新的private runtime／Safari兩輪已在
+port `7887`各唯一執行一次，完整正式結果為 **FAIL**，不得重跑或改gate。
+
+T1新能力確實進入真實產品：中文省略第一人稱時，P4-AW=`authorized_current_user_ellipsis`且source role誠實保留`unspecified`；
+P4-AS=`executed_and_committed`、M44 exact receipt=`p1-1-6c5f453019d919e9`、P4-AR authorized、P4-AG六候選與future lock均通過。
+P4-AW沒有改source frame／trigger detector／候選排序／feedback／P1-P4-AR guard／visible reply，新增model／factual memory／raw trace／
+private truth=`0/0/0/0`。這是P4-AW的real-product bounded PASS，不是完整pair PASS。
+
+T2同時暴露兩個獨立失敗。最早是複合句`你剛才先確認我需要什麼是對的；現在給我…`沒有被拆成「支持前輪action」與「本輪新request」：
+P4-AT=`closed_unknown`、`two_independent_acts=false`，P4-AU因`earlier_action_not_explicitly_supported`沒有加入T1 prior source。後段仍辨識
+`solve_regulation/practical_help`並由M51產生2個不同且structurally valid=`2/2`候選、M52 realized=`2/2`；但兩次model operation只有一次完成，
+第二次`TimeoutError`，M46=`counterfactual_review_unavailable`、M45=`withheld_model_unavailable`，M39對
+`practical_action_not_delivered_m45` fail closed，最後又澄清而未交付動作。T1/T2 latency=`3.8869/38.1546s`；model attempted/completed=
+`2/1`，已記錄tokens=`546+272`但accounting不完整。2/2自然日文、2/2 durable、isolated Chroma=`2`、2/2 graph；Safari展開AW、AT、AU、
+AV、M45節點，0 tab關閉。另T1 logic有P4-AG exact binding，但blackboard沒有獨立P4-AG node，所以凍結ordering gate也誠實FAIL。
+
+下一個單一能力變因只修**同一當輪同時含有對上一行動的明示支持，以及新的practical-help request**的bounded compositional split。
+先把本次句子降為exposed development，另凍結全新的中／英／日正例與false-link controls；不得改receipt identity、current request routing、
+候選排序、M46/M45 review與fail-closed、visible reply、prompt或記憶。修後本題只能作regression，仍需全新Safari pair。完整證據：
+`analysis/p4_aw_real_cjk_ellipsis_to_action_delivery_failure_2026-09-26.md`。
+
+## P4-AW offline 與 freeze 保存歷史（不是當前下一步）
 
 P4-AW 只修 CJK 省略第一人稱時的 executed-action authority。契約於 `a0e8c4a` 先凍結；第一次實作只達 development=`0/1`、
 fresh positive=`4/6`，但 controls=`12/12`、明示第一人稱 predecessor=`2/2`，失敗已保存。唯一 informed correction 只把 upstream 已有的
