@@ -12,6 +12,10 @@ P4-BB 真正證明的是：**若**已有正確且授權的 source-bound typed ta
 
 P4-BC gate 必須同時含 typed-spec exactness、P4-BB downstream exact compile、positive coverage、negative rejection、private/assistant source=`0`、完整tokens與單一model-call latency `<=20s`。任一模型只有全部通過才可作後續 integration候選；都失敗就保留負結果，不改產品。先commit P4-BB結果，再freeze P4-BC dataset／contract／tests；不得先改M51/M46/M45/M39或接Safari。
 
+P4-BC freeze 已準備：6 個完全新positive（繁中／英文／日文各2，逐一覆蓋六個P4-BB template）與8個ambiguous／third-party／medical／financial／unsupported／no-action／quoted-meta／private-state controls；P4-BB來源逐字交集=`0`。9B與4B各對14案只呼叫一次，共28個scored calls，模型固定順序各prewarm一次且不計case latency；prompt、dynamic schema、case order、硬體、temperature=`0`、seed=`20260927`、num_ctx／num_predict與0 retry完全相同。
+
+每個模型只有JSON=`14/14`、positive typed／exact spec／template／evidence／slots／downstream compile／mechanism／日文=`6/6`、controls unavailable＋reason=`8/8`、false spec與assistant/private source=`0`、tokens完整、max call `<=20s`才eligible。先commit本freeze後才實作一次性runner；任一近似答案、compiler僥倖可編譯或另一模型較好都不能洗掉該模型的failed gates。
+
 ## P4-BB typed action compiler freeze 與結果（保存歷史，不是當前下一步）
 
 P4-BA 已依事前凍結的 2×2 配置各唯一執行一次，正式 **FAIL**，不得重跑或在結果後改 gate。20 個 scored model calls 全部 completed、JSON 可解析、token accounting 完整，所以這次不是 transport failure。四個 arm 都不具產品資格：`g9_r9` 的 generation structural／allowed mechanism=`1/2,0/2`、review fixture=`3/4`、full accept=`0/2`、max=`35.71618s`；`g9_r08`=`1/2,0/2,2/4,0/2,22.22539s`；`g4_r9`=`0/2,0/2,3/4,0/2,29.86752s`；`g4_r08` 雖唯一通過 latency（max=`16.78266s`），但品質為`0/2,0/2,2/4,0/2`。
