@@ -12,7 +12,7 @@ P4-AZ real pair 已唯一執行並正式 **FAIL**，但把最早因果缺口往�
 
 允許新增：P4-BA frozen dataset/config、freeze test、一次性offline benchmark harness、result evidence/test/report，以及本節更新。不得先改產品runtime、M51/M46/M45/M39、prompt、schema、gate、資料或既有正式結果；每個unique model/case只執行一次，0 retry。generation output可在不同reviewer arm重用以維持factorial歸因；所有arm正負結果都保留。模型依`9b→4b→0.8b`各做一次不計分prewarm並維持`30m`，prewarm耗時另記，避免把不同cold-load順序混入stage latency。
 
-正式gate：generation JSON與selected structurally-valid=`2/2`；四個fixed reviewer fixture=`4/4`，不可always-true；full pipeline source exact、自然日文、M46 content/surface accept=`2/2`；raw dialogue trace／factual memory write=`0/0`；token accounting完整；各案two-stage最大`<=20s`。任何arm只有全部gate通過才可作後續產品整合候選；多組通過取median latency最低，其次completion tokens最少。全部失敗就產出負結果，不改runtime，下一步依失敗分支重設架構而非追分。
+正式gate：generation JSON、selected structurally-valid及case-specific allowed progress mechanism=`2/2`；四個fixed reviewer fixture=`4/4`，不可always-true；full pipeline source exact、自然日文、M46 content/surface accept=`2/2`；raw dialogue trace／factual memory write=`0/0`；token accounting完整；各案two-stage最大`<=20s`。任何arm只有全部gate通過才可作後續產品整合候選；多組通過取median latency最低，其次completion tokens最少。全部失敗就產出負結果，不改runtime，下一步依失敗分支重設架構而非追分。
 
 先完成freeze commit，再實作harness並跑唯一一次四arm評測；這只是development-only本機模型配置證據，不是人評、建議有效、自然分布、強LLM優勢或人類方程式。
 

@@ -77,6 +77,7 @@ def test_p4_ba_product_eligibility_requires_quality_cost_and_complete_accounting
 
     assert gates["generation_json_parse_success_count"] == 2
     assert gates["generation_structurally_valid_count"] == 2
+    assert gates["generation_allowed_mechanism_count"] == 2
     assert gates["review_fixture_correct_count"] == 4
     assert gates["full_pipeline_accepted_count"] == 2
     assert gates["full_pipeline_source_exact_count"] == 2
