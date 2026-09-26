@@ -2,7 +2,24 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AU 正式結果已凍結；唯一下一步：P4-AV neutral operational-role authorization
+## P4-AW offline 已通過；唯一下一步：全新 P4-AW→P4-AV real Safari pair
+
+P4-AW 只修 CJK 省略第一人稱時的 executed-action authority。契約於 `a0e8c4a` 先凍結；第一次實作只達 development=`0/1`、
+fresh positive=`4/6`，但 controls=`12/12`、明示第一人稱 predecessor=`2/2`，失敗已保存。唯一 informed correction 只把 upstream 已有的
+typed `cognitive_overactivity` compose 到 copied shadow state，不改 detector／資料／gate。修後 development=`1/1`、全新中／日文
+subjectless positive=`6/6`、third-party／quoted-meta／news-report／physical-object／resolved／ambiguous-role control=`12/12` blocked、
+explicit predecessor=`2/2` preserved；typed trigger與完整 P4-AS→P4-AR exact chain=`7/7`，false authority=`0`。source frame／detector／
+P1-P4-AR guard／candidate order／feedback／visible reply／model／memory／raw trace／private truth／完整fresh字串patch變更皆=`0`。
+focused=`15 passed`，affected total=`74 passed`（P4-AW 15＋predecessor/adjacent 59）；port `7886` sandbox preflight=`ready`，
+0 model／Safari／VRM-tool operation。完整證據：
+`analysis/p4_aw_cjk_subject_ellipsis_action_authority_acceptance_2026-09-26.md`。
+
+這只證明 frozen CJK grammar 的 deterministic authority bridge；P4-AV 舊 Safari FAIL 不改寫。下一步須先 commit 本 offline 結果，再凍結
+**完全新的**兩輪 private runtime／Safari pair，T1 是未曝光 subjectless direct-user cognitive-overactivity，必須 P4-AW final、P4-AS executed、
+M44/P1/P4-AR/P4-AG exact、future locked；T2 才能驗 P4-AT support、P4-AU exact prior-source handoff、P4-AV neutral role、M53/M46/M45/M39
+真正 visible practical action。題目、gate、port與no-retry先commit；generic promise、再澄清、timeout、只有internal plan都算FAIL。
+
+## P4-AU 正式結果已凍結；P4-AV／P4-AW 的來源（保存歷史，不是當前下一步）
 
 P4-AU offline freeze與修正後固定結果通過：development=`1/1`、全新中／英／日positive source handoff=`6/6`、9個false-link control正確阻擋=`9/9`，
 deterministic fake M45 downstream structural contract=`6/6`，predecessor mutation／candidate order／新增model／factual memory／assistant或private來源／raw trace=`0`；
