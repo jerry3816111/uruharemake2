@@ -1,0 +1,94 @@
+{
+  "schema": "uruha_p4_az_real_previous_turn_ellipsis_to_action_delivery_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "dataset": {
+    "path": "datasets/p4_az_real_previous_turn_ellipsis_to_action_delivery_v1.json",
+    "sha256": "ccfd24c7766fca3e4780ee53f759b61f8f96cc0122492eac382fb5aaa660a4d1",
+    "turn_count": 2
+  },
+  "implementation": {
+    "module": [
+      "uruha_previous_turn_cjk_ellipsis_authority_p4.py",
+      "f6eca05f2061542bdd6dfc4cbbf85b96309de243498c3dd66d223a4e1d760de9"
+    ],
+    "product_entry": [
+      "uruha_web_ui_product_p4_az.py",
+      "ba18cf55bd7b0f231fc4e360d2d88a2282b13d3a539fb616f50e8692bf7997b1"
+    ],
+    "launcher": [
+      "p4_az_safe_isolated_product_launcher.py",
+      "7ab2f59edde005110ab14f485a8273d6dcdd11a9fa9022e0938fe6fd9f0f256b"
+    ],
+    "offline_evidence": [
+      "analysis/p4_az_previous_turn_cjk_ellipsis_authority_evidence_2026-09-26.json",
+      "d77ccf22273300660edee9ea1a52c63f6fb760db81b928fd1241f2447ac3b956"
+    ]
+  },
+  "execution": {
+    "port": 7892,
+    "private_runtime_required": true,
+    "safari_required": true,
+    "turns_must_run_in_one_session": true,
+    "rerun_or_retry_after_result_allowed": false,
+    "timeout_per_turn_seconds": 75,
+    "latency_target_seconds": 20,
+    "latency_must_be_recorded": true,
+    "model_calls_and_tokens_must_be_recorded": true
+  },
+  "formal_gates": {
+    "turn_count": 2,
+    "natural_japanese_visible_count": 2,
+    "durable_episode_count": 2,
+    "graph_visible_count": 2,
+    "turn_1_p4_aw_authorized_count": 1,
+    "turn_1_p4_as_executed_count": 1,
+    "turn_1_exact_m44_receipt_count": 1,
+    "turn_1_p4_ar_authorized_count": 1,
+    "turn_1_exact_p4_ag_binding_count": 1,
+    "turn_1_future_locked_count": 1,
+    "turn_2_p4_ax_authorized_count": 1,
+    "turn_2_p4_at_closed_supported_count": 1,
+    "turn_2_p4_ay_constraint_authorized_count": 1,
+    "turn_2_p4_ay_genuine_task_ref_count": 0,
+    "turn_2_p4_ay_prior_role_only_stop_count": 1,
+    "turn_2_p4_az_authorized_count": 1,
+    "turn_2_p4_az_source_role_preserved_unspecified_count": 1,
+    "turn_2_p4_au_prior_source_linked_count": 1,
+    "turn_2_p4_au_exact_turn_1_source_count": 1,
+    "turn_2_p4_av_integrity_pass_count": 1,
+    "turn_2_p4_av_remaining_unsupported_count": 0,
+    "turn_2_m53_no_unsupported_count": 1,
+    "turn_2_m45_delivered_count": 1,
+    "turn_2_m46_verified_count": 1,
+    "turn_2_m46_content_passed_count": 1,
+    "turn_2_m46_surface_passed_count": 1,
+    "turn_2_m39_practical_act_count": 1,
+    "turn_2_generic_promise_or_clarification_count": 0,
+    "turn_2_temporal_supported_current_count": 1,
+    "turn_2_strictly_earlier_action_count": 1,
+    "turn_2_prior_future_consumed_count": 1,
+    "turn_2_same_turn_outcome_backdated_count": 0,
+    "p4_ay_node_before_p4_az_p4_au_m50_m53_m46_m45_utterance_count": 1,
+    "p4_az_node_before_p4_au_m50_m53_m46_m45_utterance_count": 1,
+    "p4_ax_node_before_p4_at_p4_ag_temporal_utterance_count": 1,
+    "p4_az_new_model_call_count": 0,
+    "p4_az_factual_memory_write_count": 0,
+    "p4_az_raw_dialogue_trace_count": 0,
+    "p4_az_source_role_rewrite_count": 0,
+    "assistant_or_private_inference_source_count": 0,
+    "exact_visible_string_gate_count": 0,
+    "latency_target_met_count": 2
+  },
+  "failure_policy": {
+    "same_input_rerun_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "missing_p4_ay_p4_az_p4_av_or_m53_node_may_count_as_pass": false,
+    "timeout_or_json_parse_failure_may_count_as_delivery": false,
+    "generic_promise_may_count_as_delivery": false,
+    "clarification_may_count_as_delivery": false,
+    "internal_plan_without_visible_action_may_count_as_delivery": false,
+    "failed_result_may_be_hidden_by_offline_pass": false
+  },
+  "claim_boundary": "A pass is one fresh two-turn private-runtime/Safari path in which exact compound feedback, response-form discrimination, previous-turn Chinese ellipsis authority, source handoff, source-label integrity, independent plan review, and visible practical-action delivery all succeed. It does not establish advice usefulness, open-domain pragmatics, human preference, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}
