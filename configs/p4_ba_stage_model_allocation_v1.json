@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_ba_stage_model_allocation_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "research_question": "Can a stage-specific local generator/reviewer allocation preserve the frozen M51 structural and M46 content/surface proxy gates while meeting a 20-second two-stage model budget on this Mac?",
+  "dataset": {
+    "path": "datasets/p4_ba_stage_model_allocation_v1.json",
+    "sha256": "e51b02ba2609ec285ca8ec4aebfee680851876b8b4f0f9ce135e00372e949fb0"
+  },
+  "models": {
+    "generator": [
+      "qwen3.5:9b",
+      "qwen3.5:4b"
+    ],
+    "reviewer": [
+      "qwen3.5:9b",
+      "qwen3.5:0.8b"
+    ]
+  },
+  "arms": [
+    {
+      "arm_id": "g9_r9",
+      "generator": "qwen3.5:9b",
+      "reviewer": "qwen3.5:9b"
+    },
+    {
+      "arm_id": "g9_r08",
+      "generator": "qwen3.5:9b",
+      "reviewer": "qwen3.5:0.8b"
+    },
+    {
+      "arm_id": "g4_r9",
+      "generator": "qwen3.5:4b",
+      "reviewer": "qwen3.5:9b"
+    },
+    {
+      "arm_id": "g4_r08",
+      "generator": "qwen3.5:4b",
+      "reviewer": "qwen3.5:0.8b"
+    }
+  ],
+  "controlled_constants": {
+    "temperature": 0,
+    "seed": 20260926,
+    "num_ctx": 4096,
+    "candidate_num_predict": 360,
+    "review_num_predict": 320,
+    "candidate_prompt_and_schema": "frozen_M51",
+    "review_prompt_checks_and_schema": "frozen_M46",
+    "hardware": "Apple M2 Pro 12-core 32GB",
+    "generation_reuse_across_reviewer_arms": true,
+    "retry_count": 0
+  },
+  "execution": {
+    "candidate_timeout_seconds": 45,
+    "review_timeout_seconds": 30,
+    "per_arm_total_latency_target_seconds": 20,
+    "record_prompt_tokens": true,
+    "record_completion_tokens": true,
+    "record_wall_seconds_per_call": true,
+    "execute_each_unique_model_case_once": true
+  },
+  "formal_gates": {
+    "generation_case_count": 2,
+    "review_fixture_count": 4,
+    "generation_json_parse_success_count": 2,
+    "generation_structurally_valid_count": 2,
+    "review_fixture_correct_count": 4,
+    "full_pipeline_accepted_count": 2,
+    "full_pipeline_source_exact_count": 2,
+    "full_pipeline_natural_japanese_count": 2,
+    "full_pipeline_raw_dialogue_trace_count": 0,
+    "full_pipeline_factual_memory_write_count": 0,
+    "maximum_two_stage_seconds": 20,
+    "token_accounting_complete": true
+  },
+  "selection_rule": "An arm is product-eligible only if every formal gate passes. If multiple arms pass, select the lowest median two-stage latency, breaking ties by fewer total completion tokens. If none pass, preserve the negative result and do not change the product runtime.",
+  "failure_policy": {
+    "same_call_retry_allowed": false,
+    "post_result_dataset_prompt_schema_or_threshold_change_allowed": false,
+    "structural_generation_pass_may_replace_review_pass": false,
+    "reviewer_always_true_may_count_as_correct": false,
+    "timeout_or_json_failure_may_count_as_pass": false,
+    "failed_arm_may_be_hidden_by_another_arm": false,
+    "runtime_model_change_before_result_allowed": false
+  },
+  "claim_boundary": "A passing arm would authorize only a later fresh product integration test of that fixed stage allocation. It would not establish human usefulness, open-domain pragmatic understanding, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}

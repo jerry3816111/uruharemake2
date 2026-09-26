@@ -2,7 +2,21 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AZ offline 已通過；唯一下一步：全新 P4-AZ→P4-AU→M45 real Safari pair
+## 當前唯一工作：P4-BA stage-specific local model allocation
+
+P4-AZ real pair 已唯一執行並正式 **FAIL**，但把最早因果缺口往後推進：P4-AY 找到 1 個response-form／feedback ref、0 個genuine replacement task並只停在prior role；P4-AZ=`authorized_previous_turn_cjk_ellipsis`，source role仍為`unspecified`且0 rewrite；P4-AU=`prior_source_linked`，新增`prior:1` digest與T1 exact相同，assistant/private source=`0/0`。P4-AV/M53 integrity、graph ordering、2/2自然日文、2/2 durable、isolated Chroma=`2`均通過。
+
+完整pair仍FAIL：M51生成2個候選、1個structurally valid；第一個model call完成`876+300` tokens，第二個M46 counterfactual review `TimeoutError`，M46=`counterfactual_review_unavailable`、M45 withheld、M39 fail closed，再次澄清而沒有交付動作。T1/T2=`3.507/38.1682s`，僅1/2達20秒門檻。正式pair不得重跑。完整證據：`analysis/p4_az_real_previous_turn_ellipsis_to_action_delivery_failure_2026-09-26.md`，result commit=`7a280c8`。
+
+這個review timeout亦已在P4-AT、P4-AW、P4-AZ三個fresh Safari pair重現；不再把它當偶發錯誤，也不直接拉長產品timeout。P4-BA只回答一個資源配置問題：相同frozen M51 prompt/schema、M46 checks/schema、資料、硬體、temperature、seed與token上限下，generator=`qwen3.5:9b/4b`、reviewer=`qwen3.5:9b/0.8b`的2×2配置，是否有任一組同時保持generation structural validity、review positive/negative discrimination、full-pipeline acceptance與每案two-stage `<=20s`。
+
+允許新增：P4-BA frozen dataset/config、freeze test、一次性offline benchmark harness、result evidence/test/report，以及本節更新。不得先改產品runtime、M51/M46/M45/M39、prompt、schema、gate、資料或既有正式結果；每個unique model/case只執行一次，0 retry。generation output可在不同reviewer arm重用以維持factorial歸因；所有arm正負結果都保留。
+
+正式gate：generation JSON與selected structurally-valid=`2/2`；四個fixed reviewer fixture=`4/4`，不可always-true；full pipeline source exact、自然日文、M46 content/surface accept=`2/2`；raw dialogue trace／factual memory write=`0/0`；token accounting完整；各案two-stage最大`<=20s`。任何arm只有全部gate通過才可作後續產品整合候選；多組通過取median latency最低，其次completion tokens最少。全部失敗就產出負結果，不改runtime，下一步依失敗分支重設架構而非追分。
+
+先完成freeze commit，再實作harness並跑唯一一次四arm評測；這只是development-only本機模型配置證據，不是人評、建議有效、自然分布、強LLM優勢或人類方程式。
+
+## P4-AZ offline 與 real freeze 保存歷史（不是當前下一步）
 
 P4-AZ於`ad2ca9b`事前凍結，只修exact previous-turn中文省略第一人稱的prior-source authority，0 correction一次通過完整offline gate：development=`1/1`；全新繁中／簡中positive authorized與exact source linked=`6/6`，deterministic fake-M45 downstream structural contract=`6/6`；third-party／quoted-meta／news-report／physical-object／resolved／hypothetical controls=`12/12` blocked且false source=`0`；P4-AY predecessor source=`6/6` preserved。target source role仍為`unspecified`=`7/7`，沒有改寫成明示第一人稱；exact feedback chain與typed trigger=`7/7`。
 

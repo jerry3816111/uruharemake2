@@ -1,0 +1,142 @@
+{
+  "schema": "uruha_p4_ba_stage_model_allocation_dataset_v1",
+  "version": "1.0.0",
+  "status": "sealed_before_model_execution",
+  "development_only": true,
+  "generation_cases": [
+    {
+      "case_id": "p4_ba_gen_zh_cognitive_001",
+      "source": {
+        "id": "prior:1",
+        "kind": "linked_previous_user",
+        "text": "腦子裡的思緒一陣一陣湧上來，今晚一直靜不下來。"
+      },
+      "required_selected_structural_validity": true,
+      "allowed_progress_mechanisms": [
+        "structure_scaffold",
+        "extract_relevant_subset",
+        "direct_atomic_completion"
+      ]
+    },
+    {
+      "case_id": "p4_ba_gen_en_report_001",
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "The report is still blank. Give me one practical step."
+      },
+      "required_selected_structural_validity": true,
+      "allowed_progress_mechanisms": [
+        "structure_scaffold"
+      ]
+    }
+  ],
+  "review_fixtures": [
+    {
+      "case_id": "p4_ba_review_report_valid_001",
+      "expected_accepted": true,
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "The report is still blank. Give me one practical step."
+      },
+      "plan": {
+        "status": "action",
+        "goal_source_id": "current:4",
+        "goal_source_span": "The report is still blank. Give me one practical step.",
+        "task_goal_jp": "報告書の作成を進める",
+        "criterion_basis": "safe_proposed_criterion",
+        "progress_criterion_jp": "見出しが三つ書かれた状態",
+        "progress_mechanism": "structure_scaffold",
+        "action_object_jp": "見出しを三つ",
+        "action_verb_jp": "書く",
+        "action_step_jp": "紙かメモに見出しを三つだけ書く",
+        "expected_state_change_jp": "空白の状態から構成の骨組みが一つできる",
+        "completion_jp": "見出しを三つ書いたら止める",
+        "unknown_constraint_jp": "詳しい提出条件は不明",
+        "instruction_jp": "まず紙かメモに見出しを三つだけ書いて、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_ba_review_report_relabel_001",
+      "expected_accepted": false,
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "The report is still blank. Give me one practical step."
+      },
+      "plan": {
+        "status": "action",
+        "goal_source_id": "current:4",
+        "goal_source_span": "The report is still blank. Give me one practical step.",
+        "task_goal_jp": "報告書の作成を進める",
+        "criterion_basis": "safe_proposed_criterion",
+        "progress_criterion_jp": "最初の文が一つ書かれた状態",
+        "progress_mechanism": "direct_atomic_completion",
+        "action_object_jp": "最初の文を一つ",
+        "action_verb_jp": "書く",
+        "action_step_jp": "報告書の最初の文を一つ書く",
+        "expected_state_change_jp": "最初の文が一つ増える",
+        "completion_jp": "一文を書いたら止める",
+        "unknown_constraint_jp": "詳しい提出条件は不明",
+        "instruction_jp": "報告書の最初の文を一つ書いて、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_ba_review_sort_valid_001",
+      "expected_accepted": true,
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "机に赤い紙と青い紙が混ざってる。色ごとに分ける手順を一つだけ教えて。"
+      },
+      "plan": {
+        "status": "action",
+        "goal_source_id": "current:4",
+        "goal_source_span": "机に赤い紙と青い紙が混ざってる。色ごとに分ける手順を一つだけ教えて。",
+        "task_goal_jp": "紙を色ごとに分ける",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "紙が赤と青の二群に分かれた状態",
+        "progress_mechanism": "group_by_rule",
+        "action_object_jp": "赤い紙と青い紙",
+        "action_verb_jp": "置く",
+        "action_step_jp": "赤い紙を左、青い紙を右に置く",
+        "expected_state_change_jp": "紙が色ごとの二群になる",
+        "completion_jp": "全部置いたら止める",
+        "unknown_constraint_jp": "紙の枚数は不明",
+        "instruction_jp": "赤い紙と青い紙を、赤は左、青は右に置いて、全部置いたら止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_ba_review_sort_random_001",
+      "expected_accepted": false,
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "机に赤い紙と青い紙が混ざってる。色ごとに分ける手順を一つだけ教えて。"
+      },
+      "plan": {
+        "status": "action",
+        "goal_source_id": "current:4",
+        "goal_source_span": "机に赤い紙と青い紙が混ざってる。色ごとに分ける手順を一つだけ教えて。",
+        "task_goal_jp": "紙を色ごとに分ける",
+        "criterion_basis": "safe_proposed_criterion",
+        "progress_criterion_jp": "隣り合う二枚の位置が逆になった状態",
+        "progress_mechanism": "group_by_rule",
+        "action_object_jp": "隣り合う紙二枚",
+        "action_verb_jp": "入れ替える",
+        "action_step_jp": "隣り合う紙二枚の位置を入れ替える",
+        "expected_state_change_jp": "二枚の位置だけが逆になる",
+        "completion_jp": "一回入れ替えたら止める",
+        "unknown_constraint_jp": "並び順は不明",
+        "instruction_jp": "隣り合う紙二枚を一回だけ入れ替えて、そこで止めよ。"
+      }
+    }
+  ],
+  "reuse_policy": {
+    "same_model_call_may_be_retried": false,
+    "failed_outputs_must_be_preserved": true,
+    "may_be_called_holdout": false
+  },
+  "claim_boundary": "Development-only local model allocation evidence. It is not a human rating, advice-usefulness result, natural-distribution holdout, matched-LLM advantage, or proof of a human equation."
+}
