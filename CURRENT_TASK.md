@@ -2,7 +2,15 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AX real 結果已凍結；唯一下一步：P4-AY response-form constraint boundary
+## P4-AY offline 結果已凍結；唯一下一步：P4-AZ previous-turn CJK ellipsis authority
+
+P4-AY 於`5735fc9`事前凍結，只區分「同一問題的feedback／response-form constraint」與「真的換了問題」。完整 frozen gate 為 **FAIL**：development=`0/1`，全新中／英／日positive=`6/6`、controls=`12/12`、genuine topic replacement=`3/3` blocked、既有P4-AU positive links=`6/6` preserved。第一次實作 fresh=`5/6` 且predecessor統計錯算，唯一 correction 只補日文肯定語尾`だった`與already-present source計數；沒有改資料／gate／中文來源角色。
+
+失敗原因已收斂到下一個既有guard：P4-AX正式T1的中文句省略第一人稱，M39 source role=`unspecified`；P4-AY證明T2沒有新task後，P4-AU仍以`prior_source_not_direct_user_first_person`阻擋。P4-AY保持`blocked_non_task_p4_au_guard`，沒有繞過它。P4-AX authority=`7/7` preserved；P4-AT mutation、P4-AU non-task bypass、candidate/order、visible reply、model、factual memory、assistant/private source、raw trace、完整fresh字串patch=`0`。聚焦與相鄰回歸=`33 passed`；port `7890` sandbox preflight=`ready`且0 model／Safari／VRM-tool operation。完整證據：`analysis/p4_ay_response_form_constraint_boundary_failure_2026-09-26.md`。
+
+P4-AZ唯一能力變因是exact previous-turn CJK省略第一人稱的prior-source authority。只在typed cognitive-overactivity、direct current-user frame、無第三人／引用／report、exact earlier executed M44/P4-AT chain、P4-AX supported、P4-AY所有current refs已授權時，允許上一輪source role仍誠實保持`unspecified`但作為exact prior problem來源。先事前凍結新的中／日正例與third-party、meta、news/report、physical-object、resolved、ambiguous controls；不得改P4-AY task boundary、P4-AU其他guard、M45/M46/M39、prompt、model、memory、visible reply或本次獨立`JSONDecodeError`。offline通過後仍需全新Safari pair。
+
+## P4-AX real 結果與 P4-AY 來源（保存歷史，不是當前下一步）
 
 P4-AX implementation=`33fd460`、real pair freeze=`7d2bf25`。全新的兩輪 private runtime／Safari pair 已在 port `7889` 各唯一執行一次，完整正式結果為 **FAIL**，不得重跑、改題或改 gate。
 
