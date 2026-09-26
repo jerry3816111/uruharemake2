@@ -1,0 +1,42 @@
+{
+  "schema": "uruha_p4_ax_compound_feedback_request_split_first_implementation_failure_v1",
+  "status": "fail",
+  "dataset_sha256": "a9bba9f219463a9e33c40babfcde0cd2122474c788864b76805a7d837ab22fb3",
+  "metrics": {
+    "case_count": 28,
+    "development_dual_act_count": 0,
+    "fresh_positive_dual_act_count": 9,
+    "fresh_control_false_support_count": 2,
+    "fresh_control_blocked_count": 10,
+    "predecessor_support_preserved_count": 6,
+    "authorized_support_with_exact_receipt_count": 15,
+    "current_request_policy_preserved_count": 15,
+    "p4_at_predecessor_mutation_count": 0,
+    "p4_au_gate_bypass_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "visible_reply_change_count": 0,
+    "added_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "private_state_truth_claim_count": 0,
+    "full_fresh_string_patch_count": 0
+  },
+  "failed_cases": [
+    {
+      "case_id": "dev_exposed_p4_aw_real_zh",
+      "observed": "current_request_policy=null and previous_action_outcome=unknown",
+      "cause": "offline evidence harness omitted the released M25 base-request trace that was present in the real product run"
+    },
+    {
+      "case_id": "control_third_party_ja",
+      "observed": "previous_action_outcome=supported",
+      "cause": "the predecessor direct-source regex did not cover this bounded Japanese report morphology"
+    },
+    {
+      "case_id": "control_hypothetical_zh",
+      "observed": "previous_action_outcome=supported",
+      "cause": "a word-boundary assertion after a CJK hypothetical marker prevented the guard from matching"
+    }
+  ],
+  "correction_limit": "One informed correction may make the harness pass the released base-request trace and repair the bounded third-party/hypothetical guards. Dataset, gates, positive patterns, P4-AT predecessor, current-request routing, P4-AU, M46/M45, prompt, model calls, memory, and visible output remain frozen."
+}
