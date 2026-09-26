@@ -2,7 +2,17 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AX offline 已通過；唯一下一步：全新 P4-AX→P4-AU→M45 real Safari pair
+## P4-AX real 結果已凍結；唯一下一步：P4-AY response-form constraint boundary
+
+P4-AX implementation=`33fd460`、real pair freeze=`7d2bf25`。全新的兩輪 private runtime／Safari pair 已在 port `7889` 各唯一執行一次，完整正式結果為 **FAIL**，不得重跑、改題或改 gate。
+
+新能力的真實產品邊界確實通過：T2 的 P4-AX=`bounded_support_composed`，把對 exact 上一輪澄清的支持與本輪 `solve_regulation/practical_help` request 分開；P4-AT=`closed_supported`、P4-AG previous resolution=`supported`，prediction id 精確相同。P4-AX node `66` 位於 P4-AT/P4-AG/temporal/utterance `67/68/69/70` 前；P4-AX predecessor mutation、P4-AU bypass、新增 model／factual memory／raw trace 都是 0。
+
+完整 pair 的最早失敗是 P4-AU 把「給我一個步驟、能馬上開始、完成就停止」誤判成新的 independent task source，得到 `blocked_current_task_replacement`；雖核對到 T1 digest=`4ebe80e6d582690d`，但沒有加入 prior source。P4-AV/M53 因未到達不能計為 pass。另有獨立 downstream failure：M45 一次完整 model call 回傳非契約資料而 `JSONDecodeError`，M51 未執行、M46=`plan_unavailable`、M39 對 `practical_action_not_delivered_m45` fail closed。T1/T2 latency=`3.776/31.0372s`，calls=`1/1`，tokens=`1001+360`但 accounting incomplete。2/2 自然日文、2/2 durable、isolated Chroma=`2`、2/2 graph；Safari 展開 P4-AX/P4-AU/M45，0 tab 關閉。完整證據：`analysis/p4_ax_real_compound_feedback_to_action_delivery_failure_2026-09-26.md`。
+
+P4-AY 唯一能力變因是：在 P4-AU 裡區分**本輪真正換了問題／主題**，與**只約束回答形式或動作形狀**。後者例如「一個步驟／立即開始／完成即停」，不應遮掉 exact 上一輪 problem source；前者仍必須 fail closed。先事前凍結全新中／英／日 positive response-form constraints，以及 genuine topic replacement、third-party、quoted/meta、receipt mismatch、非 practical policy 等 controls。不得改 P4-AT outcome、receipt identity、direct-user authority、M45/M46/M39、prompt、model call、memory、visible reply，亦不得同時修本次 `JSONDecodeError`。offline 通過後仍需全新的 Safari pair；本次正式 FAIL 永久保留。
+
+## P4-AX offline 與 real freeze 保存歷史（不是當前下一步）
 
 P4-AX於`4bd1664`事前凍結，只修同一當輪同時含有「明示支持exact上一輪澄清」與「本輪新的practical-help request」的bounded
 compositional split。第一次實作為development=`0/1`、fresh positive=`9/9`、controls=`10/12`、predecessor=`6/6`，已保存；唯一informed
@@ -16,7 +26,7 @@ factual memory、raw trace、private truth、完整fresh字串patch=`0`。focuse
 sandbox preflight=`ready`、0 model／Safari／VRM-tool operation。完整證據：
 `analysis/p4_ax_compound_feedback_request_split_acceptance_2026-09-26.md`。
 
-下一步先commit本offline結果，再事前凍結**完全新的**兩輪private runtime／Safari pair。T1需建立exact executed `calibrate_need`；T2使用未曝光
+該階段後續要求是先commit本offline結果，再事前凍結**完全新的**兩輪private runtime／Safari pair；此要求已由上節的正式結果完成並封存。原 gate 要求為：T1需建立exact executed `calibrate_need`；T2使用未曝光
 三語任一compound support＋request，必須P4-AX node在P4-AT/P4-AG/temporal前、P4-AT=`closed_supported`、P4-AU加入exact T1 source，並由既有
 M51/M52/M53/P4-AV/M46/M45/M39真正交付可立即開始且有停止條件的日文action。timeout、再澄清、generic promise、只有internal plan均FAIL；
 不能用P4-AW正式pair重跑。本offline PASS不改寫P4-AW real FAIL，也不保證後段model review會成功。
