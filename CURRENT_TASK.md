@@ -2,7 +2,17 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BB typed action compiler boundary freeze
+## 當前唯一工作：P4-BC raw-dialogue typed-task-spec producer freeze
+
+P4-BB 已在 freeze commit=`a4dd116` 後 0 correction 一次完整 **PASS**：繁中／英文／日文 6 positive 覆蓋 M46 六種 allowed progress mechanism；compiled／exact expected plan／M46 structural／source exact／mechanism exact／自然日文／deterministic repeat 全為`6/6`。12 個 identity／provenance／schema／language／safety／unsupported controls 依預定原因 blocked=`12/12`，false plan=`0`。model call／raw dialogue trace／factual memory write=`0/0/0`，最大 compile=`0.00090479s`。產品 runtime 未改。完整證據：`analysis/p4_bb_typed_action_compiler_acceptance_2026-09-27.md`。
+
+P4-BB 真正證明的是：**若**已有正確且授權的 source-bound typed task spec，下游 action plan 可以不用模型自由猜 mechanism，並可 deterministic、source-exact、自然日文、fail-closed 地形成。它沒有證明 raw dialogue 能正確產生 spec，也不能和 P4-BA 的 raw-source 兩階段時間直接相除；模板 coverage 只有六種 bounded action ontology。
+
+下一個單一未證明邊界是 P4-BC：`new raw dialogue → source-bound typed task spec`。先事前凍結完全新的繁中／英文／日文 positive 與 ambiguous／unsupported／risky／third-party／private-inference controls；P4-BB cases只能作 exposed development，不得當formal。比較`qwen3.5:9b`與`qwen3.5:4b`在相同 schema、資料、硬體、temperature、seed、token上限與0 retry下，能否選對 template、複製exact source identity/span、擷取exact evidence atoms、產生合法日文slots，且unsupported輸出`unavailable`。
+
+P4-BC gate 必須同時含 typed-spec exactness、P4-BB downstream exact compile、positive coverage、negative rejection、private/assistant source=`0`、完整tokens與單一model-call latency `<=20s`。任一模型只有全部通過才可作後續 integration候選；都失敗就保留負結果，不改產品。先commit P4-BB結果，再freeze P4-BC dataset／contract／tests；不得先改M51/M46/M45/M39或接Safari。
+
+## P4-BB typed action compiler freeze 與結果（保存歷史，不是當前下一步）
 
 P4-BA 已依事前凍結的 2×2 配置各唯一執行一次，正式 **FAIL**，不得重跑或在結果後改 gate。20 個 scored model calls 全部 completed、JSON 可解析、token accounting 完整，所以這次不是 transport failure。四個 arm 都不具產品資格：`g9_r9` 的 generation structural／allowed mechanism=`1/2,0/2`、review fixture=`3/4`、full accept=`0/2`、max=`35.71618s`；`g9_r08`=`1/2,0/2,2/4,0/2,22.22539s`；`g4_r9`=`0/2,0/2,3/4,0/2,29.86752s`；`g4_r08` 雖唯一通過 latency（max=`16.78266s`），但品質為`0/2,0/2,2/4,0/2`。
 
