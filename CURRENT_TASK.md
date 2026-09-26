@@ -2,7 +2,15 @@
 
 更新：2026-09-26。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## P4-AY offline 結果已凍結；唯一下一步：P4-AZ previous-turn CJK ellipsis authority
+## P4-AZ offline 已通過；唯一下一步：全新 P4-AZ→P4-AU→M45 real Safari pair
+
+P4-AZ於`ad2ca9b`事前凍結，只修exact previous-turn中文省略第一人稱的prior-source authority，0 correction一次通過完整offline gate：development=`1/1`；全新繁中／簡中positive authorized與exact source linked=`6/6`，deterministic fake-M45 downstream structural contract=`6/6`；third-party／quoted-meta／news-report／physical-object／resolved／hypothetical controls=`12/12` blocked且false source=`0`；P4-AY predecessor source=`6/6` preserved。target source role仍為`unspecified`=`7/7`，沒有改寫成明示第一人稱；exact feedback chain與typed trigger=`7/7`。
+
+P4-AY task mutation、P4-AU non-role bypass、candidate/order、visible reply、新增model、factual memory、assistant/private source、raw trace、完整fresh字串patch=`0`。聚焦與相鄰回歸=`42 passed`；port `7891` sandbox preflight=`ready`且0 model／Safari／VRM-tool operation。這只證明frozen deterministic source-authority接線，fake downstream不是live建議品質。完整證據：`analysis/p4_az_previous_turn_cjk_ellipsis_authority_acceptance_2026-09-26.md`。
+
+下一步先commit本offline結果，再事前凍結**完全新的**兩輪private runtime／Safari pair，不得重用P4-AX正式句。T1需建立subjectless Chinese exact executed `calibrate_need`；T2需為全新compound support＋response-form request，並分別通過P4-AX、P4-AY、P4-AZ、P4-AU exact source、P4-AV/M53、M46/M45/M39 visible immediate action。timeout、JSON parse failure、再澄清、generic promise、只有internal plan、缺席node都FAIL；須記錄日文、durability、graph、tokens、latency與0 assistant/private source。正式pair PASS也只是一條fresh product path，不是建議有效、人評、人類方程式或強LLM優勢。
+
+## P4-AY offline 結果與 P4-AZ 來源（保存歷史，不是當前下一步）
 
 P4-AY 於`5735fc9`事前凍結，只區分「同一問題的feedback／response-form constraint」與「真的換了問題」。完整 frozen gate 為 **FAIL**：development=`0/1`，全新中／英／日positive=`6/6`、controls=`12/12`、genuine topic replacement=`3/3` blocked、既有P4-AU positive links=`6/6` preserved。第一次實作 fresh=`5/6` 且predecessor統計錯算，唯一 correction 只補日文肯定語尾`だった`與already-present source計數；沒有改資料／gate／中文來源角色。
 
