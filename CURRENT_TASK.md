@@ -12,7 +12,9 @@ P4-BA 已依事前凍結的 2×2 配置各唯一執行一次，正式 **FAIL**�
 
 下一個單一架構變因是 P4-BB **typed action compiler boundary**。先事前凍結新 dataset／contract：deterministic 層只根據已授權 source、task kind 與明列 allowed mechanisms 產生可審計 slots；模型不能自行發明 mechanism，只能填寫或實現允許欄位。semantic progress 與 persona-surface 分開記分，但任一失敗仍 fail closed；unknown task 必須保持 uncovered，不得硬套模板。P4-BA cases只能作 exposed development，正式需全新中／英／日 action cases與 false-source／unsupported-task controls。
 
-先定義 coverage、source exact、slot validity、semantic counterexample rejection、surface Japanese、model calls/tokens/latency與0 memory/raw-trace gates，commit freeze後才能實作。不得先改產品M51/M46/M45/M39或runtime model；offline全通過後才有資格凍結 fresh Safari pair。
+P4-BB freeze 已準備為 6 個全新 positive（繁中／英文／日文各 2，覆蓋 M46 六種 allowed mechanism）與 12 個 identity／provenance／schema／language／safety／unsupported controls。正式 gate 是 exact expected plan、M46 structural、source／mechanism exact、自然日文、deterministic repeat=`6/6`；controls blocked＋reason=`12/12`、false plan=`0`；model call／raw dialogue trace／factual memory write=`0`；max compile `<=0.01s`。
+
+本卡只證明「already-authorized typed task spec → bounded action plan」；raw dialogue 如何形成正確 task spec 明確不在本卡。先 commit 這份 freeze，再只新增 `uruha_typed_action_compiler_p4.py` 與結果測試／證據；不得先改產品M51/M46/M45/M39或runtime model。即使offline全通過，也只授權另凍結 upstream typed-spec producer 測試，不直接授權 Safari 或產品接線。
 
 ## P4-BA stage allocation freeze 與結果（保存歷史，不是當前下一步）
 
