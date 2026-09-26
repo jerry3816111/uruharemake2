@@ -47,6 +47,12 @@ def test_p4_ba_freezes_the_complete_two_by_two_model_allocation():
         ("qwen3.5:4b", "qwen3.5:0.8b"),
     }
     assert contract["controlled_constants"]["generation_reuse_across_reviewer_arms"] is True
+    assert contract["controlled_constants"]["prewarm_models_once_in_fixed_order"] == [
+        "qwen3.5:9b", "qwen3.5:4b", "qwen3.5:0.8b"
+    ]
+    assert contract["controlled_constants"]["prewarm_scored_as_case_latency"] is False
+    assert contract["controlled_constants"]["keep_alive"] == "30m"
+    assert contract["execution"]["record_prewarm_wall_seconds_separately"] is True
     assert contract["controlled_constants"]["retry_count"] == 0
 
 
