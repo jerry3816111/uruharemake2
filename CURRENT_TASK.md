@@ -2,9 +2,29 @@
 
 更新：2026-09-29。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BD role-aware evidence span evaluation freeze
+## 當前唯一工作：P4-BE source-bound evidence grounding 設計審查
 
-### 2026-09-29 設計／凍結準備（正式模型尚未呼叫）
+### Before：P4-BD 正式 FAIL，禁止重跑或回填金標
+
+P4-BD freeze=`26fb89821d7d1b846ff3d83aa4209f8ecd8384e8`、runner=`b6362cd`；9B／4B 對各14個全新開發案例唯一執行，28/28完成、JSON／tokens完整、0 retry。兩模型 role-aware evidence／packet 都=`0/6`，normalized accepted atoms=`5/18`、`2/18`；strict single-gold仍各=`0/6`。9B positive normalized/non-span/downstream=`5/6`，4B=`5/6,4/6,4/6`；controls unavailable＋reason均=`8/8`、false spec/source violation=`0`、max=`15.05412/9.38962s`，但任何一個 failed positive gate 都不能被成本／control 通過抵銷。產品 runtime 未改、無 selected model。正式證據和限制見 `analysis/p4_bd_role_aware_evidence_failure_2026-09-29.md`；結果回歸是 `test_p4_bd_role_aware_result.py`。P4-BD 與 P4-BC 原題、契約、gold、prompt、runner及結果不得修補或重跑；P4-BD 題也成為 exposed development，非 holdout。
+
+P4-BD 兩種不同原因必須保留：一部分是事前列舉 span 過窄的可能假陰性（例如 `我那疊收據`），另一部分是真正錯目標／錯條件／漏完成限制／source 翻譯（例如4B日文分頁 role 錯、英文 evidence=`会議メモ`）；兩個 invalid packet 還漏 `unknown_constraint_jp`。不能把全部失敗解釋成標註，也不能靠任何 source substring 放行。P4-BD 的 `18/18` hard-negative scorer 單測只是 evaluator 契約證據，不是產品能力。
+
+### 下一個單一變因與先行設計 gate
+
+P4-BE 是此上游問題**第二個、最後一個有根據修正批次**，只改 raw dialogue→typed spec producer 的「source-bound evidence 角色／值擷取」機制；不得同時移動 `unknown_constraint_jp`／canonical Japanese slots 到 deterministic materializer、改 P4-BB compiler、M51/M46/M45/M39、產品模型、公開 persona、回覆或記憶。先用本次已曝光輸出做只讀 error taxonomy 和至少兩個候選方案的設計審查（如 source-position-bound role/value 選擇 vs 保留 free span 但要求完整 owner／predicate／quantity／completion）；選一個可適用繁中／英／日且不是按題目列規則的方案，明說其代價、可反駁之處、source provenance／fail-closed 路徑。這個審查不是獨立人評；若找不到可歸因的單變因，不做新的 model calls，直接 `REVIEW_REQUIRED`。
+
+選定後才能事前凍結**未曝光**的新 cases、source／role 語意 gold、hard negatives、比較 arm、prompt/schema、模型與硬體／token／latency 上限及成功／失敗門檻；新評測須在同一批新 cases 用相同 evaluator 比較 frozen P4-BC producer 與 P4-BE producer，不得以不同題目分數當改進。若仍由開發者標註，標 `developer-authored proxy`；多解歧義必須在模型輸出前處理。先離線 scorer／negative mutations、fake transport，再 commit freeze 與 runner，才可唯一一次正式生成，0 retry。前瞻成本上限由設計審查定，未凍結前=0 scored calls。結果若仍不達事前完整 gate，保留 FAIL，提出最小反例與 `REVIEW_REQUIRED` 架構取捨，不再換下一個小編號追分。產品 Safari／圖像與正式研究層仍 pending，不因離線 runner 成功升格。
+
+目前允許修改：本卡、P4-BE 設計審查與 prospective dataset／contract／scorer／tests／一次性 runner，均須按 freeze→runner→結果分階段；不得改動 P4-BB／BC／BD frozen 路徑與原始 dirty checkout。先執行只讀設計審查，不得立刻跑模型。P4-BD 收尾驗證命令：
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_bd_role_aware_freeze.py test_p4_bd_role_aware_scoring.py test_p4_bd_role_aware_runner.py test_p4_bd_role_aware_result.py test_p4_bb_typed_action_compiler_freeze.py test_p4_bb_typed_action_compiler.py test_p4_bc_raw_dialogue_typed_spec_freeze.py test_p4_bc_raw_dialogue_typed_spec_harness.py test_p4_bc_raw_dialogue_typed_spec_result.py
+```
+
+## P4-BD role-aware evidence span evaluation：已凍結與失敗（保存歷史）
+
+### 2026-09-29 模型呼叫前的設計／凍結紀錄（歷史時點）
 
 Before 仍是下述 P4-BC 正式 FAIL；本卡唯一變因是**evidence span 的評分契約**。P4-BD 新增 6 個 developer-authored positive（繁中／英／日各 2、六 template 各 1）及 8 個不同 unavailable reason controls；與 BB/BC 完整 source 逐字無交集，但固定 ontology 語義重疊，**不是獨立 holdout**。每個 positive 的 3 個 role 有事前 exact-source candidate、hard negative 與 conservative `accepted_exact_spans`。兩次分開的 LLM-proxy 判斷在 54 個二元 label 中同意 `48/54`、完整 role-set `12/18`；六個分歧候選在模型輸出前全部從可接受集合排除。這不是兩位真人的 inter-rater reliability。原始判斷與非獨立設計審查見 `analysis/p4_bd_annotation_proxy_pre_freeze_2026-09-29.json`、`analysis/p4_bd_role_aware_design_review_2026-09-29.md`。
 
@@ -14,7 +34,7 @@ Freeze 檔限 `configs/p4_bd_role_aware_evidence_v1.json`、`datasets/p4_bd_role
 PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_bd_role_aware_freeze.py test_p4_bd_role_aware_scoring.py test_p4_bb_typed_action_compiler_freeze.py test_p4_bb_typed_action_compiler.py test_p4_bc_raw_dialogue_typed_spec_freeze.py test_p4_bc_raw_dialogue_typed_spec_harness.py test_p4_bc_raw_dialogue_typed_spec_result.py
 ```
 
-已在 2026-09-29 的 freeze 準備版得到 `66 passed`、0 模型呼叫；**仍須在 freeze commit 前再跑一次並記 SHA**。凍結後任何新題、gold、accepted span、prompt/schema、門檻及模型條件均不可改。只有 freeze commit 已存在，才允許新增一次性 runner、runner tests、結果 evidence／報告與本卡；run 前需 runner 自身 commit，不能在正式呼叫後改 runner。
+已在 2026-09-29 的 freeze 準備版得到 `66 passed`、0 模型呼叫，之後完成 freeze commit `26fb898`。凍結後任何新題、gold、accepted span、prompt/schema、門檻及模型條件均不可改。runner 與其 tests 在正式呼叫前另 commit `b6362cd`，正式後沒有改 runner。
 
 P4-BD eligibility 的事前數值：每模型 14 案，JSON `14/14`，6 positive 的 normalized typed／非 span exact／template／role-aware evidence／role-aware 完整 packet／canonical slots／P4-BB compile／mechanism／自然日文均 `6/6`；8 controls 的 unavailable＋reason `8/8`，false spec／source violation `0`，token accounting 完整，max scored call `≤20s`。原 strict single-gold exact evidence/spec **仍逐案和總數報告，但不作新的放行 gate**；這是本卡唯一評分邊界變更，否則 role-aware 即使正確也會被整包 equality 強制判 FAIL。仍保留 9B／4B、原 BC prompt/schema／full slots／compiler、M2 Pro 32GB、temperature `0`、seed `20260927`、`num_ctx=4096`、`num_predict=480`、固定順序各一次 prewarm、0 retry。最多 `28` scored calls；任一必要 gate 不過即該模型 FAIL，不接產品。若兩者過才按 median latency 再 completion tokens 選。
 
