@@ -12,11 +12,23 @@ P4-BD 兩種不同原因必須保留：一部分是事前列舉 span 過窄的�
 
 ### 下一個單一變因與先行設計 gate
 
-P4-BE 是此上游問題**第二個、最後一個有根據修正批次**，只改 raw dialogue→typed spec producer 的「source-bound evidence 角色／值擷取」機制；不得同時移動 `unknown_constraint_jp`／canonical Japanese slots 到 deterministic materializer、改 P4-BB compiler、M51/M46/M45/M39、產品模型、公開 persona、回覆或記憶。先用本次已曝光輸出做只讀 error taxonomy 和至少兩個候選方案的設計審查（如 source-position-bound role/value 選擇 vs 保留 free span 但要求完整 owner／predicate／quantity／completion）；選一個可適用繁中／英／日且不是按題目列規則的方案，明說其代價、可反駁之處、source provenance／fail-closed 路徑。這個審查不是獨立人評；若找不到可歸因的單變因，不做新的 model calls，直接 `REVIEW_REQUIRED`。
+P4-BE 是此上游問題**第二個、最後一個有根據修正批次**，只改 raw dialogue→typed spec producer 的「source-bound evidence 角色／值擷取」系統 prompt；不得同時移動 `unknown_constraint_jp`／canonical Japanese slots 到 deterministic materializer、改 P4-BB compiler、M51/M46/M45/M39、產品模型、公開 persona、回覆或記憶。只讀審查已比較 prompt-only、source offset／ID、template regex parser，選 prompt-only：依六模板既有語義保留 owner／predicate／肯否／quantity／completion，不加入新題字面例子。source offset 只能防非來源片段，不能防錯角色；regex 會把六題變硬編碼。審查見 `analysis/p4_be_source_bound_role_prompt_design_review_2026-09-29.md`，屬非獨立開發審查，不是人評。這只是最後一次有界修正，不宣稱 prompt 是最終認知架構。
 
-選定後才能事前凍結**未曝光**的新 cases、source／role 語意 gold、hard negatives、比較 arm、prompt/schema、模型與硬體／token／latency 上限及成功／失敗門檻；新評測須在同一批新 cases 用相同 evaluator 比較 frozen P4-BC producer 與 P4-BE producer，不得以不同題目分數當改進。若仍由開發者標註，標 `developer-authored proxy`；多解歧義必須在模型輸出前處理。先離線 scorer／negative mutations、fake transport，再 commit freeze 與 runner，才可唯一一次正式生成，0 retry。前瞻成本上限由設計審查定，未凍結前=0 scored calls。結果若仍不達事前完整 gate，保留 FAIL，提出最小反例與 `REVIEW_REQUIRED` 架構取捨，不再換下一個小編號追分。產品 Safari／圖像與正式研究層仍 pending，不因離線 runner 成功升格。
+下一步事前凍結**未曝光**的新 cases、source／role 語意 gold、hard negatives、比較 arm、prompt/schema、模型與硬體／token／latency 上限及成功／失敗門檻；新評測在同一批新 cases 用相同 evaluator 比較 frozen P4-BC producer prompt 與 P4-BE prompt，不得以不同題目分數當改進。只測 `qwen3.5:9b`，`2 prompts × 14 cases=28` 次 scored calls、0 retry；這不授權 4B 選型。若仍由開發者標註，標 `developer-authored proxy`；多解歧義必須在模型輸出前處理。先離線 scorer／negative mutations、fake transport，再 commit freeze 與 runner，才可唯一一次正式生成。未凍結前=0 scored calls。結果若仍不達事前完整 gate，保留 FAIL，提出最小反例與 `REVIEW_REQUIRED` 架構取捨，不再換下一個小編號追分。產品 Safari／圖像與正式研究層仍 pending，不因離線 runner 成功升格。
 
-目前允許修改：本卡、P4-BE 設計審查與 prospective dataset／contract／scorer／tests／一次性 runner，均須按 freeze→runner→結果分階段；不得改動 P4-BB／BC／BD frozen 路徑與原始 dirty checkout。先執行只讀設計審查，不得立刻跑模型。P4-BD 收尾驗證命令：
+### 2026-09-29 P4-BE 事前凍結準備（目前仍是 0 scored model calls）
+
+已準備 `configs/p4_be_role_value_prompt_v1.json`／`.txt`、`datasets/p4_be_role_value_prompt_v1.json`、`p4_be_role_value_scoring.py`、`test_p4_be_role_value_freeze.py`、`test_p4_be_role_value_scoring.py` 及設計審查。新 source 與 BB/BC/BD 全文逐字無交集，六個 positive 逐模板且中／英／日各2，八 controls 理由各1；仍是固定 ontology 下的開發 proxy。對每個 role 凍結一個原文 window 和完整 target／predicate／quantity／completion anchors，18 個 source-exact hard-negative mutants 及6個 window 內漏關鍵 anchor 反例必須被擋；quote 邊界只作診斷而不作 gate，避免重犯 BD 的有限 alias 問題，但語法不自然的 anchor-complete 片段可能通過。兩 arm 同一 scorer 與資料，唯一 producer 變因是 P4-BC prompt evidence 指示變得 role/value 完整。`unknown_constraint_jp` 等完整 slots 仍由模型負責，漏填即 FAIL。
+
+候選 9B 必須 positive typed／non-span／template／role-value evidence／full packet／slots／downstream compile／mechanism／自然日文各6/6、accepted atoms18/18，controls unavailable＋reason各8/8、false spec/source violation0、JSON14/14、tokens完整、max call≤20s；要說 prompt 帶來額外價值還須 paired BE-only full pass≥1、BC-only full pass=0，且至少一案 BC raw role/value FAIL→BE raw role/value PASS、兩 arm source identity 均合法，避免把 slot 修好誤稱 evidence 進步。兩 arm 均須 completed／parseable 才可解釋成對比較；baseline 其他 gate 與成本照報、不作 BE eligibility。strict single-gold與實際tokens／latency逐案照報。前置合格不接產品；正式結果若仍 FAIL，停止小修小補而輸出 `REVIEW_REQUIRED`。
+
+先跑凍結與相鄰離線測試，成功後 commit freeze、記 full SHA；**不能先寫／執行正式 runner**。凍結後不可改 dataset、anchors、prompt、schema、scorer、gates、模型或成本上限。之後只能新增一次性 runner／fake tests（先 commit）與 evidence/result test/report/本卡。正式 preflight 應核 freeze SHA、hash、9B digest、M2 Pro 32GB、既有本機 Ollama、固定輸出不存在；prewarm 失敗不送 scored calls，每 arm/case唯一一次、0 retry，partial 不可續跑。精確離線命令：
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_be_role_value_freeze.py test_p4_be_role_value_scoring.py test_p4_bd_role_aware_freeze.py test_p4_bd_role_aware_scoring.py test_p4_bd_role_aware_runner.py test_p4_bd_role_aware_result.py test_p4_bb_typed_action_compiler_freeze.py test_p4_bb_typed_action_compiler.py test_p4_bc_raw_dialogue_typed_spec_freeze.py test_p4_bc_raw_dialogue_typed_spec_harness.py test_p4_bc_raw_dialogue_typed_spec_result.py
+```
+
+目前允許修改：本卡、P4-BE 設計審查與 prospective dataset／contract／scorer／tests／一次性 runner，均須按 freeze→runner→結果分階段；不得改動 P4-BB／BC／BD frozen 路徑與原始 dirty checkout。只讀設計審查及 freeze 離線測試已完成；下一步先 commit freeze、再寫 runner，不得在 runner commit 前跑模型。P4-BD 收尾驗證命令：
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_bd_role_aware_freeze.py test_p4_bd_role_aware_scoring.py test_p4_bd_role_aware_runner.py test_p4_bd_role_aware_result.py test_p4_bb_typed_action_compiler_freeze.py test_p4_bb_typed_action_compiler.py test_p4_bc_raw_dialogue_typed_spec_freeze.py test_p4_bc_raw_dialogue_typed_spec_harness.py test_p4_bc_raw_dialogue_typed_spec_result.py
