@@ -2,7 +2,15 @@
 
 更新：2026-09-29。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BE source-bound evidence grounding 設計審查
+## 當前唯一工作：P4-BE 正式 FAIL 後的 REVIEW_REQUIRED 架構審查
+
+### 已封存的 P4-BE 正式結果（不得重跑、改題、改 gold 或追認 PASS）
+
+P4-BE freeze=`90b4c4af2583f37a43997f9662485e81584fae04`、runner=`93938c6ed8d27393a24274cc62d5b5ff12d49751`。本機 `qwen3.5:9b` 對同一批 6 positive＋8 controls，以 P4-BC 原 prompt／P4-BE 新 prompt 各唯一執行一次：`28/28` scored calls 完成且 JSON 可解析、`0` retry、tokens 完整、controls `8/8`／`8/8`、false spec/source `0`。同題 paired BE-only full pass=`1`、BC-only=`0`、source identity 合法的 BE-only raw role/value uplift=`1`，但候選的**絕對門檻失敗**：typed=`5/6`、non-span=`3/6`、role/value evidence=`2/6`、完整 packet=`1/6`、normalized atoms=`11/18`、slots=`3/6`、compile／mechanism／自然日文各=`3/6`、full accept=`1/6`（均須 `6/6`，atoms須`18/18`）。原 prompt full accept=`0/6`、compile=`6/6`；局部一案改善不抵銷退步。新／原 prompt tokens=`16,843/12,811`、median call=`10.47381/10.11207s`，max=`16.079/15.32578s`。候選沒有選用，產品 runtime 未改。正式證據與逐案限制見 `analysis/p4_be_role_value_prompt_evidence_2026-09-29.json`、`analysis/p4_be_role_value_prompt_failure_2026-09-29.md`，結果回歸見 `test_p4_be_role_value_result.py`。
+
+P4-BD 與 P4-BE 已是這條上游路徑的兩個有根據修正批次。**下一個必要交付是設計審查，不是第三個 prompt／gold 微調，也不是直接接產品**：用中文 request 漏「只給一個／現在」而新 prompt 修好，以及新 prompt 中文混入日文 slot、英文漏 `unknown_constraint_jp`／編造 literal `...`、日文把回答形式誤當任務完成限制這些最小反例，先選定一個可歸因的能力變因及成本。選項是 source-bound 結構化角色／條件表示與獨立驗證、只修 canonical 日文 slot materializer（不解 evidence）、或縮小六模板路徑並保留 fail-closed。若變更研究問題、baseline、資料、門檻或重大架構，需明確設計審查／凍結後才可實作；已曝光 P4-BD／BE 題只能作回歸，不能充當新 holdout。成功與失敗都須有實際前後例、成本、單元→fresh model→runtime/Safari 分層證據。P4-BE 收尾只允許本次正式 evidence／失敗報告／immutable 結果回歸與本卡；收尾後只可新增獨立設計審查與更新本卡，未取得設計結論前不送新的 scored model calls。原始 dirty checkout、正式私有資料、無關 `output/graduate_application_report/`、已凍結檔及外部部署均不碰。Codex Goal 不因本卡 `REVIEW_REQUIRED` 而標為 complete／blocked。
+
+### P4-BE 事前設計與凍結（保存歷史；下述「下一步」均已執行，不是當前命令）
 
 ### Before：P4-BD 正式 FAIL，禁止重跑或回填金標
 
@@ -10,13 +18,13 @@ P4-BD freeze=`26fb89821d7d1b846ff3d83aa4209f8ecd8384e8`、runner=`b6362cd`；9B�
 
 P4-BD 兩種不同原因必須保留：一部分是事前列舉 span 過窄的可能假陰性（例如 `我那疊收據`），另一部分是真正錯目標／錯條件／漏完成限制／source 翻譯（例如4B日文分頁 role 錯、英文 evidence=`会議メモ`）；兩個 invalid packet 還漏 `unknown_constraint_jp`。不能把全部失敗解釋成標註，也不能靠任何 source substring 放行。P4-BD 的 `18/18` hard-negative scorer 單測只是 evaluator 契約證據，不是產品能力。
 
-### 下一個單一變因與先行設計 gate
+### 事前選定的單一變因與設計 gate
 
 P4-BE 是此上游問題**第二個、最後一個有根據修正批次**，只改 raw dialogue→typed spec producer 的「source-bound evidence 角色／值擷取」系統 prompt；不得同時移動 `unknown_constraint_jp`／canonical Japanese slots 到 deterministic materializer、改 P4-BB compiler、M51/M46/M45/M39、產品模型、公開 persona、回覆或記憶。只讀審查已比較 prompt-only、source offset／ID、template regex parser，選 prompt-only：依六模板既有語義保留 owner／predicate／肯否／quantity／completion，不加入新題字面例子。source offset 只能防非來源片段，不能防錯角色；regex 會把六題變硬編碼。審查見 `analysis/p4_be_source_bound_role_prompt_design_review_2026-09-29.md`，屬非獨立開發審查，不是人評。這只是最後一次有界修正，不宣稱 prompt 是最終認知架構。
 
 下一步事前凍結**未曝光**的新 cases、source／role 語意 gold、hard negatives、比較 arm、prompt/schema、模型與硬體／token／latency 上限及成功／失敗門檻；新評測在同一批新 cases 用相同 evaluator 比較 frozen P4-BC producer prompt 與 P4-BE prompt，不得以不同題目分數當改進。只測 `qwen3.5:9b`，`2 prompts × 14 cases=28` 次 scored calls、0 retry；這不授權 4B 選型。若仍由開發者標註，標 `developer-authored proxy`；多解歧義必須在模型輸出前處理。先離線 scorer／negative mutations、fake transport，再 commit freeze 與 runner，才可唯一一次正式生成。未凍結前=0 scored calls。結果若仍不達事前完整 gate，保留 FAIL，提出最小反例與 `REVIEW_REQUIRED` 架構取捨，不再換下一個小編號追分。產品 Safari／圖像與正式研究層仍 pending，不因離線 runner 成功升格。
 
-### 2026-09-29 P4-BE 事前凍結準備（目前仍是 0 scored model calls）
+### 2026-09-29 P4-BE 事前凍結準備（歷史時點為 0 scored model calls）
 
 已準備 `configs/p4_be_role_value_prompt_v1.json`／`.txt`、`datasets/p4_be_role_value_prompt_v1.json`、`p4_be_role_value_scoring.py`、`test_p4_be_role_value_freeze.py`、`test_p4_be_role_value_scoring.py` 及設計審查。新 source 與 BB/BC/BD 全文逐字無交集，六個 positive 逐模板且中／英／日各2，八 controls 理由各1；仍是固定 ontology 下的開發 proxy。對每個 role 凍結一個原文 window 和完整 target／predicate／quantity／completion anchors，18 個 source-exact hard-negative mutants 及6個 window 內漏關鍵 anchor 反例必須被擋；quote 邊界只作診斷而不作 gate，避免重犯 BD 的有限 alias 問題，但語法不自然的 anchor-complete 片段可能通過。兩 arm 同一 scorer 與資料，唯一 producer 變因是 P4-BC prompt evidence 指示變得 role/value 完整。`unknown_constraint_jp` 等完整 slots 仍由模型負責，漏填即 FAIL。
 
