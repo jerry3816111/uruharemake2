@@ -2,7 +2,15 @@
 
 更新：2026-09-29。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4-BE 正式 FAIL 後的 REVIEW_REQUIRED 架構審查
+## 當前唯一工作：M46 model review 必要性消融的事前規格
+
+P4-BE `REVIEW_REQUIRED` 設計審查已作出**非獨立**處置：目前 raw dialogue→typed-spec 自動路徑不接產品，P4-BB 的條件式 compiler 與 BC／BD／BE 失敗證據保留，不再用第三個小 prompt／gold 修正追分。理由、互斥替代方案與限制見 `analysis/p4_be_review_required_disposition_2026-09-29.md`。這不是上游能力 PASS 或產品交付，亦不撤銷 P4-BA/BC/BD/BE 的 FAIL。
+
+下一個對使用者可見交付的最早瓶頸是：P4-AZ Safari 真實兩輪已把 source 與 M51 候選接好，M46 第二次 model review timeout，M45/M39 fail closed、沒有交付動作；P4-BA 同資料模型大小 2×2 的完整 action 全部 `0/2`，小 reviewer 又退化 always-reject。現在先定案**review stage 是否值得其品質／成本**的單一變因，不能直接旁通 reviewer 或拉長 timeout。依前述設計處置，下一卡要凍結全新隔離中／英／日 action cases、valid 與 wrong-task／unsupported specificity／private-inference／non-action／surface controls、相同 M51 frozen generator packet、A=既有 M46 review、B=相同 deterministic guards 但無 model review、事前獨立品質標註、嚴格 false-action／valid-retention／token／latency gate 及失敗分支。兩 arm 重放相同一次 generator 輸出，僅比較 reviewer 貢獻；B 若放錯行動不能因快而接產品。此設計不是完整強 LLM baseline，也不是人評。
+
+**目前尚未凍結資料／門檻／runner，scored calls=`0`，不可跑正式生成。** 下一個必要步驟先只讀定位 M51/M46/M45/M39 實際入口與 guards，凍結前寫清：最小 before、單一變因、允許檔案、同模型／同 packet／同硬體／token 上限、模型 digest、0 retry、精確測試命令、資源上限、全部 gate／FAIL 分支；記錄任何 gold 歧義並在模型輸出前解決。凍結後先 offline scorer/fake transport，commit freeze 和 runner，才可一次正式模型評測。若兩 arm 都不合格，維持 fail-closed，回到設計審查；若離線合格，仍需全新 private runtime／Safari 檢查自然日文、實際圖、source、durability、latency，不重跑 P4-AZ 已曝光句。當前允許只改本卡、這份設計審查與**prospective**契約／資料／評分／假模型測試；不得改正式 BC–BE 凍結檔／結果、M51/M46/M45/M39 產品 runtime、記憶、人格或原始 dirty checkout，不架外部 server、不碰無關 `output/graduate_application_report/`。新的 gate 未定案前，不可把工作量估計當驗收結果。
+
+## P4-BE 正式 FAIL 與 REVIEW_REQUIRED（保存歷史）
 
 ### 已封存的 P4-BE 正式結果（不得重跑、改題、改 gold 或追認 PASS）
 
