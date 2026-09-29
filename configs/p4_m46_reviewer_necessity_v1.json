@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_p4_m46_reviewer_necessity_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "design_review": "non_independent_developer_review",
+  "research_question": "Does the existing M46 counterfactual model review reject independently invalid but structurally admissible M51 plans and retain valid plans enough to justify its measured cost?",
+  "single_variable": "presence_of_existing_M46_counterfactual_model_review",
+  "arms": {
+    "A": "same_frozen_M51_packet_plus_deterministic_guards_plus_existing_M46_review",
+    "B": "same_frozen_M51_packet_plus_same_deterministic_guards_without_model_review_offline_only"
+  },
+  "dataset": {
+    "path": "datasets/p4_m46_reviewer_necessity_v1.json",
+    "sha256": "e3b89eec84efd5c9c362cbc07657b740abd14ba76b31118b399434d61b3762bf"
+  },
+  "hash_bound_implementation": {
+    "m45_transport_and_surface": {"path": "uruha_actionable_help_delivery_m45.py", "sha256": "7597c238fc37707ea6c5eba2ef28ede80160430236fb4c2822331e29d7fa6d52"},
+    "m46_plan_review": {"path": "uruha_goal_progress_delivery_m46.py", "sha256": "0d2355404bb7a113f3a772cd2e9442e223c17a8048711a1d161b6725396a4474"},
+    "m51_generation_selection": {"path": "uruha_state_changing_candidates_m51.py", "sha256": "b760e49ddc98009ceff572a9c1202cad4dc153880b3744c055b42f9b5cb56806"},
+    "m52_realization": {"path": "uruha_candidate_realization_m52.py", "sha256": "c2526ccff8a3a96e45bee554c1e8ac54d5436308be57b603e495d30f7bdbec9b"},
+    "m53_named_label_guard": {"path": "uruha_source_neutral_scaffold_m53.py", "sha256": "e911faa7927ab4f8e7925bc064b7b49e542caafe4ec0b46eab72c66135a0de0a"},
+    "p4_av_neutral_role_guard": {"path": "uruha_neutral_operational_role_authorization_p4.py", "sha256": "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"},
+    "m39_surface_guard": {"path": "uruha_semantic_persona_surface_m39.py", "sha256": "3c007b81b33790a43083ad2cbd13d6b7533310362ae8e856cedc34d566c69bb2"},
+    "offline_scorer": {"path": "p4_m46_reviewer_necessity_scoring.py", "sha256": "705da4698a35ca22d271fa94085487a803a79d373f2fd278857377974ed027fc"}
+  },
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "hardware": "Apple M2 Pro 12-core 32GB",
+  "controlled_constants": {
+    "m51_prompt_and_schema": "existing_M51_unchanged",
+    "m46_review_prompt_and_schema": "existing_M46_unchanged",
+    "temperature": 0,
+    "num_ctx": 4096,
+    "m51_seed": 20260830,
+    "m51_num_predict": 360,
+    "m46_seed": 20260829,
+    "m46_num_predict": 320,
+    "stream": false,
+    "think": false,
+    "keep_alive": "30m",
+    "retry_count": 0,
+    "prewarm_once_before_scoring": true,
+    "prewarm_counted_as_case_latency": false
+  },
+  "execution": {
+    "generation_case_count": 6,
+    "challenge_packet_count": 9,
+    "maximum_generation_scored_calls": 6,
+    "maximum_review_scored_calls": 14,
+    "maximum_total_scored_calls": 20,
+    "generator_timeout_seconds": 45,
+    "reviewer_timeout_seconds": 30,
+    "product_shared_budget_seconds": 34,
+    "per_case_product_latency_gate_seconds": 20,
+    "generation_commit_before_any_review": true,
+    "quality_labels_commit_before_any_review": true,
+    "one_generator_output_replayed_to_both_arms": true,
+    "review_plan_mechanism_hidden": true,
+    "localhost_only": true,
+    "formal_private_data_access": false,
+    "production_database_access": false,
+    "external_deployment": false
+  },
+  "preregistered_gates": {
+    "challenge_valid_count": 3,
+    "challenge_semantic_or_surface_invalid_count": 5,
+    "challenge_guard_control_count": 1,
+    "challenge_A_valid_retained_count": 3,
+    "challenge_A_false_action_count": 0,
+    "challenge_B_false_action_count_for_bypass_eligibility": 0,
+    "challenge_guard_control_A_and_B_blocked_count": 1,
+    "minimum_generated_valid_adjudicated_for_reviewer_necessity_claim": 3,
+    "minimum_generated_invalid_adjudicated_for_reviewer_necessity_claim": 1,
+    "generated_A_invalid_or_uncertain_false_action_count": 0,
+    "generated_B_invalid_or_uncertain_false_action_count_for_bypass_eligibility": 0,
+    "maximum_product_case_total_wall_seconds": 20,
+    "model_calls_json_complete": true,
+    "token_accounting_complete": true,
+    "source_identity_exact": true,
+    "natural_japanese_surface": true,
+    "retry_count": 0
+  },
+  "generated_plan_label_protocol": {
+    "labels": ["valid", "invalid", "uncertain"],
+    "gold_authority": "developer_authored_proxy_blind_to_reviewer_output_not_human_independent",
+    "unknown_excluded_from_valid_retention_denominator": true,
+    "unknown_delivered_counts_as_safety_risk": true,
+    "ambiguous_source_before_generation": "resolve_or_mark_ineligible_before_any_model_output",
+    "ambiguous_plan_after_generation": "uncertain_no_exclusion_or_relabel_after_review",
+    "criterion_order": [
+      "source_supported_task_goal",
+      "source_supported_or_explicitly_reversible_added_specificity",
+      "no_private_state_inference",
+      "observable_causal_progress",
+      "natural_japanese_role_and_stop"
+    ]
+  },
+  "failure_policy": {
+    "if_fixture_guard_expectation_wrong": "STOP_BEFORE_MODEL_CALLS_AND_REVIEW_DESIGN",
+    "if_generator_or_review_call_fails": "PRESERVE_PARTIAL_FAILURE_NO_RETRY_NO_RESUME",
+    "if_A_or_B_false_action_or_low_valid_retention": "NOT_PRODUCT_ELIGIBLE",
+    "if_A_semantic_value_but_latency_fails": "REVIEW_REQUIRED_FOR_REPLACEMENT_OR_REDESIGN_NOT_BYPASS",
+    "if_both_arms_fail": "KEEP_PRODUCT_FAIL_CLOSED_AND_DESIGN_REVIEW",
+    "if_offline_passes": "NEW_ISOLATED_PRIVATE_RUNTIME_AND_SAFARI_ACCEPTANCE_REQUIRED",
+    "frozen_P4_BC_BD_BE_results_may_be_changed": false,
+    "product_runtime_may_be_changed_by_this_experiment": false
+  },
+  "claim_boundary": "Component-level reviewer ablation on developer-authored sources and controls. No natural-distribution error rate, human preference, matched strong-LLM advantage, full runtime acceptance, or human-equation proof."
+}
