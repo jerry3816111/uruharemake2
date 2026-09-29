@@ -1,8 +1,14 @@
 # 目前任務卡
 
-更新：2026-09-29。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：保存 M46 消融失敗並做下一步設計審查
+## 當前唯一工作：M46 固定辨別力 FAIL 後的設計審查
+
+**固定 challenge-only 正式結果為 `fixed_discrimination_fail`，不得重跑或追認 PASS。** 事前 freeze=`41bb4f02edf1bab392a001e0043eda4368d57144`、runner=`668be4b`，8/8 個本機 9B 審核完成、JSON／tokens／source identity 全部完整、0 retry、0 M51 generation、1 個 guard control 未送模型。A 保留有效行動僅 `1/3`（要求 `3/3`），無效行動錯放 `0/5`，但類別對應理由只辨出 `4/5`；B 是隔離的無審核反事實，錯放預構造負例 `5/5`，絕不授權旁通。reviewer-only wall 中位／最大=`13.210155/14.4233s`，prompt／completion=`6,568/2,304` tokens；不是完整產品 20 秒證據。結果與 runner/freeze 相關回歸=`41 passed`。逐案反例、原始結果、事前邊界見 `analysis/p4_m46_fixed_challenge_discrimination_failure_2026-09-30.md` 與同名 `.json`。原 M51 第一題 360-token 截斷的 A/B 消融仍是 `INCONCLUSIVE / NOT RUN`，不能合併兩實驗成成功鏈路。
+
+**下一個必要交付是非獨立設計審查，而非再送模型或直接改產品。** 有效中文封包因 `casual_japanese=false` 被拒，該「止めよ」措辭也可能與 gold 的自然日文要求不一致；有效英文封包因 `no_unknown_prerequisites=false` 被拒；actor/surface 負例聲稱助手替使用者關面板，`no_identity_or_role_error` 卻仍為 true，靠無關旗標阻擋。先分清 gold／表面標準不一致、過度保守、行動者漏辨三種原因，選一個有成本與反例支持的架構變因；若再做 scored 實驗，必須用新 source／新 freeze、明確品質與成本 gate。產品 M46/M45/M39 維持 fail-closed，不旁通、不提高 timeout、不改已曝光封包／gold／門檻。正式 M55／M56 真人依賴仍未解除。
+
+### 前一階段記錄（已完成或失敗，不是現在的執行命令）
 
 **2026-09-30 正式生成於第一個 M51 call 即停，整個 A/B 消融為 `INCONCLUSIVE / NOT RUN`。** runner commit=`e3c1c11c2180d6c7f617e5ec72c7162f26744ee8`；前檢通過後唯一執行，prewarm成功，第一個 call 17.63697s、prompt/completion=`462/360`，輸出在第二候選字串中斷，`JSONDecodeError`；360 tokens 正好碰凍結上限。已產生0/6完整 batch、1/6 generation call、0 review、0 gold、0 retry，結果檔不可續跑／覆寫。詳細原始證據與設計分支見 `analysis/p4_m46_reviewer_necessity_generation_failure_2026-09-30.md`。**下一步是先保存此 FAIL／結果回歸，再做非獨立設計審查**：優先考慮新凍結的固定 challenge-only M46 辨別力測試（只證元件辨別、非自然生成），若有價值再以新 source 對 M51 表示／token 資源做單變因修正；不可改本次 num_predict、重跑剩餘五題、把手工封包冒充生成、直接旁通 reviewer 或接產品。P4-AZ／BA／BC／BD／BE 的既有 FAIL 不變；正式 M55／M56 仍待真人資料。
 

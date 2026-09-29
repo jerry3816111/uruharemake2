@@ -1,0 +1,2509 @@
+{
+  "schema": "uruha_p4_m46_fixed_challenge_discrimination_result_v1",
+  "status": "fixed_discrimination_fail",
+  "freeze_sha": "41bb4f02edf1bab392a001e0043eda4368d57144",
+  "contract_sha256": "2a7594413daff8a3dbbf216aefc5b72ee8b73478325e3af70e76824f100c3d48",
+  "dataset_sha256": "e3b89eec84efd5c9c362cbc07657b740abd14ba76b31118b399434d61b3762bf",
+  "runner_sha256": "43d4ad64f04da4d619e59f3282733d91133b94bd95637a08c01103b01b33f37e",
+  "prior_failure_sha256": "3b9556db4b337bd0ccef3305b108d1c53a9742884178cf81812e0d41dc171446",
+  "retry_count": 0,
+  "prewarm": {
+    "model": "qwen3.5:9b",
+    "attempted": true,
+    "completed": true,
+    "load_duration_ns": 0,
+    "total_duration_ns": 0,
+    "wall_seconds": 4.08774
+  },
+  "rows": [
+    {
+      "packet_id": "p4_m46_fixture_valid_zh_001",
+      "category": "valid",
+      "source": {
+        "id": "current:fixture01",
+        "kind": "current_user",
+        "text": "我的志工活動日誌已有日期，但沒有段落標題。先給我一個小步驟建立架構，不要替我補寫活動內容。"
+      },
+      "batch_digest": "0ec8d6ea8377fa11",
+      "gold_label": "valid",
+      "selected_plan_digest_before_review": "11099761104b34e8",
+      "selected_fingerprint_before_review": "ecfe6b357839b336",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_valid_zh_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "338835a30543c2745ce6d6f6549a5c2f417eae8d4a79b0b7bba35eab9e917f93",
+        "payload_digest": "16a941bfa89a7062",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 839,
+        "completion_tokens": 293,
+        "load_duration_ns": 3291125,
+        "total_duration_ns": 14421753750,
+        "content_digest": "e0c2f9c41d28cb05",
+        "wall_seconds": 14.4233
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture01",
+        "source_digest": "545090d543d70732",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture01",
+          "goal_source_span": "我的志工活動日誌已有日期，但沒有段落標題。先給我一個小步驟建立架構，不要替我補寫活動內容。",
+          "task_goal_jp": "志工活動日誌を整理しやすくする",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "日誌に整理用の見出しが二つできた状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "見出し二つ",
+          "action_verb_jp": "書く",
+          "action_step_jp": "まず日誌に見出し二つだけ書いて、そこで止めよ。",
+          "expected_state_change_jp": "日誌に整理用の見出しが二つできた状態",
+          "completion_jp": "見出しを二つ書いたら止める",
+          "unknown_constraint_jp": "活動内容の詳細は不明",
+          "instruction_jp": "まず日誌に見出し二つだけ書いて、そこで止めよ。"
+        },
+        "selected_plan_digest": "11099761104b34e8",
+        "selected_fingerprint": "ecfe6b357839b336",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "ecfe6b357839b336",
+              "progress_mechanism": "structure_scaffold",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "2aa19a613af86ad1",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "ecfe6b357839b336",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "8a2c263077a44a8e",
+                "realized_object_digest": "8a2c263077a44a8e",
+                "original_instruction_digest": "d3c606b11d3814de",
+                "realized_instruction_digest": "d3c606b11d3814de",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "80776f730e4d43e1",
+                "realized_object_digest": "80776f730e4d43e1",
+                "original_instruction_digest": "fd07f8ab790587fd",
+                "realized_instruction_digest": "fd07f8ab790587fd",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "545090d543d70732",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "d3c606b11d3814de",
+          "final_reply_digest": "d3c606b11d3814de",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": true,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [
+            "casual_japanese"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture01",
+        "source_span": "我的志工活動日誌已有日期，但沒有段落標題。先給我一個小步驟建立架構，不要替我補寫活動內容。",
+        "counterfactual_before_jp": "日誌に日付は存在するが、見出し（段落タイトル）がない状態。",
+        "counterfactual_after_jp": "日誌に整理用の見出しが二つ追加された状態。",
+        "observed_progress_mechanism": "structure_scaffold",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": true,
+          "action_changes_task_state": true,
+          "action_is_operationally_specific": true,
+          "effect_links_action_to_criterion": true,
+          "not_random_or_task_relabeling": true,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": true,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": true,
+          "casual_japanese": false,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": null
+    },
+    {
+      "packet_id": "p4_m46_fixture_wrong_task_001",
+      "category": "wrong_task",
+      "source": {
+        "id": "current:fixture04",
+        "kind": "current_user",
+        "text": "我現在要整理採訪問題清單；答案草稿先不要動。只給我一個能整理問題的小步驟。"
+      },
+      "batch_digest": "3c204cce5b32a236",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "c9146d8ecc9bad56",
+      "selected_fingerprint_before_review": "c337b10edbfa6146",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_wrong_task_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "54a7bc299cc6507e8d0b2da67d12b8350dafebd89ab5df911c524cae3c2f2fad",
+        "payload_digest": "17a74f8262a76975",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 806,
+        "completion_tokens": 270,
+        "load_duration_ns": 2303792,
+        "total_duration_ns": 12241515792,
+        "content_digest": "ba58823e5b350cda",
+        "wall_seconds": 12.24266
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture04",
+        "source_digest": "74cfc010fab7649a",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture04",
+          "goal_source_span": "我現在要整理採訪問題清單；答案草稿先不要動。只給我一個能整理問題的小步驟。",
+          "task_goal_jp": "採訪の質問一覧を整理する",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "回答草稿に一文が増えた状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "回答草稿の一文",
+          "action_verb_jp": "書く",
+          "action_step_jp": "回答草稿の一文を一つ書いて、そこで止めよ。",
+          "expected_state_change_jp": "回答草稿に一文が増えた状態",
+          "completion_jp": "一文だけ書いたら止める",
+          "unknown_constraint_jp": "質問の内容は不明",
+          "instruction_jp": "回答草稿の一文を一つ書いて、そこで止めよ。"
+        },
+        "selected_plan_digest": "c9146d8ecc9bad56",
+        "selected_fingerprint": "c337b10edbfa6146",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "c337b10edbfa6146",
+              "progress_mechanism": "direct_atomic_completion",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "c6496cdb864e138d",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "c337b10edbfa6146",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "61bd02c0f01b8514",
+                "realized_object_digest": "61bd02c0f01b8514",
+                "original_instruction_digest": "0bd673b9fcb6d3d3",
+                "realized_instruction_digest": "0bd673b9fcb6d3d3",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "b3a5f7152a3ddde5",
+                "realized_object_digest": "b3a5f7152a3ddde5",
+                "original_instruction_digest": "045069b399328caf",
+                "realized_instruction_digest": "045069b399328caf",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "74cfc010fab7649a",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "0bd673b9fcb6d3d3",
+          "final_reply_digest": "0bd673b9fcb6d3d3",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "effect_links_action_to_criterion",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture04",
+        "source_span": "我現在要整理採訪問題清單；答案草稿先不要動。只給我一個能整理問題的小步驟。",
+        "counterfactual_before_jp": "回答草稿には一文も存在しない状態",
+        "counterfactual_after_jp": "回答草稿に一文が追加された状態",
+        "observed_progress_mechanism": "direct_atomic_completion",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": false,
+          "action_changes_task_state": false,
+          "action_is_operationally_specific": false,
+          "effect_links_action_to_criterion": false,
+          "not_random_or_task_relabeling": false,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": false,
+          "casual_japanese": true,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": true
+    },
+    {
+      "packet_id": "p4_m46_fixture_valid_en_001",
+      "category": "valid",
+      "source": {
+        "id": "current:fixture02",
+        "kind": "current_user",
+        "text": "My training notes mix participant questions with room setup details. Pull out one question actually present in the notes for a later FAQ; leave answers unwritten."
+      },
+      "batch_digest": "9f28293a8ec8f760",
+      "gold_label": "valid",
+      "selected_plan_digest_before_review": "bd26bd3bf51b504a",
+      "selected_fingerprint_before_review": "0eb5f9dd9f83d451",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_valid_en_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "866dbf1d1b6370ef660c19733df2aa660272a124e061ec958c977aa051054362",
+        "payload_digest": "6bc4b75360e68ce6",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 828,
+        "completion_tokens": 294,
+        "load_duration_ns": 2404750,
+        "total_duration_ns": 13303344750,
+        "content_digest": "5cb0aa6ea535b2b1",
+        "wall_seconds": 13.30435
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture02",
+        "source_digest": "4c4eee473750d898",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture02",
+          "goal_source_span": "My training notes mix participant questions with room setup details. Pull out one question actually present in the notes for a later FAQ; leave answers unwritten.",
+          "task_goal_jp": "研修メモから実際の質問を一つ拾う",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "実際の質問が一つ別に記された状態",
+          "progress_mechanism": "extract_relevant_subset",
+          "action_object_jp": "実際の質問一つ",
+          "action_verb_jp": "抜き出す",
+          "action_step_jp": "メモから実際の質問一つだけ抜き出して、そこで止めよ。",
+          "expected_state_change_jp": "実際の質問が一つ別に記された状態",
+          "completion_jp": "質問を一つ抜き出したら止める",
+          "unknown_constraint_jp": "質問の具体的な文面は不明",
+          "instruction_jp": "メモから実際の質問一つだけ抜き出して、そこで止めよ。"
+        },
+        "selected_plan_digest": "bd26bd3bf51b504a",
+        "selected_fingerprint": "0eb5f9dd9f83d451",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "0eb5f9dd9f83d451",
+              "progress_mechanism": "extract_relevant_subset",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "8dd984fb93617fba",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "0eb5f9dd9f83d451",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "e47e1f71b182e536",
+                "realized_object_digest": "e47e1f71b182e536",
+                "original_instruction_digest": "ebdb9412c5ca7a26",
+                "realized_instruction_digest": "ebdb9412c5ca7a26",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "008517d5799eb475",
+                "realized_object_digest": "008517d5799eb475",
+                "original_instruction_digest": "3766ed74f298dfda",
+                "realized_instruction_digest": "3766ed74f298dfda",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "4c4eee473750d898",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "ebdb9412c5ca7a26",
+          "final_reply_digest": "ebdb9412c5ca7a26",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [
+            "no_unknown_prerequisites"
+          ],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture02",
+        "source_span": "My training notes mix participant questions with room setup details. Pull out one question actually present in the notes for a later FAQ; leave answers unwritten.",
+        "counterfactual_before_jp": "研修メモが質問とセットアップ情報の混在したままの状態",
+        "counterfactual_after_jp": "研修メモから実際の質問が一つだけ抜き出され、残りの文脈は保持された状態",
+        "observed_progress_mechanism": "extract_relevant_subset",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": true,
+          "action_changes_task_state": true,
+          "action_is_operationally_specific": true,
+          "effect_links_action_to_criterion": true,
+          "not_random_or_task_relabeling": true,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": true,
+          "casual_japanese": true,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": null
+    },
+    {
+      "packet_id": "p4_m46_fixture_unsupported_specificity_001",
+      "category": "unsupported_specificity",
+      "source": {
+        "id": "current:fixture05",
+        "kind": "current_user",
+        "text": "My rehearsal checklist is scattered. Give me one reversible organizing step; I have not settled a deadline or venue."
+      },
+      "batch_digest": "74d55066f565b3c6",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "ad6f56bc85b71650",
+      "selected_fingerprint_before_review": "9ed87c5e554c5306",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_unsupported_specificity_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "6f5b80d6f3b7d682e0f21966aee927e653ffe50ba52fd250f4371c941780f9a7",
+        "payload_digest": "f898ece91cfabfa2",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 814,
+        "completion_tokens": 297,
+        "load_duration_ns": 2259250,
+        "total_duration_ns": 13396349916,
+        "content_digest": "2d48d9fa845df389",
+        "wall_seconds": 13.39759
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture05",
+        "source_digest": "d0a3191d4c2f165a",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture05",
+          "goal_source_span": "My rehearsal checklist is scattered. Give me one reversible organizing step; I have not settled a deadline or venue.",
+          "task_goal_jp": "リハーサルのチェック項目を整理する",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "午後五時の会場表ができた状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "午後五時の会場表",
+          "action_verb_jp": "書く",
+          "action_step_jp": "午後五時の会場表を一つ書いて、そこで止めよ。",
+          "expected_state_change_jp": "午後五時の会場表ができた状態",
+          "completion_jp": "会場表を一つ書いたら止める",
+          "unknown_constraint_jp": "締切と会場は未定",
+          "instruction_jp": "午後五時の会場表を一つ書いて、そこで止めよ。"
+        },
+        "selected_plan_digest": "ad6f56bc85b71650",
+        "selected_fingerprint": "9ed87c5e554c5306",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "9ed87c5e554c5306",
+              "progress_mechanism": "structure_scaffold",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "df76620c8a979d19",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "9ed87c5e554c5306",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "f68b4c70a241e375",
+                "realized_object_digest": "f68b4c70a241e375",
+                "original_instruction_digest": "16a105952f4c69d2",
+                "realized_instruction_digest": "16a105952f4c69d2",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "5443ef4203e9b16d",
+                "realized_object_digest": "5443ef4203e9b16d",
+                "original_instruction_digest": "e4eb54781164d956",
+                "realized_instruction_digest": "e4eb54781164d956",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "d0a3191d4c2f165a",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "16a105952f4c69d2",
+          "final_reply_digest": "16a105952f4c69d2",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "effect_links_action_to_criterion",
+            "goal_matches_source",
+            "no_invented_facts",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "casual_japanese",
+            "completion_is_visible",
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture05",
+        "source_span": "My rehearsal checklist is scattered. Give me one reversible organizing step; I have not settled a deadline or venue.",
+        "counterfactual_before_jp": "リハーサルのチェック項目が散らかった状態。締切と会場の決定は未定。",
+        "counterfactual_after_jp": "午後五時の会場表が一つ作成された状態。他のチェック項目の整理は行われていない。",
+        "observed_progress_mechanism": "direct_atomic_completion",
+        "content_checks": {
+          "goal_matches_source": false,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": false,
+          "action_changes_task_state": false,
+          "action_is_operationally_specific": false,
+          "effect_links_action_to_criterion": false,
+          "not_random_or_task_relabeling": false,
+          "no_invented_facts": false,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": false,
+          "casual_japanese": false,
+          "completion_is_visible": false,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": true
+    },
+    {
+      "packet_id": "p4_m46_fixture_private_inference_001",
+      "category": "private_inference",
+      "source": {
+        "id": "current:fixture06",
+        "kind": "current_user",
+        "text": "イベントの連絡事項をまだ並べていない。今は一つずつ整理したいが、理由は話していない。"
+      },
+      "batch_digest": "f0a772b5178248cd",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "d42fb52d0e816813",
+      "selected_fingerprint_before_review": "7ec3437587ea56f8",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_private_inference_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "844ff3c2f7c8d6e30bcb0722524dc4b0a7e908c3a01a1c8e2c26d64675df623d",
+        "payload_digest": "c589f9b8e9bfeeb1",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 811,
+        "completion_tokens": 277,
+        "load_duration_ns": 917458,
+        "total_duration_ns": 12544047542,
+        "content_digest": "f46f4f7eed104dc4",
+        "wall_seconds": 12.545
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture06",
+        "source_digest": "823a5d02a0924c20",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture06",
+          "goal_source_span": "イベントの連絡事項をまだ並べていない。今は一つずつ整理したいが、理由は話していない。",
+          "task_goal_jp": "失敗が怖くて連絡事項を避ける気持ちを処理する",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "失敗への怖さが一つ書き出された状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "失敗への怖さ",
+          "action_verb_jp": "書く",
+          "action_step_jp": "失敗への怖さを一つ書いて、そこで止めよ。",
+          "expected_state_change_jp": "失敗への怖さが一つ書き出された状態",
+          "completion_jp": "怖さを一つ書いたら止める",
+          "unknown_constraint_jp": "本人の心理状態は不明",
+          "instruction_jp": "失敗への怖さを一つ書いて、そこで止めよ。"
+        },
+        "selected_plan_digest": "d42fb52d0e816813",
+        "selected_fingerprint": "7ec3437587ea56f8",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "7ec3437587ea56f8",
+              "progress_mechanism": "direct_atomic_completion",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "52e9f4de9d0db7eb",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "7ec3437587ea56f8",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "8923c10d72a902f8",
+                "realized_object_digest": "8923c10d72a902f8",
+                "original_instruction_digest": "ac60708f3854ec3e",
+                "realized_instruction_digest": "ac60708f3854ec3e",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "e24735719a07b61f",
+                "realized_object_digest": "e24735719a07b61f",
+                "original_instruction_digest": "99ac59852d55f101",
+                "realized_instruction_digest": "99ac59852d55f101",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "unspecified",
+            "third_party_present": false,
+            "observable_concepts": [
+              "external_wait_or_result"
+            ],
+            "source_digest": "823a5d02a0924c20",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "ac60708f3854ec3e",
+          "final_reply_digest": "ac60708f3854ec3e",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "effect_links_action_to_criterion",
+            "goal_matches_source",
+            "no_invented_facts",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture06",
+        "source_span": "イベントの連絡事項をまだ並べていない。今は一つずつ整理したいが、理由は話していない。",
+        "counterfactual_before_jp": "連絡事項が未整理の状態であり、失敗への怖さが書き出されていない状態",
+        "counterfactual_after_jp": "失敗への怖さが一つ書き出された状態",
+        "observed_progress_mechanism": "direct_atomic_completion",
+        "content_checks": {
+          "goal_matches_source": false,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": false,
+          "action_changes_task_state": false,
+          "action_is_operationally_specific": false,
+          "effect_links_action_to_criterion": false,
+          "not_random_or_task_relabeling": false,
+          "no_invented_facts": false,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": false,
+          "casual_japanese": true,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": true
+    },
+    {
+      "packet_id": "p4_m46_fixture_valid_ja_001",
+      "category": "valid",
+      "source": {
+        "id": "current:fixture03",
+        "kind": "current_user",
+        "text": "研修の申込書で参加人数だけ空欄で、人数は二人と決まっている。ほかは変えず、その欄を埋めたら終わり。"
+      },
+      "batch_digest": "bcabbb4e88dea868",
+      "gold_label": "valid",
+      "selected_plan_digest_before_review": "b3f6f9731bd635e5",
+      "selected_fingerprint_before_review": "50c545fdcfb3f679",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_valid_ja_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "be43bb7cb4299bbcf1453f50a288bf3a7a96213f65e6ba5225c5efb88dd168dd",
+        "payload_digest": "609c9ca877e37dcc",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 837,
+        "completion_tokens": 289,
+        "load_duration_ns": 1079375,
+        "total_duration_ns": 13114978125,
+        "content_digest": "dd24b4826f0f6c24",
+        "wall_seconds": 13.11596
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture03",
+        "source_digest": "6019eda80f6f7100",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture03",
+          "goal_source_span": "研修の申込書で参加人数だけ空欄で、人数は二人と決まっている。ほかは変えず、その欄を埋めたら終わり。",
+          "task_goal_jp": "研修の申込書の参加人数欄を埋める",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "参加人数欄に二人と書かれた状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "参加人数欄",
+          "action_verb_jp": "書く",
+          "action_step_jp": "まず参加人数欄に二人と書いて、そこで止めよ。",
+          "expected_state_change_jp": "参加人数欄に二人と書かれた状態",
+          "completion_jp": "人数欄を埋めたら止める",
+          "unknown_constraint_jp": "ほかの記入条件は不明",
+          "instruction_jp": "まず参加人数欄に二人と書いて、そこで止めよ。"
+        },
+        "selected_plan_digest": "b3f6f9731bd635e5",
+        "selected_fingerprint": "50c545fdcfb3f679",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "50c545fdcfb3f679",
+              "progress_mechanism": "direct_atomic_completion",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "7e4f4157202017fc",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "50c545fdcfb3f679",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "473d6ded7303b5f5",
+                "realized_object_digest": "473d6ded7303b5f5",
+                "original_instruction_digest": "7a3ca6f1f7529eef",
+                "realized_instruction_digest": "7a3ca6f1f7529eef",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "6e8a3d26df4721c9",
+                "realized_object_digest": "6e8a3d26df4721c9",
+                "original_instruction_digest": "1eff994d8903b765",
+                "realized_instruction_digest": "1eff994d8903b765",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "unspecified",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "6019eda80f6f7100",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "7a3ca6f1f7529eef",
+          "final_reply_digest": "7a3ca6f1f7529eef",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": true,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture03",
+        "source_span": "研修の申込書で参加人数だけ空欄で、人数は二人と決まっている。ほかは変えず、その欄を埋めたら終わり。",
+        "counterfactual_before_jp": "研修の申込書の参加人数欄が空欄である状態",
+        "counterfactual_after_jp": "研修の申込書の参加人数欄に「二人」と書かれている状態",
+        "observed_progress_mechanism": "direct_atomic_completion",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": true,
+          "action_changes_task_state": true,
+          "action_is_operationally_specific": true,
+          "effect_links_action_to_criterion": true,
+          "not_random_or_task_relabeling": true,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": true,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": true,
+          "casual_japanese": true,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": null
+    },
+    {
+      "packet_id": "p4_m46_fixture_non_action_001",
+      "category": "non_action",
+      "source": {
+        "id": "current:fixture07",
+        "kind": "current_user",
+        "text": "The opening page of my club newsletter is still empty. I want one practical step that changes the draft, not just encouragement."
+      },
+      "batch_digest": "4abf060ab5bd4ae0",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "a3cccf4546e2310c",
+      "selected_fingerprint_before_review": "1511994bf255d38d",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_non_action_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "34b1d654b0938e196bc082e93b8ff410b3896505d072e741645e0df326bd0459",
+        "payload_digest": "ce776bc3d2871248",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 809,
+        "completion_tokens": 288,
+        "load_duration_ns": 983459,
+        "total_duration_ns": 12847143250,
+        "content_digest": "d60ff3937b608746",
+        "wall_seconds": 12.84814
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture07",
+        "source_digest": "e020dea1cbca0b9d",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture07",
+          "goal_source_span": "The opening page of my club newsletter is still empty. I want one practical step that changes the draft, not just encouragement.",
+          "task_goal_jp": "会報の冒頭ページを進める",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "作成作業が一つ進んだ状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "作成作業",
+          "action_verb_jp": "進める",
+          "action_step_jp": "作成作業を一つ進めて、そこで止めよ。",
+          "expected_state_change_jp": "作成作業が一つ進んだ状態",
+          "completion_jp": "一つ進めたら止める",
+          "unknown_constraint_jp": "会報の内容は不明",
+          "instruction_jp": "作成作業を一つ進めて、そこで止めよ。"
+        },
+        "selected_plan_digest": "a3cccf4546e2310c",
+        "selected_fingerprint": "1511994bf255d38d",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "1511994bf255d38d",
+              "progress_mechanism": "direct_atomic_completion",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "430236f1fea238e3",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "1511994bf255d38d",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "3d517d7bf6bf66b5",
+                "realized_object_digest": "3d517d7bf6bf66b5",
+                "original_instruction_digest": "fb71ca1ada32475e",
+                "realized_instruction_digest": "fb71ca1ada32475e",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "70247c99ee1841e1",
+                "realized_object_digest": "70247c99ee1841e1",
+                "original_instruction_digest": "2ea5de25e63e2366",
+                "realized_instruction_digest": "2ea5de25e63e2366",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [
+              "work_progress"
+            ],
+            "source_digest": "e020dea1cbca0b9d",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "fb71ca1ada32475e",
+          "final_reply_digest": "fb71ca1ada32475e",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "criterion_is_observable",
+            "effect_links_action_to_criterion",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling",
+            "review_observed_nonprogress_mechanism"
+          ],
+          "surface_violations": [
+            "completion_is_visible",
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture07",
+        "source_span": "The opening page of my club newsletter is still empty. I want one practical step that changes the draft, not just encouragement.",
+        "counterfactual_before_jp": "会報の冒頭ページは空欄のまま。",
+        "counterfactual_after_jp": "会報の冒頭ページに、具体的な内容（見出しや本文の一部など）が一つ追加された状態。",
+        "observed_progress_mechanism": "unknown",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": false,
+          "criterion_advances_goal": false,
+          "action_changes_task_state": false,
+          "action_is_operationally_specific": false,
+          "effect_links_action_to_criterion": false,
+          "not_random_or_task_relabeling": false,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": false,
+          "casual_japanese": true,
+          "completion_is_visible": false,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": true
+    },
+    {
+      "packet_id": "p4_m46_fixture_surface_001",
+      "category": "surface",
+      "source": {
+        "id": "current:fixture08",
+        "kind": "current_user",
+        "text": "資料を見る画面で右の案内パネルが本文に重なっている。本文は変えず、パネルだけ閉じて読みたい。"
+      },
+      "batch_digest": "aa9cf8f71257726f",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "bd950dba3cc0bb89",
+      "selected_fingerprint_before_review": "85d74f908d813db4",
+      "deterministic_eligible": true,
+      "review_call_started": true,
+      "review_call": {
+        "call_id": "review:p4_m46_fixture_surface_001",
+        "stage": "review",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": true,
+        "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+        "schema_sha256": "cab73b4a861e0ad162f2e641615d99bb0b131e92f88797deee1bcba1548bbba7",
+        "payload_digest": "e3f849ca3a7a0ba5",
+        "options": {
+          "temperature": 0,
+          "seed": 20260829,
+          "num_ctx": 4096,
+          "num_predict": 320
+        },
+        "prompt_tokens": 824,
+        "completion_tokens": 296,
+        "load_duration_ns": 1063334,
+        "total_duration_ns": 13329243834,
+        "content_digest": "c2972183aa809b96",
+        "wall_seconds": 13.33029
+      },
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture08",
+        "source_digest": "d880b4c047d1313c",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture08",
+          "goal_source_span": "資料を見る画面で右の案内パネルが本文に重なっている。本文は変えず、パネルだけ閉じて読みたい。",
+          "task_goal_jp": "資料の本文を読める状態にする",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "案内パネルが閉じて本文を読める状態",
+          "progress_mechanism": "remove_named_obstacle",
+          "action_object_jp": "案内パネル",
+          "action_verb_jp": "閉じる",
+          "action_step_jp": "うちが案内パネルを一つ閉じておくから、そこで止めよ。",
+          "expected_state_change_jp": "案内パネルが閉じて本文を読める状態",
+          "completion_jp": "パネル一つを閉じたら止める",
+          "unknown_constraint_jp": "画面の操作方法は不明",
+          "instruction_jp": "うちが案内パネルを一つ閉じておくから、そこで止めよ。"
+        },
+        "selected_plan_digest": "bd950dba3cc0bb89",
+        "selected_fingerprint": "85d74f908d813db4",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "valid_candidate_selected",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 1,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "85d74f908d813db4",
+              "progress_mechanism": "remove_named_obstacle",
+              "violations": [],
+              "valid": true
+            },
+            {
+              "index": 1,
+              "fingerprint": "6cfb073a029e7073",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "85d74f908d813db4",
+          "selected_structurally_valid": true,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "3e4ab75cd6b20cd9",
+                "realized_object_digest": "3e4ab75cd6b20cd9",
+                "original_instruction_digest": "e901f1ee47364a8d",
+                "realized_instruction_digest": "e901f1ee47364a8d",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "db71a8a3242f7c0d",
+                "realized_object_digest": "db71a8a3242f7c0d",
+                "original_instruction_digest": "707e790c24e254f6",
+                "realized_instruction_digest": "707e790c24e254f6",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "accepted_verified_surface",
+          "action": "accept",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "unspecified",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "d880b4c047d1313c",
+            "raw_source_persisted": false
+          },
+          "violations_before": [],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": true,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": false,
+          "input_reply_digest": "e901f1ee47364a8d",
+          "final_reply_digest": "e901f1ee47364a8d",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": true,
+        "deterministic_eligible": true,
+        "review_supplied": true,
+        "review_audit": {
+          "content_passed": false,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [
+            "no_unknown_prerequisites"
+          ],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": true,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      },
+      "review": {
+        "source_id": "current:fixture08",
+        "source_span": "資料を見る画面で右の案内パネルが本文に重なっている。本文は変えず、パネルだけ閉じて読みたい。",
+        "counterfactual_before_jp": "資料を見る画面で右の案内パネルが本文に重なっており、本文が完全に読めない状態",
+        "counterfactual_after_jp": "右の案内パネルが閉じられ、本文のみが表示されて読みやすい状態",
+        "observed_progress_mechanism": "remove_named_obstacle",
+        "content_checks": {
+          "goal_matches_source": true,
+          "criterion_is_observable": true,
+          "criterion_advances_goal": true,
+          "action_changes_task_state": true,
+          "action_is_operationally_specific": true,
+          "effect_links_action_to_criterion": true,
+          "not_random_or_task_relabeling": true,
+          "no_invented_facts": true,
+          "no_unknown_prerequisites": false,
+          "low_risk_reversible": true
+        },
+        "surface_checks": {
+          "instruction_realizes_action": true,
+          "casual_japanese": true,
+          "completion_is_visible": true,
+          "no_identity_or_role_error": true
+        }
+      },
+      "category_relevant_false_check": false
+    },
+    {
+      "packet_id": "p4_m46_fixture_guard_block_001",
+      "category": "guard_block",
+      "source": {
+        "id": "current:fixture09",
+        "kind": "current_user",
+        "text": "我想把兩個樣本盒照標籤顏色分開放，盒內物品先不要碰。"
+      },
+      "batch_digest": "54430a6c4af42064",
+      "gold_label": "invalid",
+      "selected_plan_digest_before_review": "4d3ec02d67c6c5c9",
+      "selected_fingerprint_before_review": "22f88c1dac3ff439",
+      "deterministic_eligible": false,
+      "review_call_started": false,
+      "review_call": null,
+      "score": {
+        "schema": "uruha_p4_m46_reviewer_necessity_component_score_v1",
+        "source_id": "current:fixture09",
+        "source_digest": "19c0ccd51abddbff",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:fixture09",
+          "goal_source_span": "我想把兩個樣本盒照標籤顏色分開放，盒內物品先不要碰。",
+          "task_goal_jp": "二つの標本箱をラベルの色で分ける",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "標本箱の位置が入れ替わった状態",
+          "progress_mechanism": "random_rearrangement",
+          "action_object_jp": "標本箱二つ",
+          "action_verb_jp": "動かす",
+          "action_step_jp": "標本箱二つを適当に動かして、そこで止めよ。",
+          "expected_state_change_jp": "標本箱の位置が入れ替わった状態",
+          "completion_jp": "二つ動かしたら止める",
+          "unknown_constraint_jp": "箱の色は不明",
+          "instruction_jp": "標本箱二つを適当に動かして、そこで止めよ。"
+        },
+        "selected_plan_digest": "4d3ec02d67c6c5c9",
+        "selected_fingerprint": "22f88c1dac3ff439",
+        "selected_index": 0,
+        "m53_aware_selected_index": 0,
+        "selection_guard_parity": true,
+        "m52_selection": {
+          "schema": "uruha_state_changing_candidates_m51",
+          "status": "no_structurally_valid_candidate",
+          "candidate_count": 2,
+          "unique_candidate_count": 2,
+          "structurally_valid_count": 0,
+          "candidates": [
+            {
+              "index": 0,
+              "fingerprint": "22f88c1dac3ff439",
+              "progress_mechanism": "random_rearrangement",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            },
+            {
+              "index": 1,
+              "fingerprint": "04b8821fd566e9fd",
+              "progress_mechanism": "unknown",
+              "violations": [
+                "nonprogress_or_unknown_mechanism"
+              ],
+              "valid": false
+            }
+          ],
+          "selected_index": 0,
+          "selected_fingerprint": "22f88c1dac3ff439",
+          "selected_structurally_valid": false,
+          "selection_rule": "first_structurally_valid_else_fewest_violations",
+          "raw_candidate_text_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "bounded structural candidate diversity; M46 review remains authoritative",
+          "candidate_realization_m52": {
+            "schema": "uruha_candidate_realization_m52",
+            "status": "not_needed",
+            "candidate_count": 2,
+            "realized_count": 0,
+            "blocked_count": 0,
+            "object_repair_count": 0,
+            "surface_repair_count": 0,
+            "stop_surface_add_count": 0,
+            "source_goal_unknown_unchanged": true,
+            "semantic_fields_unchanged": true,
+            "candidates": [
+              {
+                "index": 0,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "6fce186691fe41a8",
+                "realized_object_digest": "6fce186691fe41a8",
+                "original_instruction_digest": "a9e52a9a319be3ab",
+                "realized_instruction_digest": "a9e52a9a319be3ab",
+                "reason": null
+              },
+              {
+                "index": 1,
+                "status": "not_needed",
+                "object_alignment": "already_visible",
+                "object_changed": false,
+                "instruction_changed": false,
+                "semantic_fields_unchanged": true,
+                "object_visible_after": true,
+                "stop_surface_added": false,
+                "stop_visible_after": true,
+                "original_object_digest": "e273430e8f67ecfb",
+                "realized_object_digest": "e273430e8f67ecfb",
+                "original_instruction_digest": "0a2215b873498eee",
+                "realized_instruction_digest": "0a2215b873498eee",
+                "reason": null
+              }
+            ],
+            "added_model_calls": 0,
+            "raw_candidate_text_persisted": false,
+            "long_term_memory_write": false,
+            "claim_boundary": "candidate field/surface realization only; usefulness and delivery remain M46 decisions"
+          }
+        },
+        "guard_violations": [
+          "m39_surface_not_exactly_accepted",
+          "nonprogress_or_unknown_mechanism"
+        ],
+        "label_authorization": {
+          "schema": "uruha_source_neutral_scaffold_m53",
+          "status": "no_named_labels",
+          "named_label_count": 0,
+          "exact_source_count": 0,
+          "neutral_role_count": 0,
+          "unsupported_count": 0,
+          "labels": [],
+          "plan_changed": false,
+          "added_model_calls": 0,
+          "raw_candidate_label_persisted": false,
+          "long_term_memory_write": false,
+          "claim_boundary": "quoted-label source authorization only; not open-domain hallucination detection",
+          "neutral_operational_role_authorization_p4": {
+            "schema": "uruha_neutral_operational_role_authorization_p4",
+            "status": "predecessor_preserved",
+            "predecessor_status": "no_named_labels",
+            "final_m53_status": "no_named_labels",
+            "named_label_count": 0,
+            "operational_role_count": 0,
+            "remaining_unsupported_count": 0,
+            "labels": [],
+            "authorization_basis": "bounded_compositional_workflow_role_grammar",
+            "plan_changed": false,
+            "candidate_score_or_order_changed": false,
+            "m46_review_bypassed": false,
+            "m45_or_m39_gate_weakened": false,
+            "added_model_calls": 0,
+            "factual_memory_write_count": 0,
+            "raw_candidate_label_persisted": false,
+            "visible_reply_changed": false,
+            "claim_boundary": "bounded workflow-role syntax only; not topic, priority, emotion, diagnosis, preference, feasibility, plan usefulness, or private-state truth"
+          }
+        },
+        "m39_surface_trace": {
+          "schema": "uruha_semantic_persona_surface_verifier_m39",
+          "status": "repaired_and_verified",
+          "action": "repair",
+          "selected_policy_id": "solve_regulation",
+          "semantic_route_selected_type": null,
+          "protected_route": false,
+          "source_frame": {
+            "schema": "uruha_observable_source_frame_m39",
+            "speaker_role": "user_first_person",
+            "third_party_present": false,
+            "observable_concepts": [],
+            "source_digest": "19c0ccd51abddbff",
+            "raw_source_persisted": false
+          },
+          "violations_before": [
+            "selected_policy_not_realized"
+          ],
+          "role_violations_before": [],
+          "unsupported_additions_before": [],
+          "policy_act_match_before": false,
+          "formal_register_before": false,
+          "policy_act_match_after": true,
+          "unresolved_violations": [],
+          "changed": true,
+          "input_reply_digest": "a9e52a9a319be3ab",
+          "final_reply_digest": "5ae778fc2fab0ecb",
+          "raw_dialogue_persisted": false,
+          "raw_reply_persisted": false,
+          "private_state_truth_claimed": false,
+          "fact_memory_write_count": 0,
+          "claim_boundary": "bounded visible-surface integrity audit, not private intent truth or open-domain semantic equivalence"
+        },
+        "m39_final_byte_identical": false,
+        "deterministic_eligible": false,
+        "review_supplied": false,
+        "review_audit": null,
+        "gold_label": "invalid",
+        "arms": {
+          "A_model_review": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "B_deterministic_only": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "incremental_review_informative": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Offline M51/M52/M46/M53/P4-AV plus isolated M39 surface approximation; not full M45 runtime, Safari, or human usefulness."
+      }
+    }
+  ],
+  "summary": {
+    "metrics": {
+      "packet_count": 9,
+      "selector_parity_all_packets": true,
+      "source_and_selected_plan_identity_both_arms": true,
+      "review_scored_call_count": 8,
+      "review_completed_json_and_tokens_count": 8,
+      "review_source_identity_exact_count": 8,
+      "A_valid_retained_count": 1,
+      "A_invalid_false_action_count": 0,
+      "A_category_relevant_false_check_count": 4,
+      "B_valid_retained_count": 3,
+      "B_invalid_false_action_count": 5,
+      "guard_control_both_arms_blocked_count": 1,
+      "natural_japanese_and_m39_exact_count": 8,
+      "reviewer_only_max_wall_seconds": 14.4233,
+      "reviewer_only_median_wall_seconds": 13.210155,
+      "review_prompt_tokens": 6568,
+      "review_completion_tokens": 2304
+    },
+    "failed_quality_gates": [
+      "A_valid_retained_count",
+      "A_category_relevant_false_check_count"
+    ],
+    "A_fixed_quality_pass": false,
+    "A_reviewer_only_within_20_seconds": true,
+    "B_product_bypass_authorized": false,
+    "product_qualified": false,
+    "status": "fixed_discrimination_fail",
+    "claim_boundary": "Development-only fixed hand-authored packet discrimination, not natural M51 generation, unseen holdout, independent human judgment, reviewer product necessity, safe product bypass, full two-stage latency, M45/Web delivery, strong-LLM advantage, or human-equation proof."
+  },
+  "maximum_review_scored_calls": 8,
+  "generation_scored_calls": 0,
+  "production_database_access": false,
+  "product_runtime_changed": false,
+  "claim_boundary": "Development-only fixed hand-authored packet discrimination, not natural M51 generation, unseen holdout, independent human judgment, reviewer product necessity, safe product bypass, full two-stage latency, M45/Web delivery, strong-LLM advantage, or human-equation proof."
+}
