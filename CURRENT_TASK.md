@@ -2,7 +2,27 @@
 
 更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：M46 固定辨別力 FAIL 後的設計審查
+## 當前唯一工作：M46 審核判斷介面的前瞻凍結
+
+2026-09-30 的**非獨立設計審查已完成**：
+`analysis/p4_m46_reviewer_decision_interface_design_review_2026-09-30.md`。
+它沒有新的模型、產品或真人結果。舊固定封包 FAIL 不變；中文有效案的 `止めよ`
+可能是 gold／口語標準歧義，英文有效案疑似把使用者手邊可查的材料誤當未知前提，
+actor/surface 負例則漏判助理代操作。選定唯一下一架構變因為**同一 9B、同候選、
+同前後 guard 與 320-token cap 下的 M46 單次 review decision interface**；原產品 M46
+不動。這不是逐字 prompt 追分，prompt+schema 是一個可歸因契約整體；若品質／成本仍
+失敗，即審整個兩階段架構，不再對 reviewer 做第三次小修。
+
+**下一必要交付：先事前凍結全新中／英／日完整封包、內容與日文表面分開的盲於 reviewer
+gold、原／新契約、分類映射、score、模型與成本 gate；0 scored calls。** 新舊介面
+對同一封包各唯一一次；明確 valid 全保留、invalid／uncertain 零錯放、每類命中原因、
+JSON/source/tokens 完整、0 retry、逐案 wall/tokens；reviewer-only `≤20s` 仍不足以授權
+完整產品，之後須全新自然生成與 private runtime／Safari 的完整 `≤20s`。不能用舊九題
+作新分數、不能修改任何舊 gold／凍結結果或直接改產品。下一步允許新增 prospective
+研究契約／dataset／scorer／離線 tests 並更新本卡；先 freeze commit，再新增一次性 runner
+與 fake tests，runner commit 前不送模型。精確離線命令及最大 scored-call 數須寫入 freeze。
+
+### 前一工作：固定辨別力 FAIL 與設計審查的 before（保存歷史）
 
 **固定 challenge-only 正式結果為 `fixed_discrimination_fail`，不得重跑或追認 PASS。** 事前 freeze=`41bb4f02edf1bab392a001e0043eda4368d57144`、runner=`668be4b`，8/8 個本機 9B 審核完成、JSON／tokens／source identity 全部完整、0 retry、0 M51 generation、1 個 guard control 未送模型。A 保留有效行動僅 `1/3`（要求 `3/3`），無效行動錯放 `0/5`，但類別對應理由只辨出 `4/5`；B 是隔離的無審核反事實，錯放預構造負例 `5/5`，絕不授權旁通。reviewer-only wall 中位／最大=`13.210155/14.4233s`，prompt／completion=`6,568/2,304` tokens；不是完整產品 20 秒證據。結果與 runner/freeze 相關回歸=`41 passed`。逐案反例、原始結果、事前邊界見 `analysis/p4_m46_fixed_challenge_discrimination_failure_2026-09-30.md` 與同名 `.json`。原 M51 第一題 360-token 截斷的 A/B 消融仍是 `INCONCLUSIVE / NOT RUN`，不能合併兩實驗成成功鏈路。
 
