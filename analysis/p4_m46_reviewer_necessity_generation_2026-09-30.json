@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_p4_m46_reviewer_necessity_generation_v1",
+  "status": "generation_call_failed_partial_no_resume",
+  "freeze_sha": "2d522885b939cdb9a3dfd6d8bf4a2786527b6f31",
+  "contract_sha256": "e423bc9d811ef6e2d9a11dbf60b18d82c3fa5f820659d254a7f8e0732956ff97",
+  "dataset_sha256": "e3b89eec84efd5c9c362cbc07657b740abd14ba76b31118b399434d61b3762bf",
+  "runner_sha256": "d04be34283b1a956356854b14a79ae44f124ca11ccc0ed239cddb019f3e54047",
+  "gold_labels_present": false,
+  "review_calls": 0,
+  "retry_count": 0,
+  "prewarm": {
+    "model": "qwen3.5:9b",
+    "attempted": true,
+    "completed": true,
+    "load_duration_ns": 0,
+    "total_duration_ns": 0,
+    "wall_seconds": 4.34145
+  },
+  "rows": [
+    {
+      "case_id": "p4_m46_gen_zh_scaffold_001",
+      "source": {
+        "id": "current:gen01",
+        "kind": "current_user",
+        "text": "我把社團活動紀錄的素材貼在同一頁，還沒有章節。只給我一個先建立架構的小動作；不要替我編造活動內容。"
+      },
+      "call": {
+        "call_id": "generate:p4_m46_gen_zh_scaffold_001",
+        "stage": "generate",
+        "model": "qwen3.5:9b",
+        "attempted": true,
+        "completed": true,
+        "json_parse_success": false,
+        "system_sha256": "7320b43662cebfe7d56040219713d61c46c51902e3d5d9442f4c74ff100c5baf",
+        "schema_sha256": "098c99dbbe80d04371acd6e3ff9e2ed807bfed9b77bdc3bf450b1cb2ee42db69",
+        "payload_digest": "9f00e0b207f99d3b",
+        "options": {
+          "temperature": 0,
+          "seed": 20260830,
+          "num_ctx": 4096,
+          "num_predict": 360
+        },
+        "prompt_tokens": 462,
+        "completion_tokens": 360,
+        "load_duration_ns": 3385625,
+        "total_duration_ns": 17635531416,
+        "content_digest": "70b868ef5f7f1887",
+        "error_type": "JSONDecodeError",
+        "error": "Unterminated string starting at: line 19 column 17 (char 712)",
+        "raw_content": "{\n  \"sid\": \"current:gen01\",\n  \"span\": \"我把社團活動紀錄的素材貼在同一頁，還沒有章節。只給我一個先建立架構的小動作；不要替我編造活動內容。\",\n  \"goal\": \"同一ページの素材を章ごとに整理した見出し構造を作成する\",\n  \"unknown\": \"各素材がどの章に属するか、および章の順序\",\n  \"items\": [\n    {\n      \"mechanism\": \"group_by_rule\",\n      \"object\": \"「行事」「会議」「集い」などのキーワードで素材を分類し、それぞれに仮の章名（例：行事編、会議編）を付与する\",\n      \"verb\": \"分類して見出しを作成する\",\n      \"effect\": \"無秩序なテキストが明確な階層構造を持つ目次リストに変化する\",\n      \"stop\": \"すべての素材が少なくとも 1 つの仮章に割り当てられた時点で停止する\",\n      \"instruction\": \"「行事」「会議」「集い」などのキーワードで素材を分類し、それぞれに仮の章名（例：行事編、会議編）を付与して目次リストを作成し、すべての素材が少なくとも 1 つの仮章に割り当てられた時点で停止する\"\n    },\n    {\n      \"mechanism\": \"group_by_rule\",\n      \"object\": \"「月」「日」などの時間表現で素材を分類し、それぞれに仮の章名（例：1 月編、2 月編）を付与する\",\n      \"verb\": \"時系列で見出しを作成する\",\n      \"effect\": \"無秩序",
+        "wall_seconds": 17.63697
+      },
+      "batch": null
+    }
+  ],
+  "max_scored_calls": 6,
+  "production_database_access": false,
+  "product_runtime_changed": false,
+  "claim_boundary": "Component-level reviewer ablation on developer-authored sources and controls. No natural-distribution error rate, human preference, matched strong-LLM advantage, full runtime acceptance, or human-equation proof."
+}
