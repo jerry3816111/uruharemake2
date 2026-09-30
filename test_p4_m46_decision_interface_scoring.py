@@ -45,7 +45,7 @@ ANCHORED_REASON = {
     "wrong_task": "「要約原稿」は依頼された質問一覧と違う。",
     "unsupported_specificity": "「一日八キロワット時」は原文にない数値だよ。",
     "private_inference": "「不安を減らすために」は本人が述べていない。",
-    "non_action": "「考えてみよ」だけでは資料が変わらない。",
+    "non_action": "「考えてみて」だけでは資料が変わらない。",
     "actor_surface": "「うちが閉じておく」は操作権限がないよ。",
     "invented_prerequisite": "「専用アプリにログイン」は必要だと示されていない。",
     "unnatural_surface": "「引く行為を実行せよ」は硬い命令だよ。",
@@ -276,6 +276,27 @@ def test_source_and_evidence_mismatches_fail_closed(mutation, violation):
     assert violation in audit["violations"]
     assert result["arms"]["old_contract"]["valid_retained"] is True
     assert result["arms"]["new_contract"]["valid_retained"] is False
+
+
+def test_exact_english_source_quote_is_allowed_only_inside_japanese_explanation():
+    packet = next(row for row in DATASET["challenge_packets"]
+                  if row["packet_id"] == "p4_m46_di_valid_en_001")
+    plan = _selected_plan(packet)
+    review = _new_review(packet, plan)
+    review["evidence_jp"] = "「The delivery slips」の記載を確認した。"
+    accepted = _score(packet, _old_review(packet, plan), review)
+    assert accepted["new_review_audit"]["evidence_anchored"] is True
+    assert accepted["arms"]["new_contract"]["valid_retained"] is True
+
+    review["evidence_jp"] = "「The delivery slip Z」の記載を確認した。"
+    unanchored = _score(packet, None, review)
+    assert unanchored["new_review_audit"]["evidence_anchored"] is False
+    assert unanchored["arms"]["new_contract"]["would_deliver"] is False
+
+    review["evidence_jp"] = "「The delivery slips」is confirmed。"
+    non_japanese_explanation = _score(packet, None, review)
+    assert non_japanese_explanation["new_review_audit"]["evidence_anchored"] is False
+    assert non_japanese_explanation["arms"]["new_contract"]["would_deliver"] is False
 
 
 def test_guard_control_blocks_both_contracts_despite_fake_pass_reviews():

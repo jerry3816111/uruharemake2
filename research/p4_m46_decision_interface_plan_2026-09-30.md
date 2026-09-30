@@ -69,6 +69,9 @@ paired-only regression、錯誤類型、prompt/completion tokens、median/max wa
 不能因 A 失敗就放寬 B。1 個 guard control 應兩臂均阻擋且 0 call，
 不可算 reviewer 的功勞。B parser 的 `uncertain`、欄位矛盾、無來源或
 對應理由不足一律 fail closed；「只是拒絕」不等於辨出原因。
+原版沒有 B 的 `primary_failure` 欄；其 reason 數是事前多對一舊布林映射的
+**diagnostic proxy**，B 則是明確 axis-label hit。兩者分別報，不能說成對稱的
+人類理由品質評分或逐字同構 gate。
 
 若品質失敗、超 320 tokens 截斷、或成本失敗，保存 `REVIEW_REQUIRED`
 與最小反例；停止此 reviewer 小修路徑，另審兩階段架構，而不是第三次
@@ -85,3 +88,18 @@ paired-only regression、錯誤類型、prompt/completion tokens、median/max wa
 runner 與 fake transport tests，另 commit 記 full SHA；正式 preflight 要
 核對前述 SHA、依賴 hash、模型 digest、硬體、固定順序與結果檔不存在。
 之後只能唯一執行、逐 call checkpoint、保存成功或失敗；不覆寫、不續跑。
+
+## 2026-09-30 首次 freeze 後、0 模型呼叫的修訂
+
+原 freeze commit=`fa298078a47900c1963c252cf62875dc036cb711`。
+獨立只讀審查在模型前指出兩個契約風險：B prompt 允許從英文 source 逐字引用，
+舊 parser 卻把引文裡的 ASCII 字母當成非日文拒絕；3 個 valid 表面均用
+`〜てみよ`，可能與「自然口語」gold 有歧義。這不是看到模型輸出後追分：
+**目前新 scored calls=0**。修訂只做：允許 exact 2–40 字來源或 final
+instruction 引文保留原語，外圍解釋仍必須日文；將 selected packet 中
+較生硬的 `〜てみよ` 改為較明確的口語 `〜てみて`，並同步假回覆測試。
+所有 source、任務語義、候選機制與順序、gold label／預定錯誤軸、
+模型／token／call 上限、成功／失敗門檻不變。未選中的對照候選保持原樣。
+這仍是開發者語感判斷，沒有獨立日語真人評分；若正式模型對自然度仍有
+分歧，保留反例而非事後改 gold。修訂後再跑所有離線／相鄰測試、commit
+新的 freeze full SHA，runner 必須綁**新** SHA，舊 SHA 保留可追溯。

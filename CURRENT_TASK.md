@@ -18,11 +18,20 @@ control 的原 guard violation=`nonprogress_or_unknown_mechanism`，0 scored cal
 只是逐字來源錨點，axis-label hit 不等於引文語義充分或真人理由品質。
 離線命令
 `PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_m46_decision_interface_freeze.py test_p4_m46_decision_interface_scoring.py test_p4_m46_fixed_challenge_discrimination_result.py test_p4_m46_fixed_challenge_discrimination_freeze.py test_goal_progress_delivery_m46.py test_state_changing_candidates_m51.py test_candidate_realization_m52.py test_source_neutral_scaffold_m53.py test_p4_av_neutral_operational_role_authorization.py`
-=`76 passed`。**下一步先僅提交此 freeze 並記 full SHA；再僅新增一次性 runner／fake
+=`77 passed`（模型前 amendment 後）。**下一步先僅提交此 freeze amendment 並記 full SHA；再僅新增一次性 runner／fake
 transport tests、提交第二個 commit，才能唯一送 scored calls。** 未達元件絕對
 品質／成本 gate 即保留 FAIL、停止 reviewer 小修；即便通過仍須新自然生成與
 full runtime／Safari，不能接產品。產品 M46/M45/M39 不改、不旁通。無關
 `output/graduate_application_report/` 保留不碰。
+
+**模型前 freeze amendment：** 首次 freeze commit=`fa298078a47900c1963c252cf62875dc036cb711`，
+其後獨立只讀稽核發現 B 允許引用英文 source、parser 卻拒 ASCII 引文，以及
+3 個 valid 的 `〜てみよ` 口語 gold 歧義。新 scored calls 仍為 `0`，已在
+`research/p4_m46_decision_interface_plan_2026-09-30.md` 記錄並只修 exact
+source／instruction quote 的原語豁免（外圍仍需日文）、selected instruction 的
+`〜てみて` 口語表面、相應 fake tests／hash；source、機制、gold label／預定錯誤軸、
+模型及 gate 不變。修後相鄰離線測試=`77 passed`。**先提交 amendment 並用其 full SHA
+取代 runner 所綁的舊 freeze SHA，才能提交 runner 和送模型**；不能用原 SHA 混過前檢。
 
 ### 此前設計審查與 before（保存歷史）
 

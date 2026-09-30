@@ -128,14 +128,24 @@ def _short_japanese(value: object, limit: int) -> bool:
 
 
 def _anchored_evidence(value: object, source: dict, plan: dict) -> bool:
-    if not _short_japanese(value, 120):
+    if (not isinstance(value, str) or not 4 <= len(value) <= 120
+            or value != value.strip() or "\n" in value):
         return False
     source_text = source.get("text")
     instruction = plan.get("instruction_jp")
     if not isinstance(source_text, str) or not isinstance(instruction, str):
         return False
     quotes = re.findall(r"「([^「」]{2,40})」", value)
-    return any(quote in source_text or quote in instruction for quote in quotes)
+    # The source may be English or Chinese. Exact quoted evidence keeps that
+    # original script; only the surrounding explanation must be Japanese.
+    # Otherwise the prompt's "quote source or instruction" contract would
+    # reject a legitimate English source quote before semantic review.
+    outside_quotes = re.sub(r"「[^「」]{2,40}」", "", value)
+    return bool(
+        quotes and all(quote in source_text or quote in instruction for quote in quotes)
+        and "「" not in outside_quotes and "」" not in outside_quotes
+        and _short_japanese(outside_quotes, 120)
+    )
 
 
 def inspect_decision_review(source: dict, plan: dict, review: object) -> dict:
