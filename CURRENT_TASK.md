@@ -20,9 +20,11 @@ core 的 graph 節點本身沒有成功 tool result。Web Planner Debug 會呈�
 **單一變因與界線：** 只讓產品當前入口的 debug／logic 狀態
 依 core 的 `tool_call_complete` 或 `failed_closed` 對齊；core tool 契約、
 模型、status payload、成功路徑、普通聊天、memory、研究資料與 action lane
-都不改。P4-C adapter／entry／tests 受歷史 freeze hash 綁定，**不可改原檔**；
-允許改本卡、目前最新 `uruha_web_ui_product_p4_az.py`、新增窄範圍
-狀態修正 overlay 與新測試；舊入口／launcher、凍結研究檔都不改。
+都不改。P4-C adapter／entry／tests 及 P4-AZ entry／launcher 都受歷史
+freeze hash 綁定，**不可改原檔**。2026-10-01 的診斷提交後、尚未寫
+產品碼的 boundary amendment 只改檔案位置，不改問題／成功標準：
+允許改本卡，新增窄範圍狀態修正 overlay、新 additive current entry／
+safe launcher 與新測試；舊入口／launcher、凍結研究檔都不改。
 若真實 Web 失敗注入可安全完成，另加隔離驗收證據。
 資源上限：0 新 scored action／status 模型呼叫、
 0 外部 API／正式 DB 寫入；只用 deterministic fake failure 做此修正。
