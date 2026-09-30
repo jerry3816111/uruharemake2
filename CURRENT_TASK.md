@@ -2,9 +2,27 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：source-bound action transaction 的預熱相容性 amendment
+## 當前唯一工作：source-bound action transaction 負結果的架構設計審查
 
-**2026-10-01 首次啟動 0-scored-call 停止，負結果已保存：**
+**2026-10-01 amended 一次性比較正式 FAIL，先保留後審查：**
+freeze=`6525810d87ea44bb891a3c5f6c65cfa98f43b8eb`、runner=
+`054db9b03fa1f78d7a22e3c2d584b388309b71c2`、raw=
+`49497bfffc819953c9e42795fc40a8a7ff22bbe4`，18/18 題、36/54
+scored calls、0 retry；匿名 packet→submission→reveal 分別已獨立 commit，
+formal Git/source/request/usage/wall/digest verifier 通過。開發者代理而非
+獨立真人標註後，A/B 有效動作各 `0/9`、無效案錯放各 `0`；B 來源綁定
+理由 `0/9`。B 中位離線 wall 7.772 秒、A 14.203 秒，但 A 的 M46 reviewer
+實際呼叫 `0`，不能說 B 證明「省掉 reviewer 更好」。36/36 最終句都同一
+泛用澄清，**`REVIEW_REQUIRED_COMPONENT_FAIL`、不接產品、不改舊結果**。
+完整成本、逐題反例、解釋與證據界線見
+`analysis/p4_action_transaction_v1_amend1_failure_2026-10-01.md`；
+正式分數見 `analysis/p4_action_transaction_v1_result_2026-09-30.json`。
+**下一必要交付：非獨立架構設計審查**，區分 M51 parse/source、M52／共同
+guard 假拒與 B transaction source/字段錯配，選至多一個可歸因的新變因
+或列 `REVIEW_REQUIRED`；不能重跑 18 題、追改 gold／門檻或直接接產品。
+正式多輪 Web/Safari、強 LLM、人評與 temporal holdout 仍 pending。
+
+**2026-10-01 首次啟動 0-scored-call 停止（歷史，不是目前命令）：**
 raw=`analysis/p4_action_transaction_v1_raw_2026-09-30.json`、commit=
 `216f16b535bac5fbcfb73532facf61951a756b67`。Ollama 的預熱
 `done_reason=load` 回覆沒有 duration pair，嚴格預熱核帳因此
@@ -16,8 +34,8 @@ amendment freeze=`6525810d87ea44bb891a3c5f6c65cfa98f43b8eb` 已提交，
 只改預熱契約說明、新 raw 路徑與 frozen plan hash；freeze test `6 passed`。
 對應 runner/evidence 的 load-only 預熱特例與反向 fake tests 已完成；本次
 新工具 `126 passed`、相鄰隔離回歸 `93 passed`，0 新 scored calls。
-**下一必要交付：只提交／推送此 runner/evidence 修正，核 PR 與正式前檢，
-再送唯一新 scored 比較。** 18 題、gold、prompt、模型、
+當時的下一交付為提交／推送 runner/evidence 修正後送唯一新 scored 比較，
+已完成，現在只依本卡頂部負結果審查續作。18 題、gold、prompt、模型、
 token、gate 完全不改。這算一個有根據的修正批次；若再失敗，依
 `DEVELOPMENT_WORKFLOW.md` 審查而非無限重試。無關報告目錄不碰。
 
