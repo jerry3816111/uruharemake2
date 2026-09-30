@@ -320,13 +320,19 @@ def test_stale_hash_and_freeze_rejected_before_network(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="Frozen hash mismatch"):
         runner._validate_hash_bindings(bad)
     real_require = runner._require_frozen_git
-    monkeypatch.setattr(runner, "_require_frozen_git", lambda: None)
     real_hash = runner._hash
-    monkeypatch.setattr(runner, "_hash", lambda path: (
-        "0" * 64 if path.name == "p4_m46_decision_interface_scoring.py" else real_hash(path)))
-    monkeypatch.setattr(runner.old_runner, "_get_json", lambda *_: pytest.fail("network"))
-    with pytest.raises(RuntimeError, match="Frozen hash mismatch"):
-        runner.preflight()
+    real_exists = Path.exists
+    # The formal one-shot result now exists.  Isolate the stale-hash probe from
+    # the production no-overwrite gate, which must still reject that result.
+    with monkeypatch.context() as stale:
+        stale.setattr(runner, "_require_frozen_git", lambda: None)
+        stale.setattr(runner, "_hash", lambda path: (
+            "0" * 64 if path.name == "p4_m46_decision_interface_scoring.py" else real_hash(path)))
+        stale.setattr(Path, "exists", lambda path: (
+            False if path == runner.RESULT_PATH else real_exists(path)))
+        stale.setattr(runner.old_runner, "_get_json", lambda *_: pytest.fail("network"))
+        with pytest.raises(RuntimeError, match="Frozen hash mismatch"):
+            runner.preflight()
     monkeypatch.setattr(runner, "_require_frozen_git", real_require)
     monkeypatch.setattr(runner, "_git", lambda *_: "wrong-sha")
     monkeypatch.setattr(runner, "_tracked_clean", lambda *_: pytest.fail("tracked check too early"))

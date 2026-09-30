@@ -2,7 +2,31 @@
 
 更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：M46 審核判斷介面的前瞻 freeze → 一次性 runner
+## 當前唯一工作：M46 前瞻比較正式 FAIL → 兩階段架構設計審查
+
+**2026-09-30 正式一次性結果為 `review_required_component_fail`，不得重跑、改題、改 gold 或追認 PASS。**
+模型前 freeze=`7abf74579e7793c22d3111b149037d9d7bdc5393`，
+runner=`0b1dcfcaa63f9ea5af51f5c95cfca94482925848`。本機 9B、同一選定方案、
+兩審核介面各 10 題，20/20 呼叫完成且 JSON／tokens／source exact、0 retry；
+另 1 guard control 兩臂 0 call 阻擋。A 原版 valid=`2/3`、invalid false action=`2/7`、
+舊欄位映射理由=`5/7`、reviewer-only 中位／最大=`13.60179/14.72437s`；
+B 新版 valid=`0/3`、false action=`0/7`、明確預定錯誤軸＋primary 理由=`0/7`、
+中位／最大=`8.64255/10.78069s`。B 將全部 10 個方案判 `actor_capability=fail`，
+9/10 以此為 primary；加速只是全部拒絕，沒有品質改善資格。兩臂都未通過絕對
+品質 gate；B 不可接產品，既有 M51/M46/M45/M39 不改、不旁通。原始結果與反例
+見 `analysis/p4_m46_decision_interface_result_2026-09-30.json`、
+`analysis/p4_m46_decision_interface_failure_2026-09-30.md`。此證據只限 developer-authored
+固定封包元件，不是自然生成、完整 20 秒 runtime、Safari、真人／正式 holdout、
+強 LLM 優勢或人類方程式。
+
+**下一個必要交付是非獨立的兩階段架構設計審查，不是第三次 reviewer prompt／gold／timeout
+小修。** 先核 `valid_en/ja` 使用者操作被當助手代操作、`wrong_task_zh` 被擋卻沒辨出
+偏題、`actor_surface_ja` 的格式與真正角色錯誤，並比較互斥方案的品質、安全、
+token／延遲代價；選定一個可歸因架構變因及其 fresh model、完整 runtime 的分層 gate。
+未審完不送 scored model calls、不改產品。正式 M55/M56 真人與 temporal holdout
+依賴仍未解除。無關 `output/graduate_application_report/` 保留不碰。
+
+### 前瞻 freeze 與模型前狀態（保存歷史，不是目前命令）
 
 **2026-09-30 freeze 準備已完成，尚未送新模型。** 研究計畫
 `research/p4_m46_decision_interface_plan_2026-09-30.md`、
@@ -18,8 +42,8 @@ control 的原 guard violation=`nonprogress_or_unknown_mechanism`，0 scored cal
 只是逐字來源錨點，axis-label hit 不等於引文語義充分或真人理由品質。
 離線命令
 `PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_m46_decision_interface_freeze.py test_p4_m46_decision_interface_scoring.py test_p4_m46_fixed_challenge_discrimination_result.py test_p4_m46_fixed_challenge_discrimination_freeze.py test_goal_progress_delivery_m46.py test_state_changing_candidates_m51.py test_candidate_realization_m52.py test_source_neutral_scaffold_m53.py test_p4_av_neutral_operational_role_authorization.py`
-=`77 passed`（模型前 amendment 後）。**下一步先僅提交此 freeze amendment 並記 full SHA；再僅新增一次性 runner／fake
-transport tests、提交第二個 commit，才能唯一送 scored calls。** 未達元件絕對
+=`77 passed`（模型前 amendment 後）。**當時先提交 freeze amendment 並記 full SHA，再新增一次性 runner／fake
+transport tests、提交第二個 commit，才送唯一 scored calls；這些步驟已完成。** 未達元件絕對
 品質／成本 gate 即保留 FAIL、停止 reviewer 小修；即便通過仍須新自然生成與
 full runtime／Safari，不能接產品。產品 M46/M45/M39 不改、不旁通。無關
 `output/graduate_application_report/` 保留不碰。
@@ -30,8 +54,8 @@ full runtime／Safari，不能接產品。產品 M46/M45/M39 不改、不旁通�
 `research/p4_m46_decision_interface_plan_2026-09-30.md` 記錄並只修 exact
 source／instruction quote 的原語豁免（外圍仍需日文）、selected instruction 的
 `〜てみて` 口語表面、相應 fake tests／hash；source、機制、gold label／預定錯誤軸、
-模型及 gate 不變。修後相鄰離線測試=`77 passed`。**先提交 amendment 並用其 full SHA
-取代 runner 所綁的舊 freeze SHA，才能提交 runner 和送模型**；不能用原 SHA 混過前檢。
+模型及 gate 不變。修後相鄰離線測試=`77 passed`。當時已提交 amendment，並用其 full SHA
+取代 runner 所綁的舊 freeze SHA；沒有用原 SHA 混過前檢。
 
 ### 此前設計審查與 before（保存歷史）
 
