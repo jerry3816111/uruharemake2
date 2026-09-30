@@ -1,10 +1,38 @@
 # P4 單次 source-bound action transaction：前瞻比較計畫
 
-狀態：**模型呼叫前的設計／freeze 準備**。本計畫、來源、獨立 gold、
+狀態：**第一次 freeze 已完成；2026-10-01 預熱失敗後進行 scored-call 前 amendment**。
+本計畫、來源、獨立 gold、
 schema／guard／scorer、config 與 0-call tests 先一併提交並記錄 full SHA；
 runner 與 fake transport tests 只能在該 freeze 後另行提交。首次 scored call
 前不能更改任何預定題目、gold、prompt、模型、門檻或對照條件；若離線稽核發現
 歧義，須在 0 call 狀態留下明示 amendment 與新 freeze SHA。
+
+## 2026-10-01 預熱封包相容性 amendment（0 scored calls）
+
+第一次 freeze=`8b5e7a8972b27402342596d5fe18064795b7a452`、runner=
+`f25874a2f52a20fedc9a21b0aaf7f6ccd0b88c90`。唯一一次正式啟動在預熱
+`/api/generate` 收到 HTTP 200、同一模型、`done=true`、`done_reason=load`，
+但此 Ollama 載入回覆只有 load identity，沒有 `total_duration`／
+`load_duration`。runner 的預熱耗時一致性檢查因缺欄位 fail closed，保存
+`analysis/p4_action_transaction_v1_raw_2026-09-30.json`；原始失敗提交=
+`216f16b535bac5fbcfb73532facf61951a756b67`，raw SHA-256=
+`6700d9a14a5a46fcdf08d9bc788c754ae54c1626ebf7141cecf940128b3da11b`。
+`scored_calls_started=0`、案例 `0/18`、無 A/B 輸出、無 gold 評分。此紀錄不得
+覆寫、刪除、續跑或追認結果。
+
+本 amendment **只**允許預熱 `done_reason=load` 且兩個 duration 欄位都缺失
+時，以已記錄的本機 HTTP/model identity、`done=true` 與 monotonic wall 作為
+預熱完成證據；若只缺一欄、其他 `done_reason` 缺 duration、或有 duration
+但負值／非整數／`load>total`／超過 wall，仍 fail closed。正式 `/api/chat`
+scored stages 的 duration/usage/wall 規則完全不放寬。因原始結果路徑已占用，
+amendment 的唯一新 raw 路徑固定為
+`analysis/p4_action_transaction_v1_amend1_raw_2026-10-01.json`，保留舊 raw。
+來源 18 題、gold、先前已曝光資料邊界、A/B prompt/schema/guard、模型 digest、
+硬體、seed/token/20 秒門檻、0 retry、排序及最多 54 scored calls 均不變。
+先提交此 plan/config/test freeze amendment 並記新 full SHA，再另提交
+runner/evidence 的預熱契約與 fake tests；兩者都通過且新輸出檔不存在前，
+新 scored calls 維持 0。這不是對已看到的 case 答案追分，也不會讓先前
+預熱失敗變成成功的 A/B 結果。
 
 ## 要回答的問題與 before
 

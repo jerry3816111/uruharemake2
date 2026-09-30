@@ -1,10 +1,12 @@
 """Zero-model-call prospective freeze checks for the P4 topology comparison."""
 
 from collections import Counter
+from copy import deepcopy
 import hashlib
 from importlib.metadata import version
 import json
 from pathlib import Path
+import subprocess
 import pytest
 
 import p4_action_transaction_scoring as tx
@@ -62,7 +64,10 @@ def _prior_source_strings(value):
 
 def test_model_freeze_binds_dependencies_resources_and_gate():
     config, _, _ = _contract()
-    assert config["status"] == "prospectively_frozen_before_model_execution"
+    assert config["version"] == "1.0.1"
+    assert config["status"] == "prospectively_amended_after_prewarm_only_zero_scored_calls"
+    assert config["execution"]["raw_result_path"] == (
+        "analysis/p4_action_transaction_v1_amend1_raw_2026-10-01.json")
     assert config["single_variable"] == "decision_topology_two_candidates_two_calls_vs_one_source_bound_transaction"
     for record in [config["plan"], config["dataset"]["sources"],
                    config["dataset"]["gold"], *config["hash_bound_dependencies"].values()]:
@@ -103,6 +108,37 @@ def test_model_freeze_binds_dependencies_resources_and_gate():
     assert gates["retry_count"] == 0
     assert gates["each_full_turn_max_seconds"] == 20
     assert gates["B_product_eligible_from_component_only"] is False
+
+
+def test_prewarm_only_amendment_changes_no_case_gold_model_or_gate():
+    config, _, _ = _contract()
+    old = json.loads(subprocess.check_output(
+        ["git", "show", "8b5e7a8972b27402342596d5fe18064795b7a452:"
+         "configs/p4_action_transaction_v1.json"], cwd=ROOT))
+    amendment = config["prewarm_amendment"]
+    assert amendment == {
+        "prior_failure_commit": "216f16b535bac5fbcfb73532facf61951a756b67",
+        "prior_raw_path": "analysis/p4_action_transaction_v1_raw_2026-09-30.json",
+        "prior_scored_calls": 0,
+        "allowed_change": "accept_complete_load_only_prewarm_without_duration_pair_and_use_new_raw_path",
+    }
+    prior_raw = ROOT / amendment["prior_raw_path"]
+    assert hashlib.sha256(prior_raw.read_bytes()).hexdigest() == (
+        "6700d9a14a5a46fcdf08d9bc788c754ae54c1626ebf7141cecf940128b3da11b")
+    failure = json.loads(prior_raw.read_text(encoding="utf-8"))
+    assert failure["status"] == "prewarm_failed_no_scored_calls"
+    assert failure["scored_calls_started"] == 0 and failure["cases"] == []
+    assert failure["prewarm"]["ollama_response"]["done_reason"] == "load"
+    assert "total_duration" not in failure["prewarm"]["ollama_response"]
+    old_comparable = deepcopy(old)
+    new_comparable = deepcopy(config)
+    for candidate in (old_comparable, new_comparable):
+        candidate.pop("version")
+        candidate.pop("status")
+        candidate.pop("prewarm_amendment", None)
+        candidate["plan"].pop("sha256")
+        candidate["execution"].pop("raw_result_path")
+    assert new_comparable == old_comparable
 
 
 def test_new_cases_are_balanced_independent_gold_and_authorized_sources():

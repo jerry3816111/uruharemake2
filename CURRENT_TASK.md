@@ -2,7 +2,21 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：單次 source-bound action transaction 的一次性前瞻比較
+## 當前唯一工作：source-bound action transaction 的預熱相容性 amendment
+
+**2026-10-01 首次啟動 0-scored-call 停止，負結果已保存：**
+raw=`analysis/p4_action_transaction_v1_raw_2026-09-30.json`、commit=
+`216f16b535bac5fbcfb73532facf61951a756b67`。Ollama 的預熱
+`done_reason=load` 回覆沒有 duration pair，嚴格預熱核帳因此
+`prewarm_failed_no_scored_calls`，案例 `0/18`、A/B `0/54`，沒有品質／
+比較結果。不得覆寫或續跑舊 raw。研究計畫的 2026-10-01 amendment
+只對此一實測回覆形式允許預熱 load-only 完成，正式 scored `/api/chat`
+的 duration／token／wall 守門不變；新 raw 路徑另訂。
+**下一必要交付：先提交 amended plan/config/freeze test，記新的 full SHA；
+再修改 runner/evidence 的預熱契約與新路徑、fake tests，另提交／推送，
+重新只讀前檢後才可送唯一新 scored 比較。** 18 題、gold、prompt、模型、
+token、gate 完全不改。這算一個有根據的修正批次；若再失敗，依
+`DEVELOPMENT_WORKFLOW.md` 審查而非無限重試。無關報告目錄不碰。
 
 **2026-10-01 runner／evidence gate 已提交、推送並前檢通過：**
 runner commit=`f25874a2f52a20fedc9a21b0aaf7f6ccd0b88c90`，PR #435 open
