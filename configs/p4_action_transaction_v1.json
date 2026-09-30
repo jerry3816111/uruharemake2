@@ -1,0 +1,118 @@
+{
+  "schema": "uruha_p4_action_transaction_topology_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "design_review": "analysis/p4_m46_two_stage_architecture_design_review_2026-09-30.md",
+  "plan": {
+    "path": "research/p4_action_transaction_v1_plan_2026-09-30.md",
+    "sha256": "fbcd4933858e218ad75add1c48efcd763c850531d93f4906c5cb141eb2e00844"
+  },
+  "single_variable": "decision_topology_two_candidates_two_calls_vs_one_source_bound_transaction",
+  "dataset": {
+    "sources": {
+      "path": "datasets/p4_action_transaction_v1_sources.json",
+      "sha256": "478bcbcd3069f94ce71d8ace4d1da5ea5931d3a04682da0093e90c220d015912"
+    },
+    "gold": {
+      "path": "datasets/p4_action_transaction_v1_gold.json",
+      "sha256": "17a6ab1ea3998914a810487e5f05840d42800e53c641d91517b15d0b452c6ff3"
+    },
+    "case_order": [
+      "p4_tx_zh_01", "p4_tx_zh_02", "p4_tx_zh_03", "p4_tx_zh_04", "p4_tx_zh_05", "p4_tx_zh_06",
+      "p4_tx_en_01", "p4_tx_en_02", "p4_tx_en_03", "p4_tx_en_04", "p4_tx_en_05", "p4_tx_en_06",
+      "p4_tx_ja_01", "p4_tx_ja_02", "p4_tx_ja_03", "p4_tx_ja_04", "p4_tx_ja_05", "p4_tx_ja_06"
+    ],
+    "annotation_authority": "developer_authored_prospective_proxy_not_independent_human_or_temporal_holdout"
+  },
+  "hash_bound_dependencies": {
+    "transaction_prompt_schema_guard_scorer": {"path": "p4_action_transaction_scoring.py", "sha256": "5874aaf0e74118e42e6dbb07770c52295be9df43d69d20c48488f653a1b6f45d"},
+    "A_raw_observation_builder": {"path": "p4_action_transaction_a_observation.py", "sha256": "ed735a85d72076c0991c148985601aa98523f7a3f2c39d8ff253a5af94900d61"},
+    "B_raw_observation_builder": {"path": "p4_action_transaction_b_observation.py", "sha256": "ff5f7edbb54fd9af7dfc2eb9e290f5bbe288c45c8916760775693eb00f6c103f"},
+    "product_M51_generator": {"path": "uruha_state_changing_candidates_m51.py", "sha256": "b760e49ddc98009ceff572a9c1202cad4dc153880b3744c055b42f9b5cb56806"},
+    "product_M52_realization": {"path": "uruha_candidate_realization_m52.py", "sha256": "c2526ccff8a3a96e45bee554c1e8ac54d5436308be57b603e495d30f7bdbec9b"},
+    "product_M46_review": {"path": "uruha_goal_progress_delivery_m46.py", "sha256": "0d2355404bb7a113f3a772cd2e9442e223c17a8048711a1d161b6725396a4474"},
+    "product_M45_transport": {"path": "uruha_actionable_help_delivery_m45.py", "sha256": "7597c238fc37707ea6c5eba2ef28ede80160430236fb4c2822331e29d7fa6d52"},
+    "product_M45_1_source_gate": {"path": "uruha_task_evidence_authorization_m45_1.py", "sha256": "16a60667ea5cd2be6d8a20080c81d2f240864d4c3048ba2f16adeebc54999967"},
+    "product_M53_label_guard": {"path": "uruha_source_neutral_scaffold_m53.py", "sha256": "e911faa7927ab4f8e7925bc064b7b49e542caafe4ec0b46eab72c66135a0de0a"},
+    "product_P4_AV_role_guard": {"path": "uruha_neutral_operational_role_authorization_p4.py", "sha256": "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"},
+    "product_M39_surface_guard": {"path": "uruha_semantic_persona_surface_m39.py", "sha256": "3c007b81b33790a43083ad2cbd13d6b7533310362ae8e856cedc34d566c69bb2"},
+    "prior_exposed_result": {"path": "analysis/p4_m46_decision_interface_result_2026-09-30.json", "sha256": "66321bb7b01eae6dafe0a81dbb79f74f355ee6c64debab1eae4e5eec83692a46"}
+  },
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "hardware": "Apple M2 Pro 12-core 32GB",
+  "controlled_constants": {
+    "temperature": 0,
+    "num_ctx": 4096,
+    "stream": false,
+    "think": false,
+    "keep_alive": "30m",
+    "retry_count": 0,
+    "prewarm_once_before_scoring": true,
+    "prewarm_counted_as_case_latency": false,
+    "offline_jsonschema_version": "4.26.0"
+  },
+  "arms": {
+    "A": {
+      "name": "A_two_stage_frozen_M51_M52_M46_isolated",
+      "generator": {"seed": 20260830, "num_predict": 360},
+      "reviewer": {"seed": 20260829, "num_predict": 320},
+      "maximum_completion_tokens_per_case": 680
+    },
+    "B": {
+      "name": "B_single_source_bound_transaction_shadow_only",
+      "transaction": {"seed": 20260830, "num_predict": 680},
+      "maximum_completion_tokens_per_case": 680
+    }
+  },
+  "execution": {
+    "source_case_count": 18,
+    "maximum_scored_calls": 54,
+    "per_arm_deadline_seconds": 34,
+    "arm_order_rule": "case_index_even_A_then_B_odd_B_then_A",
+    "common_prefilter": "M45_1_task_sources_plus_fixed_component_solve_regulation_nonprotected_source_budget",
+    "fixed_component_policy_fixture": {"desired_response_policy_m18": "solve_regulation"},
+    "product_policy_route_for_these_cases_verified": false,
+    "m45_1_excluded_clause_count_on_18_cases": 0,
+    "generation_reads_gold": false,
+    "raw_outputs_locked_before_gold_scoring": true,
+    "A_observation_recomputed_from_raw_stages": true,
+    "B_observation_recomputed_from_raw_json": true,
+    "B_observation_requires_raw_stage_and_transport_record": true,
+    "all_18_by_2_raw_observations_bound_to_one_commit": true,
+    "A_legacy_reason_proxy_separate_from_common_abstain_gate": true,
+    "blind_adjudication_requires_raw_commit_and_digest_binding": true,
+    "formal_score_requires_frozen_case_order_and_source_gold_digests": true,
+    "parse_failure_with_complete_transport_and_tokens": "record_quality_failure_continue_next_unique_arm_or_case_no_retry",
+    "transport_token_or_identity_failure": "preserve_partial_stop_no_resume",
+    "prewarm_counted_separately": true,
+    "model_calls_after_freeze_and_runner_commits_only": true,
+    "localhost_only": true,
+    "production_database_access": false,
+    "product_runtime_changed": false,
+    "raw_result_path": "analysis/p4_action_transaction_v1_raw_2026-09-30.json",
+    "scored_result_path": "analysis/p4_action_transaction_v1_result_2026-09-30.json"
+  },
+  "preregistered_gates": {
+    "valid_action_delivered": 9,
+    "invalid_abstained": 9,
+    "invalid_false_action": 0,
+    "invalid_reason_correct": 9,
+    "B_invalid_reason_source_bound": 9,
+    "parse_source_token_complete": 18,
+    "retry_count": 0,
+    "each_full_turn_max_seconds": 20,
+    "semantic_action_adjudication_required_after_raw_lock": true,
+    "B_product_eligible_from_component_only": false
+  },
+  "failure_policy": {
+    "preflight_mismatch": "STOP_BEFORE_SCORED_CALLS_AND_REFREEZE",
+    "transport_token_or_identity_failure": "PRESERVE_PARTIAL_NO_RETRY_NO_RESUME",
+    "json_parse_or_quality_failure": "PRESERVE_RAW_COUNT_AS_FAIL_CONTINUE_NO_RETRY",
+    "component_gate_failure": "REVIEW_REQUIRED_COMPONENT_FAIL_NO_PRODUCT_CHANGE",
+    "component_gate_pass": "NEW_PRIVATE_RUNTIME_AND_SAFARI_REQUIRED_BEFORE_PRODUCT_SELECTION",
+    "old_results_or_gold_may_be_changed_after_freeze": false,
+    "product_runtime_may_be_changed_by_this_study": false
+  },
+  "claim_boundary": "Prospective developer-authored source-only decision-to-reply component comparison; no independent human or temporal holdout, full Web/Safari proof, strong LLM baseline, public-person persona validation, or human-equation proof."
+}

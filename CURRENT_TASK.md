@@ -4,6 +4,26 @@
 
 ## 當前唯一工作：單次 source-bound action transaction 的前瞻 freeze
 
+**2026-09-30 最新續接（模型前，0 新 scored calls）：** 新的 18 題 source-only
+中／英／日（各 3 action／3 abstain）與獨立 developer-authored gold、
+A=M51→M52→M46 原始兩階段觀測重建、B=單次 typed transaction 的 raw-stage
+觀測重建、共同守門與 scorer 已準備。B 的拒絕理由要求事前 source/target/
+forbidden 錨點；A 舊布林 reason 覆蓋另報，不把它無法表達的類別當 B 優勢。
+18×2 的 action/abstain 都須綁同一 raw commit；token、wall、request 與
+response 身份也在 digest 內。固定 `solve_regulation` 非 protected 是**隔離元件
+fixture**，不能當正式 Web route 證據。M45.1 原版 source filter 的獨立測試
+與會安裝 M49 overlay 的相鄰產品回歸分兩個 Python 程序，防片段 ID 漂移。
+
+本 freeze 的模型前離線測試：新四檔 `39 passed`、相鄰舊測試 `93 passed`，
+均 0 模型呼叫；命令與 gate 見
+`research/p4_action_transaction_v1_plan_2026-09-30.md`。原 M46 正式 20 calls
+的 FAIL 不重跑；產品 M51/M52/M46/M45/M39、正式 DB、原始 dirty checkout 與
+無關 `output/graduate_application_report/` 不碰。**下一個精確動作：只提交
+本次 prospective freeze 並記 full SHA；之後另做一次性 runner／fake transport
+測試並提交，再核 hash／模型／硬體／輸出檔不存在，才可能放行新 scored calls。**
+新 dataset／prompt／gold／scorer 一經 freeze 不改；若出現凍結缺陷且尚未送模型，
+須保留 amendment 與新的 full SHA。元件分數不外推到 Safari、真人或產品。
+
 **非獨立架構設計審查已完成，尚未實作或送新模型。** 見
 `analysis/p4_m46_two_stage_architecture_design_review_2026-09-30.md`。在前兩次
 reviewer 契約均 FAIL、M51 兩候選於 360 token 截斷、Safari 第二次審核 timeout、
