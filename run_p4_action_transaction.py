@@ -32,9 +32,9 @@ import uruha_state_changing_candidates_m51 as m51
 
 
 ROOT = Path(__file__).resolve().parent
-FREEZE_SHA = "8b5e7a8972b27402342596d5fe18064795b7a452"
+FREEZE_SHA = "6525810d87ea44bb891a3c5f6c65cfa98f43b8eb"
 CONTRACT_PATH = ROOT / "configs/p4_action_transaction_v1.json"
-RAW_PATH = ROOT / "analysis/p4_action_transaction_v1_raw_2026-09-30.json"
+RAW_PATH = ROOT / "analysis/p4_action_transaction_v1_amend1_raw_2026-10-01.json"
 RUNNER_PATHS = ("run_p4_action_transaction.py", "test_p4_action_transaction_runner.py")
 OLLAMA_ORIGIN = "http://127.0.0.1:11434"
 OLLAMA_CHAT = OLLAMA_ORIGIN + "/api/chat"
@@ -103,7 +103,15 @@ def _validate_contract(contract: dict) -> None:
     execution = contract.get("execution", {})
     arms = contract.get("arms", {})
     if (contract.get("schema") != "uruha_p4_action_transaction_topology_contract_v1"
-            or contract.get("status") != "prospectively_frozen_before_model_execution"
+            or contract.get("version") != "1.0.1"
+            or contract.get("status") !=
+            "prospectively_amended_after_prewarm_only_zero_scored_calls"
+            or contract.get("prewarm_amendment") != {
+                "prior_failure_commit": "216f16b535bac5fbcfb73532facf61951a756b67",
+                "prior_raw_path": "analysis/p4_action_transaction_v1_raw_2026-09-30.json",
+                "prior_scored_calls": 0,
+                "allowed_change":
+                "accept_complete_load_only_prewarm_without_duration_pair_and_use_new_raw_path"}
             or contract.get("single_variable") !=
             "decision_topology_two_candidates_two_calls_vs_one_source_bound_transaction"
             or contract.get("model") != "qwen3.5:9b"
@@ -336,6 +344,18 @@ def _server_durations_fit_wall(response: object, wall_seconds: object) -> bool:
                 wall_seconds + WALL_ROUNDING_TOLERANCE_SECONDS)
 
 
+def _prewarm_timing_valid(response: object, wall_seconds: object) -> bool:
+    """Ollama's load-only response may omit both duration fields."""
+
+    if not isinstance(response, dict) or not tx._valid_seconds(wall_seconds):
+        return False
+    if (response.get("done_reason") == "load"
+            and "load_duration" not in response
+            and "total_duration" not in response):
+        return True
+    return _server_durations_fit_wall(response, wall_seconds)
+
+
 def _verify_stage(record: dict, *, stage: str, case: dict, contract: dict,
                   plan: dict | None = None) -> str | None:
     """Recompute request/response identity, not just builder metadata flags."""
@@ -422,7 +442,7 @@ def _prewarm(contract: dict) -> dict:
         row["error_type"] = type(exc).__name__
         row["error"] = str(exc)[:300]
     row["wall_seconds"] = round(time.monotonic() - started, 6)
-    if row["completed"] and not _server_durations_fit_wall(
+    if row["completed"] and not _prewarm_timing_valid(
             row["ollama_response"], row["wall_seconds"]):
         row["completed"] = False
         row["error_type"] = "ServerDurationMismatch"

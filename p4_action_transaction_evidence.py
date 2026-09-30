@@ -26,9 +26,9 @@ import uruha_goal_progress_delivery_m46 as m46
 import uruha_state_changing_candidates_m51 as m51
 
 
-FREEZE_SHA = "8b5e7a8972b27402342596d5fe18064795b7a452"
+FREEZE_SHA = "6525810d87ea44bb891a3c5f6c65cfa98f43b8eb"
 CONTRACT_PATH = "configs/p4_action_transaction_v1.json"
-RAW_PATH = "analysis/p4_action_transaction_v1_raw_2026-09-30.json"
+RAW_PATH = "analysis/p4_action_transaction_v1_amend1_raw_2026-10-01.json"
 RUNNER_PATH = "run_p4_action_transaction.py"
 ENDPOINT = "http://127.0.0.1:11434/api/chat"
 WALL_ROUNDING_TOLERANCE_SECONDS = 0.000001
@@ -123,6 +123,16 @@ def _server_durations_fit_wall(response: object, wall_seconds: object) -> bool:
                 wall_seconds + WALL_ROUNDING_TOLERANCE_SECONDS)
 
 
+def _prewarm_timing_valid(response: object, wall_seconds: object) -> bool:
+    if not isinstance(response, dict) or not tx._valid_seconds(wall_seconds):
+        return False
+    if (response.get("done_reason") == "load"
+            and "load_duration" not in response
+            and "total_duration" not in response):
+        return True
+    return _server_durations_fit_wall(response, wall_seconds)
+
+
 def frozen_material(repo: Path) -> dict:
     """Derive order and source/gold digests from the fixed freeze commit only."""
 
@@ -132,6 +142,9 @@ def frozen_material(repo: Path) -> dict:
     _same_working_bytes(repo, CONTRACT_PATH, contract_bytes)
     contract = _json_object(contract_bytes, "frozen contract")
     _require(contract.get("schema") == "uruha_p4_action_transaction_topology_contract_v1"
+             and contract.get("version") == "1.0.1"
+             and contract.get("status") ==
+             "prospectively_amended_after_prewarm_only_zero_scored_calls"
              and contract.get("model") == "qwen3.5:9b"
              and contract.get("execution", {}).get("source_case_count") == 18
              and contract.get("execution", {}).get("maximum_scored_calls") == 54
@@ -255,7 +268,7 @@ def _verify_prewarm(value: object, contract: dict) -> None:
     _require(response == value.get("ollama_response")
              and response.get("model") == contract["model"]
              and response.get("done") is True
-             and _server_durations_fit_wall(response, value["wall_seconds"]),
+             and _prewarm_timing_valid(response, value["wall_seconds"]),
              "prewarm response model/completion mismatch")
 
 

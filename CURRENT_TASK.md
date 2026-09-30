@@ -12,9 +12,12 @@ raw=`analysis/p4_action_transaction_v1_raw_2026-09-30.json`、commit=
 比較結果。不得覆寫或續跑舊 raw。研究計畫的 2026-10-01 amendment
 只對此一實測回覆形式允許預熱 load-only 完成，正式 scored `/api/chat`
 的 duration／token／wall 守門不變；新 raw 路徑另訂。
-**下一必要交付：先提交 amended plan/config/freeze test，記新的 full SHA；
-再修改 runner/evidence 的預熱契約與新路徑、fake tests，另提交／推送，
-重新只讀前檢後才可送唯一新 scored 比較。** 18 題、gold、prompt、模型、
+amendment freeze=`6525810d87ea44bb891a3c5f6c65cfa98f43b8eb` 已提交，
+只改預熱契約說明、新 raw 路徑與 frozen plan hash；freeze test `6 passed`。
+對應 runner/evidence 的 load-only 預熱特例與反向 fake tests 已完成；本次
+新工具 `126 passed`、相鄰隔離回歸 `93 passed`，0 新 scored calls。
+**下一必要交付：只提交／推送此 runner/evidence 修正，核 PR 與正式前檢，
+再送唯一新 scored 比較。** 18 題、gold、prompt、模型、
 token、gate 完全不改。這算一個有根據的修正批次；若再失敗，依
 `DEVELOPMENT_WORKFLOW.md` 審查而非無限重試。無關報告目錄不碰。
 

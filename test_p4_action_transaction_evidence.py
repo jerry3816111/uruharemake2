@@ -318,6 +318,27 @@ def test_server_duration_cannot_contradict_prewarm_wall(raw, frozen):
         _verify(changed, frozen)
 
 
+def test_load_only_prewarm_without_duration_pair_is_verifiable(raw, frozen):
+    changed = deepcopy(raw)
+    prewarm = changed["prewarm"]
+    response = {"model": frozen["contract"]["model"], "done": True,
+                "done_reason": "load", "response": ""}
+    prewarm["ollama_response"] = response
+    prewarm["raw_http_response"]["body_base64"] = base64.b64encode(
+        json.dumps(response).encode("utf-8")).decode("ascii")
+    assert _verify(changed, frozen)["verified_raw_evidence"] is True
+    for bad in ({**response, "load_duration": 1},
+                {**response, "done_reason": "stop"},
+                {**response, "load_duration": 1,
+                 "total_duration": 25_000_000_000}):
+        invalid = deepcopy(changed)
+        invalid["prewarm"]["ollama_response"] = bad
+        invalid["prewarm"]["raw_http_response"]["body_base64"] = (
+            base64.b64encode(json.dumps(bad).encode("utf-8")).decode("ascii"))
+        with pytest.raises(evidence.EvidenceError):
+            _verify(invalid, frozen)
+
+
 def test_working_bytes_and_strict_git_chronology_are_required(tmp_path, monkeypatch):
     relative = evidence.RAW_PATH
     location = tmp_path / relative

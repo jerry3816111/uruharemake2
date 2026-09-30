@@ -354,6 +354,29 @@ def test_prewarm_invalid_server_duration_stops_before_scoring(
     assert calls == []
 
 
+def test_load_only_prewarm_without_duration_pair_is_accepted_but_not_scored(
+        monkeypatch):
+    def load_only(method, path, body, timeout):
+        assert method == "POST" and path == "/api/generate"
+        return _wire({"model": CONTRACT["model"], "done": True,
+                      "done_reason": "load", "response": ""}, path)
+
+    monkeypatch.setattr(runner, "_http_exchange", load_only)
+    record = runner._prewarm(CONTRACT)
+    assert record["completed"] is True
+    assert record["ollama_response"]["done_reason"] == "load"
+    assert "total_duration" not in record["ollama_response"]
+    assert record["wall_seconds"] >= 0
+    assert runner._prewarm_timing_valid(record["ollama_response"],
+                                        record["wall_seconds"])
+    for bad in ({"done_reason": "load", "load_duration": 1},
+                {"done_reason": "stop"},
+                {"done_reason": "load", "load_duration": 1,
+                 "total_duration": 25_000_000_000}):
+        assert not runner._prewarm_timing_valid(
+            {"model": CONTRACT["model"], "done": True, **bad}, 1.0)
+
+
 def test_prewarm_failure_starts_no_scored_call(tmp_path, monkeypatch):
     artifact, path, calls = _fake_run(tmp_path, monkeypatch, prewarm_ok=False)
     assert calls == []
