@@ -2,17 +2,30 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：單次 source-bound action transaction 的模型前 runner／evidence gate
+## 當前唯一工作：單次 source-bound action transaction 的一次性前瞻比較
 
-**2026-10-01 模型前 freeze 已提交／推送：**
+**2026-10-01 runner／evidence gate 已提交、推送並前檢通過：**
+runner commit=`f25874a2f52a20fedc9a21b0aaf7f6ccd0b88c90`，PR #435 open
+且 head 對應此 SHA；新工具離線 `123 passed`、既有相鄰隔離回歸
+`93 passed`，0 新 scored calls。只讀正式前檢確認 18 題固定順序、本機
+`qwen3.5:9b` digest、M2 Pro 32GB、凍結檔 hash、後凍結 runner commit
+與結果檔不存在。獨立反例檢查抓出的祖先 commit 先曝光揭盲資料，以及
+Ollama server duration 大於實測 wall 的假陽性，已加 fail-closed 與回歸。
+下一必要交付是依 `research/p4_action_transaction_v1_plan_2026-09-30.md`
+進行**唯一一次**新 18 題／最多 54 scored calls；0 retry、不可續跑。
+完成後先獨立提交 raw artifact，才建匿名封包、鎖定開發者代理標註、
+後揭盲與核 Git 時序／正式評分。若有 partial、品質或 20 秒成本失敗，
+照原門檻保存負結果，不改 freeze/gold/runner 追分。元件結果不外推成
+產品、Safari、真人、時間 holdout 或完整人類反應方程式證明。
+
+**2026-10-01 模型前 freeze 紀錄（已履行，不是目前命令）：**
 `8b5e7a8972b27402342596d5fe18064795b7a452`，PR #435 仍 open 且 head
 對應此 full SHA。新契約 39/39、相鄰隔離回歸 93/93，0 新 scored calls；
 無關 `output/graduate_application_report/` 未納入提交。此 commit 只是
-前瞻設計／資料／評分契約凍結，不是模型或產品效果。下一必要交付已轉為
+前瞻設計／資料／評分契約凍結，不是模型或產品效果。當時下一必要交付是
 一次性 runner、raw Git 證據 verifier 與 arm-masked annotation harness 的
-模型前假傳輸驗證；全數通過並另 commit／push 前，不准送 scored calls。
-只有正式 runner 前檢核 hash、模型／硬體／本機端點、固定 request/usage/
-wall、結果檔不存在後，才可執行全新單次比較。舊 M46 20-call FAIL 不重跑。
+模型前假傳輸驗證；此 gate 已由本卡頂部所列 commit 與前檢履行。
+舊 M46 20-call FAIL 不重跑。
 
 **2026-09-30 freeze 前設計紀錄（已履行，不是目前命令）：** 新的 18 題 source-only
 中／英／日（各 3 action／3 abstain）與獨立 developer-authored gold、
