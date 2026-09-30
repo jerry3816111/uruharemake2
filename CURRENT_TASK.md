@@ -2,7 +2,37 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4 只讀 Function Calling 失敗時的真實圖表狀態
+## 當前唯一工作：下一個 state-changing action 的 task-alignment 設計審查
+
+**前項 P4 只讀 Function Calling 失敗呈現 gate 已完成（2026-10-01）：**
+舊 P4-C／P4-AZ hash-frozen 檔不變；新增現行產品後置 overlay、additive
+entry 與安全 launcher。wrong-tool／reader exception 的原失敗日文與
+core trace 保留，logic、debug、cognition 改標 `failed_closed`，沒有把
+失敗讀取冒充成功。`61 passed`（聚焦＋相鄰 freeze）；新 entry probe／
+server 在 sandbox 內且資料路徑隔離，但繼承的 P4-B 最初 import probe
+僅有隔離 env、尚未進 sandbox，不能宣稱所有 preflight 都受 sandbox
+保護。Safari 於 fresh isolated root 實測 1 輪 fake-provider
+拒絕（真模型 0、tool execution 0），日文失敗句、debug
+`validated_tool_result=false` 與 graph `tool_call:name` 一致；另一個
+fresh isolated root 實測 1 輪真實本機 `qwen3.5:9b` 成功 status，
+1 model／1 read-only tool、`310/15` tokens、`7.5704s` user wait，
+日文與五個 function 節點維持。兩個 Safari 診斷 tab／server／隔離 root
+均已關閉／清理；正式 DB／原始 dirty checkout／無關報告未動。
+精簡證據見 `analysis/p4_status_truth_failure_view_acceptance_2026-10-01.md`。
+這只證明工具失敗可見真實性與 status 成功不退步，不是一般 action 能力。
+
+**下一個必要瓶頸：** source-bound action transaction 的 A/B valid 都
+`0/9`；B valid 5 個曾提出 action 但全部被 guard 擋，`p4_tx_zh_01`
+即使只見表面欄位違規也實際答錯任務。只增 renderer／放寬 guard
+會有 false release，不能接產品。下一步先做**無新模型呼叫的明確
+設計審查**，用 frozen raw 的 wrong-task 反例定義獨立 task-alignment
+判準／欄位與介入位置，區分來源錯、任務錯、可機驗表面錯；列一個
+可反駁的新前瞻架構變因、必要新題與 false-action／成本 gate，或
+結論為目前沒有可安全重啟的介面。此處不得改舊 gold/raw/score、
+降低門檻、重跑已曝光 18 題、另開小數 M 或直接部署。設計審查
+本身不算產品能力通過；後續新的 freeze 與比較另 gate。
+
+### 已完成之 P4 只讀工具失敗呈現卡（歷史）
 
 **Before／目的：** 既有 P4-C Safari 只驗了 `get_runtime_status` 成功；
 `uruha_read_only_function_calling_p4.py` 在 provider／tool 驗證／reader 失敗時
@@ -24,7 +54,9 @@ core 的 graph 節點本身沒有成功 tool result。Web Planner Debug 會呈�
 freeze hash 綁定，**不可改原檔**。2026-10-01 的診斷提交後、尚未寫
 產品碼的 boundary amendment 只改檔案位置，不改問題／成功標準：
 允許改本卡，新增窄範圍狀態修正 overlay、新 additive current entry／
-safe launcher 與新測試；舊入口／launcher、凍結研究檔都不改。
+safe launcher 與新測試；為可重現的隔離 Safari 故障輪，可另新增一次性
+localhost fake-provider probe（僅讓它回錯工具名，0 模型／外部工具），
+不得把注入選項加到正常產品入口。舊入口／launcher、凍結研究檔都不改。
 若真實 Web 失敗注入可安全完成，另加隔離驗收證據。
 資源上限：0 新 scored action／status 模型呼叫、
 0 外部 API／正式 DB 寫入；只用 deterministic fake failure 做此修正。
