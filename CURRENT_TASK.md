@@ -2,7 +2,41 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：下一個 state-changing action 的 task-alignment 設計審查
+## 當前唯一工作：P4 action task-alignment B2 前瞻契約／新資料 freeze
+
+**2026-10-01 前項 0-call 設計審查完成（非產品能力）：**
+`research/p4_action_task_alignment_v2_design_2026-10-01.md` 以凍結
+`p4_tx_zh_01` 指出最早可觀測的任務偏離在首次模型交易：M45.1 已保留
+「只有一行標題／要稿件骨架／不要填路線細節」，B 卻把現況子句當請求，
+提議切開不存在的正文；舊 guard 只看到表面錯。正式 `task_alignment`
+分數評的是最終 fallback，不是被擋提案。故 source exact、配對合法的
+`null/null` 禁令和機械渲染都不能獨立證明任務理解。此項 0 新模型呼叫、
+0 新評分，沒有改舊 raw／gold／score 或降低門檻；action lane 仍
+`REVIEW_REQUIRED`、未接產品。把任務語義、來源遺漏及表面一致性列為
+獨立判準；只同意**離線可反駁試驗**，不是放行。
+
+**本項 before／單一變因：** 舊 B1 valid `0/9`、invalid abstain `9/9`
+但 source-bound reason `0/9`，`zh_01` 會有 renderer-only false release。
+準備 B2「候選盲 source-first task-state frame → action transaction →
+前提／禁令／actor 比對 → 現行安全 guard」整體介面，與凍結 B1 比較；
+同基礎模型／來源／硬體／生成參數、合計 completion cap 680、0 retry。
+frame 本身仍是可錯的模型假設，不能叫語義真理。只能新增 B2 的 schema、
+prompt、isolated runner／scorer／tests、全新開發 12 與封存 18 source-only
+題及其事前 gold、freeze／evidence 文件；**不得**改舊 B1、M39／M45／
+M51／M52／M46、舊 18 題／gold／raw／score、產品接線、正式 DB 或原始
+dirty checkout。無關 `output/graduate_application_report/` 保留不碰。
+
+**成功／失敗及順序：** 先檢查新題和 gold 是否真有跨語、目前素材有／無、
+請求／現況對照、禁令／actor／stop 及新任務家族；pre-guard 與 final
+分開評分，old 18 僅曝光回歸。先鎖 prompt／資料／gold／scorer／停止規則
+full SHA，通過 fake transport 和 contract tests 才准真模型一次性比較；
+封存 gate 是 valid `9/9`、invalid `9/9`、來源與理由／欄位 `18/18`、
+零 wrong-task false-action、每題每臂完整 wall `≤20s`。超出成本或任一
+安全／品質 gate 失敗就保留負結果、不接產品；最多兩個有根據修正批次。
+目前只做**模型前規格／實作／freeze**，不得把它寫成 B2 勝出或 Safari
+通過。精確測試命令將在新 runner／tests 落地後於本卡補記，包含新 contract、
+freeze verifier 與受影響相鄰回歸；在命令不存在前不假稱測過。完成後
+diff review、commit、push、核對既有 PR #435 head，再評估唯一 scored run。
 
 **前項 P4 只讀 Function Calling 失敗呈現 gate 已完成（2026-10-01）：**
 舊 P4-C／P4-AZ hash-frozen 檔不變；新增現行產品後置 overlay、additive
