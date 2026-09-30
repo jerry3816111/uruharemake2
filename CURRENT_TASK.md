@@ -4,6 +4,37 @@
 
 ## 當前唯一工作：P4 B2 交付前 typed-action／abstain 證據閉環
 
+**2026-10-01 受限 compiler 契約已落地，獨立反例使 B2 繼續 `REVIEW_REQUIRED`：**
+新增純離線 `p4_action_task_alignment_v2_compiler.py` 與聚焦測試。五種有限
+typed 操作或來源綁定 abstain 由程式產生 B1 的日文動作欄位，不再讓模型
+同時填安全鍵和另一份真正可見指示；合成畫圖注入／未知動作、未綁定可用
+素材的 target 與假 prerequisites 被擋，合理空標題和結構上真缺前提仍保留；
+非字串 abstain reason 的 `TypeError` 已修成 fail closed。
+人工建立 frame 的六件**已曝光** valid dev 題只證明五種模板的機械覆蓋與
+B1/M39 接受度，不是模型生成或任務語義成功率。`C-4` 逐字保留在內部，
+舊 B1 排斥 ASCII，日文模板指向原文值；多值來源時可能含糊。多條禁令只在
+sidecar 全核對，B1 仍只有主要錨點。**獨立只讀複核又證實三個紅 gate：**
+已知但錯的 move 操作可把「寫標題」請求當移動目的地；同一來源有 `C-4`／
+`D-5` 時兩種 typed value 得到相同日文指示；僅禁畫圖的來源可被錯用成
+拒絕寫標題的 `forbidden_action`。這三例的 compiler/B1 綠燈只表示機械
+結構，不是正確任務或回覆。反例已記為測試，`deliverable=false`、0 新
+模型呼叫、0 Safari；聚焦＋相鄰 `63 passed`。證據與限制見
+`analysis/p4_action_task_alignment_v2_compiler_contract_2026-10-01.md`。
+
+**現在下一必要 gate：** 先做有界設計審查，對以上已保存的 wrong-operation、
+wrong-value／destination、false-abstain 逐一提出可反駁的 source/request/
+surface 一致性約束，並保留獨立 source-only 語義評分；不能用手工正確
+frame 取代模型理解。反例未關閉前**不做 runner、sealed 題、freeze 或
+新 scored call**。若可在現有安全邊界內關閉，才把 B2 prompt/schema/runner
+接成只收 typed decision，補 fake transport、sealed 新題與 gold，完成
+事前 hash freeze，再准一次性同模型 scored 比較。任何階段失敗留
+`REVIEW_REQUIRED`，不可放寬 B1、追改已曝光題或接產品。現行測試命令：
+`PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q
+-p no:cacheprovider test_p4_action_task_alignment_v2_compiler.py
+test_p4_action_task_alignment_v2.py test_p4_action_task_alignment_v2_dev_data.py
+test_p4_action_transaction_scoring.py test_p4_action_transaction_b_observation.py
+test_p4_action_transaction_freeze.py`。
+
 **2026-10-01 模型前 B2 草稿被具體反例擋下：** 開發側只讀審查與
 synthetic contract 實測證明，模型可在 typed `operation_keys` 宣稱寫標題，
 但內嵌日文 instruction 改成畫圖；即使來源明禁畫圖，B2
