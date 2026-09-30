@@ -1,6 +1,6 @@
 # P4 state-changing action：task-alignment 設計審查
 
-狀態：**0 新模型呼叫、0 新評分、未授權產品接線**。本文件只定義下一個可反駁的離線架構變因；不是 V2 成功或一般語用理解證明。審查者仍屬開發側，並非獨立真人。
+狀態：**0 新模型呼叫、0 新評分、未授權產品接線**。本文件只定義下一個可反駁的離線架構變因；不是 V2 成功或一般語用理解證明。審查者仍屬開發側，並非獨立真人。2026-10-01 模型前檢查發現 typed 安全鍵與真正日文 instruction 可不一致，以及原 abstain reason 無阻擋引文；後者已加機械 blocker 引文檢查，但仍可受錯誤的模型 frame 欺騙。原 B2 草稿仍**暫停 freeze**。反例與修正 gate 見 `analysis/p4_action_task_alignment_v2_pre_model_review_2026-10-01.md`，頂部 `CURRENT_TASK.md` 優先於本文件原預定的送模型順序。
 
 ## Before 與真正的錯誤層
 
@@ -35,7 +35,7 @@
 
 先建**全新** source-only 開發 12 題（中／英／日各 4，含有／無現成素材的近鄰對照）與封存 18 題（各語 valid 3、invalid 3；至少含新的任務家族、前提相反／禁令／actor／停止點反例）。開發題可診斷，但題目、gold、prompt、runner、評分與停止條件須在封存模型呼叫之前各自鎖定並記 full SHA。已曝光的舊 18 題只可做不計分回歸，不得改名 holdout、改舊 gold 或反覆追分。
 
-資料只先固定**抽象 strata**，不是先公開精確答案再寫題：每語 dev 2 對、sealed 3 對；每對 V/I 盡量只改一個使動作可行／不可行的來源事實。dev 家族可用中文個人任務板（自有／第三方無權）與紙樣索引（標記可讀／不可得）、英文彩排 cue（值已知／不在來源）與相片接觸表（目標指定／未指定）、日文個人預覽 UI（使用者可做／要求助手虛稱完成）與展示卡草稿（只搭空白骨架／要求操作不存在的段落）。sealed 只固定各語 3V／3I 及素材可用性、禁令、actor／receipt、stop、請求／現況衝突等覆蓋配額；在 B2 介面定案後由另一位開發作者撰寫**不同的具體 family、原文與 gold**，不放進 prompt 或 dev 日誌，再 hash-lock。這仍是 developer-authored 的 prospective source/gold holdout，不是真人自然分布、正式 temporal holdout 或獨立評價；若日後沿用本次審查已提到的計數板／逐字稿／簡報等 family，只能稱「未見精確 source／gold」，不能稱「未見 family」。
+資料只先固定**抽象 strata**，不是先公開精確答案再寫題：每語 dev 2 對、sealed 3 對；每對 V/I 盡量只改一個使動作可行／不可行的來源事實。已建立的 dev 家族為中文私人任務板（有／無編輯權）與縫紉紙樣線型圖例（標記可讀／不可得）、英文彩排 cue（值已知／不在來源）與相片接觸表（目標指定／未指定）、日文練習砂時計（使用者／不可及的助手操作）與手製桌遊規則草稿（只搭空白骨架／要求操作不存在的段落）。這些是**已曝光 dev**，不是 sealed。sealed 只固定各語 3V／3I 及素材可用性、禁令、actor／receipt、stop、請求／現況衝突等覆蓋配額；在 B2 介面定案後由另一位開發作者撰寫**不同的具體 family、原文與 gold**，不放進 prompt 或 dev 日誌，再 hash-lock。這仍是 developer-authored 的 prospective source/gold holdout，不是真人自然分布、正式 temporal holdout 或獨立評價；若日後沿用本次審查已提到的計數板／逐字稿／簡報等 family，只能稱「未見精確 source／gold」，不能稱「未見 family」。
 
 每題 source-only gold 預先記可跨**非相鄰子句**的請求／現況／目標／可用與缺席素材／禁令／actor／stop 證據跨度；valid 的可接受 action envelope（actor、object、verb、effect、stop、安全邊界），invalid 的主要／可接受拒絕理由及阻擋跨度。對匿名 pre-guard proposal 先按 task、前提、禁令、actor／receipt、object-verb-effect-stop、來源虛構與安全逐軸標 `pass/fail/uncertain`；再獨立評最終回覆、日文、理由錨點、虛稱完成。另記 `semantically_valid_proposal_rejected` 和 `wrong_task_proposal_released`。若 schema 洩漏 arm，僅稱 arm-masked；同一開發團隊的代理標註仍非獨立人評。
 

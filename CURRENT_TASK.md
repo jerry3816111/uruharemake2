@@ -2,7 +2,46 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4 action task-alignment B2 前瞻契約／新資料 freeze
+## 當前唯一工作：P4 B2 交付前 typed-action／abstain 證據閉環
+
+**2026-10-01 模型前 B2 草稿被具體反例擋下：** 開發側只讀審查與
+synthetic contract 實測證明，模型可在 typed `operation_keys` 宣稱寫標題，
+但內嵌日文 instruction 改成畫圖；即使來源明禁畫圖，B2
+`ready_for_b1_guard=true` 與舊 B1 `would_deliver=true` 仍同時出現。
+另一例在所有前提可用時虛填 `abstain/prerequisites`，原兩道機械檢查也
+接受，卻沒有來源可綁的阻擋理由；B2 草稿現已加 exact `abstain_blocker`
+與 frame 的阻擋角色核對，該合成反例被擋，但模型若把來源誤標為 absent
+仍能騙過，必須另有事前 source-only gold 評估。範圍式禁令 OR 假拒已修成雙維
+scope 判定。新 12 題 developer-authored dev 資料修正了引文跨子句、
+配對題資訊互漏及 actor／授權混雜；舊 18 題不動。聚焦＋相鄰回歸
+`44 passed`，其中反例測試是**記錄未閉合漏洞**，不是正面能力證據。
+0 新模型呼叫、0 新分數，無 Web／Safari。完整證據與界線見
+`analysis/p4_action_task_alignment_v2_pre_model_review_2026-10-01.md`。
+原 B2 草稿**不可 freeze、不可 scored run、不可產品接線**；現行
+`deliverable=false` 保持。B1 正式 valid `0/9`、invalid safe `9/9`、
+reason `0/9` 仍原樣。
+
+**下一個唯一變因／成功條件：** 在同一 B2 前瞻批次內，設計受限 typed
+action→deterministic Japanese transaction compiler（未知操作 fail closed），
+使真正可見動詞／object／instruction／effect／stop 只能從同一 typed
+動作產生，不能與安全鍵分岔；已新增的 abstain blocker 仍需維持來源
+與 reason 的分軸檢查，區分授權、實物不可及、素材缺席和未知。compiler 與 blocker 是
+相對 B1 的**整體介面變因**，不得個別宣稱因果優勢。先在 synthetic
+fixture 擋畫圖 false-action／假 prerequisites，保留安全寫標題／真缺前提
+拒絕，再測 12 題新 dev、相鄰 B1，只有兩向都通過才重啟未寫的 sealed
+題、gold、scorer、runner、fake transport 和事前 freeze。不得以全拒
+取得安全假象；若不能在受限語法內閉合，保留 `REVIEW_REQUIRED` 並轉
+下一個已有 before 的必要產品 gate。不改舊凍結檔、產品、正式 DB、
+原始 dirty checkout 或 `output/graduate_application_report/`。
+
+精確現行命令：`PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python
+-m pytest -q -p no:cacheprovider test_p4_action_task_alignment_v2.py
+test_p4_action_task_alignment_v2_dev_data.py test_p4_action_transaction_scoring.py
+test_p4_action_transaction_b_observation.py test_p4_action_transaction_freeze.py`。
+後續 compiler 測試須額外明列在本卡。收尾依 diff review、commit、push、
+核對 PR #435；不能把這次 0-call 工程檢查報成 Safari 或正式研究成功。
+
+### 前項 B2 前瞻契約／新資料準備（模型前暫停）
 
 **2026-10-01 前項 0-call 設計審查完成（非產品能力）：**
 `research/p4_action_task_alignment_v2_design_2026-10-01.md` 以凍結
@@ -26,7 +65,7 @@ prompt、isolated runner／scorer／tests、全新開發 12 與封存 18 source-
 M51／M52／M46、舊 18 題／gold／raw／score、產品接線、正式 DB 或原始
 dirty checkout。無關 `output/graduate_application_report/` 保留不碰。
 
-**成功／失敗及順序：** 先檢查新題和 gold 是否真有跨語、目前素材有／無、
+**當時預定的成功／失敗及順序，已被頂部反例暫停：** 先檢查新題和 gold 是否真有跨語、目前素材有／無、
 請求／現況對照、禁令／actor／stop 及新任務家族；pre-guard 與 final
 分開評分，old 18 僅曝光回歸。先鎖 prompt／資料／gold／scorer／停止規則
 full SHA，通過 fake transport 和 contract tests 才准真模型一次性比較；
