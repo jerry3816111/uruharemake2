@@ -2,7 +2,20 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：source-bound action transaction 負結果的架構設計審查
+## 當前唯一工作：source-bound action transaction 的 0-call 可救性診斷
+
+**2026-10-01 非獨立設計審查已完成，尚無新 scored run：**
+`analysis/p4_action_transaction_architecture_review_2026-10-01.md` 以鎖定的
+18 題失敗輸出辨出：A 的 M46 reviewer 0 call；B valid 先提出 action 5/9
+但全部被 guard 擋，invalid 先 abstain 9/9 卻來源／理由契約 0/9。
+不做第三個 prompt 小修或單純放寬 guard。下一個**唯一**工作是 0-call
+診斷性 replay：對 5 個 B action 的來源、禁令、actor、object／verb／stop
+與 guard 拒絕原因做機械可救性矩陣，並用 `p4_tx_zh_01` wrong-task
+反例防止假救回；不改凍結 raw/gold/score，不將 replay 計成功率。
+若可救回至少一個合理 valid 且仍擋 wrong-task，才評估一個新前瞻
+typed-evidence→deterministic-renderer 整體介面變因；否則本 action lane
+保留 `REVIEW_REQUIRED` 並回到下一個已定案產品 gate。此設計審查非獨立
+真人評價，不能推論一般化優勢。
 
 **2026-10-01 amended 一次性比較正式 FAIL，先保留後審查：**
 freeze=`6525810d87ea44bb891a3c5f6c65cfa98f43b8eb`、runner=
