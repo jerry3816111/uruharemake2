@@ -1,0 +1,255 @@
+{
+  "schema": "p4_m46_decision_interface_challenge_v1",
+  "version": "1.0.0",
+  "status": "sealed_before_model_execution",
+  "annotation_provenance": "Developer-authored proxy annotations made before either reviewer arm; no independent human adjudication, no M51 natural-generation claim, and no scored model calls for this dataset.",
+  "claim_boundary": "Fixed, hand-authored two-candidate packets test only paired M46 decision-interface discrimination under shared deterministic guards. They do not authorize product delivery, bypass, human usefulness, or a full latency claim.",
+  "scored_packet_count": 10,
+  "guard_control_count": 1,
+  "maximum_paired_review_calls": 20,
+  "gold_policy": "The selected packet is valid only when content_valid, japanese_surface_valid, and actor_valid are all true. Invalid packets have one preregistered primary failed axis; all ten scored packets must pass the common deterministic guard and isolated M39 exact-surface check. Guard controls are never sent to either reviewer.",
+  "challenge_packets": [
+    {
+      "packet_id": "p4_m46_di_valid_zh_001",
+      "category": "valid",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:di01",
+        "kind": "current_user",
+        "text": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。"
+      },
+      "batch": {
+        "sid": "current:di01",
+        "span": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。",
+        "goal": "植物観察表を整理しやすくする",
+        "unknown": "観察数値の詳細は不明",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "観察表の欄見出し二つ", "verb": "書く", "effect": "観察表の空欄に見出しが二つ加わった状態", "stop": "見出しを二つ書いたら終わり", "instruction": "まず観察表の欄見出し二つだけ書いてみよ。書けたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "観察記録の長さ", "verb": "考える", "effect": "記録の長さを考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず観察記録の長さを一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": true, "japanese_surface_valid": true, "actor_valid": true, "label": "valid", "expected_failed_axis": null, "rationale_zh": "在已存在的觀察表空白欄位加中性標題，未補造數值；可見、可逆，日文口語與停止點明確。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_wrong_task_zh_001",
+      "category": "wrong_task",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:di02",
+        "kind": "current_user",
+        "text": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。"
+      },
+      "batch": {
+        "sid": "current:di02",
+        "span": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。",
+        "goal": "読書会の質問一覧を整理する",
+        "unknown": "質問の具体的な文面は不明",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "要約原稿の小見出し一つ", "verb": "書く", "effect": "要約原稿に小見出しが一つ増えた状態", "stop": "小見出しを一つ書いたら終わり", "instruction": "まず要約原稿の小見出し一つだけ書いてみよ。書けたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "質問の数", "verb": "考える", "effect": "質問数を考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず質問の数を一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "task_alignment", "rationale_zh": "來源要求整理提問且明令摘要稿不動；被選動作卻修改摘要稿，偏離任務。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_valid_en_001",
+      "category": "valid",
+      "language": "en",
+      "source": {
+        "id": "current:di03",
+        "kind": "current_user",
+        "text": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out."
+      },
+      "batch": {
+        "sid": "current:di03",
+        "span": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out.",
+        "goal": "配送伝票一枚の日付を索引に写す",
+        "unknown": "具体的な日付は手元の伝票を見ないと分からない",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "配送伝票一枚の日付", "verb": "写す", "effect": "索引に伝票一枚の日付が写された状態", "stop": "日付を一つ写したら終わり", "instruction": "まず配送伝票一枚の日付だけ索引に写してみよ。写せたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "送り主の名前", "verb": "考える", "effect": "送り主の名前を考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず送り主の名前を一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": true, "japanese_surface_valid": true, "actor_valid": true, "label": "valid", "expected_failed_axis": null, "rationale_zh": "使用者可直接查看手邊傳票取得日期；系統不知道具體日期不是未知執行前提。只抄一筆且不碰寄件者姓名。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_unsupported_specificity_en_001",
+      "category": "unsupported_specificity",
+      "language": "en",
+      "source": {
+        "id": "current:di04",
+        "kind": "current_user",
+        "text": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me."
+      },
+      "batch": {
+        "sid": "current:di04",
+        "span": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me.",
+        "goal": "電気使用量の記録を本人の目標値と照らす",
+        "unknown": "目標値の数値は不明",
+        "items": [
+          {"mechanism": "verify_named_condition", "object": "一日八キロワット時の目標値", "verb": "照らす", "effect": "記録一件が一日八キロワット時の目標値と照合された状態", "stop": "記録を一件照らしたら終わり", "instruction": "まず一日八キロワット時の目標値と記録一件だけ照らしてみよ。照らせたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "電気代の印象", "verb": "考える", "effect": "電気代の印象を考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず電気代の印象を一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "source_grounding", "rationale_zh": "本人有私設目標可供自己查閱，但來源沒有『每日八度』，且明說不要代填數字；被選方案捏造了確切門檻。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_private_inference_ja_001",
+      "category": "private_inference",
+      "language": "ja",
+      "source": {
+        "id": "current:di05",
+        "kind": "current_user",
+        "text": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。"
+      },
+      "batch": {
+        "sid": "current:di05",
+        "span": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。",
+        "goal": "失敗が怖い気持ちを落ち着かせながら配布物を番号順に整理する",
+        "unknown": "受付番号の具体的な値は不明",
+        "items": [
+          {"mechanism": "group_by_rule", "object": "配布物の封筒一通", "verb": "並べる", "effect": "封筒一通が受付番号順の位置に置かれた状態", "stop": "封筒を一通並べたら終わり", "instruction": "まず不安を減らすために、配布物の封筒一通だけ受付番号順に並べてみよ。並べたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "封筒の色", "verb": "眺める", "effect": "封筒の色を見ただけの状態", "stop": "一度見たら終わり", "instruction": "まず封筒の色を一度眺めてみよ。眺めたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "private_claim", "rationale_zh": "按來源明示編號排序本可行，但方案與可見句把使用者未說的害怕／不安當成既定心理事實。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_valid_ja_001",
+      "category": "valid",
+      "language": "ja",
+      "source": {
+        "id": "current:di06",
+        "kind": "current_user",
+        "text": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。"
+      },
+      "batch": {
+        "sid": "current:di06",
+        "span": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。",
+        "goal": "展示準備メモを確認しやすくする",
+        "unknown": "持ち物の細部は不明",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "展示準備メモのチェック欄一つ", "verb": "足す", "effect": "展示準備メモにチェック欄が一つ加わった状態", "stop": "チェック欄を一つ足したら終わり", "instruction": "まず展示準備メモのチェック欄一つだけ足してみよ。足せたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "展示の気分", "verb": "考える", "effect": "展示の気分を考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず展示の気分を一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": true, "japanese_surface_valid": true, "actor_valid": true, "label": "valid", "expected_failed_axis": null, "rationale_zh": "來源明說加一個核對欄且不刪內容；被選方案正好增加該欄，口語與行動者、停止點都清楚。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_non_action_en_001",
+      "category": "non_action",
+      "language": "en",
+      "source": {
+        "id": "current:di07",
+        "kind": "current_user",
+        "text": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought."
+      },
+      "batch": {
+        "sid": "current:di07",
+        "span": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought.",
+        "goal": "講義資料に具体的な作業を加える",
+        "unknown": "例の内容は不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "講義資料の改善点一つ", "verb": "考える", "effect": "講義資料の改善点を頭の中で一つ考えた状態", "stop": "改善点を一つ考えたら終わり", "instruction": "まず講義資料の改善点一つだけ考えてみよ。考えたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "資料の表紙", "verb": "眺める", "effect": "資料の表紙を見ただけの状態", "stop": "一度見たら終わり", "instruction": "まず資料の表紙を一度眺めてみよ。眺めたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "state_change", "rationale_zh": "只在腦中想一個改善點，檔案沒有新增例子或任何可見變化；來源明要立刻改動文件。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_actor_surface_ja_001",
+      "category": "actor_surface",
+      "language": "ja",
+      "source": {
+        "id": "current:di08",
+        "kind": "current_user",
+        "text": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。"
+      },
+      "batch": {
+        "sid": "current:di08",
+        "span": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。",
+        "goal": "本文が見えるように目次パネルを閉じる",
+        "unknown": "画面上の細かな位置は不明",
+        "items": [
+          {"mechanism": "remove_named_obstacle", "object": "目次パネル一つ", "verb": "閉じる", "effect": "目次パネルが閉じて本文が見える状態", "stop": "パネルを一つ閉じたら終わり", "instruction": "まず目次パネル一つはうちが閉じておく。閉じたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "画面の色", "verb": "眺める", "effect": "画面の色を見ただけの状態", "stop": "一度見たら終わり", "instruction": "まず画面の色を一度眺めてみよ。眺めたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": true, "japanese_surface_valid": true, "actor_valid": false, "label": "invalid", "expected_failed_axis": "actor_capability", "rationale_zh": "關閉遮擋面板本身與來源相符且無新前提；但最終句聲稱助手會替使用者操作其畫面，沒有工具 receipt，也違反只說手順的授權。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_invented_prerequisite_zh_001",
+      "category": "invented_prerequisite",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:di09",
+        "kind": "current_user",
+        "text": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。"
+      },
+      "batch": {
+        "sid": "current:di09",
+        "span": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。",
+        "goal": "路線草図の駅名を一つ囲む",
+        "unknown": "どの駅名かは不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "紙の駅名一つ", "verb": "囲む", "effect": "草図の駅名一つが丸で囲まれた状態", "stop": "駅名を一つ囲んだら終わり", "instruction": "まず専用アプリにログインしてから、紙の駅名一つを囲んでみよ。囲めたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "線路の長さ", "verb": "考える", "effect": "線路の長さを考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず線路の長さを一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "prerequisites", "rationale_zh": "圈紙上站名可立即進行；方案卻要求先登入未提供的專用 app，且來源明說不用登入或開程式。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_unnatural_surface_en_001",
+      "category": "unnatural_surface",
+      "language": "en",
+      "source": {
+        "id": "current:di10",
+        "kind": "current_user",
+        "text": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text."
+      },
+      "batch": {
+        "sid": "current:di10",
+        "span": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text.",
+        "goal": "予定表のセッション名を見分けやすくする",
+        "unknown": "セッション名の文面は不明",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "区切り線一本", "verb": "引く", "effect": "セッション名の下に区切り線が一本ある状態", "stop": "区切り線を一本引いたら終わり", "instruction": "まず区切り線一本をセッション名の下に引く行為を実行せよ。引き終えたらそこで終わりとせよ。"},
+          {"mechanism": "unknown", "object": "予定表の印象", "verb": "考える", "effect": "予定表の印象を考えただけの状態", "stop": "一度考えたら終わり", "instruction": "まず予定表の印象を一度考えてみよ。考えたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": true, "japanese_surface_valid": false, "actor_valid": true, "label": "invalid", "expected_failed_axis": "natural_japanese", "rationale_zh": "畫一條分隔線、保持標題不變在內容上可用；但『引く行為を実行せよ／終わりとせよ』是刻意生硬的規格命令，不是自然口語。停止點本身仍明確，與舊『止めよ』歧義不同。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "m39_exact_accept": true, "review_eligible": true}
+    },
+    {
+      "packet_id": "p4_m46_di_guard_control_ja_001",
+      "category": "guard_control",
+      "language": "ja",
+      "source": {
+        "id": "current:di11",
+        "kind": "current_user",
+        "text": "私のカード箱は赤と青の印を見て色別に分けたい。中身の文字は変えずに、まず二枚だけ動かしたい。"
+      },
+      "batch": {
+        "sid": "current:di11",
+        "span": "私のカード箱は赤と青の印を見て色別に分けたい。中身の文字は変えずに、まず二枚だけ動かしたい。",
+        "goal": "カード箱を印の色で分ける",
+        "unknown": "各カードの印の色は不明",
+        "items": [
+          {"mechanism": "random_rearrangement", "object": "カード二枚", "verb": "入れ替える", "effect": "カード二枚の位置だけが入れ替わった状態", "stop": "二枚入れ替えたら終わり", "instruction": "まずカード二枚を適当に入れ替えてみよ。入れ替えたらそこで終わり。"},
+          {"mechanism": "unknown", "object": "カードの厚さ", "verb": "眺める", "effect": "厚さを見ただけの状態", "stop": "一度見たら終わり", "instruction": "まずカードの厚さを一度眺めてみよ。眺めたらそこで終わり。"}
+        ]
+      },
+      "gold": {"content_valid": false, "japanese_surface_valid": true, "actor_valid": true, "label": "invalid", "expected_failed_axis": "state_change", "rationale_zh": "完全未依來源指定的紅藍印記分類；更重要的是首候選明標 random_rearrangement，應先由共同結構 guard 攔下，不進 reviewer 分母。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": false, "m39_exact_accept": true, "review_eligible": false}
+    }
+  ]
+}

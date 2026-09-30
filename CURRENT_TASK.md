@@ -2,7 +2,29 @@
 
 更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：M46 審核判斷介面的前瞻凍結
+## 當前唯一工作：M46 審核判斷介面的前瞻 freeze → 一次性 runner
+
+**2026-09-30 freeze 準備已完成，尚未送新模型。** 研究計畫
+`research/p4_m46_decision_interface_plan_2026-09-30.md`、
+`configs/p4_m46_decision_interface_v1.json`、
+`datasets/p4_m46_decision_interface_v1.json`、
+`p4_m46_decision_interface_scoring.py` 與兩份 0-call tests 已齊。
+新字串但已曝光類型的 developer proxy：10 個可交審封包（3 valid／7 invalid，
+中英日）＋1 個共同 guard control；10/10 selector/source/M39 exact 可交審、
+control 的原 guard violation=`nonprogress_or_unknown_mechanism`，0 scored calls。
+新舊同一 selected plan，唯一變因是單次 review prompt＋schema 的判斷介面；
+同一 9B／320 completion token cap、最多 20 review calls、0 retry。
+`uncertain` 必須 fail closed 且不計為明確辨出錯誤；`evidence_jp` 的 quote
+只是逐字來源錨點，axis-label hit 不等於引文語義充分或真人理由品質。
+離線命令
+`PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_p4_m46_decision_interface_freeze.py test_p4_m46_decision_interface_scoring.py test_p4_m46_fixed_challenge_discrimination_result.py test_p4_m46_fixed_challenge_discrimination_freeze.py test_goal_progress_delivery_m46.py test_state_changing_candidates_m51.py test_candidate_realization_m52.py test_source_neutral_scaffold_m53.py test_p4_av_neutral_operational_role_authorization.py`
+=`76 passed`。**下一步先僅提交此 freeze 並記 full SHA；再僅新增一次性 runner／fake
+transport tests、提交第二個 commit，才能唯一送 scored calls。** 未達元件絕對
+品質／成本 gate 即保留 FAIL、停止 reviewer 小修；即便通過仍須新自然生成與
+full runtime／Safari，不能接產品。產品 M46/M45/M39 不改、不旁通。無關
+`output/graduate_application_report/` 保留不碰。
+
+### 此前設計審查與 before（保存歷史）
 
 2026-09-30 的**非獨立設計審查已完成**：
 `analysis/p4_m46_reviewer_decision_interface_design_review_2026-09-30.md`。

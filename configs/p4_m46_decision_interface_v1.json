@@ -1,0 +1,98 @@
+{
+  "schema": "uruha_p4_m46_decision_interface_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "design_review": "analysis/p4_m46_reviewer_decision_interface_design_review_2026-09-30.md",
+  "plan": {
+    "path": "research/p4_m46_decision_interface_plan_2026-09-30.md",
+    "sha256": "cf73706528869a7b521b964105c041d2c2ccb5cc9787740fa9a4660d1226ac2a"
+  },
+  "single_variable": "M46_single_review_decision_interface_prompt_plus_schema_as_one_contract",
+  "arms": {
+    "A": "existing_M46_review_contract_offline_component_only",
+    "B": "prospective_evidence_anchored_M46_review_contract_offline_component_only"
+  },
+  "dataset": {
+    "path": "datasets/p4_m46_decision_interface_v1.json",
+    "sha256": "4618a479538f86e933b03e508654a30b3dcd2d1a3ca89e323e961492e96b22be",
+    "packet_order": [
+      "p4_m46_di_valid_zh_001",
+      "p4_m46_di_wrong_task_zh_001",
+      "p4_m46_di_valid_en_001",
+      "p4_m46_di_unsupported_specificity_en_001",
+      "p4_m46_di_private_inference_ja_001",
+      "p4_m46_di_valid_ja_001",
+      "p4_m46_di_non_action_en_001",
+      "p4_m46_di_actor_surface_ja_001",
+      "p4_m46_di_invented_prerequisite_zh_001",
+      "p4_m46_di_unnatural_surface_en_001",
+      "p4_m46_di_guard_control_ja_001"
+    ],
+    "gold_authority": "developer_authored_before_either_review_arm_not_independent_human_or_holdout"
+  },
+  "hash_bound_dependencies": {
+    "prospective_decision_scorer": {"path": "p4_m46_decision_interface_scoring.py", "sha256": "879d915808f75a7c7bf6402bce84a308955ed76daff4b77b378d0728e7f3dab5"},
+    "legacy_offline_scorer": {"path": "p4_m46_reviewer_necessity_scoring.py", "sha256": "705da4698a35ca22d271fa94085487a803a79d373f2fd278857377974ed027fc"},
+    "legacy_review_transport_helper": {"path": "run_p4_m46_reviewer_necessity.py", "sha256": "d04be34283b1a956356854b14a79ae44f124ca11ccc0ed239cddb019f3e54047"},
+    "product_M46_review": {"path": "uruha_goal_progress_delivery_m46.py", "sha256": "0d2355404bb7a113f3a772cd2e9442e223c17a8048711a1d161b6725396a4474"},
+    "product_M51_selection": {"path": "uruha_state_changing_candidates_m51.py", "sha256": "b760e49ddc98009ceff572a9c1202cad4dc153880b3744c055b42f9b5cb56806"},
+    "product_M52_realization": {"path": "uruha_candidate_realization_m52.py", "sha256": "c2526ccff8a3a96e45bee554c1e8ac54d5436308be57b603e495d30f7bdbec9b"},
+    "product_M53_label_guard": {"path": "uruha_source_neutral_scaffold_m53.py", "sha256": "e911faa7927ab4f8e7925bc064b7b49e542caafe4ec0b46eab72c66135a0de0a"},
+    "product_P4_AV_role_guard": {"path": "uruha_neutral_operational_role_authorization_p4.py", "sha256": "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"},
+    "product_M39_surface_guard": {"path": "uruha_semantic_persona_surface_m39.py", "sha256": "3c007b81b33790a43083ad2cbd13d6b7533310362ae8e856cedc34d566c69bb2"},
+    "product_M45_transport": {"path": "uruha_actionable_help_delivery_m45.py", "sha256": "7597c238fc37707ea6c5eba2ef28ede80160430236fb4c2822331e29d7fa6d52"},
+    "prior_exposed_fixed_failure": {"path": "analysis/p4_m46_fixed_challenge_discrimination_2026-09-30.json", "sha256": "e7b163957152a9ab05d20094e6d5061d134efa80d47c66274538932faaabedfa"}
+  },
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "hardware": "Apple M2 Pro 12-core 32GB",
+  "controlled_constants": {
+    "temperature": 0,
+    "seed": 20260829,
+    "num_ctx": 4096,
+    "num_predict": 320,
+    "stream": false,
+    "think": false,
+    "keep_alive": "30m",
+    "retry_count": 0,
+    "prewarm_once_before_scoring": true,
+    "prewarm_counted_as_case_latency": false
+  },
+  "execution": {
+    "generation_scored_calls": 0,
+    "scored_packet_count": 10,
+    "guard_control_count": 1,
+    "maximum_review_scored_calls": 20,
+    "reviewer_timeout_seconds": 30,
+    "review_plan_mechanism_hidden": true,
+    "review_payload_excludes_gold_and_category": true,
+    "same_source_selected_plan_and_guards_both_arms": true,
+    "localhost_only": true,
+    "production_database_access": false,
+    "product_runtime_changed": false,
+    "result_path": "analysis/p4_m46_decision_interface_result_2026-09-30.json"
+  },
+  "preregistered_gates": {
+    "deterministic_eligible_packet_count": 10,
+    "valid_packet_count": 3,
+    "invalid_packet_count": 7,
+    "guard_control_both_arms_blocked_count": 1,
+    "per_arm_completed_parseable_token_count": 10,
+    "per_arm_source_exact_count": 10,
+    "per_arm_valid_retained_count": 3,
+    "per_arm_invalid_false_action_count": 0,
+    "per_arm_explicit_expected_axis_fail_count": 7,
+    "per_arm_reviewer_only_max_wall_seconds": 20,
+    "retry_count": 0,
+    "B_product_eligible_from_component_only": false
+  },
+  "failure_policy": {
+    "preflight_mismatch": "STOP_BEFORE_MODEL_CALLS_AND_REFREEZE_NO_PARTIAL_SCORING",
+    "transport_parse_or_token_failure": "PRESERVE_PARTIAL_NO_RETRY_NO_RESUME",
+    "quality_or_reviewer_cost_failure": "REVIEW_REQUIRED_STOP_REVIEWER_MICRO_FIXES",
+    "all_component_gates_pass": "NEW_NATURAL_M51_PAIRED_STUDY_THEN_NEW_FULL_RUNTIME_SAFARI_REQUIRED",
+    "old_result_or_gold_may_be_changed": false,
+    "product_runtime_may_be_changed_by_this_study": false
+  },
+  "claim_boundary": "Developer-authored fixed-packet component discrimination only; not natural M51 generation, independent human or temporal holdout, full two-stage latency, M45/Web/Safari delivery, product selection, strong-LLM advantage, or human-equation proof."
+}
