@@ -2,17 +2,64 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：source-bound action transaction 的 0-call 可救性診斷
+## 當前唯一工作：P4 只讀 Function Calling 失敗時的真實圖表狀態
 
-**2026-10-01 非獨立設計審查已完成，尚無新 scored run：**
+**Before／目的：** 既有 P4-C Safari 只驗了 `get_runtime_status` 成功；
+`uruha_read_only_function_calling_p4.py` 在 provider／tool 驗證／reader 失敗時
+回 `failed_closed` 與自然日文失敗句，然而
+`uruha_product_function_calling_p4.py` 的產品 adapter 無條件把同一輪
+`logic.surface_act` 設為 `read_only_status_report`、debug grounding 設為
+`validated_read_only_tool_result`。隔離 fake wrong-tool 直接執行的 before
+確為 `status=failed_closed` 與日文失敗句，卻仍有上述兩個成功欄位；
+core 的 graph 節點本身沒有成功 tool result。Web Planner Debug 會呈現
+錯誤的 `surface_act`，問題是同輪 debug／logic 與 graph 自相矛盾，
+不是聲稱 graph 已顯示成功。隔離注入 reader exception 的 red before
+亦同：`failed_closed`、graph `result_exposed=false`，卻還是上述成功欄位；
+兩個 before 都是 0 真實模型／外部工具呼叫。
+
+**單一變因與界線：** 只讓產品當前入口的 debug／logic 狀態
+依 core 的 `tool_call_complete` 或 `failed_closed` 對齊；core tool 契約、
+模型、status payload、成功路徑、普通聊天、memory、研究資料與 action lane
+都不改。P4-C adapter／entry／tests 受歷史 freeze hash 綁定，**不可改原檔**；
+允許改本卡、目前最新 `uruha_web_ui_product_p4_az.py`、新增窄範圍
+狀態修正 overlay 與新測試；舊入口／launcher、凍結研究檔都不改。
+若真實 Web 失敗注入可安全完成，另加隔離驗收證據。
+資源上限：0 新 scored action／status 模型呼叫、
+0 外部 API／正式 DB 寫入；只用 deterministic fake failure 做此修正。
+
+**成功／失敗：** provider 拒絕及 reader exception 都必須保持日文失敗句、
+沒有成功 result claim；logic、debug 與 same-turn graph 一致地明示失敗，
+仍保留 attempted call 與失敗節點的真實計數。成功 status 輪及 ordinary
+chat 的既有輸出／trace 不變。先跑
+`PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q -p no:cacheprovider test_uruha_product_function_calling_p4.py test_uruha_read_only_function_calling_p4.py test_p4_c_product_safari_result.py`
+與受影響相鄰回歸；若能在安全隔離 Web/Safari 注入故障，再核 UI 圖像，
+否則 Safari failure-view 保留 pending，不以 fake test 冒充。至多兩次
+有根據修正；仍錯則保留 before 與 `REVIEW_REQUIRED`，不可放寬 truth gate。
+
+**前項收斂：** source-bound action transaction 的 0-call 診斷完成，仍
+`REVIEW_REQUIRED`，不接產品；本項是獨立產品圖表真實性，不用先前
+18 題當新資料或改 A/B 結果。
+
+**2026-10-01 0-call 可救性診斷完成，仍是 `REVIEW_REQUIRED`：**
+`analysis/p4_action_transaction_architecture_review_2026-10-01.md` 逐一核對
+5 個 B valid-action 原始提案、來源／禁令／actor／object／verb／stop 與 guard。
+`p4_tx_zh_01` 是反例：只有標題的建稿任務被模型當成編排既有句子，
+表面欄位修復可能讓 wrong-task 通過；其餘 4 件亦無法只靠機械渲染
+證明語義與來源正確。這是已曝光題上的非獨立作者診斷，0 model call、
+0 新分數；原 A/B valid `0/9`、invalid `9/9` 與產品不接線結論不變。
+不啟動 renderer-only 新 scored run；若未來重啟此 lane，先要獨立的
+task-alignment 方法與全新前瞻案例。現在只選與此失敗無關、已有 before
+證據且能交付使用者可見能力的 P1–P4 工作，不增加支援編號或重跑舊題。
+
+**2026-10-01 非獨立設計審查已完成，尚無新 scored run（歷史）：**
 `analysis/p4_action_transaction_architecture_review_2026-10-01.md` 以鎖定的
 18 題失敗輸出辨出：A 的 M46 reviewer 0 call；B valid 先提出 action 5/9
 但全部被 guard 擋，invalid 先 abstain 9/9 卻來源／理由契約 0/9。
-不做第三個 prompt 小修或單純放寬 guard。下一個**唯一**工作是 0-call
+不做第三個 prompt 小修或單純放寬 guard。當時選定的工作是 0-call
 診斷性 replay：對 5 個 B action 的來源、禁令、actor、object／verb／stop
 與 guard 拒絕原因做機械可救性矩陣，並用 `p4_tx_zh_01` wrong-task
 反例防止假救回；不改凍結 raw/gold/score，不將 replay 計成功率。
-若可救回至少一個合理 valid 且仍擋 wrong-task，才評估一個新前瞻
+當時若可救回至少一個合理 valid 且仍擋 wrong-task，才評估一個新前瞻
 typed-evidence→deterministic-renderer 整體介面變因；否則本 action lane
 保留 `REVIEW_REQUIRED` 並回到下一個已定案產品 gate。此設計審查非獨立
 真人評價，不能推論一般化優勢。

@@ -56,6 +56,27 @@ prompt、compiler 各自宣稱獨立因果效果。新比較須用未見的新 s
 本 action lane 保留 `REVIEW_REQUIRED`，不再用另一句 fallback 或小規則
 追分，轉向下一個已定案的必要產品 gate。
 
+### 0-call replay 結果：單純機械渲染不可放行
+
+已逐一核對上述 5 個 B action 原始欄位與 frozen guard，沒有再送模型、
+改 transaction 或計新成功率。這是暴露案例上的作者診斷：
+
+| 案例 | 原始 B 提案與失敗 | 只修表面／欄位是否足以安全交付 |
+| --- | --- | --- |
+| `p4_tx_zh_01` | 把只有標題、要建立稿子骨架，錯當成「把現有一句分段」；guard 只列 object／verb／M39 表面違規 | **不行**。字面上可機械補欄位，但會釋放 wrong-task，是真反例 |
+| `p4_tx_zh_02` | 看貼記放兩片拼圖，object 用「パズルピース」、instruction 用「2枚」；guard 列 object／M39 | 可能只是同義／表面錯配，但「格子」是否等於對應兩格仍不確定；不能自動放行 |
+| `p4_tx_zh_03` | 建議使用者自行關歌詞視窗；guard 列 object、stop、M39 | 方向可能正確，但停止點未明示；不能只刪 stop 規則 |
+| `p4_tx_ja_01` | 建議移開紙箱，但 task source id/span／目標引文不 exact、mechanism 也不符 | 不行；需要重新綁來源並判斷語義，超過機械渲染 |
+| `p4_tx_ja_02` | 建議填 42 頁，卻有空 mechanism、verb 與 instruction 及完成條件不一致 | 可能有合理想法，但要補原輸出沒提供的一致 spec，不能事後宣稱原 transaction 已完成 |
+
+因此預設的可救性判準**未達**：存在一個看似只有表面違規、實際
+wrong-task 的 `zh_01`；也沒有一個案例能只靠可機驗欄位、在不新增
+語義判斷的前提下確證安全交付。**不啟動**「只加 deterministic renderer」
+的 scored 版本，不把 B 原本 0/9 事後改成任何正分。此 action lane
+維持 `REVIEW_REQUIRED`；若未來重啟，先要可區分 task alignment
+與表面一致性的獨立方法／新案例，再作一個新前瞻變因。當下改做已定案
+且不依賴此 action lane 的必要產品工作，不能把這個負結果藏掉。
+
 ## 對整體目標的影響
 
 這批實驗有價值的是**否定一個過早的架構主張**並留下可追溯反例與成本：
