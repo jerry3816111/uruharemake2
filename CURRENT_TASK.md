@@ -2,7 +2,31 @@
 
 更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：M46 前瞻比較正式 FAIL → 兩階段架構設計審查
+## 當前唯一工作：單次 source-bound action transaction 的前瞻 freeze
+
+**非獨立架構設計審查已完成，尚未實作或送新模型。** 見
+`analysis/p4_m46_two_stage_architecture_design_review_2026-09-30.md`。在前兩次
+reviewer 契約均 FAIL、M51 兩候選於 360 token 截斷、Safari 第二次審核 timeout、
+P4-BE raw→typed packet 僅 1/6 完整通過的 before 下，選定下一個**整體架構變因**：
+用一次來源綁定、單候選、含 task／禁令／actor／前提／effect／stop 證據的 typed
+action transaction，加上只核可機驗證欄位的 deterministic guard，與現行兩階段
+M51→M52→M46 同題比較。此設計不是第三次 reviewer prompt 小修、不是直接
+移除 guard，也不把模型自附證據當語義真理。若缺真工具 receipt，不得聲稱助手
+替使用者操作；產品路徑與正式記憶維持不變。
+
+**下一必要交付：先事前凍結新 source-only 中／英／日案例與事前獨立於輸出的
+task／禁令／actor／內容／日文／abstain gold、完整 A/B 拓撲契約、同模型／硬體／
+總 token 上限、0 retry／單次呼叫、品質＋完整 `≤20s` 成本 gate、精確離線測試及
+失敗分支。** 原 M46／P4-BE 題都已曝光，只作回歸。先做設計資料／scorer／
+0-call tests 並 commit freeze，記 full SHA；再寫一次性 runner／fake transport tests
+另 commit，前檢後才可送新的 scored calls。若 new B 沒有 valid 全保留、invalid
+零錯放與 wrong-task／actor 原因辨別，或以全拒換安全、超時，即保留 FAIL；
+即使元件通過仍需全新自然生成、private runtime／Safari 多輪與真人／holdout
+分層驗收，不能先接產品。允許新研究計畫、config、dataset、離線 scorer/tests、
+本卡及後續 runner／結果；不許改已凍結結果／gold、現有產品 M51/M52/M46/M45/M39、
+正式 DB、原始 dirty checkout 或無關 `output/graduate_application_report/`。
+
+### 本次 M46 失敗結果（保存歷史，不是目前的執行命令）
 
 **2026-09-30 正式一次性結果為 `review_required_component_fail`，不得重跑、改題、改 gold 或追認 PASS。**
 模型前 freeze=`7abf74579e7793c22d3111b149037d9d7bdc5393`，
@@ -19,12 +43,9 @@ B 新版 valid=`0/3`、false action=`0/7`、明確預定錯誤軸＋primary 理�
 固定封包元件，不是自然生成、完整 20 秒 runtime、Safari、真人／正式 holdout、
 強 LLM 優勢或人類方程式。
 
-**下一個必要交付是非獨立的兩階段架構設計審查，不是第三次 reviewer prompt／gold／timeout
-小修。** 先核 `valid_en/ja` 使用者操作被當助手代操作、`wrong_task_zh` 被擋卻沒辨出
-偏題、`actor_surface_ja` 的格式與真正角色錯誤，並比較互斥方案的品質、安全、
-token／延遲代價；選定一個可歸因架構變因及其 fresh model、完整 runtime 的分層 gate。
-未審完不送 scored model calls、不改產品。正式 M55/M56 真人與 temporal holdout
-依賴仍未解除。無關 `output/graduate_application_report/` 保留不碰。
+當時的下一交付是兩階段架構設計審查，而非第三次 reviewer prompt／gold／timeout
+小修；現已完成並列於本卡頂部。正式 M55/M56 真人與 temporal holdout 依賴
+仍未解除。無關 `output/graduate_application_report/` 保留不碰。
 
 ### 前瞻 freeze 與模型前狀態（保存歷史，不是目前命令）
 
