@@ -1,10 +1,20 @@
 # 目前任務卡
 
-更新：2026-09-30。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：單次 source-bound action transaction 的前瞻 freeze
+## 當前唯一工作：單次 source-bound action transaction 的模型前 runner／evidence gate
 
-**2026-09-30 最新續接（模型前，0 新 scored calls）：** 新的 18 題 source-only
+**2026-10-01 模型前 freeze 已提交／推送：**
+`8b5e7a8972b27402342596d5fe18064795b7a452`，PR #435 仍 open 且 head
+對應此 full SHA。新契約 39/39、相鄰隔離回歸 93/93，0 新 scored calls；
+無關 `output/graduate_application_report/` 未納入提交。此 commit 只是
+前瞻設計／資料／評分契約凍結，不是模型或產品效果。下一必要交付已轉為
+一次性 runner、raw Git 證據 verifier 與 arm-masked annotation harness 的
+模型前假傳輸驗證；全數通過並另 commit／push 前，不准送 scored calls。
+只有正式 runner 前檢核 hash、模型／硬體／本機端點、固定 request/usage/
+wall、結果檔不存在後，才可執行全新單次比較。舊 M46 20-call FAIL 不重跑。
+
+**2026-09-30 freeze 前設計紀錄（已履行，不是目前命令）：** 新的 18 題 source-only
 中／英／日（各 3 action／3 abstain）與獨立 developer-authored gold、
 A=M51→M52→M46 原始兩階段觀測重建、B=單次 typed transaction 的 raw-stage
 觀測重建、共同守門與 scorer 已準備。B 的拒絕理由要求事前 source/target/
@@ -18,9 +28,9 @@ fixture**，不能當正式 Web route 證據。M45.1 原版 source filter 的獨
 均 0 模型呼叫；命令與 gate 見
 `research/p4_action_transaction_v1_plan_2026-09-30.md`。原 M46 正式 20 calls
 的 FAIL 不重跑；產品 M51/M52/M46/M45/M39、正式 DB、原始 dirty checkout 與
-無關 `output/graduate_application_report/` 不碰。**下一個精確動作：只提交
-本次 prospective freeze 並記 full SHA；之後另做一次性 runner／fake transport
-測試並提交，再核 hash／模型／硬體／輸出檔不存在，才可能放行新 scored calls。**
+無關 `output/graduate_application_report/` 不碰。當時的下一動作是先提交
+prospective freeze 並記 full SHA；此步已完成，後續以本卡頂部的 runner／evidence
+gate 為準。
 新 dataset／prompt／gold／scorer 一經 freeze 不改；若出現凍結缺陷且尚未送模型，
 須保留 amendment 與新的 full SHA。元件分數不外推到 Safari、真人或產品。
 
