@@ -2,18 +2,36 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：明確來源問句的證據送達與歸屬核對
+## 當前審查點：來源送達因果識別與持久 profile owner 污染
 
-**2026-10-01 v2 實作層 gate 已過，真產品仍 pending。** 設計先以
+**2026-10-01 v2 前瞻 Safari 已完成，strict `0/1`，此來源送達工作項
+`REVIEW_REQUIRED`。** 凍結 `凪紗／ルイボス茶` 十輪、T5 後真 PID/session
+重啟、同隔離 DB、0 回答重試。T10 日文可見答案正確說明「使用者曾轉述
+凪紗說喜歡它」，graph/source/plan/final 一致，10/10 episode 持久、
+10/10 graph utterance 對齊、10/10 等待 `≤20s`。**但 T1 source 在
+`passed_to_leftbrain` 的 channel 是舊 `direct_episode`，不是事前 strict
+要求的新 `bounded_source_lookup`；新 channel 只送達 T3。** 所以不能
+把此次答對歸因新介入，也不把可見成功事後改算 strict 通過。另查到隔離
+DB 有兩筆重啟後仍 active 的錯誤 `subject=user` favorite：朋友凪紗的偏好
+及明示非本人的作文引文。完整逐輪、hash、來源鏈與限制見
+`analysis/p4_bounded_source_v2_fresh_product_probe_result_2026-10-01.md`。
+
+**接續 gate：** 來源送達先停在設計審查，不重跑本次或先前曝光案例；
+需用全新事前凍結資料辨明 direct path 與 bounded path 的增量，保留去重、
+原始 ID、相同成本/資料條件和失敗。持久 user-profile owner／引文否定
+污染是另一個有真 before 的必要產品問題，若轉入實作須先獨立任務卡
+定案單一變因、負反例、允許檔案與驗收。以下 v2 內容保留為已完成
+實作階段的歷史，不再是待執行指令。
+
+**2026-10-01 v2 實作層 gate 已過（歷史，真產品結果見上）。** 設計先以
 `research/p4_bounded_source_delivery_v2_plan_2026-10-01.md` 凍結；additive
 overlay 做 bounded literal `turn_episode` lookup、真 ID/trace 送達、朋友
 摘要 actor 前綴核對、overflow/損壞/矛盾 fail closed。新 29 個聚焦案例含
 臨時真 Chroma、fake full-brain 與 lookup→source→plan graph；聚焦＋相鄰 `151 passed`，
-安全 launcher 0-turn check 通過，沒有真 Safari、模型品質或公平對照分數。
+安全 launcher 0-turn check 通過；這些離線證據不是 Safari、模型品質或公平對照分數。
 證據範圍和限制見 `analysis/p4_bounded_source_delivery_v2_implementation_2026-10-01.md`。
-**下一步只做新前瞻資料與判準先凍結，再跑一次隔離 Safari 十輪、T5 真重啟；**
-舊負例不得重播追分。成功要同一 T1 persisted ID 真送達、唯一 actor/value、
-自然日文與 graph/final 對齊；失敗原樣保留並標 `REVIEW_REQUIRED`。
+原先規定新前瞻資料先凍結，再做一次隔離 Safari 十輪、T5 真重啟；
+此步已執行且原樣留負面 strict，舊負例仍不得重播追分。
 
 **新前瞻版本的 before（2026-10-01）已完成，結果負面。** 修後
 `p4_past_source` 在事前凍結的新 `結衣／ほうじ茶` 十輪 Safari，T5 後真
