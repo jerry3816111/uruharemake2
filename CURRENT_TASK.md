@@ -27,6 +27,9 @@ protected／未選中普通聊天不退化。先寫新設計與 before、只做�
 契約／相鄰測試；若需新產品確認，必須另造新案例事前 freeze，
 不得重播這十一輪、改舊 gold 或放弱底線。背景 wisdom 與既有 owner
 句末否認、source intent drift 是各自獨立 gate，不在同次介入混修。
+第二個有根據修正批次的定案設計／允許檔案／strict 門檻見
+`research/p4_profile_plan_authority_repair_2026-10-02.md`；若仍 FAIL 即
+`REVIEW_REQUIRED`，不反覆加規則。
 
 ## 最新產品結果：本人 profile 准入已驗收，整體仍 FAIL
 
