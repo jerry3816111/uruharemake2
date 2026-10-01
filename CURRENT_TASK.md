@@ -29,6 +29,13 @@ T9 是真 before（准入 `0`、DB delta `0`，回覆卻承諾記住）。先另
 不要重播這十輪、不改 freeze 或舊結果。正式 DB、原始 dirty checkout、
 無關 `output/graduate_application_report/`、正式 M55/M58 邊界仍不碰。
 
+**當前執行卡已定案：** `research/p4_profile_write_ack_truth_plan_2026-10-01.md`。
+先只在 additive 產品入口讓 P4-H plan／日文 surface 受同一 P4 owner
+准入決策約束，並於結果核對實際 writer、episode、graph；不得在
+profile writer 已執行後才單改回覆而留下不同的持久 episode。聚焦＋
+相鄰通過後另建全新 source-only 前瞻資料並事前 freeze，再做隔離
+Safari／重啟驗收。此卡不改上段前項負結果或獨立來源審查點。
+
 ## 前項工作：持久 profile 的本人陳述准入
 
 **2026-10-01 另立獨立產品 gate，設計先定案。** 前項十輪 T1 朋友偏好、
