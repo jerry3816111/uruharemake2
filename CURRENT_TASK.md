@@ -2,7 +2,34 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：持久 profile 的本人陳述准入
+## 最新產品結果：本人 profile 准入已驗收，整體仍 FAIL
+
+**2026-10-01 前瞻 Safari 十輪已完成，不重跑追分。** 新的逐候選本人
+profile writer 准入，凍結資料／答案 hash `10/10`，聚焦＋相鄰
+`152 passed, 8 warnings`；真產品逐輪新增 profile 與 source-only gold
+`10/10`，DB 七筆都是預期本人值，六個朋友／引文／否定值沒有污染
+`subject=user`，十輪 episode 均持久。這只證明限定 writer case，
+不證明整體回覆、普遍理解或相對強 LLM 優勢。
+
+**產品完整性 strict FAIL。** 額度中斷導致 T1 後非預定重啟：實際三個
+session／兩次重啟，而非凍結的 T1–T5 一個 session＋T5 後重啟。
+T10 T1 episode 雖由舊 `direct_episode` 送進左腦，來源答案契約因
+`logic.intent=pragmatic_revision` 漂移而 fail closed、顯示「不知道」，
+未指出灯里，source strict `0/1`。T9 writer 拒寫第三者傳話卻在可見
+回覆稱「覚えとく」；T2/T3/T4/T6 也有角色、當輪語義或表達瑕疵。
+十輪 graph utterance 與日誌回覆 `10/10` 對齊、等待都 `≤20s`，不能
+抵消上述失敗。原始 JSONL SHA、逐輪、DB／graph 與程序偏差見
+`analysis/p4_profile_owner_fresh_product_probe_result_2026-10-01.md`。
+舊 `bounded_source_lookup` 因果 strict `0/1`、`REVIEW_REQUIRED` 不變。
+
+**下一個唯一必要產品 gate：profile 准入結果與可見「已記住」承諾一致。**
+T9 是真 before（准入 `0`、DB delta `0`，回覆卻承諾記住）。先另立
+設計卡，固定單一變因、允許檔案、正負混合契約、成功／失敗與新前瞻
+隔離驗收；來源問答 intent drift 是另一個獨立審查點，不可順手併修。
+不要重播這十輪、不改 freeze 或舊結果。正式 DB、原始 dirty checkout、
+無關 `output/graduate_application_report/`、正式 M55/M58 邊界仍不碰。
+
+## 前項工作：持久 profile 的本人陳述准入
 
 **2026-10-01 另立獨立產品 gate，設計先定案。** 前項十輪 T1 朋友偏好、
 T3 作文引文／本人否認被錯寫成跨重啟 active `subject=user` favorite；
@@ -14,7 +41,7 @@ T3 作文引文／本人否認被錯寫成跨重啟 active `subject=user` favori
 檔案、負正混合矩陣、相鄰命令、成本與 fresh Safari gate 見
 `research/p4_profile_owner_admission_plan_2026-10-01.md`。
 
-**目前順序：** 先提交此 plan/task，實作 additive 產品入口與 writer
+**當時順序（已完成並保留歷史）：** 先提交此 plan/task，實作 additive 產品入口與 writer
 admission、跑聚焦＋相鄰，另建未曝光 source-only 情境並事前凍結，
 最後隔離 Safari 真重啟核對 graph／日文／DB；不得用舊 `凪紗` 十輪
 重播追分。若結果負面按 plan 分析、保留並設審查點。正式 DB、
