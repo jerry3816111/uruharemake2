@@ -2,7 +2,43 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：P4 B2 交付前 typed-action／abstain 證據閉環
+## 當前唯一工作：現行產品跨重啟、視窗外說話者來源 before
+
+**2026-10-01 B2 有界設計審查完成，安全停止：** 兩個模型前有根據批次後，
+typed compiler 雖封住任意日文指示注入，但 known wrong operation、錯 value／
+destination、無關禁令假 abstain 仍可在 B1 綠燈；同模型自填的 frame、exact quote
+與 hash 不能證明自然語言語義角色。`C-4`／`P-6` 與舊 B1 ASCII 禁令也未有
+精確可見表達解法。故 B2 保持 `REVIEW_REQUIRED`、`deliverable=false`，不寫
+runner／sealed 題／freeze、0 新 scored model call、不接產品。具體反例、可想像
+但未放行的 requested-effect contract、再啟動條件見
+`analysis/p4_action_task_alignment_v2_bounded_design_review_2026-10-01.md`。
+這不是否定長期目標；依兩批次停止規則，轉一個已有 before、與 B2 無依賴
+的必要產品 gate。舊 B1/B2 negative、凍結資料、Git 歷史全部保留。
+
+**新項目的 before 與目的：** 2026-08 `V2.22` 舊產品 50 輪僅 5 checkpoint
+fresh generation，system／完整 transcript LLM 都 `4/5` strict，system 額外
+成本 `13,435` vs `7,405` tokens、`255.51` vs `10.99s`；T50 缺朋友來源。
+2026-09 `P4-S` 舊入口 12 輪＋重啟 typed lifecycle PASS，但有四個凍結 gate 外
+可見語義錯。不能直接推論現行 `p4_status_truth` 入口。先在當前產品、全新
+隔離資料做一次**10 輪全 fresh**、T5 後真重啟的「朋友偏好來源 T1 到 T10
+已離開最近八輪」診斷，找現行 retrieval→speaker/owner→日文 surface 的
+最早失真。精確 source、事前答案、成功/失敗與成本界線見
+`datasets/p4_current_relation_recall_probe_2026-10-01.json` 和
+`research/p4_current_relation_recall_probe_plan_2026-10-01.md`。這是開發案例
+與現行產品 before，**不是**強 LLM 比較、sealed holdout 或正式研究分數。
+
+**唯一動作／允許範圍：** 先檢查新資料完整性、提交 plan/source 並記 full
+SHA；不得看結果後改題。再用現行安全 launcher 建 launcher-owned 系統 temp
+root，Safari exact 10 turns，T5 舊 process 真退出後沿用同 DB 新 PID/session。
+不改產品、模型、prompt、凍結結果或正式 DB，不碰原始 dirty checkout、
+`output/graduate_application_report/`。逐輪記日文、graph、episode、實際
+call/token/latency；T10 strict 必須否認 user ownership、指出紗枝、值與
+T1 真 persisted source，無來源的安全否認只是 partial。若 0-turn preflight
+故障不算品質結果；如出現錯答也不重跑同題。此步完成後只按最早失真層
+選**一個**修正變因；若通過，另建全新資料做同模型／同資訊強 baseline
+比較，不能把這件已曝光診斷當 holdout。Safari 未實際觀測時標 pending。
+
+## 暫停的前項：P4 B2 typed-action／abstain 證據閉環
 
 **2026-10-01 受限 compiler 契約已落地，獨立反例使 B2 繼續 `REVIEW_REQUIRED`：**
 新增純離線 `p4_action_task_alignment_v2_compiler.py` 與聚焦測試。五種有限
