@@ -2,7 +2,64 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：現行產品跨重啟、視窗外說話者來源 before
+## 當前唯一工作：來源約束的過去陳述問答介面
+
+**2026-10-01 before 已完成，結果負面：** 凍結的現行產品 10 輪 Safari、T5 後
+真 process/session 重啟及同隔離 DB 測試沒有 retry。10 個 turn episode 持久化，
+T1「紗枝喜歡桑の葉茶」在 T10 被檢索且 direct episode 傳入左腦，但 working
+memory rank 15/18 未選；T10 明確問以前說喜歡的人是誰，M22 卻選
+`general_conversation`，M18 選 `calibrate_need`，memory anchor 只剩無 T1
+來源的 `favorite_claim_unknown`，M39 最後改成無關的制式澄清句。T10 strict FAIL；
+T9 23.7394 秒超出 20 秒成本目標，T3/T4/T6/T9 有可見語義／日文瑕疵。
+逐輪原句、來源 ID、成本和證據邊界在
+`analysis/p4_current_relation_recall_probe_result_2026-10-01.md`。這是現行產品
+**開發 before**，不是正式 holdout、比強 LLM 勝出或 10/10 自然日文。
+
+**下一個唯一核心變因：** 做產品限定、來源約束的 explicit past-statement
+answer contract。只在可辨的「以前是誰說／喜歡哪個」問句選用；從當輪已送進
+左腦的持久 episode/recent turn 中綁定可核對的 actor、值、原句、memory ID，
+排除引用／轉述誤當 user 偏好；來源缺失、多個衝突或不受支援的語法要誠實
+abstain。受限契約需同時接 route、plan、final surface，讓 M18/M39 泛用政策
+不能覆蓋來源答案，且不得繞過 safety route 或改寫正式長期記憶。這個整體
+介面是**一個**可歸因變因；不能把單加路由詞或單禁 M39 當完成。
+
+**先後、允許檔案、成功/失敗：** 先寫離線 source/request/answer 契約與負反例
+（第三人稱、引用、本人、歧義、無來源、安全）。僅新增產品 overlay、相應
+測試、必要 additive entry/launcher 接線與本卡／分析；不改凍結資料、B1/B2、
+正式 DB、原始 dirty checkout、無關報告。離線 gate 需全部契約正／負反例通過，
+舊相關 memory/route/surface 測試不得退化；若來源證據不能唯一綁定就停止
+答案權限。之後**另建未曝光的隔離新情境，事前凍結**，真實 Web/Safari、
+跨重啟、自然日文、node graph、資源帳依同一判準驗收；本案 10 輪不得重跑
+追分或冒充 holdout。最多兩個有證據修正批次，仍失敗留 `REVIEW_REQUIRED`。
+本階段完成也不等於同模型強 LLM、公平成本、人評、正式 temporal holdout。
+
+**2026-10-01 目前實作層證據（Safari 仍 pending）：** 新增 additive
+`uruha_web_ui_product_p4_past_source.py` 和隔離 launcher，舊 before 入口／
+launcher 零 diff。來源答案只接受完整匹配的中文／日文短敘述型及三語完整過去
+問句；`MemoryManager` 當輪已送出的持久 episode/recent record 原句＋摘要雙核對，
+另需第三者本人發言局部明示。引用、轉述不明、否定／衝突、多人物、假欄位、
+額外請求與合同篡改 fail closed；不能稱開放領域理解。
+`test_p4_past_statement_source_answer.py` 54 passed；聚焦＋相鄰
+`122 passed, 8 dependency warnings in 30.20s`：
+`PYTHONDONTWRITEBYTECODE=1 .venv/product_checks/bin/python -m pytest -q
+-p no:cacheprovider test_p4_past_statement_source_answer.py
+test_p4_status_truth_entry_launcher.py test_memory_provenance_trace_v1.py
+test_p4_az_previous_turn_cjk_ellipsis_authority.py
+test_p4_ay_response_form_constraint_boundary.py
+test_speaker_attribution_recall_p2.py
+test_p4_k_typed_recall_surface_propagation.py
+test_semantic_persona_surface_m39.py test_semantic_route_taxonomy_m22.py`。
+新 launcher `check --python .venv/product_checks/bin/python --port 7892`
+在 sandboxed entry probe 通過、0 model call／0 Safari；檢查 root 已自動清理。
+假記憶 full-brain 測試含真 M22、M39、source graph/final reply，但記憶輸入是
+測試注入，**不是**真 DB/Safari 成功。下一步先事前定稿並 hash 新案例，
+再做 fresh root、真重啟的 Safari 產品驗收；不可重播已曝光 before 題追分。
+後續獨立唯讀審查指出問句否定／轉述、摘要尾端不確定／第二人物、雙值／
+多人／匿名 actor、recent-turn trace 偽對應與 route 漂移等真反例；已在同一
+來源契約內改為 fail closed 並固定回歸。這些是合成開發反例，不是產品
+能力或正式樣本增加；Safari 仍 pending。
+
+## 已完成 before：現行產品跨重啟、視窗外說話者來源
 
 **2026-10-01 B2 有界設計審查完成，安全停止：** 兩個模型前有根據批次後，
 typed compiler 雖封住任意日文指示注入，但 known wrong operation、錯 value／
