@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_p3_native_judge_schema_probe_release_v1",
+  "phase": "P3-B19",
+  "status": "released_for_native_schema_probe",
+  "reviewed_commit": "d9f371807ccc9b92148879f444f002fcbd441538",
+  "artifacts": {
+    "config": {
+      "path": "configs/p3_native_judge_schema_probe_v1.json",
+      "sha256": "f3e8332fe8e385e15c67eaf4f53a4925498dd8d043754a14ae38cdd9812705cb"
+    },
+    "implementation": {
+      "path": "p3_native_judge_schema_probe.py",
+      "sha256": "b0e86fd305e8f275cfbfa55c2fdca30264e8970934f30505cae17f5e738db926"
+    },
+    "tests": {
+      "path": "test_p3_native_judge_schema_probe.py",
+      "sha256": "3c44f7869d94486f5d9a75ff20870bdaa5b3c12c2d82e6278773c562d47937ad"
+    },
+    "preflight": {
+      "path": "analysis/p3_b19_native_judge_schema_preflight_2026-09-15.json",
+      "sha256": "c708ef142942a63e4c1ac30c7c3abc30f6964adb5bef02310b95a8307d1a4579"
+    }
+  },
+  "review": {
+    "official_native_format_contract_verified": true,
+    "local_ollama_version_bound": "0.33.3",
+    "same_b18_synthetic_prompt": true,
+    "same_judge_model_decoding_and_cap": true,
+    "only_transport_schema_carrier_changes": true,
+    "no_case_or_annotation_access": true,
+    "post_transport_failure_accounted": true,
+    "final_correction_candidate": true
+  },
+  "authorization": {
+    "calls_exact": 1,
+    "automatic_retry": false,
+    "localhost_only": true,
+    "checkpoint_root": "analysis/p3_b19_native_judge_schema_checkpoint_v1",
+    "result_path": "analysis/p3_b19_native_judge_schema_result_2026-09-15.json",
+    "case03_rerun": false,
+    "quality_claim": false
+  },
+  "claim_boundary": "Authorizes one localhost native structured-output call on the frozen synthetic prompt. It is the final bounded serialization correction and does not authorize case03 rerun, developer grading, product changes, or quality claims."
+}

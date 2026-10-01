@@ -1,0 +1,51 @@
+{
+  "schema": "uruha_p3_b67_same_source_multiwindow_predictions_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b67_caption_acquisition_model_calls_or_future_access",
+  "authorization_basis": "B66 release plus standing user authorization",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b67_same_source_multiwindow_predictions_v1.json",
+      "sha256": "3520541695df36c3dc1de3adc8746c610c5902ebe712c0fac8d457722eac8440"
+    },
+    "context_reader": {
+      "path": "p3_b67_context_batch_reader.py",
+      "sha256": "c2a1491f3967ed67a6c0da89f41b656d17d1642f38ca72d1f175340954ebf635"
+    },
+    "implementation": {
+      "path": "p3_b67_same_source_multiwindow_predictions.py",
+      "sha256": "331bf01ce514332cc8dd14cb571a4d3b150070ac498956220075c2b17bb9a601"
+    },
+    "tests": {
+      "path": "test_p3_b67_same_source_multiwindow_predictions.py",
+      "sha256": "7d5a3e0dad553fb44b79a75c01591657888067f79490b702c1e1007e45a939e4"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b67_same_source_multiwindow_predictions.py -k 'not implementation_freeze'",
+    "passed": 8,
+    "failed": 0,
+    "context_only_projection_row_order_b65_reuse_eight_call_and_future_lock_checked": true
+  },
+  "model_call_count_at_freeze": 0,
+  "prediction_side_future_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "fixed_rows": [
+    {"row_id": "r0600", "context_seconds": [600.0, 780.0], "future_seconds": [781.0, 841.0]},
+    {"row_id": "r1200", "context_seconds": [1200.0, 1380.0], "future_seconds": [1381.0, 1441.0]},
+    {"row_id": "r1800", "context_seconds": [1800.0, 1980.0], "future_seconds": [1981.0, 2041.0]},
+    {"row_id": "r2400", "context_seconds": [2400.0, 2580.0], "future_seconds": [2581.0, 2641.0]}
+  ],
+  "unchanged_b65_interface": [
+    "qwen3.5:9b",
+    "BASELINE_LITERAL then SYSTEM_PRAGMATIC_STATE",
+    "same bounded joint JSON schema",
+    "temperature 0, seed 260920, num_ctx 8192, think=false",
+    "512 completion-token ceiling per condition",
+    "state text hashed then discarded",
+    "zero retry or fallback"
+  ],
+  "success_condition": "one private acquisition publishes exactly four context-only artifacts, deletes the full caption, one fresh reader returns no future, and exactly eight calls freeze eight predictions before any future access",
+  "failure_condition": "any acquisition, projection, deletion, reader, call, schema, bound, accounting, retry, or future-access violation preserves a terminal incomplete batch",
+  "claim_boundary": "B67 is same-source development replication. Even a complete batch has no correctness evidence until separately frozen B68 future scoring and is not independent holdout evidence."
+}

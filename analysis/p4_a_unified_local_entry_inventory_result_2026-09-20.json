@@ -1,0 +1,92 @@
+{
+  "schema": "uruha_p4_a_unified_local_entry_inventory_v1",
+  "status": "inventory_complete",
+  "source_bindings": {
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "d94b7d45476d738daaddbae7864b112aef750ef5c541c4a54677e2eef7a2b133"
+    },
+    "web_entry": {
+      "path": "uruha_web_ui.py",
+      "sha256": "e6ffec9094ab824e49faa97c89268fd9d2771297491307694c7c99e70a75e046"
+    },
+    "brain_entry": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "3216483ad97b70bd93fb7178843cc8de5a5efdd713397d9a76bb56eb4437dc3e"
+    }
+  },
+  "capabilities": {
+    "chat": {
+      "status": "integrated_in_product_entry",
+      "checks": {
+        "product_reuses_base_runtime": true,
+        "product_builds_base_demo": true,
+        "chat_tab_exists": true,
+        "text_submit_is_bound": true,
+        "send_button_is_bound": true,
+        "turn_reaches_real_brain": true
+      }
+    },
+    "truthful_runtime_graph": {
+      "status": "integrated_same_turn_output",
+      "checks": {
+        "observatory_renderer_imported": true,
+        "live_memory_flow_component_exists": true,
+        "flow_html_component_exists": true,
+        "turn_result_renders_observatory": true,
+        "text_turn_updates_same_component": true
+      }
+    },
+    "vrm_3d": {
+      "status": "absent_from_product_runtime",
+      "checks": {
+        "tracked_3d_asset_count": 0,
+        "tracked_3d_assets": [],
+        "vrm_renderer_present": false,
+        "product_action_policy_imported": false,
+        "physical_action_executor_present": false
+      }
+    },
+    "function_calling": {
+      "status": "research_policy_only_not_product_runtime",
+      "checks": {
+        "offline_action_policy_exists": true,
+        "offline_action_policy_sha256": "2d0b98f5de63d319876cab6d3054295a35fb99802a8665562b7c97f056365e46",
+        "product_action_policy_imported": false,
+        "runtime_tool_schema_present": false,
+        "runtime_tool_result_loop_present": false
+      }
+    }
+  },
+  "launchability": {
+    "expected_worktree_python": "/Users/jerrychang/Desktop/uruharemake2_worktrees/persona-data-provenance/Style-Bert-VITS2/venv/bin/python",
+    "expected_worktree_python_exists": false,
+    "direct_safe_worktree_launch_ready": false,
+    "runtime_or_safari_launch_performed": false
+  },
+  "decision": {
+    "already_integrated": [
+      "chat",
+      "truthful_runtime_graph"
+    ],
+    "missing_or_not_integrated": [
+      "vrm_3d",
+      "function_calling"
+    ],
+    "smallest_next_blocker": "safe_isolated_product_launcher",
+    "reason": "Chat and graph share one real turn path, but the safe worktree has no bundled runtime Python; launchability must be made reproducible before adding tool or 3D paths."
+  },
+  "access_accounting": {
+    "model_call_count": 0,
+    "production_memory_read_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0,
+    "tool_execution_count": 0,
+    "safari_operation_count": 0
+  },
+  "claim_boundary": "Source inventory only. It proves code linkage or absence, not successful launch, visible Safari behavior, tool safety, VRM rendering, or end-to-end product readiness.",
+  "validation": {
+    "valid": true,
+    "errors": []
+  }
+}

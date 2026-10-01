@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_p3_b71b_source3_b70_prediction_batch_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_source3_caption_content_model_calls_or_future_access",
+  "claim_level": "source3_prospective_development_replication_not_independent_holdout_or_formal_m56",
+  "bindings": {
+    "b71a_release": {"path": "research/p3_b71a_source3_caption_availability_release_2026-09-20.json", "sha256": "db5154242186f917c50320ef5da8d142a4caa5840fae3e58494b102341270dd5"},
+    "b70_release": {"path": "research/p3_b70_prediction_interface_reliability_release_2026-09-20.json", "sha256": "9fcf497c9ae05e978adeb6405b6336c7aabbcc3a6265cc0b5ab0525d1ef619c5"},
+    "b70_adapter": {"path": "p3_b70_prediction_interface_reliability.py", "sha256": "9bf9dbc842aab3aa81503e9a94dbbcb7b4be69f9ae8531286f5b42b48680d78f"},
+    "b65_contract": {"path": "configs/p3_b65_bounded_joint_prediction_interface_v1.json", "sha256": "35cc6472ed9b68f971b65750271f1d607ff491ba0398bdea39ae9112dc4d5851"},
+    "b65_implementation": {"path": "p3_b65_bounded_joint_prediction_interface.py", "sha256": "46380b02c97a65b2c0d3ab40a24570156a1eafe122ed6c5d4107b57a5b14c0d1"},
+    "b61_contract": {"path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json", "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"},
+    "b61_implementation": {"path": "p3_b61_native_subtitle_cutoff_extractor.py", "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"}
+  },
+  "source": {
+    "source_id": "youtube_j6Hlk9cY9LQ",
+    "video_id": "j6Hlk9cY9LQ",
+    "selected_track_type": "automatic",
+    "selected_language_code": "ja",
+    "selected_format": "json3",
+    "rows": [
+      {"row_id": "s3r0600", "context_milliseconds": [600000, 780000], "future_milliseconds": [781000, 841000]},
+      {"row_id": "s3r1200", "context_milliseconds": [1200000, 1380000], "future_milliseconds": [1381000, 1441000]},
+      {"row_id": "s3r1800", "context_milliseconds": [1800000, 1980000], "future_milliseconds": [1981000, 2041000]},
+      {"row_id": "s3r2400", "context_milliseconds": [2400000, 2580000], "future_milliseconds": [2581000, 2641000]}
+    ],
+    "minimum_context_cues_each_row": 1,
+    "prediction_side_future_access_before_complete_batch_required": 0
+  },
+  "private_acquisition": {
+    "reuse_b61_native_downloader_command_and_private_file_contract": true,
+    "native_downloader_process_invocation_count_max": 1,
+    "maximum_private_caption_bytes": 10485760,
+    "private_full_caption_may_be_temporarily_observed": true,
+    "private_full_caption_deleted_before_fresh_context_reader_and_model": true,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "raw_full_caption_or_any_future_cue_persistence_allowed": false
+  },
+  "public_context_batch": {
+    "root": "external_data/p3_b71b_public_context_batch",
+    "artifact_schema": "uruha_p3_b71b_public_context_row_v1",
+    "manifest_schema": "uruha_p3_b71b_public_context_row_manifest_v1",
+    "artifact_count_exact": 4,
+    "fresh_reader_process_count": 1,
+    "persist_only_context_cues": true,
+    "future_cues_or_ranges_persisted": false
+  },
+  "prediction_experiment": {
+    "reuse_b65_joint_prompt_model_schema_and_options": true,
+    "use_b70_parser_adapter_for_both_conditions": true,
+    "condition_order": ["BASELINE_LITERAL", "SYSTEM_PRAGMATIC_STATE"],
+    "row_order": ["s3r0600", "s3r1200", "s3r1800", "s3r2400"],
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 260920,
+    "num_ctx": 8192,
+    "think": false,
+    "completion_token_ceiling_each_condition": 512,
+    "model_call_count_exact": 8,
+    "state_text_persistence_allowed": false,
+    "raw_prompt_or_response_persistence_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b71b_source3_prediction_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "prediction_batch.json",
+    "retry_or_condition_fallback_allowed": false,
+    "intent_without_complete_result_is_terminal": true,
+    "success_next": "separately_freeze_all_four_source3_future_outcomes_and_aggregate_scoring",
+    "failure_next": "preserve_incomplete_batch_without_future_access"
+  },
+  "denied_actions": {
+    "b65_model_prompt_options_schema_or_budget_change": true,
+    "b70_condition_specific_or_semantic_gate_change": true,
+    "future_cue_publication_or_model_access": true,
+    "source_or_row_change_after_freeze": true,
+    "partial_batch_future_unlock": true,
+    "retry_or_post_result_tuning": true,
+    "training_formal_m56_or_production_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B71B can establish only whether the B70-bound equal-resource interface freezes eight predictions on the frozen third source. Correctness remains unknown until a separate future unlock; it is not independent holdout or general advantage evidence."
+}

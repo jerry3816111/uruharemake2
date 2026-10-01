@@ -1,0 +1,43 @@
+{
+  "schema": "ilhdt_m5_transition_preregistration_v1",
+  "milestone": "M5",
+  "registered_before_model_calls": true,
+  "claim_level": "synthetic_state_transition_mechanism",
+  "formal_target_claim": false,
+  "research_question": "Under identical synthetic inputs, how do static, hand-weighted, learned-linear, and constrained hybrid event-feature transitions differ in one-step HumanState estimation?",
+  "transition_contract": "next_state = transition(previous_state, current_event, retrieved_memories, person_parameters)",
+  "dataset": "datasets/m5_state_transition_synthetic_fixture_v1.json",
+  "model": "qwen3.5:9b",
+  "provider": "ollama_local_json",
+  "provider_options": {
+    "temperature": 0,
+    "seed": 250815,
+    "num_ctx": 4096,
+    "num_predict": 256
+  },
+  "retry_policy": "no_retry_no_row_fallback",
+  "ridge_alpha_grid": [0.001, 0.01, 0.1, 1.0],
+  "alpha_selection": "lowest_dev_rmse_then_smallest_alpha",
+  "primary_metric": "holdout_state_rmse",
+  "secondary_metrics": ["holdout_state_mae", "holdout_direction_accuracy", "t3_event_feature_mae"],
+  "success_contract": {
+    "expanded_example_count": 40,
+    "train_count": 24,
+    "dev_count": 8,
+    "holdout_count": 8,
+    "transition_family_count": 4,
+    "all_holdout_rows_complete": true,
+    "behavior_prediction_performed": false,
+    "language_generation_performed": false,
+    "t2_holdout_rmse_below_t0": true,
+    "t2_holdout_rmse_below_t1": true,
+    "t3_feature_mae_at_most": 0.25,
+    "t3_holdout_rmse_below_t0": true
+  },
+  "non_claims": [
+    "This fixture does not reveal any person's true private state.",
+    "Passing does not establish real-person, Uruha, behavioral-prediction, language-generation, or production validity.",
+    "The synthetic oracle is disclosed and is only a mechanism-development target.",
+    "T3 uses an LLM only as a constrained observable-event feature extractor; it cannot see next-state labels."
+  ]
+}

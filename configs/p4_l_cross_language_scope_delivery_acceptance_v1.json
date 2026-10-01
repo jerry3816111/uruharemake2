@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_p4_l_cross_language_scope_delivery_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "implementation_commit": "d6b09002742801ff5f0a53d28ae858153a71ec50",
+  "process_1": {
+    "input": "我喜歡麦茶，請記住這是我現在的飲料偏好。",
+    "expected_visible_output": "ん、その好みは覚えとく。",
+    "expected_language": "zh",
+    "expected_act": "write",
+    "expected_scope": "drink",
+    "expected_scope_source": "canonical_alias_projection",
+    "expected_current_value": "麦茶",
+    "expected_profile_likes": [
+      "麦茶"
+    ],
+    "expected_profile_dislikes": [],
+    "expected_profile_write_count": 1,
+    "expected_p4_l_status": "canonical_scope_projected",
+    "expected_alias_id": "drink:zh-Hant:v1",
+    "expected_source_scope_alias_sha256": "7a4d3d287250d8c18c204cca7c8f8c73e074f96555a2d3936402258636fece4d",
+    "expected_canonical_predicate": "current_preference_scope:218ae6b44966c8a9"
+  },
+  "restart": {
+    "old_process_must_exit": true,
+    "new_pid_required": true,
+    "new_product_session_id_required": true,
+    "same_runtime_root_required": true,
+    "same_memory_db_required": true,
+    "process_2_start_must_observe_process_1_active_typed_record": true,
+    "post_turn_memory_injection_allowed": false
+  },
+  "process_2": {
+    "input": "What is my current drink preference?",
+    "input_must_not_contain_answer": true,
+    "expected_visible_output": "今の飲み物の好みは麦茶。前のじゃなくて、今の方ね。",
+    "expected_query_language": "en",
+    "expected_scope": "drink",
+    "expected_localized_value_jp": "麦茶",
+    "expected_contract_status": "resolved_unique_active_typed_current_preference",
+    "expected_answer_use_authorized": true,
+    "expected_p4_j_graph_label": "typed_current_preference_recall_p4",
+    "expected_p4_j_graph_stage": "select",
+    "profile_write_count": 0,
+    "historical_answer_use_count": 0,
+    "explicit_negative_answer_use_count": 0,
+    "episode_answer_use_count": 0
+  },
+  "per_turn_requirements": {
+    "visible_output_language": "Japanese",
+    "durable_episode_write_count": 1,
+    "product_planner_model_call_count": 0,
+    "fallback_count": 0,
+    "latency_target_seconds": 20.0
+  },
+  "persistent_state_requirements": {
+    "profile_record_count_before_recall": 1,
+    "profile_record_count_after_recall": 1,
+    "episode_record_count_before_recall": 1,
+    "episode_record_count_after_recall": 2,
+    "active_current_count_before_recall": 1,
+    "active_current_count_after_recall": 1,
+    "historical_current_count_after_recall": 0,
+    "current_memory_id_unchanged": true,
+    "typed_record_content_hash_unchanged": true,
+    "canonical_scope_persisted_after_restart": true,
+    "alias_provenance_persisted_after_restart": true
+  },
+  "runtime_requirements": {
+    "fresh_isolated_root": true,
+    "listener": "127.0.0.1:7864",
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "real_product_turns": 2,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "closed_user_tab_count": 0
+  },
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "input_value_scope_expected_surface_or_gate_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "p4_i_through_p4_k_real_case_rerun_allowed": false,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "claim_boundary": "A pass proves one prospectively frozen two-process product case in which an already-extractable Traditional Chinese explicit drink scope is projected to canonical drink, persists with alias provenance, and is recalled by an English exact-scope query into the exact Japanese surface and truthful graph nodes. It does not prove novel value semantics, open-domain ontology alignment, arbitrary recall, long-dialogue reliability, felt understanding, LLM superiority or a human equation."
+}

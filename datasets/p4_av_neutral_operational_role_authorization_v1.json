@@ -1,0 +1,188 @@
+{
+  "schema": "uruha_p4_av_neutral_operational_role_authorization_dataset_v1",
+  "version": "1.0.0",
+  "frozen_before_implementation": true,
+  "claim_boundary": "Bounded Japanese workflow-role grammar for quoted scaffold labels; not topic truth, priority, emotion, diagnosis, preference, feasibility, or open-domain semantic authorization.",
+  "cases": [
+    {
+      "id": "dev_p4_au_role_family_zh",
+      "split": "exposed_development",
+      "source_language": "zh",
+      "source": "腦中很多念頭輪流冒出來，我想先整理一小步。",
+      "labels": ["今扱う項目", "保留項目"],
+      "instruction_jp": "考えを「今扱う項目」と「保留項目」に分けてみよ。二つに分けたらそこで止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_zh_now_later_items",
+      "split": "fresh_positive",
+      "source_language": "zh",
+      "source": "桌上好多文件混在一起，想先從最小一步開始。",
+      "labels": ["今ここで扱う項目", "あとで扱う項目"],
+      "instruction_jp": "書類を「今ここで扱う項目」と「あとで扱う項目」に分けてみよ。二つの欄ができたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_zh_next_hold_field",
+      "split": "fresh_positive",
+      "source_language": "zh",
+      "source": "待辦很多，我只想先整理出下一步。",
+      "labels": ["次に確認する項目", "保留欄"],
+      "instruction_jp": "タスクを「次に確認する項目」と「保留欄」に一つずつ置いてみよ。置いたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_en_now_later_content",
+      "split": "fresh_positive",
+      "source_language": "en",
+      "source": "I have several notes open and need one small organizing step.",
+      "labels": ["今整理する内容", "あとで確認する内容"],
+      "instruction_jp": "メモを「今整理する内容」と「あとで確認する内容」に分けてみよ。二つに分けたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_en_now_hold_things",
+      "split": "fresh_positive",
+      "source_language": "en",
+      "source": "My tasks are mixed together; give me one reversible first step.",
+      "labels": ["今扱うこと", "あとで扱うこと"],
+      "instruction_jp": "タスクを「今扱うこと」と「あとで扱うこと」に分けてみよ。二つの欄ができたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_ja_now_later_content",
+      "split": "fresh_positive",
+      "source_language": "ja",
+      "source": "メモが散らばっていて、まず一つだけ整理したい。",
+      "labels": ["今ここで整理する内容", "あとで扱う内容"],
+      "instruction_jp": "メモを「今ここで整理する内容」と「あとで扱う内容」に分けてみよ。二つに分けたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "fresh_ja_next_hold_items",
+      "split": "fresh_positive",
+      "source_language": "ja",
+      "source": "考えることが多いから、次に見るものだけ決めたい。",
+      "labels": ["次に確認する項目", "保留項目"],
+      "instruction_jp": "考えを「次に確認する項目」と「保留項目」に分けてみよ。一つずつ置いたら止めよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "authorized_operational_roles"
+    },
+    {
+      "id": "control_invented_topics",
+      "split": "fresh_control",
+      "control_family": "invented_topic",
+      "source_language": "zh",
+      "source": "腦中有很多想法。",
+      "labels": ["仕事", "人間関係"],
+      "instruction_jp": "考えを「仕事」と「人間関係」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_hidden_priority",
+      "split": "fresh_control",
+      "control_family": "hidden_priority",
+      "source_language": "en",
+      "source": "There are many tasks in my head.",
+      "labels": ["重要", "重要でない"],
+      "instruction_jp": "考えを「重要」と「重要でない」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_hidden_emotion",
+      "split": "fresh_control",
+      "control_family": "hidden_emotion",
+      "source_language": "ja",
+      "source": "考えがいくつも浮かんでいる。",
+      "labels": ["不安", "期待"],
+      "instruction_jp": "考えを「不安」と「期待」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_diagnosis",
+      "split": "fresh_control",
+      "control_family": "diagnosis",
+      "source_language": "zh",
+      "source": "今晚腦袋停不下來。",
+      "labels": ["過動", "不眠"],
+      "instruction_jp": "考えを「過動」と「不眠」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_hidden_preference",
+      "split": "fresh_control",
+      "control_family": "hidden_preference",
+      "source_language": "en",
+      "source": "I keep thinking about several options.",
+      "labels": ["本当にやりたいこと", "やりたくないこと"],
+      "instruction_jp": "選択肢を「本当にやりたいこと」と「やりたくないこと」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_hidden_feasibility",
+      "split": "fresh_control",
+      "control_family": "hidden_feasibility",
+      "source_language": "ja",
+      "source": "やることがいくつもある。",
+      "labels": ["今できること", "できないこと"],
+      "instruction_jp": "タスクを「今できること」と「できないこと」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_arbitrary_content",
+      "split": "fresh_control",
+      "control_family": "invented_attribute",
+      "source_language": "zh",
+      "source": "桌上有很多紙。",
+      "labels": ["赤", "青"],
+      "instruction_jp": "紙を「赤」と「青」に分けてみよ。",
+      "expected_predecessor_status": "blocked",
+      "expected_status": "blocked"
+    },
+    {
+      "id": "control_exact_source_labels",
+      "split": "predecessor_control",
+      "control_family": "exact_source",
+      "source_language": "ja",
+      "source": "メモは「学校」と「買い物」の二種類だ。",
+      "labels": ["学校", "買い物"],
+      "instruction_jp": "メモを「学校」と「買い物」に分けてみよ。",
+      "expected_predecessor_status": "authorized",
+      "expected_status": "preserve_predecessor"
+    },
+    {
+      "id": "control_existing_neutral_headings",
+      "split": "predecessor_control",
+      "control_family": "existing_neutral_role",
+      "source_language": "en",
+      "source": "I need a tiny outline for this draft.",
+      "labels": ["導入", "結論"],
+      "instruction_jp": "「導入」と「結論」の欄だけ作ってみよ。",
+      "expected_predecessor_status": "authorized",
+      "expected_status": "preserve_predecessor"
+    },
+    {
+      "id": "control_unquoted_grouping",
+      "split": "predecessor_control",
+      "control_family": "unquoted",
+      "source_language": "zh",
+      "source": "桌上有紅紙和藍紙。",
+      "labels": [],
+      "instruction_jp": "赤い紙は左、青い紙は右に置いてみよ。",
+      "expected_predecessor_status": "no_named_labels",
+      "expected_status": "preserve_predecessor"
+    }
+  ]
+}

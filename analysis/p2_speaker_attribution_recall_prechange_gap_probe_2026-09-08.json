@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_p2_speaker_attribution_recall_prechange_gap_probe",
+  "date": "2026-09-08",
+  "evidence_source": "analysis/p2_explicit_space_authority_local_run1_2026-09-08.html",
+  "scenario": {
+    "prior_user_input": "謝謝。不過現在請幫我想一個做法。",
+    "current_query": "「ありがとう」は誰の言葉だった？",
+    "expected_bounded_answer": "user_was_the_only_retrieved_speaker_of_the_gratitude_act",
+    "actual_reply": "ん、そこもう少しだけ聞かせて。"
+  },
+  "prechange_route": {
+    "selected_type": "general_conversation",
+    "confidence": 0.4,
+    "performed_route": "full_planner",
+    "compact_status": "error_fallback",
+    "compact_error_type": "ValueError",
+    "selected_plan_intent": "chat",
+    "selected_plan_core": "軽く返事する"
+  },
+  "retrieved_support": {
+    "working_memory_selected": true,
+    "source": "episode",
+    "speaker_role_present_in_episode_schema": true,
+    "user_gratitude_surface": "謝謝",
+    "query_gratitude_surface": "ありがとう",
+    "crosslingual_equivalence_not_bound_to_speaker": true,
+    "trace_id": "stored:episode:cbd705f9-8c7a-4e25-bd17-b3cd7c3b564e"
+  },
+  "root_cause": [
+    "quoted_speaker_attribution_query_has_no_typed_task_shape",
+    "retrieved_episode_preserves_roles_but_planner_receives_no_speaker_qualified_evidence_contract",
+    "crosslingual_gratitude_equivalence_is_not_connected_to_retrieved_role_provenance",
+    "generic_surface_repair_cannot_recover_the_missing_source_answer"
+  ],
+  "not_root_cause": [
+    "memory_episode_absent",
+    "speaker_role_erased_from_stored_episode",
+    "stale_cross_session_feedback_after_explicit_space_fix"
+  ],
+  "claim_boundary": "developer-authored product control; not holdout, human rating, or open-domain source attribution evidence"
+}

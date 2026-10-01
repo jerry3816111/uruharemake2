@@ -1,0 +1,671 @@
+{
+  "schema": "uruha_p3_c1_controlled_context_flip_dataset_v1",
+  "version": "1.0.0",
+  "provenance": {
+    "kind": "developer_authored_controlled_proxy",
+    "created_at": "2026-09-20",
+    "human_validated": false,
+    "independent_holdout": false,
+    "real_person_observation": false,
+    "private_motive_ground_truth": false
+  },
+  "target_labels": [
+    "LITERAL_READING",
+    "PRAGMATIC_READING",
+    "UNCERTAIN"
+  ],
+  "pairs": [
+    {
+      "pair_id": "train_zh_01",
+      "surface_family_id": "sf_zh_bu_yong_le",
+      "split": "train",
+      "language": "zh",
+      "phenomenon": "implicature",
+      "surface_utterance": "不用了，真的。",
+      "interpretation_options": {
+        "LITERAL_READING": "The offered practical action is genuinely unnecessary because the task is already complete.",
+        "PRAGMATIC_READING": "The speaker is politely refusing an offer while softening the social rejection.",
+        "UNCERTAIN": "The available text does not support choosing between the two readings."
+      },
+      "modality": {
+        "text_available": true,
+        "acoustic_summary_status": "unavailable",
+        "acoustic_features": null
+      },
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "檔案已經由系統顯示上傳完成。對方問：『還要我再傳一次嗎？』說話者回答：『不用了，真的。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "系統顯示檔案已上傳完成"},
+            {"id": "a2", "text": "對方詢問是否重複傳送"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.05},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "對方第三次熱情提議要送昂貴禮物，說話者先道謝，再回答：『不用了，真的。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "對方重複提出昂貴禮物"},
+            {"id": "a2", "text": "說話者先道謝再拒絕"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.1, "PRAGMATIC_READING": 0.8, "UNCERTAIN": 0.1},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "train_zh_02",
+      "surface_family_id": "sf_zh_jiu_na_ge",
+      "split": "train",
+      "language": "zh",
+      "phenomenon": "reference",
+      "surface_utterance": "就那個。",
+      "interpretation_options": {
+        "LITERAL_READING": "The phrase refers to the only object explicitly indicated in the shared scene.",
+        "PRAGMATIC_READING": "The phrase relies on a recently established shared preference rather than the currently pointed-at object.",
+        "UNCERTAIN": "The available text does not identify which reference source should dominate."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "桌上只有一個藍色杯子。對方指著杯子問：『你要哪一個？』說話者回答：『就那個。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "桌上只有一個候選物"},
+            {"id": "a2", "text": "對方正指著該物件"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.92, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.05},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "桌上有紅、藍兩個杯子；對方指著藍杯，但兩人剛約定『那個』以後都代表說話者常用的紅杯。對方問：『你要哪一個？』說話者回答：『就那個。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "兩人剛建立『那個』代表紅杯的共同約定"},
+            {"id": "a2", "text": "當前指向藍杯，兩個線索衝突"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.2, "PRAGMATIC_READING": 0.65, "UNCERTAIN": 0.15},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "train_en_01",
+      "surface_family_id": "sf_en_think_about_it",
+      "split": "train",
+      "language": "en",
+      "phenomenon": "implicature",
+      "surface_utterance": "I'll think about it.",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker plans to compare the concrete options before deciding.",
+        "PRAGMATIC_READING": "The speaker is using delay language as a softened refusal.",
+        "UNCERTAIN": "The text supports both genuine deliberation and polite refusal."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "Two job offers arrived that morning with different salaries and locations. A friend asks which one the speaker will accept. The speaker says, \"I'll think about it.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "two concrete offers require comparison"},
+            {"id": "a2", "text": "the decision was first presented that morning"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.85, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.1},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "A salesperson has ignored two earlier refusals and asks for an immediate purchase again. The speaker thanks them, does not ask for any details, and says, \"I'll think about it.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "two earlier refusals were ignored"},
+            {"id": "a2", "text": "no information needed for deliberation is requested"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.08, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.1},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "train_en_02",
+      "surface_family_id": "sf_en_im_fine",
+      "split": "train",
+      "language": "en",
+      "phenomenon": "presupposition",
+      "surface_utterance": "I'm fine.",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker reports that no help or comfort is currently needed.",
+        "PRAGMATIC_READING": "The speaker avoids directly requesting comfort while leaving distress observable in the discourse.",
+        "UNCERTAIN": "The statement cannot be resolved beyond a possible mismatch."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "The speaker says they slept eight hours, finished their work, and are heading out for a run. A friend asks whether anything is wrong. The speaker replies, \"I'm fine.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "speaker reports normal sleep and completed work"},
+            {"id": "a2", "text": "speaker is proceeding with a planned activity"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.82, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.13},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "The speaker has just said they did not sleep, cannot stop thinking, and have been unable to start anything all morning. When a close friend asks if they want to talk, the speaker replies, \"I'm fine.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "speaker explicitly reports no sleep and racing thoughts"},
+            {"id": "a2", "text": "the reply follows an offer to talk from a close friend"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.05, "PRAGMATIC_READING": 0.85, "UNCERTAIN": 0.1},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "train_ja_01",
+      "surface_family_id": "sf_ja_daijoubu",
+      "split": "train",
+      "language": "ja",
+      "phenomenon": "implicature",
+      "surface_utterance": "大丈夫。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker is able to proceed and declines unnecessary assistance.",
+        "PRAGMATIC_READING": "The speaker is minimizing difficulty and may be leaving room for low-pressure support.",
+        "UNCERTAIN": "The text does not establish whether help is truly unnecessary."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "本人は作業が完了した画面を見せ、『もう提出した』と説明した。相手が『手伝おうか』と聞くと、『大丈夫。』と答えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "提出完了が画面で確認されている"},
+            {"id": "a2", "text": "本人が完了を明言している"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.07},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "本人は『朝から何も手につかない』『一人だとしんどい』と書いた直後だった。親しい相手が『少し話す？』と聞くと、『大丈夫。』と答えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "直前に何も手につかないと述べている"},
+            {"id": "a2", "text": "一人だとしんどいと明示している"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.05, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.13},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "train_ja_02",
+      "surface_family_id": "sf_ja_sasuga",
+      "split": "train",
+      "language": "ja",
+      "phenomenon": "presupposition",
+      "surface_utterance": "さすがだね。",
+      "interpretation_options": {
+        "LITERAL_READING": "The utterance is sincere praise for a demonstrated achievement.",
+        "PRAGMATIC_READING": "The utterance is ironic criticism made relevant by an avoidable failure.",
+        "UNCERTAIN": "The text does not determine praise versus irony."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "相手は難しい課題を期限より早く終え、正答も確認された。結果を見た話者は『さすがだね。』と言った。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "難しい課題を早く正しく完了した"},
+            {"id": "a2", "text": "評価対象が明確な達成である"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.93, "PRAGMATIC_READING": 0.02, "UNCERTAIN": 0.05},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "相手は『絶対に忘れない』と言った直後に、必要なファイルを三度目も忘れた。確認した話者は『さすがだね。』と言った。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "忘れないという宣言と三度目の失敗が対立する"},
+            {"id": "a2", "text": "達成ではなく反復失敗の直後である"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.03, "PRAGMATIC_READING": 0.9, "UNCERTAIN": 0.07},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_zh_01",
+      "surface_family_id": "sf_zh_ni_mang_ni_de",
+      "split": "dev",
+      "language": "zh",
+      "phenomenon": "implicature",
+      "surface_utterance": "你忙你的。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker genuinely releases the other person to continue an urgent task.",
+        "PRAGMATIC_READING": "The speaker signals disappointment and wants the other person to notice the relational cost.",
+        "UNCERTAIN": "The available context supports neither reading strongly enough."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "對方正在處理會影響全組截止時間的緊急故障。說話者已找到其他人陪同，便說：『你忙你的。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "存在明確緊急故障"},
+            {"id": "a2", "text": "說話者已安排其他陪同"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.85, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.1},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "兩人早已約好今晚要談重要的事；對方臨時改去做非緊急的個人工作，也沒有提出新時間。說話者回答：『你忙你的。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "既有重要約定被非緊急工作取代"},
+            {"id": "a2", "text": "對方沒有提出補救時間"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.12, "PRAGMATIC_READING": 0.75, "UNCERTAIN": 0.13},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_zh_02",
+      "surface_family_id": "sf_zh_hai_ke_yi",
+      "split": "dev",
+      "language": "zh",
+      "phenomenon": "presupposition",
+      "surface_utterance": "還可以。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker gives a genuinely moderate-positive evaluation.",
+        "PRAGMATIC_READING": "The speaker avoids a harsher negative evaluation out of politeness.",
+        "UNCERTAIN": "The degree of approval remains unresolved."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "試作品達到六項指標中的四項，另外兩項接近門檻。評審被要求用『差、還可以、很好』三選一，回答：『還可以。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "量化結果位於中間區間"},
+            {"id": "a2", "text": "評價選項本身包含中間等級"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.07},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "朋友第一次做菜並期待稱讚；菜明顯燒焦，說話者沒有吃第二口。朋友問味道，說話者回答：『還可以。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "可見的菜已燒焦"},
+            {"id": "a2", "text": "說話者沒有再吃且朋友期待鼓勵"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.08, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.1},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_en_01",
+      "surface_family_id": "sf_en_interesting",
+      "split": "dev",
+      "language": "en",
+      "phenomenon": "implicature",
+      "surface_utterance": "That's interesting.",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker is engaged and invites the topic to continue.",
+        "PRAGMATIC_READING": "The speaker gives a polite acknowledgement while attempting to disengage.",
+        "UNCERTAIN": "Acknowledgement and engagement cannot be distinguished."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "The speaker asks two specific follow-up questions about the result and requests the source link. After receiving the first explanation, the speaker says, \"That's interesting.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "speaker asks specific follow-up questions"},
+            {"id": "a2", "text": "speaker requests the source"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.92, "PRAGMATIC_READING": 0.02, "UNCERTAIN": 0.06},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "The speaker has twice said they need to leave. The other person continues an unrelated monologue. The speaker does not ask a question and says, \"That's interesting.\" Then they repeat that they must go.",
+          "evidence_anchors": [
+            {"id": "a1", "text": "speaker has twice stated a need to leave"},
+            {"id": "a2", "text": "acknowledgement is followed by another exit statement"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.03, "PRAGMATIC_READING": 0.92, "UNCERTAIN": 0.05},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_en_02",
+      "surface_family_id": "sf_en_sure_whatever",
+      "split": "dev",
+      "language": "en",
+      "phenomenon": "implicature",
+      "surface_utterance": "Sure, whatever.",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker has no meaningful preference and accepts either option.",
+        "PRAGMATIC_READING": "The speaker withdraws from the decision after feeling unheard.",
+        "UNCERTAIN": "The phrase could be casual flexibility or relational withdrawal."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "Both restaurants have the same price, distance, and menu items the speaker likes. The speaker says either is fine. Asked to choose, they answer, \"Sure, whatever.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "the options are equivalent on stated preferences"},
+            {"id": "a2", "text": "speaker already says either option is fine"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.8, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.15},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "The speaker explains twice that one restaurant is unsafe for their allergy. The other person ignores this and chooses it anyway. The speaker answers, \"Sure, whatever.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "a safety constraint was stated twice"},
+            {"id": "a2", "text": "the constraint was ignored"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.03, "PRAGMATIC_READING": 0.9, "UNCERTAIN": 0.07},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_ja_01",
+      "surface_family_id": "sf_ja_betsuni_ii",
+      "split": "dev",
+      "language": "ja",
+      "phenomenon": "implicature",
+      "surface_utterance": "別にいいけど。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker has no relevant objection and accepts the proposal.",
+        "PRAGMATIC_READING": "The speaker gives reluctant surface agreement while signaling an unresolved concern.",
+        "UNCERTAIN": "Acceptance and reluctance remain comparably plausible."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "候補日はどちらも予定が空いており、話者は直前に『どっちでも同じ』と説明した。相手が火曜日を提案すると、『別にいいけど。』と答えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "両日とも予定が空いている"},
+            {"id": "a2", "text": "どちらでも同じと明示している"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.82, "PRAGMATIC_READING": 0.05, "UNCERTAIN": 0.13},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "話者は火曜日だけ病院の予約があると二度伝えた。相手が理由に触れず火曜日を決めようとすると、『別にいいけど。』と答えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "火曜日の病院予約を二度伝えている"},
+            {"id": "a2", "text": "相手がその制約を無視している"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.05, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.13},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "dev_ja_02",
+      "surface_family_id": "sf_ja_mata_kondo",
+      "split": "dev",
+      "language": "ja",
+      "phenomenon": "deixis",
+      "surface_utterance": "また今度ね。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker proposes a real, identifiable later opportunity.",
+        "PRAGMATIC_READING": "The speaker uses an indefinite future as a polite rejection without intent to reschedule.",
+        "UNCERTAIN": "A future meeting is possible but not supported enough to choose."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "今週は出張だが、話者は来週水曜の空きを確認し、カレンダーに仮予定を入れた。今日の誘いを断って『また今度ね。』と言った。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "来週水曜の空きを確認している"},
+            {"id": "a2", "text": "カレンダーに仮予定がある"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.07},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "相手は三回誘っているが、話者は毎回日時を提案せず、今回も予定を確認しなかった。誘いに『また今度ね。』とだけ答えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "三回とも代替日時がない"},
+            {"id": "a2", "text": "今回も予定確認をしていない"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.08, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.1},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_zh_01",
+      "surface_family_id": "sf_zh_zai_kan_kan",
+      "split": "holdout",
+      "language": "zh",
+      "phenomenon": "deixis",
+      "surface_utterance": "我再看看。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker will inspect newly available information before deciding.",
+        "PRAGMATIC_READING": "The speaker delays without seeking information in order to avoid a direct refusal.",
+        "UNCERTAIN": "Future review and softened refusal remain unresolved."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "商品規格表明天才會公布，且說話者列出要比較的三項數據。被問是否購買時，回答：『我再看看。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "新的規格資料尚未公布"},
+            {"id": "a2", "text": "說話者列出具體比較項目"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.07},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "完整規格與價格已看完，說話者剛說產品不符合需求，也沒有提出待確認項目。銷售再次追問時，回答：『我再看看。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "資訊已完整且產品不符合需求"},
+            {"id": "a2", "text": "沒有任何待確認項目"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.04, "PRAGMATIC_READING": 0.9, "UNCERTAIN": 0.06},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_zh_02",
+      "surface_family_id": "sf_zh_zhen_li_hai",
+      "split": "holdout",
+      "language": "zh",
+      "phenomenon": "presupposition",
+      "surface_utterance": "你真的很厲害。",
+      "interpretation_options": {
+        "LITERAL_READING": "The utterance sincerely praises a verified accomplishment.",
+        "PRAGMATIC_READING": "The utterance is ironic criticism made relevant by a repeated avoidable failure.",
+        "UNCERTAIN": "Praise and irony cannot be distinguished from text alone."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "對方第一次參賽就完成所有題目，公開成績是全場最高分。說話者核對結果後說：『你真的很厲害。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "公開成績為最高分"},
+            {"id": "a2", "text": "完成所有題目"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.95, "PRAGMATIC_READING": 0.01, "UNCERTAIN": 0.04},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "對方保證不會再刪錯檔案，卻第四次刪掉同一份必要資料。說話者看到錯誤紀錄後說：『你真的很厲害。』",
+          "evidence_anchors": [
+            {"id": "a1", "text": "同一錯誤已發生第四次"},
+            {"id": "a2", "text": "先前有不再犯錯的明確保證"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.02, "PRAGMATIC_READING": 0.94, "UNCERTAIN": 0.04},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_en_01",
+      "surface_family_id": "sf_en_no_worries",
+      "split": "holdout",
+      "language": "en",
+      "phenomenon": "implicature",
+      "surface_utterance": "No worries.",
+      "interpretation_options": {
+        "LITERAL_READING": "The mistake caused no meaningful problem and the speaker accepts the apology.",
+        "PRAGMATIC_READING": "The speaker suppresses a complaint despite a visible cost to preserve the relationship.",
+        "UNCERTAIN": "Acceptance and suppressed concern are both plausible."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "A friend sends the same link twice. The duplicate costs nothing and is deleted immediately. The friend apologizes, and the speaker says, \"No worries.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "the duplicate has no cost"},
+            {"id": "a2", "text": "the issue is immediately resolved"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.9, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.07},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "A close friend misses an agreed deadline for the third time, causing the speaker to redo hours of work. The speaker states the lost time, receives an apology, and says, \"No worries.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "the repeated miss caused hours of rework"},
+            {"id": "a2", "text": "speaker explicitly states the cost before minimizing it"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.05, "PRAGMATIC_READING": 0.82, "UNCERTAIN": 0.13},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_en_02",
+      "surface_family_id": "sf_en_maybe_later",
+      "split": "holdout",
+      "language": "en",
+      "phenomenon": "deixis",
+      "surface_utterance": "Maybe later.",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker identifies a real later opportunity after the current constraint ends.",
+        "PRAGMATIC_READING": "The speaker uses an indefinite future to soften refusal without a plan to revisit.",
+        "UNCERTAIN": "The temporal phrase remains genuinely ambiguous."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "The speaker is in a meeting that ends at 3 p.m., checks the calendar, and points to an open slot at 4. Asked to play now, the speaker says, \"Maybe later.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "the current constraint has a known end time"},
+            {"id": "a2", "text": "an open later slot is identified"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.88, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.09},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "The invitation has been repeated on four days. Each time the speaker gives no alternative date and changes the topic. Asked again, the speaker says, \"Maybe later.\"",
+          "evidence_anchors": [
+            {"id": "a1", "text": "four repeated deferrals have no alternative time"},
+            {"id": "a2", "text": "the speaker changes the topic after deferring"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.05, "PRAGMATIC_READING": 0.86, "UNCERTAIN": 0.09},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_ja_01",
+      "surface_family_id": "sf_ja_sounanda",
+      "split": "holdout",
+      "language": "ja",
+      "phenomenon": "implicature",
+      "surface_utterance": "そうなんだ。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker acknowledges new information and remains engaged in the topic.",
+        "PRAGMATIC_READING": "The speaker gives a minimal acknowledgement to close or leave the topic.",
+        "UNCERTAIN": "Acknowledgement does not reveal whether engagement continues."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "話者は説明の途中で具体的な質問を二つし、参考資料も頼んだ。新しい事実を聞いて『そうなんだ。』と答え、その話題の次の質問をした。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "具体的な質問と資料依頼がある"},
+            {"id": "a2", "text": "同じ話題の次の質問をしている"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.94, "PRAGMATIC_READING": 0.01, "UNCERTAIN": 0.05},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "話者は二度『その話はここまでにしたい』と伝えたが、相手は同じ説明を続けた。話者は『そうなんだ。』とだけ答え、別の予定の話に変えた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "話題を終えたいと二度明示している"},
+            {"id": "a2", "text": "最小応答の後に別の話題へ移る"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.02, "PRAGMATIC_READING": 0.93, "UNCERTAIN": 0.05},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    },
+    {
+      "pair_id": "holdout_ja_02",
+      "surface_family_id": "sf_ja_suki_ni",
+      "split": "holdout",
+      "language": "ja",
+      "phenomenon": "implicature",
+      "surface_utterance": "好きにすれば。",
+      "interpretation_options": {
+        "LITERAL_READING": "The speaker grants genuine autonomy because the choice has no shared consequence.",
+        "PRAGMATIC_READING": "The speaker withdraws from a shared decision after their stated concern was ignored.",
+        "UNCERTAIN": "Permission and frustrated withdrawal cannot be separated."
+      },
+      "modality": {"text_available": true, "acoustic_summary_status": "unavailable", "acoustic_features": null},
+      "variants": [
+        {
+          "variant_id": "literal_control",
+          "context_text": "選択は相手だけが使う壁紙で、費用も共同予定への影響もない。話者は『自分で決めるのが一番』と説明して『好きにすれば。』と言った。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "選択に共同の費用や予定への影響がない"},
+            {"id": "a2", "text": "本人が決めるのがよいと先に説明している"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.86, "PRAGMATIC_READING": 0.03, "UNCERTAIN": 0.11},
+          "expected_top1": "LITERAL_READING"
+        },
+        {
+          "variant_id": "pragmatic_flip",
+          "context_text": "共同予算を使う選択で、話者は上限を三度説明した。相手が上限を無視して決めると言うと、話者は『好きにすれば。』と答えて相談から外れた。",
+          "evidence_anchors": [
+            {"id": "a1", "text": "共同予算の上限を三度説明している"},
+            {"id": "a2", "text": "上限を無視された後に相談から外れる"}
+          ],
+          "expected_distribution": {"LITERAL_READING": 0.03, "PRAGMATIC_READING": 0.9, "UNCERTAIN": 0.07},
+          "expected_top1": "PRAGMATIC_READING"
+        }
+      ]
+    }
+  ]
+}

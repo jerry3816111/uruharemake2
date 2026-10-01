@@ -73,6 +73,16 @@ class TestRouteLogic(unittest.TestCase):
         self.assertEqual(route["route"], "low_road")
         self.assertEqual(route["intent"], "abuse_pushback")
 
+    def test_finish_it_does_not_compact_into_english_abuse_word(self):
+        actual_signal, _prediction_error, route = self._route_for(
+            "My report deadline is tomorrow and I cannot finish it. What should I do first?",
+            "chat_continuation",
+            0.05,
+        )
+
+        self.assertNotEqual(actual_signal["actual_intent"], "abuse_pushback")
+        self.assertEqual(route["route"], "high_road")
+
     def test_correction_followup_stays_high_road_even_when_shocked(self):
         actual_signal, prediction_error, route = self._route_for(
             "不是啦你剛剛答錯了",
@@ -926,6 +936,88 @@ class TestRouteLogic(unittest.TestCase):
         self.assertTrue(prediction_error["shock"])
         self.assertEqual(route["route"], "high_road")
         self.assertEqual(route["reason"], "prediction_error_directness_guard")
+
+    def test_non_abusive_tired_support_is_not_misrouted_to_abuse_on_prediction_shock(self):
+        actual_signal, prediction_error, route = self._route_for(
+            "今日は疲れた。少しだけ話して。",
+            "support_followup",
+            -0.18,
+        )
+
+        self.assertEqual(actual_signal["actual_intent"], "tired_support")
+        self.assertFalse(actual_signal["abuse_like"])
+        self.assertTrue(prediction_error["shock"])
+        self.assertEqual(route["route"], "high_road")
+        self.assertEqual(route["reason"], "prediction_error_support_guard")
+
+        psyche_before = self.brain.psyche.get_state()
+        shock_update = self.brain._apply_prediction_error_shock(
+            prediction_error,
+            actual_signal=actual_signal,
+        )
+        psyche_after = self.brain.psyche.get_state()
+        self.assertEqual(shock_update["modulation"], "support_signal_guard")
+        self.assertEqual(psyche_after["trust"], psyche_before["trust"])
+        self.assertEqual(psyche_after["trust_lock_turns"], psyche_before["trust_lock_turns"])
+
+    def test_strawberry_preference_is_not_misread_as_laughter(self):
+        user_input = "我最喜歡草莓牛奶。"
+        psyche = self.brain.psyche.get_state()
+        mems = self.brain.memory.query_all_layers(user_input)
+
+        plan = self.brain.left_brain._rule_based_plan(user_input, psyche, mems)
+        memory = brain_mod.MemoryManager.__new__(brain_mod.MemoryManager)
+
+        self.assertNotEqual((plan or {}).get("intent"), "short_laughter")
+        self.assertIn(
+            ("favorite", "草莓牛奶"),
+            memory._extract_profile_facts(user_input),
+        )
+
+    def test_japanese_favorite_drink_statement_is_stored_as_the_item_only(self):
+        user_input = "私の一番好きな飲み物はいちごミルク。覚えて。"
+        memory = brain_mod.MemoryManager.__new__(brain_mod.MemoryManager)
+
+        self.assertIn(
+            ("favorite", "いちごミルク"),
+            memory._extract_profile_facts(user_input),
+        )
+
+    def test_favorite_drink_recall_is_not_labeled_as_a_food_offer(self):
+        user_input = "What is my favorite drink? Don't make it up."
+        psyche = self.brain.psyche.get_state()
+        mems = {
+            "profile_structured": {
+                "name": "小傑",
+                "likes": [],
+                "dislikes": [],
+                "favorites": ["草莓牛奶"],
+            },
+            "recent_turns": [],
+        }
+
+        signal = self.brain.left_brain.classify_user_signal(user_input, psyche, mems)
+
+        self.assertEqual(signal["actual_intent"], "recall_favorite")
+        self.assertEqual(signal["seed_plan"]["core_message_jp"], "草莓牛奶って前に言ってただろ")
+
+    def test_unknown_favorite_color_does_not_reuse_known_drink_memory(self):
+        user_input = "What is my favorite color? If I never told you, say you don't remember."
+        psyche = self.brain.psyche.get_state()
+        mems = {
+            "profile_structured": {
+                "name": "小傑",
+                "likes": [],
+                "dislikes": [],
+                "favorites": ["草莓牛奶"],
+            },
+            "recent_turns": [],
+        }
+
+        signal = self.brain.left_brain.classify_user_signal(user_input, psyche, mems)
+
+        self.assertEqual(signal["actual_intent"], "memory_uncertain")
+        self.assertEqual(signal["seed_plan"]["core_message_jp"], "好きな色はまだ聞いてない")
 
 
 if __name__ == "__main__":

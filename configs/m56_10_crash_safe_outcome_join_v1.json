@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_m56_crash_safe_outcome_join_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_any_real_m56_target_outcome_access",
+  "single_changed_variable": "lifecycle of the one authorized private-outcome join across sequential restart",
+  "public_api": {
+    "function": "execute_crash_safe_outcome_join_formal_scoring",
+    "parameters": [
+      "run_id"
+    ],
+    "outcome_result_checkpoint_readiness_retry_wait_or_bypass_injection_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_9_single_writer_formal_scoring_v1.json": "e4171b40ef3519d9e7857a7dfbd1e4693b12cd3237f385cf67b38d94cefd3403",
+    "m56_9_single_writer_formal_scoring.py": "8d2d3be783e15cb54e1308aec3dc228c0b5c4f9233c7b89788119c9705863178",
+    "research/m56_9_single_writer_formal_scoring_implementation_freeze_2026-09-03.json": "880a20adecf9621feabf394e0a1daded896cfedc6bec87d68ad1e5a672a3189f"
+  },
+  "durable_state": {
+    "mode_committed_before_m56_8_gate_and_m56_4_outcome_state": true,
+    "join_intent_committed_before_private_outcome_load": true,
+    "score_checkpoint_committed_after_one_load_before_canonical_result": true,
+    "file_fsync_required": true,
+    "file_f_fullfsync_required": true,
+    "directory_fsync_required": true,
+    "directory_f_fullfsync_required": true,
+    "score_checkpoint_location": "private_scoring_compartment",
+    "score_checkpoint_contains_exact_validated_m56_4_score_report": true
+  },
+  "restart_policy": {
+    "no_intent_no_checkpoint": "perform_one_authorized_private_outcome_load",
+    "valid_intent_and_valid_checkpoint": "reuse_checkpoint_without_private_outcome_load",
+    "valid_intent_without_checkpoint": "terminal_fail_without_private_outcome_load",
+    "checkpoint_without_valid_intent": "terminal_fail_without_private_outcome_load",
+    "canonical_result_without_checkpoint": "terminal_fail_without_retroactive_certification",
+    "retry_count": 0,
+    "fallback_count": 0,
+    "manual_result_injection_allowed": false
+  },
+  "guarantees": {
+    "completed_run_private_outcome_load_count": 1,
+    "checkpointed_restart_additional_private_outcome_load_count": 0,
+    "completed_sequential_replay_additional_private_outcome_load_count": 0,
+    "ambiguous_intent_only_restart_additional_private_outcome_load_count": 0,
+    "at_most_once_on_sanctioned_m56_10_path": true,
+    "unconditional_exactly_once_completion_across_all_crash_points": false,
+    "availability_preserved_in_ambiguous_crash_window": false,
+    "distributed_transaction_claimed": false,
+    "same_host_malicious_access_cryptographically_prevented": false
+  },
+  "unchanged_semantics": {
+    "m56_8_durable_release_authorization_and_gate": true,
+    "m56_9_same_host_single_writer_lock": true,
+    "m56_4_prescore_outcome_validation_metrics_and_thresholds": true,
+    "m56_4_score_report_and_result_commitment_content": true,
+    "model_prompts_options_calls_and_resources": true,
+    "human_evidence_gates": true
+  },
+  "authorization": {
+    "current_formal_scoring": false,
+    "current_target_outcome_access": false,
+    "current_formal_result": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "M56.10 can establish only cooperative same-host at-most-once private-outcome loading through its sanctioned path: a completed run loads once, a validated checkpoint resumes without reload, and an ambiguous intent-only state fails closed. It does not guarantee completion across every crash point, disable old APIs or direct filesystem access, provide a distributed or malicious-host boundary, add human evidence, prove model performance, validate Equation V1, solve a human-response equation, establish full-pipeline value or authorize production."
+}

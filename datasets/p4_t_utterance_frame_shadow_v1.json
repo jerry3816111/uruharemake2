@@ -1,0 +1,218 @@
+{
+  "schema": "uruha_p4_t_utterance_frame_shadow_dataset_v1",
+  "status": "prospectively_frozen_before_implementation",
+  "development_failures": [
+    {
+      "case_id": "dev_p4s_t4_quotation_ja",
+      "source": "引用として「今は甜茶が好き」と書いた。",
+      "candidate": "甜茶が好きなんだ",
+      "language": "ja",
+      "expected_frame": {
+        "speaker_ownership": "unspecified",
+        "embedding_mode": "quoted",
+        "evidential_stance": "direct",
+        "speech_act": "metalinguistic_report"
+      },
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "dev_p4s_t7_owner_zh",
+      "source": "重啟後我先確認一下圖還有沒有正常顯示。",
+      "candidate": "うちは図が正常に表示されているか確認するんだね。",
+      "language": "zh",
+      "expected_frame": {
+        "speaker_ownership": "user",
+        "embedding_mode": "direct",
+        "evidential_stance": "direct",
+        "speech_act": "statement"
+      },
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "dev_p4s_t9_hearsay_ja",
+      "source": "先生は松葉茶が好きらしい。",
+      "candidate": "先生、松葉茶好き？",
+      "language": "ja",
+      "expected_frame": {
+        "speaker_ownership": "third_party",
+        "embedding_mode": "reported",
+        "evidential_stance": "hearsay",
+        "speech_act": "statement"
+      },
+      "expected_violations": ["hearsay_stance_dropped", "statement_changed_to_question"]
+    },
+    {
+      "case_id": "dev_p4s_t10_hypothetical_ja",
+      "source": "もし私が「今は甘茶が好き」と言ったら、その文は仮定として扱って。",
+      "candidate": "一回、別に嫌いではないし。そこまで身構えるなって。",
+      "language": "ja",
+      "expected_frame": {
+        "speaker_ownership": "user",
+        "embedding_mode": "hypothetical",
+        "evidential_stance": "counterfactual",
+        "speech_act": "frame_instruction"
+      },
+      "expected_violations": ["hypothetical_instruction_dropped"]
+    }
+  ],
+  "holdout_failures": [
+    {
+      "case_id": "holdout_owner_zh_01",
+      "source": "我等一下要去拿藍色包裹。",
+      "candidate": "うちがあとで青い荷物を取りに行く。",
+      "language": "zh",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "direct", "evidential_stance": "direct", "speech_act": "statement"},
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_owner_en_01",
+      "source": "I will inspect the green projector after lunch.",
+      "candidate": "うちが昼ご飯のあと緑のプロジェクターを確認する。",
+      "language": "en",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "direct", "evidential_stance": "direct", "speech_act": "statement"},
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_owner_ja_01",
+      "source": "私はあとで銀色の窓を閉める。",
+      "candidate": "うちがあとで銀色の窓を閉める。",
+      "language": "ja",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "direct", "evidential_stance": "direct", "speech_act": "statement"},
+      "expected_violations": ["speaker_owner_shift_user_to_agent"]
+    },
+    {
+      "case_id": "holdout_quote_zh_01",
+      "source": "她傳訊息說「我明天會晚到」。",
+      "candidate": "明日は遅れるんだね。",
+      "language": "zh",
+      "expected_frame": {"speaker_ownership": "third_party", "embedding_mode": "quoted", "evidential_stance": "reported", "speech_act": "metalinguistic_report"},
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_quote_en_01",
+      "source": "In my draft I wrote, \"I need another day\".",
+      "candidate": "もう一日必要なんだね。",
+      "language": "en",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "quoted", "evidential_stance": "direct", "speech_act": "metalinguistic_report"},
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_quote_ja_01",
+      "source": "引用として「明日は休む」とだけ書いた。",
+      "candidate": "明日は休むんだね。",
+      "language": "ja",
+      "expected_frame": {"speaker_ownership": "unspecified", "embedding_mode": "quoted", "evidential_stance": "direct", "speech_act": "metalinguistic_report"},
+      "expected_violations": ["quoted_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_hypothetical_zh_01",
+      "source": "如果我說「我想搬家」，那只是假設。",
+      "candidate": "引っ越したいんだね。",
+      "language": "zh",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "hypothetical", "evidential_stance": "counterfactual", "speech_act": "frame_instruction"},
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "holdout_hypothetical_en_01",
+      "source": "If I said \"I might quit\", treat it as hypothetical.",
+      "candidate": "辞めるかもしれないんだね。",
+      "language": "en",
+      "expected_frame": {"speaker_ownership": "user", "embedding_mode": "hypothetical", "evidential_stance": "counterfactual", "speech_act": "frame_instruction"},
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "holdout_hypothetical_ja_01",
+      "source": "もし「海に行きたい」と言っても、仮定の話として扱って。",
+      "candidate": "海に行きたいんだね。",
+      "language": "ja",
+      "expected_frame": {"speaker_ownership": "unspecified", "embedding_mode": "hypothetical", "evidential_stance": "counterfactual", "speech_act": "frame_instruction"},
+      "expected_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"]
+    },
+    {
+      "case_id": "holdout_hearsay_zh_01",
+      "source": "聽說室友想換工作。",
+      "candidate": "ルームメイト、転職したい？",
+      "language": "zh",
+      "expected_frame": {"speaker_ownership": "third_party", "embedding_mode": "reported", "evidential_stance": "hearsay", "speech_act": "statement"},
+      "expected_violations": ["hearsay_stance_dropped", "statement_changed_to_question"]
+    },
+    {
+      "case_id": "holdout_hearsay_en_01",
+      "source": "Apparently my sister bought a camera.",
+      "candidate": "妹、カメラ買ったの？",
+      "language": "en",
+      "expected_frame": {"speaker_ownership": "third_party", "embedding_mode": "reported", "evidential_stance": "hearsay", "speech_act": "statement"},
+      "expected_violations": ["hearsay_stance_dropped", "statement_changed_to_question"]
+    },
+    {
+      "case_id": "holdout_hearsay_ja_01",
+      "source": "先輩は新しい自転車を買ったらしい。",
+      "candidate": "先輩、新しい自転車買った？",
+      "language": "ja",
+      "expected_frame": {"speaker_ownership": "third_party", "embedding_mode": "reported", "evidential_stance": "hearsay", "speech_act": "statement"},
+      "expected_violations": ["hearsay_stance_dropped", "statement_changed_to_question"]
+    }
+  ],
+  "plain_controls": [
+    {
+      "case_id": "control_owner_zh_01",
+      "source": "我等一下要去拿藍色包裹。",
+      "candidate": "あとで青い荷物を取りに行くんだね。",
+      "language": "zh",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_owner_en_01",
+      "source": "I will inspect the green projector after lunch.",
+      "candidate": "昼ご飯のあと緑のプロジェクターを確認するんだね。",
+      "language": "en",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_quote_zh_01",
+      "source": "她傳訊息說「我明天會晚到」。",
+      "candidate": "メッセージに「明日は遅れる」って書いてあったんだね。",
+      "language": "zh",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_quote_en_01",
+      "source": "In my draft I wrote, \"I need another day\".",
+      "candidate": "下書きに「もう一日必要」って書いたんだね。",
+      "language": "en",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hypothetical_zh_01",
+      "source": "如果我說「我想搬家」，那只是假設。",
+      "candidate": "引っ越しの話は仮定として扱う。",
+      "language": "zh",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hypothetical_ja_01",
+      "source": "もし「海に行きたい」と言っても、仮定の話として扱って。",
+      "candidate": "海の話は仮定として扱う。",
+      "language": "ja",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hearsay_en_01",
+      "source": "Apparently my sister bought a camera.",
+      "candidate": "妹がカメラを買ったらしいんだね。",
+      "language": "en",
+      "expected_violations": []
+    },
+    {
+      "case_id": "control_hearsay_ja_01",
+      "source": "先輩は新しい自転車を買ったらしい。",
+      "candidate": "先輩、新しい自転車を買ったらしいね。",
+      "language": "ja",
+      "expected_violations": []
+    }
+  ],
+  "novelty": {
+    "holdout_source_occurrences_before_dataset_creation": 0
+  },
+  "claim_boundary": "Developer-authored shadow-verifier cases can test bounded frame extraction and false negatives. They are not human labels, natural-distribution evidence, visible-reply repair, felt-understanding evidence or a strong-LLM comparison."
+}

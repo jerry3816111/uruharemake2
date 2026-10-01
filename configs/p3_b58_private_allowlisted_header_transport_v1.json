@@ -1,0 +1,117 @@
+{
+  "schema": "uruha_p3_b58_private_allowlisted_header_transport_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_standing_user_authorization_before_resolver_or_media_request",
+  "single_changed_variable": "forward only allowlisted non-sensitive extractor request headers in private memory from the resolver to direct ffmpeg",
+  "authorization": {
+    "basis": "2026-09-19 user message authorizing continuous execution according to the existing plan and Codex-token use",
+    "overrides_b57_next_execution_authorized_false": true,
+    "resolver_process_invocation_count_max": 1,
+    "direct_ffmpeg_process_invocation_count_max": 1,
+    "retry_or_additional_correction_authorized": false,
+    "paid_api_login_cookie_or_account_access_authorized": false
+  },
+  "bindings": {
+    "b57_review_required": {
+      "path": "research/p3_b57_split_resolver_direct_ffmpeg_review_required_2026-09-19.json",
+      "sha256": "45c3e82106ce292af77cdc6aa75c7331b416dcbf4049b45a5ffc9ad4fd3a0c92"
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0
+  },
+  "resolver": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "format_selector": "bestaudio/best",
+    "print_fields_in_order": ["url", "http_headers"],
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "file_download_allowed": false,
+    "metadata_sidecars_allowed": false,
+    "subtitles_allowed": false,
+    "comments_allowed": false,
+    "cache_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "timeout_seconds": 120,
+    "required_url_count": 1,
+    "required_scheme": "https",
+    "allowed_host_suffix": ".googlevideo.com",
+    "provider_http_request_count_observable": false
+  },
+  "private_request_boundary": {
+    "lifetime": "in-memory inside one worker until direct ffmpeg exits",
+    "allowed_header_names": ["User-Agent", "Referer", "Origin", "Accept", "Accept-Language"],
+    "required_header_names": ["User-Agent"],
+    "forbidden_header_names": ["Cookie", "Authorization", "Proxy-Authorization", "Set-Cookie"],
+    "unlisted_non_sensitive_headers_disposition": "drop",
+    "range_header_disposition": "drop_so_ffmpeg_manages_byte_ranges",
+    "maximum_header_value_bytes": 2048,
+    "url_text_persistence_allowed": false,
+    "url_hash_persistence_allowed": false,
+    "url_excerpt_or_query_key_persistence_allowed": false,
+    "hostname_persistence_allowed": false,
+    "header_name_persistence_allowed": false,
+    "header_value_persistence_allowed": false,
+    "header_hash_persistence_allowed": false,
+    "resolver_stdout_text_persistence_allowed": false,
+    "resolver_stderr_text_persistence_allowed": false,
+    "receipt_host_category": "googlevideo_cdn"
+  },
+  "direct_ffmpeg": {
+    "required_version_prefix": "ffmpeg version 8.0.1",
+    "input_seek_seconds": 3000.0,
+    "output_duration_seconds": 180.0,
+    "container": "wav",
+    "codec": "pcm_s16le",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "metadata_removed": true,
+    "timeout_seconds": 900,
+    "stdout_text_persistence_allowed": false,
+    "stderr_text_persistence_allowed": false,
+    "provider_byte_range_exactness_claim_allowed": false
+  },
+  "success_gate": {
+    "duration_tolerance_seconds": 0.05,
+    "public_profile": "reserved_source_context",
+    "raw_url_headers_and_private_artifact_destroyed_before_fresh_reader": true,
+    "fresh_reader_count": 1,
+    "public_artifact_hash_revalidation_required": true,
+    "public_forbidden_field_count_required": 0
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b58_header_transport_state",
+    "public_root": "external_data/p3_b58_public_context",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "exclusive_intent_before_resolver": true,
+    "intent_without_result_is_terminal": true,
+    "preexisting_nonempty_public_root_allowed": false
+  },
+  "denied_actions": {
+    "hidden_future_media_request": true,
+    "title_description_transcript_comment_or_subtitle_persistence": true,
+    "manual_playback_or_semantic_inspection": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "external_deployment": true,
+    "paid_api_or_account_access": true
+  },
+  "claim_boundary": "B58 can establish only whether forwarding a private allowlisted subset of non-sensitive extractor HTTP headers lets direct ffmpeg produce the same B54-gated 180-second observable-context artifact. It does not persist URL or header material, access hidden future, inspect semantics, execute prediction/model, train on the reserved source, or establish system advantage."
+}

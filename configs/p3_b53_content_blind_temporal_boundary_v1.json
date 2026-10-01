@@ -1,0 +1,51 @@
+{
+  "schema": "uruha_p3_b53_content_blind_temporal_boundary_v1",
+  "version": "1.0.0",
+  "status": "preregistered_before_any_reserved_source_media_or_segment_access",
+  "single_changed_variable": "derive one cutoff-to-hidden-future boundary from only the frozen source ID and duration",
+  "binding": {
+    "source_release": {
+      "path": "research/p3_b52_metadata_only_source_selection_v4_release_2026-09-17.json",
+      "sha256": "2a491230e336ebbc029fd5f7783794e5d28113d13d18c7026d4f4ac357720e86"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "duration_seconds": 11497
+  },
+  "boundary_policy": {
+    "head_margin_seconds": 900,
+    "tail_margin_seconds": 900,
+    "observable_context_seconds": 180,
+    "prediction_to_behavior_gap_seconds": 1,
+    "hidden_future_seconds": 60,
+    "cutoff_grid_step_seconds": 300,
+    "selection_seed": "p3-b53-temporal-boundary-2026-09-17-v1",
+    "selection_score": "sha256(seed + vertical_bar + source_id + vertical_bar + cutoff_seconds)",
+    "winner": "lexicographically smallest score",
+    "minimum_candidate_count": 2
+  },
+  "required_order": [
+    "event_start_seconds <= observable_input_start_seconds",
+    "observable_input_start_seconds < prediction_cutoff_seconds",
+    "prediction_cutoff_seconds < observable_behavior_start_seconds",
+    "observable_behavior_start_seconds < observable_behavior_end_seconds",
+    "observable_behavior_end_seconds <= event_end_seconds"
+  ],
+  "execution_boundary": {
+    "media_request_count": 0,
+    "media_download_count": 0,
+    "playback_count": 0,
+    "transcript_access_count": 0,
+    "title_or_description_access_count": 0,
+    "target_segment_access_count": 0,
+    "future_response_access_count": 0,
+    "gold_annotation_count": 0,
+    "model_call_count": 0,
+    "formal_m56_artifact_change_count": 0,
+    "production_memory_write_count": 0
+  },
+  "next_stage_boundary": "B54 may expose only the selected observable context after this receipt is committed; the hidden future remains unavailable to generation and annotation until a separate unlock.",
+  "claim_boundary": "B53 can establish only a deterministic content-blind time boundary inside the reserved public source. It is not an event annotation, behavior prediction, outcome, formal M56 row, or evidence of model advantage."
+}

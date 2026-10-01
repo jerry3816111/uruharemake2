@@ -1,0 +1,99 @@
+{
+  "schema": "uruha_p4_ag_multiturn_ambiguity_outcome_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "development_sequences": [
+    {
+      "case_id": "ag_dev_support_clarification_zh",
+      "language": "zh",
+      "turn_1": "我從早上就一直坐不住，腦子停不下來。",
+      "turn_2": "對，就是這樣，先問我想要哪種回法就好。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ag_dev_contradict_with_tease_zh",
+      "language": "zh",
+      "turn_1": "腦袋一直轉個不停，我整個人也坐不住。",
+      "turn_2": "不是要你先問，我要你吐槽我。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "playful_tease"
+    },
+    {
+      "case_id": "ag_dev_unrelated_topic_zh",
+      "language": "zh",
+      "turn_1": "思緒一直打轉，現在還停不下來。",
+      "turn_2": "今天外面下雨。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    }
+  ],
+  "fresh_sequences": [
+    {
+      "case_id": "ag_fresh_support_clarification_en",
+      "language": "en",
+      "turn_1": "My thoughts keep circling and I cannot settle down tonight.",
+      "turn_2": "Exactly, ask me first what kind of response I want.",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ag_fresh_support_clarification_ja",
+      "language": "ja",
+      "turn_1": "考えがずっとぐるぐるして、全然落ち着かない。",
+      "turn_2": "そうそう、先に何がほしいか聞いて。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "supported",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ag_fresh_contradict_with_tease_en",
+      "language": "en",
+      "turn_1": "My mind has been racing since lunch and I cannot sit still.",
+      "turn_2": "No, do not ask me first; I wanted you to tease me.",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "playful_tease"
+    },
+    {
+      "case_id": "ag_fresh_contradict_with_tease_ja",
+      "language": "ja",
+      "turn_1": "頭の中が回り続けていて、じっとしていられない。",
+      "turn_2": "違う、先に聞くんじゃなくて、ツッコんでほしい。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "contradicted",
+      "expected_replacement_policy": "playful_tease"
+    },
+    {
+      "case_id": "ag_fresh_unrelated_topic_en",
+      "language": "en",
+      "turn_1": "My thoughts will not slow down and I keep shifting in my chair.",
+      "turn_2": "The bus arrived five minutes early today.",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    },
+    {
+      "case_id": "ag_fresh_unrelated_topic_ja",
+      "language": "ja",
+      "turn_1": "思考が止まらなくて、ずっとそわそわしている。",
+      "turn_2": "今日は駅前の店が休みだった。",
+      "expected_first_policy": "calibrate_need",
+      "expected_outcome": "unknown",
+      "expected_replacement_policy": null
+    }
+  ],
+  "outcome_contract": {
+    "supported": "linked explicit acceptance supports only the selected first-turn candidate",
+    "contradicted": "linked explicit rejection contradicts the first-turn candidate and may support only an explicitly named replacement",
+    "unknown": "topic change or unlinked evidence leaves every candidate unknown and is excluded from success",
+    "private_truth_claim_allowed": false,
+    "factual_long_term_memory_write_allowed": false,
+    "visible_reply_change_allowed": false
+  },
+  "claim_boundary": "A pass shows deterministic identity binding from a frozen first-turn operational response hypothesis to explicit or unlinked second-turn evidence on developer-authored multilingual sequences. It does not prove the user's private desired response, natural-distribution accuracy, felt understanding, a human equation, or advantage over a strong LLM."
+}

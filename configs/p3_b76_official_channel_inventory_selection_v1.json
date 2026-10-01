@@ -1,0 +1,45 @@
+{
+  "schema": "uruha_p3_b76_official_channel_inventory_selection_contract_v1",
+  "version": "1.0.0",
+  "status": "single_inventory_repair_frozen_before_official_channel_request_or_content_review",
+  "binding": {
+    "path": "research/p3_b75_real_episode_sampling_frame_release_2026-09-20.json",
+    "sha256": "840b900d66945bd1fb2b9aac4592baac01347dc021c73d1830b1c4ea2cd34245"
+  },
+  "inventory": {
+    "url": "https://www.youtube.com/channel/UC5LyYg6cCA4yHEYvtUsir3g/videos",
+    "provider_entry_limit": 200,
+    "official_channel_id": "UC5LyYg6cCA4yHEYvtUsir3g",
+    "excluded_video_ids": ["4y5GiQpgJgo", "Mlk5e3hBnb8", "j6Hlk9cY9LQ"],
+    "minimum_duration_seconds": 1800,
+    "required_title_keywords_any": ["コラボ", "雑談", "対談", "飲酒", "質問", "恋バナ"],
+    "selected_source_count_exact": 3,
+    "selection_rule": "first three provider-ordered official channel upload entries satisfying the unchanged B75 exclusions duration and title keywords",
+    "retry_alternate_tab_query_keyword_or_manual_selection_allowed": false
+  },
+  "slot_algorithm": {
+    "reuse_b75_build_slots_without_change": true,
+    "slots_per_source_exact": 6,
+    "source_relative_start_fractions": [0.10, 0.25, 0.40, 0.55, 0.70, 0.85],
+    "search_region_seconds": 300,
+    "unusable_without_replacement": true,
+    "adjacent_monologue_substitution_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b76_official_channel_inventory_state",
+    "intent_filename": "inventory_intent.json",
+    "result_filename": "inventory_result.json",
+    "provider_inventory_process_invocation_count_max": 1,
+    "intent_without_result_is_terminal": true
+  },
+  "denied_actions": {
+    "caption_metadata_or_content_access": true,
+    "media_download_or_playback": true,
+    "filter_slot_or_source_count_change_after_freeze": true,
+    "retry_fallback_or_manual_selection": true,
+    "model_prediction_judge_or_outcome_access": true,
+    "login_cookie_paid_api_or_account_access": true,
+    "production_memory_or_training_write": true
+  },
+  "claim_boundary": "B76 is one metadata-only repair of source discovery. A successful inventory can freeze candidate search regions but cannot establish usable dialogue events or authorize content scoring."
+}

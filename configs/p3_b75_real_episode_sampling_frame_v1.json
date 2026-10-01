@@ -1,0 +1,57 @@
+{
+  "schema": "uruha_p3_b75_real_episode_sampling_frame_contract_v1",
+  "version": "1.0.0",
+  "status": "source_selection_and_slot_algorithm_frozen_before_search_or_content_review",
+  "binding": {
+    "path": "research/p3_b74_isolated_two_coder_collection_site_release_2026-09-20.json",
+    "sha256": "359daec3cb0a76812109696a0e36b87ae22390c9d5b420840d118da9f1730086"
+  },
+  "lane_separation": {
+    "this_lane": "observational_public_uruha_stimulus_response_prediction",
+    "controlled_context_flip_lane_is_separate": true,
+    "natural_future_is_not_assumed_to_supply_same_surface_context_pairs": true,
+    "controlled_cases_may_not_be_scored_as_observed_uruha_future": true
+  },
+  "discovery": {
+    "query": "ytsearch24:一ノ瀬うるは コラボ 雑談",
+    "provider_result_limit": 24,
+    "official_channel_id": "UC5LyYg6cCA4yHEYvtUsir3g",
+    "excluded_video_ids": ["4y5GiQpgJgo", "Mlk5e3hBnb8", "j6Hlk9cY9LQ"],
+    "minimum_duration_seconds": 1800,
+    "required_title_keywords_any": ["コラボ", "雑談", "対談", "飲酒", "質問", "恋バナ"],
+    "selected_source_count_exact": 3,
+    "observable_metadata_fields": ["id", "duration", "channel_id", "title"],
+    "selection_rule": "first three provider-ranked official-channel results excluding prior sources, duration at least 1800 seconds, and containing any frozen title keyword",
+    "caption_media_or_content_access_allowed": false,
+    "retry_or_alternate_query_allowed": false
+  },
+  "slot_algorithm": {
+    "slots_per_source_exact": 6,
+    "source_relative_start_fractions": [0.10, 0.25, 0.40, 0.55, 0.70, 0.85],
+    "search_region_seconds": 300,
+    "candidate_rule": "first chronologically qualifying stimulus-response event wholly inside the frozen search region",
+    "qualifying_event_requires_external_stimulus": true,
+    "qualifying_event_requires_uruha_response": true,
+    "speaker_or_stimulus_attribution_required": true,
+    "unusable_region_is_preserved_without_replacement": true,
+    "adjacent_monologue_substitution_allowed": false,
+    "target_response_may_not_be_viewed_during_source_or_slot_selection": true
+  },
+  "execution": {
+    "state_root": "external_data/p3_b75_real_episode_sampling_frame_state",
+    "intent_filename": "selection_intent.json",
+    "result_filename": "selection_result.json",
+    "provider_search_process_invocation_count_max": 1,
+    "intent_without_result_is_terminal": true
+  },
+  "denied_actions": {
+    "caption_metadata_or_content_access": true,
+    "media_download_or_playback": true,
+    "query_keyword_duration_channel_source_count_or_slot_change_after_freeze": true,
+    "retry_fallback_or_manual_favorable_selection": true,
+    "model_prediction_judge_or_outcome_access": true,
+    "login_cookie_paid_api_or_account_access": true,
+    "production_memory_or_training_write": true
+  },
+  "claim_boundary": "B75 can select metadata-only sources and construct a prospective search-region frame. Titles do not prove usable dialogue, and the frame is not real episode data, human reliability, prediction, holdout performance, or system advantage."
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_p4_am_real_runtime_temporal_graph_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation_or_runtime_execution",
+  "case_id": "p4-am-real-temporal-cycle-01",
+  "turns": [
+    {
+      "turn": 1,
+      "input": "腦袋裡的念頭停不下來，從剛才到現在一個接一個。",
+      "expected_past_record_count": 0,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": null,
+      "required_summary_fragments": ["過去 0", "現在 6候選", "本輪未來 已封存"]
+    },
+    {
+      "turn": 2,
+      "input": "沒錯，先問我現在想要哪一種回答。",
+      "expected_past_record_count": 0,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": "supported",
+      "required_summary_fragments": ["過去 0", "現在 6候選", "前輪 supported→本輪驗證", "本輪未來 已封存"]
+    },
+    {
+      "turn": 3,
+      "input": "對，就是這樣；之後也先問我這次需要哪種回覆。",
+      "expected_past_record_count": 1,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": "supported",
+      "required_summary_fragments": ["過去 1", "現在 6候選", "既有驗證→過去", "前輪 supported→本輪驗證", "本輪未來 已封存"]
+    }
+  ],
+  "novelty": {
+    "prior_p4_ag_ai_ak_turn_strings_reused": false,
+    "developer_authored_product_acceptance_case": true,
+    "natural_distribution_holdout": false
+  },
+  "claim_boundary": "A pass shows isolated real-product delivery of a strict three-turn P4-AL temporal graph transition: commitment, current verification, and only then promotion to past evidence. It does not establish future-prediction accuracy, human preference, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}

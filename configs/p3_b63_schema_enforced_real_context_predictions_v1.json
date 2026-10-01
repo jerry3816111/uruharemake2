@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_p3_b63_schema_enforced_real_context_predictions_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_b62_execution_remediation_before_model_calls_or_future_access",
+  "single_changed_variable": "enforce the already-frozen representation and prediction contracts through Ollama JSON Schema format and record calls at the provider boundary",
+  "bindings": {
+    "b62_contract": {
+      "path": "configs/p3_b62_real_context_prediction_freeze_v1.json",
+      "sha256": "c775719243a69fba8d4890461b0f0aee8281f92ce830642a9e02c68e45362c19"
+    },
+    "b62_implementation": {
+      "path": "p3_b62_real_context_prediction_freeze.py",
+      "sha256": "fd8ead6c6a9529efc08ad80f23f547b27b15f6ac3a833377aa0706baba2ed24b"
+    },
+    "b62_review": {
+      "path": "research/p3_b62_real_context_prediction_review_required_2026-09-20.json",
+      "sha256": "766f254eac96906426b80d630de491f32b10aa94fdf2aa1bdb6a6337cc5a4c8b"
+    }
+  },
+  "inherited_experiment": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "artifact_sha256": "7a690e386e0945785f0dbe8d5573a2eda6f7ed6be64c28e01ee9e4cbbd5d0537",
+    "condition_order": ["BASELINE_LITERAL", "SYSTEM_PRAGMATIC_STATE"],
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 260920,
+    "num_ctx": 8192,
+    "representation_num_predict": 256,
+    "prediction_num_predict": 256,
+    "completion_token_ceiling_each_condition": 512,
+    "model_call_count_exact": 4,
+    "future_outcome_access_before_complete_result_required": 0
+  },
+  "schema_enforcement": {
+    "provider_format": "json_schema",
+    "additional_properties_allowed": false,
+    "same_field_names_and_types_as_b62": true,
+    "probability_sum_still_validated_after_generation": true,
+    "natural_japanese_still_validated_after_generation": true
+  },
+  "accounting_repair": {
+    "record_invocation_before_http_request": true,
+    "record_completion_or_failure_at_provider_boundary": true,
+    "failed_call_counted_as_invocation": true,
+    "unavailable_token_or_latency_must_not_be_zero_filled": true,
+    "raw_prompt_or_response_persistence_allowed": false
+  },
+  "execution": {
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "timeout_seconds": 180,
+    "retry_or_condition_fallback_allowed": false,
+    "state_root": "external_data/p3_b63_schema_prediction_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "prediction_result.json",
+    "intent_without_complete_result_is_terminal": true
+  },
+  "denied_actions": {
+    "research_question_condition_context_model_budget_or_label_change": true,
+    "future_outcome_access_before_complete_prediction_result": true,
+    "private_acquisition_state_read": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B63 can only remediate B62 output enforcement and accounting. A complete result freezes two one-row predictions but cannot establish correctness until separate outcome unlock, and cannot establish general advantage after one row."
+}

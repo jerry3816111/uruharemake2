@@ -1,0 +1,60 @@
+{
+  "schema": "uruha_p3_prospective_source_only_freeze_v1",
+  "phase": "P3-B33",
+  "status": "prospective_source_only_frozen",
+  "source_commit": "a1ca9be34b813e48c9fb6fe0cb5f783d4b837e2e",
+  "artifacts": {
+    "source": {
+      "path": "datasets/p3_prospective_developer_source_v2.json",
+      "sha256": "de6614765ca2b8369cc69338c86479792f5dedbafbafa285f49640a624de1069"
+    },
+    "implementation": {
+      "path": "p3_prospective_source_freeze.py",
+      "sha256": "a0b6770aa6246310bf7388f0a8d55ca7d1f63fe9b5ebc047921b441b2ba3693f"
+    },
+    "tests": {
+      "path": "test_p3_prospective_source_freeze.py",
+      "sha256": "8004e41088c53dca35cb63fb5ceeb47f918c9051d9b2b2437660f26582c90b62"
+    },
+    "validation": {
+      "path": "analysis/p3_b33_prospective_source_freeze_validation_2026-09-17.json",
+      "sha256": "d5cba51a6175534d314c031417c2d117d13eef579b8f31fbf939b5e03ec2ffe6"
+    },
+    "dedup_parent": {
+      "path": "datasets/p3_developer_smoke_source_v1.json",
+      "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f"
+    }
+  },
+  "counts": {
+    "cases": 3,
+    "turns": 12,
+    "sessions": 6,
+    "languages": {
+      "zh": 1,
+      "en": 1,
+      "ja": 1
+    },
+    "families": 3,
+    "allowlisted_turn_views": 12
+  },
+  "review": {
+    "all_validation_checks_passed": true,
+    "exact_and_normalized_b2_text_reuse": 0,
+    "gold_reply_or_score_payloads": 0,
+    "rubric_or_condition_preference_payloads": 0,
+    "annotations_created_or_accessed": 0,
+    "generation_calls": 0,
+    "network_calls": 0,
+    "paid_calls": 0,
+    "future_turns_locked_per_view": true
+  },
+  "use_boundary": {
+    "developer_authored_prospective_not_formal_holdout": true,
+    "source_mutation_after_freeze": false,
+    "annotations_must_remain_absent_until_outputs_locked": true,
+    "future_turns_must_remain_hidden_per_generation_view": true,
+    "generation_requires_separate_preregistered_contract_and_release": true,
+    "quality_or_advantage_claimed": false
+  },
+  "claim_boundary": "Three source-only prospective developer cases are frozen before outputs and annotations. They can support a future developer comparison but are not a formal temporal holdout or human-preference sample."
+}

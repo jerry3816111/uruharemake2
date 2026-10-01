@@ -28,8 +28,8 @@ class TestProactiveDialogueLifecycle(unittest.TestCase):
         self.brain.memory.record_turn(user_input, reply, logic)
         return f"{user_input} -> {reply}"
 
-    def _set_long_idle(self):
-        simulated_idle_at = time.time() - (brain_mod.AUTONOMOUS_IDLE_SECONDS * 2.5)
+    def _set_long_idle(self, multiplier=2.5):
+        simulated_idle_at = time.time() - (brain_mod.AUTONOMOUS_IDLE_SECONDS * multiplier)
         self.brain._last_external_input_at = simulated_idle_at
         self.brain.runtime.last_interaction_timestamp = simulated_idle_at
         self.brain._last_background_tick_at = 0.0
@@ -97,16 +97,57 @@ class TestProactiveDialogueLifecycle(unittest.TestCase):
                 self.assertEqual(proactive["intent"], expected_intent)
                 self.assertTrue(any(marker in proactive["line"] for marker in required_markers))
 
-    def test_idle_followup_is_delivered_once_and_suppressed_until_user_returns(self):
+    def test_idle_does_not_create_a_visible_followup_by_default(self):
         self.brain.memory.short_term_buffer = [
             {"strength": 0.9, "intent": "chat", "scene": "casual", "text": "まだ残っている話題"}
         ]
         self._set_long_idle()
 
-        first = self.brain.run_background_cycle(force=False)
-        first_pending = dict(self.brain.runtime.pending_proactive_turn)
-        self.brain._last_background_tick_at = 0.0
-        while_pending = self.brain.run_background_cycle(force=False)
+        result = self.brain.run_background_cycle(force=False)
+
+        self.assertEqual(result["goal"]["kind"], "maintain_open_loops")
+        self.assertEqual(result["proactive_turn"], {})
+        self.assertEqual(self.brain.runtime.pending_proactive_turn, {})
+        self.assertEqual(self.brain.runtime.consecutive_proactive_count, 0)
+
+    def test_plain_idle_does_not_replace_ping_with_another_visible_line(self):
+        self.brain.runtime.open_loops = []
+        self.brain.memory.short_term_buffer = []
+        self._set_long_idle(multiplier=4.0)
+
+        result = self.brain.run_background_cycle(force=False)
+
+        self.assertEqual(result["goal"]["kind"], "passive_decay")
+        self.assertEqual(result["proactive_turn"], {})
+        self.assertEqual(self.brain.runtime.pending_proactive_turn, {})
+
+    def test_drive_threshold_does_not_enqueue_idle_urge_by_default(self):
+        self.brain.runtime.open_loops = []
+        self._set_long_idle(multiplier=4.0)
+
+        with patch.object(self.brain.runtime, "update_drives", return_value=True):
+            result = self.brain._handle_timer_tick_event(
+                {"payload": {"timestamp": time.time()}}
+            )
+
+        self.assertFalse(result["triggered_internal_urge"])
+        self.assertTrue(result["suppressed_idle_visible_proactive"])
+        self.assertFalse(
+            any(event.event_type == "internal_urge" for event in self.brain._event_queue)
+        )
+        self.assertEqual(self.brain.runtime.pending_proactive_turn, {})
+
+    def test_idle_followup_can_be_explicitly_enabled_and_is_delivered_once(self):
+        self.brain.memory.short_term_buffer = [
+            {"strength": 0.9, "intent": "chat", "scene": "casual", "text": "まだ残っている話題"}
+        ]
+        self._set_long_idle()
+
+        with patch.object(brain_mod, "IDLE_VISIBLE_PROACTIVE_ENABLED", True):
+            first = self.brain.run_background_cycle(force=False)
+            first_pending = dict(self.brain.runtime.pending_proactive_turn)
+            self.brain._last_background_tick_at = 0.0
+            while_pending = self.brain.run_background_cycle(force=False)
 
         self.assertEqual(first["proactive_turn"]["kind"], "proactive_followup")
         self.assertEqual(first["proactive_turn"]["delivery_key"], self.loop["key"])
@@ -145,7 +186,8 @@ class TestProactiveDialogueLifecycle(unittest.TestCase):
         import uruha_web_ui as web
 
         self._set_long_idle()
-        self.brain.run_background_cycle(force=False)
+        with patch.object(brain_mod, "IDLE_VISIBLE_PROACTIVE_ENABLED", True):
+            self.brain.run_background_cycle(force=False)
         fake_runtime = SimpleNamespace(
             _brain=self.brain,
             _lock=threading.Lock(),

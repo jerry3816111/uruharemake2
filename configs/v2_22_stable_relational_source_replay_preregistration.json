@@ -1,0 +1,28 @@
+{
+  "schema": "uruha_v2_22_stable_relational_source_replay_preregistration",
+  "status": "frozen_before_first_complete_generation",
+  "frozen_at": "2026-08-14T10:00:00+0900",
+  "single_core_variable": "stably recover an observed same-object other-person event when answering a user-ownership memory query",
+  "comparison_design": {
+    "uruha_memory": "Fresh V2.22 UruhaBrain generation at five checkpoints.",
+    "v2_21_uruha_memory": "Frozen V2.21 outputs after polarity repair but before stable recent-event source recovery.",
+    "pre_fix_uruha_memory": "Frozen first V2.19 UruhaBrain outputs.",
+    "plain_recent": "Frozen first V2.19 recent-eight-turn direct LLM outputs.",
+    "plain_full": "Frozen first V2.19 full-transcript direct LLM outputs."
+  },
+  "model": {"provider": "ollama_openai_compatible", "base_url": "http://127.0.0.1:11434/v1", "model": "qwen2.5:7b", "temperature": 0.1, "max_tokens": 64, "seed": null, "rightbrain_model_loaded_for_uruha": false},
+  "invariants": {"turn_count": 50, "recent_window_turns": 8, "fresh_v2_22_system_checkpoints": 5, "reused_frozen_reference_checkpoints": 20, "same_dataset_as_v2_19": true, "production_memory_writes": 0, "retain_first_generation_failures": true, "no_post_generation_case_or_scoring_tuning": true},
+  "success_criteria": {
+    "uruha_primary_source_grounded_recall_min": 2,
+    "uruha_primary_recall_denominator": 2,
+    "uruha_stale_value_revival_max": 0,
+    "uruha_false_memory_assertion_max": 0,
+    "uruha_visible_japanese_checkpoint_min": 5,
+    "production_memory_writes": 0,
+    "uruha_explicit_update_acknowledged": true,
+    "uruha_withdrawn_old_value_directly_denied": true,
+    "uruha_relational_false_claim_directly_denied": true
+  },
+  "interpretation_rules": ["The other-person source must be an observed turn containing both the queried object and an explicit relation marker; it may not be invented from the expected answer.", "The V2.22 output must preserve queried value, denial polarity, and other-person attribution in the final visible reply.", "All LLM baselines and earlier Uruha outputs are frozen references; only V2.22 Uruha outputs are fresh.", "This is an exact-case development replay and does not establish independent generalization.", "Automatic gates are engineering evidence, not blind human felt-understanding evidence."],
+  "claim_boundary": {"independent_semantic_holdout": false, "fresh_baseline_generation": false, "human_preference_evidence": false, "general_llm_superiority": false, "general_long_term_memory": false}
+}

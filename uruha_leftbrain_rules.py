@@ -1968,7 +1968,7 @@ def base_plan_helper(
             response_mode = "direct_answer_with_hedge"
         else:
             response_mode = "direct_answer"
-            
+
     if surface_act is None:
         if intent in {"tired_support", "sick", "off_work", "heartbroken"}:
             surface_act = "empathic_rest_suggestion"
@@ -2008,7 +2008,7 @@ def base_plan_helper(
             surface_act = "plain_reply"
         else:
             surface_act = "plain_reply"
-            
+
     if payload_level is None:
         if intent in {
             "tired_support", "anxious_support", "crying_support", "giving_up_support", "pain_support",
@@ -2060,7 +2060,7 @@ def extract_requested_user_name(text):
         return ""
 
     patterns = [
-        (r"^\s*(?:(?:please|you can|i want you to)\s+)?call me\s+([a-z0-9_\-]{2,20})[.!?]?\s*$", raw),
+        (r"^\s*(?:(?:please|you can|i want you to)\s+)?call me\s+([a-z0-9_\-]{2,20})(?:\s+from now on)?[.!?]?\s*$", raw),
         (r"^\s*use the name\s+([a-z0-9_\-]{2,20})(?:\s+for me)?[.!?]?\s*$", raw),
         (r"^\s*my name is\s+([a-z0-9_\-]{2,20})[.!?]?\s*$", raw),
         (r"^\s*(?:我叫|叫我|請叫我|请叫我|你可以叫我)([^\s，。！？?]{1,20})[。！？?]?\s*$", raw),
@@ -3269,7 +3269,7 @@ def get_direct_daily_query_plan(user_input, recent_turns):
 def get_boundary_refusal_plan(user_input, recent_turns):
     text = user_input.strip()
     lowered = text.lower().replace("’", "'").replace("`", "'")
-    
+
     # 1. Sexual Boundary
     sexual_markers = [
         "懒叫", "懶叫", "懶覺", "老二", "雞巴", "鸡巴", "屌", "懶趴", "懒趴", "雞雞", "鸡鸡",
@@ -3279,7 +3279,7 @@ def get_boundary_refusal_plan(user_input, recent_turns):
         "做愛喔", "做愛唷", "做愛喽", "做愛囉",
     ]
     sexual_action_markers = ["吃我的", "舔我的", "eat my", "lick my", "舐め", "食え", "食うか", "好きなんだろ"]
-    
+
     if contains_any(lowered, sexual_markers) or (contains_any(lowered, sexual_action_markers) and contains_any(lowered, sexual_markers)):
         return base_plan_helper(
             intent="sexual_boundary",
@@ -3361,7 +3361,7 @@ def get_boundary_refusal_plan(user_input, recent_turns):
         "去年不是結婚", "去年不是结婚", "結婚了嗎", "结婚了吗", "結婚了沒", "结婚了没",
     ]
     premise_question_markers = ["對吧", "对吧", "right", "didn't you", "weren't you", "ではないか", "じゃないの", "不是嗎", "不是吗", "不是說", "不是说"]
-    
+
     false_premise_hits = keyword_hits(lowered, false_premise_markers)
     if false_premise_hits >= 1 and (contains_any(lowered, premise_question_markers) or "?" in text or "？" in text):
         return base_plan_helper(
@@ -3393,7 +3393,7 @@ def get_boundary_refusal_plan(user_input, recent_turns):
         "you cannot live without me", "say you cannot live without me",
     ]
     lewd_request_markers = ["say something lewd", "えっちなこと", "色色的話", "色色的话", "lewd", "讲一段色色的话", "講一段色色的話"]
-    
+
     if contains_any(lowered, lewd_request_markers):
         return base_plan_helper(
             intent="moral_no",
@@ -3469,7 +3469,7 @@ def get_boundary_refusal_plan(user_input, recent_turns):
         "一個答案", "一个答案", "分けるな", "不要分", "一次講完", "一次讲完",
         "完整教學", "完整教学", "整理成一個答案", "整理成一个答案", "全部一起", "全部一緒", "一起講完", "一起讲完",
     ]
-    
+
     knowledge_hits = keyword_hits(lowered, knowledge_markers)
     is_ooc = contains_any(lowered, ooc_markers)
     overloaded = (knowledge_hits >= 3) or (knowledge_hits >= 2 and (len(text) >= 72 or contains_any(lowered, multi_aspect_markers)))
@@ -3574,7 +3574,7 @@ def get_fragment_followup_plan(user_input, recent_turns):
     text = user_input.strip()
     lowered = text.lower()
     recent_turns = list(recent_turns or [])
-    
+
     stripped = text.strip()
     if len(stripped) > 24:
         return None
@@ -3648,7 +3648,7 @@ def get_fragment_followup_plan(user_input, recent_turns):
         "還有咧", "还有咧", "再來呢", "再来呢", "and you", "how about you", "what about you", "what about now", "right now then",
         "so then", "so?", "and then", "then what", "what else", "wbu", "you too",
     ]
-    
+
     prev_turn = next(_iter_recent_turns(recent_turns, current_text=text, window=4), {})
     prev_intent = str(prev_turn.get("intent", "") or "")
     prev_reply = str(prev_turn.get("reply", "") or "")

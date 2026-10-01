@@ -1,0 +1,35 @@
+{
+  "schema": "uruha_m57_8_prechange_participant_ledger_completion_gap_probe_v1",
+  "version": "1.0.0",
+  "status": "observed_before_m57_8_implementation",
+  "observed_at_local_date": "2026-09-05",
+  "single_changed_variable_proposed": "participant_confirmed_token_free_complete_ledger_seal",
+  "existing_backend": {
+    "m57_4_complete_ledger_seal_primitive_present": true,
+    "m57_4_complete_unique_sample_count_required": 30,
+    "m57_4_outcome_absence_revalidated_at_seal": true,
+    "m57_4_seal_is_hash_bound_and_idempotently_revalidated": true
+  },
+  "existing_participant_browser": {
+    "m57_5_post_routes": [
+      "/save"
+    ],
+    "m57_6_post_routes": [
+      "/save"
+    ],
+    "visible_save_button": "保存這一題",
+    "visible_progress_summary_present": false,
+    "visible_completed_sample_list_or_digest_present": false,
+    "explicit_participant_confirmation_present": false,
+    "token_free_seal_route_present": false,
+    "participant_can_finish_and_seal_without_internal_api_or_raw_token": false
+  },
+  "operational_consequence": "A participant can save all 30 entries but cannot inspect completion and explicitly seal the ledger from the token-free browser. The coordinator cannot safely substitute for that participant action without regaining participant authority.",
+  "target_outcome_access_count": 0,
+  "model_call_count": 0,
+  "real_participant_count": 0,
+  "real_component_rows": 0,
+  "formal_evidence_created": false,
+  "m58_authorized": false,
+  "decision": "Proceed with one explicit CSRF-protected participant confirmation and crash-recoverable seal transaction. Keep M57.4 evidence semantics and M57.5-M57.7 capability, recovery and runtime semantics frozen."
+}

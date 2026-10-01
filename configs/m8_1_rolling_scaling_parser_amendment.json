@@ -1,0 +1,11 @@
+{
+  "schema": "ilhdt_m8_1_parser_amendment_v1",
+  "milestone": "M8.1",
+  "registered_before_first_m8_1_model_call": true,
+  "claim_level": "partially_fresh_synthetic_semantic_parser_remediation",
+  "base_config": {"path":"configs/m8_rolling_scaling_preregistration.json","sha256":"d527db028f0c6dd9a112eb04131c0931f44a295d84ef5b6d0c1c430f44759eb6"},
+  "first_failure": {"path":"analysis/m8_rolling_scaling_fresh_synthetic_first_result.json","sha256":"48ccb4da581f43f7bc603d5e88a42b3c8baf667c219af8e89f8dc2279fbd1d01","failed_stage":"feature_extraction::H08","completed_calls":7},
+  "single_change": "Clamp finite numeric feature values below 0 to 0 and above 1 to 1, while retaining the raw value and response. Keys, types, non-finite values, prompt, model, seed, data, cutoffs, hypotheses, and no-retry policy remain strict and unchanged.",
+  "freshness_boundary": "Seven history prompts completed in M8 and the H08 parser failure was exposed. The sixteen rolling test prompts and outcomes were not called before this amendment.",
+  "post_result_change_rule": "Preserve all normalizations and failed hypotheses. Do not tune on any of the sixteen rolling test results."
+}

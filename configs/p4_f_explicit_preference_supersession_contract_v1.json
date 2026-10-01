@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p4_f_explicit_preference_supersession_contract_v1",
+  "version": "1.0.0",
+  "purpose": "Resolve one explicit same-speaker same-category old-to-new preference correction while preserving source and history.",
+  "single_changed_variable": "bounded_explicit_preference_supersession_in_speaker_qualified_selected_memory",
+  "prechange_gap": {
+    "path": "analysis/p4_f_preference_supersession_prechange_gap_2026-09-20.json",
+    "required_status": "confirmed_current_adapter_cannot_apply_explicit_supersession"
+  },
+  "supported_correction_shape": {
+    "speaker": "user_first_person_only",
+    "required_relations": [
+      "explicit_old_value_negation_or_no_longer_marker",
+      "explicit_new_current_value_marker",
+      "old_and_new_values_in_the_same_selected_evidence_item"
+    ],
+    "development_fixture": "Correction: I do not prefer herbal tea anymore. I prefer black tea now.",
+    "old_value": "herbal tea",
+    "new_value": "black tea",
+    "category": "tea",
+    "expected_current_value_jp": "紅茶",
+    "expected_visible_output": "今の好みは紅茶。前のハーブティーから更新してる。"
+  },
+  "required_trace": {
+    "status": "resolved_explicit_preference_supersession",
+    "selected_speaker": "user",
+    "current_value_digest_required": true,
+    "current_value_jp": "紅茶",
+    "revoked_value_digest_required": true,
+    "revoked_value_jp": "ハーブティー",
+    "correction_memory_id_required": true,
+    "correction_trace_id_required": true,
+    "historical_memory_id_required": true,
+    "raw_dialogue_persisted_in_trace": false,
+    "fact_memory_write_count": 0,
+    "private_state_truth_claimed": false
+  },
+  "fail_closed_controls": [
+    "two_preferences_without_an_explicit_correction_remain_ambiguous",
+    "third_party_correction_does_not_update_the_user",
+    "multiple_conflicting_explicit_corrections_abstain",
+    "unsupported_new_value_localization_abstains",
+    "unselected_memory_is_never_used",
+    "safety_route_remains_authoritative"
+  ],
+  "allowed_files": [
+    "uruha_speaker_qualified_fact_p3.py",
+    "test_speaker_qualified_fact_p3.py",
+    "test_p4_f_explicit_preference_supersession.py"
+  ],
+  "implementation_boundary": {
+    "general_memory_ranking_change_allowed": false,
+    "chroma_or_database_rewrite_allowed": false,
+    "profile_schema_change_allowed": false,
+    "general_planner_prompt_change_allowed": false,
+    "model_or_persona_change_allowed": false,
+    "research_dataset_baseline_or_metric_change_allowed": false,
+    "existing_episodes_must_remain_immutable": true,
+    "resolution_must_use_only_already_selected_memory": true
+  },
+  "post_commit_product_acceptance": {
+    "fresh_isolated_runtime_required": true,
+    "session_1_old_preference_turns": 1,
+    "session_1_explicit_correction_turns": 1,
+    "actual_process_restart_count": 1,
+    "session_2_answer_absent_recall_turns": 1,
+    "real_product_turns_total": 3,
+    "retry_count": 0,
+    "production_memory_access_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "terminal_failure": "After the frozen implementation and one real three-turn run, preserve any wrong current value, ambiguity, provenance gap or restart failure. Do not change the values, wording, localization, memory seed or rerun the case.",
+  "success_claim": "One explicit old-to-new user preference correction overrides the current answer after restart while the old episode remains historical and traceable.",
+  "claim_boundary": "A pass would be a bounded product correction mechanism, not general temporal belief revision, open-domain contradiction handling, a research holdout or human-equivalent memory."
+}

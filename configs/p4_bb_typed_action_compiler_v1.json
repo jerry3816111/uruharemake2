@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_p4_bb_typed_action_compiler_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "research_question": "Given an already-authorized, source-bound typed task spec, can a deterministic compiler produce an exact-source, structurally valid, natural-Japanese action plan for six bounded progress mechanisms with zero model calls, while failing closed on malformed, unsafe, private, or unsupported specs?",
+  "dataset": {
+    "path": "datasets/p4_bb_typed_action_compiler_v1.json",
+    "sha256": "b748a36e85277fba6ebd5dd22798b71d6b285f6ba453351f663c54c232c1fa24"
+  },
+  "representation_boundary": {
+    "input": "already-authorized typed task spec plus exact allowed user source",
+    "not_tested": "deriving the typed task spec from raw dialogue",
+    "source_kinds_allowed": [
+      "current_user",
+      "linked_previous_user"
+    ],
+    "safety_class_allowed": "low_risk_reversible",
+    "unknown_or_unsupported_behavior": "fail_closed_without_plan",
+    "model_may_select_progress_mechanism": false,
+    "model_may_add_private_or_factual_slots": false
+  },
+  "templates": {
+    "blank_work_three_headings": {
+      "progress_mechanism": "structure_scaffold",
+      "required_evidence_roles": ["task_object", "state", "request"],
+      "required_slots": ["work_object_jp", "scaffold_unit_jp", "count_word_jp", "unknown_constraint_jp"]
+    },
+    "binary_rule_two_piles": {
+      "progress_mechanism": "group_by_rule",
+      "required_evidence_roles": ["task_object", "rule", "completion"],
+      "required_slots": ["items_jp", "left_label_jp", "right_label_jp", "unknown_constraint_jp"]
+    },
+    "extract_one_by_named_rule": {
+      "progress_mechanism": "extract_relevant_subset",
+      "required_evidence_roles": ["task_object", "selection_rule", "completion"],
+      "required_slots": ["collection_jp", "selected_item_jp", "unknown_constraint_jp"]
+    },
+    "verify_one_named_condition": {
+      "progress_mechanism": "verify_named_condition",
+      "required_evidence_roles": ["task_object", "condition", "limit"],
+      "required_slots": ["target_jp", "condition_jp", "unknown_constraint_jp"]
+    },
+    "close_one_named_obstacle": {
+      "progress_mechanism": "remove_named_obstacle",
+      "required_evidence_roles": ["task_object", "obstacle", "limit"],
+      "required_slots": ["obstacle_jp", "unknown_constraint_jp"]
+    },
+    "write_one_atomic_value": {
+      "progress_mechanism": "direct_atomic_completion",
+      "required_evidence_roles": ["task_object", "value", "limit"],
+      "required_slots": ["atomic_object_jp", "unknown_constraint_jp"]
+    }
+  },
+  "allowed_files_after_freeze": [
+    "uruha_typed_action_compiler_p4.py",
+    "test_p4_bb_typed_action_compiler.py",
+    "test_p4_bb_typed_action_compiler_freeze.py",
+    "analysis/p4_bb_typed_action_compiler_evidence_2026-09-27.json",
+    "analysis/p4_bb_typed_action_compiler_acceptance_2026-09-27.md",
+    "analysis/p4_bb_typed_action_compiler_failure_2026-09-27.md",
+    "CURRENT_TASK.md"
+  ],
+  "formal_gates": {
+    "positive_case_count": 6,
+    "template_coverage_count": 6,
+    "language_coverage_count": 3,
+    "compiled_count": 6,
+    "exact_expected_plan_count": 6,
+    "structurally_valid_count": 6,
+    "exact_source_binding_count": 6,
+    "mechanism_exact_count": 6,
+    "natural_japanese_instruction_count": 6,
+    "deterministic_repeat_match_count": 6,
+    "control_case_count": 12,
+    "control_blocked_count": 12,
+    "control_expected_reason_count": 12,
+    "false_plan_on_control_count": 0,
+    "model_call_count": 0,
+    "raw_dialogue_trace_count": 0,
+    "factual_memory_write_count": 0,
+    "maximum_compile_seconds": 0.01
+  },
+  "failure_policy": {
+    "post_result_dataset_template_or_gate_change_allowed": false,
+    "unsupported_template_may_fall_back_to_free_generation": false,
+    "missing_source_evidence_may_be_inferred": false,
+    "non_japanese_slot_may_be_silently_translated": false,
+    "unsafe_spec_may_be_downgraded_to_safe_without_new_evidence": false,
+    "structural_pass_may_replace_exact_output_or_control_pass": false,
+    "offline_pass_may_authorize_product_runtime_change": false,
+    "p4_ba_negative_result_may_be_overwritten": false
+  },
+  "next_authorization_if_pass": "A pass authorizes only a separate prospective test of a typed-task-spec producer on new raw-dialogue cases. Product integration and Safari remain unauthorized until that upstream boundary also passes.",
+  "claim_boundary": "This is a bounded deterministic compilation test. It cannot establish that the system inferred the right task spec, that the advice helps a person, that the templates cover open-domain dialogue, that users feel understood, that the system beats a matched strong LLM, or that a human equation has been found."
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "uruha_p4_c_read_only_function_calling_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_p4_c_real_model_call",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p4_c_read_only_function_calling_contract_v1.json",
+      "sha256": "f6931b0c48869181a6f7ee5a6bcb46ed5ecf10a676a8c62c133fc4ad1e77f4ad"
+    },
+    "implementation": {
+      "path": "uruha_read_only_function_calling_p4.py",
+      "sha256": "5e553cfacb38ef4bc1b8056471267000bd8b0fe004b766188c359cd2fa18d2e6"
+    },
+    "tests": {
+      "path": "test_uruha_read_only_function_calling_p4.py",
+      "sha256": "2ad0fad92ca0ca6e2f99c508f706edb5a62f71612dcd2c0560c60ede4d3f8ac1"
+    },
+    "offline_result": {
+      "path": "analysis/p4_c_read_only_function_calling_offline_result_2026-09-20.json",
+      "sha256": "b410dfa94355200697dc899c7c6b004616cb3633cafbb146c6d1f468d045c9c6"
+    }
+  },
+  "test_evidence": {
+    "targeted": "29 passed",
+    "adjacent_vrm_policy": "8 passed",
+    "combined": "37 passed",
+    "python_compile": "passed",
+    "git_diff_check": "passed"
+  },
+  "pre_freeze_accounting": {
+    "p4_c_real_model_call_count": 0,
+    "real_tool_execution_count": 0,
+    "production_memory_read_count": 0,
+    "production_memory_write_count": 0,
+    "safari_operation_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "post_commit_authorization": {
+    "one_positive_local_model_call": true,
+    "positive_request": "explicit current runtime status request",
+    "negative_guards_use_real_model": false,
+    "automatic_retry_or_fallback": false,
+    "product_integration_before_positive_pass": false,
+    "external_network_login_paid_api_or_vrm_execution": false
+  },
+  "terminal_rule": "The one positive call is consumed whether it succeeds or fails. Preserve its result and do not tune prompts, schema, model, decoding or token ceiling from the observed output without a new reviewed repair contract.",
+  "claim_boundary": "The freeze makes the one-call result attributable to the prospective gate, tool schema and validator. It is not yet real-provider or product/Safari evidence."
+}

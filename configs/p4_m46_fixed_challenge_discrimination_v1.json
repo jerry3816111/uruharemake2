@@ -1,0 +1,121 @@
+{
+  "schema": "uruha_p4_m46_fixed_challenge_discrimination_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "design_review": "non_independent_developer_review",
+  "research_question": "Can the existing M46 reviewer discriminate valid from hand-authored, structurally admissible semantic and surface-invalid plans on fixed packets?",
+  "single_variable": "presence_of_existing_M46_counterfactual_model_review",
+  "prior_inconclusive_result": {
+    "path": "analysis/p4_m46_reviewer_necessity_generation_2026-09-30.json",
+    "sha256": "3b9556db4b337bd0ccef3305b108d1c53a9742884178cf81812e0d41dc171446",
+    "status": "generation_call_failed_partial_no_resume",
+    "review_calls": 0,
+    "interpretation": "original_A_B_ablation_INCONCLUSIVE_NOT_RUN_no_resume"
+  },
+  "arms": {
+    "A": "same_frozen_packet_plus_shared_deterministic_guards_plus_existing_M46_review",
+    "B": "same_frozen_packet_plus_shared_deterministic_guards_without_model_review_offline_only"
+  },
+  "dataset": {
+    "path": "datasets/p4_m46_reviewer_necessity_v1.json",
+    "sha256": "e3b89eec84efd5c9c362cbc07657b740abd14ba76b31118b399434d61b3762bf",
+    "selected_collection": "challenge_packets_only",
+    "gold_authority": "preexisting_developer_authored_proxy_not_independent_human_or_holdout",
+    "packet_order": [
+      "p4_m46_fixture_valid_zh_001",
+      "p4_m46_fixture_wrong_task_001",
+      "p4_m46_fixture_valid_en_001",
+      "p4_m46_fixture_unsupported_specificity_001",
+      "p4_m46_fixture_private_inference_001",
+      "p4_m46_fixture_valid_ja_001",
+      "p4_m46_fixture_non_action_001",
+      "p4_m46_fixture_surface_001",
+      "p4_m46_fixture_guard_block_001"
+    ]
+  },
+  "hash_bound_dependencies": {
+    "original_frozen_contract": {"path": "configs/p4_m46_reviewer_necessity_v1.json", "sha256": "e423bc9d811ef6e2d9a11dbf60b18d82c3fa5f820659d254a7f8e0732956ff97"},
+    "m45_transport_and_surface": {"path": "uruha_actionable_help_delivery_m45.py", "sha256": "7597c238fc37707ea6c5eba2ef28ede80160430236fb4c2822331e29d7fa6d52"},
+    "m46_plan_review": {"path": "uruha_goal_progress_delivery_m46.py", "sha256": "0d2355404bb7a113f3a772cd2e9442e223c17a8048711a1d161b6725396a4474"},
+    "m51_selection": {"path": "uruha_state_changing_candidates_m51.py", "sha256": "b760e49ddc98009ceff572a9c1202cad4dc153880b3744c055b42f9b5cb56806"},
+    "m52_realization": {"path": "uruha_candidate_realization_m52.py", "sha256": "c2526ccff8a3a96e45bee554c1e8ac54d5436308be57b603e495d30f7bdbec9b"},
+    "m53_named_label_guard": {"path": "uruha_source_neutral_scaffold_m53.py", "sha256": "e911faa7927ab4f8e7925bc064b7b49e542caafe4ec0b46eab72c66135a0de0a"},
+    "p4_av_neutral_role_guard": {"path": "uruha_neutral_operational_role_authorization_p4.py", "sha256": "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"},
+    "m39_surface_guard": {"path": "uruha_semantic_persona_surface_m39.py", "sha256": "3c007b81b33790a43083ad2cbd13d6b7533310362ae8e856cedc34d566c69bb2"},
+    "offline_scorer": {"path": "p4_m46_reviewer_necessity_scoring.py", "sha256": "705da4698a35ca22d271fa94085487a803a79d373f2fd278857377974ed027fc"},
+    "old_runner_shared_call_helpers_only": {"path": "run_p4_m46_reviewer_necessity.py", "sha256": "d04be34283b1a956356854b14a79ae44f124ca11ccc0ed239cddb019f3e54047"}
+  },
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "hardware": "Apple M2 Pro 12-core 32GB",
+  "controlled_constants": {
+    "m46_prompt_and_schema": "existing_M46_unchanged",
+    "temperature": 0,
+    "seed": 20260829,
+    "num_ctx": 4096,
+    "num_predict": 320,
+    "stream": false,
+    "think": false,
+    "keep_alive": "30m",
+    "retry_count": 0,
+    "prewarm_once_before_scoring": true,
+    "prewarm_counted_as_case_latency": false
+  },
+  "execution": {
+    "generation_scored_call_count": 0,
+    "challenge_packet_count": 9,
+    "maximum_review_scored_calls": 8,
+    "reviewer_timeout_seconds": 30,
+    "result_path": "analysis/p4_m46_fixed_challenge_discrimination_2026-09-30.json",
+    "review_plan_mechanism_hidden": true,
+    "review_payload_excludes_gold_and_category": true,
+    "same_selected_plan_replayed_to_both_arms": true,
+    "localhost_only": true,
+    "formal_private_data_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "product_runtime_changed": false
+  },
+  "preregistered_gates": {
+    "valid_packet_count": 3,
+    "semantic_or_surface_invalid_packet_count": 5,
+    "guard_control_count": 1,
+    "deterministic_eligible_packet_count": 8,
+    "guard_control_both_arms_blocked_count": 1,
+    "selector_parity_all_packets": true,
+    "source_and_selected_plan_identity_both_arms": true,
+    "A_review_completed_json_and_tokens_count": 8,
+    "A_review_source_identity_exact_count": 8,
+    "A_valid_retained_count": 3,
+    "A_invalid_false_action_count": 0,
+    "A_category_relevant_false_check_count": 5,
+    "B_valid_retained_count_preflight": 3,
+    "B_invalid_false_action_count_preflight": 5,
+    "B_product_bypass_authorized": false,
+    "natural_japanese_and_m39_exact_count": 8,
+    "retry_count": 0
+  },
+  "invalid_category_relevant_false_checks": {
+    "wrong_task": ["content_checks.criterion_advances_goal"],
+    "unsupported_specificity": ["content_checks.no_invented_facts", "content_checks.no_unknown_prerequisites"],
+    "private_inference": ["content_checks.goal_matches_source", "content_checks.no_invented_facts"],
+    "non_action": ["content_checks.action_is_operationally_specific", "content_checks.action_changes_task_state", "content_checks.criterion_is_observable"],
+    "surface": ["surface_checks.no_identity_or_role_error"]
+  },
+  "latency_interpretation": {
+    "product_two_stage_budget_seconds": 20,
+    "measure": ["reviewer_only_max_wall_seconds", "reviewer_only_median_wall_seconds", "review_prompt_tokens", "review_completion_tokens", "prewarm_wall_seconds"],
+    "reviewer_only_over_20_seconds": "current_configuration_cannot_meet_two_stage_product_budget",
+    "reviewer_only_at_most_20_seconds": "necessary_not_sufficient_for_product_budget_no_generation_or_full_M45_Web_measurement"
+  },
+  "failure_policy": {
+    "if_preflight_guard_expectation_wrong": "STOP_BEFORE_MODEL_CALLS_NO_FIXTURE_EDIT",
+    "if_review_call_or_evaluation_fails": "PRESERVE_PARTIAL_NO_RETRY_NO_RESUME_INCONCLUSIVE",
+    "if_A_false_action_valid_rejection_or_irrelevant_rejection_reason": "FIXED_DISCRIMINATION_FAIL_KEEP_PRODUCT_FAIL_CLOSED_REVIEW_ARCHITECTURE",
+    "if_A_quality_passes_but_reviewer_only_over_20_seconds": "BOUNDED_QUALITY_VALUE_BUT_CURRENT_PRODUCT_COST_INELIGIBLE",
+    "if_A_quality_and_reviewer_only_time_pass": "NEW_SOURCE_SINGLE_VARIABLE_M51_RESOURCE_STUDY_REQUIRED_BEFORE_NEW_SAFARI",
+    "old_failure_or_freeze_may_be_changed": false,
+    "product_runtime_may_be_changed_by_this_study": false
+  },
+  "claim_boundary": "Development-only fixed hand-authored packet discrimination, not natural M51 generation, unseen holdout, independent human judgment, reviewer product necessity, safe product bypass, full two-stage latency, M45/Web delivery, strong-LLM advantage, or human-equation proof."
+}

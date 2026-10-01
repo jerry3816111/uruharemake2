@@ -1,0 +1,110 @@
+{
+  "schema": "uruha_p4_m_cross_language_correction_delivery_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_real_p4_m_product_turn",
+  "implementation_checkpoint": {
+    "commit": "e94adb0e3f6c7949f0f7fb28f68256b3b7290f1e",
+    "p4_l_release": {
+      "path": "research/p4_l_cross_language_scope_delivery_release_2026-09-21.json",
+      "sha256": "14174e8a37dd055dbd252960713de8d5614f92d9be65ea7767a553908ae406f2"
+    },
+    "scope_canonicalization": {
+      "path": "uruha_preference_scope_canonicalization_p4.py",
+      "sha256": "0bbbdb78f1be338a21f800e2d087306af4f1187d648c2cf7317a64cda9635d0f"
+    },
+    "typed_state": {
+      "path": "uruha_multilingual_current_preference_p4.py",
+      "sha256": "a54b9bda5a8470a8deff1a8f543e7a03a01df4a755d5c985487dbe57accec7b0"
+    },
+    "typed_recall": {
+      "path": "uruha_typed_current_preference_recall_p4.py",
+      "sha256": "dbec8a2cd9a6b4bbc1faeb13add35f1b491e038c0cccb377bcc137bda7750aff"
+    },
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "21b00cf406116b0a490769d6256769784ac14e3244b075558c30225176614922"
+    }
+  },
+  "acceptance_bindings": {
+    "contract": {
+      "path": "configs/p4_m_cross_language_correction_delivery_acceptance_v1.json",
+      "sha256": "74ab19e8174fa0e1b0c9a4791a9da72e0a3027d2fe9ac1fc24b7c53022177ea1"
+    },
+    "gate": {
+      "path": "p4_m_cross_language_correction_delivery_gate.py",
+      "sha256": "7bc27d958e9f94e8aefec3c2162eabfcea3619845680c78833671603c2435405"
+    },
+    "gate_test": {
+      "path": "test_p4_m_cross_language_correction_delivery_gate.py",
+      "sha256": "e351d7b5e652a3192f3ad5bbb9e875e81d62bc4f23a7d3e9f539b129edfe0390"
+    },
+    "lineage_before_test": {
+      "path": "test_p4_m_cross_language_correction_lineage.py",
+      "sha256": "f19c303ad7c0c4429ccac5b481d66144b67efc4d5179303d0c76cf4c0c095f18"
+    },
+    "launcher": {
+      "path": "p4_b_safe_isolated_product_launcher_v2.py",
+      "sha256": "bb913333145bc275ff5020d7a550fc6e441bfade45b2ffb6ffc7a246002dca8b"
+    }
+  },
+  "case_novelty_and_boundary": {
+    "first_real_chinese_write_to_japanese_correction_to_english_recall_sequence": true,
+    "exact_write_value": "梅子ソーダ",
+    "exact_correction_value": "柚子茶",
+    "write_alias_id": "drink:zh-Hant:v1",
+    "correction_alias_id": "drink:ja:v1",
+    "prior_exact_input_or_value_form_reused": false,
+    "p4_l_case_rerun": false,
+    "new_product_implementation_added_for_p4_m": false,
+    "reason_no_implementation_change_is_needed": "the isolated before probe already produced one canonical lineage with a unique new active positive, one old historical positive, one explicit negative and distinct alias provenance",
+    "arbitrary_multilingual_correction_claim_allowed": false
+  },
+  "pre_execution_evidence": {
+    "p4_m_lineage_and_gate_tests_passed": 6,
+    "existing_product_mechanism_satisfied_before_probe": true,
+    "product_code_changed_for_p4_m": false,
+    "sandboxed_product_entry_server_started": false,
+    "real_p4_m_product_turn_count": 0,
+    "p4_m_product_process_start_count": 0,
+    "production_memory_access_count": 0,
+    "result_known_before_freeze": false
+  },
+  "execution_order": [
+    "commit and push this freeze before any real P4-M turn",
+    "create one new mode-0700 isolated runtime root and start process 1 on localhost port 7865",
+    "reuse the existing Uruha Safari tab without closing any user tab",
+    "submit the frozen Traditional Chinese write exactly once and capture its P4-I and P4-L nodes",
+    "submit the frozen Japanese explicit correction exactly once in the same process and capture active historical negative lineage plus both alias provenances",
+    "stop process 1 and observe its listener exit",
+    "restart the same launcher-owned root and memory DB with a new pid and product session",
+    "before recall verify the correction is unique active the write is historical and no memory was injected",
+    "submit the answer-absent English current-drink question exactly once",
+    "capture exact Japanese new-value answer P4-J graph node source id latency and zero P4-I or P4-L write",
+    "verify all three profile ids content hashes and lineage remain unchanged while episode count increments once",
+    "run the frozen gate once and preserve pass or fail"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "input_value_scope_expected_surface_or_gate_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "p4_l_real_case_rerun_allowed": false,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "authorized_external_effects": {
+    "localhost_product_process_starts": 2,
+    "process_restart_count": 1,
+    "safari_product_turns": 3,
+    "read_only_isolated_database_inspections": 4,
+    "local_product_planner_model_calls_maximum": 0,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0,
+    "closed_user_tabs": 0
+  },
+  "claim_boundary": "This freeze authorizes one no-retry P4-M product correction-lineage case. A pass remains bounded exact-alias correction and cross-restart delivery evidence, not arbitrary multilingual correction, open-domain memory, long-dialogue reliability, felt understanding, LLM superiority or a human equation."
+}

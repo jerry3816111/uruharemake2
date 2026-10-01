@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UruhaBrain M38 · Target-Guarded Feedback Linkage</title>
+<style>
+:root{--bg:#07111d;--panel:#0d1b2a;--line:#294158;--blue:#38bdf8;--green:#34d399;--red:#fb7185;--amber:#fbbf24;--muted:#9eb2c7;--text:#f1f7fc}
+*{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(circle at 8% 0,#143551 0,transparent 30%),radial-gradient(circle at 94% 12%,#3a1836 0,transparent 28%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Noto Sans JP",sans-serif}main{max-width:1440px;margin:auto;padding:34px}.eyebrow{font:700 12px ui-monospace;letter-spacing:.17em;color:var(--blue)}h1{font-size:38px;margin:8px 0}.sub{color:#bed0e1;line-height:1.65;max-width:1080px}.stamp{display:inline-flex;gap:9px;align-items:center;margin-top:13px;padding:9px 13px;border:1px solid #8e3346;border-radius:999px;background:#36121c;color:#ffb0bd;font:800 13px ui-monospace}.dot{width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 14px var(--red)}
+.grid{display:grid;gap:16px}.metrics{grid-template-columns:repeat(4,1fr);margin:24px 0}.card{background:linear-gradient(145deg,rgba(15,31,48,.97),rgba(9,20,34,.97));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 44px rgba(0,0,0,.22)}.metric b{display:block;font-size:31px}.metric span{font-size:13px;color:var(--muted)}.gain{color:var(--green)}.fail{color:var(--red)}.section-title{margin:0 0 14px;font-size:20px}.flow{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:24px}.flow:before{content:"";position:absolute;left:7%;right:7%;top:56px;height:2px;background:linear-gradient(90deg,var(--blue),var(--green),var(--amber))}.node{position:relative;min-height:145px;text-align:center;padding:14px 10px;border:1px solid #31506a;border-radius:16px;background:#0a1727}.node i{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;margin:0 auto 12px;background:#102d43;border:1px solid var(--blue);box-shadow:0 0 0 7px var(--bg);font-style:normal;font-weight:800;color:var(--blue)}.node b{font-size:14px}.node p{font-size:12px;line-height:1.5;color:var(--muted)}.node.guard{border-color:#26705e}.node.guard i{border-color:var(--green);color:var(--green)}
+.compare{grid-template-columns:1fr 1fr}.barrow{display:grid;grid-template-columns:138px 1fr 78px;gap:12px;align-items:center;margin:16px 0}.track{height:19px;border-radius:99px;background:#1b2a3d;overflow:hidden}.bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#64748b,#94a3b8)}.bar.system{background:linear-gradient(90deg,var(--blue),var(--green))}.pct{text-align:right;font:800 17px ui-monospace}.gates{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.gate{border:1px solid #285743;background:#0b241d;border-radius:13px;padding:12px;color:#a3f6d7;font-size:13px}.gate.bad{border-color:#7b3340;background:#2b121a;color:#ffb3c0}.example{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.quote{padding:16px;border-radius:14px;background:#111f31;border:1px solid #314a65;font-size:18px;line-height:1.7}.chips{margin-top:12px}.chip{display:inline-block;margin:3px;padding:5px 9px;border-radius:999px;border:1px solid #385772;color:#c5def2;font:700 11px ui-monospace}.decision{padding:16px;border-radius:14px;border:1px solid #7b3340;background:#2b121a;line-height:1.65}.decision b{color:#ffb3c0}.explain{color:var(--muted);font-size:13px;line-height:1.65}.footer{margin-top:20px;color:#7992a9;font:12px ui-monospace;line-height:1.65}
+@media(max-width:1000px){.metrics,.compare,.example{grid-template-columns:1fr 1fr}.flow{grid-template-columns:repeat(3,1fr)}.flow:before{display:none}.gates{grid-template-columns:1fr 1fr}}@media(max-width:650px){main{padding:18px}.metrics,.compare,.example,.flow,.gates{grid-template-columns:1fr}h1{font-size:29px}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">URUHA BRAIN · M38 · FROZEN FORMAL RESULT</div>
+<h1>不是看到「不」就改記憶：先確認他真的在修正上一輪</h1>
+<div class="sub">M38 測量一個很窄但必要的認知變數：中文、英文、日文的下一輪話語，究竟是在否定句子裡的某件事，還是在明確撤銷上一個回覆方式並指定新方式。只有後者才可以修改跨輪模型。</div>
+<div class="stamp"><span class="dot"></span>FORMAL FAIL · 17/18 CORRECT · RESULT KEPT IMMUTABLE</div>
+
+<section class="grid metrics">
+  <div class="card metric"><b>44.44%</b><span>凍結 baseline · 8/18</span></div>
+  <div class="card metric"><b class="gain">94.44%</b><span>M38 system · 17/18</span></div>
+  <div class="card metric"><b class="gain">+50.00pp</b><span>相同 pending prediction 與 feedback</span></div>
+  <div class="card metric"><b class="fail">1 miss</b><span>100% 預註冊門檻未達</span></div>
+</section>
+
+<section class="card">
+<h2 class="section-title">內部資料流：把「否定內容」和「修正回覆」分開</h2>
+<div class="flow">
+  <div class="node"><i>1</i><b>上一輪 prediction</b><p>例如系統剛選了<br>solve_regulation</p></div>
+  <div class="node"><i>2</i><b>下一輪可見話語</b><p>文字本身可有「不／no／ない」</p></div>
+  <div class="node guard"><i>3</i><b>Correction reference</b><p>有沒有明確指向<br>上一輪理解／回覆</p></div>
+  <div class="node guard"><i>4</i><b>Unique target</b><p>是否只指定一個新回覆方式</p></div>
+  <div class="node guard"><i>5</i><b>Link or fail closed</b><p>兩者皆有才 contradiction<br>否則 uncertain</p></div>
+  <div class="node"><i>6</i><b>可逆模型更新</b><p>撤銷舊 branch、寫入 typed policy<br>不保存 raw 對話</p></div>
+</div>
+</section>
+
+<section class="grid compare" style="margin-top:16px">
+<div class="card"><h2 class="section-title">受控對照</h2>
+  <div class="barrow"><span>Pre-M38</span><div class="track"><div class="bar" style="width:44.44%"></div></div><div class="pct">8/18</div></div>
+  <div class="barrow"><span>M38 guard</span><div class="track"><div class="bar system" style="width:94.44%"></div></div><div class="pct">17/18</div></div>
+  <p class="explain">這個評測不呼叫 LLM；兩組收到完全相同的上一輪 prediction 與下一輪 feedback，唯一介入是 target-guarded linkage。它只證明 linkage 機制，不代表最終日文回覆品質。</p>
+</div>
+<div class="card"><h2 class="section-title">通過與失敗的 gate</h2><div class="gates">
+  <div class="gate">普通否定誤連結<br><b>0 / 6</b></div>
+  <div class="gate">無目標拒絕誤連結<br><b>0 / 3</b></div>
+  <div class="gate">raw 對話寫入<br><b>0</b></div>
+  <div class="gate">心理事實寫入<br><b>0</b></div>
+  <div class="gate">p95 latency<br><b>1.715 ms</b></div>
+  <div class="gate bad">明確校正 recall<br><b>8 / 9 · FAIL</b></div>
+</div></div>
+</section>
+
+<section class="card" style="margin-top:16px">
+<h2 class="section-title">唯一漏掉的保留題：知道「你理解反了」，卻沒抓到陪伴目標</h2>
+<div class="example">
+  <div><div class="quote">「你理解反了。別拆步驟，陪我一起緊張一下就好。」</div><div class="chips"><span class="chip">previous: solve_regulation</span><span class="chip">expected: share_arousal</span><span class="chip">language: zh</span></div></div>
+  <div class="decision"><b>實際：FAIL CLOSED</b><br>correction reference = true<br>replacement candidates = 0<br>branch revision = none<br><br><b>錯誤原因</b><br>規則只覆蓋另一種「陪我／一起／緊張」排列，沒有把這個組合辨識為 share_arousal。</div>
+</div>
+<p class="explain">這個錯誤沒有造成亂改記憶，因此安全方向是對的；但也證明 M38 仍是有限語言覆蓋，不能宣稱開放域語用理解。M38 已封存，不回頭補規則；後續版本必須用新的開發集與新的 reserve 修復。</p>
+</section>
+
+<section class="card" style="margin-top:16px">
+<h2 class="section-title">研究上真正得到什麼</h2>
+<div class="gates">
+  <div class="gate">證實「否定」不能直接等於「校正上一輪」；普通命題否定應排除。</div>
+  <div class="gate">證實唯一 replacement 能驅動 M34 branch 撤銷與替換，且更新可追溯。</div>
+  <div class="gate bad">也證實規則覆蓋仍會漏掉自然語序；必須以失敗案例推進新的機制，而不是宣稱完成。</div>
+</div>
+</section>
+
+<div class="footer">RAW RESULT SHA-256 · b08df2707e37d0253c9a1ff591f8f7fdb135d6802517fdec03e3cb38f92e89c1<br>BOUNDARY · AUTHOR-CONSTRUCTED SOURCE-DISJOINT RESERVE · NO MODEL CALL · NOT OPEN-DOMAIN CORRECTION · NOT PRIVATE INTENT TRUTH · NOT HUMAN FELT-UNDERSTANDING EVIDENCE</div>
+</main></body></html>

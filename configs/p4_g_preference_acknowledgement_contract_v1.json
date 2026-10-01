@@ -1,0 +1,104 @@
+{
+  "schema": "uruha_p4_g_preference_acknowledgement_contract_v1",
+  "version": "1.0.0",
+  "single_changed_variable": "bounded_casual_japanese_surface_for_explicit_first_person_preference_write_or_correction",
+  "activation_requirements": {
+    "write": [
+      "explicit_first_person_preference_statement",
+      "explicit_request_to_remember_as_current_preference"
+    ],
+    "correction": [
+      "explicit_first_person_old_preference_negation",
+      "explicit_first_person_new_current_preference"
+    ],
+    "common": [
+      "post_language_guard_reply_is_generic_formal_acknowledgement",
+      "not_metalinguistic_quoted_hypothetical_or_third_person"
+    ]
+  },
+  "authoritative_surfaces": {
+    "write": "ん、その好みは覚えとく。",
+    "correction": "ん、訂正の内容はそのまま覚えとく。"
+  },
+  "generic_formal_acknowledgements": [
+    "了解しました",
+    "わかりました",
+    "分かりました",
+    "承知しました"
+  ],
+  "positive_cases": [
+    {
+      "id": "write_en",
+      "language": "en",
+      "act": "write",
+      "input": "I prefer chamomile tea. Please remember that as my current tea preference."
+    },
+    {
+      "id": "write_zh",
+      "language": "zh",
+      "act": "write",
+      "input": "我喜歡無糖綠茶，請記住這是我現在的茶類偏好。"
+    },
+    {
+      "id": "write_ja",
+      "language": "ja",
+      "act": "write",
+      "input": "今はほうじ茶が好き。今の好みとして覚えといて。"
+    },
+    {
+      "id": "correction_en",
+      "language": "en",
+      "act": "correction",
+      "input": "Correction: I do not prefer chamomile tea anymore. I prefer black coffee now."
+    },
+    {
+      "id": "correction_zh",
+      "language": "zh",
+      "act": "correction",
+      "input": "更正：我現在不喜歡無糖綠茶了，現在比較喜歡玄米茶。"
+    },
+    {
+      "id": "correction_ja",
+      "language": "ja",
+      "act": "correction",
+      "input": "訂正。もうほうじ茶は好みじゃない。今は玄米茶が好き。"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "understanding_question",
+      "input": "Do you understand my preference?"
+    },
+    {
+      "id": "third_person_memory",
+      "input": "Rina prefers coffee. Remember that."
+    },
+    {
+      "id": "hypothetical_preference",
+      "input": "If I preferred black tea, would you remember it?"
+    },
+    {
+      "id": "quoted_preference",
+      "input": "Translate the sentence: I prefer black tea. Please remember that."
+    },
+    {
+      "id": "ordinary_chat",
+      "input": "I had a long day and just want to talk."
+    },
+    {
+      "id": "third_person_correction",
+      "input": "Correction: Rina does not prefer tea anymore. She prefers coffee now."
+    }
+  ],
+  "invariants": {
+    "non_generic_natural_reply_unchanged": true,
+    "visible_output_japanese_only": true,
+    "model_call_added": false,
+    "episode_write_count_changed": false,
+    "memory_ranking_changed": false,
+    "raw_dialogue_persisted_in_trace": false,
+    "p4_f_supersession_or_recall_changed": false,
+    "safety_surface_remains_authoritative": true
+  },
+  "claim_boundary": "This contract only replaces a generic formal acknowledgement on explicitly classified first-person preference write or correction turns. It is not a general persona rewrite, semantic memory guarantee, understanding result or research advantage."
+}

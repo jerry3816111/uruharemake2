@@ -1,0 +1,106 @@
+{
+  "schema": "uruha_p3_b62_real_context_prediction_freeze_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_any_real_context_model_call_or_future_outcome_access",
+  "research_question": "Under the same model, source context, two-call graph, decoding settings, and completion-token ceiling, does a pragmatic-state representation produce a more accurate next-behavior distribution than a literal-summary representation on this real temporal row?",
+  "claim_level": "single_real_row_exploratory_prediction_not_formal_m56",
+  "bindings": {
+    "b61_release": {
+      "path": "research/p3_b61_native_subtitle_cutoff_extractor_release_2026-09-20.json",
+      "sha256": "b9e9e5bad747fd9cda170e382f6f35d10c7ae9a017ceb6a882c86ca071031ada"
+    },
+    "provider": {
+      "path": "longitudinal_human_model/baselines.py",
+      "sha256": "8e5cff0491814061c0678554998464948153704f6762bc9460f37b69a68178cc"
+    },
+    "public_reader": {
+      "path": "p3_b60_caption_context_reader.py",
+      "sha256": "ed0b45b34bba35e95137375311e5ee2b3f9129afa9ab498a9905a76f0ec426b9"
+    }
+  },
+  "input": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "context_seconds": [3000.0, 3180.0],
+    "public_root": "external_data/p3_b61_public_caption_context",
+    "artifact_id": "p3-b60-7a690e386e094578",
+    "artifact_sha256": "7a690e386e0945785f0dbe8d5573a2eda6f7ed6be64c28e01ee9e4cbbd5d0537",
+    "cue_count": 65,
+    "future_outcome_seconds": [3181.0, 3241.0],
+    "future_outcome_access_before_prediction_freeze_required": 0,
+    "acquisition_module_import_allowed": false
+  },
+  "target": {
+    "reference_person": "一ノ瀬うるは",
+    "persona_boundary": "public livestream behavior only; no private state, childhood, or unseen fact inference",
+    "task": "predict the next observable communicative behavior after the cutoff",
+    "candidate_behavior_labels": [
+      "acknowledge_then_continue",
+      "accept_support_and_continue",
+      "ask_clarification",
+      "defer_commitment",
+      "direct_rejection",
+      "pause_and_reassess"
+    ]
+  },
+  "conditions": {
+    "BASELINE_LITERAL": {
+      "representation": "literal chronological summary with explicit topics and actions only",
+      "inference_about_emotion_intent_relationship_or_need_allowed": false
+    },
+    "SYSTEM_PRAGMATIC_STATE": {
+      "representation": "observed literal state plus uncertain pragmatic intent, stance, relation signal, implicit need, alternative hypothesis, and predicted next-action tendency",
+      "private_thought_or_unseen_fact_assertion_allowed": false
+    }
+  },
+  "fairness": {
+    "same_base_model": true,
+    "same_context_artifact": true,
+    "same_target_and_label_contract": true,
+    "same_two_call_graph": true,
+    "same_options_per_call": true,
+    "same_completion_token_ceiling_per_condition": 512,
+    "representation_call_num_predict": 256,
+    "prediction_call_num_predict": 256,
+    "actual_prompt_completion_tokens_and_latency_recorded": true,
+    "unequal_actual_token_use_must_be_reported": true
+  },
+  "model": {
+    "provider": "local_ollama",
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "name": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "options": {
+      "temperature": 0,
+      "seed": 260920,
+      "num_ctx": 8192
+    }
+  },
+  "output_contract": {
+    "probabilities_exactly_all_labels": true,
+    "probabilities_sum_tolerance": 0.000001,
+    "predicted_next_content_language": "ja",
+    "predicted_next_content_max_characters": 160,
+    "representation_text_persistence_allowed": false,
+    "raw_prompt_or_model_response_persistence_allowed": false,
+    "prompt_and_representation_hash_persistence_required": true
+  },
+  "execution": {
+    "condition_order": ["BASELINE_LITERAL", "SYSTEM_PRAGMATIC_STATE"],
+    "model_call_count_exact": 4,
+    "retry_or_condition_fallback_allowed": false,
+    "result_state_root": "external_data/p3_b62_real_context_prediction_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "prediction_result.json",
+    "intent_without_complete_result_is_terminal": true
+  },
+  "denied_actions": {
+    "future_outcome_access_before_prediction_result": true,
+    "private_acquisition_state_read": true,
+    "caption_raw_or_post_cutoff_read": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B62 can freeze two same-model prediction distributions and generated next-content hypotheses from one real pre-cutoff row. Without the separately unlocked future outcome it cannot say which is correct; after one row it still cannot establish general advantage, human-level understanding, or a human-response equation."
+}

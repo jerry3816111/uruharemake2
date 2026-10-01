@@ -1,0 +1,49 @@
+{
+  "schema": "uruha_p4_o_persisted_reference_time_contract_v1",
+  "version": "1.0.0",
+  "stage": "P4-O",
+  "research_question": "Can the additive P4-N adapter read one real persisted active typed preference without a caller-supplied reference_time while preserving the same validity instant across its base and additive reads?",
+  "single_changed_variable": "default reference_time exactly once at the P4-N adapter boundary and pass that same non-null value to both reads",
+  "development_case": {
+    "value": "ごぼう茶",
+    "write_input": "今はごぼう茶が好き。今の飲み物の好みとして覚えといて。",
+    "recall_input": "What is my current drink preference?",
+    "expected_scope": "drink",
+    "expected_strategy": "bounded_japanese_identity",
+    "expected_surface": "今の飲み物の好みはごぼう茶。前のじゃなくて、今の方ね。",
+    "fixture_role": "offline development regression only",
+    "future_product_case_allowed": false
+  },
+  "before_expectation": {
+    "write_status": "typed_current_preference_written",
+    "persistent_record_count": 1,
+    "recall_exception_type": "ValueError",
+    "recall_exception_message": "reference_time must be an ISO datetime or datetime instance"
+  },
+  "success_requirements": [
+    "a real temporary Chroma collection returns the exact frozen Japanese surface when reference_time is omitted",
+    "the base P4-J read and additive P4-N re-read receive one identical non-null ISO datetime",
+    "an explicit caller-supplied reference_time is passed through byte-for-byte to both reads",
+    "a record valid at the explicit reference time remains eligible",
+    "a record expired at the explicit reference time remains ineligible and is never surfaced",
+    "the read performs no profile mutation and adds no model call",
+    "all P4-N provenance script length punctuation and injection abstention boundaries remain unchanged",
+    "the P4-M and P4-N-REAL terminal failures remain preserved without rerun"
+  ],
+  "failure_requirements": [
+    "preserve the exception or any semantic regression as a failed P4-O result",
+    "do not change the frozen development case after implementation",
+    "do not add the development or exposed product values to the finite localization map",
+    "do not rerun the exposed そば茶 product case",
+    "do not claim product delivery from offline evidence"
+  ],
+  "resource_limits": {
+    "paid_api_calls": 0,
+    "model_calls": 0,
+    "product_turns": 0,
+    "same_case_retries": 0,
+    "allowed_implementation_files": [
+      "uruha_source_bound_japanese_value_surface_p4.py"
+    ]
+  }
+}

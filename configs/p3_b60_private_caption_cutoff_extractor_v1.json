@@ -1,0 +1,112 @@
+{
+  "schema": "uruha_p3_b60_private_caption_cutoff_extractor_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_under_standing_authorization_before_caption_content_request",
+  "single_changed_variable": "retrieve the selected Japanese automatic-caption json3 privately and publish only cues wholly inside the frozen pre-cutoff context window",
+  "authorization": {
+    "basis": "2026-09-19 through 2026-09-20 user standing authorization plus B59 released caption path",
+    "resolver_process_invocation_count_max": 1,
+    "caption_get_invocation_count_max": 1,
+    "retry_or_fallback_authorized": false,
+    "paid_api_login_cookie_or_account_access_authorized": false
+  },
+  "bindings": {
+    "b59_release": {
+      "path": "research/p3_b59_source_semantic_availability_probe_release_2026-09-20.json",
+      "sha256": "18d1d3c955e2987946478587532377af37a75d168bb4d24ff6d7be0ff76f02d8"
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0,
+    "selected_track_type": "automatic",
+    "selected_language_code": "ja",
+    "selected_format": "json3"
+  },
+  "resolver": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "print_fields_in_order": ["automatic_captions", "http_headers"],
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "file_download_allowed": false,
+    "caption_content_download_via_resolver_allowed": false,
+    "metadata_sidecar_allowed": false,
+    "cache_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "timeout_seconds": 120,
+    "provider_http_request_count_observable": false
+  },
+  "caption_get": {
+    "client": "python_urllib",
+    "timeout_seconds": 120,
+    "maximum_response_bytes": 10485760,
+    "allowed_request_header_names": ["User-Agent", "Accept", "Accept-Language"],
+    "forbidden_request_header_names": ["Cookie", "Authorization", "Proxy-Authorization", "Set-Cookie"],
+    "redirect_or_provider_http_request_count_observable": false
+  },
+  "cutoff_extraction": {
+    "include_rule": "cue_start_gte_context_start_and_cue_end_lte_context_end",
+    "context_start_milliseconds": 3000000,
+    "context_end_milliseconds": 3180000,
+    "minimum_cue_count": 1,
+    "text_normalization": "collapse_unicode_whitespace",
+    "cue_order": "ascending_start_then_end",
+    "post_cutoff_cue_persistence_allowed": false,
+    "overlapping_cutoff_cue_persistence_allowed": false
+  },
+  "capability_separation": {
+    "private_acquisition_may_temporarily_observe_full_caption": true,
+    "private_raw_caption_persistence_allowed": false,
+    "track_url_text_or_hash_persistence_allowed": false,
+    "resolver_raw_output_persistence_allowed": false,
+    "caption_response_raw_persistence_allowed": false,
+    "private_material_cleared_before_fresh_public_reader": true,
+    "prediction_side_future_access_required": 0,
+    "prediction_side_import_of_acquisition_module_allowed": false
+  },
+  "public_artifact": {
+    "root": "external_data/p3_b60_public_caption_context",
+    "artifact_schema": "uruha_p3_b60_caption_context_v1",
+    "manifest_schema": "uruha_p3_b60_caption_context_manifest_v1",
+    "artifact_extension": ".json",
+    "artifact_file_mode": "0400",
+    "manifest_file_mode": "0400",
+    "root_mode_after_publish": "0500",
+    "fresh_reader_count": 1,
+    "fresh_reader_returns_caption_text": false,
+    "forbidden_field_names": ["url", "track_url", "raw_metadata", "raw_caption", "future", "outcome"]
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b60_caption_cutoff_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "exclusive_intent_before_resolver": true,
+    "intent_without_result_is_terminal": true,
+    "preexisting_nonempty_public_root_allowed": false
+  },
+  "denied_actions": {
+    "human_display_or_semantic_inspection_of_caption_text": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "training_write": true,
+    "future_outcome_publication": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_account_access": true,
+    "external_deployment": true
+  },
+  "claim_boundary": "B60 can establish only that one private caption-acquisition worker produced a hash-verified Japanese context artifact containing cues wholly inside 3000..3180 and that a fresh reader cannot observe URL, raw caption, or post-cutoff content. It does not execute or score a prediction, train a model, inspect the semantics as a human, or establish system advantage."
+}

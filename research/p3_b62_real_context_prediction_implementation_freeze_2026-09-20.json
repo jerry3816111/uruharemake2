@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_p3_b62_real_context_prediction_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b62_model_calls_or_future_access",
+  "authorization_basis": "standing user authorization plus B61 real pre-cutoff context release",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b62_real_context_prediction_freeze_v1.json",
+      "sha256": "c775719243a69fba8d4890461b0f0aee8281f92ce830642a9e02c68e45362c19"
+    },
+    "implementation": {
+      "path": "p3_b62_real_context_prediction_freeze.py",
+      "sha256": "fd8ead6c6a9529efc08ad80f23f547b27b15f6ac3a833377aa0706baba2ed24b"
+    },
+    "tests": {
+      "path": "test_p3_b62_real_context_prediction_freeze.py",
+      "sha256": "9cf107a8659a633e2f251921e2f5e043bdde4879eb001e7b156e98b633085402"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b62_real_context_prediction_freeze.py -k 'not implementation_freeze'",
+    "passed": 9,
+    "failed": 0
+  },
+  "model_call_count_at_freeze": 0,
+  "future_outcome_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "single_changed_variable": "literal chronological representation versus uncertainty-bearing pragmatic-state representation",
+  "fairness": {
+    "model": "qwen3.5:9b",
+    "condition_call_count_each": 2,
+    "completion_token_ceiling_each": 512,
+    "context_artifact_sha256": "7a690e386e0945785f0dbe8d5573a2eda6f7ed6be64c28e01ee9e4cbbd5d0537",
+    "temperature": 0,
+    "seed": 260920,
+    "num_ctx": 8192
+  },
+  "success_condition": "both conditions complete exactly two calls, emit exact six-label normalized probabilities plus Japanese next-content predictions, persist only hashes and accounting for intermediate representations/prompts/responses, and freeze an immutable result before any future outcome access",
+  "failure_condition": "any input hash, provider, schema, language, probability, call-count, persistence, retry, or future-access violation produces a terminal redacted failure and does not authorize outcome unlock",
+  "claim_boundary": "B62 is one exploratory real temporal row. A completed prediction still cannot establish correctness until the future is separately unlocked and cannot establish general system advantage even after one-row scoring."
+}

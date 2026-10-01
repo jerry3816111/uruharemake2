@@ -1,0 +1,115 @@
+{
+  "schema": "uruha_p4_o_real_persisted_reference_time_delivery_result_v1",
+  "observed_at": "2026-09-22T07:34:00+08:00",
+  "status": "pass",
+  "freeze_checkpoint": {
+    "commit": "56511df15f8d150ca02410ac655c1fc1adf870fe",
+    "freeze": {
+      "path": "research/p4_o_real_persisted_reference_time_delivery_freeze_2026-09-22.json",
+      "sha256": "0f7d2d53dbdae4584430c9f34ffb1be27ded38d49f1e8e95f542984e682dd01c"
+    },
+    "contract": {
+      "path": "configs/p4_o_real_persisted_reference_time_delivery_acceptance_v1.json",
+      "sha256": "1cc5b6d800cd3455c3d96dd82a318142a678e1568488307f372d04de0d0eb169"
+    },
+    "gate": {
+      "path": "p4_o_real_persisted_reference_time_delivery_gate.py",
+      "sha256": "436a8b08f629f2e81d51cdc609399820710ea967f445e57e225d595f38706d67"
+    },
+    "gate_test": {
+      "path": "test_p4_o_real_persisted_reference_time_delivery_gate.py",
+      "sha256": "f090122bd038ce33a5536c8390c0bec8f71705028ebf5ddbb7dd543beafddddc"
+    }
+  },
+  "evidence": {
+    "path": "analysis/p4_o_real_persisted_reference_time_delivery_evidence_2026-09-22.json",
+    "sha256": "d675164bcdbd6d7922e48368f0d0f794424312465315210dda89a5c54168a465"
+  },
+  "gate_result": {
+    "status": "pass",
+    "failed_gate_count": 0,
+    "failed_gates": []
+  },
+  "observed_flow": {
+    "process_1": {
+      "pid": 13139,
+      "session_id": "20260922_072840_59121aee",
+      "input": "今はたんぽぽ茶が好き。今の飲み物の好みとして覚えといて。",
+      "visible_output": "ん、その好みは覚えとく。",
+      "end_to_end_seconds": 16.6924,
+      "episode_id": "d0f53054-4d37-4097-8ff3-33dbaf5b35ad",
+      "current_memory_id": "d345146e-9a43-456e-bfae-caf5f21cbba7",
+      "profile_write_count": 1
+    },
+    "true_restart": {
+      "old_process_exit_observed": true,
+      "old_listener_closed_before_new_process": true,
+      "new_pid": 13358,
+      "new_session_id": "20260922_073254_023e0ad4",
+      "same_runtime_root": true,
+      "same_memory_db": true,
+      "active_record_observed_before_recall": true,
+      "manual_memory_injection_count": 0
+    },
+    "process_2": {
+      "input": "What is my current drink preference?",
+      "answer_present_in_input": false,
+      "visible_output": "今の飲み物の好みはたんぽぽ茶。前のじゃなくて、今の方ね。",
+      "end_to_end_seconds": 2.6575,
+      "episode_id": "c7389033-c018-4b0f-86af-f0432f94d40a",
+      "contract_status": "resolved_unique_active_typed_current_preference",
+      "value_surface_strategy": "bounded_japanese_identity",
+      "localized_value_jp": "たんぽぽ茶",
+      "active_memory_id": "d345146e-9a43-456e-bfae-caf5f21cbba7",
+      "profile_write_count": 0,
+      "general_model_call_count": 0,
+      "fallback_count": 0
+    }
+  },
+  "persistent_state": {
+    "profile_record_count": "1 before recall / 1 after recall",
+    "episode_record_count": "1 before recall / 2 after recall",
+    "typed_record_content_sha256": "82f5c89d3c13dda3dd7d930a2b1f9564eff4e1d7d42617c47642c2738eeae433",
+    "typed_record_hash_unchanged": true,
+    "source_language": "ja",
+    "source_input_sha256": "dd57b98893a2c665bd73b1289ebf8fc7ebbde87caed141050d78edbed7d05b88",
+    "preference_scope_sha256": "218ae6b44966c8a9913e78ef950ea5d047ac7c3d73341f9867d760cc38c3fc1f",
+    "provenance_unchanged": true
+  },
+  "graph_and_ui": {
+    "safari_verified": true,
+    "tab_count_before": 52,
+    "tab_count_after": 52,
+    "closed_user_tabs": 0,
+    "p4_j_graph_label": "typed_current_preference_recall_p4",
+    "p4_j_graph_stage": "select",
+    "p4_j_graph_node_visible": true,
+    "bounded_japanese_identity_visible": true,
+    "final_surface_matches_contract": true
+  },
+  "accounting": {
+    "process_starts": 2,
+    "process_restarts": 1,
+    "product_turns": 2,
+    "successful_product_turns": 2,
+    "failed_product_turns": 0,
+    "retry_count": 0,
+    "general_model_call_count": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "preserved_runtime_artifacts": {
+    "runtime_root": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-83eylly_",
+    "conversation_jsonl_bytes": 1848625,
+    "conversation_jsonl_rows": 2,
+    "listener": "127.0.0.1:7867",
+    "process_2_pid": 13358,
+    "process_2_left_running_for_user_inspection": true,
+    "safari_left_on_result_page": true
+  },
+  "claim_boundary": "This pass closes the previously observed persisted-record reference-time delivery defect for one new prospectively frozen two-process Safari case. It proves exact cross-restart delivery of one source-bound Japanese typed current preference with a truthful graph and unchanged typed record. It does not prove arbitrary or open-domain memory, long-dialogue reliability, felt understanding, advantage over a strong LLM, individual future prediction or a human equation."
+}

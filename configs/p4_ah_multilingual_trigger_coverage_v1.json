@@ -1,0 +1,63 @@
+{
+  "schema": "uruha_p4_ah_multilingual_trigger_coverage_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_ah_multilingual_trigger_coverage_v1.json",
+    "sha256": "e2b7521b1ac005908e28eada0eb62a07bce465db050cd15c60299043bfd06a3c",
+    "development_case_count": 2,
+    "fresh_positive_case_count": 9,
+    "fresh_control_case_count": 12,
+    "languages": ["zh", "en", "ja"]
+  },
+  "predecessor": {
+    "adaptive_module": "uruha_adaptive_person_model.py",
+    "adaptive_module_sha256": "96c2557b52dee307ee455c1ad61500223df2c981922b68fc94b31842015563bf",
+    "outcome_binding_module": "uruha_desired_response_outcome_binding_p4.py",
+    "outcome_binding_module_sha256": "ddd6978eabd860c842331e211fa2051e03ecb4cf13476d439b42acfc40c2a181",
+    "product_entry": "uruha_web_ui_product_p4_ag.py",
+    "product_entry_sha256": "d223b39bc09e3bf4f91344cb373f3ddd2c57040eb7b82e1714dfa3df9f30e48d"
+  },
+  "implementation_boundary": {
+    "mode": "additive_typed_compositional_trigger_extension",
+    "predecessor_change_allowed": false,
+    "feedback_classifier_change_allowed": false,
+    "outcome_binding_change_allowed": false,
+    "p4_af_authority_change_allowed": false,
+    "candidate_score_or_order_change_allowed": false,
+    "visible_reply_change_allowed": false,
+    "prompt_or_model_change_allowed": false,
+    "model_call_added_allowed": false,
+    "memory_write_added_allowed": false,
+    "full_case_string_patch_allowed": false
+  },
+  "gates": {
+    "case_count": 23,
+    "development_exact_predicate_count": 2,
+    "fresh_positive_exact_predicate_count": 9,
+    "fresh_control_exact_abstention_count": 12,
+    "private_truth_claim_count": 0,
+    "base_trace_mutation_count": 0,
+    "complete_case_string_in_source_count": 0,
+    "candidate_ranking_changed_count": 0,
+    "visible_reply_changed_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0,
+    "raw_dialogue_persisted_count": 0
+  },
+  "integration_gates": {
+    "additive_product_entry_installs_extension": true,
+    "single_graph_node_before_utterance": true,
+    "predecessor_nodes_retained": true
+  },
+  "failure_policy": {
+    "maximum_informed_correction_batches": 2,
+    "gate_or_fresh_case_change_after_result_allowed": false,
+    "score_or_threshold_tuning_on_fresh_cases_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "real_product_or_safari_execution_authorized": false
+  },
+  "claim_boundary": "A pass shows bounded multilingual compositional coverage on frozen developer-authored cases while abstaining on frozen near controls. It does not prove open-domain semantic understanding, private mental-state truth, natural-distribution performance, or a human equation."
+}

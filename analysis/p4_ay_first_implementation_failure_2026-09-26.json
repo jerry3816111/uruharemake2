@@ -1,0 +1,35 @@
+{
+  "schema": "uruha_p4_ay_first_implementation_failure_v1",
+  "status": "fail_preserved_before_informed_correction",
+  "frozen_dataset_sha256": "956080cc3f367e92a9f43e49869df959108a665c90fae89de7e81b0fca5c5173",
+  "metrics": {
+    "case_count": 19,
+    "development_authorized_count": 0,
+    "development_prior_source_linked_count": 0,
+    "fresh_positive_authorized_count": 5,
+    "fresh_positive_prior_source_linked_count": 5,
+    "fresh_positive_exact_source_identity_count": 5,
+    "fresh_positive_downstream_action_contract_count": 5,
+    "fresh_control_prior_source_added_count": 0,
+    "fresh_control_expected_status_count": 12,
+    "genuine_task_replacement_block_count": 3,
+    "predecessor_positive_prior_source_linked_count": 0,
+    "p4_ax_authority_preserved_count": 7,
+    "p4_at_outcome_mutation_count": 0,
+    "p4_au_non_task_guard_bypass_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "added_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "assistant_source_count": 0,
+    "private_inference_source_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "visible_reply_change_count": 0,
+    "full_fresh_string_patch_count": 0
+  },
+  "observations": [
+    "The Japanese fresh case ending the support clause with the ordinary copula suffix datta was not recognized as feedback-only, so one of two refs remained genuine.",
+    "The exposed real Chinese Turn-1 source remains speaker_role=unspecified. Once the current-task replacement false positive is removed, the untouched P4-AU prior-role guard blocks it. Fixing that role guard would be a second variable and is not authorized in P4-AY.",
+    "The predecessor metric incorrectly counted only a newly added source; all six predecessor rows already contained their exact P4-AU source and were preserved. This is an evidence-harness counting defect, not a capability failure."
+  ],
+  "allowed_informed_correction": "Extend only the frozen Japanese positive-evaluation suffix grammar and count an already-present exact predecessor source as preserved. Do not change the Chinese prior-role guard, frozen dataset, gate, P4-AX/P4-AT authority, model, prompt, memory, or visible reply."
+}

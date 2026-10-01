@@ -1,0 +1,126 @@
+{
+  "schema": "uruha_p3_b51_temporal_forecast_bridge_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_new_source_selection_or_model_generation",
+  "research_question": "Does an explicit, provenance-bound and correctable person-state model improve temporally blind response-category forecasting over matched current-context, persona-prompt, retrieval and structured-history controls?",
+  "single_changed_variable": "map the 2026 related-work-derived Task A onto the already frozen M55/M56 machinery without creating a second runner or opening any target outcome",
+  "bindings": {
+    "temporal_row_contract": {
+      "path": "configs/m55_temporal_row_contract_v1.json",
+      "sha256": "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"
+    },
+    "fair_comparison_preflight": {
+      "path": "configs/m56_fair_comparison_preflight_v1.json",
+      "sha256": "184493d9c466d02625edddbfb0be19838c791fb3c4e011f8905e9da0fc3980b2"
+    },
+    "blinded_execution_capsule_freeze": {
+      "path": "research/m56_blinded_execution_capsule_implementation_freeze_2026-09-01.json",
+      "sha256": "0214c10bf232c3f657371dfe9cfae10e9c6563485876894eaf22035f2a66e979"
+    },
+    "pre_outcome_equation_artifacts": {
+      "path": "configs/m56_pre_outcome_equation_artifacts_v1.json",
+      "sha256": "40d966463ee7969d550abd7b5bffbdc700c5e9c58f879b7979fe8bf6fb99fb57"
+    },
+    "related_work_map": {
+      "path": "research/2026_related_work_module_map_2026-09-17.md",
+      "sha256": "f6516b82520d747cbfaa3dc2e204c92cdfa2aea4cf603b026c3aa5ab7a877334"
+    }
+  },
+  "task_a_condition_mapping": [
+    {
+      "task_a_role": "current_context_only",
+      "m56_condition_id": "B1_BASE_LLM"
+    },
+    {
+      "task_a_role": "persona_prompt",
+      "m56_condition_id": "B2_PERSONA_PROMPT"
+    },
+    {
+      "task_a_role": "retrieved_public_history",
+      "m56_condition_id": "B3_RAG"
+    },
+    {
+      "task_a_role": "strong_same_information_control",
+      "m56_condition_id": "B5_STRUCTURED_HISTORY"
+    },
+    {
+      "task_a_role": "full_person_state_system",
+      "m56_condition_id": "OURS_HYBRID"
+    }
+  ],
+  "related_work_inputs": [
+    {
+      "work": "PersonaForge",
+      "primary_url": "https://aclanthology.org/2026.findings-acl.386/",
+      "adopted_scope": "long-dialogue persona drift and resource-overhead reporting"
+    },
+    {
+      "work": "Dynamic Persona Coherence",
+      "primary_url": "https://aclanthology.org/2026.acl-long.1336/",
+      "adopted_scope": "separation of stable, accumulated and transient state plus correction"
+    },
+    {
+      "work": "Memory-Driven Role-Playing",
+      "primary_url": "https://aclanthology.org/2026.findings-acl.1175/",
+      "adopted_scope": "memory anchoring, selecting, bounding and enacting diagnostics"
+    },
+    {
+      "work": "Action-Guided Attention",
+      "primary_url": "https://proceedings.iclr.cc/paper_files/paper/2026/hash/5354d0b74b75801015e9d1e8326e7c19-Abstract-Conference.html",
+      "adopted_scope": "temporally blind anticipation and counterfactual inspection"
+    },
+    {
+      "work": "Persistent Personas?",
+      "primary_url": "https://aclanthology.org/2026.eacl-long.246/",
+      "adopted_scope": "long-horizon persona, instruction-following and safety degradation"
+    },
+    {
+      "work": "HumanLLM",
+      "primary_url": "https://aclanthology.org/2026.acl-long.1783/",
+      "adopted_scope": "factor-level diagnostics instead of one holistic human-likeness score"
+    }
+  ],
+  "required_mechanics": {
+    "strict_pre_outcome_cutoff": true,
+    "current_outcome_excluded_from_generation": true,
+    "same_model_for_learned_conditions": true,
+    "same_information_primary_control": true,
+    "probability_distribution_output": true,
+    "proper_scoring_rules": [
+      "brier",
+      "negative_log_likelihood"
+    ],
+    "prediction_committed_before_outcome_join": true,
+    "actual_tokens_latency_and_peak_memory_reported": true,
+    "negative_result_retained": true,
+    "private_state_truth_forbidden": true
+  },
+  "execution_boundary": {
+    "model_calls_authorized": false,
+    "target_outcome_access_authorized": false,
+    "new_source_selection_authorized": false,
+    "production_memory_write_authorized": false,
+    "external_deployment_authorized": false
+  },
+  "expected_live_status": {
+    "real_temporal_rows": 0,
+    "formal_model_calls": 0,
+    "formal_result_created": false,
+    "formal_execution_blocked": true
+  },
+  "claim_boundary": {
+    "may_claim": [
+      "Task A maps to one existing frozen temporal comparison stack",
+      "the mapped stack has machine-checkable cutoff, condition, commitment, scoring and resource controls",
+      "the cited 2026 works justify individual modules or diagnostics"
+    ],
+    "may_not_claim": [
+      "formal prediction advantage",
+      "real-person predictive validity",
+      "private mental-state truth",
+      "complete reproduction of a public person",
+      "solved human-brain equation",
+      "global novelty or world-first priority"
+    ]
+  }
+}

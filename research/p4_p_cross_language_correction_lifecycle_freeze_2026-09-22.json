@@ -1,0 +1,64 @@
+{
+  "schema": "uruha_p4_p_cross_language_correction_lifecycle_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_offline_execution",
+  "checkpoint_commit": "f463bcb93b2271c5d5d37f9292e700e9047f1b5c",
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_p_cross_language_correction_lifecycle_offline_v1.json",
+      "sha256": "6f499cec29b465144b81d6374909346da4c051d86016d120be6916b9ec100ff6"
+    },
+    "gate": {
+      "path": "p4_p_cross_language_correction_lifecycle_gate.py",
+      "sha256": "282ae761a10731a0204866a7ee6477ad7c96d40deace9aade006da3432f5c2b3"
+    },
+    "probe": {
+      "path": "p4_p_cross_language_correction_lifecycle_probe.py",
+      "sha256": "b4579a6bc9c41ebfa37ced569c87b182e7af57db0bcc854a55429986f36ea23c"
+    },
+    "gate_test": {
+      "path": "test_p4_p_cross_language_correction_lifecycle_gate.py",
+      "sha256": "fcfd68e16b6bd8b8adf38f69293f136e5754687834a1b69fbdeffca50ee15bbf"
+    },
+    "probe_test": {
+      "path": "test_p4_p_cross_language_correction_lifecycle_probe.py",
+      "sha256": "a0d655661b1e6ee9daea4c5eeea9678669a202abd7dd019b1b0622e3eaecd5dc"
+    }
+  },
+  "novelty": {
+    "old_value": "菊花茶",
+    "new_value": "クロモジ茶",
+    "git_grep_checkpoint_old_value_file_count": 0,
+    "git_grep_checkpoint_new_value_file_count": 0,
+    "checkpoint_command": "git grep -l -F <value> f463bcb93b2271c5d5d37f9292e700e9047f1b5c -- .",
+    "does_not_reuse_p4_m_p4_n_real_p4_o_or_p4_o_real_values": true
+  },
+  "design": {
+    "research_question": "Does the already released P4-O stack preserve a cross-language explicit correction as one auditable lifecycle across a true Python-process restart, without adding product code?",
+    "single_variable": "one new Chinese-old to Japanese-new explicit correction pair in a fresh temporary Persistent Chroma database",
+    "success": "old positive remains historical, linked explicit negative remains present, Japanese correction is the unique active record, all three records remain byte-canonically unchanged across restart and answer-absent English recall returns only the new Japanese value",
+    "failure": "any missing or rewritten lineage record, non-unique active state, process-identity reuse, mutation during recall, old-value answer use, abstention or wrong visible surface",
+    "diagnosis_first": true,
+    "product_implementation_authorized_before_observed_failure": false
+  },
+  "execution_authorization": {
+    "exact_command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 p4_p_cross_language_correction_lifecycle_probe.py",
+    "allowed_after_freeze_commit": true,
+    "exact_case_execution_count": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "model_call_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "safari_product_turn_count": 0
+  },
+  "result_policy": {
+    "preserve_pass_or_fail": true,
+    "same_case_rerun_allowed": false,
+    "implementation_if_pass": "none; release the evidence and separately freeze a future Safari delivery case",
+    "implementation_if_fail": "none in the result commit; localize one mechanism gap before a separately frozen change",
+    "broad_claim_allowed": false
+  },
+  "claim_boundary": "This freeze authorizes exactly one offline two-process correction-lifecycle diagnostic with new development values. It does not authorize Safari execution, product implementation, retuning, a retry, arbitrary multilingual correction, long-dialogue memory, felt understanding, LLM superiority or a human equation."
+}

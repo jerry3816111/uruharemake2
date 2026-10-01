@@ -1,0 +1,46 @@
+{
+  "schema": "uruha_source_anchored_semantic_atom_reserve_protocol_m33_v1",
+  "frozen_at": "2026-08-25",
+  "status": "sealed_before_m33_implementation",
+  "reserve": {
+    "path": "datasets/m33_source_anchored_semantic_atom_reserve_v1.json",
+    "sha256": "b86025e70692c9bfe46aaa5e984968c6c4fe279fa24ce9104ab95644177f022c",
+    "case_count": 15,
+    "valid_case_count": 12,
+    "incomplete_case_count": 3,
+    "languages": ["zh", "en", "ja"],
+    "candidate_contexts": ["fresh_session", "previous_unlinked_unknown"],
+    "source_disjoint_from": [
+      "datasets/m31_semantic_authorization_reserve_v1.json",
+      "datasets/m32_semantic_commit_routing_reserve_v1.json"
+    ]
+  },
+  "frozen_success_gates": {
+    "overall_faithful_valid_rate_min": 0.75,
+    "per_language_faithful_valid_rate_min": 0.75,
+    "fresh_session_faithful_valid_rate_min": 0.8333,
+    "direct_japanese_faithful_valid_rate_min": 1.0,
+    "change_operator_faithful_rate_min": 0.6667,
+    "negated_or_limited_quantity_faithful_rate_min": 1.0,
+    "required_source_atom_trace_coverage_min": 1.0,
+    "false_authority_valid_rate_max": 0.0834,
+    "false_reject_valid_rate_max": 0.1667,
+    "unsafe_incomplete_authority_count_max": 0,
+    "negation_polarity_accuracy_min": 1.0,
+    "unsupported_addition_authority_count_max": 0,
+    "source_conflict_authority_count_max": 0,
+    "median_total_seconds_max": 12.0,
+    "p95_total_seconds_max": 20.0,
+    "raw_dialogue_persisted_count_max": 0,
+    "model_response_raw_persisted_count_max": 0
+  },
+  "required_trace_contract": {
+    "source_atoms": "typed observable atoms with source span digest and deterministic rule id; no raw source copied into persisted ledger",
+    "canonical_atoms": "M31 canonical fields projected into comparable typed atoms",
+    "verification": "each required source atom is supported, contradicted, unavailable, or not_applicable",
+    "authority": "source conflict must be deterministically repaired with explicit provenance or surface authority revoked",
+    "direct_japanese": "self-contained Japanese literal source uses identity/normalization rather than mandatory translation inference"
+  },
+  "claim_boundary": "author-constructed source-disjoint controlled reserve; transparent slot and atom proxy; not independently authored, professionally translated, open-domain, human-rated, or proof of human-like understanding",
+  "post_result_rule": "do_not_modify_m33_from_m33_reserve_outcomes; failures move to a new milestone and a new reserve"
+}

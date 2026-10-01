@@ -1,0 +1,49 @@
+{
+  "schema_version": "m13.1-pub-generation-contract-amendment-v1",
+  "status": "frozen_after_three_call_format_probe_before_formal_run",
+  "created_on": "2026-08-17",
+  "parent_protocol": {
+    "path": "configs/m13_pub_pragmatics_preregistration.json",
+    "sha256": "de9109eaa508535dc608b09bcb0680348d26b5c480dd4f41164d0599fabac5d0"
+  },
+  "case_manifest": {
+    "path": "configs/m13_pub_pragmatics_case_manifest.json",
+    "sha256": "8a86ce624fa452d289468c5a0b62f35a254a0148fd8eb5228665fac638e4f6ee"
+  },
+  "contract_probe": {
+    "local_path": "analysis/local_m13_pub_pragmatics/contract_probe_v1.json",
+    "sha256": "821f822779889eb1e696d2f1b16a89eb78b610897ccfea1fced7e3606ee21f6a",
+    "model_call_count": 3,
+    "sample_count": 1,
+    "sample_id": "PUB-T2-1109",
+    "formal_score_excluded": true,
+    "observations": [
+      "B1_GENERIC_DELIBERATION was truncated before answer_index at num_predict 220.",
+      "OURS_PRAGMATIC_LOOP returned answer_index as a one-element JSON array after the ambiguous phrase bracketed zero-based integer.",
+      "B0_DIRECT returned a valid integer answer_index."
+    ]
+  },
+  "authorized_changes": {
+    "num_predict": {
+      "before": 220,
+      "after": 320
+    },
+    "wording": [
+      "Replace bracketed zero-based integer with plain zero-based integer shown beside the option, not a list or string.",
+      "Limit each reasoning text field to 20 words or fewer."
+    ]
+  },
+  "unchanged": [
+    "dataset archives and hashes",
+    "selected item IDs",
+    "option permutations",
+    "correct answers",
+    "model",
+    "temperature and seed",
+    "three experimental conditions",
+    "primary baseline",
+    "metrics",
+    "success and failure gates"
+  ],
+  "evidence_boundary": "This amendment repairs generation and parser interoperability before the formal run. It does not authorize retries, answer aliases, case replacement, prompt-content tuning, or reuse of the three probe calls in formal scores."
+}

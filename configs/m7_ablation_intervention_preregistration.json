@@ -1,0 +1,57 @@
+{
+  "schema": "ilhdt_m7_ablation_intervention_preregistration_v1",
+  "milestone": "M7",
+  "registered_before_first_result_write": true,
+  "claim_level": "frozen_m6_synthetic_ablation_and_intervention_diagnostic",
+  "formal_target_claim": false,
+  "m6_result": {
+    "path": "analysis/m6_behavior_predictor_synthetic_first_generation_raw.json",
+    "sha256": "b042011646c16b7fd565f39ed8acab621cbd16fb2a9e910a0e776e5829ea20b4"
+  },
+  "m5_dataset": {
+    "path": "datasets/m5_state_transition_synthetic_fixture_v1.json",
+    "sha256": "efd5fc8c251870f00b77c5a849694b26c94ff8262f3ab8c96505153050076f21"
+  },
+  "master_ablation_components": [
+    "memory", "emotion", "personality", "relationship", "preference", "goal", "habit", "temporal_dynamics", "explicit_state_transition", "llm_semantic_interpretation"
+  ],
+  "expected_identifiable_components": [
+    "memory", "emotion", "personality", "relationship", "goal", "temporal_dynamics", "explicit_state_transition", "llm_semantic_interpretation"
+  ],
+  "expected_not_identifiable_components": ["preference", "habit"],
+  "named_interventions": [
+    {"intervention_id": "emotion_irritation_zero", "feature": "state.irritation", "value": 0.0},
+    {"intervention_id": "relationship_tension_zero", "feature": "state.relationship_tension", "value": 0.0},
+    {"intervention_id": "goal_task_focus_zero", "feature": "state.task_focus", "value": 0.0},
+    {"intervention_id": "event_repetition_zero", "feature": "event.repetition", "value": 0.0},
+    {"intervention_id": "event_support_max", "feature": "event.support", "value": 1.0},
+    {"intervention_id": "delete_matching_memory", "feature": "memory.matching_memory_activation", "value": 0.0},
+    {"intervention_id": "insert_contradictory_memory", "feature": "memory.contradictory_memory_activation", "value": 1.0},
+    {"intervention_id": "person_boundary_directness_zero", "feature": "person.boundary_directness", "value": 0.0},
+    {"intervention_id": "person_reassessment_zero", "feature": "person.reassessment_tendency", "value": 0.0},
+    {"intervention_id": "person_pressure_sensitivity_zero", "feature": "person.pressure_sensitivity", "value": 0.0}
+  ],
+  "faithfulness_top_feature_count": 5,
+  "engineering_contract": {
+    "holdout_count": 8,
+    "master_component_count": 10,
+    "evaluated_ablation_count": 8,
+    "not_identifiable_count": 2,
+    "named_intervention_row_count": 80,
+    "faithfulness_intervention_row_count": 40,
+    "model_calls": 0,
+    "language_realization_performed": false,
+    "full_prediction_replay_exact": true
+  },
+  "diagnostic_hypotheses": {
+    "at_least_seven_evaluated_ablation_metrics_change": true,
+    "faithfulness_nonzero_effect_rate_at_least": 0.8,
+    "quiet_success_has_intervention_increasing_correct_probability_by_at_least": 0.1
+  },
+  "full_m7_component_coverage_claim": false,
+  "non_claims": [
+    "Preference and habit are not independently represented in frozen M6 and will be reported not_identifiable, not assigned proxy scores.",
+    "Ablation and intervention operate on a nonfresh synthetic model and do not establish real psychological causality.",
+    "Feature effects are causal only relative to the frozen computational graph, not causal claims about a human mind."
+  ]
+}

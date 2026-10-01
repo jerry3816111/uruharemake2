@@ -1,0 +1,30 @@
+{
+  "schema": "uruha_m57_5_prechange_participant_capability_gap_probe_v1",
+  "version": "1.0.0",
+  "date": "2026-09-04",
+  "status": "required_capability_separation_and_token_transport_are_absent",
+  "inspected_commit": "01eed90a66e2bbb574411cf64da66ee5a682a078",
+  "frozen_m57_4_implementation_hash": "09c964d246322b540041c44950c777c8f5ee026e82e3618d880ab391325466d0",
+  "observations": {
+    "initializer_returns_all_three_raw_role_tokens_to_one_caller": true,
+    "collector_cli_requires_raw_token_argument": true,
+    "collector_get_reads_token_from_query_string": true,
+    "collector_form_embeds_raw_token_in_hidden_input": true,
+    "collector_redirect_places_raw_token_in_url": true,
+    "role_token_hash_only_in_m57_4_mode": true,
+    "separate_role_delivery_envelopes_present": false,
+    "one_time_claim_receipts_present": false,
+    "http_only_same_site_browser_session_present": false,
+    "csrf_binding_present": false
+  },
+  "source_locations": {
+    "all_token_return": "m57_4_component_evidence_collection.py:380",
+    "hidden_form_token": "m57_4_component_evidence_collection.py:1366",
+    "query_token_parse": "m57_4_component_evidence_collection.py:1386",
+    "token_redirect": "m57_4_component_evidence_collection.py:1416",
+    "token_cli_argument": "m57_4_component_evidence_collection.py:1445"
+  },
+  "effect": "M57.4 establishes source-bound evidence mechanics, but its direct launch surface lets one coordinator receive all role capabilities and exposes a bearer token through process arguments, browser URL/history and HTML. This does not invalidate frozen synthetic mechanics, but it is not a suitable participant handoff surface.",
+  "required_next_change": "Add an external wrapper that issues three separately stored permission-restricted capability envelopes, returns no raw role token, consumes each envelope once, and exchanges it for an in-memory server-side role capability plus a host-only HttpOnly SameSite=Strict browser session and CSRF token. Do not edit M57.4 frozen evidence semantics.",
+  "claim_boundary": "This probe identifies application-interface exposure. It does not show that filesystem permissions prove participant identity, that localhost HTTP has transport security, that three physical humans exist, or that any formal evidence/result is authorized."
+}

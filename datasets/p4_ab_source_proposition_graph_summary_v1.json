@@ -1,0 +1,108 @@
+{
+  "schema": "uruha_p4_ab_source_proposition_graph_summary_dataset_v1",
+  "status": "prospectively_frozen_before_implementation",
+  "purpose": "Presentation-only graph summaries for the already-computed P4-Z trace. No source or reply text is present.",
+  "cases": [
+    {
+      "case_id": "p4ab_quote_repaired",
+      "payload": {
+        "schema": "uruha_source_bound_proposition_preservation_p4",
+        "status": "repaired_and_verified",
+        "action": "source_bound_repair",
+        "source_language": "zh",
+        "family": "quoted_report",
+        "embedding_stance": "quotation",
+        "speaker_owner": "quoted_proposition",
+        "known_field_types": ["predicate_jp", "subject_jp", "time_jp"],
+        "unknown_field_types": ["location_jp", "object_jp"],
+        "source_anchor_digests": {"predicate_jp": "digest-a", "subject_jp": "digest-b", "time_jp": "digest-c"},
+        "violations_before": ["quotation_stance_missing_or_changed", "source_predicate_missing", "source_subject_missing", "source_time_missing"],
+        "violations_after": [],
+        "changed": true,
+        "raw_source_or_reply_persisted": false,
+        "model_call_added": false,
+        "fact_write_count": 0,
+        "profile_write_count": 0,
+        "episode_write_count": 0
+      },
+      "expected_signal": "引用｜引文命題｜主體/動作/時間｜修正 4→0"
+    },
+    {
+      "case_id": "p4ab_hearsay_verified_noop",
+      "payload": {
+        "schema": "uruha_source_bound_proposition_preservation_p4",
+        "status": "accepted_verified",
+        "action": "verified_noop",
+        "source_language": "ja",
+        "family": "hearsay_statement",
+        "embedding_stance": "hearsay",
+        "speaker_owner": "third_party",
+        "known_field_types": ["location_jp", "object_jp", "predicate_jp", "subject_jp"],
+        "unknown_field_types": ["time_jp"],
+        "source_anchor_digests": {"location_jp": "digest-a", "object_jp": "digest-b", "predicate_jp": "digest-c", "subject_jp": "digest-d"},
+        "violations_before": [],
+        "violations_after": [],
+        "changed": false,
+        "raw_source_or_reply_persisted": false,
+        "model_call_added": false,
+        "fact_write_count": 0,
+        "profile_write_count": 0,
+        "episode_write_count": 0
+      },
+      "expected_signal": "傳聞｜第三者｜主體/動作/對象/地點｜已符合 0→0"
+    },
+    {
+      "case_id": "p4ab_hypothetical_failed_closed",
+      "payload": {
+        "schema": "uruha_source_bound_proposition_preservation_p4",
+        "status": "repair_failed_closed",
+        "action": "source_bound_repair",
+        "source_language": "en",
+        "family": "hypothetical_instruction",
+        "embedding_stance": "hypothetical",
+        "speaker_owner": "user_first_person",
+        "known_field_types": ["object_jp", "predicate_jp", "subject_jp", "time_jp"],
+        "unknown_field_types": ["location_jp"],
+        "source_anchor_digests": {"object_jp": "digest-a", "predicate_jp": "digest-b", "subject_jp": "digest-c", "time_jp": "digest-d"},
+        "violations_before": ["source_predicate_missing", "source_subject_missing", "user_speaker_owner_missing"],
+        "violations_after": ["source_predicate_missing"],
+        "changed": true,
+        "raw_source_or_reply_persisted": false,
+        "model_call_added": false,
+        "fact_write_count": 0,
+        "profile_write_count": 0,
+        "episode_write_count": 0
+      },
+      "expected_signal": "假設｜使用者｜主體/動作/對象/時間｜修正未通過 3→1"
+    },
+    {
+      "case_id": "p4ab_unsupported_abstain",
+      "payload": {
+        "schema": "uruha_source_bound_proposition_preservation_p4",
+        "status": "source_pattern_unavailable",
+        "action": "abstain_unchanged",
+        "source_language": "zh",
+        "family": null,
+        "embedding_stance": null,
+        "speaker_owner": null,
+        "known_field_types": [],
+        "unknown_field_types": ["subject_jp", "predicate_jp", "object_jp", "time_jp", "location_jp"],
+        "source_anchor_digests": {},
+        "violations_before": ["source_pattern_unavailable"],
+        "violations_after": ["source_pattern_unavailable"],
+        "changed": false,
+        "raw_source_or_reply_persisted": false,
+        "model_call_added": false,
+        "fact_write_count": 0,
+        "profile_write_count": 0,
+        "episode_write_count": 0
+      },
+      "expected_signal": "未支援來源｜歸屬未知｜欄位無｜保留原文 1→1"
+    }
+  ],
+  "unrelated_control": {
+    "payload": {"schema": "unrelated_fixture", "status": "waiting"},
+    "expected_signal": "2 fields"
+  },
+  "claim_boundary": "These fixtures test a concise visual summary of an existing typed trace. They do not test proposition extraction, repair accuracy, model understanding, human preference or open-domain semantics."
+}

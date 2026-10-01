@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_p4_as_product_development_failure_v1",
+  "date": "2026-09-25",
+  "status": "development_failure_preserved",
+  "formal_or_holdout": false,
+  "case_reuse_policy": "exposed development input; never classify or rerun as fresh or formal",
+  "private_runtime_root": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-ww_boblr",
+  "port": 7880,
+  "conversation_log_sha256": "ee26985953f9fd1606b534dc30292a4e143ac4abb6d5a59bc8ee167b5d06b0e5",
+  "conversation_log_rows": 1,
+  "input": "My thoughts cannot quiet down and my head will not rest.",
+  "visible_reply": "今ほしいの、方法と、ただ聞いてほしいのと、どっちに近い？",
+  "visible_language": "ja",
+  "m39": {
+    "status": "repaired_and_verified",
+    "selected_policy_id": "calibrate_need",
+    "policy_act_match_after": true,
+    "unresolved_violations": []
+  },
+  "p4_as": {
+    "status": "not_applicable",
+    "failed_checks": ["no_existing_pending"]
+  },
+  "m44": {
+    "status": "not_registered",
+    "reason": "existing_pending_preserved",
+    "previous_pending_exact": true
+  },
+  "p4_ar": {
+    "status": "blocked_unexecuted_shadow_action",
+    "outcome_verification_authorized": false,
+    "failed_checks": ["plan_applied", "plan_identity_exact", "plan_policy_exact"]
+  },
+  "outcome_binding": {
+    "status": "not_available",
+    "candidate_count": 0,
+    "suppressed_shadow_candidate_count": 6
+  },
+  "temporal_summary": "過去 0｜現在 0候選/選択 なし｜本輪未來 無承諾",
+  "graph_indices_zero_based": {
+    "selected_action_surface_execution_p4": 64,
+    "executed_action_identity_gate_p4": 65,
+    "desired_response_outcome_binding_p4": 67,
+    "runtime_temporal_graph_delivery_p4": 68,
+    "utterance": 69,
+    "executed_action_receipt_m44": 77
+  },
+  "semantic_authorization_elapsed_seconds": 13.6936,
+  "durable_embedding_count": 1,
+  "root_cause": "The product had already committed the exact P1 pending event before M44. P4-AS incorrectly required the pending slot to be empty, so it did not add the missing verified-surface receipt. Without that receipt authority, the P4-AR view adapter did not use the actual applied plan.",
+  "authorized_correction": "Allow only an absent pending event or an exact pre-existing event matching prediction_id, policy_id, turn_index, and input_digest. Preserve the exact pending event and ledger byte-for-byte and add only the missing M44 receipt. Any mismatch remains fail-closed.",
+  "claim_boundary": "This development result proves neither user preference, prediction correctness, felt understanding, human-equation recovery, nor superiority over a strong LLM."
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "ilhdt_m2_preregistration_v1",
+  "experiment_id": "m2_strong_temporal_baselines_synthetic_v1",
+  "status": "frozen_before_first_m2_generation",
+  "claim_level": "nonfresh_synthetic_strong_baseline_engineering_evidence_only",
+  "formal_target_claim": false,
+  "research_role": "Complete B4 and B5 before implementing or claiming value for the hybrid Ours model.",
+  "freshness_boundary": "The same 12 synthetic samples were processed in M1. M2 is a baseline-interface and resource experiment, not a fresh scientific holdout.",
+  "dataset": "datasets/m1_temporal_prediction_synthetic_fixture_v1.json",
+  "inherited_m1": {
+    "experiment_id": "m1_temporal_prediction_observatory_synthetic_fixture_v1_1",
+    "path": "analysis/m1_temporal_prediction_observatory_synthetic_v1_1_raw.json",
+    "sha256": "a134bc6ff22369f922079b7417c0aa4809f3cb29335c69b8c6336c1233a5c118"
+  },
+  "baselines": [
+    "B4_FULL_HISTORY_SUMMARY",
+    "B5_STRUCTURED_HISTORY"
+  ],
+  "baseline_contracts": {
+    "B4_FULL_HISTORY_SUMMARY": "Use the same model once to condense the complete authorized pre-cutoff history snapshot, cache the derivative by exact history signature, then predict from current event plus that summary. Do not include the manual persona summary.",
+    "B5_STRUCTURED_HISTORY": "Use current event, frozen persona summary, and every authorized pre-cutoff observation grouped by historical behavior label. The LLM directly emits the distribution; there is no explicit transition or probabilistic state algorithm."
+  },
+  "single_model_rule": "Summary generation, B4 prediction, and B5 prediction use the same qwen3.5:9b model and options as M1 B1-B3.",
+  "model": {
+    "provider": "local_ollama",
+    "name": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "options": {
+      "temperature": 0,
+      "seed": 240815,
+      "num_ctx": 4096,
+      "num_predict": 420
+    }
+  },
+  "metrics": {
+    "primary": [
+      "brier_score",
+      "negative_log_likelihood",
+      "expected_calibration_error"
+    ],
+    "secondary": [
+      "top1_accuracy",
+      "top_k_accuracy",
+      "macro_f1",
+      "weighted_f1",
+      "mean_reciprocal_rank",
+      "mean_ndcg"
+    ],
+    "top_k": 3,
+    "ece_bins": 5
+  },
+  "expected_execution": {
+    "prediction_rows": 24,
+    "shared_summary_artifacts": 1,
+    "model_calls": 25
+  },
+  "success_criteria": {
+    "engineering": [
+      "all temporal, inherited-artifact, and lock checks pass",
+      "24 B4/B5 prediction rows are emitted with no failure",
+      "one shared full-history summary is generated for the identical authorized history snapshot",
+      "all B0-B5 metrics and actual resource costs are reported together",
+      "the Web observatory displays B0-B5 without labeling B4 or B5 as Ours"
+    ],
+    "scientific": "none: repeated synthetic samples cannot establish general or target-person advantage"
+  },
+  "failure_policy": "No individual retry, fallback distribution, post-result prompt change, or silent summary regeneration. Preserve an invalid first run and create a new experiment if remediation is required.",
+  "privacy": {
+    "store_raw_prompt": false,
+    "store_model_text": false,
+    "store_derived_summary": true,
+    "store_prompt_hash": true
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "uruha_p4_f_explicit_preference_supersession_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_preference_supersession_implementation",
+  "parent_checkpoint": {
+    "commit": "dab3cfa",
+    "release": {
+      "path": "research/p4_e_cross_restart_memory_recall_release_2026-09-20.json",
+      "sha256": "083ab426102bccb5145124cd9398a032ff6c0629dbdf63436dfbb46069fb1dc2"
+    }
+  },
+  "bindings": {
+    "prechange_gap": {
+      "path": "analysis/p4_f_preference_supersession_prechange_gap_2026-09-20.json",
+      "sha256": "c38d66f438818996d315f1f77068d5e70a5cdc055c3ae7302bfa62901ba5ed56"
+    },
+    "contract": {
+      "path": "configs/p4_f_explicit_preference_supersession_contract_v1.json",
+      "sha256": "162c8bfb0d3bea7db7a9a047a1b13de63666bf33bde91f650cf87663841edf70"
+    },
+    "contract_test": {
+      "path": "test_p4_f_preference_supersession_contract.py",
+      "sha256": "97944f89fa74250073ca514b1817d0cd8f0d7b2c78fdc6986632bab012344176"
+    }
+  },
+  "pre_implementation_evidence": {
+    "focused_tests_passed": 25,
+    "fixture_model_calls": 0,
+    "fixture_network_calls": 0,
+    "fixture_safari_turns": 0,
+    "fixture_database_writes": 0,
+    "current_adapter_result": "ambiguous_multiple_user_preferences",
+    "correction_applied": false,
+    "historical_revocation_marked": false
+  },
+  "single_changed_variable": "bounded_explicit_preference_supersession_in_speaker_qualified_selected_memory",
+  "authorized_implementation_files": [
+    "uruha_speaker_qualified_fact_p3.py",
+    "test_speaker_qualified_fact_p3.py",
+    "test_p4_f_explicit_preference_supersession.py"
+  ],
+  "implementation_requirements": {
+    "selected_evidence_only": true,
+    "same_selected_item_contains_old_negation_and_new_current_value": true,
+    "first_person_user_only": true,
+    "same_preference_category_required": true,
+    "historical_episode_remains_immutable": true,
+    "current_and_revoked_values_have_digests": true,
+    "raw_dialogue_in_trace": false,
+    "fact_memory_write_count": 0,
+    "unsupported_or_conflicting_corrections_fail_closed": true,
+    "safety_surface_remains_authoritative": true
+  },
+  "forbidden_changes": {
+    "general_memory_ranking": true,
+    "chroma_or_database_rewrite": true,
+    "profile_schema": true,
+    "general_planner_prompt": true,
+    "model_or_persona": true,
+    "research_dataset_baseline_or_metric": true
+  },
+  "required_order": [
+    "freeze and commit this contract before implementation",
+    "implement only the bounded selected-memory supersession adapter",
+    "run focused offline tests and affected regressions",
+    "commit and push the implementation before any real P4-F product turn",
+    "freeze exact three-turn Safari inputs and acceptance gate",
+    "run once in a fresh isolated runtime with one actual process restart",
+    "preserve success or failure without retuning or rerunning"
+  ],
+  "pre_commit_external_effect_ceiling": {
+    "model_calls": 0,
+    "network_calls": 0,
+    "safari_turns": 0,
+    "database_writes": 0,
+    "product_process_restarts": 0
+  },
+  "post_implementation_acceptance_boundary": {
+    "real_product_turns": 3,
+    "actual_process_restarts": 1,
+    "retry_count": 0,
+    "production_memory_access_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "terminal_failure": "After the separately frozen implementation and one real three-turn run, preserve any wrong current value, ambiguity, provenance gap or restart failure. Do not change the values, wording, localization, memory seed or rerun the case.",
+  "claim_boundary": "This freeze authorizes one bounded product correction mechanism. It cannot establish general temporal belief revision, open-domain contradiction handling, a research advantage or human-equivalent memory."
+}

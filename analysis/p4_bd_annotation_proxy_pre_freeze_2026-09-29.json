@@ -1,0 +1,39 @@
+{
+  "schema": "uruha_p4_bd_annotation_proxy_pre_freeze_v1",
+  "status": "pre_freeze_development_review",
+  "provenance": "Two separate LLM subagents read only the candidate projection and applied distinct minimal-kernel versus counterfactual-preservation instructions. The candidate source and ontology were developer-authored. Neither pass is independent human annotation; the answers are a consistency proxy only.",
+  "candidate_file": "datasets/p4_bd_span_annotation_candidates_v1.json",
+  "decision_unit": "one accept/reject judgment for each of 3 source-exact candidates across 18 roles",
+  "rows": [
+    {"case_id":"p4_bd_zh_scaffold_001","role":"task_object","minimal_accept":"BC","counterfactual_accept":"C","consensus_accept":"C"},
+    {"case_id":"p4_bd_zh_scaffold_001","role":"state","minimal_accept":"AC","counterfactual_accept":"AC","consensus_accept":"AC"},
+    {"case_id":"p4_bd_zh_scaffold_001","role":"request","minimal_accept":"AC","counterfactual_accept":"AC","consensus_accept":"AC"},
+    {"case_id":"p4_bd_zh_group_001","role":"task_object","minimal_accept":"AC","counterfactual_accept":"A","consensus_accept":"A"},
+    {"case_id":"p4_bd_zh_group_001","role":"rule","minimal_accept":"BC","counterfactual_accept":"BC","consensus_accept":"BC"},
+    {"case_id":"p4_bd_zh_group_001","role":"completion","minimal_accept":"BC","counterfactual_accept":"BC","consensus_accept":"BC"},
+    {"case_id":"p4_bd_en_extract_001","role":"task_object","minimal_accept":"BC","counterfactual_accept":"B","consensus_accept":"B"},
+    {"case_id":"p4_bd_en_extract_001","role":"selection_rule","minimal_accept":"AC","counterfactual_accept":"AC","consensus_accept":"AC"},
+    {"case_id":"p4_bd_en_extract_001","role":"completion","minimal_accept":"AC","counterfactual_accept":"AC","consensus_accept":"AC"},
+    {"case_id":"p4_bd_en_verify_001","role":"task_object","minimal_accept":"AC","counterfactual_accept":"C","consensus_accept":"C"},
+    {"case_id":"p4_bd_en_verify_001","role":"condition","minimal_accept":"C","counterfactual_accept":"C","consensus_accept":"C"},
+    {"case_id":"p4_bd_en_verify_001","role":"limit","minimal_accept":"A","counterfactual_accept":"A","consensus_accept":"A"},
+    {"case_id":"p4_bd_ja_remove_001","role":"task_object","minimal_accept":"AC","counterfactual_accept":"A","consensus_accept":"A"},
+    {"case_id":"p4_bd_ja_remove_001","role":"obstacle","minimal_accept":"BC","counterfactual_accept":"BC","consensus_accept":"BC"},
+    {"case_id":"p4_bd_ja_remove_001","role":"limit","minimal_accept":"C","counterfactual_accept":"C","consensus_accept":"C"},
+    {"case_id":"p4_bd_ja_atomic_001","role":"task_object","minimal_accept":"BC","counterfactual_accept":"C","consensus_accept":"C"},
+    {"case_id":"p4_bd_ja_atomic_001","role":"value","minimal_accept":"AC","counterfactual_accept":"AC","consensus_accept":"AC"},
+    {"case_id":"p4_bd_ja_atomic_001","role":"limit","minimal_accept":"C","counterfactual_accept":"C","consensus_accept":"C"}
+  ],
+  "disagreements": [
+    "p4_bd_zh_scaffold_001:task_object:B",
+    "p4_bd_zh_group_001:task_object:C",
+    "p4_bd_en_extract_001:task_object:C",
+    "p4_bd_en_verify_001:task_object:A",
+    "p4_bd_ja_remove_001:task_object:C",
+    "p4_bd_ja_atomic_001:task_object:B"
+  ],
+  "binary_agreement": "48/54",
+  "full_role_set_agreement": "12/18",
+  "adjudication": "Pre-model conservative intersection; any disputed span is not accepted. If this is too restrictive, a later new dataset and fresh confirmation is required; do not reclassify this formal result after viewing model outputs.",
+  "claim_boundary": "Agreement between two LLM proxy instructions over developer-authored candidates is not inter-human reliability, semantic validity in an open distribution, or evidence of product usefulness."
+}

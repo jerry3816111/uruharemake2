@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_p3_canary_baselines_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "same_model_direct_and_deliberate_baselines_for_locked_product_canary",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "canary": {
+    "path": "configs/p3_product_canary_v1.json",
+    "sha256": "6dbcf9072592437e06d56f81a60b0199a9edaa3f8ff70759dc081ee99eb91b19"
+  },
+  "locked_product_result": {
+    "path": "analysis/p3_b6_product_canary_result_2026-09-14.json",
+    "sha256": "9a412e765c9f29c0d3dc71643ae88e4376dc3df3a2f59739cc1ae86555a75cc4",
+    "required_status": "product_canary_pass"
+  },
+  "tokenizer_binding_result": {
+    "path": "analysis/p3_b3_tokenizer_binding_probe_result_2026-09-14.json",
+    "sha256": "48eb67d56f3fa6d293eebd2bcd3e81766fbb464c935288c9e850ef0df1edf844",
+    "required_status": "provider_binding_pass"
+  },
+  "conditions": [
+    "full_history_direct",
+    "full_history_deliberate"
+  ],
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "direct_completion_cap": 768,
+    "deliberate_completion_caps": [256, 256, 256]
+  },
+  "transport": {
+    "backend": "openai_compatible_local",
+    "url": "http://127.0.0.1:11434/v1/chat/completions",
+    "per_call_timeout_seconds": 60
+  },
+  "execution_boundary": {
+    "provider_calls_exact": 4,
+    "automatic_retry": false,
+    "concurrency": 1,
+    "localhost_only": true,
+    "future_turn_access": false,
+    "annotation_access_before_outputs_locked": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "both_condition_outputs_nonempty": true,
+    "provider_prompt_usage_exact": true,
+    "each_condition_budget_valid": true,
+    "all_outputs_and_failures_retained": true
+  }
+}

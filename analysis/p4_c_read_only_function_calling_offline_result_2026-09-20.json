@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_p4_c_read_only_function_calling_offline_result_v1",
+  "version": "1.0.0",
+  "status": "offline_fake_provider_pass",
+  "single_changed_variable": "one get_runtime_status function-call path for explicit current status requests",
+  "before": {
+    "function_calling_status": "research_policy_only_not_product_runtime",
+    "runtime_tool_schema_present": false,
+    "runtime_tool_result_loop_present": false
+  },
+  "implemented_mechanism": {
+    "cross_lingual_explicit_request_gate": true,
+    "allowlisted_tool_count": 1,
+    "allowlisted_tool": "get_runtime_status",
+    "arguments": {},
+    "maximum_calls_per_turn": 1,
+    "read_only": true,
+    "retry_or_fallback": false,
+    "result_byte_ceiling": 640,
+    "natural_japanese_surface": true,
+    "raw_dialogue_or_provider_response_persisted": false
+  },
+  "offline_cases": {
+    "valid_single_call": "passed",
+    "no_call": "failed_closed_without_executor",
+    "wrong_tool": "failed_closed_without_executor",
+    "extra_arguments": "failed_closed_without_executor",
+    "duplicate_calls": "failed_closed_without_executor",
+    "malformed_arguments": "failed_closed_without_executor",
+    "provider_exception": "failed_closed_without_executor",
+    "provider_identity_mismatch": "failed_closed_without_executor",
+    "executor_exception": "failed_closed_without_status_claim",
+    "ordinary_conversation": "fell_through_without_provider",
+    "negated_request": "fell_through_without_provider",
+    "hypothetical_request": "fell_through_without_provider",
+    "translation_or_quote": "fell_through_without_provider",
+    "third_person_example": "fell_through_without_provider",
+    "prompt_injection_or_other_tool": "fell_through_without_provider",
+    "zh_en_ja_explicit_request_detection": "passed"
+  },
+  "successful_fixture": {
+    "input_language": "zh",
+    "input_persisted": false,
+    "model_decision": "one get_runtime_status call with empty arguments",
+    "tool_result": {
+      "schema": "uruha_p4_c_runtime_status_result_v1",
+      "brain_loaded": true,
+      "turn_count": 3,
+      "memory_isolation": "isolated",
+      "tool_capability": "get_runtime_status_only"
+    },
+    "visible_reply_ja": "うん、脳は起動済み。記録は3ターン、記憶は隔離環境。今使えるのは読み取り専用の状態確認だけ。",
+    "trace_labels": [
+      "function_request_p4_c",
+      "function_model_decision_p4_c",
+      "function_validated_call_p4_c",
+      "function_tool_result_p4_c",
+      "function_surface_p4_c"
+    ]
+  },
+  "verification": {
+    "targeted_test_count": 29,
+    "adjacent_vrm_policy_test_count": 8,
+    "combined_pass_count": 37,
+    "python_compile_passed": true,
+    "git_diff_check_passed": true
+  },
+  "access_accounting": {
+    "real_model_call_count": 0,
+    "real_tool_execution_count": 0,
+    "production_memory_read_count": 0,
+    "production_memory_write_count": 0,
+    "external_network_call_count": 0,
+    "safari_operation_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "next_gate": {
+    "required_before_real_model_call": "implementation freeze commit",
+    "real_positive_call_ceiling": 1,
+    "negative_guard_real_model_call_ceiling": 0,
+    "product_integration_authorized_after_positive_and_negative_guards": true
+  },
+  "claim_boundary": "This is offline contract evidence. It proves deterministic gating, exact schema validation, fail-closed execution and trace construction with a fake provider; it does not prove that qwen3.5:9b will emit the tool call or that Safari displays the path."
+}

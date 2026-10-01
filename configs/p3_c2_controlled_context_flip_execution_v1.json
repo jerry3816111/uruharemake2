@@ -1,0 +1,116 @@
+{
+  "schema": "uruha_p3_c2_controlled_context_flip_execution_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_runner_contract_before_any_p3_c_model_call",
+  "bindings": {
+    "c1_release": {
+      "path": "research/p3_c1_controlled_context_flip_release_2026-09-20.json",
+      "sha256": "973f0d098bc1cf13fa38de603da90b11aed4b4cd1f3cd0e6df5044ac3bd642f2"
+    },
+    "c1_implementation_freeze": {
+      "path": "research/p3_c1_controlled_context_flip_implementation_freeze_2026-09-20.json",
+      "sha256": "334b6a9587d228156a3fbc16a083cf5e19ed05adc80380e286dd9b4f98e31703"
+    },
+    "c1_harness": {
+      "path": "p3_c1_controlled_context_flip_lane.py",
+      "sha256": "6fc851c3e81b81d3e0c5fe96b3074f6c57d761b446cc2d3ecbe75adb456444dc"
+    }
+  },
+  "execution_plan": {
+    "stage_order": ["train_format_smoke", "dev_complete"],
+    "train_format_smoke_pair_ids": ["train_zh_01", "train_en_02"],
+    "train_format_smoke_item_count": 4,
+    "train_format_smoke_model_call_count": 8,
+    "dev_pair_count": 6,
+    "dev_item_count": 12,
+    "dev_model_call_count": 24,
+    "total_model_call_ceiling": 32,
+    "condition_order_rule": "for zero-based item index, even items run BASELINE_DIRECT then SYSTEM_PRAGMATIC_STATE; odd items run SYSTEM_PRAGMATIC_STATE then BASELINE_DIRECT",
+    "smoke_must_complete_before_any_dev_call": true,
+    "dev_must_complete_before_scoring": true,
+    "holdout_item_or_target_access_allowed": false,
+    "retry_or_fallback_allowed": false,
+    "terminal_on_provider_schema_language_or_accounting_failure": true
+  },
+  "provider": {
+    "kind": "local_ollama_exact_json_schema",
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "model": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "think": false,
+    "options": {
+      "temperature": 0,
+      "seed": 260920,
+      "top_p": 1,
+      "num_ctx": 8192,
+      "num_predict": 384
+    },
+    "probability_adapter": "p3_b70_v1",
+    "raw_prompt_or_response_persistence_allowed": false
+  },
+  "output_contract": {
+    "common_model_fields": [
+      "probabilities",
+      "visible_reply_ja",
+      "brief_evidence_anchor_ids"
+    ],
+    "system_additional_field": "pragmatic_state",
+    "probability_labels": [
+      "LITERAL_READING",
+      "PRAGMATIC_READING",
+      "UNCERTAIN"
+    ],
+    "probability_weights_finite_nonnegative_positive_total": true,
+    "visible_reply_natural_japanese_max_characters": 180,
+    "evidence_anchor_ids_must_reference_current_item": true,
+    "system_state_fields": [
+      "literal_content",
+      "communicative_intent",
+      "affect_or_stance",
+      "relationship_signal",
+      "implicit_need_or_action_tendency",
+      "alternative_hypothesis",
+      "unknowns",
+      "confidence"
+    ],
+    "system_state_string_max_characters": 180
+  },
+  "crash_safety": {
+    "state_root": "external_data/p3_c2_controlled_context_flip_state",
+    "batch_intent_before_first_call": true,
+    "per_call_intent_before_provider_invocation": true,
+    "per_call_complete_after_validated_prediction": true,
+    "intent_without_complete_is_terminal_and_never_reinvoked": true,
+    "completed_call_can_be_reused_on_process_resume": true,
+    "single_final_result": true
+  },
+  "accounting": {
+    "record_actual_prompt_tokens": true,
+    "record_actual_completion_tokens": true,
+    "record_latency_seconds": true,
+    "record_model_reported": true,
+    "record_condition_order": true,
+    "record_failure_category_without_raw_output": true,
+    "raw_prompt_or_response_persisted": false
+  },
+  "success": {
+    "requires_smoke_calls_completed": 8,
+    "requires_dev_calls_completed": 24,
+    "requires_total_validated_predictions": 32,
+    "requires_dev_score_report": true,
+    "does_not_require_positive_dev_effect": true,
+    "next_stage_if_complete": "design_review_of_dev_result_then_separately_freeze_single_use_holdout_or_stop_on_negative_or_interface_failure"
+  },
+  "denied_actions": {
+    "holdout_input_or_target_read": true,
+    "holdout_model_execution_or_scoring": true,
+    "c1_contract_dataset_metric_or_sesoi_change": true,
+    "baseline_input_or_reasoning_weakening": true,
+    "retry_fallback_or_condition_substitution": true,
+    "new_uruha_source_caption_or_future_access": true,
+    "human_preference_claim": true,
+    "formal_m56_or_production_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "P3-C2 can establish train-format and full-dev execution reliability plus a development score under the frozen C1 proxy. It cannot authorize a holdout claim, independent evidence, human preference, real-person prediction, or general system advantage."
+}

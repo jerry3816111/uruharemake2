@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_l_preference_scope_canonicalization_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_p4_l_implementation",
+  "design_review": {
+    "single_changed_variable": "canonical scope alias projection for already-selected explicit P4-I current-preference writes",
+    "reason": "P4-K proved cross-restart delivery when write and query both used canonical drink, while current P4-I before evidence shows three already-extractable Chinese and Japanese drink aliases produce different predicates from P4-J canonical drink queries.",
+    "prechange_commit": "e53d7202f2df44173942e6e9910176fedc60fabd",
+    "review_independence": "same_agent_non_independent_design_review",
+    "scope_approved": true
+  },
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_l_preference_scope_canonicalization_contract_v1.json",
+      "sha256": "44b5d96a91b2a211cd821371084be087ba7bf61e62dd49e558daa16e1555ee55"
+    },
+    "prechange": {
+      "path": "analysis/p4_l_preference_scope_alias_prechange_2026-09-21.json",
+      "sha256": "8e81048e125883d3674f87c4ead213f27decf1a50a4999edce9a121c4f535c3d"
+    },
+    "prospective_regression": {
+      "path": "test_p4_l_preference_scope_canonicalization.py",
+      "sha256": "d0ac2006905447b302ed1214f89f4a6efb01536b0890d366dbfe9728da4af109"
+    },
+    "p4_i_implementation_before": {
+      "path": "uruha_multilingual_current_preference_p4.py",
+      "sha256": "a54b9bda5a8470a8deff1a8f543e7a03a01df4a755d5c985487dbe57accec7b0"
+    },
+    "p4_j_implementation_before": {
+      "path": "uruha_typed_current_preference_recall_p4.py",
+      "sha256": "dbec8a2cd9a6b4bbc1faeb13add35f1b491e038c0cccb377bcc137bda7750aff"
+    },
+    "product_entry_before": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "4d80411fafe3b7bceac6f576f7b2baac607d5a98911ef3e72df62758496bc0f2"
+    },
+    "p4_k_release": {
+      "path": "research/p4_k_cross_restart_surface_delivery_release_2026-09-21.json",
+      "sha256": "7e7248e32e4712ff08c026adc3c59496c242887ccfaa72863e2f8c234be93e2c"
+    }
+  },
+  "prospective_red_evidence": {
+    "command": "pytest -q test_p4_l_preference_scope_canonicalization.py",
+    "status": "collection_error",
+    "reason": "ModuleNotFoundError: uruha_preference_scope_canonicalization_p4",
+    "tests_executed": 0,
+    "result_known_before_implementation": false
+  },
+  "authorized_changes": [
+    "uruha_preference_scope_canonicalization_p4.py",
+    "uruha_web_ui_product.py",
+    "test_p4_l_preference_scope_canonicalization.py"
+  ],
+  "implementation_requirements": [
+    "install a product-only adapter after P4-I and before P4-J without editing the frozen P4-I or P4-J implementations",
+    "canonicalize only exact language-plus-scope aliases listed in the frozen contract and only for selected explicit scopes",
+    "leave default general already-canonical English and unsupported scopes unchanged",
+    "preserve extracted value value digest source language input digest act and epistemic status",
+    "record alias id and source alias digest without raw dialogue or raw alias persistence",
+    "write the existing canonical drink predicate and keep profile shadow answer authority false",
+    "materialize one raw-free memory-stage P4-L graph node bound to the P4-I current memory id",
+    "add no model call and do not change episode writes final surface or query classification"
+  ],
+  "verification_order": [
+    "commit and push this contract test freeze and observed red state before implementation",
+    "implement only the authorized product adapter entry install and prospective regression",
+    "run P4-L exact tests then P4-I P4-J P4-K and product-entry affected regression",
+    "verify immutable P4-I direct tests still preserve their original frozen behavior without product install",
+    "commit and push implementation before any separate real product acceptance freeze"
+  ],
+  "failure_policy": {
+    "implementation_batches_maximum": 2,
+    "alias_table_expansion_after_result_allowed": false,
+    "p4_i_or_p4_j_frozen_case_rerun_allowed": false,
+    "preference_value_extraction_or_localization_change_allowed": false,
+    "research_baseline_gate_or_data_change_allowed": false,
+    "real_product_turn_before_separate_acceptance_freeze_allowed": false
+  },
+  "authorized_external_effects_before_implementation_release": {
+    "real_product_turns": 0,
+    "local_model_calls": 0,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0
+  },
+  "claim_boundary": "P4-L offline success would establish only a bounded product alias projection for three already-extractable explicit drink scopes. It cannot establish open-domain multilingual ontology alignment, arbitrary recall, long-dialogue reliability, felt understanding, LLM superiority or a human equation."
+}

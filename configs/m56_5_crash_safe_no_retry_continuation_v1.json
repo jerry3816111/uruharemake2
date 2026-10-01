@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_m56_crash_safe_no_retry_continuation_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_any_real_m56_generation_call",
+  "single_changed_variable": "reuse of immutable completed formal-generation step checkpoints after process interruption",
+  "public_api": {
+    "function": "execute_resumable_formal_generation",
+    "parameters": [
+      "run_id"
+    ],
+    "provider_injection_allowed": false,
+    "prediction_injection_allowed": false,
+    "outcome_injection_allowed": false,
+    "resume_override_allowed": false,
+    "retry_or_fallback_override_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_3_lease_gated_generation_runner_v1.json": "355c7d54fc87dca8c1ad573fd13c409ab246c4b89733c5a05ed321aae9acf156",
+    "m56_3_lease_gated_generation_runner.py": "6b7ef478fe727bc6dc557c6ea78408bc1f2a9d7a39895ec01099e02f723d89fa",
+    "research/m56_3_lease_gated_generation_runner_implementation_freeze_2026-09-02.json": "14eebce006d55e4dee285798470e456efdffd4ebcd0cd17f131b37dd04ab2cc5",
+    "configs/m56_4_separate_formal_scorer_v1.json": "27dc540f4db7e0ff19368351d0688809e4906a41fabe2bd473804c8ccda96434",
+    "m56_4_separate_formal_scorer.py": "e96474c1242389130651f9ac5279157a1307e730538f78e8fc446ed208ba24a1",
+    "research/m56_4_separate_formal_scorer_implementation_freeze_2026-09-02.json": "6f07baf9b84d7a441bcca7c5c3c7ecc44530c833ef15e3a91affabc228959855"
+  },
+  "state_machine": [
+    "authority_and_runner_inputs_revalidated",
+    "m56_3_schedule_created_or_identically_revalidated",
+    "equation_bundle_rematerialized_and_checkpointed",
+    "completed_step_checkpoints_revalidated_in_schedule_order",
+    "invocation_intent_committed_before_each_model_transport",
+    "one_transport_attempt_or_terminal_failure",
+    "combined_result_and_resource_checkpoint_atomically_committed",
+    "matching_intent_cleared_only_after_complete_checkpoint",
+    "unchanged_m56_3_submission_and_call_ledger_built",
+    "prediction_commitment_then_scoring_release_created"
+  ],
+  "recovery_policy": {
+    "completed_checkpoint_reuse_allowed": true,
+    "completed_step_model_recall_allowed": false,
+    "intent_plus_valid_checkpoint_is_completed": true,
+    "intent_without_checkpoint_is_terminal": true,
+    "failure_record_is_terminal": true,
+    "checkpoint_mutation_is_terminal": true,
+    "out_of_order_execution_allowed": false,
+    "retry_count": 0,
+    "fallback_count": 0
+  },
+  "checkpoint_boundary": {
+    "combined_result_and_call_telemetry": true,
+    "additional_raw_prompt_copy_persisted": false,
+    "additional_raw_source_copy_persisted": false,
+    "raw_model_response_persisted": false,
+    "reasoning_trace_persisted": false,
+    "private_outcome_access": false,
+    "private_mental_state_assertion_persisted": false
+  },
+  "final_artifacts": {
+    "m56_3_submission_schema_unchanged": true,
+    "m56_3_call_ledger_schema_unchanged": true,
+    "m56_3_prediction_commitment_schema_unchanged": true,
+    "m56_3_scoring_release_schema_unchanged": true,
+    "m56_4_separate_scorer_compatibility_required": true
+  },
+  "authorization": {
+    "formal_generation_now": false,
+    "formal_scoring": false,
+    "target_outcome_access": false,
+    "formal_result_claim": false,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false
+  },
+  "claim_boundary": "M56.5 may establish only crash-safe reuse of already completed, immutable formal-generation steps without retry. It cannot establish human evidence, actual model performance, Equation V1 validity, a solved human-brain equation, full-pipeline readiness, or production readiness."
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "uruha_m56_separate_formal_scorer_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_formal_m56_target_outcome_access_or_score",
+  "single_changed_variable": "post-commit resource-gated separate scoring and immutable scoped-result commitment",
+  "bindings": {
+    "m56_preflight_freeze": {
+      "path": "research/m56_fair_comparison_preflight_implementation_freeze_2026-09-01.json",
+      "sha256": "b9098f784e2da2ff683820a466b8f8979b0917a3faec4c60a5541d94f8e8445d"
+    },
+    "m56_preflight_contract": {
+      "path": "configs/m56_fair_comparison_preflight_v1.json",
+      "sha256": "184493d9c466d02625edddbfb0be19838c791fb3c4e011f8905e9da0fc3980b2"
+    },
+    "m56_capsule_freeze": {
+      "path": "research/m56_blinded_execution_capsule_implementation_freeze_2026-09-01.json",
+      "sha256": "0214c10bf232c3f657371dfe9cfae10e9c6563485876894eaf22035f2a66e979"
+    },
+    "m56_capsule_contract": {
+      "path": "configs/m56_blinded_execution_capsule_v1.json",
+      "sha256": "32dd61ebcb1ad5b5bddd397f2d20077ffcfa481039d6b8b27b6374ac068c4970"
+    },
+    "m56_3_runner_freeze": {
+      "path": "research/m56_3_lease_gated_generation_runner_implementation_freeze_2026-09-02.json",
+      "sha256": "14eebce006d55e4dee285798470e456efdffd4ebcd0cd17f131b37dd04ab2cc5"
+    },
+    "m56_3_runner_contract": {
+      "path": "configs/m56_3_lease_gated_generation_runner_v1.json",
+      "sha256": "355c7d54fc87dca8c1ad573fd13c409ab246c4b89733c5a05ed321aae9acf156"
+    },
+    "m56_4_plan": {
+      "path": "research/m56_4_separate_formal_scorer_plan_2026-09-02.md",
+      "sha256": "5f4c54bcef45f1ed682a6805bf3f0328e65dd67d8f4cc1728d589321f7d2f291"
+    }
+  },
+  "schemas": {
+    "scoring_access_receipt": "uruha_m56_formal_scoring_access_receipt_v1",
+    "score_report": "uruha_m56_formal_separate_score_report_v1",
+    "result_commitment": "uruha_m56_formal_score_commitment_v1",
+    "prescore_audit": "uruha_m56_formal_prescore_audit_v1",
+    "scorer_audit": "uruha_m56_separate_formal_scorer_audit_v1",
+    "synthetic_rehearsal": "uruha_m56_separate_scorer_synthetic_rehearsal_v1"
+  },
+  "state_machine": [
+    "prediction_release_revalidated",
+    "resource_comparability_checked_before_outcome",
+    "scoring_access_receipt_committed",
+    "withheld_outcome_key_opened",
+    "all_seven_conditions_scored",
+    "frozen_primary_contrast_evaluated",
+    "private_score_report_written",
+    "result_sha256_committed"
+  ],
+  "public_api": {
+    "entry_point": "execute_formal_scoring",
+    "only_parameter": "run_id",
+    "prediction_injection_allowed": false,
+    "outcome_injection_allowed": false,
+    "metric_or_threshold_injection_allowed": false,
+    "sensitivity_pass_injection_allowed": false,
+    "result_or_readiness_injection_allowed": false
+  },
+  "prescore_boundary": {
+    "outcome_compartment_opened_before_release_validation": false,
+    "outcome_compartment_opened_before_resource_gate": false,
+    "required_prediction_rows": 210,
+    "required_conditions": 7,
+    "retry_count_required": 0,
+    "fallback_count_required": 0,
+    "generation_outcome_access_count_required": 0,
+    "B5_Ours_prompt_difference_fraction_threshold": 0.05,
+    "token_sensitivity_required_above_threshold": true,
+    "missing_required_sensitivity_blocks_before_outcome": true
+  },
+  "scoring": {
+    "all_conditions_reported": true,
+    "primary_control": "B5_STRUCTURED_HISTORY",
+    "primary_system": "OURS_HYBRID",
+    "proper_target": "primary_actual_observed_behavior_one_hot",
+    "acceptable_labels_apply_to": ["top1", "top3", "mrr", "ndcg"],
+    "co_primary": ["paired_brier_delta_ours_minus_b5", "paired_nll_delta_ours_minus_b5"],
+    "paired_bootstrap_repetitions": 20000,
+    "paired_bootstrap_seed": 560901,
+    "sign_flip_exact_pair_limit": 20,
+    "sign_flip_monte_carlo_draws": 20000,
+    "sign_flip_seed": 560902,
+    "top1_delta_minimum": -0.05,
+    "ece_role": "descriptive_only",
+    "negative_result_retained": true,
+    "post_result_control_or_metric_selection_allowed": false
+  },
+  "result_boundary": {
+    "atomic_private_score_report": true,
+    "sha256_result_commitment_required": true,
+    "identical_finalize_only_after_partial_commit": true,
+    "report_contains_raw_source_or_model_response": false,
+    "report_contains_reasoning_trace": false,
+    "formal_claim_scope": "frozen_M55_M56_dataset_conditions_model_hardware_only",
+    "production_memory_write": false,
+    "external_deployment": false,
+    "broad_human_equation_claim": false
+  },
+  "authorization": {
+    "current_formal_scoring": false,
+    "current_target_outcome_access": false,
+    "current_formal_result": false,
+    "synthetic_rehearsal_authorizes_formal_result": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "This contract can establish only the resource-gated, post-commit separate scoring and immutable scoped-result commitment mechanics for one future formal M56 run. Current live scoring remains denied. It cannot establish human evidence, model performance, Equation V1 validity, private mental truth, a solved human-brain equation, full-pipeline readiness, or production readiness."
+}

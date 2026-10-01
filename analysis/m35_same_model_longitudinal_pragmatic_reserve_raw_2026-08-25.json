@@ -1,0 +1,1771 @@
+{
+  "schema": "uruha_same_model_longitudinal_pragmatic_evaluation_m35_v1",
+  "mode": "reserve",
+  "dataset_path": "datasets/m35_same_model_longitudinal_pragmatic_reserve_v1.json",
+  "dataset_sha256": "5ab3fcd8a1dbbe0b5a036499e8cd1425b1812620076b61007a1e1359cf0b299f",
+  "protocol_path": "research/m35_same_model_longitudinal_pragmatic_protocol.json",
+  "protocol_sha256": "a89288889f914f7494d020fe64d45eae5d4d5be5b6c929e68a147e4439c1ec67",
+  "implementation_freeze_sha256": "ba299284eff32c22d6cc0af51700efb71362d0bbb3429c688eaf89ef1f7f5f29",
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260825,
+    "num_ctx": 4096,
+    "num_predict": 112,
+    "input_token_budget": 1280,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "decision": "fail_one_or_more_frozen_gates",
+  "metrics": {
+    "case_count": 12,
+    "pair_count": 6,
+    "transport_error_count": 0,
+    "json_parse_error_count": 0,
+    "paired_prompt_token_gate_rate": 1.0,
+    "system_mechanism_current_policy_accuracy": 0.75,
+    "system_mechanism_feedback_outcome_accuracy": 0.6667,
+    "baseline_current_policy_accuracy": 0.25,
+    "system_current_policy_accuracy": 0.75,
+    "system_minus_baseline_current_policy_accuracy": 0.5,
+    "system_pair_divergence_rate": 0.8333,
+    "baseline_pair_policy_invariance_rate": 1.0,
+    "baseline_current_surface_proxy_match_rate": 0.0,
+    "system_current_surface_proxy_match_rate": 0.5833,
+    "baseline_feedback_policy_accuracy": 0.2,
+    "system_feedback_policy_accuracy": 0.6,
+    "system_minus_baseline_feedback_policy_accuracy": 0.4,
+    "system_contradiction_revision_accuracy": 0.2,
+    "visible_japanese_rate": {
+      "baseline": 1.0,
+      "system": 1.0
+    },
+    "unverified_mental_fact_write_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "scored_prompt_tokens": {
+      "baseline": 20040,
+      "system": 20040
+    },
+    "completion_tokens": {
+      "baseline": 450,
+      "system": 464
+    },
+    "latency_seconds": {
+      "baseline": 24.2748,
+      "system": 24.585
+    },
+    "system_to_baseline_scored_prompt_token_ratio": 1.0,
+    "system_to_baseline_completion_token_ratio": 1.0311,
+    "system_to_baseline_latency_ratio": 1.0128,
+    "median_scored_call_seconds": 0.9665
+  },
+  "gate_results": {
+    "transport_error_count_max": true,
+    "json_parse_error_count_max": true,
+    "paired_prompt_token_gate_rate_min": true,
+    "system_mechanism_current_policy_accuracy_min": false,
+    "system_mechanism_feedback_outcome_accuracy_min": false,
+    "system_current_policy_accuracy_min": false,
+    "system_minus_baseline_current_policy_accuracy_min": true,
+    "system_pair_divergence_rate_min": false,
+    "baseline_pair_policy_invariance_rate_min": true,
+    "system_current_surface_proxy_match_rate_min": false,
+    "system_feedback_policy_accuracy_min": false,
+    "system_minus_baseline_feedback_policy_accuracy_min": true,
+    "system_contradiction_revision_accuracy_min": false,
+    "unverified_mental_fact_write_count_max": true,
+    "raw_dialogue_persisted_count_max": true,
+    "system_to_baseline_scored_prompt_token_ratio_max": true,
+    "system_to_baseline_completion_token_ratio_max": true,
+    "system_to_baseline_latency_ratio_max": true,
+    "visible_japanese_rate_baseline_min": true,
+    "visible_japanese_rate_system_min": true
+  },
+  "rows": [
+    {
+      "case_id": "m35r_zh_pair1_tease_01",
+      "pair_id": "zh_midnight_racing_pair_1",
+      "language": "zh",
+      "current_input_digest": "1b692d8483fb7886",
+      "expected_current_policy": "playful_tease",
+      "expected_feedback_outcome": "supported",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "playful_tease",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "supported",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、夜中って頭が冴えてくるよね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 968,
+          "eval_count": 24,
+          "total_duration_ns": 1236226333,
+          "load_duration_ns": 236260458,
+          "latency_seconds": 1.237,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、夜中って頭が冴えてくるよね",
+          "execution_position": 2,
+          "prompt_sha256": "620cb1eaad7b6952",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"頭が止まらなくて困るのかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 968,
+          "eval_count": 23,
+          "total_duration_ns": 1198245625,
+          "load_duration_ns": 213140792,
+          "latency_seconds": 1.1989,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "頭が止まらなくて困るのかよ",
+          "execution_position": 1,
+          "prompt_sha256": "ac776d7e2de8adec",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 759,
+          "eval_count": 16,
+          "total_duration_ns": 895499417,
+          "load_duration_ns": 208944375,
+          "latency_seconds": 0.8963,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "4db2d77f9e1531dc",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"頭が止まらなくて困るのかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 759,
+          "eval_count": 23,
+          "total_duration_ns": 1158293250,
+          "load_duration_ns": 220823458,
+          "latency_seconds": 1.1591,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "頭が止まらなくて困るのかよ",
+          "execution_position": 1,
+          "prompt_sha256": "a07f4ec252c2d4c8",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 656,
+              "system": 968
+            },
+            "delta_system_minus_baseline": 312,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 968,
+              "system": 968
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 681,
+              "system": 759
+            },
+            "delta_system_minus_baseline": 78,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 759,
+              "system": 759
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_zh_pair1_solve_02",
+      "pair_id": "zh_midnight_racing_pair_1",
+      "language": "zh",
+      "current_input_digest": "1b692d8483fb7886",
+      "expected_current_policy": "solve_regulation",
+      "expected_feedback_outcome": "contradicted",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "solve_regulation",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "contradicted",
+      "m34_revision_replacement": "listen_presence",
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、夜中って頭が冴えてくるよね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 948,
+          "eval_count": 24,
+          "total_duration_ns": 1201954375,
+          "load_duration_ns": 211954667,
+          "latency_seconds": 1.2027,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、夜中って頭が冴えてくるよね",
+          "execution_position": 2,
+          "prompt_sha256": "d6292208a4de6605",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"深呼吸してみようか？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 948,
+          "eval_count": 17,
+          "total_duration_ns": 916059791,
+          "load_duration_ns": 210927791,
+          "latency_seconds": 0.9168,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "深呼吸してみようか？",
+          "execution_position": 1,
+          "prompt_sha256": "6c253c7bcbe394d0",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、聞かせて\"}",
+          "transport_error": null,
+          "prompt_eval_count": 776,
+          "eval_count": 16,
+          "total_duration_ns": 896707792,
+          "load_duration_ns": 208779208,
+          "latency_seconds": 0.8976,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、聞かせて",
+          "execution_position": 2,
+          "prompt_sha256": "92887dff898f7651",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、聞いているよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 776,
+          "eval_count": 17,
+          "total_duration_ns": 914963333,
+          "load_duration_ns": 211391458,
+          "latency_seconds": 0.9158,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、聞いているよ",
+          "execution_position": 1,
+          "prompt_sha256": "5c019505a786c159",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 656,
+              "system": 948
+            },
+            "delta_system_minus_baseline": 292,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 948,
+              "system": 948
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 686,
+              "system": 776
+            },
+            "delta_system_minus_baseline": 90,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 776,
+              "system": 776
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_zh_pair2_listen_03",
+      "pair_id": "zh_restless_pair_2",
+      "language": "zh",
+      "current_input_digest": "1465d687de8a2ed3",
+      "expected_current_policy": "listen_presence",
+      "expected_feedback_outcome": "supported",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "listen_presence",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "supported",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"落ち着いて話せるから、ゆっくり続けな\"}",
+          "transport_error": null,
+          "prompt_eval_count": 934,
+          "eval_count": 20,
+          "total_duration_ns": 1047221000,
+          "load_duration_ns": 209589541,
+          "latency_seconds": 1.0478,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "落ち着いて話せるから、ゆっくり続けな",
+          "execution_position": 1,
+          "prompt_sha256": "a972b1fa980e2393",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"坐りきれないなら、そのまま続けて話してね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 934,
+          "eval_count": 22,
+          "total_duration_ns": 1151090083,
+          "load_duration_ns": 208168625,
+          "latency_seconds": 1.1519,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "坐りきれないなら、そのまま続けて話してね",
+          "execution_position": 2,
+          "prompt_sha256": "cda75ab88646cc49",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、ゆっくり話してね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 766,
+          "eval_count": 18,
+          "total_duration_ns": 970893208,
+          "load_duration_ns": 211851625,
+          "latency_seconds": 0.9717,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、ゆっくり話してね",
+          "execution_position": 1,
+          "prompt_sha256": "1dcea0c0e4f082e9",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、ゆっくり話してね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 766,
+          "eval_count": 18,
+          "total_duration_ns": 972957375,
+          "load_duration_ns": 210861291,
+          "latency_seconds": 0.9739,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、ゆっくり話してね",
+          "execution_position": 2,
+          "prompt_sha256": "c671b7189395207b",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 659,
+              "system": 934
+            },
+            "delta_system_minus_baseline": 275,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 934,
+              "system": 934
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 684,
+              "system": 766
+            },
+            "delta_system_minus_baseline": 82,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 766,
+              "system": 766
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_zh_pair2_companion_04",
+      "pair_id": "zh_restless_pair_2",
+      "language": "zh",
+      "current_input_digest": "1465d687de8a2ed3",
+      "expected_current_policy": "share_arousal",
+      "expected_feedback_outcome": "uncertain",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "share_arousal",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "uncertain",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"落ち着いて話せるから、ゆっくり続けな\"}",
+          "transport_error": null,
+          "prompt_eval_count": 940,
+          "eval_count": 20,
+          "total_duration_ns": 1104573375,
+          "load_duration_ns": 211043541,
+          "latency_seconds": 1.1055,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "落ち着いて話せるから、ゆっくり続けな",
+          "execution_position": 2,
+          "prompt_sha256": "1816d4c0d9772d29",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"share_arousal\",\"reply\":\"うちはここにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 940,
+          "eval_count": 18,
+          "total_duration_ns": 948740416,
+          "load_duration_ns": 209097125,
+          "latency_seconds": 0.9501,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "share_arousal",
+          "reply": "うちはここにいるよ",
+          "execution_position": 1,
+          "prompt_sha256": "8ae8149a800cd3aa",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"雨降るし、落ち着ける場所ある？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 763,
+          "eval_count": 22,
+          "total_duration_ns": 1122576792,
+          "load_duration_ns": 207891042,
+          "latency_seconds": 1.1232,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "雨降るし、落ち着ける場所ある？",
+          "execution_position": 1,
+          "prompt_sha256": "38e35bc75ffc6aee",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うちはここにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 763,
+          "eval_count": 16,
+          "total_duration_ns": 896483167,
+          "load_duration_ns": 210265000,
+          "latency_seconds": 0.8971,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うちはここにいるよ",
+          "execution_position": 2,
+          "prompt_sha256": "75e9aa6f31357823",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 659,
+              "system": 940
+            },
+            "delta_system_minus_baseline": 281,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 940,
+              "system": 940
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 687,
+              "system": 763
+            },
+            "delta_system_minus_baseline": 76,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 763,
+              "system": 763
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_en_pair3_tease_05",
+      "pair_id": "en_mind_stop_pair_3",
+      "language": "en",
+      "current_input_digest": "118c83a0409f32fd",
+      "expected_current_policy": "playful_tease",
+      "expected_feedback_outcome": "contradicted",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "playful_tease",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "uncertain",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 966,
+          "eval_count": 16,
+          "total_duration_ns": 907574583,
+          "load_duration_ns": 209778833,
+          "latency_seconds": 0.9083,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "ee2298a4eb3791e9",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"playful_tease\",\"reply\":\"今夜も頭が止まらねーかよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 966,
+          "eval_count": 24,
+          "total_duration_ns": 1215864292,
+          "load_duration_ns": 210505584,
+          "latency_seconds": 1.2165,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "playful_tease",
+          "reply": "今夜も頭が止まらねーかよ",
+          "execution_position": 1,
+          "prompt_sha256": "31eaa369ddb27ce0",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"深呼吸して、今はスマホを置いてみる？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 764,
+          "eval_count": 21,
+          "total_duration_ns": 1091937709,
+          "load_duration_ns": 215490584,
+          "latency_seconds": 1.0926,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "深呼吸して、今はスマホを置いてみる？",
+          "execution_position": 1,
+          "prompt_sha256": "f4503d8b1662d96f",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"深呼吸して、今はスマホを置いてみる？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 764,
+          "eval_count": 21,
+          "total_duration_ns": 1088801333,
+          "load_duration_ns": 209024458,
+          "latency_seconds": 1.0895,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "深呼吸して、今はスマホを置いてみる？",
+          "execution_position": 2,
+          "prompt_sha256": "7ec588f1e527f8a7",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 654,
+              "system": 966
+            },
+            "delta_system_minus_baseline": 312,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 966,
+              "system": 966
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 676,
+              "system": 764
+            },
+            "delta_system_minus_baseline": 88,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 764,
+              "system": 764
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_en_pair3_listen_06",
+      "pair_id": "en_mind_stop_pair_3",
+      "language": "en",
+      "current_input_digest": "118c83a0409f32fd",
+      "expected_current_policy": "listen_presence",
+      "expected_feedback_outcome": "supported",
+      "expected_feedback_policy": "listen_presence",
+      "m34_current_policy": "listen_presence",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "supported",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 929,
+          "eval_count": 16,
+          "total_duration_ns": 923985000,
+          "load_duration_ns": 221581334,
+          "latency_seconds": 0.925,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "9280dd8e93d94e1d",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 929,
+          "eval_count": 17,
+          "total_duration_ns": 954371125,
+          "load_duration_ns": 228274584,
+          "latency_seconds": 0.9552,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだよ",
+          "execution_position": 1,
+          "prompt_sha256": "7eab1beb250f8a6f",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 752,
+          "eval_count": 16,
+          "total_duration_ns": 898612583,
+          "load_duration_ns": 211906250,
+          "latency_seconds": 0.9,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "87a26e1583d2dd5c",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 752,
+          "eval_count": 17,
+          "total_duration_ns": 919812750,
+          "load_duration_ns": 213517542,
+          "latency_seconds": 0.9215,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだよ",
+          "execution_position": 1,
+          "prompt_sha256": "85f4d4ddb2c9bc75",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 654,
+              "system": 929
+            },
+            "delta_system_minus_baseline": 275,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 929,
+              "system": 929
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 671,
+              "system": 752
+            },
+            "delta_system_minus_baseline": 81,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 752,
+              "system": 752
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_en_pair4_solve_07",
+      "pair_id": "en_thoughts_racing_pair_4",
+      "language": "en",
+      "current_input_digest": "a0e0bd204652586b",
+      "expected_current_policy": "solve_regulation",
+      "expected_feedback_outcome": "uncertain",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": "calibrate_need",
+      "m34_current_authority": "uncertainty_guarded_abstention",
+      "m34_feedback_outcome": "uncertain",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、夜中って頭が働いちゃうよね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 918,
+          "eval_count": 23,
+          "total_duration_ns": 1182148167,
+          "load_duration_ns": 218209250,
+          "latency_seconds": 1.1831,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、夜中って頭が働いちゃうよね",
+          "execution_position": 1,
+          "prompt_sha256": "da7e0e15978b7cb2",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"落ち着いてる？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 918,
+          "eval_count": 16,
+          "total_duration_ns": 908378708,
+          "load_duration_ns": 210916750,
+          "latency_seconds": 0.9092,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "落ち着いてる？",
+          "execution_position": 2,
+          "prompt_sha256": "1a9ec4404e12ad21",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"寝るの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 756,
+          "eval_count": 16,
+          "total_duration_ns": 895715750,
+          "load_duration_ns": 210815417,
+          "latency_seconds": 0.8967,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "寝るの？",
+          "execution_position": 2,
+          "prompt_sha256": "487739c763161b98",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、落ち着いてる？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 756,
+          "eval_count": 18,
+          "total_duration_ns": 960368125,
+          "load_duration_ns": 208807125,
+          "latency_seconds": 0.9613,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、落ち着いてる？",
+          "execution_position": 1,
+          "prompt_sha256": "aa18b9383990c389",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 654,
+              "system": 918
+            },
+            "delta_system_minus_baseline": 264,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 918,
+              "system": 918
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 682,
+              "system": 756
+            },
+            "delta_system_minus_baseline": 74,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 756,
+              "system": 756
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_en_pair4_companion_08",
+      "pair_id": "en_thoughts_racing_pair_4",
+      "language": "en",
+      "current_input_digest": "a0e0bd204652586b",
+      "expected_current_policy": "share_arousal",
+      "expected_feedback_outcome": "contradicted",
+      "expected_feedback_policy": "listen_presence",
+      "m34_current_policy": "share_arousal",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "uncertain",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、夜中って頭が働いちゃうよね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 935,
+          "eval_count": 23,
+          "total_duration_ns": 1181047625,
+          "load_duration_ns": 213282667,
+          "latency_seconds": 1.1817,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、夜中って頭が働いちゃうよね",
+          "execution_position": 1,
+          "prompt_sha256": "454f8b44a78086f1",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"share_arousal\",\"reply\":\"うちは、君のその気持ちに寄り添ってここにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 935,
+          "eval_count": 27,
+          "total_duration_ns": 1350787959,
+          "load_duration_ns": 230000292,
+          "latency_seconds": 1.3514,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "share_arousal",
+          "reply": "うちは、君のその気持ちに寄り添ってここにいるよ",
+          "execution_position": 2,
+          "prompt_sha256": "f2d82fd14294f7a7",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、聞かせて\"}",
+          "transport_error": null,
+          "prompt_eval_count": 770,
+          "eval_count": 16,
+          "total_duration_ns": 894451084,
+          "load_duration_ns": 208107167,
+          "latency_seconds": 0.8953,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、聞かせて",
+          "execution_position": 2,
+          "prompt_sha256": "395d07a5b19dbc39",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うちは、君のその気持ちに寄り添ってここにいるよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 770,
+          "eval_count": 25,
+          "total_duration_ns": 1219665917,
+          "load_duration_ns": 210814250,
+          "latency_seconds": 1.2208,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うちは、君のその気持ちに寄り添ってここにいるよ",
+          "execution_position": 1,
+          "prompt_sha256": "e4114e3b9cd7d2fc",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 654,
+              "system": 935
+            },
+            "delta_system_minus_baseline": 281,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 935,
+              "system": 935
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 686,
+              "system": 770
+            },
+            "delta_system_minus_baseline": 84,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 770,
+              "system": 770
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_ja_pair5_tease_09",
+      "pair_id": "ja_head_stop_pair_5",
+      "language": "ja",
+      "current_input_digest": "3abb2e6cabb9728c",
+      "expected_current_policy": "playful_tease",
+      "expected_feedback_outcome": "supported",
+      "expected_feedback_policy": "not_applicable",
+      "m34_current_policy": null,
+      "m34_current_authority": "bounded_operational_selection",
+      "m34_feedback_outcome": "not_available",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 732,
+          "eval_count": 16,
+          "total_duration_ns": 899963083,
+          "load_duration_ns": 210140417,
+          "latency_seconds": 0.9006,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "134a44135c68a3af",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 732,
+          "eval_count": 16,
+          "total_duration_ns": 879930208,
+          "load_duration_ns": 214003083,
+          "latency_seconds": 0.8806,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 1,
+          "prompt_sha256": "268d44c34ea90aa4",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 751,
+          "eval_count": 16,
+          "total_duration_ns": 896723209,
+          "load_duration_ns": 210786167,
+          "latency_seconds": 0.8975,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 1,
+          "prompt_sha256": "112d245d333701ed",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 751,
+          "eval_count": 16,
+          "total_duration_ns": 897404125,
+          "load_duration_ns": 211292667,
+          "latency_seconds": 0.8989,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "b3226923afc0c7a8",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 651,
+              "system": 732
+            },
+            "delta_system_minus_baseline": 81,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 732,
+              "system": 732
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 670,
+              "system": 751
+            },
+            "delta_system_minus_baseline": 81,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 751,
+              "system": 751
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_ja_pair5_companion_10",
+      "pair_id": "ja_head_stop_pair_5",
+      "language": "ja",
+      "current_input_digest": "3abb2e6cabb9728c",
+      "expected_current_policy": "share_arousal",
+      "expected_feedback_outcome": "contradicted",
+      "expected_feedback_policy": "solve_regulation",
+      "m34_current_policy": null,
+      "m34_current_authority": "bounded_operational_selection",
+      "m34_feedback_outcome": "not_available",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 732,
+          "eval_count": 16,
+          "total_duration_ns": 935918333,
+          "load_duration_ns": 247714416,
+          "latency_seconds": 0.9366,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 1,
+          "prompt_sha256": "134a44135c68a3af",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなんだ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 732,
+          "eval_count": 16,
+          "total_duration_ns": 888967958,
+          "load_duration_ns": 208292500,
+          "latency_seconds": 0.8897,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなんだ",
+          "execution_position": 2,
+          "prompt_sha256": "268d44c34ea90aa4",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"calibrate_need\",\"reply\":\"どうしたいの？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 761,
+          "eval_count": 16,
+          "total_duration_ns": 897234541,
+          "load_duration_ns": 209607458,
+          "latency_seconds": 0.8981,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "calibrate_need",
+          "reply": "どうしたいの？",
+          "execution_position": 1,
+          "prompt_sha256": "e54e887cac5302f3",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"深呼吸して、今はスマホを置いて離れてみて\"}",
+          "transport_error": null,
+          "prompt_eval_count": 761,
+          "eval_count": 22,
+          "total_duration_ns": 1120803500,
+          "load_duration_ns": 209899834,
+          "latency_seconds": 1.1215,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "深呼吸して、今はスマホを置いて離れてみて",
+          "execution_position": 2,
+          "prompt_sha256": "5878d833c3ffa61b",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 651,
+              "system": 732
+            },
+            "delta_system_minus_baseline": 81,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 732,
+              "system": 732
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 676,
+              "system": 761
+            },
+            "delta_system_minus_baseline": 85,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 761,
+              "system": 761
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_ja_pair6_solve_11",
+      "pair_id": "ja_late_head_pair_6",
+      "language": "ja",
+      "current_input_digest": "891ecba2e47d10f2",
+      "expected_current_policy": "solve_regulation",
+      "expected_feedback_outcome": "uncertain",
+      "expected_feedback_policy": "solve_regulation",
+      "m34_current_policy": "solve_regulation",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "uncertain",
+      "m34_revision_replacement": null,
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、無理に止める必要ないよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 947,
+          "eval_count": 21,
+          "total_duration_ns": 1099754292,
+          "load_duration_ns": 216557333,
+          "latency_seconds": 1.1005,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、無理に止める必要ないよ",
+          "execution_position": 1,
+          "prompt_sha256": "3c143a38f58f17fd",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"solve_regulation\",\"reply\":\"深呼吸してみない？\"}",
+          "transport_error": null,
+          "prompt_eval_count": 947,
+          "eval_count": 16,
+          "total_duration_ns": 910407166,
+          "load_duration_ns": 212424291,
+          "latency_seconds": 0.9113,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "solve_regulation",
+          "reply": "深呼吸してみない？",
+          "execution_position": 2,
+          "prompt_sha256": "ac630f82fd3fa763",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": true,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、雨降ってるね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 755,
+          "eval_count": 18,
+          "total_duration_ns": 973423458,
+          "load_duration_ns": 207148083,
+          "latency_seconds": 0.9741,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、雨降ってるね",
+          "execution_position": 2,
+          "prompt_sha256": "705a7a6c68052025",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、そうなるよね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 755,
+          "eval_count": 17,
+          "total_duration_ns": 913152042,
+          "load_duration_ns": 210518625,
+          "latency_seconds": 0.914,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、そうなるよね",
+          "execution_position": 1,
+          "prompt_sha256": "864b24fa5bd82186",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 655,
+              "system": 947
+            },
+            "delta_system_minus_baseline": 292,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 947,
+              "system": 947
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 679,
+              "system": 755
+            },
+            "delta_system_minus_baseline": 76,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 755,
+              "system": 755
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    },
+    {
+      "case_id": "m35r_ja_pair6_listen_12",
+      "pair_id": "ja_late_head_pair_6",
+      "language": "ja",
+      "current_input_digest": "891ecba2e47d10f2",
+      "expected_current_policy": "listen_presence",
+      "expected_feedback_outcome": "contradicted",
+      "expected_feedback_policy": "share_arousal",
+      "m34_current_policy": "listen_presence",
+      "m34_current_authority": "verified_reversible_context",
+      "m34_feedback_outcome": "contradicted",
+      "m34_revision_replacement": "share_arousal",
+      "m34_original_evidence_rewritten": false,
+      "current": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、無理に止める必要ないよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 930,
+          "eval_count": 21,
+          "total_duration_ns": 1091424458,
+          "load_duration_ns": 207760000,
+          "latency_seconds": 1.0922,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、無理に止める必要ないよ",
+          "execution_position": 1,
+          "prompt_sha256": "d9c2500c7bcea23a",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、無理に止める必要ないよ\"}",
+          "transport_error": null,
+          "prompt_eval_count": 930,
+          "eval_count": 21,
+          "total_duration_ns": 1095301166,
+          "load_duration_ns": 211179958,
+          "latency_seconds": 1.0959,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、無理に止める必要ないよ",
+          "execution_position": 2,
+          "prompt_sha256": "d5ee55565fac341d",
+          "local_prompt_token_count": null,
+          "surface_proxy_match": false,
+          "visible_japanese": true
+        }
+      },
+      "feedback": {
+        "baseline": {
+          "raw_output": "{\"selected_policy\":\"listen_presence\",\"reply\":\"うん、ただそばにいてね\"}",
+          "transport_error": null,
+          "prompt_eval_count": 788,
+          "eval_count": 19,
+          "total_duration_ns": 1009929166,
+          "load_duration_ns": 210432583,
+          "latency_seconds": 1.0107,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "listen_presence",
+          "reply": "うん、ただそばにいてね",
+          "execution_position": 1,
+          "prompt_sha256": "0b21604702aa80a7",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        },
+        "system": {
+          "raw_output": "{\"selected_policy\":\"share_arousal\",\"reply\":\"うん、うちずっとそばにいるから\"}",
+          "transport_error": null,
+          "prompt_eval_count": 788,
+          "eval_count": 21,
+          "total_duration_ns": 1083480250,
+          "load_duration_ns": 209707833,
+          "latency_seconds": 1.0841,
+          "parsed": true,
+          "parse_error": null,
+          "selected_policy": "share_arousal",
+          "reply": "うん、うちずっとそばにいるから",
+          "execution_position": 2,
+          "prompt_sha256": "8d7b929f0544c047",
+          "local_prompt_token_count": null,
+          "visible_japanese": true
+        }
+      },
+      "current_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 655,
+              "system": 930
+            },
+            "delta_system_minus_baseline": 275,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 930,
+              "system": 930
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "feedback_token_balance": {
+        "gate_passed": true,
+        "rounds": [
+          {
+            "round": 1,
+            "counts": {
+              "baseline": 684,
+              "system": 788
+            },
+            "delta_system_minus_baseline": 104,
+            "within_gate": false,
+            "generated_output_discarded": true
+          },
+          {
+            "round": 2,
+            "counts": {
+              "baseline": 788,
+              "system": 788
+            },
+            "delta_system_minus_baseline": 0,
+            "within_gate": true,
+            "generated_output_discarded": true
+          }
+        ]
+      },
+      "unverified_mental_fact_write_count": 0,
+      "raw_dialogue_persisted": false
+    }
+  ],
+  "claim_boundary": "a pass supports only a controlled same-model proxy advantage from verified longitudinal context; it does not establish private-intent truth, human felt-understanding preference, general superiority over LLMs, or a human-brain equation",
+  "human_felt_understanding_evidence_available": false
+}

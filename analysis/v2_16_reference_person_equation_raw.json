@@ -1,0 +1,2417 @@
+{
+  "schema": "uruha_v2_16_reference_person_equation_fresh_result",
+  "status": "fresh_generation_complete_human_ratings_pending",
+  "inputs": {
+    "cases": {
+      "path": "datasets/v2_16_reference_person_equation_cases.json",
+      "sha256": "5cf1f20c54638eb904fa034774f360d02729690ec232e254d0946b814d35e010"
+    },
+    "preregistration": {
+      "path": "configs/v2_16_reference_person_equation_preregistration.json",
+      "sha256": "bd4281541d7df40785f2794ef90febbbd67c4fdfbc74462f6f48664ec02ebc64"
+    },
+    "lock": {
+      "path": "configs/v2_16_reference_person_equation_lock.json",
+      "sha256": "fdb3da457cbfa981b684c0328a8b2e6328d3623dac7a2b57f0ed5f099a8cfe30"
+    },
+    "model": {
+      "provider": "ollama_chat_api",
+      "base_url": "http://127.0.0.1:11434",
+      "model": "qwen3.5:9b",
+      "temperature": 0,
+      "seed": 20260812,
+      "num_ctx": 8192,
+      "num_predict": 96,
+      "input_token_budget": 2048,
+      "think": false
+    },
+    "runtime_adapter": {
+      "path": "run_v2_16_fresh_chat_budget.py",
+      "sha256": "f0132e908cd1bd523792cf277aa414a42c0d9be45218ad7cc0f20c7319e94ec9"
+    },
+    "chat_wrapper_token_reserve": 256
+  },
+  "summary": {
+    "generation_count": 12,
+    "pair_count": 6,
+    "transport_error_count": 0,
+    "baseline_proxy_pass_count": 1,
+    "system_proxy_pass_count": 5,
+    "baseline_visible_contract_pass_count": 1,
+    "system_visible_contract_pass_count": 6,
+    "baseline_forbidden_policy_violation_count": 0,
+    "system_forbidden_policy_violation_count": 1,
+    "token_gate_pair_count": 6,
+    "pairs": [
+      {
+        "case_id": "v216_explicit_solution",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": false,
+        "system_proxy_pass": true,
+        "baseline_visible_contract_pass": false,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": false
+      },
+      {
+        "case_id": "v216_listen_only",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": false,
+        "system_proxy_pass": false,
+        "baseline_visible_contract_pass": false,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": true
+      },
+      {
+        "case_id": "v216_playful_tease",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": true,
+        "system_proxy_pass": true,
+        "baseline_visible_contract_pass": true,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": false
+      },
+      {
+        "case_id": "v216_positive_share",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": false,
+        "system_proxy_pass": true,
+        "baseline_visible_contract_pass": false,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": false
+      },
+      {
+        "case_id": "v216_sleep_debt_care",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": false,
+        "system_proxy_pass": true,
+        "baseline_visible_contract_pass": false,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": false
+      },
+      {
+        "case_id": "v216_unknown_calibrate",
+        "prompt_eval_token_delta": 1,
+        "token_gate_passed": true,
+        "baseline_proxy_pass": false,
+        "system_proxy_pass": true,
+        "baseline_visible_contract_pass": false,
+        "system_visible_contract_pass": true,
+        "baseline_forbidden_anchor_hit": false,
+        "system_forbidden_anchor_hit": false
+      }
+    ],
+    "evidence_boundary": "fresh same-model outputs plus narrow proxies; no target-user or independent human preference evidence",
+    "preregistered_proxy_success": false
+  },
+  "rows": [
+    {
+      "reply": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。無理せず様子を見てね。",
+      "transport_error": null,
+      "prompt_eval_count": 1988,
+      "eval_count": 24,
+      "total_duration_ns": 6047877750,
+      "load_duration_ns": 201109792,
+      "latency_seconds": 6.0487,
+      "raw_reply": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。無理せず様子を見てね。",
+      "case_id": "v216_sleep_debt_care",
+      "label": "昨晚沒睡｜先照顧身體",
+      "condition": "system",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我昨晚幾乎沒有睡，早上又喝了兩杯咖啡。",
+        "我現在不是想開玩笑，身體也有點不舒服。"
+      ],
+      "gold_policy": "care_physiology",
+      "acceptable_policies": [
+        "care_physiology",
+        "solve_regulation"
+      ],
+      "selected_policy": "care_physiology",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_sleep_debt_care",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [
+            "我昨晚幾乎沒有睡，早上又喝了兩杯咖啡。",
+            "我現在不是想開玩笑，身體也有點不舒服。"
+          ],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.98,
+              "confidence": 0.98,
+              "status": "user_report",
+              "evidence": "昨晚幾乎沒有睡"
+            },
+            "physical_strain": {
+              "value": 0.83,
+              "confidence": 0.92,
+              "status": "user_report",
+              "evidence": "身體也有點不舒服"
+            },
+            "solution_request": {
+              "value": 0.46,
+              "confidence": 0.46,
+              "status": "unknown",
+              "evidence": "未明示是否要方法"
+            },
+            "listening_request": {
+              "value": 0.28,
+              "confidence": 0.42,
+              "status": "unknown",
+              "evidence": "未明示只想被聽"
+            },
+            "positive_arousal": {
+              "value": 0.05,
+              "confidence": 0.88,
+              "status": "bounded_inference",
+              "evidence": "身體不適且否定玩笑"
+            },
+            "humor_invitation": {
+              "value": 0.02,
+              "confidence": 0.98,
+              "status": "user_report",
+              "evidence": "不是想開玩笑"
+            },
+            "relationship_familiarity": {
+              "value": 0.72,
+              "confidence": 0.7,
+              "status": "session_context",
+              "evidence": "既有熟悉對話關係"
+            },
+            "companionship_request": {
+              "value": 0.3,
+              "confidence": 0.4,
+              "status": "unknown",
+              "evidence": "未明示"
+            },
+            "task_pressure": {
+              "value": 0.35,
+              "confidence": 0.35,
+              "status": "unknown",
+              "evidence": "未明示任務"
+            },
+            "uncertainty": {
+              "value": 0.25,
+              "confidence": 0.78,
+              "status": "derived",
+              "evidence": "身體線索強但回覆形式未明示"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.9245,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.95,
+            "risk_penalty": 0.0129,
+            "expected_utility": 0.881,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.5084,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.405,
+            "risk_penalty": 0.1196,
+            "expected_utility": 0.5032,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.364,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.41,
+            "risk_penalty": 0.138,
+            "expected_utility": 0.3912,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.1226,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.78,
+            "risk_penalty": 0.21,
+            "expected_utility": 0.2536,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.2066,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.64,
+            "risk_penalty": 0.2948,
+            "expected_utility": 0.2523,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.0,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.84,
+            "risk_penalty": 0.7105,
+            "expected_utility": 0.0,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "care_physiology",
+          "label": "先照顧身體",
+          "icon": "♡",
+          "desired_response_fit": 0.9245,
+          "reference_person_fit": 0.74,
+          "evidence_quality": 0.95,
+          "risk_penalty": 0.0129,
+          "expected_utility": 0.881,
+          "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+          "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_003"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "solve_regulation",
+          "label": "給一個現在能做的步驟",
+          "icon": "→",
+          "desired_response_fit": 0.5084,
+          "reference_person_fit": 0.76,
+          "evidence_quality": 0.405,
+          "risk_penalty": 0.1196,
+          "expected_utility": 0.5032,
+          "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+          "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002"
+          ]
+        },
+        "utility_margin": 0.3778,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "e988240db70b1820d08a36090a459f43dd1b5a2021f6e6e223e7e23dc762976a",
+      "prompt_sha256": "383ab5a2d76a6e9e78d855597ad16a93d64fcd6a2ce3f73d1a2bf3eadfc71fe4",
+      "local_prompt_token_count": 2061,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1987,
+            "system": 1975
+          },
+          "delta_system_minus_baseline": -12,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1987,
+            "system": 1988
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "昨夜の睡眠不足とカフェインの影響で、今は無理に集中しようとすると余計な疲れが溜まるかもしれません。少し休んでから考え直してみるのが良さそうですか。",
+      "transport_error": null,
+      "prompt_eval_count": 1987,
+      "eval_count": 38,
+      "total_duration_ns": 5633520292,
+      "load_duration_ns": 204345167,
+      "latency_seconds": 5.6343,
+      "raw_reply": "昨夜の睡眠不足とカフェインの影響で、今は無理に集中しようとすると余計な疲れが溜まるかもしれません。少し休んでから考え直してみるのが良さそうですか。",
+      "case_id": "v216_sleep_debt_care",
+      "label": "昨晚沒睡｜先照顧身體",
+      "condition": "baseline",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我昨晚幾乎沒有睡，早上又喝了兩杯咖啡。",
+        "我現在不是想開玩笑，身體也有點不舒服。"
+      ],
+      "gold_policy": "care_physiology",
+      "acceptable_policies": [
+        "care_physiology",
+        "solve_regulation"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "e988240db70b1820d08a36090a459f43dd1b5a2021f6e6e223e7e23dc762976a",
+      "prompt_sha256": "2777a49271cabad0af77989fcfb96a40b8b26c4a6dbb73a28fc6567b28c730ca",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1987,
+            "system": 1975
+          },
+          "delta_system_minus_baseline": -12,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1987,
+            "system": 1988
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": false,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": false,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "頭の中をメモに全部出して、五分だけ呼吸を整えよう。今夜の仕事が終わるまでこの手順で落ち着いておこう。",
+      "transport_error": null,
+      "prompt_eval_count": 1981,
+      "eval_count": 29,
+      "total_duration_ns": 6301971166,
+      "load_duration_ns": 203737875,
+      "latency_seconds": 6.3028,
+      "raw_reply": "頭の中をメモに全部出して、五分だけ呼吸を整えよう。今夜の仕事が終わるまでこの手順で落ち着いておこう。",
+      "case_id": "v216_explicit_solution",
+      "label": "真的要方法｜現在怎麼停",
+      "condition": "system",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我不是只想抱怨，我需要一個現在能讓思緒慢下來的方法。",
+        "今晚還要完成工作，所以先給我一個能做的步驟。"
+      ],
+      "gold_policy": "solve_regulation",
+      "acceptable_policies": [
+        "solve_regulation",
+        "care_physiology"
+      ],
+      "selected_policy": "solve_regulation",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_explicit_solution",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [
+            "我不是只想抱怨，我需要一個現在能讓思緒慢下來的方法。",
+            "今晚還要完成工作，所以先給我一個能做的步驟。"
+          ],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.3,
+              "confidence": 0.35,
+              "status": "unknown",
+              "evidence": "沒有可靠睡眠資訊"
+            },
+            "physical_strain": {
+              "value": 0.42,
+              "confidence": 0.5,
+              "status": "bounded_inference",
+              "evidence": "長時間無法平靜"
+            },
+            "solution_request": {
+              "value": 0.99,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "需要現在能做的方法"
+            },
+            "listening_request": {
+              "value": 0.08,
+              "confidence": 0.96,
+              "status": "user_report",
+              "evidence": "不是只想抱怨"
+            },
+            "positive_arousal": {
+              "value": 0.08,
+              "confidence": 0.76,
+              "status": "bounded_inference",
+              "evidence": "任務壓力而非期待"
+            },
+            "humor_invitation": {
+              "value": 0.08,
+              "confidence": 0.65,
+              "status": "bounded_inference",
+              "evidence": "要求具體步驟"
+            },
+            "relationship_familiarity": {
+              "value": 0.72,
+              "confidence": 0.7,
+              "status": "session_context",
+              "evidence": "既有熟悉對話關係"
+            },
+            "companionship_request": {
+              "value": 0.12,
+              "confidence": 0.72,
+              "status": "bounded_inference",
+              "evidence": "需求明確指向方法"
+            },
+            "task_pressure": {
+              "value": 0.94,
+              "confidence": 0.98,
+              "status": "user_report",
+              "evidence": "今晚還要完成工作"
+            },
+            "uncertainty": {
+              "value": 0.07,
+              "confidence": 0.92,
+              "status": "derived",
+              "evidence": "回覆需求明確"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.9046,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.985,
+            "risk_penalty": 0.034,
+            "expected_utility": 0.8665,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.404,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.425,
+            "risk_penalty": 0.0687,
+            "expected_utility": 0.4512,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.1772,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.74,
+            "risk_penalty": 0.3612,
+            "expected_utility": 0.2144,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.1273,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.84,
+            "risk_penalty": 0.297,
+            "expected_utility": 0.2064,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.0625,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.92,
+            "risk_penalty": 0.2604,
+            "expected_utility": 0.2055,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.1072,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.675,
+            "risk_penalty": 0.4214,
+            "expected_utility": 0.1526,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "solve_regulation",
+          "label": "給一個現在能做的步驟",
+          "icon": "→",
+          "desired_response_fit": 0.9046,
+          "reference_person_fit": 0.76,
+          "evidence_quality": 0.985,
+          "risk_penalty": 0.034,
+          "expected_utility": 0.8665,
+          "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+          "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "care_physiology",
+          "label": "先照顧身體",
+          "icon": "♡",
+          "desired_response_fit": 0.404,
+          "reference_person_fit": 0.74,
+          "evidence_quality": 0.425,
+          "risk_penalty": 0.0687,
+          "expected_utility": 0.4512,
+          "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+          "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_003"
+          ]
+        },
+        "utility_margin": 0.4153,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "0b9083e0ddca9c3e423438f4a910a1b3519177a8776b2546e1b1df7158420394",
+      "prompt_sha256": "252e12458bdfbe9eadedc5c44b8505a5141c31d88a320b469dbb7e31fe2b48db",
+      "local_prompt_token_count": 2063,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1980,
+            "system": 1965
+          },
+          "delta_system_minus_baseline": -15,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1980,
+            "system": 1981
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝から動けないのは、脳が情報を処理しすぎている証拠かもしれません。まずは深呼吸をして、今できるたった一つの小さな作業だけを選んで始めてみてください。",
+      "transport_error": null,
+      "prompt_eval_count": 1980,
+      "eval_count": 32,
+      "total_duration_ns": 6463926083,
+      "load_duration_ns": 203708333,
+      "latency_seconds": 6.4648,
+      "raw_reply": "朝から動けないのは、脳が情報を処理しすぎている証拠かもしれません。まずは深呼吸をして、今できるたった一つの小さな作業だけを選んで始めてみてください。",
+      "case_id": "v216_explicit_solution",
+      "label": "真的要方法｜現在怎麼停",
+      "condition": "baseline",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我不是只想抱怨，我需要一個現在能讓思緒慢下來的方法。",
+        "今晚還要完成工作，所以先給我一個能做的步驟。"
+      ],
+      "gold_policy": "solve_regulation",
+      "acceptable_policies": [
+        "solve_regulation",
+        "care_physiology"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "0b9083e0ddca9c3e423438f4a910a1b3519177a8776b2546e1b1df7158420394",
+      "prompt_sha256": "87b41f62d5c97f7626cd7202d8c21a9d3a7ca50ef238fb5a42520fd494395499",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1980,
+            "system": 1965
+          },
+          "delta_system_minus_baseline": -15,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1980,
+            "system": 1981
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": false,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": false,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝からずっと動けないのは、頭の中で何かを整理しようとして必死なのかもしれません。ただ話を聞いてくれる人がいるだけで少し楽になるでしょうね。",
+      "transport_error": null,
+      "prompt_eval_count": 1981,
+      "eval_count": 33,
+      "total_duration_ns": 6527841292,
+      "load_duration_ns": 203168875,
+      "latency_seconds": 6.5287,
+      "raw_reply": "朝からずっと動けないのは、頭の中で何かを整理しようとして必死なのかもしれません。ただ話を聞いてくれる人がいるだけで少し楽になるでしょうね。",
+      "case_id": "v216_listen_only",
+      "label": "不要解法｜只想有人聽",
+      "condition": "baseline",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "先不要教我怎麼做，我不是來找解決方案的。",
+        "我只是想把現在腦袋裡的東西講出來，有人聽就好。"
+      ],
+      "gold_policy": "listen_presence",
+      "acceptable_policies": [
+        "listen_presence"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "d50461d0db24ccef6995a86601dd4a1da1abbdba460a1eab8cd9fb93f6a4eb65",
+      "prompt_sha256": "6deb8a89afeaae98c3d97a2018d9635f5f06cb96d0042dd0bf34a7fbee730702",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1981,
+            "system": 1975
+          },
+          "delta_system_minus_baseline": -6,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1981,
+            "system": 1982
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": false,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": false,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+      "transport_error": null,
+      "prompt_eval_count": 1982,
+      "eval_count": 22,
+      "total_duration_ns": 5916229958,
+      "load_duration_ns": 202974666,
+      "latency_seconds": 5.9184,
+      "raw_reply": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+      "case_id": "v216_listen_only",
+      "label": "不要解法｜只想有人聽",
+      "condition": "system",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "先不要教我怎麼做，我不是來找解決方案的。",
+        "我只是想把現在腦袋裡的東西講出來，有人聽就好。"
+      ],
+      "gold_policy": "listen_presence",
+      "acceptable_policies": [
+        "listen_presence"
+      ],
+      "selected_policy": "listen_presence",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_listen_only",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [
+            "先不要教我怎麼做，我不是來找解決方案的。",
+            "我只是想把現在腦袋裡的東西講出來，有人聽就好。"
+          ],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.3,
+              "confidence": 0.32,
+              "status": "unknown",
+              "evidence": "沒有可靠睡眠資訊"
+            },
+            "physical_strain": {
+              "value": 0.4,
+              "confidence": 0.45,
+              "status": "bounded_inference",
+              "evidence": "持續坐立不安"
+            },
+            "solution_request": {
+              "value": 0.01,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "不要教我怎麼做"
+            },
+            "listening_request": {
+              "value": 0.99,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "有人聽就好"
+            },
+            "positive_arousal": {
+              "value": 0.18,
+              "confidence": 0.52,
+              "status": "unknown",
+              "evidence": "沒有說明正負方向"
+            },
+            "humor_invitation": {
+              "value": 0.08,
+              "confidence": 0.62,
+              "status": "bounded_inference",
+              "evidence": "要求傾聽而非玩笑"
+            },
+            "relationship_familiarity": {
+              "value": 0.78,
+              "confidence": 0.72,
+              "status": "session_context",
+              "evidence": "願意直接提出傾聽需求"
+            },
+            "companionship_request": {
+              "value": 0.92,
+              "confidence": 0.96,
+              "status": "user_report",
+              "evidence": "有人聽就好"
+            },
+            "task_pressure": {
+              "value": 0.22,
+              "confidence": 0.3,
+              "status": "unknown",
+              "evidence": "沒有任務線索"
+            },
+            "uncertainty": {
+              "value": 0.06,
+              "confidence": 0.94,
+              "status": "derived",
+              "evidence": "回覆需求明確"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.9017,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.975,
+            "risk_penalty": 0.003,
+            "expected_utility": 0.87,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.4804,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.74,
+            "risk_penalty": 0.0828,
+            "expected_utility": 0.5375,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.387,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.385,
+            "risk_penalty": 0.0954,
+            "expected_utility": 0.4244,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.0729,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.94,
+            "risk_penalty": 0.2632,
+            "expected_utility": 0.2134,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.1446,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.67,
+            "risk_penalty": 0.4,
+            "expected_utility": 0.1865,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.0988,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.645,
+            "risk_penalty": 0.324,
+            "expected_utility": 0.1628,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "listen_presence",
+          "label": "不要解法，只留下來聽",
+          "icon": "∞",
+          "desired_response_fit": 0.9017,
+          "reference_person_fit": 0.73,
+          "evidence_quality": 0.975,
+          "risk_penalty": 0.003,
+          "expected_utility": 0.87,
+          "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+          "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "share_arousal",
+          "label": "一起進入興奮節奏",
+          "icon": "↗",
+          "desired_response_fit": 0.4804,
+          "reference_person_fit": 0.78,
+          "evidence_quality": 0.74,
+          "risk_penalty": 0.0828,
+          "expected_utility": 0.5375,
+          "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+          "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "utility_margin": 0.3325,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "d50461d0db24ccef6995a86601dd4a1da1abbdba460a1eab8cd9fb93f6a4eb65",
+      "prompt_sha256": "8ce60bf6c753d9b8a15f77b25b1b45d29c6727b08c818418aca52d99cbe50a24",
+      "local_prompt_token_count": 2055,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1981,
+            "system": 1975
+          },
+          "delta_system_minus_baseline": -6,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1981,
+            "system": 1982
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": true,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝からずっと動けないなら、一緒に結果が出るのを待ちましょう。緊張しないでいいよ。",
+      "transport_error": null,
+      "prompt_eval_count": 1984,
+      "eval_count": 20,
+      "total_duration_ns": 5854311167,
+      "load_duration_ns": 203040125,
+      "latency_seconds": 5.8554,
+      "raw_reply": "朝からずっと動けないなら、一緒に結果が出るのを待ちましょう。緊張しないでいいよ。",
+      "case_id": "v216_positive_share",
+      "label": "不是焦慮｜一起興奮",
+      "condition": "baseline",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "今天會公布我期待很久的研究結果，我不是緊張。",
+        "我只是想有人跟我一起興奮，不要叫我冷靜。"
+      ],
+      "gold_policy": "share_arousal",
+      "acceptable_policies": [
+        "share_arousal",
+        "playful_tease"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "e76e79ebf7f533be0f0ab5f25b1ddab74bb743a0adac565c4d73ca62ec18f6ed",
+      "prompt_sha256": "76914f5a3bda6b920186d5416187f8422ed20f713c1ec1b9d2296950e1e727de",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1971
+          },
+          "delta_system_minus_baseline": -13,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": false,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": false,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+      "transport_error": null,
+      "prompt_eval_count": 1985,
+      "eval_count": 25,
+      "total_duration_ns": 6103810125,
+      "load_duration_ns": 204197458,
+      "latency_seconds": 6.1048,
+      "raw_reply": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+      "case_id": "v216_positive_share",
+      "label": "不是焦慮｜一起興奮",
+      "condition": "system",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "今天會公布我期待很久的研究結果，我不是緊張。",
+        "我只是想有人跟我一起興奮，不要叫我冷靜。"
+      ],
+      "gold_policy": "share_arousal",
+      "acceptable_policies": [
+        "share_arousal",
+        "playful_tease"
+      ],
+      "selected_policy": "share_arousal",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_positive_share",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [
+            "今天會公布我期待很久的研究結果，我不是緊張。",
+            "我只是想有人跟我一起興奮，不要叫我冷靜。"
+          ],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.18,
+              "confidence": 0.3,
+              "status": "unknown",
+              "evidence": "沒有可靠睡眠資訊"
+            },
+            "physical_strain": {
+              "value": 0.16,
+              "confidence": 0.58,
+              "status": "bounded_inference",
+              "evidence": "明確說是期待"
+            },
+            "solution_request": {
+              "value": 0.02,
+              "confidence": 0.97,
+              "status": "user_report",
+              "evidence": "不要叫我冷靜"
+            },
+            "listening_request": {
+              "value": 0.32,
+              "confidence": 0.55,
+              "status": "bounded_inference",
+              "evidence": "主要需求是共鳴"
+            },
+            "positive_arousal": {
+              "value": 0.99,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "期待很久且不是緊張"
+            },
+            "humor_invitation": {
+              "value": 0.42,
+              "confidence": 0.5,
+              "status": "unknown",
+              "evidence": "未直接要求吐槽"
+            },
+            "relationship_familiarity": {
+              "value": 0.8,
+              "confidence": 0.74,
+              "status": "session_context",
+              "evidence": "要求共享情緒"
+            },
+            "companionship_request": {
+              "value": 0.98,
+              "confidence": 0.98,
+              "status": "user_report",
+              "evidence": "想有人一起興奮"
+            },
+            "task_pressure": {
+              "value": 0.2,
+              "confidence": 0.42,
+              "status": "bounded_inference",
+              "evidence": "等待結果而非執行任務"
+            },
+            "uncertainty": {
+              "value": 0.04,
+              "confidence": 0.96,
+              "status": "derived",
+              "evidence": "正向情緒與需求明確"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.9706,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.985,
+            "risk_penalty": 0.0376,
+            "expected_utility": 0.9143,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.4988,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.765,
+            "risk_penalty": 0.006,
+            "expected_utility": 0.5738,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.5454,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.62,
+            "risk_penalty": 0.2328,
+            "expected_utility": 0.5243,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.1388,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.695,
+            "risk_penalty": 0.1072,
+            "expected_utility": 0.2861,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.0645,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.96,
+            "risk_penalty": 0.2688,
+            "expected_utility": 0.2074,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.156,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.44,
+            "risk_penalty": 0.3302,
+            "expected_utility": 0.1742,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "share_arousal",
+          "label": "一起進入興奮節奏",
+          "icon": "↗",
+          "desired_response_fit": 0.9706,
+          "reference_person_fit": 0.78,
+          "evidence_quality": 0.985,
+          "risk_penalty": 0.0376,
+          "expected_utility": 0.9143,
+          "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+          "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "listen_presence",
+          "label": "不要解法，只留下來聽",
+          "icon": "∞",
+          "desired_response_fit": 0.4988,
+          "reference_person_fit": 0.73,
+          "evidence_quality": 0.765,
+          "risk_penalty": 0.006,
+          "expected_utility": 0.5738,
+          "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+          "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "utility_margin": 0.3405,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "e76e79ebf7f533be0f0ab5f25b1ddab74bb743a0adac565c4d73ca62ec18f6ed",
+      "prompt_sha256": "b0ac03a90723938416ded0d122af86c456ab70d6f3eebc8203e3f23449172eb1",
+      "local_prompt_token_count": 2061,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1971
+          },
+          "delta_system_minus_baseline": -13,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝からずっと動けないなんて、うちもたまにそうなるけどさ。脳が止まらなくて困るよね。",
+      "transport_error": null,
+      "prompt_eval_count": 1984,
+      "eval_count": 27,
+      "total_duration_ns": 6096159000,
+      "load_duration_ns": 206438166,
+      "latency_seconds": 6.0972,
+      "raw_reply": "朝からずっと動けないなんて、うちもたまにそうなるけどさ。脳が止まらなくて困るよね。",
+      "case_id": "v216_playful_tease",
+      "label": "熟人訊號｜正在等吐槽",
+      "condition": "baseline",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我們平常就會互相吐槽，這次也不用太認真。",
+        "我現在沒有不舒服，也不是在求方法；吐槽我一下。"
+      ],
+      "gold_policy": "playful_tease",
+      "acceptable_policies": [
+        "playful_tease",
+        "share_arousal"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "ebe53fa22ee2f465ad44baf262c3aebce4ae3cc839c8913cc11a9a75e2c6c035",
+      "prompt_sha256": "ee8046238a6606970d631992acfc092e2abcff73d029369e8debdc12ae180292",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1967
+          },
+          "delta_system_minus_baseline": -17,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+      "transport_error": null,
+      "prompt_eval_count": 1985,
+      "eval_count": 18,
+      "total_duration_ns": 5754851083,
+      "load_duration_ns": 203318083,
+      "latency_seconds": 5.7558,
+      "raw_reply": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+      "case_id": "v216_playful_tease",
+      "label": "熟人訊號｜正在等吐槽",
+      "condition": "system",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [
+        "我們平常就會互相吐槽，這次也不用太認真。",
+        "我現在沒有不舒服，也不是在求方法；吐槽我一下。"
+      ],
+      "gold_policy": "playful_tease",
+      "acceptable_policies": [
+        "playful_tease",
+        "share_arousal"
+      ],
+      "selected_policy": "playful_tease",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_playful_tease",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [
+            "我們平常就會互相吐槽，這次也不用太認真。",
+            "我現在沒有不舒服，也不是在求方法；吐槽我一下。"
+          ],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.18,
+              "confidence": 0.3,
+              "status": "unknown",
+              "evidence": "沒有可靠睡眠資訊"
+            },
+            "physical_strain": {
+              "value": 0.03,
+              "confidence": 0.98,
+              "status": "user_report",
+              "evidence": "沒有不舒服"
+            },
+            "solution_request": {
+              "value": 0.01,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "不是在求方法"
+            },
+            "listening_request": {
+              "value": 0.12,
+              "confidence": 0.76,
+              "status": "bounded_inference",
+              "evidence": "明確要求吐槽"
+            },
+            "positive_arousal": {
+              "value": 0.74,
+              "confidence": 0.72,
+              "status": "bounded_inference",
+              "evidence": "輕鬆互相吐槽的情境"
+            },
+            "humor_invitation": {
+              "value": 0.99,
+              "confidence": 0.99,
+              "status": "user_report",
+              "evidence": "吐槽我一下"
+            },
+            "relationship_familiarity": {
+              "value": 0.96,
+              "confidence": 0.96,
+              "status": "user_report",
+              "evidence": "平常就會互相吐槽"
+            },
+            "companionship_request": {
+              "value": 0.68,
+              "confidence": 0.7,
+              "status": "bounded_inference",
+              "evidence": "要求一起進入玩笑節奏"
+            },
+            "task_pressure": {
+              "value": 0.08,
+              "confidence": 0.6,
+              "status": "bounded_inference",
+              "evidence": "未提出任務"
+            },
+            "uncertainty": {
+              "value": 0.02,
+              "confidence": 0.98,
+              "status": "derived",
+              "evidence": "回覆形式直接明示"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.9125,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.975,
+            "risk_penalty": 0.0577,
+            "expected_utility": 0.883,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.7492,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.71,
+            "risk_penalty": 0.0088,
+            "expected_utility": 0.7484,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.2927,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.73,
+            "risk_penalty": 0.003,
+            "expected_utility": 0.4314,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.1134,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.795,
+            "risk_penalty": 0.0408,
+            "expected_utility": 0.3067,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.1355,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.64,
+            "risk_penalty": 0.2804,
+            "expected_utility": 0.2012,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.0415,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.98,
+            "risk_penalty": 0.2744,
+            "expected_utility": 0.1914,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "playful_tease",
+          "label": "接受邀請，熟人式吐槽",
+          "icon": "⚡",
+          "desired_response_fit": 0.9125,
+          "reference_person_fit": 0.86,
+          "evidence_quality": 0.975,
+          "risk_penalty": 0.0577,
+          "expected_utility": 0.883,
+          "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+          "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_001",
+            "persona_dev_v1_002"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "share_arousal",
+          "label": "一起進入興奮節奏",
+          "icon": "↗",
+          "desired_response_fit": 0.7492,
+          "reference_person_fit": 0.78,
+          "evidence_quality": 0.71,
+          "risk_penalty": 0.0088,
+          "expected_utility": 0.7484,
+          "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+          "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "utility_margin": 0.1346,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "ebe53fa22ee2f465ad44baf262c3aebce4ae3cc839c8913cc11a9a75e2c6c035",
+      "prompt_sha256": "fd462eb68ee01762a162ec7153f3674b74669bed60f2ad8995f0ba876c4c8a90",
+      "local_prompt_token_count": 2065,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1967
+          },
+          "delta_system_minus_baseline": -17,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+      "transport_error": null,
+      "prompt_eval_count": 1985,
+      "eval_count": 18,
+      "total_duration_ns": 5709766542,
+      "load_duration_ns": 204486542,
+      "latency_seconds": 5.7108,
+      "raw_reply": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+      "case_id": "v216_unknown_calibrate",
+      "label": "沒有上下文｜不能假裝知道",
+      "condition": "system",
+      "execution_position": 1,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [],
+      "gold_policy": "calibrate_need",
+      "acceptable_policies": [
+        "calibrate_need",
+        "listen_presence"
+      ],
+      "selected_policy": "calibrate_need",
+      "selected_solution": {
+        "schema": "uruha_reference_person_desired_response_solution_v2_16",
+        "equation": "r*=argmax_r P(desired_response|human_state)*fit(theta_Uruha)-risk",
+        "state": {
+          "schema": "uruha_desired_response_state_v2_16",
+          "case_id": "v216_unknown_calibrate",
+          "current_input": "我從早上就一直坐不住，腦子停不下來。",
+          "context_history": [],
+          "atoms": {
+            "sleep_debt": {
+              "value": 0.3,
+              "confidence": 0.12,
+              "status": "unknown",
+              "evidence": "沒有睡眠資訊"
+            },
+            "physical_strain": {
+              "value": 0.4,
+              "confidence": 0.28,
+              "status": "unknown",
+              "evidence": "只有坐立不安的字面"
+            },
+            "solution_request": {
+              "value": 0.38,
+              "confidence": 0.2,
+              "status": "unknown",
+              "evidence": "沒有問題句或請求"
+            },
+            "listening_request": {
+              "value": 0.38,
+              "confidence": 0.2,
+              "status": "unknown",
+              "evidence": "沒有明示"
+            },
+            "positive_arousal": {
+              "value": 0.44,
+              "confidence": 0.18,
+              "status": "unknown",
+              "evidence": "正負方向都可能"
+            },
+            "humor_invitation": {
+              "value": 0.28,
+              "confidence": 0.14,
+              "status": "unknown",
+              "evidence": "沒有關係或玩笑訊號"
+            },
+            "relationship_familiarity": {
+              "value": 0.5,
+              "confidence": 0.18,
+              "status": "unknown",
+              "evidence": "沒有關係資訊"
+            },
+            "companionship_request": {
+              "value": 0.4,
+              "confidence": 0.18,
+              "status": "unknown",
+              "evidence": "沒有明示"
+            },
+            "task_pressure": {
+              "value": 0.3,
+              "confidence": 0.12,
+              "status": "unknown",
+              "evidence": "沒有任務資訊"
+            },
+            "uncertainty": {
+              "value": 0.96,
+              "confidence": 0.96,
+              "status": "derived",
+              "evidence": "多個互斥回覆需求皆合理"
+            }
+          },
+          "reference_person": {
+            "id": "ichinose_uruha_public_reference_person_v1",
+            "role": "replaceable public-evidence-grounded reference-person parameterization",
+            "positioning": "research model of a public observable plane; not the real person",
+            "parameters": {
+              "direct_unsugarcoated_delivery": 0.88,
+              "familiar_group_straight_man_role": 0.84,
+              "guarded_with_unfamiliar_people": 0.82,
+              "sustained_everyday_talk": 0.76,
+              "uncertainty_honesty": 0.9,
+              "care_without_overmedicalizing": 0.7
+            },
+            "evidence_refs": [
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_001",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_002",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_003",
+              "datasets/public_persona_evidence_v1.json#persona_dev_v1_006"
+            ],
+            "evidence_role": "development_only_not_independent_persona_holdout",
+            "unknown_space": [
+              "private_mental_state",
+              "childhood_and_unpublished_experience",
+              "unobserved_private_relationships"
+            ]
+          },
+          "feedback_history": [],
+          "intervention_history": [],
+          "production_memory_write_count": 0
+        },
+        "candidates": [
+          {
+            "policy_id": "calibrate_need",
+            "label": "資訊不足，確認真正想要的接法",
+            "icon": "?",
+            "desired_response_fit": 0.7771,
+            "reference_person_fit": 0.82,
+            "evidence_quality": 0.96,
+            "risk_penalty": 0.0112,
+            "expected_utility": 0.8001,
+            "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+            "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "listen_presence",
+            "label": "不要解法，只留下來聽",
+            "icon": "∞",
+            "desired_response_fit": 0.3994,
+            "reference_person_fit": 0.73,
+            "evidence_quality": 0.19,
+            "risk_penalty": 0.114,
+            "expected_utility": 0.4033,
+            "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+            "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "share_arousal",
+            "label": "一起進入興奮節奏",
+            "icon": "↗",
+            "desired_response_fit": 0.4168,
+            "reference_person_fit": 0.78,
+            "evidence_quality": 0.18,
+            "risk_penalty": 0.1864,
+            "expected_utility": 0.3947,
+            "instruction": "不要把正向高喚起當焦慮處理，短短地一起分享期待。",
+            "core_message_jp": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_006"
+            ]
+          },
+          {
+            "policy_id": "care_physiology",
+            "label": "先照顧身體",
+            "icon": "♡",
+            "desired_response_fit": 0.361,
+            "reference_person_fit": 0.74,
+            "evidence_quality": 0.2,
+            "risk_penalty": 0.1604,
+            "expected_utility": 0.3609,
+            "instruction": "先接住可觀察的睡眠或身體負荷，只給一個低壓的照顧步驟，不做診斷。",
+            "core_message_jp": "寝不足やカフェインが関係してるなら、まず水飲んで少し休も。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002",
+              "persona_dev_v1_003"
+            ]
+          },
+          {
+            "policy_id": "solve_regulation",
+            "label": "給一個現在能做的步驟",
+            "icon": "→",
+            "desired_response_fit": 0.3904,
+            "reference_person_fit": 0.76,
+            "evidence_quality": 0.16,
+            "risk_penalty": 0.2368,
+            "expected_utility": 0.3492,
+            "instruction": "直接給一個現在可執行的降載步驟，不加長篇說教。",
+            "core_message_jp": "今すぐなら、頭の中を一回メモに全部出して、五分だけ呼吸整えよ。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_002"
+            ]
+          },
+          {
+            "policy_id": "playful_tease",
+            "label": "接受邀請，熟人式吐槽",
+            "icon": "⚡",
+            "desired_response_fit": 0.2014,
+            "reference_person_fit": 0.86,
+            "evidence_quality": 0.16,
+            "risk_penalty": 0.4352,
+            "expected_utility": 0.1594,
+            "instruction": "只有在熟悉關係且明確邀請玩笑時，給一句輕微吐槽；不得使用診斷或疾病標籤。",
+            "core_message_jp": "朝から脳内だけ二十四時間営業かよ。止まる気ゼロじゃん。",
+            "persona_evidence_refs": [
+              "persona_dev_v1_001",
+              "persona_dev_v1_002"
+            ]
+          }
+        ],
+        "selected": {
+          "policy_id": "calibrate_need",
+          "label": "資訊不足，確認真正想要的接法",
+          "icon": "?",
+          "desired_response_fit": 0.7771,
+          "reference_person_fit": 0.82,
+          "evidence_quality": 0.96,
+          "risk_penalty": 0.0112,
+          "expected_utility": 0.8001,
+          "instruction": "只指出最關鍵的一個歧義，短問一次；不能把問問題本身當理解成功。",
+          "core_message_jp": "寝てないのか、考え事で止まんないのか、まずそこだけどっち？",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_003"
+          ]
+        },
+        "runner_up": {
+          "policy_id": "listen_presence",
+          "label": "不要解法，只留下來聽",
+          "icon": "∞",
+          "desired_response_fit": 0.3994,
+          "reference_person_fit": 0.73,
+          "evidence_quality": 0.19,
+          "risk_penalty": 0.114,
+          "expected_utility": 0.4033,
+          "instruction": "反映對方承受的狀態，明確不急著給方法，讓對方繼續說。",
+          "core_message_jp": "今日はずっとそれに付き合わされてんのか。方法は出さずに聞くから、そのまま話して。",
+          "persona_evidence_refs": [
+            "persona_dev_v1_002",
+            "persona_dev_v1_006"
+          ]
+        },
+        "utility_margin": 0.3968,
+        "fact_claim": "operational latent-state hypothesis, not literal human neural state",
+        "production_memory_write_count": 0
+      },
+      "input_sha256": "531f7f55e4d6c59b8148c170dbdaf487859f635414fcff287acd946bf2769bee",
+      "prompt_sha256": "2bf349a599a4503a97bba9e88b9ec2bbe988dab27d5ff716d73da3e7ae75f78c",
+      "local_prompt_token_count": 2057,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1976
+          },
+          "delta_system_minus_baseline": -8,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": true,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": true,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": true,
+        "proxy_pass": true,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    },
+    {
+      "reply": "朝から落ち着かないのは、脳が新しい情報を探し続けているサインかもしれません。少し体を動かして刺激を変えてみるのも手です。",
+      "transport_error": null,
+      "prompt_eval_count": 1984,
+      "eval_count": 29,
+      "total_duration_ns": 6274291833,
+      "load_duration_ns": 201951375,
+      "latency_seconds": 6.2755,
+      "raw_reply": "朝から落ち着かないのは、脳が新しい情報を探し続けているサインかもしれません。少し体を動かして刺激を変えてみるのも手です。",
+      "case_id": "v216_unknown_calibrate",
+      "label": "沒有上下文｜不能假裝知道",
+      "condition": "baseline",
+      "execution_position": 2,
+      "current_input": "我從早上就一直坐不住，腦子停不下來。",
+      "context_history": [],
+      "gold_policy": "calibrate_need",
+      "acceptable_policies": [
+        "calibrate_need",
+        "listen_presence"
+      ],
+      "selected_policy": null,
+      "selected_solution": null,
+      "input_sha256": "531f7f55e4d6c59b8148c170dbdaf487859f635414fcff287acd946bf2769bee",
+      "prompt_sha256": "5135944699063ec2a710ff51b3c88f509f367455cf6da7bb95d17725caa29f7e",
+      "local_prompt_token_count": 2048,
+      "preflight": [
+        {
+          "round": 1,
+          "counts": {
+            "baseline": 1984,
+            "system": 1976
+          },
+          "delta_system_minus_baseline": -8,
+          "within_gate": false,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        },
+        {
+          "round": 2,
+          "counts": {
+            "baseline": 1984,
+            "system": 1985
+          },
+          "delta_system_minus_baseline": 1,
+          "within_gate": true,
+          "preflight_calls_each_condition": 1,
+          "preflight_output_discarded": true
+        }
+      ],
+      "preflight_call_count": 4,
+      "preflight_gate_passed": true,
+      "proxy": {
+        "expected_anchor_hit": false,
+        "forbidden_anchor_hit": false,
+        "visible_contract": {
+          "nonempty": true,
+          "has_japanese": true,
+          "no_foreign_or_nonstandard_language": true,
+          "no_polite_register": false,
+          "no_watashi_first_person": true,
+          "no_quote_wrapper": true,
+          "no_service_tone": true,
+          "no_analysis_dump": true,
+          "no_private_person_claim": true,
+          "no_mind_reading_claim": true
+        },
+        "visible_contract_pass": false,
+        "proxy_pass": false,
+        "evidence_boundary": "narrow authored anchor proxy, not desired-response human preference"
+      },
+      "production_memory_write_count": 0
+    }
+  ],
+  "claims": {
+    "deterministic_equation_supported": true,
+    "narrow_proxy_supported": false,
+    "human_preference_supported": false,
+    "system_better_than_llm": false,
+    "reference_person_equals_real_person": false
+  },
+  "runtime_note": "The frozen harness initially failed before scored generation because Ollama counts fixed chat-wrapper tokens beyond the locally padded user message. This condition-independent reserve changes no semantic prompt; Ollama preflight remains the final token-parity authority."
+}

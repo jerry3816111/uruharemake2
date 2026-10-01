@@ -1,0 +1,64 @@
+{
+  "schema": "uruha_p3_b71c_source3_future_aggregate_scoring_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_complete_b71b_predictions_before_source3_future_access",
+  "claim_level": "source3_development_caption_proxy_not_human_ground_truth_or_formal_holdout",
+  "bindings": {
+    "b71b_release": {"path": "research/p3_b71b_source3_b70_prediction_release_2026-09-20.json", "sha256": "c9dd911586c532f83602fb5f74bbf2ef8c34269dd96baa81c864d36676beb941"},
+    "b71b_predictions": {"path": "analysis/p3_b71b_source3_b70_prediction_result_2026-09-20.json", "sha256": "33dd5919638ad235cf4ab506151f9988ed62cacbcdb28dfd3b65ec8148d2d211"},
+    "b66_metric_contract": {"path": "configs/p3_b66_future_outcome_unlock_scoring_v1.json", "sha256": "afbb2eaa0bab6fd6bed139dded8d51d65a8f49239dbd1625e96bf121114b20e1"},
+    "b66_metric_implementation": {"path": "p3_b66_future_outcome_unlock_scoring.py", "sha256": "63714056d66801f5873f3ff52327816f5b6b3de7b18ed10fec7c568340811704"},
+    "b61_implementation": {"path": "p3_b61_native_subtitle_cutoff_extractor.py", "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"},
+    "b61_contract": {"path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json", "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"}
+  },
+  "source": {
+    "source_id": "youtube_j6Hlk9cY9LQ",
+    "video_id": "j6Hlk9cY9LQ",
+    "rows": [
+      {"row_id": "s3r0600", "future_milliseconds": [781000, 841000]},
+      {"row_id": "s3r1200", "future_milliseconds": [1381000, 1441000]},
+      {"row_id": "s3r1800", "future_milliseconds": [1981000, 2041000]},
+      {"row_id": "s3r2400", "future_milliseconds": [2581000, 2641000]}
+    ],
+    "include_rule": "cue_start_gte_future_start_and_cue_end_lte_future_end",
+    "minimum_future_cues_each_row": 1,
+    "unlock_all_rows_together": true
+  },
+  "private_acquisition": {
+    "native_downloader_process_invocation_count_max": 1,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "private_full_caption_deleted_before_public_scoring": true,
+    "raw_full_caption_or_context_cue_persistence_allowed": false
+  },
+  "public_future_batch": {
+    "root": "external_data/p3_b71c_public_future_batch",
+    "artifact_schema": "uruha_p3_b71c_public_future_row_v1",
+    "manifest_schema": "uruha_p3_b71c_public_future_row_manifest_v1",
+    "artifact_count_exact": 4,
+    "fresh_reader_process_count": 1
+  },
+  "scoring": {
+    "reuse_b66_first_three_cues_within_twelve_seconds": true,
+    "reuse_b66_proxy_marker_order_without_change": true,
+    "reuse_b66_per_row_metrics_and_winner_rule_without_change": true,
+    "reuse_b68_aggregate_metrics_without_change": true,
+    "model_human_or_llm_judge_call_count_required": 0,
+    "prediction_mutation_count_required": 0
+  },
+  "execution": {
+    "state_root": "external_data/p3_b71c_source3_scoring_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "aggregate_result.json"
+  },
+  "denied_actions": {
+    "partial_or_sequential_future_unlock": true,
+    "prediction_mutation": true,
+    "proxy_target_marker_metric_or_winner_change": true,
+    "model_human_or_llm_judge_call": true,
+    "retry_source_or_window_substitution": true,
+    "training_formal_m56_or_production_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B71C can report four preregistered source3 automatic-caption proxy outcomes. These are not human ground truth, semantic quality, felt-understanding evidence, independent holdout, or a general system advantage."
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "uruha_p4_o_product_entry_mutation_rejected_v1",
+  "observed_at": "2026-09-22T05:18:00+08:00",
+  "status": "second_implementation_attempt_rejected_before_commit",
+  "attempted_change": "import and install the additive P4-O adapter in the released uruha_web_ui_product.py entry",
+  "attempted_product_entry_sha256": "2d509a6b6c96cfbf537e13db29ca7e8ab2bd725292f920afa07efbb84477c4ba",
+  "affected_suite": {
+    "passed": 50,
+    "failed": 1,
+    "failure": "test_p4_n_source_bound_japanese_identity_localization_result.py::test_result_binds_frozen_design_amendment_and_implementation"
+  },
+  "rejection_reason": "The released P4-N result also binds the product entry hash, so modifying that entry invalidates historical evidence even though the new functional tests pass.",
+  "resolution": "Restore the released product entry byte-for-byte and create a new P4-O product entry that imports it, installs only P4-O afterward, and launches the same base UI.",
+  "preservation": {
+    "rejected_change_committed": false,
+    "product_entry_restored_sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694",
+    "historical_hash_updated_to_hide_change": false,
+    "real_product_case_run": false
+  },
+  "correction_budget": {
+    "informed_correction_batches_used": 2,
+    "additional_failed_batch_policy": "REVIEW_REQUIRED"
+  },
+  "claim_boundary": "This rejected entrypoint edit is process evidence only; it is not a product capability result."
+}

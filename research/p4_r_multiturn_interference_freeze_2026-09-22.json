@@ -1,0 +1,56 @@
+{
+  "schema": "uruha_p4_r_multiturn_interference_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_holdout_execution",
+  "checkpoint_commit": "76a17627ecb5caa0c4cf615acad1124a0516fd36",
+  "bindings": {
+    "p4_q_real_result": {
+      "path": "analysis/p4_q_real_safari_correction_lifecycle_result_2026-09-22.json",
+      "sha256": "9954d7c1bb6e25a1a98124819282f4571911eb7fc938448be47f9cffd7b92995"
+    },
+    "dataset": {
+      "path": "datasets/p4_r_multiturn_interference_holdout_v1.json",
+      "sha256": "de1bdaeb7d48c9fa7b8f095aacc84d55889cd27f8c59b911c59f9a200431d222"
+    },
+    "contract": {
+      "path": "configs/p4_r_multiturn_interference_acceptance_v1.json",
+      "sha256": "257c9862b4cb3a6df2b84272fb2a1bd21ebdc8eda6780d7245e76aaed3f6662d"
+    },
+    "gate": {
+      "path": "p4_r_multiturn_interference_gate.py",
+      "sha256": "89feddf18efe931738f2ccb1aa45765dac7a41ab7986bef875d09c981336ad0a"
+    },
+    "gate_test": {
+      "path": "test_p4_r_multiturn_interference_gate.py",
+      "sha256": "1a45d14a861b98cc4919958e907a8e82519186dd311d6643a4973741e1590c6c"
+    }
+  },
+  "research_question": "Does released typed current-preference lineage preserve the correct current drink across 12 turns containing recency, speaker, quotation, hypothetical and other-scope interference, when compared with a deterministic recent-five-turn lexical mention baseline on the identical transcript?",
+  "single_causal_difference": "The baseline selects the latest tea token from the same recent transcript window; the system selects a unique active exact-scope typed state produced only by authorized explicit first-person writes and corrections.",
+  "execution": {
+    "fresh_temporary_chroma": true,
+    "dataset_execution_count": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "local_model_call_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "safari_turn_count": 0
+  },
+  "evidence_requirements": {
+    "record_each_turn_classifier_status": true,
+    "record_each_typed_write_identity_and_scope": true,
+    "record_both_condition_outputs_at_turns_6_and_12": true,
+    "record_final_active_historical_negative_and_cross_scope_state": true,
+    "record_correction_links": true,
+    "preserve_exact_first_result": true
+  },
+  "failure_policy": {
+    "same_case_rerun_allowed": false,
+    "value_transcript_baseline_or_gate_change_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "maximum_correction_batches_after_failure": 2
+  },
+  "claim_boundary": "P4-R is a zero-model mechanism comparison. Even if it passes, it cannot establish advantage over a strong LLM, open-domain or 50-turn memory, felt understanding, human preference, future prediction or a human equation."
+}

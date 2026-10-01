@@ -1,0 +1,82 @@
+{
+  "schema": "uruha_p4_g_multilingual_preference_acknowledgement_release_v1",
+  "version": "1.0.0",
+  "status": "released_negative_multilingual_preference_acknowledgement_result",
+  "bindings": {
+    "freeze": {
+      "path": "research/p4_g_multilingual_preference_acknowledgement_freeze_2026-09-21.json",
+      "sha256": "1c370ec081d2c6cc358c0a49c8702c909ee6c894bf2c273b77e0721f85462077"
+    },
+    "result": {
+      "path": "analysis/p4_g_multilingual_preference_acknowledgement_result_2026-09-21.json",
+      "sha256": "8bbc0710efc65bb01ac6194ef55c2fb1866dc7731ef8abedb5aa6798c360de72"
+    },
+    "acceptance": {
+      "path": "analysis/p4_g_multilingual_preference_acknowledgement_acceptance_2026-09-21.md",
+      "sha256": "4f4add8aac1b3c2447cc82df364f58c1035f1103a2719b4ab493a744f0f8b5b3"
+    }
+  },
+  "passed_scope": {
+    "fresh_isolated_runtime": true,
+    "multilingual_classifier_selected_both_acts": true,
+    "graph_node_visible_both_turns": true,
+    "two_distinct_durable_episodes": true,
+    "visible_output_japanese_both_turns": true,
+    "model_call_ceiling_respected": true,
+    "zero_retry_fallback_and_production_memory": true
+  },
+  "failed_scope": {
+    "frozen_gate_failed_count": 10,
+    "write_surface_matches_contract": false,
+    "correction_surface_matches_contract": false,
+    "surface_authority_activated_any_turn": false,
+    "turn_1_latency_target_met": false,
+    "turn_2_existing_route": "ask_like_me_misclassification",
+    "same_case_rerun_or_retuning_performed": false
+  },
+  "actual_result": {
+    "turn_1_output": "了解。茉莉花茶が今の飲み物だ",
+    "turn_2_output": "はいはい、全くじゃないとは言わない。そこ聞いて安心したいだけだろ。",
+    "turn_1_episode_id": "a69816fe-6c02-4724-b5e4-48d0deebbcae",
+    "turn_2_episode_id": "6e6c32ce-1242-487e-8c51-0361fc700c63",
+    "combined_user_wait_seconds": 36.9642,
+    "frozen_gate_status": "fail"
+  },
+  "resource_accounting": {
+    "real_product_turns": 2,
+    "process_starts": 1,
+    "local_product_planner_model_calls": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "causal_diagnosis": {
+    "generic_only_post_guard_repair_is_sufficient": false,
+    "classifier_failed": false,
+    "surface_scope_too_narrow": true,
+    "planner_route_can_fail_before_post_guard": true,
+    "trace_match_field_needs_semantic_cleanup": true
+  },
+  "next_stage": {
+    "id": "P4-H",
+    "single_changed_variable": "deterministic explicit preference-memory act authority before general planner and legacy intent collisions",
+    "first_action": "bind this P4-G negative result as the prechange counterexample and freeze a plan-level route plus exact bounded Japanese surfaces",
+    "requirements": [
+      "reuse the proven multilingual act classifier",
+      "select a deterministic write or correction plan before the full planner and conflicting legacy rules",
+      "make the same bounded surface authoritative regardless of arbitrary model wording",
+      "keep episode write behavior and all P4-F recall or supersession semantics unchanged",
+      "rename or correct the misleading trace-match field",
+      "verify ordinary chat third-person hypothetical quoted and safety negative guards"
+    ],
+    "same_p4_g_real_case_may_be_rerun": false,
+    "new_real_product_turns_before_separate_contract_freeze_authorized": 0,
+    "general_persona_prompt_model_or_memory_change_authorized": false,
+    "paid_api_external_deployment_or_production_memory_authorized": false
+  },
+  "claim_boundary": "This release is a negative product result. It shows that a generic-only post-language-guard acknowledgement repair is insufficient and exposes one legacy Japanese correction misroute. It does not establish general persona, memory understanding or research advantage."
+}
