@@ -2,7 +2,32 @@
 
 更新：2026-10-02。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 目前最新 gate：profile 記憶承諾的完整 plan／graph authority 仍 FAIL
+## 最新產品 gate：profile 記憶承諾的真 selected-plan authority 限定 PASS
+
+第二個、最後一個有根據的同卡修正批次已用全新事前凍結八輪驗收，
+**本批 strict PASS**；不改前批十一輪 strict FAIL。freeze commit
+`1375376`、manifest 18/18 OK；聚焦＋相鄰 `185 passed, 8 warnings`，
+隔離入口 0-turn 檢查通過。Safari T1–T8 各逐字一次、T4 後舊 PID/port
+關閉再以同一 DB 的新 PID/session 起服務、0 回答重試：八輪真正
+`selected_plan`、logic、prediction 來源立場、graph truth 與可見日文
+均符合事前 gold；T1 M29 確有原投影需求且在 plan 選中前被撤權。
+profile row delta `[0,1,2,0,1,0,1,0]`、五筆本人值、八個不同的
+持久 turn episode；八輪最大 user wait `3.0928s`。raw JSONL SHA
+`ffd7bc3fda55b6c41e2592c3922529c9648f5ac1a6cb4e871f7745820ce6011a`，
+獨立 raw＋DB 唯讀審查無 blocker。完整逐輪及限制見
+`analysis/p4_profile_plan_authority_fresh_product_probe_result_2026-10-02.md`。
+這是**有限的產品來源權限證據**，不是同模型對照、人評、正式 holdout
+或全專案完成。T8 後背景整理另增一筆 episode summary、一筆 procedural、
+一筆 wisdom；它們不是第九個使用者回合，也不屬此次 profile-only gate。
+
+**下一個獨立必要交付：** 回到產品本人來源准入的已知「句末本人否認仍
+可能錯准入並真寫入」反例，先把其精確 before、單一變因、正負句式、
+允許檔案、成本與新前瞻產品 gate 寫成獨立設計卡，再依卡小測／驗收。
+不得重播上述八輪或舊十一輪追分；source intent drift、背景 wisdom
+對未解訂正的跨層副作用保留為其他審查點。若 owner 問題已有更早
+完整工作卡且處於 `REVIEW_REQUIRED`，先核對停止規則，不自行重啟。
+
+## 保留前批負結果：profile 記憶承諾的完整 plan／graph authority FAIL
 
 2026-10-02 全新凍結十一輪 Safari 已各送一次、T4 後真 PID/session 重啟、
 同隔離 DB、0 回答重試；不要重跑該案追分。profile row delta
