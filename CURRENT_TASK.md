@@ -1,6 +1,32 @@
 # 目前任務卡
 
-更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-10-02。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+
+## 目前最新 gate：profile 記憶承諾的完整 plan／graph authority 仍 FAIL
+
+2026-10-02 全新凍結十一輪 Safari 已各送一次、T4 後真 PID/session 重啟、
+同隔離 DB、0 回答重試；不要重跑該案追分。profile row delta
+`[0,1,2,0,1,0,1,0,1,1,0]` 與事前 gold 11/11、DB 七筆值／scope
+正確、十一個持久 turn episode、十一個 truth graph node `matched`，
+十一輪可見日文與 writer 結果一致，等待最大 `13.2459s`。但 T1
+朋友傳話被 M32 覆蓋為 selected plan `今は枇杷葉茶が好きであるんだね。`，
+錯將朋友偏好指向本人；最後 surface 才攔回。T2/T9/T10 的
+P4-H audit 稱 plan authority，選中的其實也是 M32 而非記憶 act plan。
+按事前「planner 須選來源受限非承諾方案」規格，**整體 strict FAIL**，
+不能用 surface/write 11/11 或 truth node `matched` 冒充全管線通過。
+T11 未解 scope 訂正後背景整理另生一筆偏好式 wisdom，profile 零污染
+不等於所有記憶層無副作用。完整凍結 hash、raw SHA、逐輪、DB、
+Safari／PID、成本與限制見
+`analysis/p4_profile_write_ack_fresh_product_probe_result_2026-10-02.md`。
+
+**下一個必要修正：** 保留上述負結果，先定位 M31/M32 對 profile
+memory-act seed 的覆蓋點，設計一個 additive、source-bound 的實際
+selected-plan authority 裁決（非只在寫後重繪 graph），使反例中的
+選中 plan／預測／後續表面皆承認朋友來源，正例仍能保留記憶承諾，
+protected／未選中普通聊天不退化。先寫新設計與 before、只做必要
+契約／相鄰測試；若需新產品確認，必須另造新案例事前 freeze，
+不得重播這十一輪、改舊 gold 或放弱底線。背景 wisdom 與既有 owner
+句末否認、source intent drift 是各自獨立 gate，不在同次介入混修。
 
 ## 最新產品結果：本人 profile 准入已驗收，整體仍 FAIL
 
