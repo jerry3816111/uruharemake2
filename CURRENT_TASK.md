@@ -4,6 +4,17 @@
 
 ## 當前唯一工作：明確來源問句的證據送達與歸屬核對
 
+**2026-10-01 v2 實作層 gate 已過，真產品仍 pending。** 設計先以
+`research/p4_bounded_source_delivery_v2_plan_2026-10-01.md` 凍結；additive
+overlay 做 bounded literal `turn_episode` lookup、真 ID/trace 送達、朋友
+摘要 actor 前綴核對、overflow/損壞/矛盾 fail closed。新 29 個聚焦案例含
+臨時真 Chroma、fake full-brain 與 lookup→source→plan graph；聚焦＋相鄰 `151 passed`，
+安全 launcher 0-turn check 通過，沒有真 Safari、模型品質或公平對照分數。
+證據範圍和限制見 `analysis/p4_bounded_source_delivery_v2_implementation_2026-10-01.md`。
+**下一步只做新前瞻資料與判準先凍結，再跑一次隔離 Safari 十輪、T5 真重啟；**
+舊負例不得重播追分。成功要同一 T1 persisted ID 真送達、唯一 actor/value、
+自然日文與 graph/final 對齊；失敗原樣保留並標 `REVIEW_REQUIRED`。
+
 **新前瞻版本的 before（2026-10-01）已完成，結果負面。** 修後
 `p4_past_source` 在事前凍結的新 `結衣／ほうじ茶` 十輪 Safari，T5 後真
 process/session 重啟、0 retry。T10 英文問舊偏好來源，最終只有日文「今の

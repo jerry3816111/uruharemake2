@@ -11,11 +11,16 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import re
+import time
 import unicodedata
 
 
 LABEL = "past_statement_source_answer_p4"
+SOURCE_LOOKUP_LABEL = "p4_bounded_source_lookup"
 SCHEMA = "uruha_past_statement_source_answer_p4"
+_LOOKUP_SENTINEL = 9
+_LOOKUP_MAX_DOCUMENT_CHARS = 2048
+_LOOKUP_MAX_TOTAL_CHARS = 16384
 _INSTALLED = False
 _ORIGINAL_QUERY = None
 _ORIGINAL_RULE_PLAN = None
@@ -169,6 +174,18 @@ def _clean_value(value: object) -> str:
     return re.sub(r"(?:だ|です|って)$", "", text).strip()
 
 
+def _friend_source(source: str) -> bool:
+    return source.strip().startswith(("我朋友", "朋友", "友達の"))
+
+
+def _summary_actor_key(actor: str, source: str) -> str:
+    # A summary may retain the relation prefix, but only a friend source can
+    # license removing it.  In particular, "友達のユーザー" is not the user.
+    if _friend_source(source) and actor.startswith("友達の"):
+        return actor[len("友達の"):]
+    return actor
+
+
 def _japanese_surface_safe(value: str) -> bool:
     # An unlocalized Latin phrase is not silently presented as natural Japanese.
     return bool(
@@ -210,33 +227,137 @@ def classify_past_statement_query_p4(user_input: object) -> dict:
     return {**base, "reason": "past_first_person_favorite_source_query_not_detected"}
 
 
-def _episode_rows(memory_data: dict) -> list[dict]:
+def _bounded_source_lookup(collection, value: str) -> tuple[dict, list[dict]]:
+    """Read at most eight raw literal hits plus one overflow sentinel."""
+    started = time.perf_counter()
+    base = {
+        "schema": "uruha_p4_bounded_source_lookup_v1",
+        "value_sha256": _digest(value),
+        "match_scope": "literal_value_in_turn_episode_collection_only",
+        "limit": _LOOKUP_SENTINEL - 1,
+        "source_memory_ids": [],
+        "matched_count": 0,
+        "extra_model_calls": 0,
+        "raw_dialogue_persisted": False,
+    }
+
+    def finish(status: str, reason: str, rows: list[dict] | None = None):
+        rows = rows or []
+        return ({
+            **base,
+            "status": status,
+            "reason": reason,
+            "source_memory_ids": [row["memory_id"] for row in rows],
+            "matched_count": len(rows),
+            "lookup_elapsed_seconds": round(time.perf_counter() - started, 6),
+        }, rows)
+
+    try:
+        result = collection.get(
+            where={"source": "turn_episode"},
+            where_document={"$contains": value},
+            limit=_LOOKUP_SENTINEL,
+            include=["documents", "metadatas"],
+        )
+    except Exception:
+        return finish("lookup_unavailable", "collection_get_failed")
+    if not isinstance(result, dict):
+        return finish("lookup_unavailable", "collection_result_not_mapping")
+    ids, documents, metadatas = (
+        result.get("ids"), result.get("documents"), result.get("metadatas")
+    )
+    if not all(isinstance(value, list) for value in (ids, documents, metadatas)):
+        return finish("lookup_unavailable", "collection_result_fields_not_lists")
+    if not (len(ids) == len(documents) == len(metadatas)):
+        return finish("lookup_unavailable", "collection_result_fields_misaligned")
+    if len(ids) >= _LOOKUP_SENTINEL:
+        return finish("overflow", "at_least_nine_literal_hits")
+    rows = []
+    seen_ids = set()
+    total_chars = 0
+    for memory_id, document, metadata in zip(ids, documents, metadatas):
+        if not isinstance(memory_id, str) or not memory_id.strip() or len(memory_id) > 256:
+            return finish("lookup_unavailable", "invalid_memory_id")
+        if memory_id in seen_ids:
+            return finish("lookup_unavailable", "duplicate_memory_id")
+        if not isinstance(document, str) or not document.strip() or value not in document:
+            return finish("lookup_unavailable", "invalid_or_nonmatching_document")
+        if not isinstance(metadata, dict) or metadata.get("source") != "turn_episode":
+            return finish("lookup_unavailable", "invalid_episode_metadata")
+        total_chars += len(document)
+        if len(document) > _LOOKUP_MAX_DOCUMENT_CHARS or total_chars > _LOOKUP_MAX_TOTAL_CHARS:
+            return finish("lookup_unavailable", "episode_document_size_exceeded")
+        seen_ids.add(memory_id)
+        rows.append({
+            "source": "episode",
+            "collection_name": "episode",
+            "memory_id": memory_id,
+            "text": document,
+        })
+    return finish("complete", "all_bounded_literal_hits_delivered", rows)
+
+
+def _delivered_source_lookup_gap(memory_data: dict, requested_value: str, lookup_rows: list[dict]) -> bool:
+    by_id = {row["memory_id"]: row["text"] for row in lookup_rows}
+    provenance = (memory_data or {}).get("memory_provenance") or {}
+    for item in provenance.get("passed_to_leftbrain") or []:
+        if item.get("source") != "episode":
+            continue
+        text = str(item.get("text") or "")
+        memory_id = str(item.get("memory_id") or "")
+        if memory_id in by_id:
+            if text != by_id[memory_id]:
+                return True
+            continue
+        if _norm(requested_value) not in _norm(text):
+            continue
+        # A normalization-equivalent source or inconsistent direct payload
+        # means literal get cannot certify even the bounded delivered set.
+        return True
+    return False
+
+
+def _episode_rows(memory_data: dict, requested_value: str) -> tuple[list[dict], list[dict]]:
     """Use only persisted episodes already delivered to this turn's left brain."""
     provenance = (memory_data or {}).get("memory_provenance") or {}
     rows = []
+    malformed = []
     seen = set()
     for item in provenance.get("passed_to_leftbrain") or []:
         if item.get("source") != "episode" or item.get("channel") not in {
-            "direct_episode", "selected_working_memory"
+            "direct_episode", "selected_working_memory", "bounded_source_lookup"
         }:
             continue
         memory_id = str(item.get("memory_id") or "")
         trace_id = str(item.get("trace_id") or "")
-        if not memory_id or trace_id != f"stored:episode:{memory_id}" or memory_id in seen:
-            continue
         text = str(item.get("text") or "")
+        relevant = _norm(requested_value) in _norm(text)
+        if not memory_id or trace_id != f"stored:episode:{memory_id}":
+            if relevant and (memory_data or {}).get(SOURCE_LOOKUP_LABEL):
+                malformed.append({"memory_id": memory_id, "trace_id": trace_id})
+            continue
+        if memory_id in seen:
+            continue
         # Legacy episode documents interpolate unescaped user text.  An input
         # containing a field delimiter cannot be parsed as trusted structure.
         if any(text.count(delimiter) != 1 for delimiter in (
             " | User: ", " | Summary: ", " | Uruha: ", " | Mood: "
         )):
+            if relevant:
+                malformed.append({"memory_id": memory_id, "trace_id": trace_id})
             continue
         match = _EPISODE.search(text)
         if not match:
+            if relevant:
+                malformed.append({"memory_id": memory_id, "trace_id": trace_id})
             continue
         if re.search(r"\|\s*(?:User|Summary|Uruha|Mood):", match.group(1)):
+            if relevant:
+                malformed.append({"memory_id": memory_id, "trace_id": trace_id})
             continue
         if re.search(r"\|\s*(?:User|Summary|Uruha|Mood):", match.group(2)):
+            if relevant:
+                malformed.append({"memory_id": memory_id, "trace_id": trace_id})
             continue
         seen.add(memory_id)
         rows.append({
@@ -249,6 +370,9 @@ def _episode_rows(memory_data: dict) -> list[dict]:
     for turn in (memory_data or {}).get("recent_turns") or []:
         memory_id = str(turn.get("episode_id") or "")
         if not memory_id or memory_id in seen:
+            continue
+        lookup = (memory_data or {}).get(SOURCE_LOOKUP_LABEL)
+        if lookup and memory_id not in set(lookup.get("source_memory_ids") or []):
             continue
         user = str(turn.get("user") or "").strip()
         reply = str(turn.get("reply") or "").strip()
@@ -273,12 +397,15 @@ def _episode_rows(memory_data: dict) -> list[dict]:
             "user": user,
             "summary": summary,
         })
-    return rows
+    return rows, malformed
 
 
 def _source_candidates(row: dict, requested_value: str) -> tuple[list[dict], bool]:
     source = row["user"]
     summary = row["summary"]
+    if classify_past_statement_query_p4(source).get("selected"):
+        # A prior question is not a positive statement of anyone's preference.
+        return [], False
     if _META_OR_HYPOTHETICAL.search(source) or _SOURCE_RETRACTION_OR_QUOTE.search(source):
         return [], _norm(requested_value) in _norm(source)
     if not _supported_source_form(source):
@@ -289,7 +416,7 @@ def _source_candidates(row: dict, requested_value: str) -> tuple[list[dict], boo
         return [], True
     summaries = list(_SUMMARY_LIKE.finditer(summary))
     relevant_summary_actors = {
-        _norm(match.group("actor"))
+        _norm(_summary_actor_key(match.group("actor"), source))
         for match in summaries
         if _norm(_clean_value(match.group("value"))) == _norm(requested_value)
     }
@@ -312,6 +439,10 @@ def _source_candidates(row: dict, requested_value: str) -> tuple[list[dict], boo
                 value = _clean_value(source_match.group("value"))
                 if _norm(value) != _norm(requested_value):
                     continue
+                lookup = row.get("literal_lookup_required")
+                if lookup and value != requested_value:
+                    uncorroborated_relevant_claim = True
+                    continue
                 if not _japanese_surface_safe(actor) or not _japanese_surface_safe(value):
                     uncorroborated_relevant_claim = True
                     continue
@@ -325,7 +456,7 @@ def _source_candidates(row: dict, requested_value: str) -> tuple[list[dict], boo
                     uncorroborated_relevant_claim = True
                     continue
                 corroborated = any(
-                    _norm(s.group("actor")) == _norm(actor)
+                    _norm(_summary_actor_key(s.group("actor"), source)) == _norm(actor)
                     and _norm(_clean_value(s.group("value"))) == _norm(value)
                     for s in summaries
                 )
@@ -348,16 +479,57 @@ def _source_candidates(row: dict, requested_value: str) -> tuple[list[dict], boo
     return candidates, uncorroborated_relevant_claim
 
 
+def _source_lookup_abstention(query: dict, lookup: dict) -> dict:
+    status = "source_lookup_" + str(lookup.get("status") or "unavailable")
+    core = "その好みを誰が言ったか、今の記録じゃ分からない。"
+    return {
+        **query,
+        "status": status,
+        "reason": str(lookup.get("reason") or "bounded_literal_source_lookup_not_complete"),
+        "surface_authority": True,
+        "answer_use_authorized": False,
+        "selected_speaker_role": None,
+        "selected_actor": None,
+        "candidate_count": 0,
+        "candidate_actors": [],
+        "source_memory_ids": [],
+        "source_trace_ids": [],
+        "unresolved_source_memory_ids": list(lookup.get("source_memory_ids") or []),
+        "unresolved_source_trace_ids": [
+            f"stored:episode:{item}" for item in lookup.get("source_memory_ids") or []
+        ],
+        "bounded_source_lookup": deepcopy(lookup),
+        "candidates": [],
+        "selected_core_jp": core,
+        "selected_core_sha256": _digest(core),
+        "model_call_added": False,
+        "fact_memory_write_count": 0,
+        "profile_memory_write_count": 0,
+        "private_state_truth_claimed": False,
+        "raw_dialogue_persisted": False,
+        "claim_boundary": "bounded literal episode lookup failed; no source answer authorized",
+    }
+
+
 def build_past_statement_source_contract_p4(user_input: object, memory_data: dict) -> dict:
     query = classify_past_statement_query_p4(user_input)
     if not query["selected"]:
         return query
+    lookup = deepcopy((memory_data or {}).get(SOURCE_LOOKUP_LABEL) or {})
+    if lookup and lookup.get("status") != "complete":
+        return _source_lookup_abstention(query, lookup)
     candidates = []
     uncorroborated_relevant_claim = False
     unresolved_rows = []
-    rows = _episode_rows(memory_data)
+    rows, malformed_rows = _episode_rows(memory_data, query["value"])
+    if lookup:
+        for row in rows:
+            row["literal_lookup_required"] = True
     negative_actor_values = {
-        (_norm(match.group("actor")), _norm(_clean_value(match.group("value"))))
+        (
+            _norm(_summary_actor_key(match.group("actor"), row["user"])),
+            _norm(_clean_value(match.group("value"))),
+        )
         for row in rows
         for match in _SUMMARY_NOT_LIKE.finditer(row["summary"])
     }
@@ -372,7 +544,12 @@ def build_past_statement_source_contract_p4(user_input: object, memory_data: dic
         (_norm(row["actor"]), _norm(row["value"])) in negative_actor_values
         for row in candidates
     )
-    if contradicted_source_claim:
+    if malformed_rows:
+        status = "malformed_relevant_source_episode"
+        core = "記録の形が崩れてる。誰の発言かは断定しない。"
+        reason = "relevant_delivered_episode_could_not_be_safely_parsed"
+        role = actor = None
+    elif contradicted_source_claim:
         status = "contradicted_source_claim"
         core = "記録が食い違ってる。誰の発言か、今は断定しない。"
         reason = "same_actor_and_value_have_positive_and_negative_delivered_episode_summaries"
@@ -386,7 +563,11 @@ def build_past_statement_source_contract_p4(user_input: object, memory_data: dic
         role, actor = next(iter(actors))
         if role == "user":
             status = "resolved_user_source"
-            core = f"今の記録では、あんたが{query['value']}を一番好きだって言ってた。"
+            core = (
+                f"見つかった記録じゃ、あんたが{query['value']}を一番好きって言ってた。"
+                if lookup else
+                f"今の記録では、あんたが{query['value']}を一番好きだって言ってた。"
+            )
             reason = "unique_source_actor_and_value_corrobated_by_original_and_summary"
         elif not all(row.get("third_party_self_report_cue") for row in candidates):
             status = "subject_known_speaker_unverified"
@@ -395,7 +576,10 @@ def build_past_statement_source_contract_p4(user_input: object, memory_data: dic
             role = actor = None
         else:
             status = "resolved_third_party_source"
-            core = f"記録では、あんたは「{query['value']}が一番好き」と言ったのは{actor}だって話してた。"
+            if lookup:
+                core = f"見つかった記録じゃ、{actor}が{query['value']}を一番好きって言ったとあんたが話してた。"
+            else:
+                core = f"記録では、あんたは「{query['value']}が一番好き」と言ったのは{actor}だって話してた。"
             reason = "unique_source_actor_and_value_corrobated_by_original_and_summary"
     elif actors:
         status = "ambiguous_multiple_source_actors"
@@ -426,8 +610,9 @@ def build_past_statement_source_contract_p4(user_input: object, memory_data: dic
         "candidate_actors": sorted(f"{row['speaker_role']}:{row['actor']}" for row in candidates),
         "source_memory_ids": sorted({row["memory_id"] for row in candidates}),
         "source_trace_ids": sorted({row["trace_id"] for row in candidates}),
-        "unresolved_source_memory_ids": sorted({row["memory_id"] for row in unresolved_rows}),
-        "unresolved_source_trace_ids": sorted({row["trace_id"] for row in unresolved_rows}),
+        "unresolved_source_memory_ids": sorted({row["memory_id"] for row in unresolved_rows + malformed_rows}),
+        "unresolved_source_trace_ids": sorted({row["trace_id"] for row in unresolved_rows + malformed_rows}),
+        "bounded_source_lookup": lookup or None,
         "candidates": candidates[:8],
         "selected_core_jp": core,
         "selected_core_sha256": _digest(core),
@@ -437,14 +622,38 @@ def build_past_statement_source_contract_p4(user_input: object, memory_data: dic
         "private_state_truth_claimed": False,
         "raw_dialogue_persisted": False,
         "claim_boundary": (
-            "bounded current-turn delivered-episode source attribution, not exhaustive "
-            "memory search or private preference truth"
+            "bounded literal current-turn delivered-episode source attribution, not "
+            "NFKC/semantic-global uniqueness or private preference truth"
         ),
     }
 
 
 def query_all_layers_with_past_statement_source_p4(self, text):
     data = _ORIGINAL_QUERY(self, text)
+    query = classify_past_statement_query_p4(text)
+    if query.get("selected") and hasattr(self, "episode_col"):
+        lookup, lookup_rows = _bounded_source_lookup(self.episode_col, query["value"])
+        provenance = data.setdefault("memory_provenance", {})
+        if lookup.get("status") == "complete":
+            if _delivered_source_lookup_gap(data, query["value"], lookup_rows):
+                lookup["status"] = "incomplete"
+                lookup["reason"] = "other_delivered_episode_outside_literal_lookup_or_inconsistent_document"
+            passed = provenance.setdefault("passed_to_leftbrain", [])
+            existing_ids = {
+                str(row.get("memory_id")) for row in passed
+                if row.get("source") == "episode" and row.get("memory_id")
+            }
+            import uruha_memory_runtime as memory_runtime
+
+            for row in lookup_rows:
+                if row["memory_id"] not in existing_ids:
+                    passed.append(memory_runtime.memory_trace_row(
+                        row, channel="bounded_source_lookup"
+                    ))
+            provenance["passed_to_leftbrain_trace_ids"] = list(dict.fromkeys(
+                str(row.get("trace_id")) for row in passed if row.get("trace_id")
+            ))
+        data[SOURCE_LOOKUP_LABEL] = lookup
     data[LABEL] = build_past_statement_source_contract_p4(text, data)
     return data
 
@@ -589,7 +798,8 @@ def visible_guard_with_past_statement_source_p4(self, reply, logic_data, user_in
     integrity_fields = (
         "schema", "input_sha256", "selected", "status", "value_sha256",
         "selected_speaker_role", "selected_actor", "source_memory_ids",
-        "source_trace_ids", "selected_core_sha256", "selected_core_jp",
+        "source_trace_ids", "unresolved_source_memory_ids", "bounded_source_lookup",
+        "selected_core_sha256", "selected_core_jp",
     )
     contract_matches_source = all(contract.get(key) == fresh.get(key) for key in integrity_fields)
     selected_route = route == "factual_or_memory"
@@ -638,17 +848,30 @@ def materialize_past_statement_source_p4(result: dict) -> None:
     logic = result.setdefault("logic", {})
     contract = deepcopy(logic.get(LABEL) or {})
     trace = result.setdefault("runtime_trace", {})
-    rows = [row for row in trace.get("blackboard", []) if row.get("label") != LABEL]
+    rows = [
+        row for row in trace.get("blackboard", [])
+        if row.get("label") not in {LABEL, SOURCE_LOOKUP_LABEL}
+    ]
     if contract.get("schema") == SCHEMA and contract.get("surface_authority"):
         final = str(result.get("reply") or result.get("response") or "").strip()
         status = str(contract.get("status") or "")
+        lookup = deepcopy(contract.get("bounded_source_lookup") or {})
         if status == "surface_integrity_failed_closed":
             flow = ["explicit_past_source_query", "source_contract_integrity_failure", "visible_japanese_abstention"]
+        elif status.startswith("source_lookup_"):
+            flow = ["explicit_past_source_query", "bounded_literal_episode_lookup", status, "visible_japanese_abstention"]
         elif status == "source_not_found_in_delivered_episodes":
-            flow = ["explicit_past_source_query", "no_qualifying_delivered_episode", "visible_japanese_abstention"]
+            flow = ([
+                "explicit_past_source_query", "bounded_literal_episode_lookup",
+                "no_qualifying_source_episode", "visible_japanese_abstention",
+            ] if lookup else [
+                "explicit_past_source_query", "no_qualifying_delivered_episode",
+                "visible_japanese_abstention",
+            ])
         else:
             flow = [
-                "explicit_past_source_query", "already_delivered_persisted_episode",
+                "explicit_past_source_query",
+                "bounded_literal_episode_lookup" if lookup else "already_delivered_persisted_episode",
                 "source_actor_value_join", "unique_or_abstain", "visible_japanese_surface",
             ]
         contract.update(
@@ -662,6 +885,14 @@ def materialize_past_statement_source_p4(result: dict) -> None:
             (index for index, row in enumerate(rows) if row.get("label") == "selected_plan"),
             next((index for index, row in enumerate(rows) if row.get("label") == "utterance"), len(rows)),
         )
+        if lookup:
+            rows.insert(position, {
+                "stage": "retrieve",
+                "label": SOURCE_LOOKUP_LABEL,
+                "payload": lookup,
+                "salience": 1.0,
+            })
+            position += 1
         rows.insert(position, {
             "stage": "select",
             "label": LABEL,
