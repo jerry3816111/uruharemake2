@@ -1,6 +1,7 @@
 # P4 legacy profile：後句本人否認對前句候選的撤銷
 
-狀態：2026-10-02 先定案設計；**尚未實作、尚未做新 Safari**。
+狀態：2026-10-02 先定案設計；additive pre-writer 實作與聚焦測試已完成，
+**尚未做新 Safari**。真產品結果須以另一份事前凍結的 fresh probe 判定。
 這是前項 selected-plan authority 限定 PASS 後的獨立產品 gate，
 不能拿已曝光八輪／十一輪追分。前項來源送達 `REVIEW_REQUIRED`
 是另一問題；本 owner gate 尚未進入該停止狀態。
@@ -64,6 +65,12 @@ checkout、無關 `output/graduate_application_report/`。若 additive
 6. `友達の灯里は花梨茶が好き。私は海が好き。` → 只寫本人海；
    普通非 memory-act 句、P4-H selected 句與 protected route
    均不得被此 legacy 專用規則誤接管。
+7. 獨立凍結前審查新增的反例：
+   `私は紅茶が好き。これは私の好みじゃない、と友達が言った。`
+   與 `私は紅茶が好き。これは私の好みじゃない？` 均不能把報述／疑問
+   當成本人確定否認而撤銷紅茶；`私は紅茶が好き。これは私の好みじゃない`
+   的無句號 assertive 版本則應撤銷。只有 `。 . ! ！` 或輸入終點
+   可作這項否認的終止，逗號、頓號、問號及後續報述不給撤銷權限。
 
 測試要觀察實際 owner audit／writer、隔離 Chroma profile／session
 與 graph/episode，不可只測正規表示式。先聚焦，再跑舊 P4 owner、

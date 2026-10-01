@@ -2,6 +2,26 @@
 
 更新：2026-10-02。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前未完成 gate：legacy profile 後句本人否認
+
+前一個 selected-plan authority 八輪限定 PASS 已保存，不重跑；目前依
+`research/p4_profile_postposed_self_denial_plan_2026-10-02.md` 的獨立
+before 做 writer 前的有界撤銷。新 additive overlay、產品入口、安全
+launcher 與聚焦測試已寫在安全 worktree；**尚未宣稱真產品通過**。
+最後 protected-route 測試加入後，聚焦＋受影響相鄰回歸為
+`221 passed, 8 dependency warnings in 98.65s`（測試進程 FD soft 4096）。
+獨立唯讀預檢核對 fresh 八輪的 owner／overlay source-only gold 與
+P4-I typed path，8/8 一致；此預檢不是模型或 Safari 結果。
+新前瞻資料與事前 strict 門檻在
+`datasets/p4_profile_postposed_self_denial_fresh_probe_2026-10-02.json`
+及 `research/p4_profile_postposed_self_denial_fresh_probe_plan_2026-10-02.md`。
+安全 launcher 0-turn check exit 0、localhost／隔離 root、runtime 重用與
+pre-writer hook 均確認；接著須製作完整 SHA manifest 並 commit
+凍結，**之後才可**在新隔離 root／Safari tab 將 T1–T8 各送一次，T4
+後真 PID/session 重啟、同 DB、0 retry；真 DB、graph 與可見日文依原
+strict gate 判讀。不可把純函式／測試通過寫成產品成功，不碰無關
+`output/graduate_application_report/`、原始 dirty checkout 或正式 DB。
+
 ## 最新產品 gate：profile 記憶承諾的真 selected-plan authority 限定 PASS
 
 第二個、最後一個有根據的同卡修正批次已用全新事前凍結八輪驗收，
