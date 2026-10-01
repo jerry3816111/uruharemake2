@@ -36,6 +36,24 @@ profile writer 已執行後才單改回覆而留下不同的持久 episode。聚
 相鄰通過後另建全新 source-only 前瞻資料並事前 freeze，再做隔離
 Safari／重啟驗收。此卡不改上段前項負結果或獨立來源審查點。
 
+**本輪凍結前 review／接續狀態（Safari 尚未執行）：** additive
+overlay 已把同一來源准入與 correction 的既有 scope state 綁到
+planner／日文 surface；writer 之後核對實際 row、episode 與 graph。
+對多 active scope 訂正，保留 typed writer 的歧義審計，只攔同輪
+錯誤 legacy fallback。獨立唯讀審查在全新臨時 DB 做 0-model/0-Safari
+十一輪預演，profile 增量 `[0,1,2,0,1,0,1,0,1,1,0]`、七筆 profile、
+十一筆不同 episode，T11 的 two-scope 拒寫、fallback suppression 與
+resolver historical/current 相符；它不是網頁或模型品質證據。
+修後聚焦＋六項相鄰回歸在提高單一測試進程 FD soft limit 到 4096 後
+`178 passed, 8 dependency warnings in 72.21s`。預設 soft limit 256
+的合併長套件曾因 Chroma client 檔案描述符耗盡而失敗；單檔及提高
+測試進程 limit 後通過，不抹去此測試環境資源限制。安全 launcher
+0-turn check 通過；前瞻資料／plan 是開發者自製十一輪，待本卡 freeze
+commit/hash 後只跑一次隔離 Safari 真產品。
+review 另發現既有 owner 對句末本人否認仍可能錯准入並真寫入，
+它是獨立 owner 語義 gate，這張承諾對齊卡不偷修；任意 DB 寫入失敗
+仍受核心先存 episode 後寫 profile 的非原子順序限制，必須明列。
+
 ## 前項工作：持久 profile 的本人陳述准入
 
 **2026-10-01 另立獨立產品 gate，設計先定案。** 前項十輪 T1 朋友偏好、

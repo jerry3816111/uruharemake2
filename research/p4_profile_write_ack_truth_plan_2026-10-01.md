@@ -30,6 +30,25 @@ correction 保留既有 P4-H 日文、既有 writer 與 episode。可見回覆�
 持久化證明。safety、VRM/function、source recall 與非選中普通聊天
 保持既有 authority。
 
+**凍結前的獨立 review 補充（同一承諾真實性 gate）：** P4-I correction
+的 writer 另有 read-only、取決於既有 profile 的前置條件。舊值若同時
+存在兩個 active scope，無明示 scope 的訂正會以
+`old_value_has_multiple_active_scopes` 拒絕 typed 寫入；**獨立 writer-only
+隔離預演更發現其後 fallback legacy 竟新增一筆錯誤的本人偏好**。
+單靠純文字 owner 准入會在保存 episode 前錯誤承諾並污染 profile。
+新入口須在 planner／surface 前用與 writer 同源的 resolved profile
+active rows 檢查這個條件；已知 state-blocked 時，先選非承諾回覆，
+episode 照存、typed writer 照常報出 `ambiguous_extraction`，但新
+additive overlay 只對同輸入 hash、同一多 scope 理由的 legacy
+fallback 做 no-op，阻止錯誤第二次寫入。graph 必須分開記純文字
+owner 准入、typed writer 拒寫、legacy fallback suppression 與實際
+profile delta，不能把前者冒充持久化成功。無法可靠讀取時也不得
+承諾。此狀態檢查仍只服務「可見承諾
+與准入一致」一個變因，不改 P4-I writer 或核心交易順序。意外 DB
+寫入失敗仍只能在
+writer 後拒絕 UI 交付並保留 mismatch；已保存 episode 無法用這項
+事後改回覆，屬明示限制。
+
 不得改 `uruha_brain_mac.py`、已凍結 P4-H／P4-I／P4 owner／source 模組、
 舊產品入口、舊 dataset／freeze／raw／result、正式 DB、原始 dirty checkout
 及無關 `output/graduate_application_report/`。如果必須改核心 save/write
