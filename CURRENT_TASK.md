@@ -2,7 +2,37 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一工作：來源約束的過去陳述問答介面
+## 當前唯一工作：明確來源問句的證據送達與歸屬核對
+
+**新前瞻版本的 before（2026-10-01）已完成，結果負面。** 修後
+`p4_past_source` 在事前凍結的新 `結衣／ほうじ茶` 十輪 Safari，T5 後真
+process/session 重啟、0 retry。T10 英文問舊偏好來源，最終只有日文「今の
+記録じゃ分からない」，strict `0/1`；M22 factual route 與來源 graph/final
+一致，但 T1 持久 episode 在 T10 candidate pool rank `18/20`、沒有進
+`passed_to_leftbrain`。即使送達，當前摘要 parser 仍將 `友達の結衣` 誤當
+actor 而非 `結衣`。10/10 episode/delivery，9/10 `≤20s`，總等候
+`115.9450s`；T3 另有無關記憶侵入、T1 同輪舊 profile owner 污染訊號。
+原樣證據在 `analysis/p4_past_source_fresh_product_probe_result_2026-10-01.md`，
+原始隔離 JSONL hash 已記。不可重跑本案、改原判準或稱其已通過。
+
+**下一個唯一可歸因介面變因：** bounded explicit source-query evidence
+delivery。在 query_all_layers 把同值持久 episode 有界地、帶真 ID/trace
+送入當輪 memory_data/provenance，而不是只讓它留在候選池；核對時將摘要中
+有來源的關係前綴 `友達の<人名>` 與原句 `<人名>` 對齊。兩者是同一
+source→actor 證據交付契約的必要閉環，不得聲稱兩部件各自獨立增益。
+必須保留多來源、否定、引文、溢出 fail closed，及 safety route、日文
+surface、graph 原有邊界；不得變成任意全庫搜尋或只根據值猜人。
+
+**先後與 gate：** 先凍結 v2 設計（查詢範圍、最大命中數、溢出行為、
+允許檔案、exact 負反例、成本），再實作於 additive P4 overlay／測試；
+舊 entry 與 frozen code/result 不改。只跑聚焦和受影響相鄰測試，之後
+另造未曝光多輪情境／事前凍結，隔離 Safari 真重啟且 0 retry。
+strict 必須從持久 T1 到 delivered trace 到唯一 actor/value 到自然日文
+與 graph 全部同一來源；不能用 parser unit 或 sandbox probe 抵 Safari。
+最多一個有根據後續修正批次，仍失敗即 `REVIEW_REQUIRED`，保留問題和
+取捨；正式 holdout、同模型比較、人評、VRM/tool 仍未獲此案授權。
+
+## 已完成一次修正但產品 FAIL：來源約束的過去陳述問答介面
 
 **2026-10-01 before 已完成，結果負面：** 凍結的現行產品 10 輪 Safari、T5 後
 真 process/session 重啟及同隔離 DB 測試沒有 retry。10 個 turn episode 持久化，
