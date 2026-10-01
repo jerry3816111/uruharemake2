@@ -1,0 +1,179 @@
+{
+  "schema": "uruha_p4_profile_plan_authority_fresh_probe_v1",
+  "case_id": "p4_profile_plan_authority_fresh_20261002_01",
+  "status": "developer_authored_prospective_product_probe_not_holdout",
+  "core_intervention": "selected_profile_memory_act_plan_outranks_general_m29_literal_projection",
+  "turn_count": 8,
+  "restart_after_turn": 4,
+  "global_expected": {
+    "exact_input_once_per_turn": true,
+    "distinct_persisted_turn_episode_count": 8,
+    "session_count": 2,
+    "same_isolated_db_after_restart": true,
+    "visible_language": "ja",
+    "selected_plan_count_each_turn": 1,
+    "selected_plan_matches_logic_intent_and_core_each_turn": true,
+    "profile_truth_node_count_each_turn": 1,
+    "profile_truth_node_status_each_turn": "matched",
+    "profile_truth_selected_plan_authority_each_turn": "matched",
+    "graph_utterance_equals_visible_reply": true,
+    "rejected_act_keeps_episode": true,
+    "rejected_act_must_not_promise_user_profile_write": true,
+    "accepted_act_keeps_existing_acknowledgement": true,
+    "expected_profile_row_deltas": [0, 1, 2, 0, 1, 0, 1, 0],
+    "expected_final_user_profile_row_count": 5,
+    "forbidden_user_profile_values": [
+      "蕎麦蜜茶",
+      "wild thyme tea",
+      "桂花酸梅湯",
+      "lavender tisane",
+      "cardamom milk"
+    ],
+    "forbidden_values_must_also_be_absent_as_substrings_of_user_profile_value": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ja_named_friend_message_fresh_m29_risk",
+      "input": "友人の璃帆からの伝言。今は蕎麦蜜茶が好き。今の好みとして覚えといて。",
+      "source_only_owner": "friend_璃帆_not_user",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "third_person_or_reported_scope",
+      "expected_profile_row_delta": 0,
+      "expected_new_user_profile": [],
+      "expected_writer_evidence": "writer_not_invoked",
+      "expected_selected_plan": {
+        "intent": "profile_write_ack_rejected",
+        "core_message_jp": "ん、その話は聞いた。お前の好みとしては覚えない。"
+      },
+      "expected_visible_exact": "ん、その話は聞いた。お前の好みとしては覚えない。",
+      "m29_causal_coverage": "Fresh-session M29 must report pre-veto projection_required=true, followed by superseded_by_profile_memory_act_p4 with projection_required=false; otherwise the plan authority outcome alone does not demonstrate the new veto.",
+      "visible_rubric": "The selected plan and visible Japanese answer must both treat this as 璃帆's message, never as the user's preference or a successful write."
+    },
+    {
+      "turn": 2,
+      "role": "ja_direct_current_drink_write",
+      "input": "今は柚香麦茶が好き。今の飲み物の好みとして覚えといて。",
+      "source_only_owner": "user_self_report",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_profile_row_delta": 1,
+      "expected_new_user_profile": [
+        {"fact_type": "like", "value": "柚香麦茶", "scope": "drink"}
+      ],
+      "expected_writer_status": "typed_write_completed",
+      "expected_selected_plan": {
+        "intent": "explicit_preference_memory_write",
+        "core_message_jp": "ん、その好みは覚えとく。"
+      },
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 3,
+      "role": "ja_direct_current_drink_correction",
+      "input": "訂正。もう柚香麦茶は好みじゃない。今は金柑玄米茶が好き。今の飲み物の好みとして覚えといて。",
+      "source_only_owner": "user_self_correction",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_profile_row_delta": 2,
+      "expected_new_user_profile": [
+        {"fact_type": "like", "value": "金柑玄米茶", "scope": "drink"},
+        {"fact_type": "dislike", "value": "柚香麦茶", "scope": "drink"}
+      ],
+      "expected_prior_positive_state": "historical_in_resolver_not_physical_metadata_mutation",
+      "expected_writer_status": "typed_write_completed",
+      "expected_selected_plan": {
+        "intent": "explicit_preference_memory_correction",
+        "core_message_jp": "ん、訂正の内容はそのまま覚えとく。"
+      },
+      "expected_visible_exact": "ん、訂正の内容はそのまま覚えとく。"
+    },
+    {
+      "turn": 4,
+      "role": "en_named_friend_quote_rejected_before_restart",
+      "input": "My friend Norah said, \"I like wild thyme tea.\" Please remember my current drink preference.",
+      "source_only_owner": "quoted_friend_Norah_not_user",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "quoted_scope",
+      "expected_profile_row_delta": 0,
+      "expected_new_user_profile": [],
+      "expected_writer_evidence": "writer_not_invoked",
+      "expected_selected_plan": {
+        "intent": "profile_write_ack_rejected",
+        "core_message_jp": "ん、その話は聞いた。お前の好みとしては覚えない。"
+      },
+      "expected_visible_exact": "ん、その話は聞いた。お前の好みとしては覚えない。",
+      "visible_rubric": "Do not turn Norah's quoted statement into a user-profile write."
+    },
+    {
+      "turn": 5,
+      "role": "zh_direct_current_snack_write_after_restart",
+      "input": "我現在喜歡杏仁酥。請記住我現在的點心偏好。",
+      "source_only_owner": "user_self_report",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_profile_row_delta": 1,
+      "expected_new_user_profile": [
+        {"fact_type": "like", "value": "杏仁酥", "scope": "點心"}
+      ],
+      "expected_writer_status": "typed_write_completed",
+      "expected_selected_plan": {
+        "intent": "explicit_preference_memory_write",
+        "core_message_jp": "ん、その好みは覚えとく。"
+      },
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 6,
+      "role": "zh_named_friend_report_rejected",
+      "input": "我的朋友若晞說我現在喜歡桂花酸梅湯。請記住我現在的飲料偏好。",
+      "source_only_owner": "friend_若晞_report_about_user_not_direct_self_report",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "third_person_or_reported_scope",
+      "expected_profile_row_delta": 0,
+      "expected_new_user_profile": [],
+      "expected_writer_evidence": "writer_not_invoked",
+      "expected_selected_plan": {
+        "intent": "profile_write_ack_rejected",
+        "core_message_jp": "ん、その話は聞いた。お前の好みとしては覚えない。"
+      },
+      "expected_visible_exact": "ん、その話は聞いた。お前の好みとしては覚えない。",
+      "visible_rubric": "Do not treat 若晞's report about the user as a verified user self-report."
+    },
+    {
+      "turn": 7,
+      "role": "en_direct_current_music_write",
+      "input": "I like lo-fi piano. Please remember my current music preference.",
+      "source_only_owner": "user_self_report",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_profile_row_delta": 1,
+      "expected_new_user_profile": [
+        {"fact_type": "like", "value": "lo-fi piano", "scope": "music"}
+      ],
+      "expected_writer_status": "typed_write_completed",
+      "expected_selected_plan": {
+        "intent": "explicit_preference_memory_write",
+        "core_message_jp": "ん、その好みは覚えとく。"
+      },
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 8,
+      "role": "en_two_self_values_ambiguous_no_commit",
+      "input": "I like lavender tisane. I like cardamom milk. Please remember my current drink preference.",
+      "source_only_owner": "two_user_self_reports_selection_ambiguous",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "selected_act_ambiguous_extraction",
+      "expected_profile_row_delta": 0,
+      "expected_new_user_profile": [],
+      "expected_writer_evidence": "writer_not_invoked",
+      "expected_selected_plan": {
+        "intent": "profile_write_ack_rejected",
+        "core_message_jp": "ん、好みが複数あるな。今のはどれか教えて。"
+      },
+      "expected_visible_exact": "ん、好みが複数あるな。今のはどれか教えて。",
+      "visible_rubric": "These are two possible user preferences, not third-party claims. Ask which single current drink preference to save; do not choose one or promise a write."
+    }
+  ]
+}
