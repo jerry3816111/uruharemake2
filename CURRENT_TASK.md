@@ -2,7 +2,25 @@
 
 更新：2026-10-01。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前審查點：來源送達因果識別與持久 profile owner 污染
+## 當前唯一工作：持久 profile 的本人陳述准入
+
+**2026-10-01 另立獨立產品 gate，設計先定案。** 前項十輪 T1 朋友偏好、
+T3 作文引文／本人否認被錯寫成跨重啟 active `subject=user` favorite；
+純離線現行抽取可重現兩筆錯 tuple，最早失真在 legacy profile writer
+准入，而不是 P4 source lookup。前項來源送達 strict `0/1`、
+`REVIEW_REQUIRED` 保持原樣。新項只改一個核心變因：產品版、逐候選
+來源片段綁定的本人陳述准入，防止錯 owner/quote/polarity 寫入，
+並保留本人喜好、訂正、episode 與來源回溯。精確 before、可改／不可改
+檔案、負正混合矩陣、相鄰命令、成本與 fresh Safari gate 見
+`research/p4_profile_owner_admission_plan_2026-10-01.md`。
+
+**目前順序：** 先提交此 plan/task，實作 additive 產品入口與 writer
+admission、跑聚焦＋相鄰，另建未曝光 source-only 情境並事前凍結，
+最後隔離 Safari 真重啟核對 graph／日文／DB；不得用舊 `凪紗` 十輪
+重播追分。若結果負面按 plan 分析、保留並設審查點。正式 DB、
+原始 dirty checkout、舊凍結資料與無關報告不碰。
+
+## 保留審查點：來源送達因果識別
 
 **2026-10-01 v2 前瞻 Safari 已完成，strict `0/1`，此來源送達工作項
 `REVIEW_REQUIRED`。** 凍結 `凪紗／ルイボス茶` 十輪、T5 後真 PID/session
