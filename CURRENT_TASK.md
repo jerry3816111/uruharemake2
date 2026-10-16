@@ -27,11 +27,14 @@ token／價格 ledger 缺值。
 原八輪 gold、程式、manifest 不改，T1–T6 不重跑；這次 writer 局部
 證據與可見語義 FAIL 分開保留，不把 T7/T8 未測稱通過。
 
-**下一個必要交付：** 先設計審查問句敏感的關係 intent 匹配：原
+**下一個必要交付：** 2026-10-16 已由
+`research/p4_relationship_question_evidence_plan_2026-10-16.md`
+定案問句敏感的關係 intent 匹配：原
 `好き？` pattern 在 compact 時失去問號、變成 `好き`，使「我喜歡
-某物」被當「你喜歡我嗎」。新卡需有正反 source-only before、只修
-這一個核心變因、允許檔案、相鄰回歸與全新未曝光產品門檻；不得在
-這張卡順手修 T4/T6 的 M31 clause／quote scope。無關
+某物」被當「你喜歡我嗎」。純規則 before 已證實兩條路徑的同一
+缺陷；現在依卡新增 scoped matcher／產品入口與聚焦、相鄰回歸，
+通過後才另造全新未曝光產品資料、事前 freeze 與 Safari gate。
+不得在這張卡順手修 T4/T6 的 M31 clause／quote scope。無關
 `output/graduate_application_report/`、原始 dirty checkout 與正式 DB
 繼續不碰。T4/T6、來源送達 `REVIEW_REQUIRED` 和背景智慧記憶副作用
 保留為獨立審查點。
