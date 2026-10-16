@@ -2,7 +2,32 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 第三者陳述 speech-act 遺失的設計審查
+## 當前唯一進行項：P4 第三者陳述 speech-act 修正與前瞻產品驗收
+
+2026-10-17 已依前批 T2 真實失敗完成設計審查，文件在
+`research/p4_source_bound_third_party_statement_act_plan_2026-10-17.md`
+（commit `2be8324`）；此為同團隊非獨立審查。只增加產品限定來源
+`XはYが好き。` 陳述的 M31 授權後／selected 前核對：若已授權的
+模型候選只把完全相同第三者命題問回去，從逐字來源重建日文肯定
+承接，讓 M31 response、selected plan 與最後表面一致；原模型
+候選與 canonical 只留 hash，原 self-check 缺欄預設另存，不冒稱
+模型已判出錯。未觸及核心 M31/M32、writer 或正式 DB。
+
+新增開發者零模型 `6/6`、受影響相鄰 `143/143`（9 個依賴警告），
+compile/diff check 通過；隔離產品入口 0-turn check exit 0，
+`server_started=false`、0 模型呼叫、0 Safari 操作。新 manifest
+`research/p4_source_bound_third_party_statement_act_fresh_probe_freeze_2026-10-17.sha256`
+22/22 hash OK；仍須先 commit 才能送首輪。
+五輪新逐字資料與 gold 已寫於
+`datasets/p4_source_bound_third_party_statement_act_fresh_probe_2026-10-17.json`，
+詳細程序在同名 `research/*_plan_2026-10-17.md`，目前尚未呼叫真
+模型／送 Safari。下一步：以 SHA／commit 在
+首輪前凍結，再新私有 root／新 Safari tab 單次逐輪驗收，T3 後
+planned same-DB restart；未通過任一語義、成本、graph、memory ID
+或程序條件就是第二批 strict FAIL，需 `REVIEW_REQUIRED`，不可
+重播曝光題。此輪 UI 圖節點新增加來源修正狀態；未經 Safari 目視
+不得稱圖像驗收通過。舊批 5/5 graph utterance、本人 3/3 快路與
+T2 錯誤的結果不改。
 
 舊五輪 Safari 批次仍是三輪後 strict FAIL，原 input/gold/raw 不改、不重播。
 其 before 與單一修正變因見
