@@ -2,6 +2,33 @@
 
 更新：2026-10-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新結果：問句證據新六輪 Safari 前瞻產品 probe strict FAIL
+
+`research/p4_relationship_question_evidence_fresh_probe_plan_2026-10-16.md`
+與六輪 exact gold 已在首輪前由 commit `990b279` 凍結，兩層 manifest
+11/11、24/24 OK。新隔離 root、新 Safari tab 中只完成 T1/T2 各一次：
+T1 `ねえ、好き?` 真 selected `ask_like_me`、日文泡泡對齊，等待
+`2.9856s`、profile 0；T2 `私は昆布生姜スープが好き。` 真 selected
+`chat`、日文泡泡沒有關係告白，DB 唯一 profile 是本人
+`like/昆布生姜スープ`，但等待 `26.5627s > 20s`。T2 慢路徑的
+full planner 約 `10.3953s` 加 M31 授權約 `12.8828s`；不能歸咎
+新 matcher。T3 欲送時頁面錯誤、原 PID／port／exec session 已消失，
+JSONL 無 T3；計畫的 T3 後重啟、T4–T6 不存在，**程序＋成本 strict
+FAIL**。服務消失與 Codex host 結束同秒相關，但沒有服務 PID 確切
+死因。每輪完整 profile row-ID 前後快照未留，不能把 writer count delta
+當集合差。原題／gold 不改，不重送六個已曝光 case。
+原始 SHA、兩個 episode、Safari／graph／記憶／成本逐層證據與缺口見
+`analysis/p4_relationship_question_evidence_interrupted_product_probe_result_2026-10-16.md`。
+
+**下一個必要交付：** 對同輪全 planner 與 M31 連續模型呼叫造成的
+`>20s` 先做單變因設計審查，確認哪一段可安全省略或併入而不削弱
+M31 來源／語義 guard；對服務 lifecycle 與逐輪 ID 快照只做支持這個
+產品 gate 的操作修復，不另開 M。若沒有可辯護修正，維持
+`REVIEW_REQUIRED` 而不是重播舊題追分。任何新 Safari 驗收都須先用
+**全新** source-only 案例、事前凍結 plan/hash，0 retry；正式 DB、
+原始 dirty checkout、無關 `output/graduate_application_report/` 不碰。
+問句 matcher 的六輪產品結論仍 pending，10/2 writer 批次 FAIL 不洗白。
+
 ## 最新負結果：legacy profile 後句本人否認產品批次 strict FAIL
 
 前一個 selected-plan authority 八輪限定 PASS 已保存，不重跑。此項
