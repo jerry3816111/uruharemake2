@@ -1,26 +1,40 @@
 # 目前任務卡
 
-更新：2026-10-02。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-10-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前未完成 gate：legacy profile 後句本人否認
+## 最新負結果：legacy profile 後句本人否認產品批次 strict FAIL
 
-前一個 selected-plan authority 八輪限定 PASS 已保存，不重跑；目前依
-`research/p4_profile_postposed_self_denial_plan_2026-10-02.md` 的獨立
-before 做 writer 前的有界撤銷。新 additive overlay、產品入口、安全
-launcher 與聚焦測試已寫在安全 worktree；**尚未宣稱真產品通過**。
-最後 protected-route 測試加入後，聚焦＋受影響相鄰回歸為
-`221 passed, 8 dependency warnings in 98.65s`（測試進程 FD soft 4096）。
-獨立唯讀預檢核對 fresh 八輪的 owner／overlay source-only gold 與
-P4-I typed path，8/8 一致；此預檢不是模型或 Safari 結果。
-新前瞻資料與事前 strict 門檻在
-`datasets/p4_profile_postposed_self_denial_fresh_probe_2026-10-02.json`
-及 `research/p4_profile_postposed_self_denial_fresh_probe_plan_2026-10-02.md`。
-安全 launcher 0-turn check exit 0、localhost／隔離 root、runtime 重用與
-pre-writer hook 均確認；接著須製作完整 SHA manifest 並 commit
-凍結，**之後才可**在新隔離 root／Safari tab 將 T1–T8 各送一次，T4
-後真 PID/session 重啟、同 DB、0 retry；真 DB、graph 與可見日文依原
-strict gate 判讀。不可把純函式／測試通過寫成產品成功，不碰無關
-`output/graduate_application_report/`、原始 dirty checkout 或正式 DB。
+前一個 selected-plan authority 八輪限定 PASS 已保存，不重跑。此項
+writer 前有界撤銷修正由設計卡
+`research/p4_profile_postposed_self_denial_plan_2026-10-02.md` 定案；
+freeze commit `bfd137b` 已推、24/24 SHA OK。聚焦＋受影響相鄰回歸
+`221 passed, 8 dependency warnings in 98.65s`（FD soft 4096），
+launcher 0-turn check exit 0；純函式預檢 8/8 source-only gold 一致。
+**這些不代表真產品通過。** 新八輪 Safari 首四輪各一次，T4 後真
+PID/port 關閉與同隔離 DB 新 session；後兩輪各一次後 Codex 中斷，
+第二服務程序終止。恢復時 raw 恰六行、port 關閉，T7/T8 未送；按
+事前「額外重啟／漏輪不重播追分」條款，**程序 strict FAIL**。
+六輪 raw 回報的 profile collection-count delta `[0,1,0,1,1,1]`
+與事後 DB 四筆 ID／時間／值相符；未留逐輪 row ID 差，故該 strict
+證據子項未達，不能把 count delta 當成 ID-attributed 驗證。
+DB 四筆本人 like、六個持久 turn episode；但 Safari 可見回覆與
+真正 selected plan 在多輪把物品偏好誤路由成 `ask_like_me`，T4/T6
+另錯處理朋友來源／引文範圍。全部 6/6 圖上 utterance 與 raw reply
+一致；整張 graph 的既有 USER SIGNAL 仍顯示原句，不能聲稱滿足事前
+「graph 不得洩出原句」。六輪最大等待 `12.7904s`，完整模型
+token／價格 ledger 缺值。
+詳見 `analysis/p4_profile_postposed_self_denial_interrupted_product_probe_result_2026-10-02.md`。
+原八輪 gold、程式、manifest 不改，T1–T6 不重跑；這次 writer 局部
+證據與可見語義 FAIL 分開保留，不把 T7/T8 未測稱通過。
+
+**下一個必要交付：** 先設計審查問句敏感的關係 intent 匹配：原
+`好き？` pattern 在 compact 時失去問號、變成 `好き`，使「我喜歡
+某物」被當「你喜歡我嗎」。新卡需有正反 source-only before、只修
+這一個核心變因、允許檔案、相鄰回歸與全新未曝光產品門檻；不得在
+這張卡順手修 T4/T6 的 M31 clause／quote scope。無關
+`output/graduate_application_report/`、原始 dirty checkout 與正式 DB
+繼續不碰。T4/T6、來源送達 `REVIEW_REQUIRED` 和背景智慧記憶副作用
+保留為獨立審查點。
 
 ## 最新產品 gate：profile 記憶承諾的真 selected-plan authority 限定 PASS
 
