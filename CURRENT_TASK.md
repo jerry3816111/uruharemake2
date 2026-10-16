@@ -11,7 +11,7 @@ T1 `ねえ、好き?` 真 selected `ask_like_me`、日文泡泡對齊，等待
 `2.9856s`、profile 0；T2 `私は昆布生姜スープが好き。` 真 selected
 `chat`、日文泡泡沒有關係告白，DB 唯一 profile 是本人
 `like/昆布生姜スープ`，但等待 `26.5627s > 20s`。T2 慢路徑的
-full planner 約 `10.3953s` 加 M31 授權約 `12.8828s`；不能歸咎
+M31 授權約 `12.8828s` 後接 full planner 約 `10.3953s`；不能歸咎
 新 matcher。T3 欲送時頁面錯誤、原 PID／port／exec session 已消失，
 JSONL 無 T3；計畫的 T3 後重啟、T4–T6 不存在，**程序＋成本 strict
 FAIL**。服務消失與 Codex host 結束同秒相關，但沒有服務 PID 確切
@@ -28,6 +28,13 @@ M31 來源／語義 guard；對服務 lifecycle 與逐輪 ID 快照只做支持�
 **全新** source-only 案例、事前凍結 plan/hash，0 retry；正式 DB、
 原始 dirty checkout、無關 `output/graduate_application_report/` 不碰。
 問句 matcher 的六輪產品結論仍 pending，10/2 writer 批次 FAIL 不洗白。
+本輪已完成該設計審查並定案
+`research/p4_source_bound_preference_fallback_plan_2026-10-16.md`：
+只在 postposed-aware source admission 支持的單句日文本人肯定偏好
+進入普通 planner fallback 時，以來源值形成 deterministic `chat`
+回應；M31 保持原呼叫與拒權，不改 writer/問句 matcher。下一步依
+卡實作、先小測再相鄰、建全新前瞻 source-only 產品驗收；預估
+省約 10.4s **不是**已驗證改善。
 
 ## 最新負結果：legacy profile 後句本人否認產品批次 strict FAIL
 

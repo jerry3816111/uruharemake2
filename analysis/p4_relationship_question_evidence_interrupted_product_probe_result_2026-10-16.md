@@ -44,8 +44,8 @@ T2 `user_wait_seconds=26.5627` 超過事前每輪 `≤20` 秒門檻，
 `runtime_latency_m19.target_met=false`；兩輪總等待 `29.5483` 秒、
 最大 `26.5627` 秒，**成本 gate 亦 FAIL**。T2 走 `full_planner`，
 `route_and_base_plan=10.4177` 秒、`cognitive_total=23.3802` 秒，
-其中 planner 模型呼叫 `10.3953` 秒，後接 M31 source-first
-semantic authorization 已完成的模型呼叫 `12.8828` 秒；M42 稽核
+其中 M31 source-first semantic authorization 已完成的模型呼叫
+`12.8828` 秒，後接 planner 模型呼叫 `10.3953` 秒；M42 稽核
 只有 `0.0518` 秒，不能把這次慢路徑歸咎新增的問句 matcher。
 局部欄位同時有 `status=completed_within_budget` 與 `budget_met=false`，
 不可只取前者作成本通過。模型總 token／價格沒有可核帳值，記為
