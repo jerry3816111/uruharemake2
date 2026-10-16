@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import json
 import signal
+import socket
 import stat
 import sys
 import time
@@ -149,26 +150,143 @@ def test_listener_rejects_non_loopback_or_other_owner(monkeypatch):
             self.stdout = text
 
     with patch.object(control.subprocess, "run", return_value=Completed(
-        f"p4242\nn{base.HOST}:{control.PORT}\n"
+        f"p4242\nf9\nn{base.HOST}:{control.PORT}\n"
     )):
         assert control._listener_owned_by_pid(4242) is True
     with patch.object(control.subprocess, "run", return_value=Completed(
-        f"p4242\nn{base.HOST}:{control.PORT}\nn*:{control.PORT}\n"
+        f"p4242\nf9\nn{base.HOST}:{control.PORT}\nf10\nn*:{control.PORT}\n"
     )):
         with pytest.raises(control.ControllerError, match="loopback_scope"):
             control._listener_owned_by_pid(4242)
     with patch.object(control.subprocess, "run", return_value=Completed(
-        f"p9999\nn{base.HOST}:{control.PORT}\n"
+        f"p9999\nf9\nn{base.HOST}:{control.PORT}\n"
     )):
         with pytest.raises(control.ControllerError, match="loopback_scope"):
             control._listener_owned_by_pid(4242)
     with patch.object(control.subprocess, "run", return_value=Completed(
-        f"p4242\nn{base.HOST}:{control.PORT}\np9999\nn*:{control.PORT}\n"
+        f"p4242\nf9\nn{base.HOST}:{control.PORT}\np9999\nf10\nn*:{control.PORT}\n"
     )) as inspected:
         with pytest.raises(control.ControllerError, match="loopback_scope"):
             control._listener_owned_by_pid(4242)
         argv = inspected.call_args.args[0]
         assert "-p" not in argv and "-a" not in argv
+
+
+def test_no_live_listener_is_vacant_even_when_plain_bind_would_fail(monkeypatch):
+    class Completed:
+        returncode = 1
+        stdout = ""
+        stderr = ""
+
+    # A recently closed connection may be in TIME_WAIT, so bind() can fail
+    # although no process still listens on the product port.
+    monkeypatch.setattr(control.identity, "_vacant", lambda port: False)
+    with patch.object(control.subprocess, "run", return_value=Completed()) as inspected:
+        assert control._port_listeners() == set()
+        control._require_vacant()
+        assert control._listener_owned_by_pid(4242) is False
+        assert inspected.call_count == 3
+
+
+@pytest.mark.skipif(sys.platform != "darwin", reason="macOS lsof listener format")
+def test_lsof_parses_actual_loopback_listener_in_current_process(monkeypatch):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+        listener.bind((base.HOST, 0))
+        listener.listen(1)
+        port = listener.getsockname()[1]
+        monkeypatch.setattr(control, "PORT", port)
+        assert control._port_listeners() == {(str(os.getpid()), f"{base.HOST}:{port}")}
+        assert control._listener_owned_by_pid(os.getpid()) is True
+        with pytest.raises(control.ControllerError, match="localhost_port_not_vacant"):
+            control._require_vacant()
+
+
+def test_vacancy_rejects_foreign_listener_and_unknown_lsof(monkeypatch):
+    class Completed:
+        def __init__(self, returncode, stdout, stderr=""):
+            self.returncode = returncode
+            self.stdout = stdout
+            self.stderr = stderr
+
+    monkeypatch.setattr(control.identity, "_vacant", lambda port: True)
+    with patch.object(control.subprocess, "run", return_value=Completed(
+        0, f"p9999\nf9\nn{base.HOST}:{control.PORT}\n"
+    )):
+        with pytest.raises(control.ControllerError, match="localhost_port_not_vacant"):
+            control._require_vacant()
+    for uncertain in (
+        Completed(2, "", "lsof failed"), Completed(0, ""),
+        Completed(0, f"p4242\nf9\nn{base.HOST}:{control.PORT}\np9999\nf10\n"),
+    ):
+        with patch.object(control.subprocess, "run", return_value=uncertain):
+            with pytest.raises(control.ControllerError, match="listener_(inspection_|record_)"):
+                control._require_vacant()
+
+
+def test_ready_product_stop_accepts_no_listener_despite_bind_failure(tmp_path, monkeypatch):
+    metadata = _metadata()
+    metadata["runtime_root"] = str(tmp_path)
+    final = _identity()
+    observations = iter([final, final, None])
+    monkeypatch.setattr(control, "_root", lambda _: (tmp_path, metadata))
+    monkeypatch.setattr(control, "_identity", lambda pid: next(observations))
+    monkeypatch.setattr(control, "_ready_identity", lambda *args: final)
+    monkeypatch.setattr(control.identity, "_vacant", lambda port: False)
+    monkeypatch.setattr(control, "_port_listeners", lambda: set())
+    with patch.object(control.os, "killpg") as kill:
+        result = control.stop("ignored")
+    kill.assert_called_once_with(4242, signal.SIGTERM)
+    assert result["ok"] is True
+    assert result["planned_stop"] is True
+    assert result["original_pid_exited"] is True
+    assert result["port_vacant"] is True
+    assert result["port_vacancy_basis"] == "no_tcp_listener_all_owners_lsof"
+    assert (tmp_path / control._name(metadata["run_id"], "stop.json")).is_file()
+
+
+def test_stop_foreign_listener_never_authorizes_restart(tmp_path, monkeypatch):
+    metadata = _metadata()
+    metadata["runtime_root"] = str(tmp_path)
+    final = _identity()
+    observations = iter([final, final, None])
+    monkeypatch.setattr(control, "_root", lambda _: (tmp_path, metadata))
+    monkeypatch.setattr(control, "_identity", lambda pid: next(observations))
+    monkeypatch.setattr(control, "_ready_identity", lambda *args: final)
+    monkeypatch.setattr(control, "_port_listeners", lambda: {
+        ("9999", f"{base.HOST}:{control.PORT}")
+    })
+    with patch.object(control.os, "killpg") as kill:
+        result = control.stop("ignored")
+    kill.assert_called_once_with(4242, signal.SIGTERM)
+    assert result["ok"] is False
+    assert result["planned_stop"] is False
+    assert result["port_vacant"] is False
+    assert result["failure_reason"] == "process_or_port_not_clean_after_term"
+    assert not (tmp_path / control._name(metadata["run_id"], "stop.json")).exists()
+
+
+def test_stop_lsof_unknown_preserves_failed_attempt_not_planned(tmp_path, monkeypatch):
+    metadata = _metadata()
+    metadata["runtime_root"] = str(tmp_path)
+    final = _identity()
+    observations = iter([final, final, None])
+    monkeypatch.setattr(control, "_root", lambda _: (tmp_path, metadata))
+    monkeypatch.setattr(control, "_identity", lambda pid: next(observations))
+    monkeypatch.setattr(control, "_ready_identity", lambda *args: final)
+    monkeypatch.setattr(control, "_port_listeners", lambda: (_ for _ in ()).throw(
+        control.ControllerError("listener_inspection_unknown:rc=2")
+    ))
+    with patch.object(control.os, "killpg") as kill:
+        result = control.stop("ignored")
+    kill.assert_called_once_with(4242, signal.SIGTERM)
+    assert result["ok"] is False
+    assert result["planned_stop"] is False
+    assert result["port_vacant"] is None
+    assert result["failure_reason"] == "listener_inspection_unknown"
+    assert not (tmp_path / control._name(metadata["run_id"], "stop.json")).exists()
+    assert json.loads(Path(result["stop_attempt_file"]).read_text(encoding="utf-8"))[
+        "port_inspection_error"
+    ].startswith("ControllerError:")
 
 
 def test_unready_product_stop_is_cleanup_not_planned_stop(tmp_path, monkeypatch):
@@ -179,7 +297,7 @@ def test_unready_product_stop_is_cleanup_not_planned_stop(tmp_path, monkeypatch)
     monkeypatch.setattr(control, "_root", lambda _: (tmp_path, metadata))
     monkeypatch.setattr(control, "_identity", lambda pid: next(observations))
     monkeypatch.setattr(control, "_ready_identity", lambda *args: None)
-    monkeypatch.setattr(control.identity, "_vacant", lambda port: True)
+    monkeypatch.setattr(control, "_port_listeners", lambda: set())
     with patch.object(control.os, "killpg") as kill:
         result = control.stop("ignored")
     kill.assert_called_once_with(4242, signal.SIGTERM)
@@ -241,7 +359,7 @@ def test_failed_start_cleanup_refuses_unknown_group_and_preserves_evidence(tmp_p
     unknown = _identity("unexpected-program")
     monkeypatch.setattr(control, "_identity", lambda pid: unknown)
     monkeypatch.setattr(control, "_group_members", lambda pgid: [{"pid": 4242, "uid": os.getuid()}])
-    monkeypatch.setattr(control.identity, "_vacant", lambda port: True)
+    monkeypatch.setattr(control, "_port_listeners", lambda: set())
     with patch.object(control.os, "killpg") as kill:
         result = control._cleanup_failed_start(
             FakeProcess(), tmp_path, "0123456789abcdef",

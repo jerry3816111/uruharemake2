@@ -227,33 +227,66 @@ def _validated_stage(current: dict | None, metadata: dict) -> str:
 
 
 def _require_vacant() -> None:
-    if not identity._vacant(PORT):
+    if _port_listeners():
         raise ControllerError(f"localhost_port_not_vacant:{PORT}")
 
 
-def _listener_owned_by_pid(pid: int) -> bool:
+def _port_listeners() -> set[tuple[str, str]]:
+    """Inspect all live TCP listeners; a post-close TIME_WAIT is not a listener.
+
+    A failed/ambiguous lsof inspection is never evidence of vacancy.  Start
+    checks this both before and after preflight, and verify-ready still checks
+    the exact final PID and loopback scope before and after HTTP 200.
+    """
     result = subprocess.run(
         [str(launchd.LSOF), "-nP", f"-iTCP:{PORT}",
          "-sTCP:LISTEN", "-Fpn"],
         capture_output=True, text=True, check=False,
     )
     if result.returncode == 1 and not result.stdout.strip() and not result.stderr.strip():
-        return False
-    if result.returncode != 0:
+        return set()
+    if result.returncode != 0 or result.stderr.strip():
         raise ControllerError(f"listener_inspection_unknown:rc={result.returncode}")
     owner = None
+    owner_has_address = False
+    file_pending = False
     listeners: set[tuple[str, str]] = set()
     for line in result.stdout.splitlines():
         if line.startswith("p"):
+            if owner is not None and (not owner_has_address or file_pending):
+                raise ControllerError("listener_record_incomplete")
             owner = line[1:]
+            owner_has_address = False
             if not owner.isdigit():
                 raise ControllerError("listener_owner_invalid")
+        elif line.startswith("f"):
+            # macOS lsof includes a file-descriptor record even for -Fpn.
+            if owner is None or not line[1:] or file_pending:
+                raise ControllerError("listener_file_record_invalid")
+            file_pending = True
         elif line.startswith("n"):
             if owner is None:
                 raise ControllerError("listener_missing_owner")
+            if not line[1:]:
+                raise ControllerError("listener_address_invalid")
             listeners.add((owner, line[1:]))
+            owner_has_address = True
+            file_pending = False
+        else:
+            raise ControllerError("listener_record_invalid")
+    if owner is not None and (not owner_has_address or file_pending):
+        raise ControllerError("listener_record_incomplete")
+    if not listeners:
+        raise ControllerError("listener_inspection_empty_success")
+    return listeners
+
+
+def _listener_owned_by_pid(pid: int) -> bool:
     # Query the *entire* port, not merely the expected PID: reject a second
     # owner or an additional wildcard/non-loopback listener on this port.
+    listeners = _port_listeners()
+    if not listeners:
+        return False
     if listeners != {(str(pid), f"{base.HOST}:{PORT}")}:
         raise ControllerError("listener_owner_or_loopback_scope_mismatch")
     return True
@@ -366,8 +399,8 @@ def _cleanup_failed_start(
         members = None
         inspection_errors.append(f"group:{type(exc).__name__}")
     try:
-        port_vacant = identity._vacant(PORT)
-    except OSError as exc:
+        port_vacant = not _port_listeners()
+    except (ControllerError, OSError) as exc:
         port_vacant = None
         inspection_errors.append(f"port:{type(exc).__name__}")
     evidence = {
@@ -561,7 +594,7 @@ def status(requested: str) -> dict:
         "mode": metadata["mode"], "pid": metadata["pid"], "stage": stage,
         "same_origin_alive": current is not None,
         "ready_recorded": ready_identity is not None,
-        "port_vacant": identity._vacant(PORT),
+        "port_vacant": not _port_listeners(),
         "http_ready_verified": False, "ready": False,
         "stdout_file": str(root / _name(metadata["run_id"], "stdout.log")),
         "stderr_file": str(root / _name(metadata["run_id"], "stderr.log")),
@@ -654,13 +687,22 @@ def stop(requested: str) -> dict:
             break
         time.sleep(0.1)
         after = _identity(metadata["pid"])
+    try:
+        port_vacant = not _port_listeners()
+        port_inspection_error = None
+    except (ControllerError, OSError) as exc:
+        port_vacant = None
+        port_inspection_error = f"{type(exc).__name__}:{exc}"
     result = {
         "schema": SCHEMA, "runtime_root": str(root),
         "run_id": metadata["run_id"], "pid": metadata["pid"],
         "before_identity": current, "before_stage": stage,
         "ready_identity": ready_identity,
         "signalled": signalled, "original_pid_exited": after is None,
-        "port_vacant": identity._vacant(PORT),
+        # This means no live TCP LISTEN socket on the entire port, not that a
+        # plain bind succeeds while recently closed sockets are in TIME_WAIT.
+        "port_vacant": port_vacant,
+        "port_vacancy_basis": "no_tcp_listener_all_owners_lsof",
         "exit_code": "unavailable_after_detach",
         "observed_at_unix": time.time(),
     }
@@ -672,8 +714,11 @@ def stop(requested: str) -> dict:
         result["failure_reason"] = (
             "unexpected_process_absent_before_stop" if current is None
             else "product_not_ready_at_stop" if metadata["mode"] == "product" and not planned_candidate
+            else "listener_inspection_unknown" if port_inspection_error is not None
             else "process_or_port_not_clean_after_term"
         )
+        if port_inspection_error is not None:
+            result["port_inspection_error"] = port_inspection_error
         attempt = root / _name(metadata["run_id"], f"stop-attempt-{secrets.token_hex(4)}.json")
         _private_json(attempt, result)
         return {"ok": False, "stop_attempt_file": str(attempt), **result}

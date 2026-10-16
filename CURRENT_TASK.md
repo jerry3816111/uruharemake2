@@ -25,11 +25,15 @@ episode。T1 selected fallback／writer 正確，但 user wait `26.6754s`
 **整批成本＋語義＋程序 strict FAIL**，詳見
 `analysis/p4_source_bound_preference_fresh_product_probe_result_2026-10-17.md`。
 
-**下一個必要交付：** 先封存並推這批真實負結果；以 T3 的
+**下一個必要交付：** 已封存這批真實負結果（commit `5dbf355`，
+推送與 PR 核對待收尾）；以 T3 的
 「M31/M32 優先於本人來源快路」為單一語義變因作設計審查，明確
 protected／第三者／引文負例後才准最小修正。controller 的
-TIME_WAIT／listener 判定需在下一次產品驗收前作獨立生命週期支援
-修正；T2 主語、T3 最終表面角色與 T1 冷啟成本分開保留，不混成
+TIME_WAIT／listener 判定已作獨立生命週期支援修正，聚焦 20/20、
+相鄰 59/59 通過，另有新 root 真 inert 兩段 same-root planned
+stop/restart/stop；新產品 same-DB 重啟仍未實測，見
+`analysis/p4_preference_fallback_stop_listener_vacancy_fix_2026-10-17.md`。
+T2 主語、T3 最終表面角色與 T1 冷啟成本分開保留，不混成
 一個追分補丁。新 Safari 案例必須另造、事前凍結、0 retry。
 正式同模型對照、人評、temporal holdout、VRM／tool 完整整合仍 pending。
 
