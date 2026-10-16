@@ -2,7 +2,19 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 第三者陳述 speech-act 產品負結果封存與設計審查
+## 當前唯一進行項：P4 完整當輪偏好陳述的來源優先權
+
+前一項五輪 Safari 已 strict FAIL／REVIEW_REQUIRED，raw/gold/result 不改、不重播；
+原始錯誤是 M31 拒權後 full planner 漏來源或毀字，以及舊食物規則將本人
+肯定陳述誤作邀請。2026-10-17 已做同團隊**非獨立**設計審查：
+`research/p4_current_statement_source_authority_design_2026-10-17.md`。
+新產品工作項只變更完整、直接、逐字可驗 `XはYが好き。` 的
+source-rule authority，讓早期 signal 與真正 plan 使用同一來源證書；
+保留 safety／grounded memory／M33、日文與人格 guard、writer 獨立性。
+先凍結設計，再實作新 overlay 與相鄰回歸；未做新 Safari、同模型比較
+或人評前不得稱產品優勢。舊 detached controller 及正式 DB 不碰。
+
+## 前一項：P4 第三者陳述 speech-act 產品負結果封存與設計審查
 
 2026-10-17 接續中斷後，原已實作的 scoped code／新五輪 gold／
 22/22 SHA manifest 由首輪前 commit `4ddfe95` 凍結並推到既有 PR #435。
