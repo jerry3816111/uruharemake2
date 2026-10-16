@@ -2,7 +2,7 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 本人來源快路競權修正後的全新產品驗收
+## 當前唯一進行項：P4 第三者陳述 speech-act 遺失的設計審查
 
 舊五輪 Safari 批次仍是三輪後 strict FAIL，原 input/gold/raw 不改、不重播。
 其 before 與單一修正變因見
@@ -17,14 +17,28 @@ writer、人格與 final guard 不改。聚焦 `7/7`、相鄰 `109/109`
 新五輪 exact input/gold、20 秒及 0 retry 規格見
 `datasets/p4_source_bound_preference_priority_fresh_probe_2026-10-17.json`、
 `research/p4_source_bound_preference_priority_fresh_probe_plan_2026-10-17.md`。
-模型首輪前 `research/p4_source_bound_preference_priority_fresh_probe_freeze_2026-10-17.sha256`
-19/19 OK；新句無模型預檢：三個本人正例進快路、朋友不進、
-關係問句為 `ask_like_me`。**尚未送任何新案例／開 Safari 新測試 tab。**
-下一步先將 code/test/plan/gold/manifest/current card 作 scoped commit，
-再以新隔離 root 啟動真產品、核 PID/listener/HTTP；依凍結五輪
-Safari 各送一次，T3 後真 planned same-DB restart，逐輪 snapshot、
-raw／graph／可見回覆／成本核對。任何失敗照 frozen strict FAIL 保存，
-不得在看到答案後改門檻。正式資料、人評、同模型對照仍 pending。
+模型首輪前 freeze commit `599f1cd`、19/19 SHA OK；同案 Safari
+T1–T5 逐字各一次、0 retry、T3 後真 planned same-DB restart，
+兩段 PID/session 不同、stop 都 planned true。三個本人正例 3/3
+真選來源快路且 M31 未呼叫；profile row-ID delta `[1,0,1,0,1]`，
+五個 turn episode、圖上 utterance 與泡泡 5/5 一致，等待
+`[12.5392,9.6315,3.0259,2.4625,2.8746]s` 均在 20 秒內。
+但 T2 朋友的肯定陳述被可見輸出變成疑問句；M31 nested schema
+未要求的 self-check 欄位預設 false，不能當模型判斷，且
+authorization 缺 speech-act guard 卻仍取得 selected authority；M32 repair rejected、
+P4 frame shadow 偵測到 `statement_changed_to_question`，visible
+repair 未支援。T4 關係問句路由正確但回覆的「また」缺前文依據。
+**本批語義 strict FAIL**，詳見
+`analysis/p4_source_bound_preference_priority_fresh_product_probe_result_2026-10-17.md`；
+不重播舊批或本批題目，不調金標。新隔離 root 保留、服務已停，
+Safari 四個 tabs 未關。
+
+下一個必要交付：對 T2 的第三者 statement→question 錯誤做
+唯一語義變因設計審查，釐清應由 M31 authority gate 或既有
+frame-preserving visible repair 承擔；先證明一般化來源約束、
+明確正負控制與新前瞻案例，再作最多第二個有根據修正批次。
+仍失敗就 `REVIEW_REQUIRED`，不能反覆補規則追分。T4「また」、
+正式資料、人評、同模型對照及 VRM/tool 完整驗收各自 pending。
 
 ## 2026-10-17 P4 本人偏好快路：前瞻 Safari strict FAIL，三輪後停測
 
