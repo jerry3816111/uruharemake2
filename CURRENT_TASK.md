@@ -2,39 +2,36 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 2026-10-17 P4 本人偏好快路：已解產品啟停，待新五輪驗收
+## 2026-10-17 P4 本人偏好快路：前瞻 Safari strict FAIL，三輪後停測
 
-前一輪 `3be9770` 人物／物品邊界審查保留。舊六輪 Safari 只完成
-T1/T2，T2 `26.5627s >20s`、後續服務消失，strict FAIL 原樣保留，
-舊題不得重送。新五輪 exact input/gold 尚未送模型或 Safari；
-本層 `research/p4_source_bound_preference_fresh_probe_freeze_2026-10-17.sha256`
-27/27、上層 11/11 已核對，需先 commit 才進第一輪。無關
-`output/graduate_application_report/` 與原始 dirty checkout 不碰。
+前批 `3be9770` 與舊六輪負結果不變。新五輪 exact input/gold
+已在 `b03d3dd` 前瞻凍結，本層 manifest 27/27、上層 11/11 通過。
+獨立產品 0-turn 啟停 PASS 僅是操作前提，非對話 PASS；launchd 的
+Python-only 失敗與 FD soft 256 的三個 `Too many open files` 仍保留。
+無關 `output/graduate_application_report/`、原始 dirty checkout 與
+正式 DB 不碰。
 
-launchd 產品 0-turn/精確 venv Python-only 仍失敗，OS 根因未證；
-10/17 事前 lifecycle 修訂保留五輪 gold 與 0 retry。detached
-controller 已修意外死亡不得 planned restart、全埠 listener 排他、
-隔離樹 symlink/hardlink 與 start-error fail-closed；獨立再審認可
-受控本機 0-turn。聚焦測試 `36 passed, 2 warnings`，先前受影響
-相鄰合併在 FD soft 4096 為 `174 passed, 9 warnings`；預設 FD 256
-則先有 `171 passed, 3 failed`、三敗皆 `Too many open files`，不抹去。
-fallback 真 selected trace 另補 scene/path 一致核對與 raw-free
-可讀 graph route。
+新私有 root `/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-bt560czz`
+啟動同源 final Python PID 36294、唯一 loopback listener、HTTP 200。
+T1–T3 在 Safari 逐字各送一次，原始 JSONL 恰 3 行、graph utterance
+與三個泡泡 3/3 對齊、profile row-ID delta `[1,0,1]`、三個不同持久
+episode。T1 selected fallback／writer 正確，但 user wait `26.6754s`
+超過凍結 20s；T2 不誤選 `ask_like_me`／不寫朋友 profile，但最後
+省略「友達」主語；T3 selected M32 而非預期 fallback，最後「うちは」
+還可能把使用者偏好說成角色自身偏好。T3 後 controller `stop`
+已發 TERM、PID 已退出，卻因 port-vacancy 判定 false 寫
+`planned_stop=false`；後續有 TIME_WAIT、無 LISTEN 的只讀觀察。
+不能補寫成功 stop 或重啟同 DB；T4/T5 未送，不重播已曝光三輪。
+**整批成本＋語義＋程序 strict FAIL**，詳見
+`analysis/p4_source_bound_preference_fresh_product_probe_result_2026-10-17.md`。
 
-新私有 root `/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-sjja92fg`
-產品 0-turn `start` PID 35257 後，另一次呼叫核同源 final Python；
-全埠唯一 `127.0.0.1:7894` listener 與 HTTP 200 前後同 PID，
-`verify-ready=true`；exact `stop` 為 planned/signalled/PID exited/
-port vacant，後續 status exited。證據見
-`analysis/p4_preference_fallback_detached_product_zero_turn_2026-10-17.md`。
-**僅生命週期限定 PASS**，不是語義、記憶、日文或成本 PASS。
-
-**唯一下一步：** review diff、commit 本層 freeze；再在全新隔離
-root／Safari 新 tab 依已凍結五輪各送一次、每輪前後留 row-ID
-快照、逐輪核 selected plan/graph/日文/等待與可用 token，T3 後
-恰一次 planned same-DB restart。任一服務意外消失、`>20s` 或
-不合 gold 即保留 strict FAIL、不重送、不事後改資料或門檻。
-完整專案和正式對照／人評／temporal holdout 仍 pending。
+**下一個必要交付：** 先封存並推這批真實負結果；以 T3 的
+「M31/M32 優先於本人來源快路」為單一語義變因作設計審查，明確
+protected／第三者／引文負例後才准最小修正。controller 的
+TIME_WAIT／listener 判定需在下一次產品驗收前作獨立生命週期支援
+修正；T2 主語、T3 最終表面角色與 T1 冷啟成本分開保留，不混成
+一個追分補丁。新 Safari 案例必須另造、事前凍結、0 retry。
+正式同模型對照、人評、temporal holdout、VRM／tool 完整整合仍 pending。
 
 ## 最新結果：問句證據新六輪 Safari 前瞻產品 probe strict FAIL
 
