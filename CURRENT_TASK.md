@@ -32,8 +32,14 @@ token／價格 ledger 缺值。
 定案問句敏感的關係 intent 匹配：原
 `好き？` pattern 在 compact 時失去問號、變成 `好き`，使「我喜歡
 某物」被當「你喜歡我嗎」。純規則 before 已證實兩條路徑的同一
-缺陷；現在依卡新增 scoped matcher／產品入口與聚焦、相鄰回歸，
-通過後才另造全新未曝光產品資料、事前 freeze 與 Safari gate。
+缺陷；scoped matcher／產品入口與隔離 launcher 已新增，完整產品入口
+七句無模型 plan/signal/M42 整合測試通過。聚焦＋M42 `31 passed`，
+受影響相鄰 `147 passed, 8 warnings`，0-turn launcher check 通過。
+新六輪資料與 strict plan 已由 freeze commit `990b279` 推送；新
+manifest 11/11 與前層 manifest 24/24 均 OK。**尚未送 Safari；
+selected plan／可見日文仍 pending。** 下一步只依凍結六輪在新隔離
+root、Safari 各送一次，T3 後真 PID/session 重啟、同 DB、逐輪 row-ID
+集合差與 graph／成本核對；不得重播 10/2 舊題或在看到輸出後改 gold。
 不得在這張卡順手修 T4/T6 的 M31 clause／quote scope。無關
 `output/graduate_application_report/`、原始 dirty checkout 與正式 DB
 繼續不碰。T4/T6、來源送達 `REVIEW_REQUIRED` 和背景智慧記憶副作用
