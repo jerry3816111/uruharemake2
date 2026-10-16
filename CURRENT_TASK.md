@@ -1,6 +1,40 @@
 # 目前任務卡
 
-更新：2026-10-16。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+
+## 2026-10-17 P4 本人偏好快路：已解產品啟停，待新五輪驗收
+
+前一輪 `3be9770` 人物／物品邊界審查保留。舊六輪 Safari 只完成
+T1/T2，T2 `26.5627s >20s`、後續服務消失，strict FAIL 原樣保留，
+舊題不得重送。新五輪 exact input/gold 尚未送模型或 Safari；
+本層 `research/p4_source_bound_preference_fresh_probe_freeze_2026-10-17.sha256`
+27/27、上層 11/11 已核對，需先 commit 才進第一輪。無關
+`output/graduate_application_report/` 與原始 dirty checkout 不碰。
+
+launchd 產品 0-turn/精確 venv Python-only 仍失敗，OS 根因未證；
+10/17 事前 lifecycle 修訂保留五輪 gold 與 0 retry。detached
+controller 已修意外死亡不得 planned restart、全埠 listener 排他、
+隔離樹 symlink/hardlink 與 start-error fail-closed；獨立再審認可
+受控本機 0-turn。聚焦測試 `36 passed, 2 warnings`，先前受影響
+相鄰合併在 FD soft 4096 為 `174 passed, 9 warnings`；預設 FD 256
+則先有 `171 passed, 3 failed`、三敗皆 `Too many open files`，不抹去。
+fallback 真 selected trace 另補 scene/path 一致核對與 raw-free
+可讀 graph route。
+
+新私有 root `/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-sjja92fg`
+產品 0-turn `start` PID 35257 後，另一次呼叫核同源 final Python；
+全埠唯一 `127.0.0.1:7894` listener 與 HTTP 200 前後同 PID，
+`verify-ready=true`；exact `stop` 為 planned/signalled/PID exited/
+port vacant，後續 status exited。證據見
+`analysis/p4_preference_fallback_detached_product_zero_turn_2026-10-17.md`。
+**僅生命週期限定 PASS**，不是語義、記憶、日文或成本 PASS。
+
+**唯一下一步：** review diff、commit 本層 freeze；再在全新隔離
+root／Safari 新 tab 依已凍結五輪各送一次、每輪前後留 row-ID
+快照、逐輪核 selected plan/graph/日文/等待與可用 token，T3 後
+恰一次 planned same-DB restart。任一服務意外消失、`>20s` 或
+不合 gold 即保留 strict FAIL、不重送、不事後改資料或門檻。
+完整專案和正式對照／人評／temporal holdout 仍 pending。
 
 ## 最新結果：問句證據新六輪 Safari 前瞻產品 probe strict FAIL
 
