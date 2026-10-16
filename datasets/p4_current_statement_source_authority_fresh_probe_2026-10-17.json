@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_p4_current_statement_source_authority_fresh_probe_v1",
+  "authorship": "developer_authored_source_only_pre_model",
+  "status": "pre_exposure",
+  "claim_boundary": "Prospective local product probe only; not independent holdout, human evaluation, or same-model comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [0, 1, 0, 0, 0, 1],
+  "expected_distinct_turn_episode_count": 6,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "third_party_direct_statement_cold_start",
+      "input": "後輩は玄米柚子ゼリーが好き。",
+      "expected_source_owner": "third_party",
+      "expected_source_act": "assertion",
+      "expected_source_polarity": "affirmed",
+      "expected_selected_planner_path": "current_statement_source_authority_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese affirmative acknowledgement that the junior likes 玄米柚子ゼリー; preserve both source spans and owner, no question, prior-knowledge claim, user/Uruha preference transfer, or raw debugging analysis."
+    },
+    {
+      "turn": 2,
+      "role": "self_direct_statement_old_food_word_conflict",
+      "input": "私は山葵おにぎりが好き。",
+      "expected_source_owner": "user",
+      "expected_source_act": "assertion",
+      "expected_source_polarity": "affirmed",
+      "expected_selected_planner_path": "current_statement_source_authority_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese acknowledgement that the user likes 山葵おにぎり, not an offer to Uruha and not Uruha's own preference; no unsupported memory-write promise."
+    },
+    {
+      "turn": 3,
+      "role": "different_third_party_direct_statement_before_restart",
+      "input": "母は檸檬黒糖プリンが好き。",
+      "expected_source_owner": "third_party",
+      "expected_source_act": "assertion",
+      "expected_source_polarity": "affirmed",
+      "expected_selected_planner_path": "current_statement_source_authority_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese affirmative acknowledgement that the mother likes 檸檬黒糖プリン, with exact object and owner, no question or unsupported prior-knowledge claim."
+    },
+    {
+      "turn": 4,
+      "role": "genuine_third_party_question_after_restart",
+      "input": "後輩は抹茶玄米茶が好き？",
+      "forbidden_source_certificate": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese response to a genuine question; do not present the junior's 抹茶玄米茶 preference as confirmed or transfer the user's own preference to the junior. Explicitly respect that the current evidence does not answer this question."
+    },
+    {
+      "turn": 5,
+      "role": "genuine_food_offer_after_restart",
+      "input": "山葵おにぎり、一口いる？",
+      "forbidden_source_certificate": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese answer to the user's food offer, not a statement that the user or a third party likes the food; no invented profile fact."
+    },
+    {
+      "turn": 6,
+      "role": "self_direct_statement_after_restart",
+      "input": "私は山椒味噌せんべいが好き。",
+      "expected_source_owner": "user",
+      "expected_source_act": "assertion",
+      "expected_source_polarity": "affirmed",
+      "expected_selected_planner_path": "current_statement_source_authority_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese acknowledgement that the user likes 山椒味噌せんべい after restart, preserving exact item and owner, with no food offer or false memory-write promise."
+    }
+  ]
+}
