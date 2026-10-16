@@ -2,6 +2,30 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前唯一進行項：P4 本人來源快路競權修正後的全新產品驗收
+
+舊五輪 Safari 批次仍是三輪後 strict FAIL，原 input/gold/raw 不改、不重播。
+其 before 與單一修正變因見
+`research/p4_source_bound_preference_priority_repair_plan_2026-10-17.md`：
+只有原 M29 要求投影、M33 不可解析且 owner/postposed 准入的完整單句
+日文本人物品偏好，才把 M29 candidate 讓給既有來源快路；M31/M32、
+writer、人格與 final guard 不改。聚焦 `7/7`、相鄰 `109/109`
+（9 個依賴警告）、compile 與隔離產品入口 0-turn check 通過。
+無生成模型完整 turn 證明本人句可免 M31 並真選 fallback，第三人稱
+維持原路；這些都不是 Safari 或成本 PASS。
+
+新五輪 exact input/gold、20 秒及 0 retry 規格見
+`datasets/p4_source_bound_preference_priority_fresh_probe_2026-10-17.json`、
+`research/p4_source_bound_preference_priority_fresh_probe_plan_2026-10-17.md`。
+模型首輪前 `research/p4_source_bound_preference_priority_fresh_probe_freeze_2026-10-17.sha256`
+19/19 OK；新句無模型預檢：三個本人正例進快路、朋友不進、
+關係問句為 `ask_like_me`。**尚未送任何新案例／開 Safari 新測試 tab。**
+下一步先將 code/test/plan/gold/manifest/current card 作 scoped commit，
+再以新隔離 root 啟動真產品、核 PID/listener/HTTP；依凍結五輪
+Safari 各送一次，T3 後真 planned same-DB restart，逐輪 snapshot、
+raw／graph／可見回覆／成本核對。任何失敗照 frozen strict FAIL 保存，
+不得在看到答案後改門檻。正式資料、人評、同模型對照仍 pending。
+
 ## 2026-10-17 P4 本人偏好快路：前瞻 Safari strict FAIL，三輪後停測
 
 前批 `3be9770` 與舊六輪負結果不變。新五輪 exact input/gold

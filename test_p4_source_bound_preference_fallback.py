@@ -7,6 +7,7 @@ patch global classes and must not leak into adjacent frozen regressions.
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -33,6 +34,7 @@ def _isolated(tmp_path, program):
     )
     assert completed.returncode == 0, completed.stdout + "\n" + completed.stderr
     assert completed.stdout.splitlines()[-1] == "ok"
+    return completed
 
 
 def test_pure_plan_requires_installed_source_guard_and_exact_single_span(tmp_path):
@@ -131,6 +133,90 @@ def test_pure_plan_rejects_owner_fact_or_source_hash_disagreement(tmp_path):
     )
 
 
+def test_m29_priority_only_for_original_projection_and_exact_self_source(tmp_path):
+    _isolated(
+        tmp_path,
+        """
+        import uruha_adaptive_person_model as m29
+        import uruha_web_ui_product_p4_question_evidence
+        import uruha_source_bound_preference_fallback_p4 as fallback
+
+        assert fallback.install_source_bound_preference_fallback_p4() is True
+        assert fallback.install_source_bound_preference_fallback_p4() is False
+        assert m29.build_literal_topic_projection_candidate_m29 is fallback.literal_topic_projection_with_source_bound_rule_p4
+        pragmatic = {"pragmatic_label": "literal_intent_unresolved"}
+        source = "私は黒蜜抹茶クッキーが好き。"
+        original = fallback._ORIGINAL_M29(source, {}, pragmatic)
+        assert original["projection_required"] is True and original["surface_authority"] is False
+        selected = m29.build_literal_topic_projection_candidate_m29(source, {}, pragmatic)
+        assert selected["projection_required"] is False
+        assert selected["status"] == "source_admitted_rule_candidate_p4"
+        assert selected["reason"] == "exact_self_preference_rule_available_before_m31"
+        assert {key: value for key, value in selected.items() if key not in {
+            "status", "reason", "projection_required", "source_bound_preference_priority_p4"
+        }} == {key: value for key, value in original.items() if key not in {
+            "status", "reason", "projection_required"
+        }}
+        seed = fallback.source_bound_preference_plan_p4(source)
+        audit = selected["source_bound_preference_priority_p4"]
+        source_audit = seed[fallback.LABEL]
+        assert audit["schema"] == fallback.PRIORITY_SCHEMA
+        assert audit["input_sha256"] == source_audit["input_sha256"]
+        assert audit["source_span_sha256"] == source_audit["source_span_sha256"]
+        assert audit["value_sha256"] == source_audit["value_sha256"]
+        assert audit["original_projection_required"] is True
+        assert audit["original_m33_status"] == "source_pattern_unavailable"
+        assert audit["raw_dialogue_persisted"] is False
+        assert source not in repr(audit) and "黒蜜抹茶クッキー" not in repr(audit)
+
+        negatives = [
+            "友達は黒蜜抹茶クッキーが好き。",         # third person
+            "「私は黒蜜抹茶クッキーが好き。」",       # quoted
+            "私は黒蜜抹茶クッキーが好き。これは私の好みじゃない。", # postposed denial
+            "ねえ、好き？",                         # relationship question
+            "私は紗夜さんが好き。",                 # person, not object
+            "私は黒蜜抹茶クッキーが好き。覚えといて。", # explicit memory act
+            "I like matcha cookies.",             # other language
+            "私は黒蜜抹茶クッキーが好き。私は豆茶が好き。", # multiple clauses
+            "私は棚が好き。",                     # object head not licensed
+            "死にたい。私は黒蜜抹茶クッキーが好き。", # protected mixed turn
+        ]
+        for text in negatives:
+            before = fallback._ORIGINAL_M29(text, {}, pragmatic)
+            after = m29.build_literal_topic_projection_candidate_m29(text, {}, pragmatic)
+            assert after == before, text
+        # M28 already owns the surface, or M29 never requested projection.
+        for feedback, context, transition in [
+            ({}, {"pragmatic_label": "other"}, None),
+            ({}, pragmatic, {"surface_authority": True}),
+            ({"previous_prediction_id": "p", "status": "supported"}, pragmatic, None),
+        ]:
+            before = fallback._ORIGINAL_M29(source, feedback, context, transition)
+            after = m29.build_literal_topic_projection_candidate_m29(source, feedback, context, transition)
+            assert before["projection_required"] is False and after == before
+
+        # Mismatched source identity cannot make a source-priority candidate.
+        previous = fallback._ORIGINAL_M29
+        try:
+            fallback._ORIGINAL_M29 = lambda *args: {**original, "input_digest": "0" * 16}
+            assert m29.build_literal_topic_projection_candidate_m29(source, {}, pragmatic) == {
+                **original, "input_digest": "0" * 16
+            }
+        finally:
+            fallback._ORIGINAL_M29 = previous
+        previous_atoms = fallback.usa33.extract_source_semantic_atoms_m33
+        try:
+            fallback.usa33.extract_source_semantic_atoms_m33 = lambda *args: {"status": "source_atoms_extracted"}
+            assert m29.build_literal_topic_projection_candidate_m29(source, {}, pragmatic) == original
+            fallback.usa33.extract_source_semantic_atoms_m33 = lambda *args: None
+            assert m29.build_literal_topic_projection_candidate_m29(source, {}, pragmatic) == original
+        finally:
+            fallback.usa33.extract_source_semantic_atoms_m33 = previous_atoms
+        print("ok")
+        """,
+    )
+
+
 def test_installed_fallback_removes_only_general_planner_call(tmp_path):
     _isolated(
         tmp_path,
@@ -187,6 +273,107 @@ def test_installed_fallback_removes_only_general_planner_call(tmp_path):
     )
 
 
+def test_no_generative_model_full_turn_selects_source_rule_before_m31_and_keeps_friend_route(tmp_path):
+    """Real cognitive_tick/emit without generative calls; Chroma embedding is measured."""
+    completed = _isolated(
+        tmp_path,
+        """
+        import json, time
+        from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
+        import uruha_web_ui_product_p4_preference_fallback as entry
+        from test_personhood_loop_v2_13 import _IsolatedContractBrain
+        from uruha_brain_mac import LeftBrain, MemoryManager, RightBrain
+        import uruha_adaptive_person_model as uapm
+        import uruha_source_bound_preference_fallback_p4 as fallback
+
+        counts = {"embedding_calls": 0, "cache_checks": 0, "downloads": 0}
+        original_embed = ONNXMiniLM_L6_V2.__call__
+        original_cache = ONNXMiniLM_L6_V2._download_model_if_not_exists
+        original_download = ONNXMiniLM_L6_V2._download
+        def embed(self, *args, **kwargs):
+            counts["embedding_calls"] += 1
+            return original_embed(self, *args, **kwargs)
+        def cache(self, *args, **kwargs):
+            counts["cache_checks"] += 1
+            return original_cache(self, *args, **kwargs)
+        def download(self, *args, **kwargs):
+            counts["downloads"] += 1
+            return original_download(self, *args, **kwargs)
+        ONNXMiniLM_L6_V2.__call__ = embed
+        ONNXMiniLM_L6_V2._download_model_if_not_exists = cache
+        ONNXMiniLM_L6_V2._download = download
+
+        friend = "友達は黒蜜抹茶クッキーが好き。"
+        self_report = "私は黒蜜抹茶クッキーが好き。"
+        m31_calls = []
+        def no_model_m31(self, user_input, projection):
+            m31_calls.append(user_input)
+            assert user_input == friend, ("self preference must bypass M31", user_input)
+            return ({
+                "intent": "semantically_authorized_literal_topic_m31",
+                "scene": "casual", "core_message_jp": "友達は黒蜜抹茶クッキーが好きなんだね。",
+                "jp_summary": "友達の好みを聞いた", "mood_impact": 0, "trust_impact": 0,
+                "response_mode": "direct_answer", "surface_act": "plain_reply",
+                "constraints": {"max_chars": 96},
+            }, {
+                "schema": uapm.SEMANTIC_AUTHORIZATION_SCHEMA_M31,
+                "status": "semantically_authorized", "surface_authority": True,
+                "surface_self_checks": {
+                    "safe_response_semantics_faithful": True,
+                    "subject_preserved": True, "predicate_preserved": True,
+                    "time_quantity_relation_preserved": True, "polarity_preserved": True,
+                },
+                "model_call_completed": False, "raw_dialogue_persisted": False,
+            })
+        LeftBrain.authorize_literal_topic_m31 = no_model_m31
+
+        def brain():
+            instance = _IsolatedContractBrain()
+            instance.memory = MemoryManager()
+            instance.left_brain = LeftBrain(None)
+            instance.right_brain = RightBrain(load_model=False)
+            instance.right_brain.speak = lambda _source, logic, _mem, _psyche: logic["core_message_jp"]
+            return instance
+
+        started = time.perf_counter()
+        friend_result = brain().run_turn_debug(friend)
+        friend_seconds = time.perf_counter() - started
+        assert m31_calls == [friend]
+        assert friend_result["logic"]["intent"] == "semantically_authorized_literal_topic_m31"
+        assert friend_result["logic"].get("planner_path") != fallback.LABEL
+        assert not any(row.get("label") == fallback.LABEL for row in friend_result["runtime_trace"]["blackboard"])
+
+        started = time.perf_counter()
+        result = brain().run_turn_debug(self_report)
+        self_seconds = time.perf_counter() - started
+        assert m31_calls == [friend], m31_calls
+        assert result["logic"]["intent"] == "chat", result["logic"]["intent"]
+        assert result["logic"]["planner_path"] == fallback.LABEL
+        assert result["logic"]["bounded_slow_path_m21"]["route"] == "deterministic_rule_plan"
+        assert result["logic"]["bounded_slow_path_m21"]["model_call_attempted"] is False
+        m29 = result["logic"]["literal_topic_projection_m29"]
+        assert m29["status"] == "source_admitted_rule_candidate_p4"
+        assert m29["projection_required"] is False
+        rows = result["runtime_trace"]["blackboard"]
+        selected = [row for row in rows if row.get("label") == "selected_plan"]
+        assert len(selected) == 1 and selected[0]["payload"]["intent"] == "chat"
+        assert selected[0]["payload"]["planner_path"] == fallback.LABEL
+        marker = [row for row in rows if row.get("label") == fallback.LABEL]
+        assert len(marker) == 1 and marker[0]["payload"]["status"] == "selected_source_admitted_rule_fallback"
+        utterance = [row for row in rows if row.get("label") == "utterance"]
+        assert len(utterance) == 1 and utterance[0]["payload"]["reply"] == result["reply"]
+        assert entry.RUNTIME is entry._prior.RUNTIME
+        print(json.dumps({"embedding": counts, "friend_seconds": round(friend_seconds, 4),
+                          "self_seconds": round(self_seconds, 4), "m31_calls": len(m31_calls)}))
+        print("ok")
+        """,
+    )
+    report = json.loads(completed.stdout.splitlines()[-2])
+    assert report["m31_calls"] == 1
+    assert report["embedding"]["embedding_calls"] >= 1
+    print(f"no-generative-model full-turn instrumentation: {report}")
+
+
 def test_original_rule_precedes_fallback_and_m31_is_not_replaced(tmp_path):
     _isolated(
         tmp_path,
@@ -196,9 +383,13 @@ def test_original_rule_precedes_fallback_and_m31_is_not_replaced(tmp_path):
         import uruha_source_bound_preference_fallback_p4 as fallback
 
         original_m31 = LeftBrain.authorize_literal_topic_m31
+        from uruha_adaptive_person_model import build_literal_topic_projection_candidate_m29 as original_m29
         assert fallback.install_source_bound_preference_fallback_p4() is True
         assert fallback.install_source_bound_preference_fallback_p4() is False
         assert LeftBrain.authorize_literal_topic_m31 is original_m31
+        from uruha_adaptive_person_model import build_literal_topic_projection_candidate_m29 as selected_m29
+        assert selected_m29 is fallback.literal_topic_projection_with_source_bound_rule_p4
+        assert fallback._ORIGINAL_M29 is original_m29
         left = LeftBrain.__new__(LeftBrain)
         psyche = {"mood": 0, "trust": 50}
         assert left._rule_based_plan("好き？", psyche, {})["intent"] == "ask_like_me"

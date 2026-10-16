@@ -10,13 +10,16 @@ from __future__ import annotations
 import re
 from copy import deepcopy
 
+import uruha_adaptive_person_model as uapm
 import uruha_profile_owner_admission_p4 as owner
 import uruha_profile_postposed_self_denial_p4 as postposed
 import uruha_relationship_question_evidence_p4 as question
+import uruha_source_semantic_atoms_m33 as usa33
 
 
 LABEL = "source_bound_preference_fallback_p4"
 SCHEMA = "uruha_source_bound_preference_fallback_p4_v1"
+PRIORITY_SCHEMA = "uruha_source_bound_preference_priority_p4_v1"
 MAX_INPUT_CHARS = 40
 MAX_VALUE_CHARS = 24
 _JAPANESE_CHAR = r"[\u3041-\u3096\u30a1-\u30fa\u30fc\u3400-\u9fff\u3005\u3006\u30f5\u30f6]"
@@ -51,6 +54,7 @@ _MEMORY_ACT = re.compile(r"(?:覚え|記憶|メモ|保存|訂正|更正)")
 
 _INSTALLED = False
 _ORIGINAL_RULE_PLAN = None
+_ORIGINAL_M29 = None
 _ORIGINAL_RUN = None
 _ORIGINAL_EMIT = None
 
@@ -168,6 +172,70 @@ def source_bound_preference_plan_p4(text):
         },
         "must_avoid": ["覚えた", "覚えとく", "覚えておく", "記憶した", "メモした", "私"],
     }
+
+
+def literal_topic_projection_with_source_bound_rule_p4(
+    user_input,
+    adaptive_feedback,
+    pragmatic_understanding,
+    feedback_topic_transition_m28=None,
+):
+    """Defer only an original M29 candidate to an exact source-bound rule.
+
+    This changes candidate priority, not the M31/M32 implementations.  The
+    existing rule still has to win the actual runtime selection independently.
+    """
+    candidate = _ORIGINAL_M29(
+        user_input,
+        adaptive_feedback,
+        pragmatic_understanding,
+        feedback_topic_transition_m28,
+    )
+    if not (
+        isinstance(candidate, dict)
+        and candidate.get("schema") == uapm.LITERAL_TOPIC_PROJECTION_SCHEMA_M29
+        and candidate.get("projection_required") is True
+        and candidate.get("surface_authority") is False
+        and not (feedback_topic_transition_m28 or {}).get("surface_authority")
+    ):
+        return candidate
+    seed = source_bound_preference_plan_p4(user_input)
+    audit = (seed.get(LABEL) or {}) if isinstance(seed, dict) else {}
+    if not (
+        isinstance(seed, dict)
+        and seed.get("intent") == "chat"
+        and seed.get("planner_path") == LABEL
+        and audit.get("status") == "source_admitted_current_self_like"
+        and audit.get("candidate_count") == audit.get("admitted_count") == 1
+        and candidate.get("input_digest") == str(audit.get("input_sha256") or "")[:16]
+    ):
+        return candidate
+    # M33 consumes the M29 candidate; do not hide a source-atom route which
+    # would otherwise have been available before the rule fallback.
+    original_atoms = usa33.extract_source_semantic_atoms_m33(user_input, candidate)
+    if not isinstance(original_atoms, dict) or original_atoms.get("status") != "source_pattern_unavailable":
+        return candidate
+    updated = dict(candidate)
+    updated.update(
+        {
+            "status": "source_admitted_rule_candidate_p4",
+            "reason": "exact_self_preference_rule_available_before_m31",
+            "projection_required": False,
+            "source_bound_preference_priority_p4": {
+                "schema": PRIORITY_SCHEMA,
+                "status": "source_admitted_rule_candidate",
+                "original_m29_status": candidate.get("status"),
+                "original_projection_required": True,
+                "original_m33_status": original_atoms["status"],
+                "input_sha256": audit["input_sha256"],
+                "source_span_sha256": audit["source_span_sha256"],
+                "value_sha256": audit["value_sha256"],
+                "owner_admitted_count": 1,
+                "raw_dialogue_persisted": False,
+            },
+        }
+    )
+    return updated
 
 
 def rule_plan_with_source_bound_preference_fallback_p4(
@@ -301,7 +369,7 @@ def emit_response_if_ready_with_source_bound_preference_fallback_p4(self, event,
 
 def install_source_bound_preference_fallback_p4():
     """Postpose one rule-plan fallback after the installed question overlay."""
-    global _INSTALLED, _ORIGINAL_RULE_PLAN, _ORIGINAL_RUN, _ORIGINAL_EMIT
+    global _INSTALLED, _ORIGINAL_RULE_PLAN, _ORIGINAL_M29, _ORIGINAL_RUN, _ORIGINAL_EMIT
     if _INSTALLED:
         return False
     from uruha_brain_mac import LeftBrain, UruhaBrainV4_Mac
@@ -310,9 +378,13 @@ def install_source_bound_preference_fallback_p4():
         raise RuntimeError(f"{LABEL}:prior_source_and_question_overlays_required")
     if LeftBrain._rule_based_plan is not question._inline_plan_with_full_turn:
         raise RuntimeError(f"{LABEL}:prior_rule_plan_changed")
+    if not callable(uapm.build_literal_topic_projection_candidate_m29):
+        raise RuntimeError(f"{LABEL}:m29_candidate_builder_unavailable")
     _ORIGINAL_RULE_PLAN = LeftBrain._rule_based_plan
+    _ORIGINAL_M29 = uapm.build_literal_topic_projection_candidate_m29
     _ORIGINAL_RUN = UruhaBrainV4_Mac.run_turn_debug
     _ORIGINAL_EMIT = UruhaBrainV4_Mac.emit_response_if_ready
+    uapm.build_literal_topic_projection_candidate_m29 = literal_topic_projection_with_source_bound_rule_p4
     LeftBrain._rule_based_plan = rule_plan_with_source_bound_preference_fallback_p4
     UruhaBrainV4_Mac.run_turn_debug = run_turn_debug_with_source_bound_preference_fallback_p4
     UruhaBrainV4_Mac.emit_response_if_ready = emit_response_if_ready_with_source_bound_preference_fallback_p4
@@ -332,9 +404,29 @@ def preference_fallback_preflight_p4():
     route = source_bound_preference_plan_p4(positive)
     prior = _ORIGINAL_RULE_PLAN(left, "好き？", psyche, {}) if callable(_ORIGINAL_RULE_PLAN) else None
     protected = left._rule_based_plan("好き？", psyche, {})
+    pragmatic = {"pragmatic_label": "literal_intent_unresolved"}
+    original_m29 = _ORIGINAL_M29(positive, {}, pragmatic) if callable(_ORIGINAL_M29) else {}
+    priority_m29 = uapm.build_literal_topic_projection_candidate_m29(positive, {}, pragmatic)
+    third_party_m29 = uapm.build_literal_topic_projection_candidate_m29(
+        "友達は山椒海苔せんべいが好き。", {}, pragmatic
+    )
     trace = (route or {}).get(LABEL) or {}
     contract = {
         "installed": bool(_INSTALLED and LeftBrain._rule_based_plan is rule_plan_with_source_bound_preference_fallback_p4),
+        "m29_installed": bool(
+            callable(_ORIGINAL_M29)
+            and uapm.build_literal_topic_projection_candidate_m29
+            is literal_topic_projection_with_source_bound_rule_p4
+        ),
+        "m29_original_candidate": bool(original_m29.get("projection_required") is True),
+        "m29_source_priority": bool(
+            priority_m29.get("projection_required") is False
+            and priority_m29.get("status") == "source_admitted_rule_candidate_p4"
+            and priority_m29.get("input_digest") == original_m29.get("input_digest")
+            and priority_m29.get("source_bound_preference_priority_p4", {}).get("input_sha256")
+            == trace.get("input_sha256")
+        ),
+        "m29_third_party_unchanged": bool(third_party_m29.get("projection_required") is True),
         "owner_postposed": _owner_chain_ready(),
         "positive_route": bool(seed and seed.get("intent") == "chat" and seed.get("planner_path") == LABEL),
         "negative_route": source_bound_preference_plan_p4(negative) is None,
@@ -356,7 +448,9 @@ def preference_fallback_preflight_p4():
 __all__ = [
     "LABEL",
     "SCHEMA",
+    "PRIORITY_SCHEMA",
     "source_bound_preference_plan_p4",
+    "literal_topic_projection_with_source_bound_rule_p4",
     "materialize_source_bound_preference_fallback_p4",
     "install_source_bound_preference_fallback_p4",
     "preference_fallback_preflight_p4",

@@ -1,6 +1,7 @@
 # P4 本人偏好快路 selected-plan 競權：第一個前瞻修正批次
 
-狀態：2026-10-17 先定案、**尚未修改語義程式／送新模型案例**。
+狀態：2026-10-17 先定案，已按此單一變因修改語義程式並做無生成模型測試；
+**尚未送新模型案例**。
 這是 `analysis/p4_source_bound_preference_fresh_product_probe_result_2026-10-17.md`
 的下一個產品修正，不改既有五輪 frozen input/gold/結果；該批三輪
 已曝光且 strict FAIL，不用作修後 fresh PASS。設計審查是同工作團隊
