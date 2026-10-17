@@ -69,6 +69,7 @@ def route_admission_contract_p4(user_input, projection, context, certificate):
         return result
     result.update(
         {
+            "seed_plan_status_p4": context.get("seed_plan_status_p4"),
             "seed_intent": seed.get("intent"),
             "seed_scene": seed.get("scene"),
             "signal_route": route.get("route"),
@@ -76,10 +77,20 @@ def route_admission_contract_p4(user_input, projection, context, certificate):
             "m22_recommended_route": m22.get("recommended_route"),
         }
     )
+    seed_status = context.get("seed_plan_status_p4")
+    seed_is_ordinary = (
+        (seed_status == "no_rule_match" and seed == {})
+        or (
+            seed_status == "matched_rule"
+            and seed.get("intent") == "chat"
+            and seed.get("scene") == "casual"
+        )
+    )
+    if not seed_is_ordinary:
+        result["reason"] = "seed_provenance_missing_or_not_ordinary"
+        return result
     if not (
-        seed.get("intent") == "chat"
-        and seed.get("scene") == "casual"
-        and context.get("actual_intent") == "chat"
+        context.get("actual_intent") == "chat"
         and context.get("actual_scene") == "casual"
     ):
         result["reason"] = "seed_or_actual_signal_not_ordinary_chat"

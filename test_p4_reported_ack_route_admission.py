@@ -12,6 +12,7 @@ import uruha_adaptive_person_model as adaptive
 import uruha_reported_ack_m31_priority_p4 as priority
 import uruha_reported_ack_route_admission_p4 as admission
 import uruha_temporal_actor_scope_p4 as actor_scope
+from uruha_brain_mac import LeftBrain
 
 
 SOURCE = "同僚が「先に確認して」と言っていた。"
@@ -39,6 +40,7 @@ def _context(text=SOURCE):
         "schema": admission.CONTEXT_SCHEMA,
         "input_digest": priority._digest(text),
         "seed_plan": {"intent": "chat", "scene": "casual"},
+        "seed_plan_status_p4": "matched_rule",
         "actual_intent": "chat",
         "actual_scene": "casual",
         "route_info": {"route": "high_road", "reason": "deliberative"},
@@ -93,10 +95,52 @@ def test_ordinary_route_and_same_turn_certificate_admit_without_original_m31():
     assert authorization[admission.LABEL]["status"] == "admitted"
 
 
+def test_true_no_rule_match_has_explicit_seed_provenance_and_can_admit():
+    left = LeftBrain.__new__(LeftBrain)
+    actual = left.classify_user_signal(
+        SOURCE, {"mood": 0.0, "trust": 50.0}, {}
+    )
+    assert actual["seed_plan"] == {}
+    assert actual["seed_plan_status_p4"] == "no_rule_match"
+    assert (actual["actual_intent"], actual["actual_scene"]) == ("chat", "casual")
+    context = _context()
+    context.update({
+        "seed_plan": actual["seed_plan"],
+        "seed_plan_status_p4": actual["seed_plan_status_p4"],
+        "actual_intent": actual["actual_intent"],
+        "actual_scene": actual["actual_scene"],
+    })
+    certificate = _candidate()
+    decision = admission.route_admission_contract_p4(
+        SOURCE, _projection(), context, certificate
+    )
+    assert decision["status"] == "admitted"
+    assert decision["seed_plan_status_p4"] == "no_rule_match"
+    old = admission._ORIGINAL_M31
+    try:
+        admission._ORIGINAL_M31 = lambda *_: (_ for _ in ()).throw(
+            AssertionError("original M31 should not run")
+        )
+        with patch.object(adaptive, "classify_explicit_desired_response_m25", _classifier):
+            _, authorization = admission.authorize_literal_topic_with_route_context_p4(
+                None, SOURCE, _projection(), context
+            )
+    finally:
+        admission._ORIGINAL_M31 = old
+    assert authorization["status"] == "deferred_to_reported_ack_p4"
+    assert authorization[admission.LABEL]["status"] == "admitted"
+
+
 @pytest.mark.parametrize("mutation,reason", [
     ({"route_info": {"route": "low_road", "cognitive_hijack": True}}, "protected_or_unverified_signal_route"),
     ({"route_info": {"route": "high_road", "reason": "acute_crisis", "intent": "crisis_support"}}, "protected_or_unverified_signal_route"),
-    ({"seed_plan": {"intent": "crisis_support", "scene": "boundary"}}, "seed_or_actual_signal_not_ordinary_chat"),
+    ({"seed_plan": {"intent": "crisis_support", "scene": "boundary"}}, "seed_provenance_missing_or_not_ordinary"),
+    ({"seed_plan": {}}, "seed_provenance_missing_or_not_ordinary"),
+    ({"seed_plan": None}, "route_context_missing_or_malformed"),
+    ({"seed_plan": {"intent": "chat"}}, "seed_provenance_missing_or_not_ordinary"),
+    ({"seed_plan_status_p4": None}, "seed_provenance_missing_or_not_ordinary"),
+    ({"seed_plan_status_p4": "unknown"}, "seed_provenance_missing_or_not_ordinary"),
+    ({"seed_plan_status_p4": "no_rule_match"}, "seed_provenance_missing_or_not_ordinary"),
     ({"actual_intent": "hallucination_safe"}, "seed_or_actual_signal_not_ordinary_chat"),
     ({"semantic_route_m22": {"schema": "uruha_semantic_route_taxonomy_m22", "selected_type": "safety_sensitive", "recommended_route": "protected"}}, "m22_not_exclusively_general_conversation"),
     ({"semantic_route_m22": {"schema": "uruha_semantic_route_taxonomy_m22", "selected_type": "factual_or_memory", "recommended_route": "grounded"}}, "m22_not_exclusively_general_conversation"),
@@ -181,6 +225,109 @@ def test_missing_context_and_late_repair_fail_closed():
     assert len(calls) == 2
     assert authorization[admission.LABEL]["reason"] == "route_context_missing_or_malformed"
     assert late["status"] == "original_m31"
+
+
+def test_omitted_seed_and_omitted_marker_fail_closed():
+    certificate = _candidate()
+    for omitted in ("seed_plan", "seed_plan_status_p4"):
+        context = _context()
+        context.pop(omitted)
+        decision = admission.route_admission_contract_p4(
+            SOURCE, _projection(), context, certificate
+        )
+        assert decision["status"] == "rejected"
+        assert decision["reason"] in {
+            "route_context_missing_or_malformed",
+            "seed_provenance_missing_or_not_ordinary",
+        }
+        calls = []
+        old = admission._ORIGINAL_M31
+        try:
+            def original(_self, text, proposed):
+                calls.append((text, proposed))
+                return None, {"status": "original_m31"}
+            admission._ORIGINAL_M31 = original
+            projection = _projection()
+            with patch.object(adaptive, "classify_explicit_desired_response_m25", _classifier):
+                _, authorization = admission.authorize_literal_topic_with_route_context_p4(
+                    None, SOURCE, projection, context
+                )
+        finally:
+            admission._ORIGINAL_M31 = old
+        assert calls == [(SOURCE, projection)]
+        assert authorization["status"] == "original_m31"
+
+
+def test_matched_seed_and_marker_remain_diagnostic_not_private_fact():
+    left = LeftBrain.__new__(LeftBrain)
+    with patch.object(left, "_rule_based_plan", return_value={
+        "intent": "hallucination_safe", "scene": "boundary"
+    }):
+        actual = left.classify_user_signal(SOURCE, {}, {})
+    assert actual["seed_plan_status_p4"] == "matched_rule"
+    context = _context()
+    context.update({
+        "seed_plan": actual["seed_plan"],
+        "seed_plan_status_p4": actual["seed_plan_status_p4"],
+        "actual_intent": actual["actual_intent"],
+        "actual_scene": actual["actual_scene"],
+    })
+    decision = admission.route_admission_contract_p4(
+        SOURCE, _projection(), context, _candidate()
+    )
+    assert decision["status"] == "rejected"
+    assert decision["reason"] == "seed_provenance_missing_or_not_ordinary"
+    assert decision["private_state_truth_claimed"] is False
+
+
+@pytest.mark.parametrize("mutation,reason", [
+    ({"route_info": {"route": "low_road", "reason": "prediction_error_surprise", "cognitive_hijack": True}}, "protected_or_unverified_signal_route"),
+    ({"semantic_route_m22": {"schema": "uruha_semantic_route_taxonomy_m22", "selected_type": "safety_sensitive", "recommended_route": "protected"}}, "m22_not_exclusively_general_conversation"),
+    ({"semantic_route_m22": {"schema": "uruha_semantic_route_taxonomy_m22", "selected_type": "factual_or_memory", "recommended_route": "grounded"}}, "m22_not_exclusively_general_conversation"),
+    ({"grounded_profile_logic_present": True}, "factual_grounding_present_or_unknown"),
+    ({"input_digest": "0" * 16}, "same_turn_digest_missing_or_mismatched"),
+    ({"actual_intent": "crisis_support"}, "seed_or_actual_signal_not_ordinary_chat"),
+])
+def test_no_rule_match_branch_still_calls_original_once_when_protected(mutation, reason):
+    context = _context()
+    context.update({"seed_plan": {}, "seed_plan_status_p4": "no_rule_match"})
+    context.update(mutation)
+    projection = _projection()
+    calls = []
+    old = admission._ORIGINAL_M31
+    try:
+        def original(_self, text, proposed):
+            calls.append((text, proposed))
+            return None, {"status": "original_m31"}
+        admission._ORIGINAL_M31 = original
+        with patch.object(adaptive, "classify_explicit_desired_response_m25", _classifier):
+            _, authorization = admission.authorize_literal_topic_with_route_context_p4(
+                None, SOURCE, projection, context
+            )
+    finally:
+        admission._ORIGINAL_M31 = old
+    assert calls == [(SOURCE, projection)]
+    assert authorization["status"] == "original_m31"
+    assert authorization[admission.LABEL]["reason"] == reason
+
+
+@pytest.mark.parametrize("malformed", [{}, "not_a_plan"])
+def test_empty_or_malformed_rule_result_is_not_no_rule_match(malformed):
+    left = LeftBrain.__new__(LeftBrain)
+    with patch.object(left, "_rule_based_plan", return_value=malformed):
+        actual = left.classify_user_signal(SOURCE, {}, {})
+    assert actual["seed_plan_status_p4"] == "invalid"
+    assert actual["seed_plan"] == {}
+    context = _context()
+    context.update({
+        "seed_plan": actual["seed_plan"],
+        "seed_plan_status_p4": actual["seed_plan_status_p4"],
+    })
+    decision = admission.route_admission_contract_p4(
+        SOURCE, _projection(), context, _candidate()
+    )
+    assert decision["status"] == "rejected"
+    assert decision["reason"] == "seed_provenance_missing_or_not_ordinary"
 
 
 def test_tampered_m29_digest_and_correction_route_never_defer():

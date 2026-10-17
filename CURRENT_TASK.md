@@ -6,7 +6,9 @@
 
 **2026-10-18 首發產品批已完成並 strict FAIL／REVIEW_REQUIRED**；下面本節原來的「尚須 commit／Safari」是首輪前歷史，不能再當下一步。`c1ee0ec` 首輪前已凍結、推 PR #435；真 Safari 兩 session／八題一次性、T4 後同 DB planned restart、0 retry 已完成，原件 SHA `1e59785995586f5ea9247a577433d1436fbf6fdd3603eb74dfbaf0b5806d56d7`，完整逐題／圖／成本／隔離見 `analysis/p4_reported_ack_route_admission_fresh_product_probe_result_2026-10-18.md`。來源完整的普通 high-road T1/T5 **0/2 准入**，因規則 seed 在無命中時變 `{}`，A 卻要求 seed 明寫 `chat/casual`；受保護 low-road T2/T7 **2/2 拒絕**，四個負控制無錯 defer。user wait 7/8 ≤20 秒，T1 22.3399 秒；T6 記憶題另有焦點錯和不自然冒號。八個泡泡＝圖 UTTERANCE＝raw；八個 episode、T0–T8 full profile digest 不變／0 rows。服務終停、port vacant，正式資料未動。
 
-**唯一下一個必要交付**：在保留本批失敗原件／凍結檔不改的前提下，按計畫最多一個有根據的 A 修正批。先把 `_rule_based_plan` 真正回 `None` 與缺／矛盾 seed 明確分開，再做單一變因的 opt-in 准入更正、零模型保護測試；新未曝光題／gold／code／SHA 在真 Safari 前凍結、push 核 PR head，再隔離真輪驗收。若仍失敗，維持 `REVIEW_REQUIRED` 等設計審查，不反覆加規則或重播已曝光句。B 可見忠實度、T6 記憶與 C 延遲另卡；正式同模型 LLM、真人、temporal holdout、VRM／Function Calling pending，Goal 未完成。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
+**唯一下一個必要交付**：保存首發失敗原件，完成下方已設計、已實作的唯一 A 修正批首輪前 Git 凍結，接著全新隔離 Safari 一次性驗收。若仍失敗，維持 `REVIEW_REQUIRED` 等設計審查，不反覆加規則或重播已曝光句。B 可見忠實度、T6 記憶與 C 延遲另卡；正式同模型 LLM、真人、temporal holdout、VRM／Function Calling pending，Goal 未完成。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
+
+**修正批首輪前進度**：`research/p4_reported_ack_route_admission_seed_provenance_correction_plan_2026-10-18.md` 已定案；只新增 no-rule seed 來源標記並更正 A 准入，不改後段 B。新八題與條件式 gold 在 `datasets/p4_reported_ack_route_admission_seed_provenance_fresh_probe_2026-10-18.json`，八題逐字與前三批重疊 0；靜態 source certificate T1/T2/T5/T7 true，普通無規則 seed T1/T5、protected seed T2/T7。聚焦最後版 36/36、較廣相鄰 177/177（9 既有 warnings）；新 SHA manifest 全 OK。**尚須本批 diff／commit／push／PR head 核對，未送任何新 Safari 題**；之後按計畫跑一次隔離真輪，失敗照留。
 
 ### 本項首輪前紀錄（歷史，非下一步）
 

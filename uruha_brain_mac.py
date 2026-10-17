@@ -6830,9 +6830,19 @@ Rules:
     def classify_user_signal(self, user_input, current_psyche, memory_data=None):
         memory_data = memory_data or {}
         lowered = str(user_input or "").lower()
-        seed_plan = self._rule_based_plan(user_input, current_psyche, memory_data)
-        intent = (seed_plan or {}).get("intent", "chat")
-        scene = (seed_plan or {}).get("scene", "casual")
+        raw_seed_plan = self._rule_based_plan(
+            user_input, current_psyche, memory_data
+        )
+        # Preserve whether an empty serialized seed means no rule matched.
+        # An omitted/malformed seed is not equivalent evidence for P4 admission.
+        seed_plan_status_p4 = (
+            "no_rule_match" if raw_seed_plan is None else
+            "matched_rule" if isinstance(raw_seed_plan, dict) and raw_seed_plan else
+            "invalid"
+        )
+        seed_plan = raw_seed_plan if isinstance(raw_seed_plan, dict) else {}
+        intent = seed_plan.get("intent", "chat")
+        scene = seed_plan.get("scene", "casual")
         abuse_like_intents = {"abuse_pushback", "sexual_boundary", "crisis_support"}
         intent_valence_overrides = {
             "abuse_pushback": -1.0,
@@ -6879,7 +6889,8 @@ Rules:
             "actual_scene": scene,
             "actual_valence": round(max(-1.0, min(1.0, valence)), 3),
             "abuse_like": intent in abuse_like_intents or valence <= -0.95,
-            "seed_plan": seed_plan or {},
+            "seed_plan": seed_plan,
+            "seed_plan_status_p4": seed_plan_status_p4,
         }
 
     def predict_next_user_signal(self, selected_plan, user_input, current_psyche, memory_data=None, mode="reactive"):
@@ -19218,6 +19229,9 @@ class UruhaBrainV4_Mac:
                             str(user_input or "").encode("utf-8")
                         ).hexdigest()[:16],
                         "seed_plan": deepcopy(actual_signal.get("seed_plan")),
+                        "seed_plan_status_p4": actual_signal.get(
+                            "seed_plan_status_p4"
+                        ),
                         "actual_intent": actual_signal.get("actual_intent"),
                         "actual_scene": actual_signal.get("actual_scene"),
                         "route_info": deepcopy(route_info),
