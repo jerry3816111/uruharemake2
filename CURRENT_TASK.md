@@ -20,14 +20,25 @@ self-monitor 曾報 grounding miss 卻修後不變，M39 與舊 selected-action 
 HTTP 200；planned stop 原 PID 退出、port vacant。這不是 Safari PASS。
 全新六句與 gold 已寫入 `datasets/p4_selected_offer_action_surface_fresh_probe_2026-10-17.json`，
 逐輪程序見 `research/p4_selected_offer_action_surface_fresh_probe_plan_2026-10-17.md`；
-**尚未送 Safari／模型，待首輪前 commit、SHA、PR head 核對**。原六輪
-與首次歷史 0-turn abort 仍 FAIL，不重播曝露題、不可把本項與 T1/T4
-裝飾語法修正合包。
+凍結時尚未送 Safari；首次送題後的 abort 狀態如下。原六輪與首次歷史
+0-turn abort 仍 FAIL，不重播曝露題、不可把本項與 T1/T4 裝飾語法修正合包。
 
-**下一個必要交付**：先完成首輪前 code/gold/SHA 凍結並推既有 PR，
-再開全新隔離 root 真 Safari 六輪、T3 後 planned same-DB restart，
-依事前 strict rubric 保存正負結果、graph/bubble/row-ID/成本；不得用
-零模型或 0-turn 入口當產品 PASS。正式同模型比較、人評、temporal
+首輪前 code/gold/SHA 已由 `f622cdc` 推到 PR #435，8/8 新與 21/21 舊
+manifest OK。但全新 root 的真 Safari T1 `胡椒ポテト、一口いる？` 超過
+20 秒後 UI 顯示錯誤、沒有 final reply；stderr 指向隔離 HOME 中 Chroma
+ONNX 首次下載 `httpx.ReadTimeout`（錯誤時曾觀察 30,412,800-byte 部分
+archive；同 root 稍後完成官方 SHA 下載，不抹掉 T1 timeout）。
+T0/T1 隔離 profile／episode 皆空，服務 planned stop、PID 退出／port 空；
+T2–T6 未送。**整批 strict FAIL，且沒有語義結果**，不可重播這六句。
+詳細 raw SHA、來源與歸因界線見
+`analysis/p4_selected_offer_action_surface_fresh_product_probe_abort_2026-10-17.md`。
+
+**下一個必要交付**：先讓**全新**隔離 0-turn root 以本機既有、SHA
+符合 Chroma 官方常數的 ONNX 資產離線準備並驗證 embedding readiness，
+不得修改正式 DB、凍結首批題或重播 T1；明列預熱成本。成功後另凍結
+全新逐字題／gold／manifest、再做一次真 Safari 前瞻批次（仍受至多兩個
+有根據修正批次上限）。若 readiness 仍失敗，保存程序 FAIL；不得用
+零模型或啟動 HTTP 200 當產品 PASS。正式同模型比較、人評、temporal
 holdout、VRM／Function Calling 完整交付仍 pending，Goal 遠未完成。
 
 2026-10-17 第二個全新隔離 root 已完成事前凍結的六輪 Safari（第一
