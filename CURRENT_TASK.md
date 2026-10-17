@@ -2,6 +2,14 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 進行中：P4 最終開頭來源准入與完整 profile 證據
+
+上一批六輪的 strict FAIL 完全保留（下一節），未重播曝露題。已用只讀 before 證明 T1 的 `先に、` 出自最終函式的八選一字元 hash，而非 selected plan；舊 source audit 又把它當成普遍可接受前綴。單變因設計見 `research/p4_hash_prefix_provenance_gate_design_2026-10-17.md`：新 opt-in 產品入口只撤回「hash 在完整候選前純新增固定開頭」的操作；上游候選本身已有連接詞則保留。新 graph audit 獨立要求 reported-offer 的 final 為 exact selected core，並連帶核舊 admission proof；不能只憑舊 `visible_report_preserved` 稱成功。這不是 T2/T5 語氣或甜食文法的修正。
+
+上批還欠完整 profile collection 內容 hash；新獨立 `p4_profile_full_content_snapshot.py` 讀取隔離 `user_profile` 所有 subject 的 ID／metadata／documents／embeddings，僅落狀態、筆數與 digest，不把內容寫進收據。開啟 Chroma 前遞迴拒絕隔離 DB 樹內的 symlink／hardlink／特殊檔；仍受單機同帳號 TOCTOU 限制，不能回補上批缺證。新工具只是下一批的驗收儀器，不作第二個產品因果變因。
+
+七句新開發者前瞻資料與 gold 見 `datasets/p4_hash_prefix_provenance_fresh_probe_2026-10-17.json`，程序與嚴格判準見同名前綴 `research/*_plan_2026-10-17.md`。舊 8/8 manifest hash 已核不變；最後版本的零模型聚焦 12/12、相鄰 36/36（8 warnings），六個新 Python 檔 compile 通過，10/10 新 freeze SHA 相符；尚未首輪前 commit／送 Safari，不得稱真產品 PASS。首輪前需完成 diff review、commit/push/PR head；之後新隔離 root 的 0-turn readiness、真 Safari 七輪一次性、T3 後 planned same-DB restart、逐輪完整 profile digest／episode／graph／泡泡／成本。失敗保留，不改新 gold 追分。正式同模型比較、人評、temporal holdout、VRM／Function Calling 完整交付仍 pending。
+
 ## 最新結果與下一個必要交付：reported-offer 來源作用域 Safari strict FAIL
 
 2026-10-17 首輪前 `00e3016` 凍結的**全新**六輪已在隔離真 Safari
