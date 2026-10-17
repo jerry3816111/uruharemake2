@@ -5,6 +5,7 @@ import uruha_web_ui as _base
 from uruha_source_bound_preference_fallback_p4 import install_source_bound_preference_fallback_p4
 from uruha_source_bound_third_party_statement_act_p4 import install_source_bound_third_party_statement_act_p4
 from uruha_current_statement_source_authority_p4 import install_current_statement_source_authority_p4
+from uruha_third_party_question_evidence_p4 import install_third_party_question_evidence_p4
 
 
 install_source_bound_preference_fallback_p4()
@@ -16,6 +17,7 @@ if __name__ == "__main__":
     # The detached launcher's import-only preflight checks the prior frozen
     # chain; install this product-only layer only for the running UI process.
     install_current_statement_source_authority_p4()
+    install_third_party_question_evidence_p4()
     demo = _base.build_demo()
     demo.queue(default_concurrency_limit=4)
     RUNTIME.start_brain_prewarm()

@@ -2,7 +2,36 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 第三者偏好真問句的證據授權設計審查
+## 當前唯一進行項：P4 第三者偏好真問句的首輪前凍結與新 Safari 產品驗收
+
+2026-10-17：設計 `dcd095c` 後已實作產品限定問句 gate，只在完整窄日文
+第三者偏好問句、既有規則回傳 `None`、且 planner 已收到的可辨識
+使用者來源沒有同 X/Y 非問句時給「目前證據不足」的 deterministic plan；
+不宣稱搜尋全庫或知道第三者真實偏好。RightBrain 與 writer 不改。
+開發期第一次零模型 4/5 的「先前相同問句誤作證據」失敗已保留；
+首輪前唯讀稽核又找出 graph 可把 unknown＋後接相反命題誤報成功、
+以及未跳脫 episode 欄位造成來源截斷，已在新 probe 曝光前有界修正。
+修訂後零模型聚焦 6/6（含真兩輪重複問句、對抗表面與來源注入），
+相鄰 31/31；較早 112/112 屬修訂前。隔離入口 0-turn 啟停通過，
+那不是產品對話 PASS。逐字六輪／gold／20 秒／0 retry／T3 後一次
+same-DB planned restart 與 21/21 SHA manifest 見
+`datasets/p4_third_party_question_evidence_fresh_probe_2026-10-17.json`、
+`research/p4_third_party_question_evidence_fresh_probe_plan_2026-10-17.md`、
+`research/p4_third_party_question_evidence_fresh_probe_freeze_2026-10-17.sha256`。
+五個不同字串在 repository 只見新 dataset；T4 事前預定重問 T1，
+不是看過答案後 retry。**尚未送這六輪 Safari／模型，不得稱產品通過。**
+
+**下一個必要交付**：先把上述 scoped 檔與本卡 commit／push 並核
+PR #435，確認 manifest；再用全新 0700 隔離 root 與真 Safari 逐字
+T1–T6 各一次，逐輪留 profile row-ID／episode-ID、raw、graph selected／
+utterance／evidence 節點、Safari bubble 與等待／成本；T3 後真 stop、
+同 DB restart。若 strict 任一 gate 失敗，保留反例、按設計停止規則
+報 FAIL，不能重播曝光題追分。舊六輪 strict FAIL 不改。正式同模型
+比較、人評、temporal holdout、VRM／Function Calling 完整產品仍 pending；
+Goal 遠未完成。正式 DB、原始 dirty checkout、無關
+`output/graduate_application_report/` 不碰。
+
+## 前一項：P4 第三者偏好真問句的證據授權設計審查
 
 前一項「完整當輪偏好陳述來源優先權」已在首輪前 commit `1b638f1`
 凍結並推送：聚焦零模型 5/5、相鄰 61/61、17/17 manifest、0-turn
