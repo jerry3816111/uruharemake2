@@ -2,7 +2,36 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 進行中：P4 最終開頭來源准入與完整 profile 證據
+## 最新結果與唯一下一步：hash-prefix 七輪 Safari strict FAIL
+
+首輪前 `4200900` 已凍結／推 PR #435 的**新**七句，在全新隔離 root
+真 Safari 各送一次、0 retry；T3 後同 DB planned stop/restart，兩個
+session、七個持久 episode、7/7 泡泡＝graph UTTERANCE、7/7 M19
+等待 2.6526–3.3806 秒。reported-offer 作用域 T1/T4/T7 3/3 與
+直接邀約 T2/T6 2/2 局部符合，T5 沒有把問句寫成第三者偏好。
+但 T3 誤解「使用者先查自己的行程再回答」，新 prefix gate 在三個
+reported 路徑的實際移除都是 0，T0 profile DB absent 到 T1 present
+使事前整 collection status/digest 全程不變條件不成立。**整批產品
+strict FAIL／REVIEW_REQUIRED**；不是 fresh model generation、
+同模型優勢、人評或人類方程式證據。T5 末句另有自然度警訊。原七題、
+gold、freeze、raw、上批六輪 FAIL 均不改不重播。七輪逐字、graph、
+profile receipt、兩次 PID stop、成本及 SHA 見
+`analysis/p4_hash_prefix_provenance_fresh_product_probe_result_2026-10-17.md`；
+泡泡／0 retry 是當輪 Safari 觀察，留存原件沒有完整瀏覽器操作收據；
+服務已停、PID exited／port vacant，隔離原件與 Safari 分頁保留。
+
+**唯一下一個必要交付**：先只讀審查 hash-added prefix 在真產品路徑
+的可達條件與新的未曝光正控制；另將 lazy DB 初始化放到可事前核對的
+T0 基線程序，不能事後放寬本批判準。T3 上游時間／主語語義錯讀列
+獨立單變因，不能混進 prefix gate 追分。審查後才決定下一個最小
+前瞻版本；同工作項最多兩個有根據的修正批次，不能只換題目。
+正式同模型公平比較、人評、temporal holdout、VRM／Function Calling
+完整交付仍 pending；Goal 遠未完成。原始 dirty checkout、正式 DB、
+無關 `output/graduate_application_report/` 不碰。
+
+## 歷史：P4 最終開頭來源准入與完整 profile 證據（首輪前狀態）
+
+以下是七輪首輪前的工作紀錄；當時的「尚未／下一步」不覆蓋上方結果。
 
 上一批六輪的 strict FAIL 完全保留（下一節），未重播曝露題。已用只讀 before 證明 T1 的 `先に、` 出自最終函式的八選一字元 hash，而非 selected plan；舊 source audit 又把它當成普遍可接受前綴。單變因設計見 `research/p4_hash_prefix_provenance_gate_design_2026-10-17.md`：新 opt-in 產品入口只撤回「hash 在完整候選前純新增固定開頭」的操作；上游候選本身已有連接詞則保留。新 graph audit 獨立要求 reported-offer 的 final 為 exact selected core，並連帶核舊 admission proof；不能只憑舊 `visible_report_preserved` 稱成功。這不是 T2/T5 語氣或甜食文法的修正。
 
