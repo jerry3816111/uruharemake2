@@ -2,6 +2,36 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新執行點：reported-ack／M31 優先序 opt-in 已做，尚待真 Safari
+
+前批 actor/scope 八輪 strict FAIL 與 raw/gold/凍結 SHA 不變；T3 的確是
+`actor=third_party` 仍遭 M31 literal-topic 表面權限蓋掉，不是辨識來源失敗。
+單變因設計見 `research/p4_reported_ack_m31_priority_design_2026-10-18.md`：
+只在完整日文單句第三者引述、既有 M25/P4-AT actor proof、M29 當輪 digest
+全一致時，新 opt-in `uruha_reported_ack_m31_priority_p4.py` 讓 M31 回
+非權威 deferred contract，再由既有 actor wrapper 選 reported-ack；
+一般字面句、混合直接請求、自述、unknown、保護 cue 仍走舊路。
+入口時未有 selected plan，最終仍必須核 graph selected/final，不能單靠
+certificate 宣稱成功。獨立 T7 串行延遲不合包。
+
+零模型聚焦及相鄰 M25/M29/M31/M32/M33/P4-AT/source 回歸 **87/87**
+（9 個既有 warning）；真 opt-in 安裝鏈零模型檢查及 controller `--help`
+通過。全新八句作者自編題／逐輪 gold 和 2-session、同 DB restart、
+0 retry、20 秒嚴格程序見 `datasets/p4_reported_ack_m31_priority_fresh_probe_2026-10-18.json`
+及 `research/p4_reported_ack_m31_priority_fresh_probe_plan_2026-10-18.md`；
+8/8 靜態路由核對通過、無舊題或 fixture 逐字重複。新 SHA manifest
+`research/p4_reported_ack_m31_priority_fresh_probe_freeze_2026-10-18.sha256`
+待末次 diff/manifest 核對及 commit/push PR #435 head 後才算首輪前凍結。
+**尚未送新題 Safari，不得報產品 PASS。**
+
+**唯一下一步**：manifest/diff 核對、只提交本項檔案、push 核 PR head；
+再全新 0700 隔離 root 做 exact 入口 0-turn readiness、planned stop、
+私有 ONNX 預熱、顯式空 profile setup，最後按凍結八句真 Safari 各一次並
+逐輪核 selected／M31/M32/M33／泡泡／node graph／profile digest／episode／
+成本。失敗保留，第二次有理由前瞻仍失敗則 `REVIEW_REQUIRED` 不再追分。
+正式同模型比較、真人評價、temporal holdout、完整 VRM/Function Calling
+仍 pending；Goal 未完成。無關 `output/graduate_application_report/` 不碰。
+
 ## 最新結果與唯一下一步：actor/scope 八輪 Safari strict FAIL
 
 首輪前 `e156459` 已凍結、推到 PR #435 的 opt-in actor/scope、新八句/gold/

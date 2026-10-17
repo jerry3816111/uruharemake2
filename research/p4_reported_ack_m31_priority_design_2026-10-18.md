@@ -34,7 +34,7 @@ reported speech act；其後 M32/M33 與 final M31 surface commit 又可取得�
 
 唯一產品變因是：在 M31 取得字面回覆表面權限**以前**，若同一當輪來源
 已被既有 actor/scope typed gate 證明為「只是在報告第三者叫人先確認」且
-已選 source-qualified reported-ack，則讓該**對話行動**先於 M31 的字面
+符合 source-qualified reported-ack 的**准入條件**，則讓該**對話行動**先於 M31 的字面
 重述；M31 模型不必為這個被承接的非任務引述額外執行。這是 speech-act
 authority 的優先序，不是宣稱第三者引述的內容為事實、私人意圖或穩定偏好。
 可見句只作低壓承接與開放澄清，不能假定引文是對 Uruha 的命令、也不
@@ -49,7 +49,8 @@ scope 同時承認 `source_kind=third_party_report`／
 等於當輪來源雜湊時，回傳有明確 source/action proof、
 `surface_authority=false` 的 M31 deferred contract。不新增 model call；
 M32 的輸入也因而不會從被抑制的 M31 surface 生成另一個強制 commit。
-之後仍讓既有 actor wrapper 選擇承接行動，並在 graph 最終核對
+此入口執行時尚未產生最終 selected plan，因此 certificate 只證明准入，
+**不能**宣稱承接行動已被選中。之後仍讓既有 actor wrapper 選擇承接行動，並在 graph 最終核對
 actor → M25/M18 → M31 defer → selected plan → utterance。
 
 入口**不得**按單一題目全文、先輩一詞或回覆字串白名單放行；需對
