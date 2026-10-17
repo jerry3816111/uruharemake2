@@ -19199,12 +19199,39 @@ class UruhaBrainV4_Mac:
             and not direct_japanese_identity_m33
             and hasattr(self.left_brain, "authorize_literal_topic_m31")
         ):
-            semantic_topic_logic_m31, semantic_authorization_m31 = (
-                self.left_brain.authorize_literal_topic_m31(
+            route_qualified_m31 = getattr(
+                self.left_brain,
+                "authorize_literal_topic_m31_with_route_context_p4",
+                None,
+            )
+            if callable(route_qualified_m31):
+                # This context is passed explicitly at the only call site where
+                # seed, router, and M22 evidence are all available. The optional
+                # P4 admission hook must fail closed if any evidence is missing;
+                # the default product still uses the original two-argument path.
+                semantic_topic_logic_m31, semantic_authorization_m31 = route_qualified_m31(
                     user_input,
                     literal_topic_projection_m29,
+                    {
+                        "schema": "uruha_m31_route_context_p4_v1",
+                        "input_digest": hashlib.sha256(
+                            str(user_input or "").encode("utf-8")
+                        ).hexdigest()[:16],
+                        "seed_plan": deepcopy(actual_signal.get("seed_plan")),
+                        "actual_intent": actual_signal.get("actual_intent"),
+                        "actual_scene": actual_signal.get("actual_scene"),
+                        "route_info": deepcopy(route_info),
+                        "semantic_route_m22": deepcopy(semantic_route_m22),
+                        "grounded_profile_logic_present": bool(grounded_profile_logic),
+                    },
                 )
-            )
+            else:
+                semantic_topic_logic_m31, semantic_authorization_m31 = (
+                    self.left_brain.authorize_literal_topic_m31(
+                        user_input,
+                        literal_topic_projection_m29,
+                    )
+                )
             semantic_commit_logic_m32, semantic_commit_repair_m32 = (
                 uapm.build_deterministic_semantic_commit_m32(
                     semantic_authorization_m31

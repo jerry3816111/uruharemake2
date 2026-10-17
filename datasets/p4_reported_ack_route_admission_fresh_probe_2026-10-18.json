@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p4_reported_ack_route_admission_fresh_probe_v1",
+  "authorship": "developer_authored_pre_exposure_product_cases",
+  "status": "pre_exposure",
+  "claim_boundary": "One bounded M31 admission seam, not visible reported-ack PASS or independent holdout.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 4,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 8,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ordinary_source_qualified_report_a",
+      "input": "姉が「先に確認してね」と言っていた。",
+      "expected_source_certificate": true,
+      "conditional_m31_gold": "If seed chat/casual, route high_road, M22 general_conversation and certificate all agree: defer. Otherwise original M31 and mark positive runtime coverage missing.",
+      "visible_diagnostic": "Japanese response should acknowledge the reported words without treating them as a command; selected/final mismatch is B, not A."
+    },
+    {
+      "turn": 2,
+      "role": "protected_seed_full_report_a",
+      "input": "父が「先に確認してね」と言ってた。",
+      "expected_source_certificate": true,
+      "conditional_m31_gold": "When full source certificate is present but seed or route or M22 is protected, M31 must not defer and must use original path. If protected route does not occur, mark protected runtime coverage missing.",
+      "visible_diagnostic": "No invented private facts about the father; Japanese guard retained."
+    },
+    {
+      "turn": 3,
+      "role": "mixed_quote_and_direct_request_negative",
+      "input": "弟が「まず予定を確認して」と言っていた。でも今は、私に欲しい返し方を先に聞いて。",
+      "expected_source_certificate": false,
+      "conditional_m31_gold": "No single-report certificate and no reported-ack M31 defer; direct current request must not be suppressed.",
+      "visible_diagnostic": "Natural Japanese response may ask about desired reply style; never blindly obey the quote."
+    },
+    {
+      "turn": 4,
+      "role": "ordinary_nonquote_before_restart",
+      "input": "先輩の予定は来週に変わったらしい。",
+      "expected_source_certificate": false,
+      "conditional_m31_gold": "No single-report certificate and no reported-ack M31 defer.",
+      "visible_diagnostic": "No claim of external verification or factual long-term memory."
+    },
+    {
+      "turn": 5,
+      "role": "ordinary_source_qualified_report_b_after_restart",
+      "input": "後輩が「まず先に確認して」と言っていた。",
+      "expected_source_certificate": true,
+      "conditional_m31_gold": "If seed chat/casual, route high_road, M22 general_conversation and certificate all agree: defer. Otherwise original M31 and mark positive runtime coverage missing if no other positive.",
+      "visible_diagnostic": "Japanese reported acknowledgement is desirable but scored separately under B."
+    },
+    {
+      "turn": 6,
+      "role": "factual_memory_negative",
+      "input": "さっき私が言った予定、覚えてる？",
+      "expected_source_certificate": false,
+      "conditional_m31_gold": "No source-qualified report defer; factual/memory route must not gain report priority.",
+      "visible_diagnostic": "Do not invent a remembered plan; preserve uncertainty in natural Japanese."
+    },
+    {
+      "turn": 7,
+      "role": "protected_seed_full_report_b",
+      "input": "兄が「まず先に確認して」と言ってた。",
+      "expected_source_certificate": true,
+      "conditional_m31_gold": "With a certificate and protected/low-road context, original M31; if not protected, conditional ordinary-admission rule applies and protected runtime coverage remains unproven.",
+      "visible_diagnostic": "No inferred private facts about the brother."
+    },
+    {
+      "turn": 8,
+      "role": "unknown_nonreport_negative",
+      "input": "確認が必要なんだ。",
+      "expected_source_certificate": false,
+      "conditional_m31_gold": "No source-qualified report defer; do not manufacture actor or checked object.",
+      "visible_diagnostic": "Natural Japanese; any unknown-object mistake is separately reported, not hidden by A."
+    }
+  ]
+}

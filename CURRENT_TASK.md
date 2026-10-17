@@ -2,6 +2,22 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前執行：P4 reported-ack 的 M31 路由准入 A（前瞻新項）
+
+上兩批失敗及 `REVIEW_REQUIRED` 原封保留。before、單一變因、允許檔案、
+失敗分支、≤20 秒成本與新八題／條件式 gold 已事先寫在
+`research/p4_reported_ack_route_admission_plan_2026-10-18.md`、
+`datasets/p4_reported_ack_route_admission_fresh_probe_2026-10-18.json`。
+本項只讓主要 M31 呼叫顯式接收已計算的 seed／route／M22；欠缺或保護
+上下文時回原 M31，不能把 A 子門檻當可見 reported-ack 產品 PASS。
+最小 opt-in hook／入口已寫；聚焦＋相鄰零模型 **105/105**，controller
+`--help` 與語法通過；真安裝鏈靜態 certificate 8/8 符合事前欄位，
+新舊題逐字交集 0，舊 SHA 全 OK。新前瞻 SHA manifest 已建立，
+**尚須 commit/push、核 PR head，首輪前不可送 Safari**。之後全新隔離
+Safari 兩 session、同 DB restart 的八輪首發驗收、失敗與成本分析、
+Git review。舊八題與
+無關 `output/graduate_application_report/` 不碰。
+
 ## 最新結果與唯一下一步：reported-ack／M31 優先序八輪 Safari strict FAIL
 
 首輪前 `1ad129c` 已把單變因 opt-in、新八句與 gold、程序和 SHA manifest
