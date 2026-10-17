@@ -1,0 +1,80 @@
+{
+  "schema": "uruha_p4_reported_offer_source_scope_fresh_probe_v1",
+  "authorship": "developer_authored_prospective_pre_safari",
+  "status": "pre_exposure",
+  "claim_boundary": "Finite Japanese reported-offer product batch. Not independent holdout, human preference evidence, same-model LLM comparison, or general quote understanding. The old quoted-friend T2 and old sweet-core T3 stay frozen failures and are not replayed.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [0, 0, 0, 0, 0, 0],
+  "expected_distinct_turn_episode_count": 6,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "new_reported_coworker_offer",
+      "input": "同僚に「味噌焼きおにぎり、一口いる？」って言われた。",
+      "expected_reported_role": "同僚",
+      "expected_reported_item": "おにぎり",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_new_scope_audit_status": "visible_report_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese acknowledging that the user reports a coworker's offer of onigiri; may lightly ask what the user did. Must not directly accept a bite for Uruha or assert that the real coworker event is independently verified."
+    },
+    {
+      "turn": 2,
+      "role": "new_direct_savory_offer_control",
+      "input": "山椒ポテト、一口いる？",
+      "expected_offer_item": "ポテト",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_prior_offer_audit_status": "visible_action_preserved",
+      "forbidden_new_scope_audit_node": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese responding affirmatively to the user's direct offer of potato, not attributing it to a third party and not dropping the selected action."
+    },
+    {
+      "turn": 3,
+      "role": "new_reported_senior_offer_before_restart",
+      "input": "先輩に「海苔チーズピザ、一口いる？」と聞かれた。",
+      "expected_reported_role": "先輩",
+      "expected_reported_item": "ピザ",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_new_scope_audit_status": "visible_report_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese treating the pizza question as reported speech from a senior to the user; no direct acceptance by Uruha, invented earlier event, or personal preference fact."
+    },
+    {
+      "turn": 4,
+      "role": "new_reported_friend_offer_after_same_db_restart",
+      "input": "友達に「胡椒おにぎり、一口いる？」と言われた。",
+      "expected_reported_role": "友達",
+      "expected_reported_item": "おにぎり",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_new_scope_audit_status": "visible_report_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese preserving that this is a reported friend's offer to the user after restart; no direct Uruha acceptance and no previous item substituted."
+    },
+    {
+      "turn": 5,
+      "role": "neighboring_third_party_preference_question_control",
+      "input": "後輩は梨ゼリーが好き？",
+      "forbidden_new_scope_audit_node": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese explicitly leaving the junior's preference unknown unless genuinely supported by available prior evidence; the new reported-offer scope must not take authority or invent a preference."
+    },
+    {
+      "turn": 6,
+      "role": "new_direct_offer_after_cross_turn_context_control",
+      "input": "昆布ポテト、一口いる？",
+      "expected_offer_item": "ポテト",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_prior_offer_audit_status": "visible_action_preserved",
+      "forbidden_new_scope_audit_node": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese affirmatively answering the current direct potato offer, not replying to or borrowing the prior friend's onigiri offer."
+    }
+  ]
+}

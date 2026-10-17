@@ -2,6 +2,35 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新續作：reported-offer 來源作用域已實作，尚未送新 Safari 六題
+
+針對下方 selected-offer 第二批 T2「使用者引述朋友提議」被誤當直接向 Uruha
+邀約的保留失敗，另立**新**有限來源作用域項，而非修改或重播舊題。只在完整
+「第三者角色＋配對引文內食物一口問句＋報告動詞」單句、且舊規則真的選中
+casual food-offer action 時，改為 `chat/plain_reply`；最後日文承接使用者收到
+邀約，不讓角色直接接受一口。新 `grounding` 攜帶可重算 admission proof，
+最終 graph 以來源、舊 seed、selected plan、utterance 逐項核對；缺失或竄改
+proof fail closed。其他輸入保留舊路；不寫第三者偏好事實。設計與邊界見
+`research/p4_reported_offer_source_scope_design_2026-10-17.md`。
+
+聚焦 5/5、相鄰 127/127，四個新 Python 檔 compile 通過；舊 8/8 凍結 SHA
+未變。新 controller 首次 0-turn CLI 因 wrapper main 轉接錯誤失敗，已只修新
+controller 並補執行 CLI 的測試；第二次新隔離 root 已同 PID `52651` 通過
+唯一 localhost listener／HTTP 200，planned stop 確認 PID exited／port vacant。
+官方 SHA 相符的 83,178,821-byte ONNX archive 以獨立私有副本預熱，封鎖下載
+仍得到 1×384 finite embedding；memory/session/log 仍空。這些全是首輪前
+工程證據，**不是**新 Safari PASS。新六輪逐字/gold 與程序見
+`datasets/p4_reported_offer_source_scope_fresh_probe_2026-10-17.json`、
+`research/p4_reported_offer_source_scope_fresh_probe_plan_2026-10-17.md`，
+作者新題、非獨立 holdout；尚未送 Safari／模型，不得用於修程式。
+
+**唯一下一個必要交付**：diff review，產生新 SHA manifest，commit/push 並
+核 PR #435 head 作首輪前凍結；然後在上述已停機預熱 root 上以新 controller
+啟動，真 Safari 按事前 gold 六輪一次性驗收（T3 後 same-DB restart，0 retry，
+逐輪 ≤20 秒、profile 全內容 hash／episode／graph utterance 對泡泡）。任何
+失敗保留原始結果，不修改舊 selected-offer FAIL 或新已曝光題。正式同模型
+比較、人評、temporal holdout、完整 VRM／Function Calling 仍 pending。
+
 ## 最新結果與唯一下一步：selected food-offer action 第二批 Safari strict FAIL
 
 2026-10-17 已在首輪前 `4873ead` 凍結的全新六輪與預熱過的**新**隔離 root

@@ -16,6 +16,8 @@
 
 新 graph 節點須位於 selected plan 後、utterance 前，顯示 source scope、舊 selected intent hash/類別、新 selected act、final 是否仍直接接受、selected/logic/utterance/泡泡是否一致；**只有**真正最後日文忠實於 reported-speech core 且沒接受一口才報 `visible_report_preserved`，否則 `selected_or_visible_mismatch`。不得在缺少 final/graph 時自行補成功節點或把內部分析倒入一般聊天泡泡。保留原圖 input、memory、decision、utterance、writeback 連線與 no-new-fact-write。
 
+首輪前只讀審查指出 `_normalize_plan` 會丟棄任意頂層 certificate。實作因而把有限的 source／quote／prior intent／prior act／prior core 與 admission digest 保存在 normalizer 有界 `grounding`，最後從同一來源重新計算 frozen legacy direct-daily seed 與 certificate，再與 selected／logic／utterance 核對；缺失或竄改 proof 必須 fail closed。此為本次來源作用域授權的證據鏈修補，不能把 hash 當成真人事件真值或加密簽章。
+
 ## 預先成功／失敗條件與順序
 
 1. 開發層先用舊 T2 只作可重現 before，不把它當新前瞻成功。新增 source-disjoint 單元／契約例：純朋友/同僚引述正例；直接食物邀請；引文後另有直接邀請；商品名引號；求建議；否定；條件；轉述要求；引號不配對；危機／邊界；第三者偏好問句／陳述；本人偏好與記憶召回；中文／英文。正例 certificate/selected/final 均一致，負例不可取得新 certificate，不可破壞既有 protected route。用 exact core/graph 檢查，不以「沒有新節點」替代正確回覆。
