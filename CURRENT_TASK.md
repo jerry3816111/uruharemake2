@@ -25,12 +25,18 @@ action 正確，後段附加標點與語言 guard generic fallback 洗掉承接�
 已是同一 reported-action 問題第二個有根據前瞻批次，不重播曝露句、
 不補第三批詞彙例外追分，也不把舊失敗抹除。
 
-**唯一下一個必要交付**：先做不改產品程式的設計審查，明確分開
-(a) 已知 protected seed 後才准 M31 defer 的 admission 位置；
-(b) source-qualified selected action 到最終自然日文的表面忠實度和
-guard/fallback 契約；(c) unknown 確認句及串行延遲是獨立項。
-列 before 反例、候選單一變因與代價、新正負控制及資源上限，交設計
-審查後才能開全新未曝光前瞻；不利用本批答案追分。正式同模型強 LLM
+同團隊、非獨立的只讀設計審查已記在
+`research/p4_reported_ack_postfailure_design_review_2026-10-18.md`：
+(A) M31 defer 准入須看已有的 protected seed／route／M22，
+(B) selected ack 到 guard 後最終自然日文的忠實度，
+(C) unknown 確認對象與串行延遲，均為不同單變因。A 先於 B，因目前
+T6 已錯略過 protected 路由；只修 A 不會自動讓 T6 可見承接成功。
+
+**唯一下一個必要交付**：依審查建立 A 的新任務卡／精確設計，先凍結
+未曝光的正負控制、成本上限與各層判準，再做最小實作和相稱驗收；
+不得用本批 T2/T6/T8 重新計 pass，亦不得把 A 的准入子門檻冒充
+reported-ack 產品 PASS。B 待 A 的保護邊界穩定後另立單變因卡；
+C 不合包。正式同模型強 LLM
 比較、真人評價、temporal holdout、完整 VRM／Function Calling 仍
 pending；Goal 未完成。原始 dirty checkout、正式 DB 與無關
 `output/graduate_application_report/` 不碰。
