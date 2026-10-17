@@ -4,7 +4,7 @@
 
 ## 可反駁的 before 與因果邊界
 
-兩個新普通來源報告 T1/T5 的 M31 都 `deferred_to_reported_ack_p4`，selected `surface_act=ack_reported_check_instruction_p4`、core `そう言ってたんだ。何を先に確認する話？`。但原件 `visible_language_guard.original_reply` 兩輪均是 `そう言ってたんだ。何を先に確認する話？。そのくらいでいいだろ。`，接在 `？` 後多出 `。`；guard 因 `malformed_japanese_punctuation` 以通用 casual fallback `ん、その話もう少し聞かせて。` 取代。T1 最終就是此泛答。T5 的 P4-T 因 `「…」`＋`と言った` 把 source 當 quoted frame；P4-W 再對泛答做 `quote_embedding_restore`，最終變 `「ん、その話もう少し聞かせて」っていう記載なんだね。`。這是把**助手上一句泛答**錯當被轉述內容，不是正確的引述承接。
+兩個新普通來源報告 T1/T5 的 M31 都 `deferred_to_reported_ack_p4`，selected `surface_act=ack_reported_check_instruction_p4`、core `そう言ってたんだ。何を先に確認する話？`。但原件 `visible_language_guard.original_reply` 兩輪均是 `そう言ってたんだ。何を先に確認する話？。そのくらいでいいだろ。`，接在 `？` 後多出 `。`；guard 因 `malformed_japanese_punctuation` 以通用 casual fallback `ん、その話もう少し聞かせて。` 取代。T1 最終就是此泛答。T5 的 P4-T 因 `「…」`＋`と言った` 把 source 當 quoted frame；P4-W 再對**本輪 guard 產生的泛答**做 `quote_embedding_restore`，最終變 `「ん、その話もう少し聞かせて」っていう記載なんだね。`。這是錯把泛答包成被轉述內容，不是正確的引述承接。
 
 程式靜態對應：`uruha_brain_mac.py` 的 `_speech_plan_variants` 對一般 `direct_chat_answer` 用 `f"{core}。そのくらいでいいだろ。"`；`_fallback_reply`／`speak` 可選它，語言 guard 對 `！？` 後接 `。` 拒絕並改 casual fallback。原件未保存 `speak()` 當下逐字回傳，故「這個 variant 是本輪唯一來源」是**高信心靜態推論**；已觀察事實是 guard 前候選逐字同形及後續實際轉換。M39 對 fallback 回 `accepted_verified_surface`，T5 的 M39 甚至 `third_party_present=false`；它不是 selected reported-ack fidelity 的充分證據。
 

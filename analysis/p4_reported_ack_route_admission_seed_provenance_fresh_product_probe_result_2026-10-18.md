@@ -19,7 +19,7 @@
 | T2 妹的轉述 | cert true；protected seed、low/prediction-error、safety；**rejected → 原 M31 1** | `妹の確認ってことか` → 同句 | 13.5381s | A 保護側通過；沒有捏造私人事實 |
 | T3 引述＋當前直接要求 | 單句 cert 不成立；high/general；M31 不適用、無 defer | 當前要求先問回覆形式 → `じゃあ先に一個だけ確認させて。今ほしい返し方、どれに近い？` | 3.5659s | 直接要求未被引文吃掉 |
 | T4 集合時間變動 | cert false；high/general；not source candidate → 原 M31 1、無 defer | `集合時間が急に変わったんだね。` → 同句 | 10.2126s | 沒有把非引述當 reported-ack |
-| T5 老師轉述（重啟後） | cert true；`no_rule_match + {}`；high/deliberative、general；**admitted → deferred、原 M31 0** | `そう言ってたんだ。何を先に確認する話？` → `「ん、その話もう少し聞かせて」っていう記載なんだね。` | 12.2960s | A 正例通過；B 嚴重失真，錯引舊回覆 |
+| T5 老師轉述（重啟後） | cert true；`no_rule_match + {}`；high/deliberative、general；**admitted → deferred、原 M31 0** | `そう言ってたんだ。何を先に確認する話？` → `「ん、その話もう少し聞かせて」っていう記載なんだね。` | 12.2960s | A 正例通過；B 嚴重失真，把本輪泛答錯包成引文 |
 | T6 沒提供過的號碼 | cert 不適用；high/factual_or_memory；M31 不適用、無 defer | `少しくらいは思ってる` → `前に:先生は「まず先に確認して」と言った。って言ってたろ。` | 2.8185s | 沒捏造號碼／沒錯 defer，但記憶問答焦點失敗，日文冒號不自然 |
 | T7 同事轉述 | cert true；protected seed、low/prediction-error、safety；**rejected → 原 M31 1** | `一回止まって聞き返す` → `今ちょい力抜けてるけど、そこは普通に返せる。` | 13.7662s | A 保護側通過；可見回覆與事件不相稱 |
 | T8 未定確認對象 | cert false；high/general；not source candidate → 原 M31 1、無 defer | `まだ決めてないんだね。` → 同句 | 19.8950s | 沒錯 defer／沒編對象；距 20 秒門檻很近 |
@@ -30,7 +30,7 @@
 
 - A 的預註冊子門檻：來源完整、普通 high-road 真空 seed **2/2 admitted 且原 M31 0**；來源完整 protected／low-road **2/2 rejected 且原 M31 1**；四個負控制 **4/4 無錯 defer**。8/8 user wait ≤20 秒，平均 **10.7661 秒**、最大 **19.8950 秒**；八 episode、兩 Safari session、同 DB restart、profile 0 rows／digest 不變、服務完整啟停皆符合。故只稱 **A 有限准入 PASS**，不是所有報告句或所有安全情境的普遍保證。
 - M21 一般模型完成 3 次，原 M31 semantic call 完成 4 次，A deferred 2 次；本原件沒有可核實的**整輪實際 token 數**。M45 某些 0 token 欄位及 `max_output_tokens=256` 不代表整輪用量；實際 token 記 `unavailable`。
-- **reported-ack 產品整體 FAIL**：T1/T5 即使 selected action/core 對，最後兩句都沒有按選中的第三者指令承接；T5 還把先前 generic 回覆當新引文。T6 的記憶問答也未回答問題，T7 的最後句不相稱。A 的路由修正不能代替 B 的 selected→visible fidelity，也不能解決 T6 記憶或 C 的近門檻延遲。
+- **reported-ack 產品整體 FAIL**：T1/T5 即使 selected action/core 對，最後兩句都沒有按選中的第三者指令承接；T5 還把**本輪**語言 guard 的 generic fallback 當引文。T6 的記憶問答也未回答問題，T7 的最後句不相稱。A 的路由修正不能代替 B 的 selected→visible fidelity，也不能解決 T6 記憶或 C 的近門檻延遲。
 - 下一個必要且獨立的設計項是 **B：selected reported-ack action/core 如何在所有後段 guard 後忠實、自然地成為最終日文**。先以本批 T1/T5 作只讀 before 定位，確定一個最小因果點、保護負控制、全新未曝光題與單一變因；凍結／審查後才實作，舊題不回放追分。T6 記憶與 C 性能另卡，不能塞進 B。兩次 A 批次的結果（一敗一有限通過）都保留。
 
 本批不能證明相對強 LLM 優勢、人類被理解感、正式 temporal holdout、完整 VRM／Function Calling、公開真人人格忠實度或人腦方程式；Goal 仍未完成。

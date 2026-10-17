@@ -6,7 +6,7 @@
 
 `618c628fef40ac01eac2b272ec48e11e1c3b2f04` 首輪前已把唯一 seed-provenance 修正批的 code／新八句／條件式 gold／計畫／manifest 推到 PR #435。全新 0700 隔離 root 真 Safari 兩 session、T4 後同 DB planned restart、每題一次／0 retry 已完成，原件 SHA `9580fd65f4fd4094ae733e9bdcd12fbefba1190e7723c5b009f956cadcd74236`；完整逐題與界線見 `analysis/p4_reported_ack_route_admission_seed_provenance_fresh_product_probe_result_2026-10-18.md`。普通 no-rule 空 seed 正例 T1/T5 **2/2 admitted、原 M31 0**；protected low-road T2/T7 **2/2 rejected、原 M31 1**；四個負控制無錯 defer。8/8 等待 ≤20 秒（平均 10.7661、最大 19.8950 秒），8/8 raw＝graph UTTERANCE＝當輪目視 Safari 泡泡，八 episode；T0–T8 九份完整 profile 收據同 digest／0 rows。服務 planned stop、兩 PID exited、port 7894 vacant。這只讓 **A 有限路由子門檻通過**，不是產品完成。
 
-**整體 reported-ack 產品仍 FAIL**：T1/T5 selected `ack_reported_check_instruction_p4` 的正確 core 被後段改成 generic 或錯引舊助手句，最終使用者看不到可信的第三者指令承接；T6 的「是否說過號碼」記憶問答錯位且冒號不自然；T7 可見句也不相稱。正式同模型強 LLM、人評、temporal holdout、完整 VRM／Function Calling 仍 pending，Goal 未完成。首發 A 0/2 正例的 strict FAIL 與原件不改算。
+**整體 reported-ack 產品仍 FAIL**：T1/T5 selected `ack_reported_check_instruction_p4` 的正確 core 被後段改成 generic，T5 更把本輪 generic fallback 錯包成引文，最終使用者看不到可信的第三者指令承接；T6 的「是否說過號碼」記憶問答錯位且冒號不自然；T7 可見句也不相稱。正式同模型強 LLM、人評、temporal holdout、完整 VRM／Function Calling 仍 pending，Goal 未完成。首發 A 0/2 正例的 strict FAIL 與原件不改算。
 
 **B 只讀定位已完成**：`research/p4_reported_ack_selected_to_visible_design_review_2026-10-18.md` 保存 T1/T5 從 selected core → 通用 speech tail 的 `？。` → 日文 guard 泛答；T5 又被 P4-W 錯包成引文的因果證據及尚未驗證的單變因方案。同團隊審查非獨立，尚未改 B code、凍結 B 新題或取得 B 產品 PASS。
 
