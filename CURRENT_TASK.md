@@ -2,7 +2,31 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 selected 食物邀請行動到最終日文的表面忠實度實作
+## 最新結果與唯一下一步：selected food-offer action 第二批 Safari strict FAIL
+
+2026-10-17 已在首輪前 `4873ead` 凍結的全新六輪與預熱過的**新**隔離 root
+完成真 Safari 一次性產品批次，T3 後同 DB planned restart，6/6 泡泡＝
+graph utterance、六個持久 episode、profile row-ID delta 全 0、六輪 M19 等待
+均 <20 秒。但 T2 把朋友引述誤選為向 Uruha 的直接食物邀請，最終回覆
+直接接受；T3 雖正面接住蘋果派，事前要求的 selected-offer verify 節點
+缺席（selected core 的 `甘いのならあり` 未進有限稽核文法）。四正例只有
+3/4 有新 audit `visible_action_preserved`，引述負控制語義 FAIL。**整批
+strict FAIL／REVIEW_REQUIRED**；離線 ONNX 預檢與成功啟停不抹掉第一批
+T1 首載 timeout FAIL。原始 SHA、逐輪、重啟、成本與根因見
+`analysis/p4_selected_offer_action_surface_offline_ready_fresh_product_probe_result_2026-10-17.md`。
+服務已 planned stop、兩個 PID 退出與 port vacant；root/raw 留存、Safari
+分頁未任意關。原 gold／raw 不改、不重播，不再做同卡第三批追分。
+
+**唯一下一個必要交付**：以 T2 真實錯行動為 before，先做獨立的單變因
+設計審查：「使用者直接食物邀請」必須與引述第三者問句分清來源作用域。
+列准入、負控制、自然日文、圖誠實度、延遲／成本與全新未曝光驗收；
+確認後才開新卡修改 upstream selected authority。T3 的 sweet-core 稽核
+文法覆蓋另列後續儀器項，**不得**與 T2 修正合包。正式同模型比較、
+人評、temporal holdout、VRM／Function Calling 完整交付仍 pending。
+
+## 歷史：P4 selected 食物邀請行動到最終日文的表面忠實度實作
+
+以下保留首輪前任務卡與當時的下一步作時間紀錄；不得覆蓋上方最新結果。
 
 2026-10-17 已完成同團隊非獨立的只讀設計審查，具體 before、候選機制、
 source/selected 準入、單一變因、禁止檔案、負控制、資源上限與精確首層命令
