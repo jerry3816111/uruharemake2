@@ -41,6 +41,23 @@ T2–T6 未送。**整批 strict FAIL，且沒有語義結果**，不可重播�
 零模型或啟動 HTTP 200 當產品 PASS。正式同模型比較、人評、temporal
 holdout、VRM／Function Calling 完整交付仍 pending，Goal 遠未完成。
 
+續作 2026-10-17：上述**新** 0700 隔離 0-turn root `uruha-product-wy07nein`
+已同 PID `24249` 核單一 loopback HTTP 200、planned stop 原 PID exited／
+port vacant；當時 memory/session/log 三目錄均空。本機已有的 Chroma ONNX
+archive 83,178,821 bytes、官方 SHA `913d7300ceae3b2dbc2c50d1de4baacab4be7b9380491c27fab7418616a16ec3`
+以不同 inode／link count 1 的獨立私有副本供此 root；同 venv、同 sandbox、
+封鎖網路下載的 fresh Python embedding 預檢得 1×384 finite vector，
+0.405 秒，六模型檔齊，事後三個 DB/log 目錄仍空。這是**設施預檢**，
+不是產品或語義 PASS。第二批全新六句/gold 已事前寫入
+`datasets/p4_selected_offer_action_surface_offline_ready_fresh_probe_2026-10-17.json`，
+程序與成本見同名前綴的 `research/*_plan_2026-10-17.md`；尚未送題。
+
+**現在下一個必要交付**：完成第二批 dataset/plan/程式 SHA manifest、
+diff 與 PR head 的首輪前凍結；在該已預熱且停機的 root 上按事前程序
+真 Safari 六輪並於 T3 後 planned same-DB restart。保留第一批 T1 timeout
+strict FAIL，不重播原六題；若第二批失敗，保留反例轉 `REVIEW_REQUIRED`，
+不做第三批加規則追分。正式研究與產品其餘 gate 仍 pending。
+
 2026-10-17 第二個全新隔離 root 已完成事前凍結的六輪 Safari（第一
 root 的 0-turn 啟動 abort 獨立保留，不併入成功批次）。五個第三者真問句
 5/5 selected 新 unknown gate，跨 planned same-DB restart 的 T4 同題仍不把
