@@ -1,6 +1,35 @@
 # 目前任務卡
 
-更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
+
+## 最新結果與唯一下一步：actor/scope 八輪 Safari strict FAIL
+
+首輪前 `e156459` 已凍結、推到 PR #435 的 opt-in actor/scope、新八句/gold/
+程序與 SHA 不變。2026-10-17～18 用全新 0700 隔離 root 做真 Safari 8/8
+各送一次、0 retry；T4 後同 DB planned stop/restart，新舊各四輪、兩個 session、
+最終八個不同 episode。八輪 actor/action/source、M25/M18、graph actor 在 M25
+前都符合事前 gold；八個當輪目視泡泡＝graph UTTERANCE，raw 可重算
+reply＝utterance 8/8。所有 T0／逐輪／停機／重啟的 full profile 內容 digest
+相同、0 rows；正式 DB 與原始 dirty checkout 未動。
+
+**整批 strict FAIL**：T3 第三者引述雖不再誤觸 `calibrate_need`，但下游 M31
+把原定 reported-ack action 覆蓋為 `semantically_authorized_literal_topic_m31`，
+最終只說「先輩が先に確認してと言った」；新 graph 稽核如實標
+`reported_instruction_ack_missing`。T7 unknown 未誤選助手回覆形式，卻因
+M21 full planner 9.5932 秒接 M31 semantic call 10.7653 秒，使用者等
+23.4192 秒，超過預註冊 20 秒。其餘 7/8 輪達 latency 目標。M21 一般
+planner 完成 4 次，M31 semantic 完成 2 次；本 raw 沒有可信實際 token
+數，不可報零 token。raw SHA、逐輪表、啟停與證據邊界見
+`analysis/p4_temporal_actor_scope_fresh_product_probe_result_2026-10-18.md`。
+服務已終停／PID 退出／port vacant，原件與 Safari 分頁保留；本八題不改
+gold、不重播、不作正式 holdout 或同模型優勢主張。
+
+**唯一下一個必要交付**：先只讀設計審查 T3 的 M31 final action
+arbitration，確認最小 source-qualified reported-ack 保留點與正／負控制；
+再另立新前瞻版、全新未曝光題與首輪前凍結，做相稱聚焦／相鄰回歸、隔離
+Safari 真輪與成本驗收。T7 的串行 latency 另列獨立性能變因，不與本項
+合包。正式同模型比較、人評、temporal holdout、完整 VRM／Function Calling
+仍 pending；Goal 遠未完成。無關 `output/graduate_application_report/` 不碰。
 
 ## 最新進度與唯一下一步：actor/scope opt-in 已實作，前瞻 Safari 尚未執行
 
