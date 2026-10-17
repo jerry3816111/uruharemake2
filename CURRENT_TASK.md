@@ -11,10 +11,24 @@ T2 的 `dynamic_anchor.variants[0]` 逐字等於最終主句，model blend disab
 self-monitor 曾報 grounding miss 卻修後不變，M39 與舊 selected-action node 均
 未涵蓋此次承諾。設計不改全域 semantic groups，因其會影響模型准入與成本；
 只做有界產品 post-refine 合格候選回退，及真正最終日文的獨立 graph 稽核。
-這**尚未實作、未測試、未聲稱產品 PASS**。下一步先完成小測與相鄰回歸，
-再用與 dev diagnostic 不同的全新前瞻 source/value 凍結 gold；凍結前不送
-Safari。原六輪與首次 0-turn abort 仍 FAIL，不重播曝露題、不可把本項
-與 T1/T4 裝飾語法修正合包。
+此設計已做產品限定實作；最終原句只由既有自然候選／selected core
+有界回退，不改全域模型候選門檻。第一次 reviewer 找出的否定、錯物品、
+不安全修飾語與 selected core 自身矛盾，第二次 reviewer 找出的第三人稱／
+後句反轉假陽性，都已在首輪新題前 fail closed。零模型聚焦 7/7，
+未改 overlay 的相鄰回歸 73/73（8 warnings），compile 過。隔離產品入口
+0-turn 啟動有短暫 ready race，**同一次 run** 終核同 PID 單一 loopback
+HTTP 200；planned stop 原 PID 退出、port vacant。這不是 Safari PASS。
+全新六句與 gold 已寫入 `datasets/p4_selected_offer_action_surface_fresh_probe_2026-10-17.json`，
+逐輪程序見 `research/p4_selected_offer_action_surface_fresh_probe_plan_2026-10-17.md`；
+**尚未送 Safari／模型，待首輪前 commit、SHA、PR head 核對**。原六輪
+與首次歷史 0-turn abort 仍 FAIL，不重播曝露題、不可把本項與 T1/T4
+裝飾語法修正合包。
+
+**下一個必要交付**：先完成首輪前 code/gold/SHA 凍結並推既有 PR，
+再開全新隔離 root 真 Safari 六輪、T3 後 planned same-DB restart，
+依事前 strict rubric 保存正負結果、graph/bubble/row-ID/成本；不得用
+零模型或 0-turn 入口當產品 PASS。正式同模型比較、人評、temporal
+holdout、VRM／Function Calling 完整交付仍 pending，Goal 遠未完成。
 
 2026-10-17 第二個全新隔離 root 已完成事前凍結的六輪 Safari（第一
 root 的 0-turn 啟動 abort 獨立保留，不併入成功批次）。五個第三者真問句
