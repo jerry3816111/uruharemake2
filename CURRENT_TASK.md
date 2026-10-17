@@ -2,6 +2,28 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新進度與唯一下一步：時序行為者／作用域只讀設計已完成，產品仍待實作
+
+依前批七輪 T3 的**既有失敗**完成單變因、同團隊非獨立設計審查，見
+`research/p4_temporal_actor_scope_design_review_2026-10-17.md`。raw SHA
+`77b0a8cc138b73176a4a1f47369442b5407d10ca88511da6f41d15d7552016b8`
+顯示 `先に予定を確認して、それから返事してもいい？` 被 M25 當成明確
+`calibrate_need`，P4-AT 繼承並升權，M18 selected core 已錯，故不是最終
+hash-prefix 問題。純 in-process、曝光題診斷撤回 M25 後，M18 inactive，
+隔離假 runtime 只回 `分かった。`；這不等於正確承接「使用者先查、稍後回覆」。
+未改產品碼、未跑新 Safari、未修改任何凍結資料或舊 strict FAIL。
+
+**唯一下一個必要交付**：照審查建立新 opt-in、共用的 actor/source/action/time
+證據 seam，讓 M25、P4-AT、M18 與實際 action 看到一致的使用者自做／助手
+受託／引述／未知歸屬；self-defer 需交付尊重順序的日文行動，不能只是擋掉
+錯誤澄清後泛答 `分かった。`。先用與前瞻題不同的零模型開發控制及相鄰回歸
+證明正負例、混合子句、protected/negated 與 graph；若 opt-in seam 不能保持
+feedback 及 selected 一致，回設計審查，不偷改 frozen M25/P4-AT。成功後才
+事前凍結**全新**資料/gold/計畫/SHA、commit/push/核 PR head，並做隔離
+Safari 一次性產品驗收；舊 T3 只可診斷，不算新 PASS。另保留五輪 T3 的
+未知偏好句尾自然度獨立風險，不能合包。正式同模型比較、人評、
+temporal holdout、完整 VRM/Function Calling 仍 pending，Goal 未完成。
+
 ## 最新結果與唯一下一步：hash-prefix 事件傳遞五輪 Safari 局部成功、整批 strict FAIL
 
 首輪前 `ca2621b` 凍結並推 PR #435 的**新**五句，已在全新隔離 root
