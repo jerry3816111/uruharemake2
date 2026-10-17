@@ -2,7 +2,15 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前執行：P4 reported-ack 的 M31 路由准入 A（前瞻新項）
+## 最新結果與唯一下一步：A 有限准入 PASS，reported-ack 產品 FAIL
+
+`618c628fef40ac01eac2b272ec48e11e1c3b2f04` 首輪前已把唯一 seed-provenance 修正批的 code／新八句／條件式 gold／計畫／manifest 推到 PR #435。全新 0700 隔離 root 真 Safari 兩 session、T4 後同 DB planned restart、每題一次／0 retry 已完成，原件 SHA `9580fd65f4fd4094ae733e9bdcd12fbefba1190e7723c5b009f956cadcd74236`；完整逐題與界線見 `analysis/p4_reported_ack_route_admission_seed_provenance_fresh_product_probe_result_2026-10-18.md`。普通 no-rule 空 seed 正例 T1/T5 **2/2 admitted、原 M31 0**；protected low-road T2/T7 **2/2 rejected、原 M31 1**；四個負控制無錯 defer。8/8 等待 ≤20 秒（平均 10.7661、最大 19.8950 秒），8/8 raw＝graph UTTERANCE＝當輪目視 Safari 泡泡，八 episode；T0–T8 九份完整 profile 收據同 digest／0 rows。服務 planned stop、兩 PID exited、port 7894 vacant。這只讓 **A 有限路由子門檻通過**，不是產品完成。
+
+**整體 reported-ack 產品仍 FAIL**：T1/T5 selected `ack_reported_check_instruction_p4` 的正確 core 被後段改成 generic 或錯引舊助手句，最終使用者看不到可信的第三者指令承接；T6 的「是否說過號碼」記憶問答錯位且冒號不自然；T7 可見句也不相稱。正式同模型強 LLM、人評、temporal holdout、完整 VRM／Function Calling 仍 pending，Goal 未完成。首發 A 0/2 正例的 strict FAIL 與原件不改算。
+
+**唯一下一個必要交付**：先做 B `selected reported-ack → visible Japanese` 的只讀因果定位與設計審查；以本批 T1/T5 為 before，不回放它們追分。定一個最小後段變因、保護負控制、全新未曝光題／成本／gold，再依流程實作與驗收。T6 記憶和 C 性能另卡，不合包；不碰原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/`。下面 A 首發與修正批的歷史「尚須／下一步」不再是當前命令。
+
+## 歷史：P4 reported-ack 的 M31 路由准入 A（首發與修正前狀態）
 
 **2026-10-18 首發產品批已完成並 strict FAIL／REVIEW_REQUIRED**；下面本節原來的「尚須 commit／Safari」是首輪前歷史，不能再當下一步。`c1ee0ec` 首輪前已凍結、推 PR #435；真 Safari 兩 session／八題一次性、T4 後同 DB planned restart、0 retry 已完成，原件 SHA `1e59785995586f5ea9247a577433d1436fbf6fdd3603eb74dfbaf0b5806d56d7`，完整逐題／圖／成本／隔離見 `analysis/p4_reported_ack_route_admission_fresh_product_probe_result_2026-10-18.md`。來源完整的普通 high-road T1/T5 **0/2 准入**，因規則 seed 在無命中時變 `{}`，A 卻要求 seed 明寫 `chat/casual`；受保護 low-road T2/T7 **2/2 拒絕**，四個負控制無錯 defer。user wait 7/8 ≤20 秒，T1 22.3399 秒；T6 記憶題另有焦點錯和不自然冒號。八個泡泡＝圖 UTTERANCE＝raw；八個 episode、T0–T8 full profile digest 不變／0 rows。服務終停、port vacant，正式資料未動。
 
