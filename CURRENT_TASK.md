@@ -2,17 +2,29 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 完整當輪偏好陳述的來源優先權
+## 當前唯一進行項：P4 第三者偏好真問句的證據授權設計審查
 
-前一項五輪 Safari 已 strict FAIL／REVIEW_REQUIRED，raw/gold/result 不改、不重播；
-原始錯誤是 M31 拒權後 full planner 漏來源或毀字，以及舊食物規則將本人
-肯定陳述誤作邀請。2026-10-17 已做同團隊**非獨立**設計審查：
-`research/p4_current_statement_source_authority_design_2026-10-17.md`。
-新產品工作項只變更完整、直接、逐字可驗 `XはYが好き。` 的
-source-rule authority，讓早期 signal 與真正 plan 使用同一來源證書；
-保留 safety／grounded memory／M33、日文與人格 guard、writer 獨立性。
-先凍結設計，再實作新 overlay 與相鄰回歸；未做新 Safari、同模型比較
-或人評前不得稱產品優勢。舊 detached controller 及正式 DB 不碰。
+前一項「完整當輪偏好陳述來源優先權」已在首輪前 commit `1b638f1`
+凍結並推送：聚焦零模型 5/5、相鄰 61/61、17/17 manifest、0-turn
+入口皆通過。全新六輪 Safari 同隔離 DB、T3 後 planned stop/restart、
+每輪逐字一次且 0 retry；真正來源 chat 4/4、第三者不寫本人 profile、
+本人恰兩筆、六個 graph utterance 對泡泡、6/6 等待 ≤20s。但 T4 真問句
+`後輩は抹茶玄米茶が好き？` 的可見回答未承認未知且加了無來源的 `も`；
+四個來源節點雖保留主語／物品／肯定陳述，仍因真實人格表面加前後綴
+而 4/4 回報 `selected_or_visible_mismatch`。**整批 strict FAIL**；
+原始 SHA、逐輪數據、快照及限制見
+`analysis/p4_current_statement_source_authority_fresh_product_probe_result_2026-10-17.md`。
+本批題目／gold／程式／raw 不改、不重播；不是正式 holdout 或對 LLM 優勢。
+
+**下一個必要交付**：先審查 T4 的單一語義變因——真第三者問句不自帶
+第三者偏好證據，若無已核來源，selected plan 到可見日文須明確保留
+未知；若有來源，僅歸屬於該來源。列安全／grounded memory／本人問句／
+陳述／食物邀請／引文／否定／多子句等負控制、成本及保護路由；
+設計凍結後方可實作、做**全新**前瞻案例。圖上 source commit 的
+byte-exact 與人格表面契約是**另一獨立 instrumentation 變因**，之後
+另審查，不可與問句修正合包或把舊批改成 PASS。正式同模型比較、
+人評、temporal holdout、VRM／Function Calling 完整產品仍 pending；
+Goal 遠未完成。隔離服務已 planned stop，root 保留；Safari 舊分頁未關。
 
 ## 前一項：P4 第三者陳述 speech-act 產品負結果封存與設計審查
 
