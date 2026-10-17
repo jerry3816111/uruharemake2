@@ -4,6 +4,17 @@
 
 ## 當前唯一進行項：P4 第三者偏好真問句的首輪前凍結與新 Safari 產品驗收
 
+首輪前 freeze 已在 commit `19f9a03` 推送，PR #435 head 已核；21/21
+manifest OK。但首次新隔離產品啟動在送任何題／Safari 之前，final
+Python PID `11796` 曾 LISTEN 又退出；Gradio localhost HEAD 健康檢查
+報不可用。此**0-turn 啟動批次程序 strict FAIL**，不算語義失敗或成功，
+DB absent、profile/episode 皆零，原六題完全未曝光。詳見
+`analysis/p4_third_party_question_evidence_preflight_abort_2026-10-17.md`。
+下一次如另開全新隔離嘗試，不能合併洗掉此失敗；須先核原
+21/21 manifest，取得同 PID／唯一 loopback／HTTP 200 ready 才送題，
+仍使用已凍結未曝光的六題和原嚴格 gold，不得答案驅動換題或重試。
+整體產品穩定性須把首次 abort 算入分母；不得為通過開公開 share link。
+
 2026-10-17：設計 `dcd095c` 後已實作產品限定問句 gate，只在完整窄日文
 第三者偏好問句、既有規則回傳 `None`、且 planner 已收到的可辨識
 使用者來源沒有同 X/Y 非問句時給「目前證據不足」的 deterministic plan；
@@ -21,8 +32,8 @@ same-DB planned restart 與 21/21 SHA manifest 見
 五個不同字串在 repository 只見新 dataset；T4 事前預定重問 T1，
 不是看過答案後 retry。**尚未送這六輪 Safari／模型，不得稱產品通過。**
 
-**下一個必要交付**：先把上述 scoped 檔與本卡 commit／push 並核
-PR #435，確認 manifest；再用全新 0700 隔離 root 與真 Safari 逐字
+**下一個必要交付**：先封存此 0-turn abort；另開全新 0700 隔離 root
+與真 Safari 逐字
 T1–T6 各一次，逐輪留 profile row-ID／episode-ID、raw、graph selected／
 utterance／evidence 節點、Safari bubble 與等待／成本；T3 後真 stop、
 同 DB restart。若 strict 任一 gate 失敗，保留反例、按設計停止規則
