@@ -2,7 +2,32 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 最新續作：reported-offer 來源作用域已實作，尚未送新 Safari 六題
+## 最新結果與下一個必要交付：reported-offer 來源作用域 Safari strict FAIL
+
+2026-10-17 首輪前 `00e3016` 凍結的**全新**六輪已在隔離真 Safari
+逐字各跑一次、0 retry；T3 後同 DB planned stop/restart。來源分流
+3/3、直接邀請控制 2/2、第三者偏好未知控制 1/1；六個泡泡與 graph
+utterance 相符，六筆持久 episode，`subject=user` profile 快照 rows
+全程空（全 profile documents 的事前內容 hash 未驗成），M19 六輪
+2.7057–3.0062 秒。但 T1 最終 `先に、同僚に…` 的無來源固定開頭
+不自然／可暗示時間先後，新 scope audit 卻允許該前綴並報成功。
+故**整批產品 strict FAIL**，不能以有界機制 6/6 稱產品 PASS。
+T2 `いや` 接接受、T5 硬結尾另列自然度警訊。原 raw、快照、前後
+SHA、完整逐輪與限制見
+`analysis/p4_reported_offer_source_scope_fresh_product_probe_result_2026-10-17.md`。
+服務已 planned stop／PID exited／port vacant；隔離 root 原件與 Safari
+分頁保留。舊批 strict FAIL 不改，本六題/gold/freeze 不改不重播。
+
+**唯一下一個必要交付**：對 `_finalize_surface_reply` 的固定開頭
+准入及 scope audit 容許範圍先做只讀、單變因設計審查；凍結真正需要
+時間轉承的正例、引述／直接邀請／未知的負控制與新未曝光 gold，
+並在下一批首輪前補足全 profile 內容 hash 的獨立快照證據 gate，
+再決定有界修正及一次真 Safari 前瞻。不要與上批 sweet-core audit
+或 T2/T5 的人格語氣風險合包追分。正式同模型比較、人評、
+temporal holdout、VRM／Function Calling 完整交付仍 pending；Goal
+遠未完成。
+
+## 歷史：reported-offer 來源作用域首輪前實作與凍結
 
 針對下方 selected-offer 第二批 T2「使用者引述朋友提議」被誤當直接向 Uruha
 邀約的保留失敗，另立**新**有限來源作用域項，而非修改或重播舊題。只在完整
