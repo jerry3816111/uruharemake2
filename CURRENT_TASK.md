@@ -2,7 +2,36 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 第三者偏好真問句的首輪前凍結與新 Safari 產品驗收
+## 當前唯一進行項：P4 selected 行動到最終日文的表面忠實度設計審查
+
+2026-10-17 第二個全新隔離 root 已完成事前凍結的六輪 Safari（第一
+root 的 0-turn 啟動 abort 獨立保留，不併入成功批次）。五個第三者真問句
+5/5 selected 新 unknown gate，跨 planned same-DB restart 的 T4 同題仍不把
+先前問句當偏好事實；profile row-ID delta `[0,0,0,0,0,0]`、六個
+持久 turn episode、六個 graph UTTERANCE 與 Safari 泡泡逐字對齊，
+6/6 等待 ≤20 秒。但 T1/T4 人格表面新增未在有限語法內的 `一回、`，
+圖節點 2/5 `selected_or_visible_mismatch`；T2 food offer selected core
+原為接受一口，最終卻沒有回答邀請。故**此六輪 strict FAIL**，不是
+普遍理解或產品交付 PASS。原始 SHA、逐輪與兩次 stop/restart 程序在
+`analysis/p4_third_party_question_evidence_fresh_product_probe_result_2026-10-17.md`。
+服務已 planned stop，root/raw 保留；Safari tabs 不任意關。原六題、
+gold、freeze、code 不改、不重播；本問句 gate 開發期兩批修訂後已曝光，
+同卡標 `REVIEW_REQUIRED`，不做第三批加例外追分。第一次 0-turn abort
+仍列產品穩定性失敗，見同項 preflight report。
+
+**下一個必要交付**：先以 T2 為只讀 before 做獨立單變因設計審查：
+`food_offer_generic`／`named_offer_accept` 已被 selected，為何 final
+surface 成為泛泛的「その話なら普通に分かる」；明列哪些 selected action
+在何種來源／安全邊界下必須交付，負控制、人格自然度、可見 graph
+誠實稽核、成本與全新未曝光驗收。先審查而非立即改最終字串；不得
+把 T1/T4 的圖表裝飾語法、原問句 gate 或 T2 修正合成一個因果變因。
+正式同模型比較、人評、temporal holdout、VRM／Function Calling
+完整交付仍 pending，Goal 遠未完成。正式 DB、原始 dirty checkout、
+無關 `output/graduate_application_report/` 不碰。
+
+## 已執行：P4 第三者偏好真問句的首輪前凍結與新 Safari 產品驗收
+
+以下保留首輪前狀態與當時下一步作歷史；六輪現已完成，結論以上方最新結果為準。
 
 首輪前 freeze 已在 commit `19f9a03` 推送，PR #435 head 已核；21/21
 manifest OK。但首次新隔離產品啟動在送任何題／Safari 之前，final
