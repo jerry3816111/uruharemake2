@@ -2,7 +2,19 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前唯一進行項：P4 selected 行動到最終日文的表面忠實度設計審查
+## 當前唯一進行項：P4 selected 食物邀請行動到最終日文的表面忠實度實作
+
+2026-10-17 已完成同團隊非獨立的只讀設計審查，具體 before、候選機制、
+source/selected 準入、單一變因、禁止檔案、負控制、資源上限與精確首層命令
+見 `research/p4_selected_offer_action_surface_fidelity_design_2026-10-17.md`。
+T2 的 `dynamic_anchor.variants[0]` 逐字等於最終主句，model blend disabled；
+self-monitor 曾報 grounding miss 卻修後不變，M39 與舊 selected-action node 均
+未涵蓋此次承諾。設計不改全域 semantic groups，因其會影響模型准入與成本；
+只做有界產品 post-refine 合格候選回退，及真正最終日文的獨立 graph 稽核。
+這**尚未實作、未測試、未聲稱產品 PASS**。下一步先完成小測與相鄰回歸，
+再用與 dev diagnostic 不同的全新前瞻 source/value 凍結 gold；凍結前不送
+Safari。原六輪與首次 0-turn abort 仍 FAIL，不重播曝露題、不可把本項
+與 T1/T4 裝飾語法修正合包。
 
 2026-10-17 第二個全新隔離 root 已完成事前凍結的六輪 Safari（第一
 root 的 0-turn 啟動 abort 獨立保留，不併入成功批次）。五個第三者真問句
