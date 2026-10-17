@@ -1,6 +1,6 @@
 # P4 hash-prefix provenance：七輪真 Safari 前瞻產品驗收
 
-**結論：整批 strict FAIL／REVIEW_REQUIRED。** 七句依首輪前凍結順序各送一次、0 retry，兩個 session 與同 DB planned restart 都完成；但事前 strict PASS 的三個必要條件未達：T3 把「使用者先確認自己的行程再答覆」誤接成「系統先問想要的回覆方式」；T1/T4/T7 的 `final_related_hash_additions_removed` 都是 0，Safari 真路徑沒有觸發本項欲驗的 hash-added-prefix 移除；T0 profile DB 不存在，T1 首輪 lazy 建立 DB/collection，使「從 T0 起 status／count／全內容 digest 全程不變」不能成立。這不是第三者偏好被寫入的證據，亦不能用 T1–T7 rows 全 0 把原 gate 改成 PASS。前批六輪 strict FAIL、原題/gold/raw 與本批首輪前凍結檔均不改、不重播。
+**結論：整批 strict FAIL／REVIEW_REQUIRED。** 七句依首輪前凍結順序各送一次、0 retry，兩個 session 與同 DB planned restart 都完成；但事前 strict PASS 的三個必要條件未達：T3 把「使用者先確認自己的行程再答覆」誤接成「系統先問想要的回覆方式」；T1/T4/T7 的 `final_related_hash_additions_removed` 都是 0，持久 trace **未證明**本項欲驗的 hash-added-prefix 移除；T0 profile DB 不存在，T1 首輪 lazy 建立 DB/collection，使「從 T0 起 status／count／全內容 digest 全程不變」不能成立。0 不是「修正函式必未執行」的證據，詳見下方只讀因果補註。這不是第三者偏好被寫入的證據，亦不能用 T1–T7 rows 全 0 把原 gate 改成 PASS。前批六輪 strict FAIL、原題/gold/raw 與本批首輪前凍結檔均不改、不重播。
 
 ## 事前凍結與執行邊界
 
@@ -33,8 +33,14 @@
 |---|---|---|
 | 七輪 0 retry／兩 session／同 DB restart／7 distinct episodes／7 泡泡＝graph／≤20s | 均符合；兩 PID 最終退出，port vacant | PASS（程序/局部） |
 | T1/T4/T7 reported source 與 exact core、T2/T6 direct act、T5 未知不編 | 有界節點和可見句符合；T5 末句自然度警訊 | 局部 PASS／警訊 |
-| 真 Safari 至少一輪 hash-added prefix **實際**被移除 | 三個 reported route 的 removal 皆 0 | **FAIL：修正機制未被真路徑觸發** |
+| 真 Safari 至少一輪 hash-added prefix **實際**被移除且有可追溯收據 | 三個 reported route 的持久 removal 計數皆 0 | **FAIL：真路徑移除未被可追溯證明** |
 | T3 尊重先查行程再回答 | 系統反而先問回覆類型 | **FAIL：順序語義** |
 | profile status/count/全內容 digest 從 T0 全程不變 | T0 absent/null → T1 present/hash，T1 之後 rows/digest 穩定 | **FAIL：事前完整基線 gate** |
 
-不做答後調 gold、重播這七句、用舊六句重跑追分或另加固定回覆。下個必要交付先以**只讀設計審查**分清：(a) hash 修正發生的 reachable 條件與如何在新未曝光真輪有正控制；(b) lazy DB 初始化在 T0 前完成的可檢驗 baseline，而不是事後放寬「全程不變」；(c) T3 的上游時間/主語語義錯讀作獨立單變因問題，不混入 prefix gate。新題與判準須再次首輪前凍結，受同一工作項最多兩個有根據修正批次限制。正式 temporal holdout、同模型公平比較、人類被理解感、VRM／Function Calling 完整產品、對完整人類反應方程式的證明皆仍 pending。
+### 結果後只讀因果補註（不改 strict 判定）
+
+七輪 raw 的 reported route 均無 `_hash_prefix_provenance_events_p4`。程式只讀定位發現 `RightBrain.speak` 先 `dict(logic_data)` 複製，之後只將固定幾個鍵寫回原邏輯（`uruha_brain_mac.py:15460-15498`）；新 finalizer 將移除事件寫在這個副本（`uruha_hash_prefix_provenance_gate_p4.py:32-53`），最後稽核卻從原邏輯取事件（同檔 `:99-123`）。因此持久 `removed=0` 可能是**事件傳遞遺失**，無法區分「根本沒進 finalizer」與「已移除但收據遺失」。靜態條件看來 T1/T4/T7 若進 legacy finalizer 會分別選 `てか、`／`一回、`／`まあ、`；三輪無 compact call，P2 wrapper 應走 legacy，但這仍不是本輪實際移除的動態證據。先前報告把 0 直接解讀為「沒有觸發」過強，本補註明確更正，**不**藉此把 frozen gate 改為 PASS。
+
+T3 另由只讀 trace 追到上游 `先に.{0,8}(?:聞いて|確認して)` 將使用者「先查行程」誤當「請系統先詢問」的 cue（`uruha_adaptive_person_model.py:872`）；M18 選的 core 已是錯句，與 hash 前綴無關。這是後續獨立語義工作項的 before，不在本項偷加規則。
+
+不做答後調 gold、重播這七句、用舊六句重跑追分或另加固定回覆。下個必要交付以**單變因設計審查**先讓移除事件能跨 `speak` 邏輯副本保存、且 final 稽核只能算真正交付的候選；再於新未曝光批次設定正控制。獨立程序問題是於 T0 前在新隔離 root 明示初始化空 `user_profile` collection 並量測其成本，不能事後放寬本批「全程不變」。T3 的時間／主語語義錯讀另立工作項，不混入 prefix gate。新題與判準須再次首輪前凍結，受同一工作項最多兩個有根據修正批次限制。正式 temporal holdout、同模型公平比較、人類被理解感、VRM／Function Calling 完整產品、對完整人類反應方程式的證明皆仍 pending。

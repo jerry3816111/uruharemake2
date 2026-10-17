@@ -10,7 +10,7 @@ session、七個持久 episode、7/7 泡泡＝graph UTTERANCE、7/7 M19
 等待 2.6526–3.3806 秒。reported-offer 作用域 T1/T4/T7 3/3 與
 直接邀約 T2/T6 2/2 局部符合，T5 沒有把問句寫成第三者偏好。
 但 T3 誤解「使用者先查自己的行程再回答」，新 prefix gate 在三個
-reported 路徑的實際移除都是 0，T0 profile DB absent 到 T1 present
+reported 路徑的持久移除收據都是 0，T0 profile DB absent 到 T1 present
 使事前整 collection status/digest 全程不變條件不成立。**整批產品
 strict FAIL／REVIEW_REQUIRED**；不是 fresh model generation、
 同模型優勢、人評或人類方程式證據。T5 末句另有自然度警訊。原七題、
@@ -20,8 +20,11 @@ profile receipt、兩次 PID stop、成本及 SHA 見
 泡泡／0 retry 是當輪 Safari 觀察，留存原件沒有完整瀏覽器操作收據；
 服務已停、PID exited／port vacant，隔離原件與 Safari 分頁保留。
 
-**唯一下一個必要交付**：先只讀審查 hash-added prefix 在真產品路徑
-的可達條件與新的未曝光正控制；另將 lazy DB 初始化放到可事前核對的
+**唯一下一個必要交付**：結果後只讀審查已發現 `RightBrain.speak`
+先複製 `logic_data`，prefix 移除事件可能留在暫時副本，final graph
+從原邏輯讀不到；所以收據 0 **不能反推功能未執行**，詳見上述報告
+因果補註。先定案單變因事件傳遞設計，使真正交付的移除有可追溯
+證據，再凍結新的未曝光正控制；另將 lazy DB 初始化放到可事前核對的
 T0 基線程序，不能事後放寬本批判準。T3 上游時間／主語語義錯讀列
 獨立單變因，不能混進 prefix gate 追分。審查後才決定下一個最小
 前瞻版本；同工作項最多兩個有根據的修正批次，不能只換題目。
