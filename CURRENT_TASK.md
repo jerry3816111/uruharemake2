@@ -17,11 +17,14 @@ T1 首載 timeout FAIL。原始 SHA、逐輪、重啟、成本與根因見
 服務已 planned stop、兩個 PID 退出與 port vacant；root/raw 留存、Safari
 分頁未任意關。原 gold／raw 不改、不重播，不再做同卡第三批追分。
 
-**唯一下一個必要交付**：以 T2 真實錯行動為 before，先做獨立的單變因
-設計審查：「使用者直接食物邀請」必須與引述第三者問句分清來源作用域。
-列准入、負控制、自然日文、圖誠實度、延遲／成本與全新未曝光驗收；
-確認後才開新卡修改 upstream selected authority。T3 的 sweet-core 稽核
-文法覆蓋另列後續儀器項，**不得**與 T2 修正合包。正式同模型比較、
+**唯一下一個必要交付**：已完成同團隊非獨立、未改程式的單變因審查，
+細節見 `research/p4_reported_offer_source_scope_design_2026-10-17.md`。
+現在依該設計建立**新** product scope module／新入口／新 controller 和
+聚焦測試，先驗「使用者報告第三者邀請」不能被 selected 為直接向
+Uruha 邀請，且引文後的新直接邀請不得一律被擋；保護舊凍結 8/8 SHA。
+相鄰回歸、0-turn 隔離入口與全新資料/gold/SHA 首輪前凍結後，才做
+一次真 Safari 前瞻；成功／失敗照設計判定。T3 sweet-core 稽核文法
+覆蓋另列後續儀器項，**不得**與來源作用域修正合包。正式同模型比較、
 人評、temporal holdout、VRM／Function Calling 完整交付仍 pending。
 
 ## 歷史：P4 selected 食物邀請行動到最終日文的表面忠實度實作
