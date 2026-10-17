@@ -1089,6 +1089,19 @@ def _graph_detail(payload):
 def _graph_signal(payload):
     if isinstance(payload, dict):
         schema = str(payload.get("schema") or "")
+        if schema == "uruha_temporal_actor_scope_p4_v1":
+            actor = payload.get("actor")
+            if actor == "user_self":
+                return "使用者先確認 → 稍後答覆"
+            if actor == "assistant" and payload.get("assistant_request_authorized"):
+                return "要求助手先問 → 已授權"
+            if payload.get("negated_assistant_request_observed"):
+                return "先問已否定 → 不授權"
+            if actor == "assistant":
+                return "助手先問語句 → 未取得本輪權限"
+            if actor == "third_party":
+                return "第三者引述 → 不作直接請求"
+            return "行為者未明 → 不升為明確請求"
         if schema == "uruha_user_mental_state_hypothesis_v2_12":
             inferred = payload.get("inferred") or {}
             intent = (inferred.get("possible_intent") or {}).get("value")
