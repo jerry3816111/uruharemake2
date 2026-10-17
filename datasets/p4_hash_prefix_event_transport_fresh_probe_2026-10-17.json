@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_p4_hash_prefix_event_transport_fresh_probe_v1",
+  "authorship": "developer_authored_prospective_static_grammar_pre_safari",
+  "status": "pre_exposure",
+  "claim_boundary": "Second prospective batch tests event transport and finite product provenance only. Not an independent holdout, not a regrade of the prior seven-turn strict FAIL, and not a full P4/semantic/fresh-model claim.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 5,
+  "source_selection": "Choose new complete one-sentence reported offers from the existing finite grammar before any generated reply. Read-only parser/legacy-plan admission passed; character-sum seed for chat|plain_reply|source predicts one legacy fixed prefix. Do not substitute another sentence if live pre-finalize candidate differs or no event appears.",
+  "turns": [
+    {
+      "turn": 1,
+      "role": "reported_offer_positive_before_restart",
+      "input": "先輩に「胡椒焼きポテト、一口いる？」と言われた。",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_reported_role": "先輩",
+      "expected_reported_item": "ポテト",
+      "static_legacy_hash_prefix_if_core_reaches_finalizer": "まあ、",
+      "expected_prior_report_audit_status": "visible_report_preserved",
+      "expected_prefix_audit_status": "visible_core_exact",
+      "visible_semantic_rubric": "Natural Japanese acknowledges that the senior offered food to the user, not directly to Uruha. No added fixed opener or new preference fact. Require pre-finalize, legacy-added, returned and final-delivered SHA witnesses for any counted removal."
+    },
+    {
+      "turn": 2,
+      "role": "direct_offer_negative_control",
+      "input": "焼きバーガー、一口いる？",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_surface_act": "named_offer_accept",
+      "expected_offer_audit_status": "visible_action_preserved",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Natural Japanese accepts or lightly responds to this user's direct offer without reporting another speaker."
+    },
+    {
+      "turn": 3,
+      "role": "unknown_third_party_preference_negative_control",
+      "input": "後輩は柚子羊羹が好き？",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Do not infer the junior's preference from the question; state the limit naturally and do not write a preference fact."
+    },
+    {
+      "turn": 4,
+      "role": "reported_offer_positive_after_same_db_restart",
+      "input": "祖母に「昆布チーズおにぎり、一口いる？」って言われた。",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_reported_role": "祖母",
+      "expected_reported_item": "おにぎり",
+      "static_legacy_hash_prefix_if_core_reaches_finalizer": "いや、",
+      "expected_prior_report_audit_status": "visible_report_preserved",
+      "expected_prefix_audit_status": "visible_core_exact",
+      "visible_semantic_rubric": "Natural Japanese preserves grandmother-to-user attribution after restart. Do not borrow the earlier senior's potato offer or directly accept for Uruha. Require the same SHA witnesses for any counted removal."
+    },
+    {
+      "turn": 5,
+      "role": "direct_offer_after_report_negative_control",
+      "input": "塩チーズポテト、一口いる？",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_surface_act": "named_offer_accept",
+      "expected_offer_audit_status": "visible_action_preserved",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Respond to the current direct offer, not the grandmother's onigiri; no fabricated prior preference."
+    }
+  ]
+}

@@ -20,14 +20,28 @@ profile receipt、兩次 PID stop、成本及 SHA 見
 泡泡／0 retry 是當輪 Safari 觀察，留存原件沒有完整瀏覽器操作收據；
 服務已停、PID exited／port vacant，隔離原件與 Safari 分頁保留。
 
-**唯一下一個必要交付**：結果後只讀審查已發現 `RightBrain.speak`
-先複製 `logic_data`，prefix 移除事件可能留在暫時副本，final graph
-從原邏輯讀不到；所以收據 0 **不能反推功能未執行**，詳見上述報告
-因果補註。先定案單變因事件傳遞設計，使真正交付的移除有可追溯
-證據，再凍結新的未曝光正控制；另將 lazy DB 初始化放到可事前核對的
-T0 基線程序，不能事後放寬本批判準。T3 上游時間／主語語義錯讀列
-獨立單變因，不能混進 prefix gate 追分。審查後才決定下一個最小
-前瞻版本；同工作項最多兩個有根據的修正批次，不能只換題目。
+**目前續接點**：結果後只讀因果審查見
+`research/p4_hash_prefix_event_transport_design_2026-10-17.md`。
+`RightBrain.speak` 的 logic shallow copy 使舊 prefix 移除收據可能只留
+在副本；舊批 0 不能反推函式未執行。新 opt-in per-speak 事件傳遞已
+只在**新**程式與入口實作，並加去重／與實際回覆 SHA 綁定；隔離空
+profile T0 前初始化另作測量程序，不是第二個產品決策變因。完整
+`speak` 開發 fixture 在未改可見句下由原 logic 0 事件變為 1 件、
+final graph 移除數 1；聚焦＋相鄰 46/46（2 upstream warnings）通過、
+六個新 Python 檔 compile、舊 10/10 SHA 不變。這都**不是 Safari PASS**。
+新五句 developer-authored 未曝光題、事前判準與新 10/10 manifest 分別
+見 `datasets/p4_hash_prefix_event_transport_fresh_probe_2026-10-17.json`、
+`research/p4_hash_prefix_event_transport_fresh_probe_plan_2026-10-17.md`、
+同前綴 `*_freeze_2026-10-17.sha256`。無關 output 不碰。
+
+**唯一下一個必要交付**：完成新 diff/manifest/CLI 審查，commit、push
+並核 PR #435 head 作首輪前凍結；才在全新隔離 root 先跑真 0-turn
+啟停、私人 ONNX 預熱與顯式空 profile setup，核其收據／T0 四欄一致，
+再真 Safari 五輪一次性驗收、T3 後同 DB planned restart、逐輪 graph/
+泡泡/記憶內容 digest/episodes/等待/模型成本，依事前 strict gate 保留
+正負結果。T3 上游主語／時間錯讀列**獨立**單變因，不能混進 prefix
+gate 追分；本批成功也不抹除原七輪 FAIL。仍無正式同模型公平比較、
+人評、temporal holdout、完整 VRM／Function Calling，Goal 未完成。
 正式同模型公平比較、人評、temporal holdout、VRM／Function Calling
 完整交付仍 pending；Goal 遠未完成。原始 dirty checkout、正式 DB、
 無關 `output/graduate_application_report/` 不碰。
