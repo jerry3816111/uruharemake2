@@ -2,49 +2,37 @@
 
 更新：2026-10-17。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 最新結果與唯一下一步：hash-prefix 七輪 Safari strict FAIL
+## 最新結果與唯一下一步：hash-prefix 事件傳遞五輪 Safari 局部成功、整批 strict FAIL
 
-首輪前 `4200900` 已凍結／推 PR #435 的**新**七句，在全新隔離 root
-真 Safari 各送一次、0 retry；T3 後同 DB planned stop/restart，兩個
-session、七個持久 episode、7/7 泡泡＝graph UTTERANCE、7/7 M19
-等待 2.6526–3.3806 秒。reported-offer 作用域 T1/T4/T7 3/3 與
-直接邀約 T2/T6 2/2 局部符合，T5 沒有把問句寫成第三者偏好。
-但 T3 誤解「使用者先查自己的行程再回答」，新 prefix gate 在三個
-reported 路徑的持久移除收據都是 0，T0 profile DB absent 到 T1 present
-使事前整 collection status/digest 全程不變條件不成立。**整批產品
-strict FAIL／REVIEW_REQUIRED**；不是 fresh model generation、
-同模型優勢、人評或人類方程式證據。T5 末句另有自然度警訊。原七題、
-gold、freeze、raw、上批六輪 FAIL 均不改不重播。七輪逐字、graph、
-profile receipt、兩次 PID stop、成本及 SHA 見
-`analysis/p4_hash_prefix_provenance_fresh_product_probe_result_2026-10-17.md`；
-泡泡／0 retry 是當輪 Safari 觀察，留存原件沒有完整瀏覽器操作收據；
-服務已停、PID exited／port vacant，隔離原件與 Safari 分頁保留。
+首輪前 `ca2621b` 凍結並推 PR #435 的**新**五句，已在全新隔離 root
+真 Safari 當輪目視各送一次、0 retry；T3 後同 DB planned stop/restart，兩個
+session、五個持久 episode、5/5 當輪目視泡泡＝graph UTTERANCE，
+5/5 M19 等待 2.6243–3.0800 秒。T1/T4 reported-offer 最終
+selected core、來源 proof 與 hash-prefix 稽核一致；`まあ、`／`いや、`
+各一筆無來源固定開頭被移除，事件 selected/legacy/returned SHA 與
+最終句可重算，**有限事件傳遞子門檻通過**。T2/T5 直接邀約稽核通過，
+T3 未憑問句捏造後輩偏好；顯式空 profile setup receipt 與後續九份
+status/count/全內容 digest 相同。聚焦＋相鄰 46/46、10/10 freeze SHA
+保留；前批七輪 strict FAIL 亦保留。
 
-**目前續接點**：結果後只讀因果審查見
-`research/p4_hash_prefix_event_transport_design_2026-10-17.md`。
-`RightBrain.speak` 的 logic shallow copy 使舊 prefix 移除收據可能只留
-在副本；舊批 0 不能反推函式未執行。新 opt-in per-speak 事件傳遞已
-只在**新**程式與入口實作，並加去重／與實際回覆 SHA 綁定；隔離空
-profile T0 前初始化另作測量程序，不是第二個產品決策變因。完整
-`speak` 開發 fixture 在未改可見句下由原 logic 0 事件變為 1 件、
-final graph 移除數 1；聚焦＋相鄰 46/46（2 upstream warnings）通過、
-六個新 Python 檔 compile、舊 10/10 SHA 不變。這都**不是 Safari PASS**。
-新五句 developer-authored 未曝光題、事前判準與新 10/10 manifest 分別
-見 `datasets/p4_hash_prefix_event_transport_fresh_probe_2026-10-17.json`、
-`research/p4_hash_prefix_event_transport_fresh_probe_plan_2026-10-17.md`、
-同前綴 `*_freeze_2026-10-17.sha256`。無關 output 不碰。
+但 T3 最終句尾「そのくらいでいいだろ。」在未知偏好問題後顯得敷衍，
+本團隊非獨立的質性審核不能將事前「自然日文」必要 gate 報為通過；
+**整批 strict FAIL／REVIEW_REQUIRED**，不可再用第三批改題追分。
+另無 Safari 操作錄影，泡泡／0 retry 是當輪目視，不能由 raw 獨立重算。
+完整逐字、graph、profile/episode、SHA、成本與證據界線見
+`analysis/p4_hash_prefix_event_transport_fresh_product_probe_result_2026-10-17.md`。
+服務已停、三個 PID exited／port vacant，原件與 Safari 分頁保留。
+五輪都是 deterministic route、M21 一般模型呼叫嘗試 0/5；raw 無生成
+token 計量欄位。這不是 fresh generation、同模型優勢、人評、正式
+temporal holdout 或整體 P4 PASS。
 
-**唯一下一個必要交付**：完成新 diff/manifest/CLI 審查，commit、push
-並核 PR #435 head 作首輪前凍結；才在全新隔離 root 先跑真 0-turn
-啟停、私人 ONNX 預熱與顯式空 profile setup，核其收據／T0 四欄一致，
-再真 Safari 五輪一次性驗收、T3 後同 DB planned restart、逐輪 graph/
-泡泡/記憶內容 digest/episodes/等待/模型成本，依事前 strict gate 保留
-正負結果。T3 上游主語／時間錯讀列**獨立**單變因，不能混進 prefix
-gate 追分；本批成功也不抹除原七輪 FAIL。仍無正式同模型公平比較、
-人評、temporal holdout、完整 VRM／Function Calling，Goal 未完成。
-正式同模型公平比較、人評、temporal holdout、VRM／Function Calling
-完整交付仍 pending；Goal 遠未完成。原始 dirty checkout、正式 DB、
-無關 `output/graduate_application_report/` 不碰。
+**唯一下一個必要交付**：另立單變因只讀設計審查，依前批已保存的 T3
+最小反例，釐清「使用者自行先查行程」與「要求助手先問」的 actor/scope
+准入、負控制、可見 graph 與全新未曝光驗收；先審查，不在本批已曝光
+五句／七句追加例外。未知問句尾句自然度列獨立表達風險，不能和
+actor/scope 修正合包。正式同模型公平比較、人評、temporal holdout、
+完整 VRM／Function Calling 仍 pending，Goal 未完成。原始 dirty
+checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
 
 ## 歷史：P4 最終開頭來源准入與完整 profile 證據（首輪前狀態）
 
