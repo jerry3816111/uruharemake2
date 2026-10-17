@@ -2,7 +2,40 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 最新執行點：reported-ack／M31 優先序 opt-in 已做，尚待真 Safari
+## 最新結果與唯一下一步：reported-ack／M31 優先序八輪 Safari strict FAIL
+
+首輪前 `1ad129c` 已把單變因 opt-in、新八句與 gold、程序和 SHA manifest
+推到 PR #435。全新隔離 root 的真 Safari 兩 session、同 DB planned restart
+已按凍結題各送一次、0 retry；8/8 泡泡當輪目視＝graph UTTERANCE、
+8/8 raw reply＝blackboard utterance，八個持久 episode；12 份完整 profile
+收據都 present／0 rows／同 digest。8/8 user wait ≤20 秒（平均 8.5395、
+最大 18.8440 秒）。raw SHA 與逐輪、圖、隔離、成本、限制見
+`analysis/p4_reported_ack_m31_priority_fresh_product_probe_result_2026-10-18.md`。
+服務已 planned stop、PID exited、port 7894 vacant；原件與兩個 Safari
+測試分頁保留。這些程序門檻通過不等於產品門檻通過。
+
+**整批 strict FAIL／`REVIEW_REQUIRED`**：T2/T6 第三方引述均證明
+M31 被 deferred，卻都沒有最終可見的 reported-ack（0/2）。T2 selected
+action 正確，後段附加標點與語言 guard generic fallback 洗掉承接；T6
+進入 `safety_sensitive`／M21 protected low-road 而 selected `plain_reply`，
+早期 M31 certificate 卻在未知 protected seed 時略過 M31；兩者都不能以
+「source 辨識正確」或 graph selected 正確稱成功。T8 unknown 負控制
+最終 `確認ありがとう`，未真正釐清；T1/T3/T4/T5/T7 可見路由合格。
+零模型聚焦與相鄰回歸 87/87 只證契約；本批無可信全 runtime token 數。
+已是同一 reported-action 問題第二個有根據前瞻批次，不重播曝露句、
+不補第三批詞彙例外追分，也不把舊失敗抹除。
+
+**唯一下一個必要交付**：先做不改產品程式的設計審查，明確分開
+(a) 已知 protected seed 後才准 M31 defer 的 admission 位置；
+(b) source-qualified selected action 到最終自然日文的表面忠實度和
+guard/fallback 契約；(c) unknown 確認句及串行延遲是獨立項。
+列 before 反例、候選單一變因與代價、新正負控制及資源上限，交設計
+審查後才能開全新未曝光前瞻；不利用本批答案追分。正式同模型強 LLM
+比較、真人評價、temporal holdout、完整 VRM／Function Calling 仍
+pending；Goal 未完成。原始 dirty checkout、正式 DB 與無關
+`output/graduate_application_report/` 不碰。
+
+## 歷史：reported-ack／M31 優先序 opt-in 首輪前狀態
 
 前批 actor/scope 八輪 strict FAIL 與 raw/gold/凍結 SHA 不變；T3 的確是
 `actor=third_party` 仍遭 M31 literal-topic 表面權限蓋掉，不是辨識來源失敗。
