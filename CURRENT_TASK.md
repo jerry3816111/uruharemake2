@@ -8,7 +8,9 @@
 
 **整體 reported-ack 產品仍 FAIL**：T1/T5 selected `ack_reported_check_instruction_p4` 的正確 core 被後段改成 generic 或錯引舊助手句，最終使用者看不到可信的第三者指令承接；T6 的「是否說過號碼」記憶問答錯位且冒號不自然；T7 可見句也不相稱。正式同模型強 LLM、人評、temporal holdout、完整 VRM／Function Calling 仍 pending，Goal 未完成。首發 A 0/2 正例的 strict FAIL 與原件不改算。
 
-**唯一下一個必要交付**：先做 B `selected reported-ack → visible Japanese` 的只讀因果定位與設計審查；以本批 T1/T5 為 before，不回放它們追分。定一個最小後段變因、保護負控制、全新未曝光題／成本／gold，再依流程實作與驗收。T6 記憶和 C 性能另卡，不合包；不碰原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/`。下面 A 首發與修正批的歷史「尚須／下一步」不再是當前命令。
+**B 只讀定位已完成**：`research/p4_reported_ack_selected_to_visible_design_review_2026-10-18.md` 保存 T1/T5 從 selected core → 通用 speech tail 的 `？。` → 日文 guard 泛答；T5 又被 P4-W 錯包成引文的因果證據及尚未驗證的單變因方案。同團隊審查非獨立，尚未改 B code、凍結 B 新題或取得 B 產品 PASS。
+
+**唯一下一個必要交付**：依 B 審查先定精確 task card、未曝光的普通／保護／混合／未知負控制、條件式 gold 與成本上限，首輪前凍結；再做新 opt-in 表面實現、相稱回歸與隔離 Safari 驗收。A 的 T1/T5 只作 before，不回放追分；T6 記憶和 C 性能另卡，不合包。不碰原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/`。下面 A 首發與修正批的歷史「尚須／下一步」不再是當前命令。
 
 ## 歷史：P4 reported-ack 的 M31 路由准入 A（首發與修正前狀態）
 
