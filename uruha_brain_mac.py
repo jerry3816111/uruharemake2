@@ -9559,6 +9559,15 @@ SOURCE:
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
 
+        # P4 opt-in: only the current User's prospective placement-advice act
+        # may add a planning constraint.  The default product path is unchanged.
+        placement_advice_act_p4 = None
+        if os.getenv("URUHA_P4_LOCATION_ADVICE_ACT") == "1":
+            from uruha_location_advice_act_handoff_p4 import classify_location_advice_act_p4
+
+            candidate = classify_location_advice_act_p4(user_input)
+            if candidate.get("eligible"):
+                placement_advice_act_p4 = candidate
         working_memory_summary = memory_data.get("working_memory_summary", "無工作記憶內容")
         rule_plan = (
             None
@@ -9582,6 +9591,11 @@ SOURCE:
                 "fallback_used": False,
                 "raw_dialogue_persisted": False,
             }
+            if placement_advice_act_p4:
+                selected["location_advice_act_handoff_p4"] = {
+                    **placement_advice_act_p4,
+                    "handoff_status": "rule_plan_no_general_prompt",
+                }
             print(Fore.MAGENTA + f"  [Left Brain Rule Plan] {selected}")
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
@@ -9590,6 +9604,20 @@ SOURCE:
             self.persona_policy_provider.planner_goal_line()
             if self.persona_policy_provider is not None
             else "- Final output should sound like Ichinose Uruha."
+        )
+        placement_advice_contract_p4 = (
+            """
+[Current User placement-advice act — P4 opt-in]
+The User asks where to place something in the future, not where it is now.
+For each candidate, make core_message_jp give ONE concrete, reversible, low-risk
+placement recommendation or criterion tied to the User's stated goal.
+If the room layout is unknown, phrase the recommendation conditionally; do not
+claim an actual location, access, or a private fact. Do not use vacuous advice
+such as 適当な場所, 好きな所, or only 一緒に決めよう.
+Do not turn an old stored position or a third-party guess into the best future choice.
+Keep this instruction internal; the final utterance should sound like ordinary casual Japanese.
+"""
+            if placement_advice_act_p4 else ""
         )
         sys_prompt = f"""
 You are the Left Brain Planner for a dual-brain character system.
@@ -9600,7 +9628,7 @@ You must think like a human planner, not like a one-shot classifier.
 [System Goal]
 - Final output should feel human.
 {persona_goal_line}
-- The right brain must not decide knowledge or policy by itself.
+- The right brain must not decide knowledge or policy by itself.{placement_advice_contract_p4}
 
 [Memory]
 - Working memory cue: {working_memory_summary}
@@ -9740,6 +9768,11 @@ Return ONLY valid JSON with this structure:
                 "forced_general_planner": bool(force_general_planner),
                 "raw_dialogue_persisted": False,
             }
+            if placement_advice_act_p4:
+                selected["location_advice_act_handoff_p4"] = {
+                    **placement_advice_act_p4,
+                    "handoff_status": "passed_to_full_planner",
+                }
             print(Fore.MAGENTA + f"  [Left Brain Plan] {selected}")
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
@@ -9789,6 +9822,11 @@ Return ONLY valid JSON with this structure:
                 "error_type": type(e).__name__,
                 "raw_dialogue_persisted": False,
             }
+            if placement_advice_act_p4:
+                selected["location_advice_act_handoff_p4"] = {
+                    **placement_advice_act_p4,
+                    "handoff_status": "model_fallback_no_advice_delivery_claim",
+                }
             return selected
 
 
