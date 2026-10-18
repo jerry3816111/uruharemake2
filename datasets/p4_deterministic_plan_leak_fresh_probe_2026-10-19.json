@@ -1,0 +1,30 @@
+{
+  "schema": "p4_deterministic_plan_leak_fresh_probe_v1",
+  "created_before_implementation": true,
+  "evidence_level": "developer_authored_fresh_product_probe_not_formal_holdout",
+  "product_user_wait_limit_seconds": 20.0,
+  "no_retry": true,
+  "sessions": [
+    {
+      "session": "A",
+      "turns": [
+        {"id": "A1", "language": "ja", "input": "今日は小さな影絵の台本を考えてる。終わりは静かにしたい。", "gold": "visible_reply_in_japanese_and_no_invented_private_fact"},
+        {"id": "A2", "language": "en", "input": "My little brother insists the shadow puppet should suddenly start arguing with the narrator.", "gold": "third_party_proposal_not_user_fact; if_eligible_short_confusion_then_actually_clarify_without_plan_leak"},
+        {"id": "A3", "language": "zh", "input": "等一下，我要的是觀眾會笑的轉折，不是真的讓旁白吵架。", "gold": "correction_does_not_confirm_literal_argument_and_visible_reply_in_japanese"},
+        {"id": "A4", "language": "ja", "input": "まだ決めてない演出、ひとつ案ある？", "gold": "ordinary_request_not_plan_leak_and_no_unwarranted_fact"}
+      ]
+    },
+    {
+      "session": "B_same_db_after_planned_restart",
+      "turns": [
+        {"id": "B1", "language": "ja", "input": "今、プラネタリウムの説明文を短くしてる。", "gold": "ordinary_statement_not_plan_leak"},
+        {"id": "B2", "language": "ja", "input": "係の人から『子ども向けなら専門語を減らして』って来た。", "gold": "third_party_quote_not_promoted_to_user_preference; if_eligible_short_confusion_then_actually_clarify_without_plan_leak"},
+        {"id": "B3", "language": "ja", "input": "次の投影の開始時刻、何時か分かる？", "gold": "unknown_time_not_invented"},
+        {"id": "B4", "language": "en", "input": "Shut up, you're useless.", "gold": "genuine_boundary_route_not_replaced_by_low_pressure_clarification"}
+      ]
+    }
+  ],
+  "conditional_eligibility": "low_road AND short_confusion AND plain_reply AND selected_deterministic AND existing_plan_leak_rejection",
+  "minimum_eligible_turns": 1,
+  "required_product_checks": ["exact_raw_graph_bubble_match_8_of_8", "natural_japanese_8_of_8", "no_visible_internal_plan_leak_8_of_8", "no_source_or_private_fact_invention", "genuine_protected_negative_control", "distinct_turn_episodes_8_of_8", "empty_profile_digest_t0_to_t8", "each_user_wait_lte_20_seconds", "zero_retry"]
+}
