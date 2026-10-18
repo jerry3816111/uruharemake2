@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點**；下方 typed-source 與所有舊「下一步」均是歷史，不可覆蓋本節。
+更新：2026-10-19。**本節是唯一當前續接點**；下方 deterministic plan-leak 結果與所有舊「下一步」是歷史，不覆蓋本節。
+
+## 當前執行：P4 參照探查 source-evidence admission，前瞻計畫已凍結
+
+上一批八輪 strict FAIL／0 eligible 及原 raw SHA 不改判、不重播。只讀因果審查確認 B1 的 `プラネタリウム` 內嵌 `ネタ`、B3 的 `投影` 內嵌 `影`，在舊 ≤22 字 substring 規則被錯選 `reference_probe`；後段 `_critique_plan` 可能二次注入。A1/A3/A4 是不同斷點，不合修。新單一變因是 opt-in `reference_probe` 當輪來源／言語行為證據准入，**同一證書**約束 seed、critique 與 selected；不能靠兩句黑名單、也不以固定澄清句取代。
+
+新設計／八題與條件 gold 已在實作前凍結於 `research/p4_reference_probe_evidence_admission_plan_2026-10-19.md`、`datasets/p4_reference_probe_evidence_fresh_probe_2026-10-19.json`；preimplementation SHA 2/2。純規則 before：四個 false `reference_probe` 正例、兩個真參照控制、一個無 rule、一個受保護辱罵。**尚無本批新 code／模型／Safari 證據**；不能把計畫或舊批輸出當產品改善。
+
+**下一個必要交付**：依凍結允許檔案做最小 opt-in adapter、薄產品入口／controller、聚焦和相鄰回歸；首輪前 product SHA、diff/commit/push/PR head，再全新 0700 隔離 root、空 profile／官方 SHA ONNX 私有離線預熱、真 Safari 兩 session 同 DB planned restart，八句各一次／0 retry。逐輪核 4/4 false admission 阻擋、2/2 合法參照保留、保護負控、最終自然日文／行動忠實／未知不編、raw＝graph＝泡泡、每輪 ≤20 秒、episode/profile、PID/port 和可得成本。失敗保留 strict FAIL，不改題追分；正式同模型／真人／temporal holdout／VRM／Function Calling 仍 pending，Goal active。原始 dirty checkout、正式 DB 與無關 `output/graduate_application_report/` 不碰。
+
+更新：2026-10-19。以下 deterministic plan-leak 結果及其舊「下一步」保留為歷史；不能覆蓋最上方的新准入任務。
 
 ## 當前結果：P4 確定性內部策略外洩八輪 strict FAIL／未命中
 
