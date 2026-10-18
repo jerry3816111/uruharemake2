@@ -8,7 +8,7 @@ B opt-in 表面實現、八句新資料與條件式 gold 已在首輪前以 `f02
 
 **只讀設計審查已完成**：`research/p4_reported_ack_selected_visible_postfailure_review_2026-10-18.md` 定位 T5 是泛用背景 episode anchor 被 B 當成答案權限；只刪 `memory_anchor` gate 不安全，因先前記憶可能已提供確認對象，而現 B 句會錯說「尚不知道」。沒有把 T5 改判或重播。
 
-**唯一下一個必要交付**：先定可追溯的背景檢索／顯性記憶答案權限契約及新的前瞻反例（含前文已知對象），再決定是否能以單一、可歸因的 B 修正處理跨 session；若不能，B 維持 strict FAIL／`REVIEW_REQUIRED`，轉獨立記憶權限工程，不加詞彙小補丁。T2、T3、T6 各屬不同問題，不合包。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合 pending，Goal 未完成；無關 `output/graduate_application_report/` 保留。
+**下一個必要交付（前瞻設計已凍結，尚未實作／生成）**：`research/p4_reported_ack_source_scoped_memory_correction_plan_2026-10-18.md` 將 B 的唯一主張來源限於本輪引文，背景 episode 不當作答案權限；含前文已知確認對象的新八題、條件式 gold 與首輪前 SHA 在新 dataset／freeze。靜態 source certificate 4/4 正候選、4/4 非候選，最後逐字碰撞 0，沒有送模型。先做允許範圍內的 B 修正、零模型與相鄰回歸、最終 code SHA/commit/push/PR 核對，才可新 root Safari 一次性驗收。失敗即 B `REVIEW_REQUIRED`，不重播舊題；T2、T3、T6 各屬不同問題，不合包。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合 pending，Goal 未完成；無關 `output/graduate_application_report/` 保留。
 
 ## 最新結果與唯一下一步：A 有限准入 PASS，reported-ack 產品 FAIL
 
