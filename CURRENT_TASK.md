@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-18。這是唯一當前工作順序；以下各節的舊「下一步」均是歷史。
+
+## 最新結果與下一個必要交付：P4 關係答案權限六輪 Safari strict FAIL
+
+前瞻設計／六句先以 `1da572e` 凍結；opt-in answer-authority、產品 SHA 8/8 與零模型／相鄰 33/33 後以 `f7796f6` 推既有 PR #435，head 已核對。全新 0700 隔離 root、0-turn HTTP readiness／planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile 後，用 Safari 在同 DB 兩 session 做 T1–T6 各一次／0 retry、T4 後 planned restart。T2/T6 selected `ask_miss_me` 都有 `short_term`／`quoted_line_feedback` 真來源命中，新圖節點撤泛用 context 的可見答案權限，回覆未再引用台詞；T1/T5 正確只答引述外層語氣。6/6 泡泡＝raw＝圖 utterance、6/6 ≤20 秒（平均 4.7813、最大 14.8248 秒）、六個不同 episode、T0–T6 七份 full profile 0 rows／同 digest；兩次真 session PID 均 planned exited、7894 vacant。原件 SHA、逐輪、圖、成本與誠實邊界見 `analysis/p4_relationship_context_answer_authority_fresh_product_probe_result_2026-10-18.md`。正式 DB／原始 dirty checkout／無關 `output/graduate_application_report/` 未動。
+
+**整批 strict FAIL，不重播追分**：T4 問 T3 的集合目印，最終卻回 T2 的「前に:ねえ、うちのことまだ覚えてる？」。T3 來源存在於候選池 #2；舊 specific-recall 未涵蓋 `少し前に言った`，泛用 `覚えてる？` 選成 `chat/memory_presence_reply`，generic anchor fallback 取無關 T2 #1。新關係權限 gate 對 T4 未啟用，故 T2/T6 有界正例不等於整體事實記憶或產品 PASS。整份 runtime_state/history 與最終 trace 的 late nodes 亦非逐欄完全同鏡像；只報有核對的權限節點和 utterance。T3 有一次 M31 模型呼叫，不能稱全管線零 token。
+
+**唯一下一個必要交付**：以 T4 raw 只做新項的 before 證據；先只讀設計審查「來源限定的具體事實回憶焦點」，明確選一個可歸因能力變因，凍結全新未曝光正負控制、來源忠實度、未知／衝突、≤20 秒、profile／episode／圖與重啟 gate，再做 opt-in 實作、相稱零模型與隔離 Safari。不可重送本六句、改本批 gate，或將泛用 `覚えてる？` 直接列為足夠的事實答案來源。T7 類混合 frame、T8 具體精簡與 T1 冷啟延遲分卡。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending；Goal active。
+
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
 ## 最新結果與下一個必要交付：P4 引述台詞 act-scope Safari strict FAIL
