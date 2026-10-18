@@ -1,5 +1,13 @@
 # 目前任務卡
 
+更新：2026-10-19。本節取代緊接下方的「尚無本批新 code」狀態；歷史 strict FAIL 不改判。
+
+## 當前交付：P4 參照探查 source-evidence admission，程式與新題已凍結，Safari 首輪待驗
+
+唯一變因維持先前凍結的當輪來源／言語行為准入；舊 core、前批 raw 和八句 gold 未改。新增 opt-in `uruha_reference_probe_evidence_p4.py`、聚焦測試、薄 Web 入口及隔離 controller。相同證書約束 seed、critique、候選選取與右腦弱參照 rescue；末端若仍選錯，拒絕舊參照計畫並標記其圖節點為 shadow，不把舊情緒影響套用到新選定計畫。獨立審查發現並補入 `EDは何時？`、第三者引號內尋曲、引用台詞自然度三類負控及原文 digest；這些是同一准入變因，未改八句凍結題。
+
+首輪前零模型聚焦／相鄰 **193/193**，語法與 controller `--help` 通過；preimplementation SHA 2/2、product SHA 9/9。這些僅是契約證據，**尚未有本批真實模型／Safari／產品 PASS**。下一步先 diff review、只提交本項、push 既有 PR #435 並核 head，再新 0700 root 做 0-turn readiness/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile。依凍結資料用真 Safari 兩 session、同 DB planned restart，A1–A4/B1–B4 每句一次、0 retry；逐輪核准入 4/4 false 阻擋、2/2 真參照保留、保護路由、自然日文／未知不編、泡泡＝raw＝graph UTTERANCE、≤20 秒、episode/profile、可得成本與 PID/port。任何硬門檻不過即整批 strict FAIL，不重送改分；正式同模型、真人、temporal holdout、VRM／Function Calling 仍 pending，Goal active。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。
+
 更新：2026-10-19。**本節是唯一當前續接點**；下方 deterministic plan-leak 結果與所有舊「下一步」是歷史，不覆蓋本節。
 
 ## 當前執行：P4 參照探查 source-evidence admission，前瞻計畫已凍結
