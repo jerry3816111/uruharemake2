@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-18。下節是**唯一最新續接點**；以下舊「下一步」均屬歷史。
+
+## 最新結果與下一個必要交付：P4 時間片語具體回憶 Safari strict FAIL
+
+`2766bdc` 先凍結新八句與計畫，`f62e3e6` 再凍結 opt-in 准入、薄 Web 入口與產品 SHA，兩者已推 PR #435。新隔離 0700 root 經 0-turn readiness、官方 SHA ONNX 私有離線預熱、顯式空 profile 後，Safari 兩 session 同 DB、T4 後 planned restart，T1–T8 各一次／0 retry 已完成。T3/T7 專用來源節點均從 rank 6、普通 top-5 未選的 T1/T5 直接 User episode 取得正確回覆；T4 引述外層評語不誤回憶，T8 缺來源不編顏色。8/8 泡泡＝raw＝graph utterance；八個不同 episode，T0–T8 full profile 0 rows／同 digest；兩 PID planned exited、7894 vacant。raw SHA `4a555de6ae4a0a4b26b3b84b01a332ac6e9a9b46a092feb4b992ca2632774683`，完整逐輪與成本見 `analysis/p4_temporal_specific_recall_admission_fresh_product_probe_result_2026-10-18.md`。本次聚焦／相鄰零模型 37/37、preimplementation SHA 2/2、product SHA 9/9。
+
+**整批 strict FAIL，不重播或放寬 gate**：T1 user wait **22.8402 秒** >20.0；8 輪平均 6.91625、7/8 達標。T1 預熱 ready，但 cognition 20.2296 秒，M31 11.7562 秒與 M21 full planner 8.3131 秒同輪；尚未用干預確證最小性能修正。T2 問「還記得我嗎」卻答「有在意你／你呢」，selected `ask_miss_me`，按凍結直接問題 gold 至少是回答忠實度疑似額外 FAIL。T8 `確かには言えない` 有日文自然度疑慮，事前自然日文 gate 亦不能宣稱已驗收；無獨立母語人評。T3/T7 專用 focus→selected core→utterance 同源，但舊 `selected_plan.memory_anchor` 仍指干擾 short_term、舊 `post_check` 說未顯性使用記憶；不能宣稱整張 graph 所有欄位一致。重啟後的 DB snapshot 保留 T1，但 T7 找的是重啟後才寫入的 T5，本批**未測重啟前來源的可見回憶**。完整 token 不可得。正式 DB／原始 dirty checkout／無關 `output/graduate_application_report/` 未動；正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合 pending，Goal active。
+
+**唯一下一個必要交付**：先只讀設計審查 T1 普通直接陳述的 M31 + M21 串行慢路徑，用 raw、凍結圖與既有代碼確定一個可歸因性能變因；前瞻凍結新的未曝光正負控、來源忠實度／人格／日文／寫回、≤20 秒與成本，再做最小 opt-in 實作與新隔離 Safari。不得重播本八句、用慢路徑的舊輸出追分，亦不得將舊 graph 欄位同步與 T8 措辭順手混進同一變因。若兩次有根據修正仍失敗，保留 `REVIEW_REQUIRED` 等審查。
+
 更新：2026-10-18。這是唯一當前工作順序；以下各節的舊「下一步」均是歷史。
 
 ## 最新結果與下一個必要交付：P4 關係答案權限六輪 Safari strict FAIL
