@@ -1,8 +1,20 @@
 # 目前任務卡
 
-更新：2026-10-19。本節是唯一當前續接點；下方「P4 句尾 copula 六輪」及其他歷史下一步不再直接執行。
+更新：2026-10-19。**本節是唯一當前續接點**；以下所有舊「下一步」保留為歷史，不能覆蓋本節。
 
-## 當前交付：P4 typed episode 來源顯性回憶，程式／凍結題已備，Safari 首輪尚未執行
+## 當前交付：typed episode 來源回憶九輪已驗，整批 strict FAIL
+
+首輪前設計／九題以 `01947d0` 凍結，opt-in adapter／薄 Web entry/controller／產品 SHA 與 125/125 零模型聚焦及相鄰回歸以 `38a06d6` 推既有 PR #435；preimplementation SHA 2/2、product SHA 11/11。真 Safari 在新的 0700 隔離 root `uruha-product-f33brkmw` 跑 session A 5 輪、T5 後真 consolidation／planned stop、同 DB 新 PID/session B 4 輪，各句一次／0 retry。完整逐輪、來源圖、成本與限制見 `analysis/p4_typed_episode_recall_source_fresh_product_probe_result_2026-10-19.md`；raw 九行 SHA `d727d22936a98ef2983064611128e676c6c423886e5907bee491a3b3eb491b5b`。
+
+有界新能力可見：T6 pool 中原生摘要 rank 1、T1 直接 User episode rank 6（top-5 外），typed audit 禁摘要作**最終答案**，專用 handoff 找回 T1「白い階段」而非朋友引述的「赤い門」；T7 兩個直接時間來源衝突不任選，T8 未知牆色不捏造，T9 當輪撤回可見（未測之後是否遵守）。9/9 Safari 泡泡＝graph `UTTERANCE`＝raw；九個不同 episode，T0–T9 full-profile 都是 0 rows／同 digest；兩個 PID planned exited、7894 vacant；正式 DB、原始 dirty checkout及無關 `output/graduate_application_report/` 未動。摘要仍進舊工作記憶／一般 planner 候選，故只主張最終答案權限隔離。
+
+**整批 strict FAIL，不能重播追分**：T1 完整使用者等待 22.6619 秒 > 凍結上限 20 秒，只有 8/9 達標；T4 可見句把「先停下來問」的內部策略說出卻沒真正問，T7/T8 `確かには言えない` 生硬，T9 無句尾標點。typed-source 狹義成功不等於自然日文／人格／產品全通過，也不是正式同模型強 LLM、真人被理解感或 temporal holdout 證據。可靠全管線 token ledger 尚未確認。Goal active。
+
+**下一個必要交付**：先只讀設計審查這批 T1 冷首輪的 M31／M21 串行成本與 T4 對外露出內部策略兩個不同問題，選擇阻擋門檻的單一可歸因變因；若要動 code，先定新題、條件式 gold、精確門檻、允許檔案與 SHA，再按單一任務卡實作、相稱回歸與全新隔離 Safari。不可重播本九題、改弱 baseline 或把支持工程另編 M 充數。正式同模型／holdout／真人／VRM／Function Calling 等上層仍 pending。完成本報告與卡片後只提交本項結果並 push 核 PR head。
+
+更新：2026-10-19。以下是**本批首輪前歷史狀態**；下方「P4 句尾 copula 六輪」及其他歷史下一步均不再直接執行。
+
+## 歷史：P4 typed episode 來源顯性回憶，程式／凍結題已備、Safari 尚未執行
 
 上批六輪 Safari strict FAIL 與 raw SHA `2b343e003101ba0cbf5940c6093686fc96ff0c333e60738a6dcaba72b4d3db78` 保留，不重送。只讀根因審查發現 T6 候選 rank 3 是合法 `episodic_consolidation` 摘要；舊 `explicit_episode_recall_focus` 把同 episode collection 的每筆候選都當 turn serializer 驗證，因此整池 `episode_provenance_incomplete`，即使 rank 7 T1 直接 User episode 還在也無法回答。`consolidation_state=consolidated` 的 T1 仍屬 `source=turn_episode`，不可誤排除。這比僅稱 top-5 rank 問題更精確；原批不改判。
 
