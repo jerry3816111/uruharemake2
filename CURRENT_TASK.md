@@ -1,5 +1,17 @@
 # 目前任務卡
 
+更新：2026-10-18。本節是**唯一最新續接點**；以下「Safari 首輪待執行」及更早的下一步都已成歷史。
+
+## 最新結果與下一個必要交付：P4 句尾 copula 六輪 Safari strict FAIL
+
+首輪前 `7a18043` 凍結新六句／gold／計畫、`f9910cc` 凍結 opt-in code／產品 SHA，均已在既有 PR #435。零模型聚焦 36/36、相鄰回歸 96/96，preimplementation SHA 2/2、product SHA 10/10。新 0700 隔離 root、0-turn readiness／planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile 後，真 Safari 兩 session 同 DB，T4 後 planned restart；T1–T6 各一次／0 retry。完整原件、逐輪、圖和邊界見 `analysis/p4_terminal_copula_commit_latency_fresh_product_probe_result_2026-10-18.md`，raw SHA `2b343e003101ba0cbf5940c6093686fc96ff0c333e60738a6dcaba72b4d3db78`。
+
+6/6 Safari 泡泡＝graph UTTERANCE＝raw，6/6 user wait ≤20 秒（平均 8.1550、最大 14.6911），T1–T6 六個不同 episode，full profile 各輪與重啟前後皆 0 rows／同 digest；兩 PID planned exited、7894 vacant。M31 completed 3 次，M21 general-model completed 0 次，新 gate 自身加 0 次；可靠全管線 token ledger unavailable。T2 同 session 可從 T1 原話回憶；T3 引述與 T4 否定控制未翻成當輪事實／肯定。
+
+**整批 strict FAIL，不重送追分**：預設新 copula mismatch 正例 T1/T5 **0/2 coverage**，M31 實際 canonical 是 `…にある`、不是句尾 `…である`；新來源證書 fail-closed、沒有新 `である→だ` 提交，T5 是**舊** M32 獨立成功，不能算新機制或降延遲因果證據。T1 把直接陳述改問句（frame shadow violation）。T6 在同 DB 重啟後沒有答出 T1 直接原話且日文 `確かには言えない` 生硬；T1 episode 並未丟失，而是在八個 retrieved candidates 中 rank 7、未進 top-5／focus 可回答來源／leftbrain handoff。舊 graph 的 `memory_anchor` 等欄位也不能稱全面同源。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未動；正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending，Goal active。
+
+**唯一下一個必要交付**：只讀設計審查，分開 copula canonical 覆蓋與跨重啟 episode handoff 兩個問題，各自選單一可歸因變因；優先核 T6 來源候選 rank 7 到專用 focus 的斷點，因它阻擋核心記憶產品。若選擇改動，先凍結未曝光的直接來源／干擾／引述／未知與 restart 正負控、成功／失敗、成本、允許檔案與 SHA，再做至多一次有根據的獨立修正批；不可重播本六句或把 T1 frame、T6 日文表面順手混進 copula patch。第二個有根據修正仍失敗則 `REVIEW_REQUIRED`。P4、整體專案與 Goal 均未完成。
+
 更新：2026-10-18。本節是**唯一最新續接點**；以下舊「下一步」留作歷史。
 
 ## P4 句尾 copula M32 有界提交：程式已驗、Safari 首輪待執行
