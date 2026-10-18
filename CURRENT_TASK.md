@@ -1,5 +1,17 @@
 # 目前任務卡
 
+更新：2026-10-19。本節是唯一當前續接點；下方「P4 句尾 copula 六輪」及其他歷史下一步不再直接執行。
+
+## 當前交付：P4 typed episode 來源顯性回憶，程式／凍結題已備，Safari 首輪尚未執行
+
+上批六輪 Safari strict FAIL 與 raw SHA `2b343e003101ba0cbf5940c6093686fc96ff0c333e60738a6dcaba72b4d3db78` 保留，不重送。只讀根因審查發現 T6 候選 rank 3 是合法 `episodic_consolidation` 摘要；舊 `explicit_episode_recall_focus` 把同 episode collection 的每筆候選都當 turn serializer 驗證，因此整池 `episode_provenance_incomplete`，即使 rank 7 T1 直接 User episode 還在也無法回答。`consolidation_state=consolidated` 的 T1 仍屬 `source=turn_episode`，不可誤排除。這比僅稱 top-5 rank 問題更精確；原批不改判。
+
+唯一新變因是 opt-in `uruha_typed_episode_recall_source_p4.py`：把 Chroma metadata `source` 的 bounded type 投影到 episode trace；僅對狹義顯性回憶，核對候選 ID／文檔／類型及 retrieved/pool 一致後，從**焦點副本**排除驗證過的整合摘要，讓原始 User turn 獨占事實答案權限。原候選池、排序、top-5、分數、圖、資料庫及 frozen focus 模組不改；未知類型、文件矛盾、畸形 turn、重複 ID fail-closed。新的薄 Web entry/controller 只在隔離產品入口安裝。此修正不處理 copula coverage、T1 frame shadow 或原 T6 日文措辭，不能把單元通過說成產品 PASS。
+
+新九題／條件式 gold／same-DB restart 與 strict gate 在實作前以 `01947d0` 凍結於 `research/p4_typed_episode_recall_source_plan_2026-10-18.md` 與同名 dataset；preimplementation SHA 2/2。局部聚焦 **7/7**、含 pytest function tests 的受影響 P4／memory 相鄰合計 **125/125** 零模型測試通過，Python compile、controller `--help` 通過；read-only 審查發現 optional provenance list 畸形會 throw，已補 fail-closed 與回歸。`research/p4_typed_episode_recall_source_product_freeze_2026-10-19.sha256` 首輪前 **11/11** 相符；尚無本批 fresh model 或 Safari 證據。新題 exact collision 0/9，developer-authored 非正式 holdout。提交前本分支較 origin 多一筆資料凍結 commit，opt-in code 待提交；無關 `output/graduate_application_report/` 不碰。
+
+**下一個必要交付**：只提交本項並 push 既有 PR #435／核 head。再全新 0700 隔離 root 做 0-turn readiness/stop、官方 SHA ONNX 私有離線預熱、顯式空 profile；依凍結九題各一次／0 retry，在 T5 後等真 `episodic_consolidation` 收據並 planned stop／同 DB restart。T6 須同池有摘要與 T1 原始 turn，核焦點／handoff／selected／泡泡同源；T7 衝突、T8 未知、T4 引述、T9 撤回各守邊界。逐輪核 raw＝graph UTTERANCE＝Safari、自然日文、≤20 秒、不同 episode、profile 0 rows／同 digest、可得 token/延遲、PID/port。任一 gate 失敗存原件、strict FAIL、不補送。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending；Goal active。
+
 更新：2026-10-18。本節是**唯一最新續接點**；以下「Safari 首輪待執行」及更早的下一步都已成歷史。
 
 ## 最新結果與下一個必要交付：P4 句尾 copula 六輪 Safari strict FAIL
