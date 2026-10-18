@@ -19,7 +19,7 @@
 
 ## T5 因果界線
 
-T5 `memory_anchor.source=episode`、`expected=false`、`memory_speakability=background_only`，並有 `stored:episode:<id>`；舊 B 的粗記憶 gate 已不是本輪斷點。當輪 actor/source certificate、A admitted、M31 deferred 和 high/general 均成立。然而 planner 輸出 `intent=ask_miss_me`、`surface_act=affection_tease_soften`、core `先輩の言葉を思い出すね。`；actor wrapper 只在更新後 intent 為 `chat` 時設 reported-ack selected，故該憑證缺席，B 依設計拒絕。其後 self-monitor 的無關句被 frame repair 包成引文，未恢復本輪語義。trace 可以定位斷點，**不能單憑本 log 證明模型為何選 `ask_miss_me`**。不得把這例錯歸因成 episode gate、靠再放寬 B gate 追分，或稱後段 repair 修復成功。
+T5 `memory_anchor.source=episode`、`expected=false`、`memory_speakability=background_only`，並有 `stored:episode:<id>`；舊 B 的粗記憶 gate 已不是本輪斷點。當輪 actor/source certificate、A admitted、M31 deferred 和 high/general 均成立。然而 planner 輸出 `intent=ask_miss_me`、`surface_act=affection_tease_soften`、core `先輩の言葉を思い出すね。`；`uruha_brain_mac.py` 的 `_normalize_plan` 在 casual plan 合併文字含 `思い出` 時，會確定性地強制 `ask_miss_me`，再映成 `affection_tease_soften`。這是足以產生本輪漂移的程式路徑；**raw 未保存 normalization 前的模型候選，不能判定模型原本的 intent**。actor wrapper 只在更新後 intent 為 `chat` 時設 reported-ack selected，故該憑證缺席，B 依設計拒絕。其後 self-monitor 的無關句被 frame repair 包成引文，未恢復本輪語義。不得把這例錯歸因成 episode gate、靠再放寬 B gate 追分，或稱後段 repair 修復成功。第二次失敗後的只讀設計審查見 `research/p4_reported_ack_source_scoped_postfailure_review_2026-10-18.md`。
 
 ## 圖、隔離與成本證據
 
