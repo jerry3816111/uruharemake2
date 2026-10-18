@@ -2,6 +2,14 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新結果與唯一下一步：P4 顯性 episode 回憶焦點首發 strict FAIL
+
+首輪前 `a82d4de28f2d72db8bec799d8e7e12106d7e6ef0` 已把 opt-in 實作、九輪新題、產品 SHA 與 10/10 聚焦＋45/45 相鄰零模型測試推 PR #435。隔離 root 真 Safari T1–T9 各一次／0 retry，T4 後 planned stop、同 DB／新 session 重啟；9/9 泡泡＝graph `UTTERANCE`＝raw，九個不同 episode，T0–T9 十份 full profile 0 rows／同 digest。T7 確實把 rank 8、一般 top-5 未選中的 T2 原話經專用 handoff 帶到最終「七時半」；T5 也正確，但原來源 rank 3，不當作 handoff 增益。T8 缺來源沒有捏造。完整逐輪、圖、成本、隔離與 raw SHA 見 `analysis/p4_explicit_episode_recall_focus_fresh_product_probe_result_2026-10-18.md`。服務最終 planned stop／PID 退出／7894 vacant；原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 未碰。
+
+**整批 strict FAIL，不重播改判**：T1 user wait 23.4546 秒 > 20 秒；T9 雖 focus=null，舊引述／關係 intent 及 generic memory anchor 卻把「台詞是否自然」錯答成上一輪駐輪場內容，不自然且離題；T3 另有「請確認」→「已確認」語義錯述。T5/T7 新 focus receipt、selected core、最終泡泡同源，但舊 `memory_anchor/post_check` 仍是 pre-focus 快照，不能宣稱圖所有節點一致。來源限定跨重啟回憶的狹義能力成立，非產品 PASS、同模型優勢、人類理解或正式研究結論。
+
+**唯一下一個必要交付**：先就 T9 做只讀設計審查與新單變因工作卡，釐清引號內台詞是被討論的內容而非當前回憶／關係請求；凍結新的未曝光正負控、成功／失敗、允許檔案與成本後才實作。T1 cognition 延遲與 T3 第三者指令忠實度分開立項，不以同一修正批偷改。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending；Goal 未完成。下面的首發前「下一步」均屬歷史，不再執行。
+
 ## 當前執行：P4 顯性 episode 回憶焦點首發（T6 獨立工作項）
 
 2026-10-18 接續：opt-in `uruha_explicit_episode_recall_focus_p4.py`、薄 Web 入口與隔離 controller 已實作；首輪前獨立只讀審查補上敏感來源阻擋、來源更正 fail-closed、handoff 原始 rank/top-k flag 與既有 direct episode passage 標記。聚焦 10/10、相鄰 45/45 零模型測試通過，語法與 controller help 通過。新入口已在專用 0700 root `uruha-product-d7ak5ika` 做 0-turn same-PID HTTP ready 與 planned stop；官方 SHA `913d7300ceae3b2dbc2c50d1de4baacab4be7b9380491c27fab7418616a16ec3` ONNX 私有副本已離線封網預熱得 1×384 finite embedding，三個 DB/log 目錄仍空。這些都**不是**九輪產品通過。首輪前 code／依賴／資料 manifest 是 `research/p4_explicit_episode_recall_focus_product_freeze_2026-10-18.sha256`；下一步只提交本項並推 PR #435、核 head 後，做顯式空 profile setup 和 T0 收據，再依凍結九輪各一次／0 retry 做真 Safari 兩 session 同 DB 重啟。若 gate 失敗如實保留，不改舊題追分。無關 `output/graduate_application_report/` 不碰。
