@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點；下方舊「下一步」保留歷史。**
+更新：2026-10-19。**本節是唯一當前續接點；下方所有舊「當前／下一步」保留歷史，不能覆蓋本節。**
+
+## 最新結果：P4 本地時間／位置答案來源授權局部成立，fresh Safari 整批 strict FAIL
+
+`5b1437afedadded478a20dbc50fa3cd5aff8f148` 已把 opt-in 來源授權與首輪前 SHA 推既有 PR #435；12/12 聚焦、118/118 受影響零模型測試只算程式證據。全新 0700 隔離 root、0-turn same-PID ready/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile 後，真 Safari 兩 session 同 DB 在 A4 後 planned restart，凍結 11 句各一次／0 retry。詳細原件、逐輪表與失敗歸因見 `analysis/p4_local_time_place_answer_authority_fresh_product_probe_result_2026-10-19.md`；raw 11 行 SHA `5b6543bad332c8a28abb82ad2f0d00732a7d7d1beec4bd5ab853c90b893c0b5d`。
+
+有界子能力：無 User 來源 A1/B2 **2/2** 不編，直接 User 來源 A3/B1/B4 **3/3** 答值且 B1 跨重啟用真 `direct_episode`；A4 第三者「かも」未升格，B5/B6/B7 原結構路由未被新 gate 越權。11/11 Safari 泡泡＝raw＝graph utterance＝guard、11/11 ≤20 秒（平均 10.7321、最大 14.2247）、十一個不同 episode；新 gate 0 模型呼叫，但舊 M21/M31 計算保留。三個服務 PID planned stop／7894 vacant。**整批 strict FAIL**：A1 後漏存當時 T1 profile/episode 快照，不能從 T2 倒補；B5 建議問句只回 `予備マイクは適当な場所に。`，行動忠實度不過；B6 對未提供的歌詞片段憑空責備，A4 日文雙 `が` 生硬。T0、T2–T11 的 profile 0 rows 同 digest，不代替缺失 T1。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
+
+**下一個必要交付**：先只讀審查 B5 `chat`／M45 建議行為斷點並選一個可歸因變因，以**全新未曝光**正負控、before、允許檔案、成功／失敗、≤20 秒／自然日文／圖／記憶／成本 gate 前瞻凍結，再做相稱 opt-in 實作與隔離 Safari。B6 無證據責備、A4 語面與 T1 收據流程分因處理；本 11 句不可重播追分或改判。若兩次有根據修正仍失敗，保留 `REVIEW_REQUIRED`；正式同模型強 LLM、真人、temporal holdout、VRM／Function Calling 仍 pending。
+
+更新：2026-10-19。以下是本批首輪前歷史狀態；其「下一步」均已執行或作廢。
 
 ## 當前交付：P4 本地時間／位置 User 來源授權，程式已凍結，Safari 首輪待執行
 
@@ -10,7 +20,7 @@
 
 **下一個必要交付**：先核 preimplementation/product SHA、diff、只提交本項並 push 既有 PR #435／核 head；再新 0700 root 做 0-turn 同 PID ready/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile。真 Safari A1–A4，planned stop 後同 DB B1–B7；11 句各一次／0 retry，逐輪核來源 trace、selected／visible／graph、自然日文與行動忠實、泡泡＝raw＝UTTERANCE、十一 episode、T0–T11 profile digest、≤20 秒、模型呼叫及可得 token／延遲。任一硬門檻不過整批 strict FAIL，報告失敗且不重送題句追分。正式同模型強 LLM、真人、temporal holdout、VRM／Function Calling 仍 pending；Goal active。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰。
 
-更新：2026-10-19。**本節是唯一當前續接點**；下方參照探查結果保留，不重播原八句。
+更新：2026-10-19。以下是更早的首輪前歷史狀態；下方參照探查結果保留，不重播原八句。
 
 ## 當前執行：P4 本地時間／位置答案的 User 來源授權，計畫／新題已凍結
 
