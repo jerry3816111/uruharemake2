@@ -1,12 +1,22 @@
 # 目前任務卡
 
-更新：2026-10-19。本節取代緊接下方的「尚無本批新 code」狀態；歷史 strict FAIL 不改判。
+更新：2026-10-19。**本節是唯一當前續接點**；下方「Safari 首輪待驗」及更早的下一步都是歷史。前批 strict FAIL 不改判、不重播。
 
-## 當前交付：P4 參照探查 source-evidence admission，程式與新題已凍結，Safari 首輪待驗
+## 當前結果：P4 參照探查 source-evidence admission 有界成功／產品 strict FAIL
+
+唯一變因是 opt-in 當輪來源／言語行為准入；前瞻計畫／八句 gold 先於實作以 `3cabf42` 凍結，程式／產品 SHA 以 `21527e3` 推既有 PR #435。零模型聚焦／相鄰 **193/193**，preimplementation SHA 2/2、product SHA 9/9。全新 0700 隔離 root、0-turn readiness／planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile 後，真 Safari 兩 session 同 DB planned restart，八句各一次／0 retry。完整原件、逐輪與成本見 `analysis/p4_reference_probe_evidence_fresh_product_probe_result_2026-10-19.md`；raw 八行 SHA `892e98fb2dc29531e5b0f518cfeea3a1f935aa8b679251ad901d001e8dfa9618`。
+
+狹義准入結果：四個舊假陽性 **4/4** 被拒、兩個真參照 **2/2** 保留、受保護路由 **1/1** 保留；8/8 Safari 泡泡＝raw＝graph UTTERANCE＝guard，八個不同 episode，T0–T8 profile 0 rows／同 digest。**整批 strict FAIL**：A1 22.9159 秒 >20 且把普通自述改問句；A3/B1 一般 planner 被選 core 產生無來源「上午／桌下」並通過表面守門；A4/B2 真參照回覆口吻責備而非自然承接。user wait 7/8 ≤20 秒、平均 9.8632625；全 token ledger 不可得。兩 PID planned stop／7894 vacant，兩個新 Safari 分頁保留，其餘未關。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未動。
+
+**下一個必要交付**：對普通時間／位置資訊問句的來源授權做單一可歸因新任務；先只讀設計審查現有 M22/M21／末端來源守門，分辨候選生成與選取的未觀測處，凍結新未曝光有／無來源正負控、條件 gold、≤20 秒／日文／圖／記憶／成本 gate 及 SHA，再最小 opt-in 實作與全新隔離 Safari。不得重送本八句、改舊 gold 追分、把「一律不知道」當方案，亦不合修 A1 latency 或 A4/B2 口吻。新批失敗照留，至多兩個有根據修正批後 `REVIEW_REQUIRED`。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一入口 pending；Goal active。
+
+更新：2026-10-19。以下是本批首輪前歷史狀態，不能覆蓋上節結果。
+
+## 歷史：P4 參照探查程式與新題已凍結，Safari 首輪待驗
 
 唯一變因維持先前凍結的當輪來源／言語行為准入；舊 core、前批 raw 和八句 gold 未改。新增 opt-in `uruha_reference_probe_evidence_p4.py`、聚焦測試、薄 Web 入口及隔離 controller。相同證書約束 seed、critique、候選選取與右腦弱參照 rescue；末端若仍選錯，拒絕舊參照計畫並標記其圖節點為 shadow，不把舊情緒影響套用到新選定計畫。獨立審查發現並補入 `EDは何時？`、第三者引號內尋曲、引用台詞自然度三類負控及原文 digest；這些是同一准入變因，未改八句凍結題。
 
-首輪前零模型聚焦／相鄰 **193/193**，語法與 controller `--help` 通過；preimplementation SHA 2/2、product SHA 9/9。這些僅是契約證據，**尚未有本批真實模型／Safari／產品 PASS**。下一步先 diff review、只提交本項、push 既有 PR #435 並核 head，再新 0700 root 做 0-turn readiness/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile。依凍結資料用真 Safari 兩 session、同 DB planned restart，A1–A4/B1–B4 每句一次、0 retry；逐輪核准入 4/4 false 阻擋、2/2 真參照保留、保護路由、自然日文／未知不編、泡泡＝raw＝graph UTTERANCE、≤20 秒、episode/profile、可得成本與 PID/port。任何硬門檻不過即整批 strict FAIL，不重送改分；正式同模型、真人、temporal holdout、VRM／Function Calling 仍 pending，Goal active。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。
+首輪前零模型聚焦／相鄰 **193/193**，語法與 controller `--help` 通過；preimplementation SHA 2/2、product SHA 9/9。這些僅是契約證據，**當時尚未有本批真實模型／Safari／產品 PASS**。下文原先的 diff review、提交、Safari 步驟均已執行，不再重做；正式同模型、真人、temporal holdout、VRM／Function Calling 仍 pending，Goal active。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。
 
 更新：2026-10-19。**本節是唯一當前續接點**；下方 deterministic plan-leak 結果與所有舊「下一步」是歷史，不覆蓋本節。
 
