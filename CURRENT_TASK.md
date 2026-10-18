@@ -1,6 +1,18 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點**；下方「Safari 首輪待驗」及更早的下一步都是歷史。前批 strict FAIL 不改判、不重播。
+更新：2026-10-19。**本節是唯一當前續接點**；下方參照探查結果保留，不重播原八句。
+
+## 當前執行：P4 本地時間／位置答案的 User 來源授權，計畫／新題已凍結
+
+上批 `reference_probe` 准入 4/4 假陽性阻擋、2/2 真參照保留，但整批 strict FAIL；A3/B1 的 M21 被選 `core_message_jp` 已編出無來源「午前中／机の下」，M22 仍歸 `general_conversation`，M39／語言守門未攔。只讀審查確認原 trace 不存三候選 core，不能斷言每個候選都編值；也不能把 B1 記憶裡的舊 assistant 答案洗成證據。唯一新變因是 opt-in 本地時間／位置問答的**來源准入**，依已交給決策的原始 User turn 授權值、未知時不編，同證書核 selected／visible／graph；A1 latency、參照語氣與舊 M22 scorer 不合修。
+
+實作／新模型首輪前計畫與 11 句條件 gold 已凍結在 `research/p4_local_time_place_answer_authority_plan_2026-10-19.md`、`datasets/p4_local_time_place_answer_authority_fresh_probe_2026-10-19.json`，preimplementation SHA 2/2；新句對既有 dataset JSON 逐字碰撞 0。兩 Safari session 同 DB、A4 後 planned restart；A1/B2 無來源不編，A3/B1/B4 有來源答值（B1 必須跨重啟檢索且傳到決策），A4 第三者推測不升格，B5 建議／B6 真參照／B7 保護路由不變；11/11 泡泡＝raw＝graph UTTERANCE、自然日文、十一 episode、T0–T11 空 profile 同 digest、每輪 ≤20 秒、0 retry。任何硬門檻失敗 strict FAIL；這是開發者 fresh 產品探針，非正式 holdout／同模型比較／人評。
+
+**下一個必要交付**：依凍結允許檔案做最小 opt-in adapter、聚焦與相鄰零模型回歸、薄現有 Gradio 入口／隔離 controller；product SHA、diff review、精確 commit／push／PR #435 head 後，才用新 0700 root／官方 SHA ONNX 私有離線預熱／空 profile 做真 Safari 11 輪。逐輪核來源 trace ID、選定計畫、最後可見、成本及 graph；失敗不重送改分。正式同模型／真人／temporal holdout／VRM／Function Calling 仍 pending，Goal active。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
+
+更新：2026-10-19。以下參照探查結果為歷史，不覆蓋上節。
+
+更新：2026-10-19。以下是參照探查批的歷史結果；其「下一步」已由最上方新任務取代。前批 strict FAIL 不改判、不重播。
 
 ## 當前結果：P4 參照探查 source-evidence admission 有界成功／產品 strict FAIL
 
