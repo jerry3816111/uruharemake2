@@ -4,7 +4,9 @@
 
 ## 當前執行：P4 顯性 episode 回憶焦點首發（T6 獨立工作項）
 
-B 第二次失敗後只讀因果審查已於 `1e99d0f` 推 PR #435，B 保持 `REVIEW_REQUIRED`；不重跑其已曝光 T6。新單一能力變因是來源限定的顯性回憶契約，貫通 retrieved candidate→專用 handoff→selected plan→最終自然日文，並保留無證據／衝突時不猜。before、允許範圍、成功／失敗、成本和九輪新資料見 `research/p4_explicit_episode_recall_focus_plan_2026-10-18.md`；新資料及設計在首輪／實作前 SHA 固定於 `research/p4_explicit_episode_recall_focus_preimplementation_freeze_2026-10-18.sha256`，尚未新模型生成。下一步依此實作 opt-in、零模型回歸；然後凍結產品 code/依賴 SHA、commit/push/核 PR head，才跑全新隔離 Safari 兩 session 同 DB 重啟。正式 DB、原始 dirty checkout 和無關 `output/graduate_application_report/` 不碰。若 gate 不過保留 strict FAIL，不把單元、圖或 B 舊正例冒充產品通過。
+2026-10-18 接續：opt-in `uruha_explicit_episode_recall_focus_p4.py`、薄 Web 入口與隔離 controller 已實作；首輪前獨立只讀審查補上敏感來源阻擋、來源更正 fail-closed、handoff 原始 rank/top-k flag 與既有 direct episode passage 標記。聚焦 10/10、相鄰 45/45 零模型測試通過，語法與 controller help 通過。新入口已在專用 0700 root `uruha-product-d7ak5ika` 做 0-turn same-PID HTTP ready 與 planned stop；官方 SHA `913d7300ceae3b2dbc2c50d1de4baacab4be7b9380491c27fab7418616a16ec3` ONNX 私有副本已離線封網預熱得 1×384 finite embedding，三個 DB/log 目錄仍空。這些都**不是**九輪產品通過。首輪前 code／依賴／資料 manifest 是 `research/p4_explicit_episode_recall_focus_product_freeze_2026-10-18.sha256`；下一步只提交本項並推 PR #435、核 head 後，做顯式空 profile setup 和 T0 收據，再依凍結九輪各一次／0 retry 做真 Safari 兩 session 同 DB 重啟。若 gate 失敗如實保留，不改舊題追分。無關 `output/graduate_application_report/` 不碰。
+
+B 第二次失敗後只讀因果審查已於 `1e99d0f` 推 PR #435，B 保持 `REVIEW_REQUIRED`；不重跑其已曝光 T6。新單一能力變因是來源限定的顯性回憶契約，貫通 retrieved candidate→專用 handoff→selected plan→最終自然日文，並保留無證據／衝突時不猜。before、允許範圍、成功／失敗、成本和九輪新資料見 `research/p4_explicit_episode_recall_focus_plan_2026-10-18.md`；新資料及設計在首輪／實作前 SHA 固定於 `research/p4_explicit_episode_recall_focus_preimplementation_freeze_2026-10-18.sha256`。目前尚未新模型生成。正式 DB、原始 dirty checkout 和無關 `output/graduate_application_report/` 不碰。若 gate 不過保留 strict FAIL，不把單元、圖或 B 舊正例冒充產品通過。
 
 ## 最新結果：P4 reported-ack B 來源限定修正批 strict FAIL／`REVIEW_REQUIRED`
 
