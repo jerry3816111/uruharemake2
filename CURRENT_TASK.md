@@ -2,6 +2,10 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前執行：P4 顯性 episode 回憶焦點首發（T6 獨立工作項）
+
+B 第二次失敗後只讀因果審查已於 `1e99d0f` 推 PR #435，B 保持 `REVIEW_REQUIRED`；不重跑其已曝光 T6。新單一能力變因是來源限定的顯性回憶契約，貫通 retrieved candidate→專用 handoff→selected plan→最終自然日文，並保留無證據／衝突時不猜。before、允許範圍、成功／失敗、成本和九輪新資料見 `research/p4_explicit_episode_recall_focus_plan_2026-10-18.md`；新資料及設計在首輪／實作前 SHA 固定於 `research/p4_explicit_episode_recall_focus_preimplementation_freeze_2026-10-18.sha256`，尚未新模型生成。下一步依此實作 opt-in、零模型回歸；然後凍結產品 code/依賴 SHA、commit/push/核 PR head，才跑全新隔離 Safari 兩 session 同 DB 重啟。正式 DB、原始 dirty checkout 和無關 `output/graduate_application_report/` 不碰。若 gate 不過保留 strict FAIL，不把單元、圖或 B 舊正例冒充產品通過。
+
 ## 最新結果：P4 reported-ack B 來源限定修正批 strict FAIL／`REVIEW_REQUIRED`
 
 首輪前 `3ce45ec489ae3beb5b12174e07d1660a24bc120a` 已把 source-scoped B 修正、八句新題／條件式 gold、修訂與產品 SHA 推到 PR #435。隔離 root 真 Safari 兩 session、T4 後同 DB planned restart、每句一次／0 retry 已完成；原件 SHA `b08aaa9d85bb0bc68f28ed162d5eb63082c5c087ddf2ea5c0037abc59421f304`。完整逐題、圖、隔離、成本與歸因見 `analysis/p4_reported_ack_source_scoped_memory_fresh_product_probe_result_2026-10-18.md`。8/8 raw＝graph UTTERANCE＝當輪 Safari 泡泡、八個不同 episode、T0–T8 九份 profile 0 rows／同 digest；B 追加模型呼叫 0。服務 planned stop、7894 vacant，正式 DB 未動。前瞻 manifest 16/16 重驗 OK。

@@ -1,0 +1,20 @@
+{
+  "schema": "uruha_p4_explicit_episode_recall_focus_fresh_probe_v1",
+  "authorship": "developer_authored_unseen_product_probe_not_formal_holdout",
+  "status": "frozen_before_implementation_and_first_model_generation",
+  "sessions": 2,
+  "restart_after_turn": 4,
+  "same_isolated_db_after_restart": true,
+  "retry_count_per_turn": 0,
+  "turns": [
+    {"turn": 1, "role": "user_source_place", "input": "集合する場所は市民ホールの南入口だよ。", "conditional_gold": "Store this user-authored place statement as an episode; do not create a profile fact."},
+    {"turn": 2, "role": "user_source_time", "input": "集合する時間は七時半だよ。", "conditional_gold": "Store a distinct user-authored time statement; do not conflate place and time."},
+    {"turn": 3, "role": "quoted_place_distractor", "input": "友達が「集合場所を確認してね」と言った。", "conditional_gold": "Third-party quote is not a user assertion of the place value; no explicit-recall takeover."},
+    {"turn": 4, "role": "quoted_time_distractor", "input": "先輩は「集合時間も確認して」と言ってた。", "conditional_gold": "Third-party quote is not a user assertion of the time value; planned stop and same-DB restart follow."},
+    {"turn": 5, "role": "cross_restart_place_recall", "input": "さっき言った集合場所、覚えてる？", "conditional_gold": "If the T1 episode is in retrieved pool with valid user-source proof, it must be passed by explicit-focus handoff, selected and visibly answered in natural Japanese with 市民ホールの南入口, not the T3 quote. If the source is absent, record coverage FAIL rather than inventing."},
+    {"turn": 6, "role": "broad_relationship_presence", "input": "私のこと、まだ覚えてる？", "conditional_gold": "No explicit-focus takeover; preserve the normal relationship or memory-presence route, and do not invent a specific fact."},
+    {"turn": 7, "role": "cross_restart_time_recall", "input": "前に言った集合時間、覚えてる？", "conditional_gold": "If the T2 episode is in retrieved pool with valid user-source proof, it must be passed, selected and visibly answered in natural Japanese with 七時半, not T4 quote or T1 place. If absent, coverage FAIL."},
+    {"turn": 8, "role": "missing_source_recall", "input": "さっき言った駐輪場の色、覚えてる？", "conditional_gold": "Do not invent a parking color or steal unrelated episode; use a short natural Japanese uncertainty reply if this concrete recall path is selected."},
+    {"turn": 9, "role": "metalinguistic_quoted_question", "input": "「集合場所、覚えてる？」って台詞、変かな？", "conditional_gold": "The quotation is a phrase under discussion, not an actual past-fact recall query; no explicit-focus takeover."}
+  ]
+}
