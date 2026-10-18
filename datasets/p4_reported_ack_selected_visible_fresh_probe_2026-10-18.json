@@ -1,0 +1,22 @@
+{
+  "schema": "uruha_p4_reported_ack_selected_visible_fresh_probe_v1",
+  "authorship": "developer_authored_pre_exposure_product_cases",
+  "status": "pre_exposure",
+  "claim_boundary": "One prospective B selected-to-visible product batch; not independent holdout, human rating, or strong-LLM comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 4,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 8,
+  "turns": [
+    {"turn": 1, "role": "ordinary_report_check_a", "input": "友人が「先に確認してね」と言っていた。", "expected_source_certificate": true, "conditional_gold": "If A admitted and M31 deferred on high/general ordinary route with selected reported act and no memory/profile, B must produce final natural Japanese source-qualified reported acknowledgement; otherwise positive coverage missing. No invented check object or completed action."},
+    {"turn": 2, "role": "protected_report_check_a", "input": "妹が「先に確認して」と言ってた。", "expected_source_certificate": true, "conditional_gold": "If actual seed/route/M22 is protected, B must not take over and original M31 runs. If ordinary, protected coverage missing; never call an ordinary B output a protected PASS."},
+    {"turn": 3, "role": "mixed_report_plus_direct_request_negative", "input": "先輩が「先に確認して」と言っていた。でも今は、うるはは私に先に欲しい返し方を聞いて。", "expected_source_certificate": false, "conditional_gold": "B ineligible; current direct request retains authority and quote is not an instruction to assistant."},
+    {"turn": 4, "role": "ordinary_nonreport_before_restart", "input": "待ち合わせ場所が急に変わったんだ。", "expected_source_certificate": false, "conditional_gold": "B ineligible; no source-qualified reported instruction or invented completed check."},
+    {"turn": 5, "role": "ordinary_report_check_b_after_restart", "input": "先生が「先に確認してね」と言っていた。", "expected_source_certificate": true, "conditional_gold": "Same full positive conditional gate as T1 after planned restart; final, not selected-only, natural Japanese must retain the report without pretending the check target is known."},
+    {"turn": 6, "role": "identity_negative", "input": "うるは、自己紹介して。", "expected_source_certificate": false, "conditional_gold": "B ineligible; self-identity still Uruha in natural Japanese, no reported quote."},
+    {"turn": 7, "role": "protected_report_check_b", "input": "同僚が「先に確認してね」と言ってた。", "expected_source_certificate": true, "conditional_gold": "If protected route, B must not take over and original M31 runs; no invented colleague motive or private fact."},
+    {"turn": 8, "role": "unknown_nonreport_negative", "input": "確認の対象は、まだ誰も決めてないんだ。", "expected_source_certificate": false, "conditional_gold": "B ineligible; do not manufacture actor, object, or completed check; low-pressure Japanese response."}
+  ]
+}

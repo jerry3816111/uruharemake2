@@ -2,6 +2,10 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前執行：P4 reported-ack B 的首輪前凍結與表面實現
+
+A 修正批與 B 只讀審查已完成，未重跑舊句。B 的 before、單一變因、允許檔案、八句新資料／條件式 gold、嚴格成功/失敗分支及資源上限見 `research/p4_reported_ack_selected_visible_plan_2026-10-18.md` 與 `datasets/p4_reported_ack_selected_visible_fresh_probe_2026-10-18.json`。目前**尚無 B 生成、Safari 或產品 PASS**。先做零模型靜態來源／碰撞檢查、設計 review、prospective SHA／commit/push；再新 opt-in 表面 hook、聚焦與相鄰回歸、首輪前 final freeze／PR head 核對，最後才各句一次的隔離 Safari。舊 A T1/T5 只作 before，T6 記憶與 C 延遲不混修。無關 `output/graduate_application_report/` 保留。
+
 ## 最新結果與唯一下一步：A 有限准入 PASS，reported-ack 產品 FAIL
 
 `618c628fef40ac01eac2b272ec48e11e1c3b2f04` 首輪前已把唯一 seed-provenance 修正批的 code／新八句／條件式 gold／計畫／manifest 推到 PR #435。全新 0700 隔離 root 真 Safari 兩 session、T4 後同 DB planned restart、每題一次／0 retry 已完成，原件 SHA `9580fd65f4fd4094ae733e9bdcd12fbefba1190e7723c5b009f956cadcd74236`；完整逐題與界線見 `analysis/p4_reported_ack_route_admission_seed_provenance_fresh_product_probe_result_2026-10-18.md`。普通 no-rule 空 seed 正例 T1/T5 **2/2 admitted、原 M31 0**；protected low-road T2/T7 **2/2 rejected、原 M31 1**；四個負控制無錯 defer。8/8 等待 ≤20 秒（平均 10.7661、最大 19.8950 秒），8/8 raw＝graph UTTERANCE＝當輪目視 Safari 泡泡，八 episode；T0–T8 九份完整 profile 收據同 digest／0 rows。服務 planned stop、兩 PID exited、port 7894 vacant。這只讓 **A 有限路由子門檻通過**，不是產品完成。
