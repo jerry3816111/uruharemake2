@@ -2,6 +2,14 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 最新結果：P4 reported-ack B 來源限定修正批 strict FAIL／`REVIEW_REQUIRED`
+
+首輪前 `3ce45ec489ae3beb5b12174e07d1660a24bc120a` 已把 source-scoped B 修正、八句新題／條件式 gold、修訂與產品 SHA 推到 PR #435。隔離 root 真 Safari 兩 session、T4 後同 DB planned restart、每句一次／0 retry 已完成；原件 SHA `b08aaa9d85bb0bc68f28ed162d5eb63082c5c087ddf2ea5c0037abc59421f304`。完整逐題、圖、隔離、成本與歸因見 `analysis/p4_reported_ack_source_scoped_memory_fresh_product_probe_result_2026-10-18.md`。8/8 raw＝graph UTTERANCE＝當輪 Safari 泡泡、八個不同 episode、T0–T8 九份 profile 0 rows／同 digest；B 追加模型呼叫 0。服務 planned stop、7894 vacant，正式 DB 未動。前瞻 manifest 16/16 重驗 OK。
+
+**整批未通過兩個獨立門檻**：T1 20.2395 秒，超出凍結 ≤20 秒；T5 跨重啟雖 A admitted／M31 deferred，planner 卻選 `ask_miss_me/affection_tease_soften`，actor selected ack 缺席，B 正確 fail-closed，最終為無關引文。T1/T3 的來源限定 B 正例可見，但跨重啟 T5 coverage 缺失，不能稱產品 PASS。T6 顯性回憶沒有答 T2「明日の教室番号」、T7 直接請求沒有執行，另屬非 B 路徑缺陷。T1 私有 ONNX 79.3 MB 在當輪下載而非先離線預熱，程序疏漏與耗時保留，不重跑改判。首發 B 失敗與本修正失敗都保留。
+
+**唯一下一個必要交付**：先做 B `REVIEW_REQUIRED` 的只讀設計審查，分清 post-planner intent 漂移、actor selection 與 quote repair 的責任邊界；不重送已曝光題、不放寬 B gate 追分。之後選與 B 獨立、對核心目標必要的單一變因（首候選為跨重啟顯性記憶焦點 T6），先定 before、前瞻資料與成功／失敗條件再實作。T7 行動忠實度與冷啟動成本分卡。正式同模型比較、人評、temporal holdout、VRM／Function Calling 整合仍 pending；Goal 未完成。無關 `output/graduate_application_report/` 保留。下面歷史「下一步／尚須 Safari」均不是當前命令。
+
 ## 當前執行：P4 reported-ack B 首發失敗後的單變因審查
 
 B opt-in 表面實現、八句新資料與條件式 gold 已在首輪前以 `f02cf95113391e6b8512d6ee23fb0e4203060161` 凍結並推 PR #435；160/160 聚焦及相鄰契約通過。真 Safari 兩 session／同 DB planned restart、八題各一次、0 retry 已完成；原件 SHA `020de8e7a6b526e03b15f4f0a1a28bbaa2efc9bf6037786692ad86907e817c7e`。完整結果及邊界見 `analysis/p4_reported_ack_selected_visible_fresh_product_probe_result_2026-10-18.md`。T1 最終 reported-ack 成功，但重啟後 T5 雖 A admitted／M31 deferred／selected 正確，B 因自動背景 episode 的 `memory_anchor` 擋下，最終泛答，正例只有 **1/2**，整批 strict FAIL。protected 2/2 與其他負控制 4/4 沒被 B 誤接管；8/8 raw＝graph UTTERANCE＝Safari 泡泡，8/8 ≤20 秒，八不同 episode，T0–T8 profile 0 rows／同 digest。服務已 planned stop、7894 vacant。T2 source fidelity、T6 identity 與 T3 frame shadow 警告保留，不能稱全產品 PASS。
