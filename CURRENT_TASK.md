@@ -2,7 +2,15 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
-## 當前執行：P4 引述台詞與當輪行為分界（首輪前，尚未產品驗收）
+## 最新結果與下一個必要交付：P4 引述台詞 act-scope Safari strict FAIL
+
+首輪前 `524e873` 凍結新八句與 gate，`09ed473` 凍結 opt-in code／相鄰 35/35 零模型測試並推 PR #435；product SHA 13/13 OK。全新 0700 隔離 root 真 Safari T1–T8 各一次、0 retry，T4 後 planned stop／同 DB 新 session 重啟。8/8 Safari 泡泡＝runtime graph UTTERANCE＝raw；T0–T8 九份 full profile 均 0 rows／同 digest、八個不同 episode、終局兩 PID exited／7894 vacant。T2 直接回憶能精確找回 T1 episode；T3/T5/T8 的有界引述 certificate、selected 與可見回覆一致，沒有把引號內問句當成本輪記憶／關係請求。完整逐輪、失敗歸因、成本、原件 SHA 見 `analysis/p4_quoted_line_act_scope_fresh_product_probe_result_2026-10-18.md`。
+
+**整批 strict FAIL，不重播追分**：T1 user-wait 21.7664 秒 >20 秒，且 `了解しました` 的敬體不符 casual 人格目標；T6 selected `ask_miss_me` 卻把 T5 引述台詞作記憶答案，並有不自然標點；T7 selected 真外層關係問句，最後被舊 short-term anchor／frame repair 改為離題「記載」；T8 雖識別外層 shorten，只給泛泛方向，未交付針對該句的精簡版本。新 scope 有限能力成立不等於產品 PASS，正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending。
+
+**唯一下一個必要交付**：先做只讀設計審查，分開 T6/T7 的舊 short-term answer-authority／selected→final 忠實度、T8 的具體精簡交付、T1 冷啟 latency；各自界定單一變因與成本，選一個阻擋產品 gate 的最小必要修正，先凍結新未曝光題與成功／失敗，再實作及驗收。不可將八句原題重播或放寬 gate，亦不碰原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/`。Goal 未完成。下列首輪前與舊批「唯一下一步」均是歷史。
+
+## 歷史：P4 引述台詞與當輪行為分界（首輪前，尚未產品驗收）
 
 上一批九輪及 T9 strict FAIL 原件不變、不重播。只讀審查確認：新 episode focus 已拒絕引號，舊關係 detector 卻把引號內 `覚えてる？` 當本輪請求，並讓上一輪短期記憶 anchor 蓋過外層「台詞自然嗎」問題。這輪唯一新變因是有界 quote/outer-act scope certificate，綁定 route／selected plan／anchor 准入／最後日文與 graph；原始候選池、top-5、profile 與舊模組不改。
 
