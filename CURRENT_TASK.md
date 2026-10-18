@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-19。**本節是唯一當前續接點**；下方 typed-source 與所有舊「下一步」均是歷史，不可覆蓋本節。
+
+## 當前結果：P4 確定性內部策略外洩八輪 strict FAIL／未命中
+
+上一批 typed-source 九輪 T4 真實 `short_confusion` 內部策略句外洩與 T1 超時分因審查後，本輪先以 `b710534` 凍結單變因計畫及八句，後以 `3d017c7` 凍結 opt-in 最後可見 speech-act guard／測試／產品 SHA 並推既有 PR #435。零模型聚焦＋相鄰 89/89、preimplementation SHA 2/2、product SHA 6/6。全新 0700 隔離 root、0-turn readiness/planned stop、官方 SHA ONNX 私有預熱及空 profile 後，Safari 兩 session、同 DB planned restart，共八句各一次、0 retry；原始 raw SHA `ccf6e137a102f6cc1e672b066e9abcfb1fa57a7d343fe0790eadf86b4408aae5`。逐輪、圖、成本與邊界見 `analysis/p4_deterministic_plan_leak_surface_fresh_product_probe_result_2026-10-19.md`。
+
+**整批 strict FAIL**：實際符合 `low_road/short_confusion/plain_reply/selected deterministic/plan-leak rejection` **0/8**，新增 node 0/8，不能主張新機制在 fresh Safari 已證明改善。A1 user wait **23.5476 秒** >20；A1/B1/B3 把普通完整語句／資訊問句誤作殘句或梗，A3 不接住明示修正、A4 未交付一個點子，B4 保護路由雖保住但末句不自然。8/8 Safari 泡泡＝raw＝graph UTTERANCE＝guard，八個 episode，T0–T8 profile 0 rows／同 digest；服務 planned stop，兩 PID exited、7894 vacant。這些一致性與隔離門檻不抵銷品質／coverage／latency 失敗。兩個 Safari 測試分頁保留，其他未關。正式同模型比較、真人、temporal holdout、VRM／Function Calling 統一入口仍 pending，Goal active。
+
+**下一個必要交付**：先只讀設計審查新 raw 的普通語句／問句錯路由與 selected→final 對話行為，分開舊 T4 策略外洩，挑一個對正常聊天最關鍵且可歸因的變因；事前凍結新的未曝光正負控制、gold、≤20 秒／自然日文／來源／episode/profile／graph／成本 gate 與 SHA，再實作、相稱回歸、全新隔離 Safari。不能重播本八句、改本批判準或把未命中新 guard 視為產品 PASS。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。
+
 更新：2026-10-19。**本節是唯一當前續接點**；以下所有舊「下一步」保留為歷史，不能覆蓋本節。
 
 ## 當前交付：typed episode 來源回憶九輪已驗，整批 strict FAIL
