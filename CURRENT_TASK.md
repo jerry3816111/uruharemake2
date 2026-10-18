@@ -2,6 +2,14 @@
 
 更新：2026-10-18。這是唯一當前工作順序；歷史下一步留在 Git／交接，不直接執行。
 
+## 當前執行：P4 引述台詞與當輪行為分界（首輪前，尚未產品驗收）
+
+上一批九輪及 T9 strict FAIL 原件不變、不重播。只讀審查確認：新 episode focus 已拒絕引號，舊關係 detector 卻把引號內 `覚えてる？` 當本輪請求，並讓上一輪短期記憶 anchor 蓋過外層「台詞自然嗎」問題。這輪唯一新變因是有界 quote/outer-act scope certificate，綁定 route／selected plan／anchor 准入／最後日文與 graph；原始候選池、top-5、profile 與舊模組不改。
+
+八輪前瞻題與 conditional gold、strict gate 已在實作前以 `524e873` 推 PR #435；`research/p4_quoted_line_act_scope_preimplementation_freeze_2026-10-18.sha256` 2/2 OK。新 opt-in 模組／入口／controller 已寫、聚焦＋相鄰零模型 **35/35**，語法與 controller help 通過。只讀複審指出並已處理 selected-plan 晚期覆蓋、失敗收據、複合外層行動誤准入等風險；`research/p4_quoted_line_act_scope_product_freeze_2026-10-18.sha256` 現為首輪前 code／依賴／資料 SHA。**尚無新 Safari／模型生成，不能稱產品 PASS**。
+
+**唯一下一步**：核 product SHA、diff review，精確提交本項並推 PR #435／核 head；再用全新 0700 隔離 root 做 0-turn readiness、私有官方 SHA ONNX 離線預熱、空 profile setup；依凍結八輪各一次／0 retry，在 T4 後 planned stop、同 DB 新 session 重啟。逐輪核 raw＝Safari 泡泡＝graph UTTERANCE、outer act/selected/final、延遲、profile digest 與八個 episode。任一 gate 不過整批 strict FAIL 並保存，不回放追分。T1 性能與先前 T3 引述指令時態另卡。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 整合仍 pending；Goal 未完成。無關 `output/graduate_application_report/` 不碰。下面的「唯一下一步」均是歷史。
+
 ## 最新結果與唯一下一步：P4 顯性 episode 回憶焦點首發 strict FAIL
 
 首輪前 `a82d4de28f2d72db8bec799d8e7e12106d7e6ef0` 已把 opt-in 實作、九輪新題、產品 SHA 與 10/10 聚焦＋45/45 相鄰零模型測試推 PR #435。隔離 root 真 Safari T1–T9 各一次／0 retry，T4 後 planned stop、同 DB／新 session 重啟；9/9 泡泡＝graph `UTTERANCE`＝raw，九個不同 episode，T0–T9 十份 full profile 0 rows／同 digest。T7 確實把 rank 8、一般 top-5 未選中的 T2 原話經專用 handoff 帶到最終「七時半」；T5 也正確，但原來源 rank 3，不當作 handoff 增益。T8 缺來源沒有捏造。完整逐輪、圖、成本、隔離與 raw SHA 見 `analysis/p4_explicit_episode_recall_focus_fresh_product_probe_result_2026-10-18.md`。服務最終 planned stop／PID 退出／7894 vacant；原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 未碰。
