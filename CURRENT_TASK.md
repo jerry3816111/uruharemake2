@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-19。**本節是唯一當前續接點；下方舊「下一步」保留歷史。**
+
+## 當前交付：P4 本地時間／位置 User 來源授權，程式已凍結，Safari 首輪待執行
+
+前批 `reference_probe` 八輪 strict FAIL 與 raw SHA 不改判、不重播。本項唯一變因按 `ef97590` 事前凍結的計畫／十一句條件 gold：只在 opt-in 產品入口對有界本地開始時間、置放地點問句，以本輪確實交給決策的原始 User turn 授權具體值；無來源、第三方猜測、舊 assistant 答案、summary、時間戳與衝突不能當事實。source-bound 回覆、selected plan、visible guard 與新 graph node 共用證書；舊規劃節點標 shadow，成本保留。重啟需真 `direct_episode`、`turn_episode` stored-metadata type；缺檢索即產品 FAIL，不偷查 DB。受保護／尋曲／建議路由維持原狀。程式的保守文法與 40 字 core 上限不是開放領域問答或自然日文保證。
+
+新增 `uruha_local_fact_answer_authority_p4.py`、12 個聚焦零模型契約、薄 Web entry/controller。聚焦與受影響相鄰 **118/118**（其後聚焦增補安全負控再 12/12），語法、Web entry import、controller `--help` 通過；獨立只讀審查指出的 fake recent trace ID、pre-gate personhood／prediction 殘留、post-guard mismatch 可偵測性已補契約或 shadow。`research/p4_local_time_place_answer_authority_product_freeze_2026-10-19.sha256` 為本批首輪前 13 檔 SHA；與事前 2 檔 SHA 分開。這些只是程式證據，**尚未有本批 fresh 模型／Safari／產品 PASS**；末端如再變更已授權回覆，收據標 `post_guard_surface_mismatch`、整批按 hard gate FAIL，不假稱絕對阻斷所有下游變更。
+
+**下一個必要交付**：先核 preimplementation/product SHA、diff、只提交本項並 push 既有 PR #435／核 head；再新 0700 root 做 0-turn 同 PID ready/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile。真 Safari A1–A4，planned stop 後同 DB B1–B7；11 句各一次／0 retry，逐輪核來源 trace、selected／visible／graph、自然日文與行動忠實、泡泡＝raw＝UTTERANCE、十一 episode、T0–T11 profile digest、≤20 秒、模型呼叫及可得 token／延遲。任一硬門檻不過整批 strict FAIL，報告失敗且不重送題句追分。正式同模型強 LLM、真人、temporal holdout、VRM／Function Calling 仍 pending；Goal active。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰。
+
 更新：2026-10-19。**本節是唯一當前續接點**；下方參照探查結果保留，不重播原八句。
 
 ## 當前執行：P4 本地時間／位置答案的 User 來源授權，計畫／新題已凍結
