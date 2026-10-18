@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-18。本節是**唯一最新續接點**；以下舊「下一步」留作歷史。
+
+## P4 句尾 copula M32 有界提交：程式已驗、Safari 首輪待執行
+
+上一批時間片語回憶八輪的 strict FAIL 與 raw SHA 不改判、不重播。只讀歸因見 `research/p4_terminal_copula_commit_latency_plan_2026-10-18.md`：普通直接陳述的 M31 產生與原句對齊的 canonical `…である`，舊 M32 因 predicate `…だ` 不在 summary 內，唯獨雙錨點失敗，落入第二次 M21 模型規劃。唯一新變因是 opt-in `uruha_terminal_copula_commit_latency_p4.py`：M31 邊界先拿真原文作逐字來源證書；舊 M32 先跑、且只有這個單一失敗時，複製句尾 `である→だ` 再跑**未改的原 M32 全守門**。不改原 M31/M32、舊資料或記憶。
+
+新六句、條件式 gold、T4 後同 DB planned restart 與 ≤20 秒 strict gate 已在實作前以 `7a18043` 凍結；首輪前 exact collision 0/6。聚焦零模型 **36/36**、擴大相鄰 M31/M32/M33/source/quote/episode/temporal **96/96** 通過，語法、Web entry import、controller `--help` 通過；preimplementation SHA **2/2**、product SHA **10/10** 均核對。這些尚非模型／Safari 產品通過，原實驗不具有同題延遲因果 A/B 或正式 holdout 身分。
+
+**唯一下一步**：只提交本項 opt-in 模組、測試、薄 Web 入口/controller、product SHA 與本任務卡，push 既有 PR #435 並核 head；然後全新 0700 隔離 root 做 0-turn readiness／planned stop、官方 ONNX 私有離線預熱、顯式空 profile，再按凍結 T1–T6 各送真 Safari 一次／0 retry、T4 後同 DB planned restart。逐輪核 M31 shape、M32 轉換收據、M21 完成呼叫、raw＝graph utterance＝泡泡、直接來源與重啟前 T1 回憶、自然日文、延遲、episode、profile digest 與 PID/port。任一 gate 失敗，整批 strict FAIL，保存原件及成本，不補送追分。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰；Goal active。
+
 更新：2026-10-18。下節是**唯一最新續接點**；以下舊「下一步」均屬歷史。
 
 ## 最新結果與下一個必要交付：P4 時間片語具體回憶 Safari strict FAIL
