@@ -101,7 +101,8 @@ def test_source_bound_realization_has_no_bad_punctuation_or_invented_check():
     core = logic["core_message_jp"]
     assert receipt["status"] == "selected"
     assert "後輩が「先に確認して」って言ってたんだね。" in core
-    assert "まだ分かんない" in core
+    assert "まだ分かんない" not in core
+    assert "何を確認" not in core
     assert "？" not in core and "？。" not in core
     assert "確認した" not in core
     assert logic["constraints"]["max_chars"] >= len(core)
@@ -109,6 +110,9 @@ def test_source_bound_realization_has_no_bad_punctuation_or_invented_check():
     assert logic["personhood_action_context_v2_13"]["core_message_jp"] == core
     assert SOURCE not in repr(receipt)
     assert "先に確認して" not in repr(receipt)
+    assert receipt["claim_source_scope"] == "current_user_report_only"
+    assert receipt["memory_authority"] == "no_retrieved_anchor"
+    assert receipt["global_unknown_claimed"] is False
     assert not inspect_utterance_frame_shadow_p4(SOURCE, core)["violations"]
     brain = RightBrain.__new__(RightBrain)
     assert "malformed_japanese_punctuation" not in brain._user_visible_language_rejection_reasons(
@@ -147,6 +151,127 @@ def test_eligibility_fails_closed_without_touching_selected_core(mutation, reaso
     )
     assert receipt["status"] == "not_applied"
     assert receipt["reason"] == reason
+    assert logic == before
+
+
+def _passive_episode_anchor():
+    # A prior source can carry a known target even when the current answer
+    # must not quote it.  This is a fixture, never a claim about a live user.
+    return {
+        "kind": "context", "expected": False, "source": "episode",
+        "provenance_channel": "selected_working_memory",
+        "memory_id": "fixture-episode-1",
+        "trace_id": "stored:episode:fixture-episode-1",
+        "source_text": "Earlier user specified that the target was the room number.",
+    }
+
+
+def test_passive_episode_is_context_not_answer_or_global_unknown():
+    logic, route, selected = _qualified()
+    logic["memory_anchor"] = _passive_episode_anchor()
+    logic["memory_speakability"] = "background_only"
+    logic["memory_speakability_reason"] = "relevant_but_not_requested"
+    receipt = visible.prepare_reported_ack_selected_visible_p4(
+        SOURCE, logic, route, selected
+    )
+    assert receipt["status"] == "selected"
+    assert receipt["memory_authority"] == "retrieved_background_not_answer"
+    assert receipt["background_trace_digest"] == priority._digest(
+        "stored:episode:fixture-episode-1"
+    )
+    assert "room number" not in logic["core_message_jp"]
+    assert "まだ分かんない" not in logic["core_message_jp"]
+    assert "先に確認して" in logic["core_message_jp"]
+    assert "fixture-episode-1" not in repr(receipt)
+    assert "room number" not in repr(receipt)
+
+
+def test_passive_short_term_is_context_not_answer_or_global_unknown():
+    logic, route, selected = _qualified()
+    logic["memory_anchor"] = {
+        "kind": "context", "expected": False, "source": "short_term",
+        "provenance_channel": "selected_working_memory", "memory_id": None,
+        "trace_id": "derived:short_term:" + "a" * 20,
+        "source_text": "Earlier user gave the check target; do not deny it.",
+    }
+    logic["memory_speakability"] = "background_only"
+    logic["memory_speakability_reason"] = "relevant_but_not_requested"
+    receipt = visible.prepare_reported_ack_selected_visible_p4(
+        SOURCE, logic, route, selected
+    )
+    assert receipt["status"] == "selected"
+    assert receipt["memory_authority"] == "retrieved_background_not_answer"
+    assert "まだ分かんない" not in logic["core_message_jp"]
+    assert "check target" not in logic["core_message_jp"]
+    assert "check target" not in repr(receipt)
+
+
+@pytest.mark.parametrize("trace_id,memory_id", [
+    (None, None), ("derived:short_term:bad", None),
+    ("derived:episode:" + "a" * 20, None),
+    ("derived:short_term:" + "a" * 20, "unexpected-id"),
+])
+def test_short_term_provenance_must_be_well_formed(trace_id, memory_id):
+    logic, route, selected = _qualified()
+    logic["memory_anchor"] = {
+        "kind": "context", "expected": False, "source": "short_term",
+        "provenance_channel": "selected_working_memory",
+        "memory_id": memory_id, "trace_id": trace_id,
+    }
+    logic["memory_speakability"] = "background_only"
+    logic["memory_speakability_reason"] = "relevant_but_not_requested"
+    before = deepcopy(logic)
+    receipt = visible.prepare_reported_ack_selected_visible_p4(
+        SOURCE, logic, route, selected
+    )
+    assert receipt["status"] == "not_applied"
+    assert receipt["reason"] == "memory_or_profile_authority_present"
+    assert logic == before
+
+
+@pytest.mark.parametrize("mutation", [
+    "missing_trace", "mismatched_trace", "missing_memory_id",
+    "expected_fact", "wrong_source", "wrong_channel", "suppressed_sensitive",
+    "third_party_suppression", "missing_speakability", "explicit_memory_use",
+    "recall_contract", "profile_grounding",
+])
+def test_nonpassive_or_unproven_memory_never_grants_b_surface(mutation):
+    logic, route, selected = _qualified()
+    logic["memory_anchor"] = _passive_episode_anchor()
+    logic["memory_speakability"] = "background_only"
+    logic["memory_speakability_reason"] = "relevant_but_not_requested"
+    if mutation == "missing_trace":
+        logic["memory_anchor"].pop("trace_id")
+    elif mutation == "mismatched_trace":
+        logic["memory_anchor"]["trace_id"] = "stored:episode:other"
+    elif mutation == "missing_memory_id":
+        logic["memory_anchor"].pop("memory_id")
+    elif mutation == "expected_fact":
+        logic["memory_anchor"]["expected"] = True
+    elif mutation == "wrong_source":
+        logic["memory_anchor"]["source"] = "profile"
+    elif mutation == "wrong_channel":
+        logic["memory_anchor"]["provenance_channel"] = "retrieved_candidate"
+    elif mutation == "suppressed_sensitive":
+        logic["memory_speakability"] = "suppressed_sensitive"
+        logic["memory_speakability_reason"] = "sensitive_memory"
+    elif mutation == "third_party_suppression":
+        logic["memory_speakability"] = "suppressed_third_party"
+        logic["memory_speakability_reason"] = "third_party_memory_without_request"
+    elif mutation == "missing_speakability":
+        logic.pop("memory_speakability")
+    elif mutation == "explicit_memory_use":
+        logic["memory_use_expected"] = True
+    elif mutation == "recall_contract":
+        logic["memory_recall_contract"] = {"status": "requested"}
+    elif mutation == "profile_grounding":
+        logic["grounded_profile_logic"] = {"status": "supported"}
+    before = deepcopy(logic)
+    receipt = visible.prepare_reported_ack_selected_visible_p4(
+        SOURCE, logic, route, selected
+    )
+    assert receipt["status"] == "not_applied"
+    assert receipt["reason"] == "memory_or_profile_authority_present"
     assert logic == before
 
 

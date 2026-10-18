@@ -3,6 +3,8 @@
 This changes neither source classification nor M31 admission.  A same-turn
 ordinary A decision may be expressed without the generic direct-chat suffix;
 all later guards still run, and the actual final utterance is audited.  The
+reply is scoped to the current reported utterance: passive retrieved context
+does not authorize either a memory answer or a global "unknown" claim.  The
 receipt contains digests/status only, not a new factual or memory claim.
 """
 
@@ -18,7 +20,7 @@ import uruha_reported_ack_route_admission_p4 as admission
 import uruha_temporal_actor_scope_p4 as actor_scope
 
 
-SCHEMA = "uruha_reported_ack_selected_visible_p4_v1"
+SCHEMA = "uruha_reported_ack_selected_visible_p4_v2"
 LABEL = "reported_ack_selected_visible_p4"
 _BOUNDED_QUOTE = re.compile(r"(?:先に|まず)(?:確認|チェック)(?:して|しといて|してね)\Z")
 _ALLOWED_PREFIXES = ("", "ん、", "まあ、", "いや、", "てか、", "一回、", "先に、", "普通に、", "はいはい、")
@@ -45,8 +47,35 @@ def _receipt(user_input, status="not_applied", reason="not_eligible"):
 
 def _candidate_from_match(match):
     speaker, quote = match.group("speaker"), match.group("quote")
-    action_verb = "チェック" if "チェック" in quote else "確認"
-    return f"{speaker}が「{quote}」って言ってたんだね。何を{action_verb}するかはまだ分かんないけど。"
+    return f"{speaker}が「{quote}」って言ってたんだね。"
+
+
+def _passive_memory_context(anchor, logic):
+    """Retrieved episode/short-term context is never a memory-answer warrant."""
+
+    if not isinstance(anchor, dict) or not anchor:
+        return False
+    memory_id = anchor.get("memory_id")
+    trace_id = anchor.get("trace_id")
+    source = anchor.get("source")
+    speakability = logic.get("memory_speakability")
+    reason = logic.get("memory_speakability_reason")
+    return bool(
+        anchor.get("kind") == "context"
+        and anchor.get("expected") is False
+        and anchor.get("provenance_channel") == "selected_working_memory"
+        and (
+            (source == "episode" and isinstance(memory_id, str) and bool(memory_id)
+             and trace_id == f"stored:episode:{memory_id}")
+            or (source == "short_term" and memory_id in (None, "")
+                and isinstance(trace_id, str)
+                and re.fullmatch(r"derived:short_term:[0-9a-f]{20}", trace_id) is not None)
+        )
+        and (
+            (speakability == "background_only" and reason == "relevant_but_not_requested")
+            or (speakability == "latent_ok" and reason == "weak_contextual_memory")
+        )
+    )
 
 
 def prepare_reported_ack_selected_visible_p4(user_input, logic, route_info, selected_plan):
@@ -122,12 +151,13 @@ def prepare_reported_ack_selected_visible_p4(user_input, logic, route_info, sele
     ):
         receipt["reason"] = "actual_selected_or_general_route_disagrees"
         return receipt
+    anchor = logic.get("memory_anchor")
     if (
         logic.get("memory_use_expected") is not False
-        or logic.get("memory_anchor")
         or logic.get("memory_recall_contract")
         or logic.get("profile_grounding_shadow")
         or logic.get("grounded_profile_logic")
+        or (anchor and not _passive_memory_context(anchor, logic))
     ):
         receipt["reason"] = "memory_or_profile_authority_present"
         return receipt
@@ -159,6 +189,10 @@ def prepare_reported_ack_selected_visible_p4(user_input, logic, route_info, sele
         "selected_core_length": len(core),
         "max_chars": constraints["max_chars"],
         "source_qualified": True,
+        "claim_source_scope": "current_user_report_only",
+        "memory_authority": "retrieved_background_not_answer" if anchor else "no_retrieved_anchor",
+        "background_trace_digest": priority._digest(anchor["trace_id"]) if anchor else None,
+        "global_unknown_claimed": False,
     })
     logic[LABEL] = receipt
     return receipt
