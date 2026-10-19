@@ -1,5 +1,17 @@
 # 目前任務卡
 
+更新：2026-10-20。**本節是唯一當前續接點；下方 2026-10-19 的「下一步」已是歷史，不重跑曝光題。**
+
+## 最新結果：P4 日文追問語氣詞誤撞已修，fresh Safari 全批 strict FAIL
+
+舊憑證紙十輪的 B4 `意味を変えず`、B6 `使える` 都被核心單字 `え` 子字串規則錯設 `repair_check`，選定內容在 legacy surface 被固定追問句蓋掉；只讀因果審查和原 strict FAIL 保留。單一變因是隔離 opt-in `uruha_repair_cue_boundary_p4.py` 僅把**詞中**「え」誤觸退回一般回答，真獨立「え？」與舊中英 cue 不動。實作前原 plan/v1 題本 `3124a80` 凍結；v1 T5 deterministic 預檢就因拆句而不符合既有安全分類正控，**v1 preflight FAIL** 保留。模型前只改 T5 成單句的 v2 是**實作後、模型前修訂**，不冒充 preimplementation holdout；opt-in 產品程式與 v2 原件以 `3af068c` 推既有 PR #435。受影響零模型 **118/118**、新產品 SHA **8/8**、前批 SHA **22/22**；舊 v62/v63 SHA-lock 兩項在目前 HEAD 已不吻合，本項沒改核心檔，不動舊鎖。
+
+全新 0700 root `uruha-product-t5nadz1s` 零輪 same-PID ready/planned stop、官方 SHA ONNX 獨立私有預熱、顯式空 profile/T0；真 Safari 新分頁 session `20261020_035130_b9ec7913`，T1–T6 各一次／0 retry、逐輪 T0–T6 雙快照、六個不同 episode、profile 0 rows 同 digest，產品 PID 869 planned stop、7894 vacant。raw 六行 SHA `1295179f08c0dd39b27ce4eb1964ff8034f558570205b3d2a60693528c57e2a8`；逐輪結果、node graph、來源與成本見 `analysis/p4_repair_cue_boundary_fresh_product_probe_result_2026-10-20.md`。嵌詞正例 **4/4** graph act 不再錯追問；真「え？」**1/1** 保留追問；憑證安全正控 **1/1**；Safari 泡泡＝raw＝guard＝graph UTTERANCE **6/6**。**整批 strict FAIL**：T1 core 已錯且日文殘片、T2 選 `承知しました` 最後只說 `うん`、T4 真 cue 選重講卻說固定反問、T6 未知來源錯怪使用者忘記；T3 普通建議有界交付。M21 一般 planner 6/6 完成；新變因 0 model calls；runtime wait proxy 平均 9.8805 秒、獨立 Safari stopwatch 未量，不外推。正式強 LLM、人評、temporal holdout、VRM/Function Calling 完整驗收 pending；Goal active。
+
+**下一個必要交付**：只讀追查 T2/T4 的 selected core→human speech plan→legacy surface→M39/final 斷點，選一個可歸因的「選定行動表達保留」變因，以新未曝光正負控和安全／來源／自然日文／圖／≤20 秒／成本 gate 前瞻凍結，再最小 opt-in 實作與隔離 Safari。T1 候選品質、T6 來源誤解、舊 B1 跨重啟來源、B4 guard-after-frame 分卡；不得重送本六句、改 v1/v2 FAIL 或順手合修。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 未碰。
+
+更新：2026-10-19。**以下憑證紙批次為歷史；其「下一步」由上節取代。**
+
 更新：2026-10-19。**本節是唯一當前續接點；下方各批「下一步」都是歷史，不能重跑曝光題。**
 
 ## 最新結果：P4 紙上憑證可見安全有界命中，fresh Safari 全批 strict FAIL
