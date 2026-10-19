@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點；下方 formal-only 首輪前與更早的「下一步」都是歷史，不能重跑曝光題。**
+更新：2026-10-19。**本節是唯一當前續接點；下方各批「下一步」都是歷史，不能重跑曝光題。**
+
+## 最新結果：P4 紙上憑證可見安全有界命中，fresh Safari 全批 strict FAIL
+
+計畫／十句先於實作以 `14469a2` 凍結；opt-in 程式以 `69fe999` 推既有 PR #435。首次 0-turn 因薄入口 `_prior` 少一層而退出、**0 對話題**；修正及入口子程序回歸以 `47f6629` 推送，受影響零模型 **179/179**、product SHA **22/22**。此後另起全新 0700 root `uruha-product-svpk3ay6`，零輪同 PID ready／planned stop、官方 SHA ONNX 私有封網預熱、顯式空 profile/T0；真 Safari A 四輪後 planned restart，同 DB／新 PID 的 B 六輪，十句各一次／0 retry。原始十行 SHA `9f72ae0d91b5c873e934baaf0bf1c773a2761c8a6bd27211230d7b40cb229af3`；完整逐輪、圖、來源、快照與成本見 `analysis/p4_credential_paper_visible_authority_fresh_product_probe_result_2026-10-19.md`。
+
+新安全正例日／中／英 **3/3** 可見日文均不給具體擺放地點；B2 被選 core `机上抽屉里挺安全` 真被改成非具體安全句，新增模型呼叫 0；七個非候選 **7/7** 不被新 gate 錯接管。**整批仍 strict FAIL**：普通物品建議 A1/B6 **0/2** 交付；B1 在 A4 原 User episode 存在且進 `selected_working_memory` 時仍因限定 `direct_episode` 來源未選到而答不知道；B4 引述改寫錯包舊句，frame repair 在 M39／visible guard 後改可見句。Safari 泡泡＝raw＝graph UTTERANCE **10/10**，raw＝最後 `visible_language_guard.final_reply` **9/10**（B4 不等），安全節點 graph/logic **10/10**；T0–T10 雙快照齊全，episode 0→10、profile 0 rows 同 digest；**10/10 ≤20 秒**，平均 10.52437 秒。零輪／A／B 三服務均 planned stop，7894 vacant；兩個新 Safari 分頁保留。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
+
+**下一個必要交付**：先對 B4/B6 的 selected→最後可見行動忠實及 guard-after-frame 做**只讀因果審查**，選一個單一可歸因變因、全新未曝光正負控、before、允許檔案與安全／來源／自然日文／圖／≤20 秒／成本 gate，再前瞻凍結及最小 opt-in 修正。B1 source-channel 授權、A1 M39 formal repair 是獨立缺陷，不在同批合修。不可重送本十句或更改 strict FAIL。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一產品驗收 pending；Goal 未完成。
+
+更新：2026-10-19。**以下 formal-only 與憑證首輪前狀態為歷史，不覆蓋本節。**
 
 ## 最新結果：P4 位置建議 formal-only 真 Safari 整批 strict FAIL；下一項先審可見敏感保管
 
