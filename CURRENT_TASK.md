@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點；下方舊「下一步」均為歷史。**
+更新：2026-10-19。**本節是唯一當前續接點；下方九輪失敗與舊「下一步」是 before 證據。**
+
+## 當前交付：P4 位置建議 formal-only 選定命題保留，程式已凍結，Safari 首輪待執行
+
+上一批九輪嚴格 FAIL／raw SHA `8e05c0252d01590a8419e1bf86605948cc426932d1f3631c6e85d77a5d354468` 不改判、不重送。A1/B1 已選位置命題被 M39 唯一 `formal_register` 修復改成空泛追問；B3 的 M18 早路徑、B2 的 M31 殘片分因不合修。新工作卡與九句 developer-authored 條件 gold 先於實作以 `d8aced8` 凍結並推既有 PR #435，preimplementation SHA **2/2**。唯一新變因是 opt-in 末端只對 current User 證書、`matched_full_planner`、選定 core SHA、M22 一般路由、M39 唯一敬體問題與安全單句 `…やすいです／…にくいです` 做常體句尾轉換；原日文／M39 guard 仍須接受且可見句保留前綴。其他形態和路由不接管。新 graph 收據分開標 pre-M39 attempt 與 post-M39/post-emit verification；不宣稱命題本身貼合目標。
+
+允許檔案：`uruha_location_advice_act_handoff_p4.py`、`test_p4_location_advice_formal_surface_p4.py`、薄 Web entry/controller、凍結 SHA、結果報告及本卡。新功能目前聚焦與受影響相鄰零模型 **73/73**，語法、Web import、controller `--help` 通過；product SHA **19/19**。**尚無本批 fresh 模型／Safari／產品 PASS。** `output/graduate_application_report/` 是無關既有 untracked，不觸碰；正式 DB 與原始 dirty checkout不碰。
+
+**下一個必要交付**：先 diff review，僅提交本項並 push／核既有 PR #435 head。再新 launcher-owned 0700 root 做 0-turn same-PID ready/planned stop、官方 SHA ONNX 私有離線預熱、顯式空 profile/T0；真 Safari A1–A3，各句一次／0 retry，A3 後 planned stop；同 DB 新 PID/session B1–B6，逐輪即時存 T1–T9 episode/full-profile。核 A1/A2 **2/2** 目標相連位置原則且至少一輪真 formal-only 保留、A3/B1/B3 直接時間來源、B2 第三者不確定、B4 引用、B5 no-advice、B6 敏感；9/9 泡泡＝raw＝guard＝graph、自然日文、≤20 秒、九 episode、T0–T9 profile digest、0 retry、新變因 0 model calls 和可得成本。任一硬門檻失敗整批 strict FAIL，不重發題句追分。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一入口仍 pending；Goal active。
+
+更新：2026-10-19。**以下是本次 formal-only 修正前的歷史續接點；其「下一步」已由上節取代。**
 
 ## 最新結果：P4 位置建議言語行為交接已真 Safari 驗收，整批 strict FAIL
 

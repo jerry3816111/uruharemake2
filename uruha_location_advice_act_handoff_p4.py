@@ -15,6 +15,8 @@ import re
 
 SCHEMA = "uruha_location_advice_act_handoff_p4_v1"
 LABEL = "location_advice_act_handoff_p4"
+FORMAL_SURFACE_SCHEMA = "uruha_location_advice_formal_surface_p4_v1"
+FORMAL_SURFACE_LABEL = "location_advice_formal_surface_p4"
 MAX_INPUT_CHARS = 300
 _INSTALLED = False
 _ORIGINAL_TICK = None
@@ -92,6 +94,9 @@ _GOAL = re.compile(
     r"\b(?:so that|easy to|easier to|accessible|convenient)\b|"
     r"(?:方便|容易|便于|便於)",
     re.I,
+)
+_SAFE_FORMAL_ENDING = re.compile(
+    r"(?P<prefix>[^。.!?！？「」『』\"“”'‘’`\r\n\t\u2028\u2029]+(?:やすい|にくい))です。?$"
 )
 
 
@@ -200,6 +205,84 @@ def _vacuity_diagnostic(value: str) -> str:
     return "manual_goal_tie_review_required"
 
 
+def _formal_only_surface_candidate_p4(reply, logic_data, user_input, cert):
+    """Try one opt-in morphology edit; M39 and the Japanese guard still decide.
+
+    The receipt proves string provenance and bounded surface form, never that
+    the selected recommendation actually meets the user's goal.
+    """
+    from uruha_semantic_persona_surface_m39 import inspect_surface_m39
+
+    original = str(reply or "")
+    current = classify_location_advice_act_p4(user_input)
+    receipt = {
+        "schema": FORMAL_SURFACE_SCHEMA,
+        "status": "not_eligible",
+        "method": "none",
+        "original_candidate_sha": _sha(original),
+        "attempt_sha": None,
+        "final_visible_sha": None,
+        "final_same_as_attempt": None,
+        "m39_action": None,
+        "m39_status": None,
+        "model_calls_added": 0,
+        "raw_reply_persisted": False,
+        "semantic_goal_tie": (
+            "manual_product_review_required" if current["eligible"] else "not_applicable"
+        ),
+        "attempt_stage": "pre_m39",
+        "verification_stage": "post_m39_and_post_emit",
+    }
+    if not (
+        isinstance(logic_data, dict)
+        and isinstance(cert, dict)
+        and cert.get("schema") == SCHEMA
+        and cert.get("source_kind") == "current_user"
+        and cert.get("input_sha") == current["input_sha"]
+        and cert.get("eligible") is True
+        and current["eligible"] is True
+        and cert.get("selected_handoff_status") == "matched_full_planner"
+        and cert.get("selected_core_sha") == _sha(original)
+        and (logic_data.get("semantic_route_m22") or {}).get("selected_type")
+        == "general_conversation"
+    ):
+        return original, receipt
+    match = _SAFE_FORMAL_ENDING.fullmatch(original)
+    if not match:
+        receipt["status"] = "unsupported_surface_shape"
+        return original, receipt
+    audit = inspect_surface_m39(user_input, original, logic_data)
+    if (
+        audit["protected_route"]
+        or audit["role_violations"]
+        or audit["unsupported_additions"]
+        or not audit["policy_act_match"]
+        or not audit["formal_register_detected"]
+    ):
+        receipt["status"] = "not_formal_only"
+        return original, receipt
+    candidate = match.group("prefix") + "よ。"
+    after = inspect_surface_m39(user_input, candidate, logic_data)
+    if (
+        after["protected_route"]
+        or after["role_violations"]
+        or after["unsupported_additions"]
+        or not after["policy_act_match"]
+        or after["formal_register_detected"]
+    ):
+        receipt["status"] = "post_audit_rejected"
+        return original, receipt
+    receipt.update({
+        "status": "attempted_formal_only",
+        "method": "terminal_i_adjective_desu_to_yo",
+        "attempt_sha": _sha(candidate),
+        "source_prefix_sha": _sha(match.group("prefix")),
+        "attempt_prefix_sha": _sha(candidate[:-2]),
+        "prefix_identical": candidate[:-2] == match.group("prefix"),
+    })
+    return candidate, receipt
+
+
 def cognitive_tick_with_location_advice_act_handoff_p4(self, event):
     tick = _ORIGINAL_TICK(self, event)
     if not isinstance(tick, dict):
@@ -248,17 +331,46 @@ def cognitive_tick_with_location_advice_act_handoff_p4(self, event):
 def visible_guard_with_location_advice_act_handoff_p4(
     self, reply, logic_data, user_input="", memory_data=None,
 ):
+    guard_candidate = reply
+    formal_surface = None
+    selected_cert = logic_data.get(LABEL) if isinstance(logic_data, dict) else None
+    if (
+        os.environ.get("URUHA_P4_LOCATION_ADVICE_FORMAL_SURFACE") == "1"
+        and isinstance(reply, str)
+        and isinstance(selected_cert, dict)
+        and selected_cert.get("schema") == SCHEMA
+    ):
+        guard_candidate, formal_surface = _formal_only_surface_candidate_p4(
+            reply, logic_data, user_input, selected_cert,
+        )
     visible = _ORIGINAL_VISIBLE_GUARD(
-        self, reply, logic_data, user_input=user_input, memory_data=memory_data,
+        self, guard_candidate, logic_data, user_input=user_input, memory_data=memory_data,
     )
     if not isinstance(logic_data, dict):
         return visible
-    cert = logic_data.get(LABEL) or {}
-    if cert.get("schema") != SCHEMA:
+    cert = logic_data.get(LABEL)
+    if not isinstance(cert, dict) or cert.get("schema") != SCHEMA:
         return visible
     cert = deepcopy(cert)
     cert["guard_input_sha"] = _sha(reply)
     cert["guard_output_sha"] = _sha(visible)
+    if formal_surface is not None:
+        formal_surface["final_visible_sha"] = _sha(visible)
+        m39 = logic_data.get("semantic_persona_surface_verifier_m39") or {}
+        formal_surface["m39_action"] = m39.get("action")
+        formal_surface["m39_status"] = m39.get("status")
+        if formal_surface["attempt_sha"]:
+            formal_surface["final_same_as_attempt"] = (
+                formal_surface["attempt_sha"] == _sha(visible)
+            )
+            formal_surface["status"] = (
+                "accepted_preserved"
+                if formal_surface["final_same_as_attempt"]
+                and m39.get("action") == "accept"
+                and m39.get("status") == "accepted_verified_surface"
+                else "post_guard_mismatch"
+            )
+        cert["formal_surface"] = formal_surface
     cert["guard_output_vacuity_diagnostic"] = (
         _vacuity_diagnostic(visible) if cert.get("eligible") else "not_applicable"
     )
@@ -275,9 +387,11 @@ def materialize_location_advice_act_handoff_p4(result: dict) -> dict:
     if not isinstance(result, dict):
         return result
     logic = result.get("logic") or {}
-    cert = logic.get(LABEL) or {}
+    if not isinstance(logic, dict):
+        return result
+    cert = logic.get(LABEL)
     trace = result.get("runtime_trace")
-    if cert.get("schema") != SCHEMA or not isinstance(trace, dict):
+    if not isinstance(cert, dict) or cert.get("schema") != SCHEMA or not isinstance(trace, dict):
         return result
     cert = deepcopy(cert)
     cert["final_reply_sha"] = _sha(result.get("reply"))
@@ -288,12 +402,35 @@ def materialize_location_advice_act_handoff_p4(result: dict) -> dict:
     cert["final_reply_vacuity_diagnostic"] = (
         _vacuity_diagnostic(result.get("reply")) if cert.get("eligible") else "not_applicable"
     )
+    formal_surface = cert.get("formal_surface")
+    if isinstance(formal_surface, dict) and formal_surface.get("schema") == FORMAL_SURFACE_SCHEMA:
+        formal_surface = deepcopy(formal_surface)
+        formal_surface["final_reply_sha"] = cert["final_reply_sha"]
+        formal_surface["final_reply_match"] = (
+            formal_surface.get("final_visible_sha") == cert["final_reply_sha"]
+        )
+        if formal_surface.get("status") == "accepted_preserved" and not formal_surface["final_reply_match"]:
+            formal_surface["status"] = "post_emit_mismatch"
+        cert["formal_surface"] = formal_surface
     logic[LABEL] = deepcopy(cert)
-    rows = [row for row in trace.get("blackboard", []) if row.get("label") != LABEL]
+    rows = [row for row in trace.get("blackboard", [])
+            if row.get("label") not in {LABEL, FORMAL_SURFACE_LABEL}]
     index = next((i for i, row in enumerate(rows)
                   if row.get("label") == "selected_plan"), len(rows))
     rows.insert(index, {"stage": "evidence", "label": LABEL,
                         "payload": deepcopy(cert), "salience": 0.93})
+    if isinstance(formal_surface, dict) and formal_surface.get("schema") == FORMAL_SURFACE_SCHEMA:
+        utterance_index = next((i for i, row in enumerate(rows)
+                                if row.get("label") == "utterance"), len(rows))
+        m39_index = next((i for i, row in enumerate(rows)
+                          if row.get("label") == "semantic_persona_surface_verifier_m39"),
+                         utterance_index)
+        rows.insert(min(m39_index, utterance_index), {
+            "stage": "surface", "label": FORMAL_SURFACE_LABEL,
+            "payload": deepcopy(formal_surface),
+            "salience": 0.94 if formal_surface.get("status") == "accepted_preserved" else 0.86,
+        })
+        trace[FORMAL_SURFACE_LABEL] = deepcopy(formal_surface)
     trace["blackboard"] = rows
     trace[LABEL] = deepcopy(cert)
     return result
