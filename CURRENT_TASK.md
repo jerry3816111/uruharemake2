@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-20。**本節是唯一當前續接點；下方 2026-10-19 的「下一步」已是歷史，不重跑曝光題。**
+更新：2026-10-20。**本節取代下方 repair-cue 批次的「下一步」，舊 strict FAIL 不改判。**
+
+## 當前交付：P4 明示引述改寫的 typed action 計畫／新題已凍結，產品尚未修復
+
+上一批 raw 六句 SHA `1295179f08c0dd39b27ce4eb1964ff8034f558570205b3d2a60693528c57e2a8`、Safari strict FAIL 保留，不能重送追分。只讀因果審查：T2 的 M21 core `承知しました` 在 P2 `_sanitize_reply` 被變成 `うん`，且 core 本身也比要求的柔和改寫更拘謹；T4 是另一個 `repair_check` 固定反問與前句來源問題，精確重播並非合格修正，不合批。
+
+新單一變因與八句 developer-authored 正負控在模型／程式前凍結於 `research/p4_explicit_rewrite_action_plan_2026-10-20.md`、`datasets/p4_explicit_rewrite_action_fresh_probe_2026-10-20.json`，preimplementation SHA **2/2**。合格的當輪明示引述改寫才用 opt-in typed action 與同模型最多一次額外生成；原 M21 receipt 留 shadow，模型內層短語與組合後完整候選分別記 digest，實際 token／延遲另記。T1–T3 必須 3/3 語義與語氣達標，T4–T6 0/3 誤接管，T7 安全、T8 身份、日文、圖／可見一致、記憶隔離、逐輪 ≤20 秒與成本都屬硬 gate。這**只是前瞻設計**，尚無本批 code、fresh model、Safari 或產品 PASS；正式同模型、人評、temporal holdout、VRM／Function Calling 仍 pending。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
+
+**下一個必要交付**：只在凍結允許檔案做最小 opt-in 包裝、聚焦與相鄰零模型契約；失敗保留。程式／product SHA 與 diff 審查、精確 commit／push／PR head 後，才用全新 0700 root、官方 SHA ONNX 私有預熱、0-turn 同 PID 啟停與真 Safari 八輪各一次／0 retry，逐輪快照及報告。不可把這批當正式 holdout 或強 LLM 優勢證據。
+
+更新：2026-10-20。**以下 repair-cue 批次是歷史結果；其「下一步」已由上節取代，不重跑曝光題。**
 
 ## 最新結果：P4 日文追問語氣詞誤撞已修，fresh Safari 全批 strict FAIL
 
