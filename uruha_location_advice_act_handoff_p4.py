@@ -17,6 +17,8 @@ SCHEMA = "uruha_location_advice_act_handoff_p4_v1"
 LABEL = "location_advice_act_handoff_p4"
 FORMAL_SURFACE_SCHEMA = "uruha_location_advice_formal_surface_p4_v1"
 FORMAL_SURFACE_LABEL = "location_advice_formal_surface_p4"
+CREDENTIAL_VISIBLE_SCHEMA = "uruha_credential_paper_visible_authority_p4_v1"
+CREDENTIAL_VISIBLE_LABEL = "credential_paper_visible_authority_p4"
 MAX_INPUT_CHARS = 300
 _INSTALLED = False
 _ORIGINAL_TICK = None
@@ -97,6 +99,64 @@ _GOAL = re.compile(
 )
 _SAFE_FORMAL_ENDING = re.compile(
     r"(?P<prefix>[^。.!?！？「」『』\"“”'‘’`\r\n\t\u2028\u2029]+(?:やすい|にくい))です。?$"
+)
+_CREDENTIAL_SAFE_SURFACE = (
+    "なくすのは困るよな。人目につく所に置きっぱなしにせず、"
+    "他人に見られない形で管理しとけ。"
+)
+_WRITTEN_CREDENTIAL_PAPER = re.compile(
+    r"(?:パスワード|パスコード|暗証番号|認証コード|認証番号|ワンタイムコード|"
+    r"(?<![A-Za-z])PIN(?![A-Za-z])).{0,32}?(?:書いた|書いてある|書かれた|メモした|記した|の|入りの)"
+    r".{0,10}?(?:紙|付箋|メモ|カード)|"
+    r"(?:紙|付箋|メモ|カード).{0,20}?(?:に|上に|の).{0,18}?"
+    r"(?:パスワード|パスコード|暗証番号|認証コード|(?<![A-Za-z])PIN(?![A-Za-z]))|"
+    r"(?:密碼|密码|登入碼|登录码|驗證碼|验证码|(?<![A-Za-z])PIN(?![A-Za-z])).{0,32}?"
+    r"(?:寫|写|記|记).{0,12}?(?:紙|纸|便條|便条|筆記|笔记)|"
+    r"(?:紙|纸|便條|便条|筆記|笔记).{0,18}?(?:上|的|有).{0,18}?"
+    r"(?:密碼|密码|登入碼|登录码|驗證碼|验证码|(?<![A-Za-z])PIN(?![A-Za-z]))|"
+    r"\b(?:note|paper|sticky note|piece of paper|card)\b.{0,30}?"
+    r"\b(?:with|containing|bearing|has|holding)\b.{0,16}?"
+    r"\b(?:my |the )?(?:PIN|password|passcode|login code)\b|"
+    r"\b(?:PIN|password|passcode|login code)\b.{0,30}?"
+    r"\b(?:written on|on|in)\b.{0,16}?"
+    r"\b(?:a |my |the )?(?:note|paper|sticky note|piece of paper|card)\b",
+    re.I,
+)
+_CREDENTIAL_PROSPECTIVE_JP = re.compile(
+    r"(?:どこ|どの辺|どんな位置|置き場所).{0,32}?"
+    r"(?:置く|置けば|置いたら|置くと|しまえば|保管すれば|いい|良い|よい|べき|おすすめ)|"
+    r"(?:置く|置けば|置いたら|保管する).{0,16}?"
+    r"(?:どこ|どの辺|いい|良い|よい|べき|おすすめ)"
+)
+_CREDENTIAL_PROSPECTIVE_EN = re.compile(
+    r"\b(?:where (?:should|could|can) I put|where (?:should|could) I store|"
+    r"where to put|best place to (?:put|store))\b",
+    re.I,
+)
+_CREDENTIAL_PROSPECTIVE_ZH = re.compile(
+    r"(?:放|摆|擺|收|存).{0,5}?(?:哪裡|哪里|甚麼地方|什么地方|哪個位置|哪个位置)"
+    r".{0,10}?(?:比較好|比较好|好|合適|合适|安全|方便|[?？])|"
+    r"(?:應該|应该|建議|建议).{0,10}?(?:放|摆|擺|收|存).{0,6}?"
+    r"(?:哪裡|哪里|甚麼地方|什么地方)"
+)
+_CREDENTIAL_META = re.compile(
+    r"翻訳|英訳|和訳|訳して|言い換え|自然な日本語に|文章を|文面を|台詞を|セリフを|"
+    r"\b(?:translate|translation|rewrite|rephrase|wording)\b|"
+    r"翻譯|翻译|改寫|改写|怎麼說|怎么说",
+    re.I,
+)
+_CREDENTIAL_REPORTED = re.compile(
+    r"(?:友達|友人|同僚|先生|知人|彼|彼女|誰か).{0,80}?(?:聞いた|聞いて|聞かれた|言った|言って|尋ねた|尋ねて)|"
+    r"(?:朋友|同事|老師|老师|有人).{0,80}?(?:問|问|說|说|建議|建议)|"
+    r"\b(?:my )?(?:friend|teacher|coworker|colleague|someone)\b.{0,80}?"
+    r"\b(?:asked|said|suggested|told)\b|"
+    r"\b(?:he|she|they|someone)\s+(?:asked|said|suggested)\b",
+    re.I,
+)
+_CREDENTIAL_LOCATION_ACTION_LEXEME = re.compile(
+    r"(?:机の上|机上|テーブルの上|窓際|引き出し|鞄|バッグ|棚|玄関|枕元|"
+    r"デスクの上).{0,18}?(?:置|しま|保管|入れ)|"
+    r"(?:置|しま|保管|入れ).{0,18}?(?:机の上|机上|窓際|引き出し|鞄|バッグ|棚|玄関)",
 )
 
 
@@ -191,6 +251,136 @@ def classify_location_advice_act_p4(user_input: str) -> dict:
     }
 
 
+def _same_credential_paper_object_p4(
+    segment: str, pair: re.Match, request: re.Match, language: str,
+) -> bool:
+    """Admit only when the placement request still points at the paper.
+
+    This intentionally rejects uncertain cross-object anaphora.  It is not a
+    syntactic parser and a false negative keeps the existing route untouched.
+    """
+    if language == "en":
+        after_put = segment[request.end():].lstrip()
+        if pair.start() >= request.end():
+            return bool(re.match(
+                r"(?:a |my |the )?(?:note|paper|sticky note|piece of paper|card|"
+                r"PIN|password|passcode|login code)\b", after_put, re.I,
+            ))
+        between = segment[pair.end():request.start()]
+        if re.search(r"\b(?:and|but)\b", between, re.I):
+            return False
+        referent = re.match(r"(?:it|this|that|the note|the paper)\b", after_put, re.I)
+        if not referent:
+            return False
+        return not bool(re.search(r"\bfor\s+\w+", after_put[referent.end():], re.I))
+    if pair.start() > request.end():
+        return False
+    between = segment[pair.end():request.start()]
+    # A new explicit topic/object takes precedence over an earlier credential
+    # paper, even when the writer omitted a comma before the new topic.
+    trailing_clause = re.split(r"[、，,;；]|けど|けれど|但是|但|而", between)[-1]
+    if trailing_clause != between or language == "jp":
+        new_jp_object = re.search(r"([^\sはを、，,;；]{1,24})(?:は|を)\s*$", trailing_clause)
+        new_zh_object = re.search(r"([^\s、，,;；]{1,16}?)(?:要|該|该)?$", trailing_clause)
+        explicit = new_jp_object.group(1) if new_jp_object else ""
+        if language == "zh" and not explicit and new_zh_object:
+            explicit = new_zh_object.group(1)
+        if explicit:
+            # A second memo/paper need not be the credential paper: e.g.
+            # 「買い物メモ」 and 「買菜便條」 are different asked objects.
+            is_goal_clause = bool(
+                language == "zh"
+                and re.search(r"怕|擔心|担心|弄丟|弄丢|遺失|遗失", explicit)
+            )
+            is_coreference = bool(re.fullmatch(
+                r"(?:それ|これ|它|その(?:紙|付箋|メモ)|あの(?:紙|付箋|メモ)|"
+                r"(?:那張|这张|這張)(?:紙|纸|便條|便条|筆記|笔记))",
+                explicit,
+                re.I,
+            ))
+            repeats_secret_paper = bool(
+                re.search(r"パスワード|パスコード|暗証番号|認証コード|密碼|密码|PIN", explicit, re.I)
+                and re.search(r"紙|纸|付箋|メモ|便條|便条|筆記|笔记", explicit, re.I)
+            )
+            if not (is_goal_clause or is_coreference or repeats_secret_paper):
+                return False
+    return True
+
+
+def _outside_credential_quotes_p4(raw: str) -> tuple[str, bool]:
+    """Extend old quote masking for written-secret advice without changing it."""
+    chars = list(raw)
+    ascii_quote_positions = [
+        i for i, char in enumerate(chars)
+        if char == "'"
+        and not (i > 0 and i + 1 < len(chars)
+                 and chars[i - 1].isalnum() and chars[i + 1].isalnum())
+    ]
+    if len(ascii_quote_positions) % 2:
+        return "", False
+    for index in ascii_quote_positions:
+        chars[index] = '"'
+    text = "".join(chars).replace("‘", "“").replace("’", "”")
+    outside, _, balanced = _outside_quotes(text)
+    return outside, balanced
+
+
+def classify_credential_paper_visible_p4(user_input: str) -> dict:
+    """Classify this User turn independently of the older advice handoff.
+
+    The certificate carries only a digest and bounded labels; never the
+    credential or raw User text.  It authorizes one safe visible surface,
+    not a claim about where the paper actually is or storage confidentiality.
+    """
+    raw = str(user_input or "")
+    receipt = {
+        "schema": CREDENTIAL_VISIBLE_SCHEMA,
+        "input_sha": hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+        "source_kind": "current_user",
+        "eligible": False,
+        "reason": "not_direct_credential_paper_advice",
+        "model_calls_added": 0,
+        "receipt_raw_user_text_persisted": False,
+        "fact_location_authorized": False,
+    }
+    if not raw.strip():
+        return {**receipt, "reason": "empty_input"}
+    if len(raw) > MAX_INPUT_CHARS:
+        return {**receipt, "reason": "outside_bounded_input"}
+    outside, balanced = _outside_credential_quotes_p4(raw)
+    if not balanced:
+        return {**receipt, "reason": "ambiguous_quote_scope"}
+    if _META_REQUEST.search(outside) or _CREDENTIAL_META.search(outside):
+        return {**receipt, "reason": "wording_or_translation_request"}
+    if _NO_ADVICE.search(outside):
+        return {**receipt, "reason": "advice_explicitly_negated"}
+    if _REPORTED.search(outside) or _CREDENTIAL_REPORTED.search(outside):
+        return {**receipt, "reason": "third_party_report"}
+    for segment in re.findall(r"[^。.!?！？\n]+[。.!?！？]?", outside):
+        if not segment.strip():
+            continue
+        if not _REQUEST_FORM.search(segment):
+            continue
+        pair = _WRITTEN_CREDENTIAL_PAPER.search(segment)
+        if pair is None:
+            continue
+        for language, pattern in (
+            ("jp", _CREDENTIAL_PROSPECTIVE_JP),
+            ("zh", _CREDENTIAL_PROSPECTIVE_ZH),
+            ("en", _CREDENTIAL_PROSPECTIVE_EN),
+        ):
+            request = pattern.search(segment)
+            if request and _same_credential_paper_object_p4(segment, pair, request, language):
+                return {
+                    **receipt,
+                    "eligible": True,
+                    "reason": "direct_written_credential_paper_future_placement_advice",
+                    "speech_act": "prospective_placement_advice_request",
+                    "language_cue": language,
+                }
+    return receipt
+
+
 def _sha(value: str) -> str:
     return hashlib.sha256(str(value or "").encode("utf-8")).hexdigest()
 
@@ -283,6 +473,45 @@ def _formal_only_surface_candidate_p4(reply, logic_data, user_input, cert):
     return candidate, receipt
 
 
+def _credential_visible_candidate_p4(reply, logic_data, user_input):
+    """One current-turn, source-bound visible candidate, before M39/Japanese guard."""
+    current = classify_credential_paper_visible_p4(user_input)
+    original = str(reply or "")
+    core = str(logic_data.get("core_message_jp") or "") if isinstance(logic_data, dict) else ""
+    receipt = {
+        **current,
+        "status": "not_eligible",
+        "original_candidate_sha": _sha(original),
+        "selected_core_sha": _sha(core) if core else None,
+        "selected_core_same_as_guard_input": bool(core and core == original),
+        "safe_candidate_sha": None,
+        "final_visible_sha": None,
+        "final_same_as_safe_candidate": None,
+        "m39_action": None,
+        "m39_status": None,
+        "final_reply_sha": None,
+        "final_reply_match": None,
+        "verification_stage": "post_m39_and_post_emit",
+        "selected_core_safe_diagnostic": (
+            "location_action_lexeme_manual_polarity_review"
+            if _CREDENTIAL_LOCATION_ACTION_LEXEME.search(core) else
+            "same_as_bounded_safe_surface"
+            if core == _CREDENTIAL_SAFE_SURFACE else "not_established"
+        ),
+    }
+    if not current["eligible"]:
+        return original, receipt
+    if not isinstance(reply, str) or not isinstance(logic_data, dict):
+        receipt["status"] = "missing_selected_candidate_or_logic"
+        return original, receipt
+    # The current User SHA and the exact candidate passed into this terminal
+    # guard are independently recorded.  An older advice handoff may be stale
+    # or say eligible=true for Chinese/English and cannot veto this boundary.
+    receipt["safe_candidate_sha"] = _sha(_CREDENTIAL_SAFE_SURFACE)
+    receipt["status"] = "attempted_safe_surface"
+    return _CREDENTIAL_SAFE_SURFACE, receipt
+
+
 def cognitive_tick_with_location_advice_act_handoff_p4(self, event):
     tick = _ORIGINAL_TICK(self, event)
     if not isinstance(tick, dict):
@@ -333,8 +562,15 @@ def visible_guard_with_location_advice_act_handoff_p4(
 ):
     guard_candidate = reply
     formal_surface = None
+    credential_visible = None
     selected_cert = logic_data.get(LABEL) if isinstance(logic_data, dict) else None
+    if os.environ.get("URUHA_P4_CREDENTIAL_PAPER_VISIBLE") == "1":
+        guard_candidate, credential_visible = _credential_visible_candidate_p4(
+            reply, logic_data, user_input,
+        )
     if (
+        not (isinstance(credential_visible, dict) and credential_visible.get("eligible"))
+        and
         os.environ.get("URUHA_P4_LOCATION_ADVICE_FORMAL_SURFACE") == "1"
         and isinstance(reply, str)
         and isinstance(selected_cert, dict)
@@ -354,6 +590,26 @@ def visible_guard_with_location_advice_act_handoff_p4(
     cert = deepcopy(cert)
     cert["guard_input_sha"] = _sha(reply)
     cert["guard_output_sha"] = _sha(visible)
+    if credential_visible is not None:
+        credential_visible["final_visible_sha"] = _sha(visible)
+        m39 = logic_data.get("semantic_persona_surface_verifier_m39") or {}
+        credential_visible["m39_action"] = m39.get("action")
+        credential_visible["m39_status"] = m39.get("status")
+        if credential_visible["safe_candidate_sha"]:
+            credential_visible["final_same_as_safe_candidate"] = (
+                credential_visible["safe_candidate_sha"] == _sha(visible)
+            )
+            if not credential_visible["final_same_as_safe_candidate"]:
+                credential_visible["status"] = "post_guard_mismatch"
+            elif (m39.get("action") == "accept"
+                  and m39.get("status") == "accepted_verified_surface"):
+                credential_visible["status"] = "accepted_preserved"
+            elif (m39.get("action") == "not_applicable"
+                  and m39.get("status") == "protected_route_not_modified"):
+                credential_visible["status"] = "preserved_protected_route"
+            else:
+                credential_visible["status"] = "m39_verification_not_established"
+        cert["credential_paper_visible"] = deepcopy(credential_visible)
     if formal_surface is not None:
         formal_surface["final_visible_sha"] = _sha(visible)
         m39 = logic_data.get("semantic_persona_surface_verifier_m39") or {}
@@ -412,9 +668,22 @@ def materialize_location_advice_act_handoff_p4(result: dict) -> dict:
         if formal_surface.get("status") == "accepted_preserved" and not formal_surface["final_reply_match"]:
             formal_surface["status"] = "post_emit_mismatch"
         cert["formal_surface"] = formal_surface
+    credential_visible = cert.get("credential_paper_visible")
+    if (isinstance(credential_visible, dict)
+            and credential_visible.get("schema") == CREDENTIAL_VISIBLE_SCHEMA):
+        credential_visible = deepcopy(credential_visible)
+        credential_visible["final_reply_sha"] = cert["final_reply_sha"]
+        credential_visible["final_reply_match"] = bool(
+            credential_visible.get("final_visible_sha")
+            and credential_visible["final_visible_sha"] == cert["final_reply_sha"]
+        )
+        if (credential_visible.get("safe_candidate_sha")
+                and not credential_visible["final_reply_match"]):
+            credential_visible["status"] = "post_emit_mismatch"
+        cert["credential_paper_visible"] = credential_visible
     logic[LABEL] = deepcopy(cert)
     rows = [row for row in trace.get("blackboard", [])
-            if row.get("label") not in {LABEL, FORMAL_SURFACE_LABEL}]
+            if row.get("label") not in {LABEL, FORMAL_SURFACE_LABEL, CREDENTIAL_VISIBLE_LABEL}]
     index = next((i for i, row in enumerate(rows)
                   if row.get("label") == "selected_plan"), len(rows))
     rows.insert(index, {"stage": "evidence", "label": LABEL,
@@ -431,6 +700,21 @@ def materialize_location_advice_act_handoff_p4(result: dict) -> dict:
             "salience": 0.94 if formal_surface.get("status") == "accepted_preserved" else 0.86,
         })
         trace[FORMAL_SURFACE_LABEL] = deepcopy(formal_surface)
+    if (isinstance(credential_visible, dict)
+            and credential_visible.get("schema") == CREDENTIAL_VISIBLE_SCHEMA):
+        utterance_index = next((i for i, row in enumerate(rows)
+                                if row.get("label") == "utterance"), len(rows))
+        m39_index = next((i for i, row in enumerate(rows)
+                          if row.get("label") == "semantic_persona_surface_verifier_m39"),
+                         utterance_index)
+        rows.insert(min(m39_index, utterance_index), {
+            "stage": "surface", "label": CREDENTIAL_VISIBLE_LABEL,
+            "payload": deepcopy(credential_visible),
+            "salience": 0.95 if credential_visible.get("status") in {
+                "accepted_preserved", "preserved_protected_route"
+            } else 0.88,
+        })
+        trace[CREDENTIAL_VISIBLE_LABEL] = deepcopy(credential_visible)
     trace["blackboard"] = rows
     trace[LABEL] = deepcopy(cert)
     return result
