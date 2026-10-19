@@ -8,7 +8,7 @@ formal-only 計畫／九句先於實作以 `d8aced8` 凍結，opt-in 程式／�
 
 9/9 Safari 目視泡泡＝raw＝最後 guard＝graph `UTTERANCE`，formal node 每輪一個；T0–T9 雙快照即時齊全，episode 0→9、profile 0 rows／同 digest；8/9 runtime wait ≤20 秒、平均 12.9307 秒。新 gate model calls 0，完整 token ledger 不可得。三個 service run 均 planned stop、7894 vacant；兩個新 Safari 分頁保留，既有分頁未關。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
 
-**下一個必要交付**：先就 B6 做單獨只讀設計審查，定位 `sensitive_placement_context` 為何只擋 opt-in contract、不擋一般 planner 可見位置；選一個最小可歸因的「current-user access-secret 紙本位置授權」變因。先凍結全新未曝光正／負控制、條件 gold、before、允許檔案、日文／來源／graph／記憶／≤20 秒／成本 gate，並檢查普通無害放置與引號／第三者／否定不被誤擋；再依該卡決定最小實作與隔離 Safari。A1/A2 候選品質、B2 歸屬、B3 來源選擇、B4 form/latency 分卡，不合修、不重播本九句追分。formal-only 失敗保留；不能宣稱位置建議產品 PASS。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一產品驗收 pending，Goal 未完成。
+**下一個必要交付**：B6 的獨立只讀斷點已存 `research/p4_credential_paper_visible_authority_postfailure_review_2026-10-19.md`：敏感類別只擋 opt-in advice contract，不擋一般 planner 的可見位置；raw 未保存三個候選原文，只能論選定 core。單一新變因為「當輪直接問紙本 access-secret 未來放置的 selected→visible 授權」。before、允許檔案、全新十句條件 gold、三語正例、無害／引號／不建議／既有位置負控、跨重啟記憶、日文／graph／≤20 秒／成本 gate 已在 `research/p4_credential_paper_visible_authority_plan_2026-10-19.md`、`datasets/p4_credential_paper_visible_authority_fresh_probe_2026-10-19.json` 凍結；與既有 dataset 逐字碰撞 0，preimplementation SHA 3/3。先精確提交並推此設計與資料、核 PR #435；再依卡實作最小 opt-in visible guard、相稱測試與新的隔離 Safari。A1/A2 候選品質、B2 歸屬、B3 來源選擇、B4 form/latency 分卡，不合修、不重播本九句追分。formal-only 失敗保留；不能宣稱位置建議產品 PASS。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一產品驗收 pending，Goal 未完成。
 
 更新：2026-10-19。**以下是 formal-only 首輪前的歷史續接點；其「下一步」已由上節取代。**
 
