@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點；下方所有舊「當前／下一步」保留歷史，不能覆蓋本節。**
+更新：2026-10-19。**本節是唯一當前續接點；下方舊「下一步」均為歷史。**
+
+## 最新結果：P4 位置建議言語行為交接已真 Safari 驗收，整批 strict FAIL
+
+前批 B5 空泛放置回答不改判／不重送。本批 plan／九句在 `5aaf6ab` 先凍結，opt-in handoff／測試／product SHA 以 `e7f5196` 推既有 PR #435；11/11 聚焦、84/84 相鄰零模型與 manifest 15/15 僅是接線證據。全新隔離 0700 root 的 0-turn ready、官方 SHA ONNX 私有離線預熱、空 profile、真 Safari 兩 session／同 DB planned restart 已完成；九句各一次／0 retry。詳細逐輪、原件、局部成功、失敗與成本見 `analysis/p4_location_advice_act_handoff_fresh_product_probe_result_2026-10-19.md`；raw 九行 SHA `8e05c0252d01590a8419e1bf86605948cc426932d1f3631c6e85d77a5d354468`。
+
+**整批 strict FAIL：3 個建議正例 0/3 可見交付。** A1/B1 選定的放置候選被 M39 `formal_register` repair 改成空泛追問；B1 原候選也未明確對齊「易發放」。B3 被 M18 `calibrate_need` 失眠模板快路徑越過 advice prompt，答了與色鉛筆不相干的句子；非 DB 污染。B2 第三方猜測控制雖未變成確定事實，最終只剩殘片 `係の人、色鉛筆`，語意／自然度失敗。A2/A4 事實問答來源 2/2、A3 User 斷言保留、B4 不回答引號內問題、B5 遵守不提議；不能抵銷正例與 B2 失敗。9/9 Safari 泡泡＝raw＝最後 guard＝graph UTTERANCE；T0–T9 逐輪兩類快照齊全，episode 0→9、profile 0 rows／同 digest；9/9 runtime user wait ≤20 秒，平均 10.9346 秒。新 gate 模型呼叫 0；M21 full-planner completed 5、M31 completed 2、M45 completed 0，總 token ledger 不完整。0-turn／A／B 服務 planned stop，7894 vacant。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
+
+**下一個必要交付**：先就 A1/B1 做 M39「僅 formal-register 違規時是否能保留選定命題」的單變因設計審查，凍結**全新未曝光**建議正負控、protected／多重違規、事實來源、語氣與圖／記憶／≤20 秒成本 gate；只對安全可辨識句尾做自然常體修復，其他情形維持原 fail-closed，不重送本九句追分。B3 的 M18 跨領域模板與 B2 片語忠實度是獨立後續問題，不能在這項合修或宣稱修完 M39 就達產品 PASS。若兩個有根據的修正批次仍失敗，需留 `REVIEW_REQUIRED` 與最小反例，停下任意加規則。正式強 LLM 同模型比較、真人、temporal holdout、VRM／Function Calling 統一驗收仍 pending。
+
+更新：2026-10-19。**以下是位置建議探針前的歷史續接點；其「下一步」已由最上方新結果取代。**
 
 ## 最新結果：P4 本地時間／位置答案來源授權局部成立，fresh Safari 整批 strict FAIL
 
