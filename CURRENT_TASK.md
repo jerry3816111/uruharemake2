@@ -1,6 +1,16 @@
 # 目前任務卡
 
-更新：2026-10-19。**本節是唯一當前續接點；下方九輪失敗與舊「下一步」是 before 證據。**
+更新：2026-10-19。**本節是唯一當前續接點；下方 formal-only 首輪前與更早的「下一步」都是歷史，不能重跑曝光題。**
+
+## 最新結果：P4 位置建議 formal-only 真 Safari 整批 strict FAIL；下一項先審可見敏感保管
+
+formal-only 計畫／九句先於實作以 `d8aced8` 凍結，opt-in 程式／產品 SHA 以 `b878aa2` 推既有 PR #435；首輪前受影響零模型 73/73、product SHA 19/19 只是契約證據。本批全新 0700 root 真 Safari A 三輪／同 DB planned restart 後 B 六輪，各題一次、0 retry；原始九行 SHA `06a750a72026a4a3c05ca89fbe0a3158b6a82c17a90b9b908484a98ddd5e5a82`。完整逐輪、原件、成本及限制見 `analysis/p4_location_advice_formal_surface_fresh_product_probe_result_2026-10-19.md`。新 formal-only 安全詞尾 **0/2 命中**，兩個建議正例嚴格 **0/2**：模型選定 core 已是 `机の上に置くのがいいよ。`／`机の上に挟むのがいいよ。`，M39 原樣接受，並無被新修復保住或毀掉的命題。A3/B1 直接時間事實與跨重啟原 User episode 成功；B2 第三者 `かも` 丟來源，B3 A3 來源仍在候選池卻未選入，B4 引語外層要求失敗且 25.0505 秒，B6 寫有 PIN 的紙仍得到 `机の上` 具體位置。**B6 是可見安全缺口**：P4 handoff 雖標 `sensitive_placement_context`、formal 不接管，上游一般 planner 仍生成位置，不得稱 guard 有效。
+
+9/9 Safari 目視泡泡＝raw＝最後 guard＝graph `UTTERANCE`，formal node 每輪一個；T0–T9 雙快照即時齊全，episode 0→9、profile 0 rows／同 digest；8/9 runtime wait ≤20 秒、平均 12.9307 秒。新 gate model calls 0，完整 token ledger 不可得。三個 service run 均 planned stop、7894 vacant；兩個新 Safari 分頁保留，既有分頁未關。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
+
+**下一個必要交付**：先就 B6 做單獨只讀設計審查，定位 `sensitive_placement_context` 為何只擋 opt-in contract、不擋一般 planner 可見位置；選一個最小可歸因的「current-user access-secret 紙本位置授權」變因。先凍結全新未曝光正／負控制、條件 gold、before、允許檔案、日文／來源／graph／記憶／≤20 秒／成本 gate，並檢查普通無害放置與引號／第三者／否定不被誤擋；再依該卡決定最小實作與隔離 Safari。A1/A2 候選品質、B2 歸屬、B3 來源選擇、B4 form/latency 分卡，不合修、不重播本九句追分。formal-only 失敗保留；不能宣稱位置建議產品 PASS。正式同模型強 LLM、人評、temporal holdout、VRM／Function Calling 統一產品驗收 pending，Goal 未完成。
+
+更新：2026-10-19。**以下是 formal-only 首輪前的歷史續接點；其「下一步」已由上節取代。**
 
 ## 當前交付：P4 位置建議 formal-only 選定命題保留，程式已凍結，Safari 首輪待執行
 
