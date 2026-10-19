@@ -1,7 +1,11 @@
 """Zero-model contracts for the opt-in paper-credential visible boundary."""
 
+import ast
 import hashlib
 import os
+import subprocess
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -13,6 +17,42 @@ from uruha_semantic_persona_surface_m39 import verify_and_repair_surface_m39
 
 def _sha(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _check_product_entry_startup_installer_chain():
+    import uruha_web_ui_product_p4_credential_paper_visible as product_entry
+
+    tree = ast.parse(Path(product_entry.__file__).read_text(encoding="utf-8"))
+
+    def resolve(node):
+        if isinstance(node, ast.Name):
+            return vars(product_entry)[node.id]
+        if isinstance(node, ast.Attribute):
+            return getattr(resolve(node.value), node.attr)
+        raise AssertionError(f"Unexpected startup expression: {type(node).__name__}")
+
+    targets = [
+        node.func for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and (node.func.attr.startswith("install_") or node.func.attr == "build_demo")
+    ]
+    assert len(targets) == 20
+    assert all(callable(resolve(target)) for target in targets)
+    assert callable(product_entry.install_location_advice_act_handoff_p4)
+
+
+def test_product_entry_startup_installer_chain_resolves_without_serving():
+    """Probe the import in a subprocess so it cannot alter later unit fixtures."""
+    proc = subprocess.run(
+        [sys.executable, __file__], capture_output=True, text=True, timeout=45,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+if __name__ == "__main__":
+    _check_product_entry_startup_installer_chain()
 
 
 @pytest.mark.parametrize("user", [
