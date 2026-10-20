@@ -2,6 +2,7 @@ import json
 import inspect
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -835,7 +836,20 @@ def _annotation_candidate_markdown():
 
 
 def _annotation_draft_queue_payload():
-    return _load_json(ANNOTATION_DRAFT_QUEUE_JSON_PATH) or {}
+    # Draft builders retain the complete local source_record. Never forward a
+    # private episode witness through the JSON widget or annotation gr.State.
+    def without_private_episode(value):
+        if isinstance(value, dict):
+            return {
+                key: without_private_episode(item)
+                for key, item in value.items()
+                if key != "episode_doc"
+            }
+        if isinstance(value, list):
+            return [without_private_episode(item) for item in value]
+        return value
+
+    return without_private_episode(_load_json(ANNOTATION_DRAFT_QUEUE_JSON_PATH) or {})
 
 
 def _annotation_draft_queue_markdown():
@@ -1812,18 +1826,72 @@ def _client_turn_record_m24(record, cognition, memory):
 def _observatory_result_from_log_record(record):
     record = record or {}
     cognition = record.get("cognition_trace") or {}
-    memory_data = dict(record.get("memory_snapshot") or {})
-    if not memory_data.get("working_memory_items"):
-        memory_data["working_memory_items"] = cognition.get("working_memory_items") or []
-    if not memory_data.get("memory_provenance"):
-        memory_data["memory_provenance"] = cognition.get("memory_provenance") or {}
+    episode_doc = _private_semantic_ledger_episode_doc(record)
+    # For a verified ledger, never manufacture a missing source snapshot from
+    # another trace field on reload. Ordinary historical graphs keep their
+    # previous best-effort fallback.
+    snapshot = record.get("memory_snapshot")
+    if episode_doc:
+        memory_data = dict(snapshot) if isinstance(snapshot, dict) and snapshot else None
+    else:
+        memory_data = dict(snapshot or {})
+        if not memory_data.get("working_memory_items"):
+            memory_data["working_memory_items"] = cognition.get("working_memory_items") or []
+        if not memory_data.get("memory_provenance"):
+            memory_data["memory_provenance"] = cognition.get("memory_provenance") or {}
     return {
         "user_text": record.get("user_text") or "",
         "reply": record.get("assistant_reply") or "",
+        "logic": record.get("logic") if isinstance(record.get("logic"), dict) else {},
+        "episode_doc": episode_doc,
         "memory_data": memory_data,
         "runtime_trace": cognition.get("runtime_trace") or {},
         "runtime_state": cognition.get("runtime_state") or {},
     }
+
+
+def _private_semantic_ledger_episode_doc(result):
+    """Keep a real delivered episode witness server-side, never in client JSON.
+
+    The observatory still rechecks the complete source/terminal/episode chain.
+    This selector only accepts the exact saved-episode serialization for this
+    turn. It does not claim a DB readback or cryptographic attestation.
+    """
+    if not isinstance(result, dict):
+        return ""
+    logic = result.get("logic")
+    receipt = logic.get("typed_mixed_atomic_delivery_p4") if isinstance(logic, dict) else None
+    ledger = receipt.get("semantic_ledger") if isinstance(receipt, dict) else None
+    doc = result.get("episode_doc")
+    if (
+        not isinstance(receipt, dict)
+        or receipt.get("status") != "delivered_structure_semantics_unverified"
+        or not isinstance(ledger, dict)
+        or ledger.get("status") != "bounded_slot_fidelity_verified"
+        or not isinstance(doc, str)
+    ):
+        return ""
+    timestamp = doc[len("Time: "):len("Time: ") + 19] if doc.startswith("Time: ") else ""
+    try:
+        if datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S") != timestamp:
+            return ""
+    except ValueError:
+        return ""
+    reply = result.get("reply") if "reply" in result else result.get("assistant_reply")
+    psyche = (result.get("psyche_after") if "psyche_after" in result
+              else (result.get("cognition_trace") or {}).get("psyche_after"))
+    if not isinstance(reply, str) or "user_text" not in result or psyche is None:
+        return ""
+    expected = (
+        f"Time: {timestamp} | Intent: {logic.get('intent', 'chat')} | "
+        f"Scene: {logic.get('scene', 'casual')} | "
+        f"CognitiveMode: {logic.get('cognitive_mode', 'direct')} | "
+        f"PremiseCheck: {logic.get('premise_check', 'accept')} | "
+        f"Routing: {logic.get('routing_path', 'high_road')} | "
+        f"User: {result['user_text']} | Summary: {logic.get('jp_summary', '')} | "
+        f"Uruha: {reply} | Mood: {psyche}"
+    )
+    return doc if doc == expected else ""
 
 
 def _latest_observatory_result():
@@ -2843,6 +2911,7 @@ def _run_turn(
         "audio_path": audio_path,
         "debug": debug,
         "logic": logic,
+        "episode_doc": _private_semantic_ledger_episode_doc(turn),
         "memory_snapshot": _extract_memory_payload(turn),
         "cognition_trace": _extract_trace_payload(turn),
         "flow_html": _render_flow_html(turn),
@@ -2916,11 +2985,17 @@ def _finalize_surface_delivery(
             "timestamp": datetime.now().isoformat(timespec="seconds"),
         },
     )
+    episode_doc = _private_semantic_ledger_episode_doc(result)
+    snapshot = result.get("memory_snapshot")
     observatory_result = {
         "user_text": result.get("user_text") or "",
         "reply": result.get("reply") or "",
         "logic": result.get("logic") or {},
-        "memory_data": result.get("memory_snapshot") or {},
+        "episode_doc": episode_doc,
+        "memory_data": (
+            (snapshot if isinstance(snapshot, dict) and snapshot else None)
+            if episode_doc else snapshot or {}
+        ),
         "runtime_trace": runtime_trace,
         "runtime_state": (result.get("cognition_trace") or {}).get("runtime_state") or {},
     }
@@ -2942,7 +3017,29 @@ def _append_conversation_log(input_mode, result):
         "cognition_trace": result.get("cognition_trace", {}),
         "memory_snapshot": result.get("memory_snapshot", {}),
     }
-    with open(WEB_LOG_JSONL, "a", encoding="utf-8") as f:
+    episode_doc = _private_semantic_ledger_episode_doc(result)
+    # Existing default Web logs may be 0644. Keep their old conversation
+    # logging behavior, but never duplicate a full episode there. A private
+    # owner-only directory and 0600 regular file are required for reload proof.
+    log_fd = os.open(
+        WEB_LOG_JSONL,
+        os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW,
+        0o600,
+    )
+    with os.fdopen(log_fd, "a", encoding="utf-8") as f:
+        directory_info = os.stat(os.path.dirname(WEB_LOG_JSONL), follow_symlinks=False)
+        file_info = os.fstat(f.fileno())
+        private_log = (
+            stat.S_ISDIR(directory_info.st_mode)
+            and directory_info.st_uid == os.getuid()
+            and not stat.S_IMODE(directory_info.st_mode) & 0o077
+            and stat.S_ISREG(file_info.st_mode)
+            and file_info.st_uid == os.getuid()
+            and not stat.S_IMODE(file_info.st_mode) & 0o077
+            and file_info.st_nlink == 1
+        )
+        if episode_doc and private_log:
+            record["episode_doc"] = episode_doc
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     with open(WEB_LOG_TXT, "a", encoding="utf-8") as f:
         f.write(
