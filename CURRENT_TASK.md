@@ -1,8 +1,18 @@
 # 目前任務卡
 
-更新：2026-10-20。**上次中斷的 Safari 結果已以 `579d12a` 提交並推 PR #435；其後 0-call 設計審查見 `research/p4_current_turn_action_role_design_review_2026-10-20.md`。下方八輪 strict FAIL 不改判、不重跑。**
+更新：2026-10-20。**當輪來源角色憑證已實作並以 `70080e9` 推 PR #435；七輪新隔離 Safari 實測完成，整批 strict FAIL，完整證據見 `analysis/p4_current_turn_source_role_fresh_product_probe_result_2026-10-20.md`。下方所有舊批 strict FAIL 與 `REVIEW_REQUIRED` 不改判、不重跑曝光題。**
 
-下一項必要交付：先為「當輪 communicative-act／source-role 憑證及 M31 同輪權限仲裁」凍結一張新的任務卡與 source-disjoint 案例，做零模型跨行動類型契約驗證，再決定是否進入單變因實作與 fresh Safari。這不是第三次同題改寫追分；舊明示改寫工作項以 0/3 gold 的負結果及 `REVIEW_REQUIRED` 結束。若無法給出不依賴具體答案的來源／lineage 證明，不實作權限覆蓋，改處其他獨立產品門檻。候選 JSON、引號內敬體、N1 詞義、P4-W guard 後修改、身份退步分屬不同問題，不在這項同改。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰；Goal 仍 active。
+## 唯一當前續接點：混合請求的過去事實來源授權，先設計審查
+
+憑證零模型聚焦 **78/78**、受影響回歸 **210/210**；Safari A1–A7 source-role 7/7、五負控新改寫呼叫 0/5、泡泡＝raw＝guard＝blackboard utterance 7/7，但正例自然改寫 **0/2**。A1 無任何檢索記憶仍說「昨日は公園で待ち合わせしたよね」，A6 日文句型錯，A7 依本批較嚴非冒充 gold 有與真人同名直接自稱的界線問題（早期身份保持測試曾將同型句判 PASS，非本次新退步），A1 user-wait 23.5449 秒 >20；原始 trace 的 USER→role→action/utterance edge／event-parent lineage **0/7 可核**，只有節點與順序。T0–A7 profile 0 rows／同 digest，episode 0→7；產品與 0-turn PID 均 planned stop、7894 vacant，只關本次 Safari 新分頁。這是「來源角色分類局部成立、產品失敗」，不是整體成功、正式強 LLM 優勢或研究完成。
+
+**下一個必要交付：先只讀設計審查 A1 的混合請求回憶事實來源權限**。分別確認原始 User 直接來源、相同/不同輪、未知／矛盾、第三人引語、assistant-output 污染及 graph lineage 能否被驗證；若有單一可歸因修正，才以前瞻未曝光 source-disjoint 案例凍結 before、允許檔案、成功／失敗、零模型／真 Safari、≤20 秒與成本 gate，再實作。A2/A3 候選品質、A6 M32 句型、A7 身份非冒充標準與早期 PASS 的調和及 runtime graph 真實 edge 另列獨立問題，不能合成一個補丁；不在此批 A1–A7 修分、改 gold 或將相同模型/舊題重播當新證據。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰；正式同模型、人評、temporal holdout、VRM／Function Calling 統一驗收 pending，Goal 仍 active。
+
+歷史更新：2026-10-20。**以下是前一個來源角色工作項開始前的指令，已由上節取代。**
+
+上次中斷的 Safari 結果已以 `579d12a` 提交並推 PR #435；其後 0-call 設計審查見 `research/p4_current_turn_action_role_design_review_2026-10-20.md`。下方八輪 strict FAIL 不改判、不重跑。
+
+歷史下一項曾是為「當輪 communicative-act／source-role 憑證及 M31 同輪權限仲裁」凍結新任務卡與 source-disjoint 案例，做零模型跨行動類型契約驗證。該憑證已實作並經本輪七題產品探針，不應再作為待開始工作；M31/M32 event/parent lineage 尚不足，權限覆蓋沒有實作。舊明示改寫工作項以 0/3 gold 的負結果及 `REVIEW_REQUIRED` 結束。候選 JSON、引號內敬體、N1 詞義、P4-W guard 後修改、身份退步分屬不同問題。
 
 歷史更新：2026-10-20。**以下記錄是已完成批次；「下一步」已由本檔最上方的設計審查決定取代，不重做八輪。**
 
