@@ -27,6 +27,10 @@ BY_ID = {row["id"]: row["input"] for row in DATA["cases"]}
 Q_DATA = json.loads((Path(__file__).parent / "datasets" /
                      "p4_typed_mixed_atomic_m31_authority_variant_probe_2026-10-21.json").read_text(encoding="utf-8"))
 Q_BY_ID = {row["id"]: row["input"] for row in Q_DATA["cases"]}
+S_DATA = json.loads((Path(__file__).parent / "datasets" /
+                     "p4_typed_mixed_atomic_rewrite_style_scope_probe_2026-10-21.json").read_text(encoding="utf-8"))
+S_BY_ID = {row["id"]: row["input"] for row in S_DATA["cases"]}
+Z_BY_ID = {row["id"]: row["input"] for row in S_DATA["zero_model_scope_controls"]}
 
 
 def _sha(value):
@@ -513,13 +517,14 @@ def _transaction_harness(monkeypatch, *, raw=BY_ID["N2"], memory=None, phrase=No
         right_brain=right, memory=memory_object,
         runtime=SimpleNamespace(cycle_index=7, blackboard=[], turn_traces=[{"cycle_index": 7, "blackboard": []}]),
     )
-    calls = {"generate": 0, "episode": []}
+    calls = {"generate": 0, "generate_args": [], "episode": []}
     monkeypatch.setenv(atomic.FLAG, "1")
 
-    def fake_generate(_brain, source, outside):
+    def fake_generate(_brain, source, requested_style):
         calls["generate"] += 1
+        calls["generate_args"].append((source, requested_style))
         assert source in raw
-        assert "言い換えて" in outside
+        assert requested_style == "友達向けの柔らかい日本語"
         return phrase, {"stage": atomic.rewrite.STAGE, "model": atomic.rewrite.MODEL,
                         "attempted_calls": 1, "completed_calls": 1,
                         "temperature": 0, "max_tokens": 80, "timeout_seconds": 6.0,
@@ -627,6 +632,126 @@ def test_zero_model_true_m31_variant_delivers_with_truthful_prior_authority(monk
     assert tick["logic"]["semantic_commit_repair_m32"][lineage.PRODUCER_KEY] == before_m32[lineage.PRODUCER_KEY]
     assert tick["logic"][lineage.LABEL]["m31"]["surface_authority_retained"] is True
     assert tick["logic"][lineage.LABEL]["authority_transfer_permitted"] is False
+
+
+@pytest.mark.parametrize("case_id,source", [
+    ("S0", "集合場所はまだ相談しているところです"),
+    ("S2", "集合場所はまだ仮の状態です"),
+    ("S3", "2027年2月11日の集合場所はまだ調整中です"),
+    ("S5", "集合場所はまだ候補を比べているところです"),
+    ("S7", "集合場所はまだ考え直しているところです"),
+])
+def test_frozen_mixed_styles_pass_only_canonical_cue_to_generator(monkeypatch, case_id, source):
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=S_BY_ID[case_id], memory=_memory([]),
+        phrase="集合場所、まだ調整中なんだ",
+    )
+    atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    assert calls["generate"] == 1
+    assert calls["generate_args"] == [(source, "友達向けの柔らかい日本語")]
+    assert "2027年2月10日" not in calls["generate_args"][0][1]
+    if case_id == "S3":
+        assert "2027年2月11日" in calls["generate_args"][0][0]
+        assert "2027年2月11日" not in calls["generate_args"][0][1]
+
+
+@pytest.mark.parametrize("case_id", ["Z0", "Z1"])
+def test_missing_or_contradictory_mixed_style_keeps_old_route_without_atomic_call(monkeypatch, case_id):
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=Z_BY_ID[case_id], memory=_memory([]),
+    )
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    assert calls["generate"] == 0
+    assert result["reply"] == "旧経路の返事。"
+    assert atomic.LABEL not in result["logic"]
+    assert tick["logic"]["semantic_commit_repair_m32"]["surface_authority"] is True
+
+
+@pytest.mark.parametrize("change", [
+    "wrong_role", "protected_quote", "missing_style_cue", "altered_quote", "altered_outside",
+])
+def test_style_scope_requires_untampered_current_turn_role(change):
+    role = atomic.source_role.classify_current_turn_source_role_p4(S_BY_ID["S3"], cycle_index=7)
+    assert atomic._bounded_requested_style(role) == "友達向けの柔らかい日本語"
+    role = deepcopy(role)
+    if change == "wrong_role":
+        role["quote_role"] = "reported_content"
+    elif change == "protected_quote":
+        role = atomic.source_role.classify_current_turn_source_role_p4(S_BY_ID["S8"], cycle_index=7)
+    elif change == "missing_style_cue":
+        role["evidence_ids"].remove("style_goal")
+    elif change == "altered_quote":
+        role["_quote_nfkc"] = role["_quote_nfkc"].replace("11日", "10日")
+    elif change == "altered_outside":
+        role["_outside_nfkc"] = role["_outside_nfkc"].replace("10日", "11日")
+    assert atomic._bounded_requested_style(role) is None
+
+
+def test_style_cue_in_second_task_cannot_become_rewrite_instruction():
+    raw = (
+        "「集合場所はまだ未定です」を言い換えて、"
+        "2027年2月13日に私が選んだ場所も友達向けに柔らかく教えて。"
+    )
+    role = atomic.source_role.classify_current_turn_source_role_p4(raw, cycle_index=7)
+    assert role["act"] == "mixed_request"
+    assert "style_goal" in role["evidence_ids"]
+    assert atomic._bounded_requested_style(role) is None
+
+
+@pytest.mark.parametrize("extra", [
+    "あと、改写は冷たく突き放す感じで。",
+    "あと、冷たく突き放す感じで。",
+])
+def test_extra_opposing_rewrite_instruction_after_recall_fails_closed_without_call(monkeypatch, extra):
+    raw = (
+        "「集合場所はまだ未定です」を友達向けに柔らかく言い換えて、"
+        "2027年2月13日に私が選んだ場所も教えて。" + extra
+    )
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=raw, memory=_memory([]),
+    )
+    assert atomic._bounded_requested_style(_admit(event, tick)["source_role"]) is None
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    assert calls["generate"] == 0
+    assert result["reply"] == "旧経路の返事。"
+    assert atomic.LABEL not in result["logic"]
+
+
+def test_supported_casual_cue_uses_its_own_bounded_style_not_soft_default():
+    raw = (
+        "「集合場所はまだ未定です」を友達向けにカジュアルに言い換えて、"
+        "2027年2月13日に私が選んだ場所も教えて。"
+    )
+    role = atomic.source_role.classify_current_turn_source_role_p4(raw, cycle_index=7)
+    assert atomic._bounded_requested_style(role) == "友達向けのカジュアルな日本語"
+
+
+@pytest.mark.parametrize("change", ["quote", "outer"])
+def test_tampered_event_scope_cannot_add_atomic_call(monkeypatch, change):
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=S_BY_ID["S3"], memory=_memory([]),
+    )
+    if change == "quote":
+        event["user_input"] = event["user_input"].replace("2027年2月11日", "2027年2月12日")
+    else:
+        event["user_input"] = event["user_input"].replace("2027年2月10日", "2027年2月12日")
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    assert calls["generate"] == 0
+    assert atomic.LABEL not in result["logic"]
+
+
+def test_quote_internal_date_does_not_authorize_new_outer_date_in_rewrite(monkeypatch):
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=S_BY_ID["S3"], memory=_memory([]),
+        phrase="2027年2月10日の集合場所はまだ調整中なんだ",
+    )
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    assert calls["generate_args"] == [
+        ("2027年2月11日の集合場所はまだ調整中です", "友達向けの柔らかい日本語"),
+    ]
+    assert result["reply"] == "旧経路の返事。"
+    assert result["logic"][atomic.LABEL]["rewrite_contrast_status"] == "new_number"
+    assert result["logic"][atomic.LABEL]["final_consistent"] is False
 
 
 def test_new_number_in_rewrite_remains_rejected_for_true_m31_variant():

@@ -38,6 +38,26 @@ _PAST = re.compile(r"昨日|一昨日|今日|明日|先週|来週")
 _DONE = re.compile(r"(?:もう|すでに|既に)?(?:決まった|決めた|確定した|確認できた|終わった)")
 _NOT_DECIDED = re.compile(r"決まっていません|決まってない|決めていません|決めてない|未確定|未定")
 _UNSETTLED = re.compile(r"まだ|未|仮|保留|確認中|確認待ち|待ち|検討中|見直し中|再検討中|調整中")
+_MIXED_STYLE_COMMAND = re.compile(
+    r"を友達(?:向けに|に(?:送る|話す|返す)感じで)"
+    r"(?:もう少し|少し|もっと)?(?P<tone>柔らかく|やわらかく|カジュアルに|親しみやすく)"
+    r"(?:言い換えて|書き換えて)[、,](?P<recall>.+)"
+)
+_BOUNDED_RECALL_SUFFIX = re.compile(
+    rf"(?:{past_place._DATE}|一昨日|昨日)に(?:私|僕|俺|うち)が"
+    r"(?:選んだ|決めた)(?:集合)?場所も?(?:教えて|思い出して|覚えて)[。.!！]?"
+)
+_CONTRADICTORY_STYLE = re.compile(
+    r"堅い|硬い|固い|かたい|敬語|丁寧語|フォーマル|ビジネス|公式|"
+    r"くだけない|砕けない|柔らかく(?:しない|ない)|やわらかく(?:しない|ない)|"
+    r"カジュアル(?:にしない|じゃない)"
+)
+_CANONICAL_STYLE = {
+    "柔らかく": "友達向けの柔らかい日本語",
+    "やわらかく": "友達向けの柔らかい日本語",
+    "カジュアルに": "友達向けのカジュアルな日本語",
+    "親しみやすく": "友達向けの親しみやすい日本語",
+}
 
 
 def _sha(value: object) -> str:
@@ -46,6 +66,40 @@ def _sha(value: object) -> str:
 
 def _uuid(value: object) -> bool:
     return isinstance(value, str) and bool(_ID_RE.fullmatch(value))
+
+
+def _bounded_requested_style(role: dict) -> str | None:
+    """Use only the certified outer rewrite cue, never its separate recall act.
+
+    This is a deliberately narrow style boundary, not an intent inference.
+    Unrecognized or conflicting wording retains the original route without an
+    added rewrite call. The quoted source (including any inner date) is not
+    shortened or altered here.
+    """
+    if not isinstance(role, dict) or (
+        role.get("act") != "mixed_request"
+        or role.get("quote_role") != "rewrite_object"
+        or role.get("outer_role") != "current_user_context_or_instruction"
+    ):
+        return None
+    cues = role.get("evidence_ids")
+    outside = role.get("_outside_nfkc")
+    quote = role.get("_quote_nfkc")
+    if (
+        not isinstance(cues, list)
+        or not {"rewrite_request", "style_goal", "other_action"}.issubset(cues)
+        or not isinstance(outside, str)
+        or not isinstance(quote, str)
+        or not outside or not quote or "\n" in outside
+        or _sha(outside) != role.get("outside_classifier_normalized_sha256")
+        or _sha(quote) != role.get("quote_normalized_sha256")
+        or _CONTRADICTORY_STYLE.search(outside)
+    ):
+        return None
+    match = _MIXED_STYLE_COMMAND.fullmatch(outside)
+    if not match or not _BOUNDED_RECALL_SUFFIX.fullmatch(match.group("recall")):
+        return None
+    return _CANONICAL_STYLE[match.group("tone")]
 
 
 def verify_typed_mixed_atomic_admission_p4(event: dict, tick_result: dict) -> dict:
@@ -418,7 +472,9 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
         return _ORIGINAL_EMIT(self, event, tick_result)
     role = admission["source_role"]
     quote = role["_quote_nfkc"]
-    outside = role["_outside_nfkc"]
+    requested_style = _bounded_requested_style(role)
+    if requested_style is None:
+        return _ORIGINAL_EMIT(self, event, tick_result)
     receipt = {
         "schema": SCHEMA, "status": "candidate_rejected_original_route_kept",
         "event_id": admission["event_id"], "raw_input_sha256": admission["raw_input_sha256"],
@@ -440,7 +496,7 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
         "semantic_equivalence_certified": False,
         "claim_boundary": "bounded two-action terminal delivery; rewrite semantics unverified; DB durability and quality require external validation",
     }
-    phrase, call = rewrite._generate(self, quote, outside)
+    phrase, call = rewrite._generate(self, quote, requested_style)
     receipt["model_call"] = call
     if not _valid_rewrite_call(phrase, call):
         valid, reason = False, "rewrite_call_receipt_missing_invalid_or_over_budget"
