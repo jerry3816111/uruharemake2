@@ -17,6 +17,7 @@ import unicodedata
 import uruha_compute_ledger as compute_ledger
 from uruha_local_fact_answer_authority_p4 import _protected_or_other_route
 from uruha_trace_history_sync_m41_1 import sync_current_history_m41_1
+import uruha_utterance_frame_shadow_extension_p4 as frame_extension
 
 
 LABEL = "explicit_rewrite_action_p4"
@@ -38,6 +39,7 @@ _NUMBER = re.compile(r'[0-9０-９]+')
 _BAD_CHAR = re.compile(r'[\x00-\x1f\x7f<>`{}\[\]]')
 _INSTALLED = False
 _ORIGINAL_EMIT = None
+_ORIGINAL_SPEAK = None
 
 
 def _sha(value: object) -> str:
@@ -117,6 +119,80 @@ def _usage(response: object) -> dict:
     }
 
 
+def _candidate_has_competing_authority(logic: dict) -> bool:
+    """Do not displace an independently authoritative protected/factual reply."""
+    if logic.get("semantic_commit_repair_m32") is not None and not isinstance(
+        logic.get("semantic_commit_repair_m32"), dict
+    ):
+        return True
+    if logic.get(frame_extension.LABEL) is not None and not isinstance(
+        logic.get(frame_extension.LABEL), dict
+    ):
+        return True
+    for key in (
+        "semantic_authorization_m31", "source_anchored_semantic_commit_m33",
+        "literal_topic_projection_m29", "feedback_topic_transition_m28",
+    ):
+        contract = logic.get(key)
+        if contract is not None and (not isinstance(contract, dict) or contract.get("surface_authority")):
+            return True
+    return False
+
+
+def _transfer_surface_authority(logic: dict, user_input: str, candidate: str, receipt: dict) -> None:
+    """Move only this turn's *surface* authority from the old plan to the new act."""
+    old_m32 = deepcopy(logic.get("semantic_commit_repair_m32") or {})
+    if not isinstance(old_m32, dict):
+        raise TypeError("malformed M32 surface contract")
+    if old_m32.get("surface_authority"):
+        shadow = deepcopy(old_m32)
+        shadow["surface_authority"] = False
+        shadow["post_selection_role"] = "shadowed_by_explicit_rewrite_action_p4"
+        logic["semantic_commit_repair_m32"] = shadow
+        receipt["m32_surface_authority_shadowed"] = True
+    else:
+        receipt["m32_surface_authority_shadowed"] = False
+    previous_frame = logic.get(frame_extension.LABEL) or {}
+    effective_frame = frame_extension.inspect_utterance_frame_coverage_extension_p4(
+        user_input, candidate
+    )
+    logic[frame_extension.LABEL] = effective_frame
+    receipt["pre_action_frame_reply_sha256"] = previous_frame.get("reply_digest", "unavailable")
+    receipt["effective_frame_reply_sha256"] = effective_frame.get("reply_digest", "unavailable")
+    receipt["effective_frame_violations"] = list(effective_frame.get("violations") or [])
+    logic["human_speech_plan"] = {
+        "dialogue_act": "direct_chat_answer",
+        "content_units": [candidate],
+        "speech_moves": [],
+        "content_density_target": "low",
+        "turn_opening_potential": False,
+        "grounding_terms": [],
+    }
+
+
+def speak_with_explicit_rewrite_action_p4(
+    self, user_input, logic_data, memory_data, current_psyche
+):
+    """Use the accepted, complete action candidate without a second realization pass."""
+    receipt = (logic_data or {}).get(LABEL) or {}
+    candidate = str((logic_data or {}).get("core_message_jp") or "").strip()
+    if (
+        os.environ.get(FLAG) == "1"
+        and receipt.get("status") == "candidate_committed"
+        and receipt.get("committed_visible_candidate_sha256") == _sha(candidate)
+        and candidate
+    ):
+        self._remember_turn(
+            str(logic_data.get("jp_summary") or ""), candidate,
+            str(logic_data.get("intent") or "chat"),
+        )
+        receipt["speak_delivery"] = "typed_candidate_no_second_generation"
+        return candidate
+    if _ORIGINAL_SPEAK is None:
+        raise RuntimeError("explicit rewrite speech action not installed")
+    return _ORIGINAL_SPEAK(self, user_input, logic_data, memory_data, current_psyche)
+
+
 def _generate(self, source: str, outside: str) -> tuple[str | None, dict]:
     receipt = {
         "stage": STAGE, "model": MODEL, "attempted_calls": 1,
@@ -173,6 +249,7 @@ def _materialize(self, result: dict, receipt: dict) -> dict:
     trace = result.get("runtime_trace") or {}
     complete = receipt.get("committed_visible_candidate_sha256")
     receipt = deepcopy(receipt)
+    receipt["speak_delivery"] = (logic.get(LABEL) or {}).get("speak_delivery", "unavailable")
     speech_history = getattr(getattr(self, "right_brain", None), "history", None) or []
     last_speech = speech_history[-1] if speech_history else {}
     speak_reply = str(last_speech.get("content") or "") if last_speech.get("role") == "assistant" else ""
@@ -204,6 +281,11 @@ def _materialize(self, result: dict, receipt: dict) -> dict:
             payload = deepcopy(original.get("payload") or {})
             payload["typed_rewrite_original_plan_role"] = "shadowed_by_explicit_rewrite_action_p4"
             original["payload"] = payload
+        old_frame = next((row for row in rows if row.get("label") == frame_extension.LABEL), None)
+        if old_frame and receipt.get("committed_visible_candidate_sha256"):
+            payload = deepcopy(old_frame.get("payload") or {})
+            payload["typed_rewrite_frame_role"] = "pre_action_shadow"
+            old_frame["payload"] = payload
         before = next((index for index, row in enumerate(rows) if row.get("label") == "utterance"), len(rows))
         rows.insert(before, {"stage": "surface", "label": LABEL, "payload": deepcopy(receipt), "salience": 1.0})
         trace["blackboard"] = rows
@@ -253,6 +335,8 @@ def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result
     receipt["model_call"] = model_receipt
     if phrase is None:
         receipt["status"] = "model_candidate_rejected_original_route_kept"
+    elif _candidate_has_competing_authority(logic):
+        receipt["status"] = "candidate_rejected_competing_surface_authority"
     else:
         candidate = f"「{phrase}」がいいかな。"
         receipt["model_phrase_sha256"] = _sha(phrase)
@@ -260,7 +344,7 @@ def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result
         receipt["status"] = "candidate_committed"
         logic["core_message_jp"] = candidate
         logic["surface_act"] = "plain_reply"
-        logic.pop("human_speech_plan", None)
+        _transfer_surface_authority(logic, raw, candidate, receipt)
         constraints = dict(logic.get("constraints") or {})
         constraints["max_chars"] = max(80, int(constraints.get("max_chars") or 0))
         logic["constraints"] = constraints
@@ -271,19 +355,23 @@ def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result
 
 def install_explicit_rewrite_action_p4(brain_class=None) -> bool:
     """Install once after prior P4 wrappers; flag-off preserves their behavior."""
-    global _INSTALLED, _ORIGINAL_EMIT
+    global _INSTALLED, _ORIGINAL_EMIT, _ORIGINAL_SPEAK
     if _INSTALLED:
         return False
     if brain_class is None:
         from uruha_brain_mac import UruhaBrainV4_Mac
         brain_class = UruhaBrainV4_Mac
+    from uruha_brain_mac import RightBrain
     _ORIGINAL_EMIT = brain_class.emit_response_if_ready
+    _ORIGINAL_SPEAK = RightBrain.speak
     brain_class.emit_response_if_ready = emit_response_with_explicit_rewrite_action_p4
+    RightBrain.speak = speak_with_explicit_rewrite_action_p4
     _INSTALLED = True
     return True
 
 
 __all__ = [
     "LABEL", "SCHEMA", "FLAG", "classify_explicit_rewrite_action_p4",
-    "emit_response_with_explicit_rewrite_action_p4", "install_explicit_rewrite_action_p4",
+    "emit_response_with_explicit_rewrite_action_p4", "speak_with_explicit_rewrite_action_p4",
+    "install_explicit_rewrite_action_p4",
 ]

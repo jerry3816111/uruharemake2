@@ -12,9 +12,13 @@ from unittest.mock import patch
 import pytest
 
 import uruha_explicit_rewrite_action_p4 as rewrite
+import uruha_adaptive_person_model as adaptive_person
+import uruha_frame_preserving_visible_repair_p4 as frame_repair
+import uruha_utterance_frame_shadow_extension_p4 as frame_extension
 
 
 DATASET = Path(__file__).with_name("datasets") / "p4_explicit_rewrite_action_fresh_probe_2026-10-20.json"
+SURFACE_DATASET = Path(__file__).with_name("datasets") / "p4_rewrite_surface_authority_fresh_probe_2026-10-20.json"
 
 
 def _case_users():
@@ -203,3 +207,98 @@ assert len(targets) == 20, len(targets)
 """
     proc = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=45, check=False)
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_prospective_scope_is_disjoint_and_keeps_negative_controls_out():
+    cases = json.loads(SURFACE_DATASET.read_text(encoding="utf-8"))["cases"]
+    old = set(_case_users().values())
+    assert len(cases) == 8
+    assert all(case["user"] not in old for case in cases)
+    assert [rewrite.classify_explicit_rewrite_action_p4(case["user"])["eligible"] for case in cases] == [
+        True, True, True, False, False, False, False, False,
+    ]
+
+
+def test_accepted_action_shadows_stale_m32_and_rechecks_frame_before_original_emit():
+    brain = _fake_brain()
+    tick = _fake_tick()
+    old_m32 = {
+        "schema": adaptive_person.SEMANTIC_COMMIT_REPAIR_SCHEMA_M32,
+        "surface_authority": True,
+        "response_jp": "私は今日行けないんだね。",
+        "surface_anchors_jp": ["私", "行けない"],
+        "plan_applied": True,
+    }
+    user = json.loads(SURFACE_DATASET.read_text(encoding="utf-8"))["cases"][0]["user"]
+    old_frame = frame_extension.inspect_utterance_frame_coverage_extension_p4(user, old_m32["response_jp"])
+    tick["logic"]["semantic_commit_repair_m32"] = deepcopy(old_m32)
+    tick["logic"][frame_extension.LABEL] = old_frame
+
+    def base_emit(self, event, result):
+        logic = result["logic"]
+        candidate = logic["core_message_jp"]
+        spoken = rewrite.speak_with_explicit_rewrite_action_p4(
+            self.right_brain, event["user_input"], logic, {}, {"mood": 0, "trust": 50}
+        )
+        after_m32, contract = adaptive_person.ensure_semantic_commit_repair_m32_reaches_surface(spoken, logic)
+        logic["semantic_commit_repair_m32"] = contract
+        visible, frame_receipt = frame_repair.repair_visible_reply_p4(
+            event["user_input"], after_m32, effective_trace=logic[frame_extension.LABEL]
+        )
+        logic["frame_preserving_visible_repair_p4"] = frame_receipt
+        logic["visible_language_guard"] = {"final_reply": visible}
+        trace = {"cycle_index": 1, "selected_plan": {}, "blackboard": [
+            {"stage": "select", "label": "selected_plan", "payload": {"core_message_jp": old_m32["response_jp"]}},
+            {"stage": "surface", "label": frame_extension.LABEL, "payload": old_frame},
+            {"stage": "surface", "label": "utterance", "payload": {"reply": visible}},
+        ]}
+        self.runtime.turn_traces = [deepcopy(trace)]
+        assert candidate == spoken
+        return {"reply": visible, "logic": logic, "runtime_trace": trace,
+                "runtime_state": {"blackboard": deepcopy(trace["blackboard"]), "recent_turn_traces": [deepcopy(trace)]}}
+
+    memory_calls = []
+    brain.right_brain._remember_turn = lambda *args: (memory_calls.append(args), brain.right_brain.history.append({"role": "assistant", "content": args[1]}))
+    with patch.object(rewrite, "_ORIGINAL_EMIT", base_emit), patch.object(rewrite, "_generate", return_value=("今日は会えないんだ。", {"attempted_calls": 1, "completed_calls": 1})), patch.dict(os.environ, {rewrite.FLAG: "1"}):
+        result = rewrite.emit_response_with_explicit_rewrite_action_p4(brain, {"user_input": user}, tick)
+    candidate = "「今日は会えないんだ。」がいいかな。"
+    receipt = result["logic"][rewrite.LABEL]
+    assert result["reply"] == candidate
+    assert len(memory_calls) == 1
+    assert receipt["m32_surface_authority_shadowed"] is True
+    assert receipt["speak_delivery"] == "typed_candidate_no_second_generation"
+    assert receipt["effective_frame_violations"] == []
+    assert receipt["candidate_equals_speak"] is True
+    assert receipt["candidate_equals_final_guard"] is True
+    assert receipt["candidate_equals_final"] is True
+    assert result["logic"]["semantic_commit_repair_m32"]["surface_authority"] is False
+    assert result["logic"]["frame_preserving_visible_repair_p4"]["changed"] is False
+    frame_row = next(row for row in result["runtime_trace"]["blackboard"] if row["label"] == frame_extension.LABEL)
+    assert frame_row["payload"]["typed_rewrite_frame_role"] == "pre_action_shadow"
+    assert user not in json.dumps(receipt, ensure_ascii=False)
+
+
+def test_competing_factual_authority_rejects_candidate_without_shadowing_m32():
+    brain = _fake_brain()
+    tick = _fake_tick()
+    tick["logic"]["semantic_authorization_m31"] = {"surface_authority": True}
+    tick["logic"]["semantic_commit_repair_m32"] = {"surface_authority": True, "response_jp": "元の答え。"}
+    user = json.loads(SURFACE_DATASET.read_text(encoding="utf-8"))["cases"][0]["user"]
+    with patch.object(rewrite, "_ORIGINAL_EMIT", _fake_base_emit), patch.object(rewrite, "_generate", return_value=("今日は会えないんだ。", {"attempted_calls": 1})), patch.dict(os.environ, {rewrite.FLAG: "1"}):
+        result = rewrite.emit_response_with_explicit_rewrite_action_p4(brain, {"user_input": user}, tick)
+    assert result["logic"][rewrite.LABEL]["status"] == "candidate_rejected_competing_surface_authority"
+    assert result["logic"]["semantic_commit_repair_m32"]["surface_authority"] is True
+    assert result["reply"] == "承知しました"
+
+
+def test_speech_handoff_flag_off_and_invalid_digest_use_old_speak():
+    fake = SimpleNamespace(_remember_turn=lambda *_: (_ for _ in ()).throw(AssertionError("must not remember")))
+    logic = {"core_message_jp": "「うん」がいいかな。", rewrite.LABEL: {
+        "status": "candidate_committed", "committed_visible_candidate_sha256": "bad-digest",
+    }}
+    old = lambda *_: "old-speak"
+    with patch.object(rewrite, "_ORIGINAL_SPEAK", old), patch.dict(os.environ, {rewrite.FLAG: "1"}):
+        assert rewrite.speak_with_explicit_rewrite_action_p4(fake, "x", logic, {}, {}) == "old-speak"
+    logic[rewrite.LABEL]["committed_visible_candidate_sha256"] = rewrite._sha(logic["core_message_jp"])
+    with patch.object(rewrite, "_ORIGINAL_SPEAK", old), patch.dict(os.environ, {rewrite.FLAG: "0"}):
+        assert rewrite.speak_with_explicit_rewrite_action_p4(fake, "x", logic, {}, {}) == "old-speak"
