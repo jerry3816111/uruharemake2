@@ -20,6 +20,7 @@ import uruha_current_turn_source_role_p4 as source_role
 import uruha_explicit_rewrite_action_p4 as rewrite
 import uruha_mixed_act_lineage_p4 as lineage
 import uruha_mixed_past_place_source_authority_p4 as past_place
+import uruha_typed_act_semantic_ledger_p4 as semantic_ledger
 from uruha_local_fact_answer_authority_p4 import _protected_or_other_route
 from uruha_trace_history_sync_m41_1 import sync_current_history_m41_1
 
@@ -329,6 +330,11 @@ def visible_guard_with_typed_mixed_atomic_delivery_p4(self, reply, logic_data, u
     receipt = logic_data.get(LABEL) or {}
     fresh_admission = verify_typed_mixed_atomic_admission_p4(tx["event"], tx["tick"])
     fresh_source = past_place.build_mixed_past_place_certificate_p4(user_input, memory_data)
+    fresh_ledger = (
+        semantic_ledger.build_typed_act_semantic_ledger_p4(
+            tx["event"], fresh_admission, fresh_source, tx["requested_style"],
+        ) if tx.get("semantic_ledger_mode") else None
+    )
     valid = (
         fresh_admission.get("eligible") is True
         and fresh_admission.get("event_id") == receipt.get("event_id")
@@ -340,6 +346,12 @@ def visible_guard_with_typed_mixed_atomic_delivery_p4(self, reply, logic_data, u
         and tx.get("speak_candidate_sha256") == receipt.get("committed_visible_candidate_sha256")
         and user_input == tx["event"].get("user_input")
         and getattr(tx.get("owner_runtime"), "cycle_index", None) == receipt.get("cycle_index")
+        and (not tx.get("semantic_ledger_mode") or (
+            isinstance(fresh_ledger, dict)
+            and fresh_ledger.get("eligible") is True
+            and fresh_ledger.get("candidate") == tx.get("candidate")
+            and fresh_ledger.get("receipt") == receipt.get("semantic_ledger")
+        ))
     )
     if valid:
         selected = _ORIGINAL_GUARD(self, tx["candidate"], logic_data, user_input=user_input, memory_data=memory_data)
@@ -367,7 +379,8 @@ def visible_guard_with_typed_mixed_atomic_delivery_p4(self, reply, logic_data, u
     receipt["final_guard_reply_sha256"] = _sha(selected)
     receipt["history_commit_status"] = _commit_history(tx, selected, logic_data)
     receipt["rewrite_action_surface_status"] = (
-        "shape_visible_semantics_unverified" if valid else "not_delivered"
+        ("bounded_slot_visible_semantics_unverified" if tx.get("semantic_ledger_mode")
+         else "shape_visible_semantics_unverified") if valid else "not_delivered"
     )
     receipt["recall_action_surface_status"] = (
         ("source_backed_visible" if receipt.get("source_status") == "source_backed" else "honest_unknown_visible")
@@ -475,6 +488,7 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
     requested_style = _bounded_requested_style(role)
     if requested_style is None:
         return _ORIGINAL_EMIT(self, event, tick_result)
+    semantic_ledger_mode = os.environ.get(semantic_ledger.FLAG) == "1"
     receipt = {
         "schema": SCHEMA, "status": "candidate_rejected_original_route_kept",
         "event_id": admission["event_id"], "raw_input_sha256": admission["raw_input_sha256"],
@@ -496,17 +510,31 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
         "semantic_equivalence_certified": False,
         "claim_boundary": "bounded two-action terminal delivery; rewrite semantics unverified; DB durability and quality require external validation",
     }
-    phrase, call = rewrite._generate(self, quote, requested_style)
-    receipt["model_call"] = call
-    if not _valid_rewrite_call(phrase, call):
-        valid, reason = False, "rewrite_call_receipt_missing_invalid_or_over_budget"
+    if semantic_ledger_mode:
+        ledger_result = semantic_ledger.build_typed_act_semantic_ledger_p4(
+            event, admission, source_cert, requested_style,
+        )
+        if not ledger_result.get("eligible"):
+            receipt["semantic_ledger_status"] = ledger_result.get("reason", "not_eligible")
+            logic[LABEL] = deepcopy(receipt)
+            return _materialize(self, _ORIGINAL_EMIT(self, event, tick_result), {"receipt": receipt})
+        phrase = ledger_result["rewrite_phrase"]
+        candidate = ledger_result["candidate"]
+        receipt["semantic_ledger"] = deepcopy(ledger_result["receipt"])
+        receipt["model_call"] = deepcopy(ledger_result["receipt"]["model_call"])
+        receipt["rewrite_contrast_status"] = "bounded_slot_fidelity_verified"
     else:
-        valid, reason = validate_typed_mixed_rewrite_phrase_p4(phrase, quote)
-    receipt["rewrite_contrast_status"] = reason
-    if not valid:
-        logic[LABEL] = deepcopy(receipt)
-        return _materialize(self, _ORIGINAL_EMIT(self, event, tick_result), {"receipt": receipt})
-    candidate = f"「{phrase}」って感じかな。{source_cert['authorized_reply']}"
+        phrase, call = rewrite._generate(self, quote, requested_style)
+        receipt["model_call"] = call
+        if not _valid_rewrite_call(phrase, call):
+            valid, reason = False, "rewrite_call_receipt_missing_invalid_or_over_budget"
+        else:
+            valid, reason = validate_typed_mixed_rewrite_phrase_p4(phrase, quote)
+        receipt["rewrite_contrast_status"] = reason
+        if not valid:
+            logic[LABEL] = deepcopy(receipt)
+            return _materialize(self, _ORIGINAL_EMIT(self, event, tick_result), {"receipt": receipt})
+        candidate = f"「{phrase}」って感じかな。{source_cert['authorized_reply']}"
     receipt["status"] = "candidate_prepared"
     receipt["rewrite_phrase_sha256"] = _sha(phrase)
     receipt["committed_visible_candidate_sha256"] = _sha(candidate)
@@ -518,6 +546,8 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
         "logic_id": id(logic), "owner_runtime": getattr(self, "runtime", None),
         "memory_object": getattr(self, "memory", None),
         "history_snapshot": _history_snapshot(getattr(self, "right_brain", None), logic),
+        "semantic_ledger_mode": semantic_ledger_mode,
+        "requested_style": requested_style,
     }
     if tx["history_snapshot"] is None:
         receipt["status"] = "history_transaction_unavailable_original_route_kept"

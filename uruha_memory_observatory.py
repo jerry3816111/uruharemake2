@@ -321,6 +321,9 @@ MEMORY_OBSERVATORY_CSS += r"""
 .brain-graph-canvas.has-atomic::before {
   content: "VERIFIED RECEIPT · two-action terminal structure (meaning unverified)";
 }
+.brain-graph-canvas.has-ledger::before {
+  content: "VERIFIED RECEIPT · bounded date/state/source slots (general meaning unverified)";
+}
 .brain-graph-canvas.has-atomic::after {
   top: 237px;
   border-top-color: rgba(167, 139, 250, .54);
@@ -1738,6 +1741,13 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
     final_digest = hashlib.sha256(final.encode("utf-8")).hexdigest()
     lineage_actions = lineage.get("actions")
     action_ids = receipt.get("action_ids")
+    # A ledger receipt is an opt-in realization method, not a stronger claim
+    # about unrestricted paraphrase.  Its presence must not silently fall back
+    # to the old one-call structural projection when malformed.
+    ledger_mode = "semantic_ledger" in receipt
+    ledger = receipt.get("semantic_ledger") if ledger_mode else None
+    if ledger_mode and not isinstance(ledger, dict):
+        return None
     if (
         lineage.get("source_role_act") != "mixed_request"
         or lineage.get("authority_blockers") != []
@@ -1771,8 +1781,14 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
         or m32.get("terminal_transaction_shadowed_surface_p4") != "typed_mixed_atomic_delivery_p4"
         or receipt.get("lineage_authority_transfer_permitted") is not False
         or receipt.get("terminal_priority_status") != "applied_after_legacy_m32"
-        or receipt.get("rewrite_action_surface_status") != "shape_visible_semantics_unverified"
-        or receipt.get("rewrite_contrast_status") != "bounded_contrast_accepted_semantics_unverified"
+        or receipt.get("rewrite_action_surface_status") != (
+            "bounded_slot_visible_semantics_unverified" if ledger_mode
+            else "shape_visible_semantics_unverified"
+        )
+        or receipt.get("rewrite_contrast_status") != (
+            "bounded_slot_fidelity_verified" if ledger_mode
+            else "bounded_contrast_accepted_semantics_unverified"
+        )
         or receipt.get("semantic_equivalence_certified") is not False
         or receipt.get("db_readback_verified") is not False
         or receipt.get("persistent_fact_write") is not False
@@ -1804,9 +1820,18 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
     ):
         return None
     call = receipt.get("model_call")
-    if (
-        not isinstance(call, dict)
-        or call.get("attempted_calls") != 1 or call.get("completed_calls") != 1
+    if not isinstance(call, dict):
+        return None
+    if ledger_mode:
+        if (
+            type(call.get("attempted_calls")) is not int or call["attempted_calls"] != 0
+            or type(call.get("completed_calls")) is not int or call["completed_calls"] != 0
+            or type(call.get("completion_tokens")) is not int or call["completion_tokens"] != 0
+            or call.get("status") != "not_called_constrained_realization"
+        ):
+            return None
+    elif (
+        call.get("attempted_calls") != 1 or call.get("completed_calls") != 1
         or call.get("model_phrase_sha256") != receipt["rewrite_phrase_sha256"]
         or call.get("status") != "bounded_shape_accepted_semantics_unverified"
     ):
@@ -1834,6 +1859,188 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
         or receipt.get("source_trace_id") is not None
     ):
         return None
+    if ledger_mode:
+        if (
+            ledger.get("schema") != "uruha_typed_act_semantic_ledger_p4_v1"
+            or ledger.get("status") != "bounded_slot_fidelity_verified"
+            or ledger.get("bounded_slot_fidelity_verified") is not True
+            or ledger.get("semantic_equivalence_certified") is not False
+            or ledger.get("event_id") != receipt["event_id"]
+            or type(ledger.get("cycle_index")) is not int
+            or ledger["cycle_index"] != receipt["cycle_index"]
+            or ledger.get("raw_input_sha256") != digest
+            or ledger.get("action_ids") != action_ids
+            or ledger.get("source_status") != source_status
+            or ledger.get("source_binding_sha256") != receipt["source_binding_sha256"]
+            or ledger.get("source_reply_sha256") != receipt["source_reply_sha256"]
+            or ledger.get("source_channel") != receipt.get("source_channel")
+            or ledger.get("source_trace_id") != receipt.get("source_trace_id")
+            or ledger.get("quote_sha256") != receipt["quote_sha256"]
+            or ledger.get("quote_raw_sha256") != receipt["quote_sha256"]
+            or ledger.get("quote_role") != "rewrite_object_not_fact"
+            or ledger.get("quote_state_class") != "pending"
+            or type(ledger.get("dates_distinct")) is not bool
+            or ledger.get("recall_actor") != "user"
+            or ledger.get("rewrite_phrase_sha256") != receipt["rewrite_phrase_sha256"]
+            or ledger.get("candidate_sha256") != final_digest
+            or ledger.get("committed_visible_candidate_sha256") != final_digest
+            or type(ledger.get("model_calls_added")) is not int
+            or ledger["model_calls_added"] != 0
+            or type(ledger.get("completion_tokens_added")) is not int
+            or ledger["completion_tokens_added"] != 0
+            or ledger.get("raw_dialogue_persisted") is not False
+            or not all(hex_digest(ledger.get(key)) for key in (
+                "quote_date_sha256", "quote_state_sha256", "recall_date_sha256",
+                "recall_phrase_sha256",
+            ))
+            or ledger.get("model_call") != call
+        ):
+            return None
+        # A receipt can attest its own hashes while the visible sentence has
+        # drifted.  Reparse the current raw quote and outer date, then split
+        # the final sentence into the two realized acts.  This is a bounded
+        # text/slot check, not an independent source-DB read or general
+        # meaning-equivalence judgment.
+        import uruha_current_turn_source_role_p4 as source_role_p4
+        import uruha_mixed_past_place_source_authority_p4 as past_place_p4
+        import uruha_typed_act_semantic_ledger_p4 as typed_ledger_p4
+
+        role = source_role_p4.classify_current_turn_source_role_p4(
+            raw, cycle_index=receipt["cycle_index"],
+        )
+        query = past_place_p4.classify_mixed_past_place_query_p4(raw)
+        quoted, quote_reason = typed_ledger_p4._bound_quote(raw, role)
+        if (
+            role.get("act") != "mixed_request"
+            or role.get("quote_role") != "rewrite_object"
+            or query.get("eligible") is not True
+            or query.get("date_kind") != "absolute"
+            or not isinstance(quoted, dict)
+            or quote_reason != "verified"
+            or not isinstance(query.get("date_anchor"), str)
+        ):
+            return None
+        rewritten = f"{quoted['raw'][:-2]}なんだ"
+        rewrite_prefix = f"「{rewritten}」って感じかな。"
+        if not final.startswith(rewrite_prefix):
+            return None
+        recall_surface = final[len(rewrite_prefix):]
+        outer_date = query["date_anchor"]
+        if (
+            not recall_surface.startswith(f"{outer_date}の集合場所は")
+            or ledger["quote_sha256"] != quoted["raw_sha256"]
+            or ledger["quote_date_sha256"] != hashlib.sha256(quoted["date"].encode("utf-8")).hexdigest()
+            or ledger["quote_state_sha256"] != hashlib.sha256(quoted["state"].encode("utf-8")).hexdigest()
+            or ledger["recall_date_sha256"] != hashlib.sha256(outer_date.encode("utf-8")).hexdigest()
+            or ledger["dates_distinct"] is not (quoted["date"] != outer_date)
+            or ledger["rewrite_phrase_sha256"] != hashlib.sha256(rewritten.encode("utf-8")).hexdigest()
+            or ledger["recall_phrase_sha256"] != hashlib.sha256(recall_surface.encode("utf-8")).hexdigest()
+        ):
+            return None
+        # The source binding in the terminal/ledger receipts is not by itself
+        # proof that the visible recall was authorized.  Rebuild the source
+        # certificate from the actual memory snapshot passed to this turn.
+        # Missing or malformed snapshots must omit the new graph projection.
+        memory_data = result.get("memory_data")
+        if not isinstance(memory_data, dict):
+            return None
+        try:
+            fresh_source = past_place_p4.build_mixed_past_place_certificate_p4(
+                raw, memory_data,
+            )
+        except Exception:
+            return None
+        if (
+            fresh_source.get("eligible") is not True
+            or fresh_source.get("date_kind") != "absolute"
+            or fresh_source.get("date_anchor") != outer_date
+            or fresh_source.get("input_sha256") != digest
+            or fresh_source.get("status") != source_status
+            or fresh_source.get("binding_sha256") != receipt["source_binding_sha256"]
+            or fresh_source.get("authorized_reply_sha256") != receipt["source_reply_sha256"]
+            or fresh_source.get("source_channel") != receipt.get("source_channel")
+            or fresh_source.get("source_trace_id") != receipt.get("source_trace_id")
+        ):
+            return None
+        if source_backed:
+            if (
+                not isinstance(fresh_source.get("admitted_value"), str)
+                or not fresh_source["admitted_value"]
+                or recall_surface != fresh_source.get("authorized_reply")
+            ):
+                return None
+        elif (
+            fresh_source.get("admitted_value") is not None
+            or recall_surface != f"{outer_date}の集合場所は、今ある会話だけじゃ分からないな。"
+        ):
+            return None
+        # Each action must carry its own event, source and realized-surface
+        # obligation.  Reconstruct both bounded records instead of accepting
+        # a top-level digest that was merely copied into the ledger.
+        import uruha_typed_mixed_atomic_delivery_p4 as atomic_p4
+
+        requested_style = atomic_p4._bounded_requested_style(role)
+        if not isinstance(requested_style, str) or not typed_ledger_p4._certified_style(
+            role, requested_style, outer_date,
+        ):
+            return None
+        slot_sha = lambda value: hashlib.sha256(value.encode("utf-8")).hexdigest()
+        binding_sha = lambda value: slot_sha(json.dumps(value, sort_keys=True, ensure_ascii=False))
+        quote_binding = {
+            "kind": "current_user_quoted_object_not_fact",
+            "event_id": receipt["event_id"],
+            "raw_input_sha256": digest,
+            "quote_raw_sha256": quoted["raw_sha256"],
+        }
+        recall_binding = {
+            "kind": "direct_user_certificate_or_honest_unknown",
+            "event_id": receipt["event_id"],
+            "raw_input_sha256": digest,
+            "source_certificate_binding_sha256": fresh_source["binding_sha256"],
+            "source_status": source_status,
+            "source_channel": fresh_source.get("source_channel"),
+            "source_trace_id": fresh_source.get("source_trace_id"),
+        }
+        expected_acts = [
+            {
+                "action_id": action_ids[0],
+                "type": "quoted_rewrite",
+                "event_id": receipt["event_id"],
+                "cycle_index": receipt["cycle_index"],
+                "raw_input_sha256": digest,
+                "source_binding": quote_binding,
+                "source_binding_sha256": binding_sha(quote_binding),
+                "obligation_slot_digests": {
+                    "quote_raw_sha256": quoted["raw_sha256"],
+                    "quote_date_sha256": slot_sha(quoted["date"]),
+                    "quote_state_sha256": slot_sha(quoted["state"]),
+                    "requested_style_sha256": slot_sha(requested_style),
+                },
+                "quote_state_class": "pending",
+                "realized_surface_sha256": slot_sha(rewritten),
+                "status": "bounded_slot_fidelity_verified",
+                "semantic_equivalence_certified": False,
+            },
+            {
+                "action_id": action_ids[1],
+                "type": "past_user_place_recall",
+                "event_id": receipt["event_id"],
+                "cycle_index": receipt["cycle_index"],
+                "raw_input_sha256": digest,
+                "source_binding": recall_binding,
+                "source_binding_sha256": binding_sha(recall_binding),
+                "obligation_slot_digests": {
+                    "recall_date_sha256": slot_sha(outer_date),
+                    "source_reply_sha256": fresh_source["authorized_reply_sha256"],
+                },
+                "recall_actor": "user",
+                "realized_surface_sha256": slot_sha(recall_surface),
+                "status": "bounded_slot_fidelity_verified",
+                "semantic_equivalence_certified": False,
+            },
+        ]
+        if ledger.get("acts") != expected_acts:
+            return None
     guard = logic.get("visible_language_guard")
     if (
         not isinstance(guard, dict)
@@ -1866,7 +2073,7 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
     nodes = [
         ("typed-atomic-rewrite", "surface", "REWRITE · visible", "meaning unverified", {
             **common, "action_id": action_ids[0], "action_type": "quoted_rewrite",
-            "surface_status": "shape_visible_semantics_unverified",
+            "surface_status": receipt["rewrite_action_surface_status"],
             "rewrite_phrase_sha256": receipt["rewrite_phrase_sha256"],
         }),
         ("typed-atomic-recall", "memory", "RECALL · visible",
@@ -1887,18 +2094,64 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
             "claim_boundary": "visible structure only; rewrite meaning and DB durability unverified",
         }),
     ]
+    if ledger_mode:
+        ledger_node = (
+            "typed-atomic-ledger", "verify", "LEDGER · bounded slots",
+            "date · state · source", {
+                **common,
+                "action_type": "semantic_ledger",
+                "schema": ledger["schema"],
+                "status": "bounded_slot_fidelity_verified",
+                "action_ids": action_ids,
+                "quote_role": "rewrite_object_not_fact",
+                "recall_actor": "user",
+                "quote_date_sha256": ledger["quote_date_sha256"],
+                "quote_state_sha256": ledger["quote_state_sha256"],
+                "recall_date_sha256": ledger["recall_date_sha256"],
+                "dates_distinct": ledger["dates_distinct"],
+                "source_status": source_status,
+                "source_binding_sha256": ledger["source_binding_sha256"],
+                "model_calls_added": 0,
+                "completion_tokens_added": 0,
+                "bounded_slot_fidelity_verified": True,
+                "claim_boundary": "visible date/state slots and User-source certificate rechecked; general meaning/DB durability unverified",
+            },
+        )
+        nodes.insert(0, ledger_node)
+        nodes[1][4].update({
+            "quote_date_sha256": ledger["quote_date_sha256"],
+            "quote_state_sha256": ledger["quote_state_sha256"],
+            "bounded_slot_fidelity_verified": True,
+        })
+        nodes[2][4].update({
+            "recall_date_sha256": ledger["recall_date_sha256"],
+            "recall_phrase_sha256": ledger["recall_phrase_sha256"],
+            "bounded_slot_fidelity_verified": True,
+        })
+        nodes[3][4]["claim_boundary"] = (
+            "visible date/state slots and User-source certificate rechecked; "
+            "general semantic equivalence and DB durability unverified"
+        )
     # Identifiers and hashes are not copied from the raw quote/value.  Still
     # reject the pathological case where the complete raw input equals one.
     if any(raw in json.dumps(detail, ensure_ascii=False) for *_, detail in nodes):
         return None
+    summary = {
+        "status": "delivered_structure_semantics_unverified",
+        "source_status": source_status,
+        "recall_surface_status": receipt["recall_action_surface_status"],
+        "rewrite_surface_status": receipt["rewrite_action_surface_status"],
+        "semantic_equivalence_certified": False,
+    }
+    if ledger_mode:
+        summary.update({
+            "semantic_ledger_status": "bounded_slot_fidelity_verified",
+            "bounded_slot_fidelity_verified": True,
+            "model_calls_added": 0,
+            "completion_tokens_added": 0,
+        })
     return {
-        "summary": {
-            "status": "delivered_structure_semantics_unverified",
-            "source_status": source_status,
-            "recall_surface_status": receipt["recall_action_surface_status"],
-            "rewrite_surface_status": "shape_visible_semantics_unverified",
-            "semantic_equivalence_certified": False,
-        },
+        "summary": summary,
         "nodes": nodes,
     }
 
@@ -2069,8 +2322,13 @@ def collect_cognitive_graph(result):
         add_edge("producer-projection-event", "producer-projection-m31", "is-producer")
         add_edge("producer-projection-m31", "producer-projection-m32", "is-producer")
     if atomic_projection_p4:
-        add_edge("producer-projection-m32", "typed-atomic-rewrite", "is-atomic-delivery")
-        add_edge("producer-projection-m32", "typed-atomic-recall", "is-atomic-delivery")
+        if atomic_projection_p4["summary"].get("bounded_slot_fidelity_verified") is True:
+            add_edge("producer-projection-m32", "typed-atomic-ledger", "is-atomic-delivery")
+            add_edge("typed-atomic-ledger", "typed-atomic-rewrite", "is-atomic-delivery")
+            add_edge("typed-atomic-ledger", "typed-atomic-recall", "is-atomic-delivery")
+        else:
+            add_edge("producer-projection-m32", "typed-atomic-rewrite", "is-atomic-delivery")
+            add_edge("producer-projection-m32", "typed-atomic-recall", "is-atomic-delivery")
         add_edge("typed-atomic-rewrite", "typed-atomic-terminal", "is-atomic-delivery")
         add_edge("typed-atomic-recall", "typed-atomic-terminal", "is-atomic-delivery")
         add_edge("typed-atomic-terminal", "turn-output", "is-atomic-delivery")
@@ -2355,11 +2613,21 @@ def collect_cognitive_graph(result):
             node["x"], node["y"] = x, 50
     if atomic_projection_p4:
         projected = {node["id"]: node for node in graph_nodes if node.get("atomic_delivery_projection")}
-        for node_id, position in {
-            "typed-atomic-rewrite": (610, 50),
-            "typed-atomic-recall": (610, 142),
-            "typed-atomic-terminal": (840, 96),
-        }.items():
+        ledger_layout = atomic_projection_p4["summary"].get("bounded_slot_fidelity_verified") is True
+        positions = (
+            {
+                "typed-atomic-ledger": (610, 96),
+                "typed-atomic-rewrite": (840, 50),
+                "typed-atomic-recall": (840, 142),
+                "typed-atomic-terminal": (1070, 96),
+            }
+            if ledger_layout else {
+                "typed-atomic-rewrite": (610, 50),
+                "typed-atomic-recall": (610, 142),
+                "typed-atomic-terminal": (840, 96),
+            }
+        )
+        for node_id, position in positions.items():
             projected[node_id]["x"], projected[node_id]["y"] = position
 
     unique_edges = []
@@ -2496,15 +2764,27 @@ def render_memory_observatory(result):
             "direct User source" if atomic_projection_p4["source_status"] == "source_backed"
             else "honest unknown"
         )
-        atomic_proof_html = (
-            '<div class="brain-producer-proof is-atomic-delivery" '
-            'aria-label="P4 typed mixed atomic delivery projection">'
-            '<strong>VISIBLE TWO-ACTION DELIVERY · REWRITE + RECALL → UTTERANCE</strong>'
-            '<span>3 個行動／交付節點 · 5 條原生箭頭</span>'
-            f'<span>recall {escape(recall_status)}</span>'
-            '<em>rewrite meaning unverified · DB readback unverified</em>'
-            '</div>'
-        )
+        if atomic_projection_p4.get("bounded_slot_fidelity_verified") is True:
+            atomic_proof_html = (
+                '<div class="brain-producer-proof is-atomic-delivery" '
+                'aria-label="P4 typed act semantic ledger projection">'
+                '<strong>BOUNDED SLOT LEDGER · REWRITE + RECALL → UTTERANCE</strong>'
+                '<span>4 個 ledger／行動／交付節點 · 6 條原生箭頭</span>'
+                f'<span>recall {escape(recall_status)} · 0 added rewrite calls</span>'
+                '<em>visible date/state slots and User-source certificate rechecked · '
+                'general meaning and DB readback unverified</em>'
+                '</div>'
+            )
+        else:
+            atomic_proof_html = (
+                '<div class="brain-producer-proof is-atomic-delivery" '
+                'aria-label="P4 typed mixed atomic delivery projection">'
+                '<strong>VISIBLE TWO-ACTION DELIVERY · REWRITE + RECALL → UTTERANCE</strong>'
+                '<span>3 個行動／交付節點 · 5 條原生箭頭</span>'
+                f'<span>recall {escape(recall_status)}</span>'
+                '<em>rewrite meaning unverified · DB readback unverified</em>'
+                '</div>'
+            )
     runtime_trace = result.get("runtime_trace") or {}
     latency = runtime_trace.get("runtime_latency_m19") or {}
     if not latency:
@@ -3031,7 +3311,7 @@ def render_memory_observatory(result):
         f'{producer_proof_html}'
         f'{atomic_proof_html}'
         '<div class="brain-graph-scroll">'
-        f'<div class="brain-graph-canvas{" has-producer" if producer_projection_p4 else ""}{" has-atomic" if atomic_projection_p4 else ""}" style="width:{graph["width"]}px;height:{graph["height"]}px">'
+        f'<div class="brain-graph-canvas{" has-producer" if producer_projection_p4 else ""}{" has-atomic" if atomic_projection_p4 else ""}{" has-ledger" if atomic_projection_p4 and atomic_projection_p4.get("bounded_slot_fidelity_verified") is True else ""}" style="width:{graph["width"]}px;height:{graph["height"]}px">'
         f"{lanes}"
         f'<svg class="brain-edge-layer" viewBox="0 0 {graph["width"]} {graph["height"]}" aria-hidden="true">'
         '<defs><marker id="brain-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
