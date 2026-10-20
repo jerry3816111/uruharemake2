@@ -297,6 +297,26 @@ MEMORY_OBSERVATORY_CSS += r"""
   min-height: 520px;
   isolation: isolate;
 }
+.brain-graph-canvas.has-producer .brain-stage-lane { top: 116px; }
+.brain-graph-canvas.has-producer::before {
+  content: "VERIFIED RECEIPT · producer parentage only";
+  position: absolute;
+  top: 5px;
+  left: 18px;
+  z-index: 2;
+  color: #67e8f9;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.brain-graph-canvas.has-producer::after {
+  content: "";
+  position: absolute;
+  top: 115px;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(34, 211, 238, .5);
+}
 .brain-stage-lane {
   position: absolute;
   top: 0;
@@ -352,6 +372,30 @@ MEMORY_OBSERVATORY_CSS += r"""
   animation: brain-edge-flow 1.25s linear infinite;
   filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.48));
 }
+.brain-edge.is-producer {
+  stroke: #22d3ee;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.8));
+}
+.brain-node.is-producer-projection > summary {
+  border: 2px solid #22d3ee;
+  background: rgba(8, 47, 73, 0.98);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.18), 0 0 20px rgba(34, 211, 238, 0.28);
+}
+.brain-producer-proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(34, 211, 238, 0.26);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.26);
+  color: #cffafe;
+  background: rgba(8, 47, 73, 0.5);
+  font-size: 11px;
+}
+.brain-producer-proof strong { color: #67e8f9; }
+.brain-producer-proof em { color: #fda4af; font-style: normal; }
 .brain-node {
   position: absolute;
   left: var(--node-x);
@@ -1424,6 +1468,228 @@ def _graph_signal(payload):
     return _trim(payload, 38) or "runtime event"
 
 
+def _verified_producer_projection_p4(result, runtime_trace):
+    """Project only a complete, current-turn producer receipt, never inferred order.
+
+    This is a read-only visualization of a producer-parent chain.  It does not
+    certify action coverage, successful speech, or a transfer of authority.
+    """
+    if not isinstance(runtime_trace, dict) or not isinstance(result, dict):
+        return None
+    raw = result.get("user_text")
+    cycle = runtime_trace.get("cycle_index")
+    receipt = runtime_trace.get("mixed_act_lineage_p4")
+    m31 = runtime_trace.get("semantic_authorization_m31")
+    m32 = runtime_trace.get("semantic_commit_repair_m32")
+    if (
+        not isinstance(raw, str) or not raw
+        or type(cycle) is not int or cycle < 0
+        or not all(isinstance(item, dict) for item in (receipt, m31, m32))
+    ):
+        return None
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    schema = "uruha_mixed_act_lineage_p4_v1"
+    if (
+        receipt.get("schema") != schema
+        or receipt.get("status") != "linked"
+        or receipt.get("reason") != "producer_parent_chain_verified"
+        or receipt.get("raw_input_sha256") != digest
+        or type(receipt.get("cycle_index")) is not int
+        or receipt.get("cycle_index") != cycle
+        or receipt.get("action_coverage_status") != "unverified"
+        or receipt.get("authority_transfer_permitted") is not False
+        or receipt.get("reply_changed_by_lineage") is not False
+        or receipt.get("raw_dialogue_persisted") is not False
+        or receipt.get("model_calls_added") != 0
+    ):
+        return None
+
+    event_id = receipt.get("event_id")
+    receipt_m31 = receipt.get("m31")
+    receipt_m32 = receipt.get("m32")
+    if not isinstance(receipt_m31, dict) or not isinstance(receipt_m32, dict):
+        return None
+    m31_id = receipt_m31.get("proposal_id")
+    m32_id = receipt_m32.get("proposal_id")
+    ids = (event_id, m31_id, m32_id)
+    def uuid_hex(value):
+        return (
+            isinstance(value, str) and len(value) == 32
+            and all(char in "0123456789abcdef" for char in value)
+        )
+
+    def producer_id(value, producer):
+        prefix = f"{event_id}:{producer}:"
+        return isinstance(value, str) and value.startswith(prefix) and uuid_hex(value[len(prefix):])
+
+    m31_status = m31.get("status")
+    m32_status = m32.get("status")
+    if (
+        not uuid_hex(event_id)
+        or not producer_id(m31_id, "m31")
+        or not producer_id(m32_id, "m32")
+        or len(set(ids)) != 3
+        or receipt_m31.get("status") != "produced"
+        or receipt_m32.get("status") != "produced"
+        or m31.get("schema") != "uruha_semantic_authorization_m31"
+        or m32.get("schema") != "uruha_deterministic_semantic_commit_m32"
+        or not isinstance(m31_status, str)
+        or m31_status not in {
+            "not_applicable", "not_applied", "semantic_authority_rejected",
+            "semantically_authorized", "protected_current_turn_retained",
+        }
+        or not isinstance(m32_status, str)
+        or m32_status not in {
+            "not_applicable", "not_applied", "repair_rejected",
+            "deterministic_commit_repaired", "protected_current_turn_retained",
+        }
+        or type(m31.get("surface_authority")) is not bool
+        or type(m32.get("surface_authority")) is not bool
+        or receipt_m31.get("surface_authority_retained") is not m31["surface_authority"]
+        or receipt_m32.get("surface_authority_retained") is not m32["surface_authority"]
+        or m31.get("input_digest") != digest[:16]
+    ):
+        return None
+    m31_stamp = m31.get("mixed_act_producer_lineage_p4")
+    m32_stamp = m32.get("mixed_act_producer_lineage_p4")
+    if not isinstance(m31_stamp, dict) or not isinstance(m32_stamp, dict):
+        return None
+    for stamp, producer, proposal_id in ((m31_stamp, "m31", m31_id), (m32_stamp, "m32", m32_id)):
+        if (
+            stamp.get("schema") != schema
+            or stamp.get("producer") != producer
+            or stamp.get("proposal_id") != proposal_id
+            or stamp.get("parent_event_id") != event_id
+            or stamp.get("raw_input_sha256") != digest
+            or type(stamp.get("cycle_index")) is not int
+            or stamp.get("cycle_index") != cycle
+            or stamp.get("action_coverage_status") != "unverified"
+            or stamp.get("authority_transfer_permitted") is not False
+            or stamp.get("raw_dialogue_persisted") is not False
+            or stamp.get("status_at_return") != (m31 if producer == "m31" else m32).get("status")
+        ):
+            return None
+    if (
+        m32_stamp.get("parent_m31_id") != m31_id
+        or m32_stamp.get("parent_m31_direct_argument") is not True
+        or m32_stamp.get("parent_m31_status_at_build") != m31_stamp.get("status_at_return")
+        or m32.get("source_m31_status") != m31_stamp.get("status_at_return")
+    ):
+        return None
+    expected_edges = [
+        {"from_id": event_id, "to_id": m31_id, "type": "event_to_m31"},
+        {"from_id": m31_id, "to_id": m32_id, "type": "m31_to_m32"},
+    ]
+    if receipt.get("producer_edges") != expected_edges:
+        return None
+    blackboard = runtime_trace.get("blackboard")
+    if isinstance(blackboard, list) and any(
+        isinstance(row, dict) and row.get("label") == "mixed_act_lineage_p4"
+        and (
+            not isinstance(row.get("payload"), dict)
+            or any(
+                row["payload"].get(key) != receipt.get(key)
+                for key in (
+                    "schema", "status", "reason", "event_id", "raw_input_sha256",
+                    "cycle_index", "source_role_act",
+                )
+            )
+        )
+        for row in blackboard
+    ):
+        return None
+
+    actions = receipt.get("actions")
+    blockers = receipt.get("authority_blockers")
+    source_role = receipt.get("source_role_act")
+    known_source_roles = {
+        "unknown", "protected", "unquoted_request", "ordinary_chat",
+        "mixed_request", "reported_speech", "definition_request",
+        "hypothetical_identity", "quoted_evaluation", "single_rewrite",
+    }
+    known_blockers = {
+        "protected_source_role", "protected_or_other_route",
+        "factual_memory_contract", "m33_authoritative",
+    }
+    if (
+        not isinstance(actions, list)
+        or not isinstance(blockers, list)
+        or any(not isinstance(value, str) or value not in known_blockers for value in blockers)
+        or len(blockers) != len(set(blockers))
+        or not isinstance(source_role, str) or source_role not in known_source_roles
+        or type(receipt.get("m33_authoritative")) is not bool
+        or (source_role == "protected" and "protected_source_role" not in blockers)
+        or (receipt["m33_authoritative"] and "m33_authoritative" not in blockers)
+    ):
+        return None
+    action_ids = []
+    for action in actions:
+        if not isinstance(action, dict) or action.get("coverage_status") != "unverified":
+            return None
+        action_id = action.get("action_id")
+        if not isinstance(action_id, str) or not action_id or len(action_id) > 128:
+            return None
+        action_ids.append(action_id)
+    if len(set((*ids, *action_ids))) != len(ids) + len(action_ids):
+        return None
+
+    role_certificate = runtime_trace.get("current_turn_source_role_p4")
+    if role_certificate is not None:
+        if not isinstance(role_certificate, dict) or (
+            role_certificate.get("raw_input_sha256") != digest
+            or role_certificate.get("cycle_index") != cycle
+            or role_certificate.get("act") != source_role
+        ):
+            return None
+    m33 = runtime_trace.get("source_anchored_semantic_commit_m33")
+    if m33 is not None:
+        if not isinstance(m33, dict) or (
+            (m33.get("surface_authority") is True) is not receipt["m33_authoritative"]
+        ):
+            return None
+
+    common = {
+        "projection": "verified receipt projection (not a new producer run)",
+        "cycle_index": cycle,
+        "raw_input_sha256": digest,
+        "source_role_act": source_role,
+        "action_coverage_status": "unverified",
+        "authority_transfer_permitted": False,
+        "authority_blockers": blockers,
+        "claim_boundary": "producer parentage only; action completion and reply quality unverified",
+    }
+    projection = {
+        "summary": {
+            "source_role_act": source_role,
+            "authority_blockers": blockers,
+            "action_coverage_status": "unverified",
+            "authority_transfer_permitted": False,
+        },
+        "nodes": [
+            ("producer-projection-event", "input", "EVENT · verified", "current user event", {
+                **common, "event_id": event_id, "producer": "ingest",
+            }),
+            ("producer-projection-m31", "appraise", "M31 · verified", "direct event parent", {
+                **common, "proposal_id": m31_id, "producer": "m31",
+                "parent_event_id": event_id, "status_at_return": m31_stamp["status_at_return"],
+                "surface_authority_retained": m31["surface_authority"],
+            }),
+            ("producer-projection-m32", "surface", "M32 · verified", "direct M31 argument", {
+                **common, "proposal_id": m32_id, "producer": "m32",
+                "parent_event_id": event_id, "parent_m31_id": m31_id,
+                "parent_m31_direct_argument": True,
+                "status_at_return": m32_stamp["status_at_return"],
+                "surface_authority_retained": m32["surface_authority"],
+            }),
+        ],
+    }
+    # Even a shape-valid identifier or an allowed status may coincide with a
+    # short raw input.  Never copy that input into a newly projected detail.
+    if any(raw in json.dumps(detail, ensure_ascii=False) for *_, detail in projection["nodes"]):
+        return None
+    return projection
+
+
 def collect_cognitive_graph(result):
     """Build a deterministic runtime graph for the visual observatory."""
     result = result or {}
@@ -1544,6 +1810,15 @@ def collect_cognitive_graph(result):
                 break
     add_node("turn-output", "surface", "UTTERANCE", reply or "等待輸出", reply or "等待輸出", active=bool(reply))
 
+    producer_projection_p4 = _verified_producer_projection_p4(result, runtime_trace)
+    if producer_projection_p4:
+        for node_id, kind, label, signal, detail in producer_projection_p4["nodes"]:
+            add_node(
+                node_id, kind, label, signal, _graph_detail(detail),
+                active=True, producer_projection=True,
+                trace_id=f"verified-receipt:{detail.get('producer')}:{detail.get('cycle_index')}",
+            )
+
     def add_edge(source, target, edge_class=""):
         if source and target and source != target:
             graph_edges.append({"source": source, "target": target, "class": edge_class})
@@ -1555,6 +1830,9 @@ def collect_cognitive_graph(result):
         add_edge(blackboard_ids[-1], "turn-output", "is-main")
     else:
         add_edge("turn-input", "turn-output", "is-main")
+    if producer_projection_p4:
+        add_edge("producer-projection-event", "producer-projection-m31", "is-producer")
+        add_edge("producer-projection-m31", "producer-projection-m32", "is-producer")
 
     retrieval_id = next((node["id"] for node in graph_nodes if node["id"].startswith("runtime-") and node["kind"] == "memory"), "turn-input")
     attention_id = next((node["id"] for node in graph_nodes if node["id"].startswith("runtime-") and node["label"] == "attention_frame"), None)
@@ -1815,18 +2093,25 @@ def collect_cognitive_graph(result):
 
     layer_rows = {index: [] for index in range(len(GRAPH_LANES))}
     for node in graph_nodes:
-        layer_rows[node["layer"]].append(node)
+        if not node.get("producer_projection"):
+            layer_rows[node["layer"]].append(node)
     max_rows = max((len(rows) for rows in layer_rows.values()), default=1)
     width = len(GRAPH_LANES) * 170
-    height = max(520, 104 + max_rows * 92)
-    usable_height = height - 92
+    ordinary_height = max(520, 104 + max_rows * 92)
+    projection_band = 116 if producer_projection_p4 else 0
+    height = ordinary_height + projection_band
+    usable_height = ordinary_height - 92
     for layer, rows in layer_rows.items():
         if not rows:
             continue
         step = usable_height / len(rows)
         for row_index, node in enumerate(rows):
             node["x"] = layer * 170 + 18
-            node["y"] = 51 + step * row_index + max(0.0, (step - 58) / 2.0)
+            node["y"] = projection_band + 51 + step * row_index + max(0.0, (step - 58) / 2.0)
+    if producer_projection_p4:
+        projected = [node for node in graph_nodes if node.get("producer_projection")]
+        for node, x in zip(projected, (18, 206, 394)):
+            node["x"], node["y"] = x, 50
 
     unique_edges = []
     seen_edges = set()
@@ -1842,6 +2127,7 @@ def collect_cognitive_graph(result):
     return {
         "nodes": graph_nodes,
         "edges": unique_edges,
+        "producer_projection_p4": producer_projection_p4["summary"] if producer_projection_p4 else None,
         "width": width,
         "height": height,
         "payload_budget_m24": {
@@ -1876,6 +2162,8 @@ def _graph_node_html(node):
         classes.append("is-active")
     if node.get("write"):
         classes.append("is-write")
+    if node.get("producer_projection"):
+        classes.append("is-producer-projection")
     trace_id = str(node.get("trace_id") or node["id"])
     metric = ""
     if node.get("salience") is not None:
@@ -1918,7 +2206,8 @@ def _graph_edges_html(graph):
         else:
             middle = (x1 + x2) / 2.0
             path = f"M{x1:.1f},{y1:.1f} C{middle:.1f},{y1:.1f} {middle:.1f},{y2:.1f} {x2:.1f},{y2:.1f}"
-        paths.append(f'<path class="brain-edge {escape(edge["class"], quote=True)}" d="{path}" marker-end="url(#brain-arrow)"/>')
+        marker = "brain-producer-arrow" if edge["class"] == "is-producer" else "brain-arrow"
+        paths.append(f'<path class="brain-edge {escape(edge["class"], quote=True)}" d="{path}" marker-end="url(#{marker})"/>')
     return "".join(paths)
 
 
@@ -1931,6 +2220,19 @@ def render_memory_observatory(result):
     graph_detail_budget = int(graph_budget.get("detail_budget_bytes") or 0)
     graph_largest_detail = int(graph_budget.get("largest_node_detail_bytes") or 0)
     graph_budget_status = "met" if graph_budget.get("budget_met") else "exceeded"
+    producer_projection_p4 = graph.get("producer_projection_p4")
+    producer_proof_html = ""
+    if producer_projection_p4:
+        blockers = producer_projection_p4.get("authority_blockers") or []
+        blocker_text = ", ".join(blockers) if blockers else "none"
+        producer_proof_html = (
+            '<div class="brain-producer-proof" aria-label="P4 verified receipt projection">'
+            '<strong>VERIFIED RECEIPT PROJECTION · EVENT → M31 → M32</strong>'
+            '<span>3 個可展開節點 · 2 條 is-producer 原生父子箭頭</span>'
+            f'<span>source {escape(producer_projection_p4["source_role_act"])}</span>'
+            f'<em>blocker {escape(blocker_text)} · action coverage unverified · authority transfer false</em>'
+            '</div>'
+        )
     runtime_trace = result.get("runtime_trace") or {}
     latency = runtime_trace.get("runtime_latency_m19") or {}
     if not latency:
@@ -2454,12 +2756,15 @@ def render_memory_observatory(result):
         '<span><i style="--legend-color:#34d399"></i>實際傳入</span>'
         '<span><i style="--legend-color:#f472b6"></i>寫回</span>'
         "</div></div>"
+        f'{producer_proof_html}'
         '<div class="brain-graph-scroll">'
-        f'<div class="brain-graph-canvas" style="width:{graph["width"]}px;height:{graph["height"]}px">'
+        f'<div class="brain-graph-canvas{" has-producer" if producer_projection_p4 else ""}" style="width:{graph["width"]}px;height:{graph["height"]}px">'
         f"{lanes}"
         f'<svg class="brain-edge-layer" viewBox="0 0 {graph["width"]} {graph["height"]}" aria-hidden="true">'
         '<defs><marker id="brain-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
-        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker></defs>'
+        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker>'
+        '<marker id="brain-producer-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">'
+        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/></marker></defs>'
         f'{_graph_edges_html(graph)}</svg>{nodes_html}{empty_html}'
         "</div></div></div></section>"
     )
