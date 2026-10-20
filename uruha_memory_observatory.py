@@ -317,6 +317,14 @@ MEMORY_OBSERVATORY_CSS += r"""
   right: 0;
   border-top: 1px solid rgba(34, 211, 238, .5);
 }
+.brain-graph-canvas.has-atomic .brain-stage-lane { top: 238px; }
+.brain-graph-canvas.has-atomic::before {
+  content: "VERIFIED RECEIPT · two-action terminal structure (meaning unverified)";
+}
+.brain-graph-canvas.has-atomic::after {
+  top: 237px;
+  border-top-color: rgba(167, 139, 250, .54);
+}
 .brain-stage-lane {
   position: absolute;
   top: 0;
@@ -377,10 +385,20 @@ MEMORY_OBSERVATORY_CSS += r"""
   stroke-width: 3.4;
   filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.8));
 }
+.brain-edge.is-atomic-delivery {
+  stroke: #a78bfa;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.72));
+}
 .brain-node.is-producer-projection > summary {
   border: 2px solid #22d3ee;
   background: rgba(8, 47, 73, 0.98);
   box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.18), 0 0 20px rgba(34, 211, 238, 0.28);
+}
+.brain-node.is-atomic-delivery-projection > summary {
+  border: 2px solid #a78bfa;
+  background: rgba(46, 16, 101, 0.98);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.18), 0 0 20px rgba(167, 139, 250, 0.28);
 }
 .brain-producer-proof {
   display: flex;
@@ -396,6 +414,12 @@ MEMORY_OBSERVATORY_CSS += r"""
 }
 .brain-producer-proof strong { color: #67e8f9; }
 .brain-producer-proof em { color: #fda4af; font-style: normal; }
+.brain-producer-proof.is-atomic-delivery {
+  border-color: rgba(167, 139, 250, 0.32);
+  color: #ede9fe;
+  background: rgba(46, 16, 101, 0.45);
+}
+.brain-producer-proof.is-atomic-delivery strong { color: #c4b5fd; }
 .brain-node {
   position: absolute;
   left: var(--node-x);
@@ -1690,6 +1714,193 @@ def _verified_producer_projection_p4(result, runtime_trace):
     return projection
 
 
+def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_projection):
+    """Display a delivered *structure*, not proof that the rewrite means the same thing.
+
+    The previous EVENT → M31 → M32 projection is the prerequisite.  This is an
+    independent read-only projection of the later terminal receipt and actual
+    visible artifacts; a linked producer chain alone never creates action nodes.
+    """
+    if not producer_projection or not isinstance(result, dict) or not isinstance(runtime_trace, dict):
+        return None
+    raw = result.get("user_text")
+    final = result.get("reply")
+    logic = result.get("logic")
+    receipt = runtime_trace.get("typed_mixed_atomic_delivery_p4")
+    lineage = runtime_trace.get("mixed_act_lineage_p4")
+    if not all(isinstance(value, dict) for value in (logic, receipt, lineage)):
+        return None
+    if not isinstance(raw, str) or not raw or not isinstance(final, str) or not final:
+        return None
+    if logic.get("typed_mixed_atomic_delivery_p4") != receipt:
+        return None
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    final_digest = hashlib.sha256(final.encode("utf-8")).hexdigest()
+    lineage_actions = lineage.get("actions")
+    action_ids = receipt.get("action_ids")
+    if (
+        lineage.get("source_role_act") != "mixed_request"
+        or lineage.get("authority_blockers") != []
+        or not isinstance(lineage_actions, list) or len(lineage_actions) != 2
+        or [row.get("type") for row in lineage_actions if isinstance(row, dict)]
+        != ["quoted_rewrite", "past_user_place_recall"]
+        or not isinstance(action_ids, list) or len(action_ids) != 2
+        or action_ids != [row.get("action_id") for row in lineage_actions]
+        or len(set(action_ids)) != 2
+    ):
+        return None
+    m31 = runtime_trace.get("semantic_authorization_m31")
+    m32 = runtime_trace.get("semantic_commit_repair_m32")
+    if not isinstance(m31, dict) or not isinstance(m32, dict):
+        return None
+    if (
+        receipt.get("schema") != "uruha_typed_mixed_atomic_delivery_p4_v1"
+        or receipt.get("status") != "delivered_structure_semantics_unverified"
+        or receipt.get("action_coverage_status") != "visible_structure_delivered_semantics_unverified"
+        or receipt.get("event_id") != lineage.get("event_id")
+        or receipt.get("raw_input_sha256") != digest
+        or type(receipt.get("cycle_index")) is not int
+        or receipt.get("cycle_index") != runtime_trace.get("cycle_index")
+        or receipt.get("m31_proposal_id") != lineage["m31"]["proposal_id"]
+        or receipt.get("m32_proposal_id") != lineage["m32"]["proposal_id"]
+        or receipt.get("prior_m31_surface_authority") is not False
+        or receipt.get("prior_m32_surface_authority") is not True
+        or m31.get("surface_authority") is not False
+        or m32.get("surface_authority") is not True
+        or m32.get("terminal_transaction_shadowed_surface_p4") != "typed_mixed_atomic_delivery_p4"
+        or receipt.get("lineage_authority_transfer_permitted") is not False
+        or receipt.get("terminal_priority_status") != "applied_after_legacy_m32"
+        or receipt.get("rewrite_action_surface_status") != "shape_visible_semantics_unverified"
+        or receipt.get("rewrite_contrast_status") != "bounded_contrast_accepted_semantics_unverified"
+        or receipt.get("semantic_equivalence_certified") is not False
+        or receipt.get("db_readback_verified") is not False
+        or receipt.get("persistent_fact_write") is not False
+        or receipt.get("raw_dialogue_persisted_in_receipt") is not False
+        or receipt.get("final_consistent") is not True
+    ):
+        return None
+    checks = (
+        "candidate_equals_final", "guard_equals_final", "graph_utterance_equals_final",
+        "episode_argument_equals_final", "episode_doc_equals_final",
+        "right_brain_history_equals_final", "terminal_priority_applied",
+        "history_committed",
+    )
+    if any(receipt.get(check) is not True for check in checks):
+        return None
+    hex_digest = lambda value: (
+        isinstance(value, str) and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    )
+    if (
+        any(not hex_digest(receipt.get(key)) for key in (
+            "quote_sha256", "rewrite_phrase_sha256", "source_binding_sha256",
+            "source_reply_sha256", "committed_visible_candidate_sha256",
+        ))
+        or any(receipt.get(key) != final_digest for key in (
+            "committed_visible_candidate_sha256", "final_visible_sha256",
+            "final_guard_reply_sha256", "episode_call_reply_sha256",
+        ))
+    ):
+        return None
+    call = receipt.get("model_call")
+    if (
+        not isinstance(call, dict)
+        or call.get("attempted_calls") != 1 or call.get("completed_calls") != 1
+        or call.get("model_phrase_sha256") != receipt["rewrite_phrase_sha256"]
+        or call.get("status") != "bounded_shape_accepted_semantics_unverified"
+    ):
+        return None
+    source_status = receipt.get("source_status")
+    source_backed = source_status == "source_backed"
+    unknown_statuses = {
+        "source_transport_ambiguous", "current_turn_change_ambiguous",
+        "relative_time_unverifiable", "source_retracted_or_ambiguous",
+        "conflicting_user_sources", "no_admitted_user_source",
+        "source_value_outside_surface_budget",
+    }
+    if source_backed:
+        if (
+            receipt.get("recall_action_surface_status") != "source_backed_visible"
+            or receipt.get("source_channel") not in {"recent_turns", "direct_episode"}
+            or not isinstance(receipt.get("source_trace_id"), str)
+            or not receipt["source_trace_id"]
+        ):
+            return None
+    elif (
+        source_status not in unknown_statuses
+        or receipt.get("recall_action_surface_status") != "honest_unknown_visible"
+        or receipt.get("source_channel") is not None
+        or receipt.get("source_trace_id") is not None
+    ):
+        return None
+    guard = logic.get("visible_language_guard")
+    if (
+        not isinstance(guard, dict)
+        or guard.get("final_reply") != final
+        or guard.get("final_reply_sha256") != final_digest
+        or guard.get("final_rejection_reasons") not in (None, [])
+    ):
+        return None
+    rows = runtime_trace.get("blackboard")
+    if not isinstance(rows, list):
+        return None
+    utterances = [row for row in rows if isinstance(row, dict) and row.get("label") == "utterance"]
+    terminal_rows = [row for row in rows if isinstance(row, dict) and row.get("label") == "typed_mixed_atomic_delivery_p4"]
+    if (
+        not utterances or not isinstance(utterances[-1].get("payload"), dict)
+        or utterances[-1]["payload"].get("reply") != final
+        or len(terminal_rows) != 1 or terminal_rows[0].get("payload") != receipt
+        or f" | Uruha: {final} | Mood: " not in str(result.get("episode_doc") or "")
+    ):
+        return None
+    common = {
+        "projection": "terminal receipt plus visible artifact check, not semantic equivalence",
+        "cycle_index": receipt["cycle_index"],
+        "event_id": receipt["event_id"],
+        "raw_input_sha256": digest,
+        "final_visible_sha256": final_digest,
+        "semantic_equivalence_certified": False,
+        "db_readback_verified": False,
+    }
+    nodes = [
+        ("typed-atomic-rewrite", "surface", "REWRITE · visible", "meaning unverified", {
+            **common, "action_id": action_ids[0], "action_type": "quoted_rewrite",
+            "surface_status": "shape_visible_semantics_unverified",
+            "rewrite_phrase_sha256": receipt["rewrite_phrase_sha256"],
+        }),
+        ("typed-atomic-recall", "memory", "RECALL · visible",
+         "direct User source" if source_backed else "honest unknown", {
+             **common, "action_id": action_ids[1], "action_type": "past_user_place_recall",
+             "surface_status": receipt["recall_action_surface_status"],
+             "source_status": source_status,
+             "source_channel": receipt.get("source_channel") if source_backed else "none",
+             "source_binding_sha256": receipt["source_binding_sha256"],
+         }),
+        ("typed-atomic-terminal", "surface", "TERMINAL · delivered", "two clauses · one reply", {
+            **common, "terminal_priority_status": "applied_after_legacy_m32",
+            "prior_m32_surface_authority": True,
+            "lineage_authority_transfer_permitted": False,
+            "action_coverage_status": "visible_structure_delivered_semantics_unverified",
+            "final_consistent": True,
+            "claim_boundary": "visible structure only; rewrite meaning and DB durability unverified",
+        }),
+    ]
+    # Identifiers and hashes are not copied from the raw quote/value.  Still
+    # reject the pathological case where the complete raw input equals one.
+    if any(raw in json.dumps(detail, ensure_ascii=False) for *_, detail in nodes):
+        return None
+    return {
+        "summary": {
+            "status": "delivered_structure_semantics_unverified",
+            "source_status": source_status,
+            "recall_surface_status": receipt["recall_action_surface_status"],
+            "rewrite_surface_status": "shape_visible_semantics_unverified",
+            "semantic_equivalence_certified": False,
+        },
+        "nodes": nodes,
+    }
+
+
 def collect_cognitive_graph(result):
     """Build a deterministic runtime graph for the visual observatory."""
     result = result or {}
@@ -1818,6 +2029,28 @@ def collect_cognitive_graph(result):
                 active=True, producer_projection=True,
                 trace_id=f"verified-receipt:{detail.get('producer')}:{detail.get('cycle_index')}",
             )
+    atomic_projection_p4 = _verified_typed_mixed_atomic_projection_p4(
+        result, runtime_trace, producer_projection_p4,
+    )
+    if atomic_projection_p4:
+        projected_details = [_graph_detail(detail) for *_, detail in atomic_projection_p4["nodes"]]
+        existing_bytes = sum(len(node["detail"].encode("utf-8")) for node in graph_nodes)
+        added_bytes = sum(len(detail.encode("utf-8")) for detail in projected_details)
+        if (
+            existing_bytes + added_bytes > M24_GRAPH_DETAIL_BUDGET_BYTES
+            or any(len(detail.encode("utf-8")) > M24_NODE_DETAIL_BUDGET_BYTES
+                   for detail in projected_details)
+        ):
+            atomic_projection_p4 = None
+        else:
+            for (node_id, kind, label, signal, detail), rendered in zip(
+                atomic_projection_p4["nodes"], projected_details,
+            ):
+                add_node(
+                    node_id, kind, label, signal, rendered,
+                    active=True, atomic_delivery_projection=True,
+                    trace_id=f"typed-atomic:{detail.get('action_type', 'terminal')}:{detail['cycle_index']}",
+                )
 
     def add_edge(source, target, edge_class=""):
         if source and target and source != target:
@@ -1833,6 +2066,12 @@ def collect_cognitive_graph(result):
     if producer_projection_p4:
         add_edge("producer-projection-event", "producer-projection-m31", "is-producer")
         add_edge("producer-projection-m31", "producer-projection-m32", "is-producer")
+    if atomic_projection_p4:
+        add_edge("producer-projection-m32", "typed-atomic-rewrite", "is-atomic-delivery")
+        add_edge("producer-projection-m32", "typed-atomic-recall", "is-atomic-delivery")
+        add_edge("typed-atomic-rewrite", "typed-atomic-terminal", "is-atomic-delivery")
+        add_edge("typed-atomic-recall", "typed-atomic-terminal", "is-atomic-delivery")
+        add_edge("typed-atomic-terminal", "turn-output", "is-atomic-delivery")
 
     retrieval_id = next((node["id"] for node in graph_nodes if node["id"].startswith("runtime-") and node["kind"] == "memory"), "turn-input")
     attention_id = next((node["id"] for node in graph_nodes if node["id"].startswith("runtime-") and node["label"] == "attention_frame"), None)
@@ -2093,12 +2332,12 @@ def collect_cognitive_graph(result):
 
     layer_rows = {index: [] for index in range(len(GRAPH_LANES))}
     for node in graph_nodes:
-        if not node.get("producer_projection"):
+        if not node.get("producer_projection") and not node.get("atomic_delivery_projection"):
             layer_rows[node["layer"]].append(node)
     max_rows = max((len(rows) for rows in layer_rows.values()), default=1)
     width = len(GRAPH_LANES) * 170
     ordinary_height = max(520, 104 + max_rows * 92)
-    projection_band = 116 if producer_projection_p4 else 0
+    projection_band = 238 if atomic_projection_p4 else 116 if producer_projection_p4 else 0
     height = ordinary_height + projection_band
     usable_height = ordinary_height - 92
     for layer, rows in layer_rows.items():
@@ -2112,6 +2351,14 @@ def collect_cognitive_graph(result):
         projected = [node for node in graph_nodes if node.get("producer_projection")]
         for node, x in zip(projected, (18, 206, 394)):
             node["x"], node["y"] = x, 50
+    if atomic_projection_p4:
+        projected = {node["id"]: node for node in graph_nodes if node.get("atomic_delivery_projection")}
+        for node_id, position in {
+            "typed-atomic-rewrite": (610, 50),
+            "typed-atomic-recall": (610, 142),
+            "typed-atomic-terminal": (840, 96),
+        }.items():
+            projected[node_id]["x"], projected[node_id]["y"] = position
 
     unique_edges = []
     seen_edges = set()
@@ -2128,6 +2375,7 @@ def collect_cognitive_graph(result):
         "nodes": graph_nodes,
         "edges": unique_edges,
         "producer_projection_p4": producer_projection_p4["summary"] if producer_projection_p4 else None,
+        "typed_mixed_atomic_projection_p4": atomic_projection_p4["summary"] if atomic_projection_p4 else None,
         "width": width,
         "height": height,
         "payload_budget_m24": {
@@ -2164,6 +2412,8 @@ def _graph_node_html(node):
         classes.append("is-write")
     if node.get("producer_projection"):
         classes.append("is-producer-projection")
+    if node.get("atomic_delivery_projection"):
+        classes.append("is-atomic-delivery-projection")
     trace_id = str(node.get("trace_id") or node["id"])
     metric = ""
     if node.get("salience") is not None:
@@ -2206,7 +2456,11 @@ def _graph_edges_html(graph):
         else:
             middle = (x1 + x2) / 2.0
             path = f"M{x1:.1f},{y1:.1f} C{middle:.1f},{y1:.1f} {middle:.1f},{y2:.1f} {x2:.1f},{y2:.1f}"
-        marker = "brain-producer-arrow" if edge["class"] == "is-producer" else "brain-arrow"
+        marker = (
+            "brain-producer-arrow" if edge["class"] == "is-producer"
+            else "brain-atomic-arrow" if edge["class"] == "is-atomic-delivery"
+            else "brain-arrow"
+        )
         paths.append(f'<path class="brain-edge {escape(edge["class"], quote=True)}" d="{path}" marker-end="url(#{marker})"/>')
     return "".join(paths)
 
@@ -2221,6 +2475,7 @@ def render_memory_observatory(result):
     graph_largest_detail = int(graph_budget.get("largest_node_detail_bytes") or 0)
     graph_budget_status = "met" if graph_budget.get("budget_met") else "exceeded"
     producer_projection_p4 = graph.get("producer_projection_p4")
+    atomic_projection_p4 = graph.get("typed_mixed_atomic_projection_p4")
     producer_proof_html = ""
     if producer_projection_p4:
         blockers = producer_projection_p4.get("authority_blockers") or []
@@ -2231,6 +2486,21 @@ def render_memory_observatory(result):
             '<span>3 個可展開節點 · 2 條 is-producer 原生父子箭頭</span>'
             f'<span>source {escape(producer_projection_p4["source_role_act"])}</span>'
             f'<em>blocker {escape(blocker_text)} · action coverage unverified · authority transfer false</em>'
+            '</div>'
+        )
+    atomic_proof_html = ""
+    if atomic_projection_p4:
+        recall_status = (
+            "direct User source" if atomic_projection_p4["source_status"] == "source_backed"
+            else "honest unknown"
+        )
+        atomic_proof_html = (
+            '<div class="brain-producer-proof is-atomic-delivery" '
+            'aria-label="P4 typed mixed atomic delivery projection">'
+            '<strong>VISIBLE TWO-ACTION DELIVERY · REWRITE + RECALL → UTTERANCE</strong>'
+            '<span>3 個行動／交付節點 · 5 條原生箭頭</span>'
+            f'<span>recall {escape(recall_status)}</span>'
+            '<em>rewrite meaning unverified · DB readback unverified</em>'
             '</div>'
         )
     runtime_trace = result.get("runtime_trace") or {}
@@ -2757,14 +3027,17 @@ def render_memory_observatory(result):
         '<span><i style="--legend-color:#f472b6"></i>寫回</span>'
         "</div></div>"
         f'{producer_proof_html}'
+        f'{atomic_proof_html}'
         '<div class="brain-graph-scroll">'
-        f'<div class="brain-graph-canvas{" has-producer" if producer_projection_p4 else ""}" style="width:{graph["width"]}px;height:{graph["height"]}px">'
+        f'<div class="brain-graph-canvas{" has-producer" if producer_projection_p4 else ""}{" has-atomic" if atomic_projection_p4 else ""}" style="width:{graph["width"]}px;height:{graph["height"]}px">'
         f"{lanes}"
         f'<svg class="brain-edge-layer" viewBox="0 0 {graph["width"]} {graph["height"]}" aria-hidden="true">'
         '<defs><marker id="brain-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
         '<path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker>'
         '<marker id="brain-producer-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">'
-        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/></marker></defs>'
+        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/></marker>'
+        '<marker id="brain-atomic-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">'
+        '<path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/></marker></defs>'
         f'{_graph_edges_html(graph)}</svg>{nodes_html}{empty_html}'
         "</div></div></div></section>"
     )
