@@ -1,6 +1,10 @@
 # 目前任務卡
 
-更新：2026-10-20。**本節是唯一最新續接點；下方明示引述改寫八輪的「下一步」已完成，不重做。**
+更新：2026-10-20。**上次中斷的 Safari 結果已以 `579d12a` 提交並推 PR #435；其後 0-call 設計審查見 `research/p4_current_turn_action_role_design_review_2026-10-20.md`。下方八輪 strict FAIL 不改判、不重跑。**
+
+下一項必要交付：先為「當輪 communicative-act／source-role 憑證及 M31 同輪權限仲裁」凍結一張新的任務卡與 source-disjoint 案例，做零模型跨行動類型契約驗證，再決定是否進入單變因實作與 fresh Safari。這不是第三次同題改寫追分；舊明示改寫工作項以 0/3 gold 的負結果及 `REVIEW_REQUIRED` 結束。若無法給出不依賴具體答案的來源／lineage 證明，不實作權限覆蓋，改處其他獨立產品門檻。候選 JSON、引號內敬體、N1 詞義、P4-W guard 後修改、身份退步分屬不同問題，不在這項同改。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 不碰；Goal 仍 active。
+
+歷史更新：2026-10-20。**以下記錄是已完成批次；「下一步」已由本檔最上方的設計審查決定取代，不重做八輪。**
 
 ## 最新結果：P4 改寫表達權限交接有局部機制進展，fresh Safari strict FAIL／REVIEW_REQUIRED
 
@@ -10,7 +14,7 @@ P2 首次有 typed 候選完整走 `speak→guard→P4-W no-op→graph→Safari`
 
 **下一個必要交付是 0-call 設計審查，不再沿本批曝光題修分**：分開候選 JSON/敬體品質、M31 與 typed action 的當輪來源／表達權限、P4-V/P4-W provenance，以及 N1 詞義和前批身份失真；提出一個有歸因的新設計與 source-disjoint 正負控、成本/圖/安全門檻後才可另立前瞻批。若無法提出不靠固定答案的可證明權限仲裁，保留 `REVIEW_REQUIRED`，改處其他獨立必要產品門檻；不得把 P2 機制成功寫成產品 PASS，也不能用本八句重跑。正式同模型、人評、temporal holdout、VRM／Function Calling 統一驗收 pending。
 
-更新：2026-10-20。**本節是唯一當前續接點；下方「fresh pending」已是歷史，不重做。**
+歷史更新：2026-10-20。**以下真 Safari 八輪已完成；舊「fresh pending」與「下一步」均非當前指令。**
 
 ## 最新結果：P4 明示引述改寫真 Safari 八輪 strict FAIL
 
