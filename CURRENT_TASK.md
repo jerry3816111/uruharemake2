@@ -1,5 +1,7 @@
 # 目前任務卡
 
+更新：2026-10-20。**混合請求過去地點來源授權的設計審查與 opt-in 程式已完成，真 Safari 首輪仍 pending。** 前批 A1–A7 與更早 strict FAIL／`REVIEW_REQUIRED` 不改判、不重送。只讀 before 證實 A1 在 0 記憶來源時，M21 core 已編出昨天地點、M39／guard 放行且 assistant episode 保存；來源角色本身只有分類，不是事實權限。單一變因、未曝光 11 契約題＋7 產品輪次、允許檔案、條件 gold／≤20 秒與成本 gate 在程式前以 `0e0fd0c` 凍結，見 `research/p4_mixed_past_place_source_authority_plan_2026-10-20.md`；preimplementation SHA 2/2、舊 datasets exact-string collision 0/18。新的 opt-in gate 僅對日文單引述改寫＋本人過去選的集合地點：直接且已交付的 User 原話＋同一絕對日期才可說具體值；相對日、無來源、矛盾／撤回、第三人／assistant／summary、current presupposition皆退未知。M31/M32 既有 authoritative 不移交，改寫子任務不冒稱完成。最終 guard 在 episode 寫前重查；本輪 `RightBrain.history` 與四種表面計數以 emit 交易回滾 pre-guard 草稿，只提交最後日文句。聚焦 9/9、受影響相鄰 148/148、入口與 controller `--help`、product SHA 10/10；**這些只是零模型／接線證據，不是產品 PASS**。當前下一步是 diff review、精確 commit/push 核 PR #435，然後新隔離 0700 root 做 0-turn 啟停、官方私有 ONNX 預熱、真 Safari W1–W7 各一次／0 retry，逐輪核 raw＝泡泡＝guard＝graph utterance＝episode／history、User source trace、自然日文、成本與 ≤20 秒。若失敗保留 strict FAIL，不補送；正式同模型／人評／temporal holdout／VRM/Function Calling 仍 pending。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰。
+
 更新：2026-10-20。**當輪來源角色憑證已實作並以 `70080e9` 推 PR #435；七輪新隔離 Safari 實測完成，整批 strict FAIL，完整證據見 `analysis/p4_current_turn_source_role_fresh_product_probe_result_2026-10-20.md`。下方所有舊批 strict FAIL 與 `REVIEW_REQUIRED` 不改判、不重跑曝光題。**
 
 ## 唯一當前續接點：混合請求的過去事實來源授權，先設計審查
