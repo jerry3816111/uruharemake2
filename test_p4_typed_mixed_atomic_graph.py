@@ -28,14 +28,14 @@ def _sha(value):
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def delivered_result(*, source_backed=True, raw=None):
+def delivered_result(*, source_backed=True, raw=None, m31_authority=False):
     result = linked_result(raw=raw) if raw is not None else linked_result()
     trace = result["runtime_trace"]
     lineage = trace["mixed_act_lineage_p4"]
     m31 = trace["semantic_authorization_m31"]
     m32 = trace["semantic_commit_repair_m32"]
-    m31["surface_authority"] = False
-    lineage["m31"]["surface_authority_retained"] = False
+    m31["surface_authority"] = m31_authority
+    lineage["m31"]["surface_authority_retained"] = m31_authority
     m32["terminal_transaction_shadowed_surface_p4"] = "typed_mixed_atomic_delivery_p4"
     reply = "「集合場所、まだ相談中なんだ」がいいかな。前の場所は白磁の掲示板の横って言ってたな。" if source_backed else (
         "「集合場所、まだ相談中なんだ」がいいかな。その日の場所は、今ある会話だけじゃ分からないな。"
@@ -54,7 +54,7 @@ def delivered_result(*, source_backed=True, raw=None):
         "m31_proposal_id": lineage["m31"]["proposal_id"],
         "m32_proposal_id": lineage["m32"]["proposal_id"],
         "action_ids": [action["action_id"] for action in lineage["actions"]],
-        "prior_m31_surface_authority": False,
+        "prior_m31_surface_authority": m31_authority,
         "prior_m32_surface_authority": True,
         "lineage_authority_transfer_permitted": False,
         "terminal_priority_status": "applied_after_legacy_m32",
@@ -115,8 +115,9 @@ def _atomic_edges(graph):
 
 
 @pytest.mark.parametrize("source_backed", [True, False])
-def test_structurally_delivered_actions_get_distinct_native_graph_paths(source_backed):
-    result = delivered_result(source_backed=source_backed)
+@pytest.mark.parametrize("m31_authority", [False, True])
+def test_structurally_delivered_actions_get_distinct_native_graph_paths(source_backed, m31_authority):
+    result = delivered_result(source_backed=source_backed, m31_authority=m31_authority)
     graph = collect_cognitive_graph(result)
     html = render_memory_observatory(result)
     assert {node["id"] for node in _atomic_nodes(graph)} == ATOMIC_IDS
@@ -148,10 +149,45 @@ def test_structurally_delivered_actions_get_distinct_native_graph_paths(source_b
         assert result["user_text"] not in node["detail"]
         assert "白磁の掲示板の横" not in node["detail"]
         assert "meaning and DB durability unverified" in node["detail"] if node["id"] == "typed-atomic-terminal" else True
+        if node["id"] == "typed-atomic-terminal":
+            assert f'"prior_m31_surface_authority": {str(m31_authority).lower()}' in node["detail"]
     budget = graph["payload_budget_m24"]
     assert budget["budget_met"]
     assert budget["rendered_detail_bytes"] <= M24_GRAPH_DETAIL_BUDGET_BYTES
     assert budget["largest_node_detail_bytes"] <= M24_NODE_DETAIL_BUDGET_BYTES
+
+
+@pytest.mark.parametrize("m31_authority", [False, True])
+@pytest.mark.parametrize("site", ["terminal_receipt", "lineage_receipt", "producer_trace"])
+@pytest.mark.parametrize("fault", ["mismatch", "missing", "non_bool"])
+def test_m31_authority_disagreement_never_projects_delivered_actions(m31_authority, site, fault):
+    result = delivered_result(m31_authority=m31_authority)
+    trace = result["runtime_trace"]
+    if site == "terminal_receipt":
+        targets = [
+            trace["typed_mixed_atomic_delivery_p4"],
+            result["logic"]["typed_mixed_atomic_delivery_p4"],
+            next(row["payload"] for row in trace["blackboard"]
+                 if row.get("label") == "typed_mixed_atomic_delivery_p4"),
+        ]
+        key = "prior_m31_surface_authority"
+    elif site == "lineage_receipt":
+        targets = [trace["mixed_act_lineage_p4"]["m31"]]
+        key = "surface_authority_retained"
+    else:
+        targets = [trace["semantic_authorization_m31"]]
+        key = "surface_authority"
+    for target in targets:
+        if fault == "missing":
+            target.pop(key)
+        else:
+            target[key] = not m31_authority if fault == "mismatch" else "true"
+    graph = collect_cognitive_graph(result)
+    html = render_memory_observatory(result)
+    assert _atomic_nodes(graph) == []
+    assert _atomic_edges(graph) == []
+    assert graph["typed_mixed_atomic_projection_p4"] is None
+    assert 'marker-end="url(#brain-atomic-arrow)"' not in html
 
 
 def _mutate(result, case):

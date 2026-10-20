@@ -1763,9 +1763,10 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
         or receipt.get("cycle_index") != runtime_trace.get("cycle_index")
         or receipt.get("m31_proposal_id") != lineage["m31"]["proposal_id"]
         or receipt.get("m32_proposal_id") != lineage["m32"]["proposal_id"]
-        or receipt.get("prior_m31_surface_authority") is not False
+        or type(receipt.get("prior_m31_surface_authority")) is not bool
+        or receipt["prior_m31_surface_authority"] is not m31.get("surface_authority")
+        or receipt["prior_m31_surface_authority"] is not lineage["m31"].get("surface_authority_retained")
         or receipt.get("prior_m32_surface_authority") is not True
-        or m31.get("surface_authority") is not False
         or m32.get("surface_authority") is not True
         or m32.get("terminal_transaction_shadowed_surface_p4") != "typed_mixed_atomic_delivery_p4"
         or receipt.get("lineage_authority_transfer_permitted") is not False
@@ -1878,6 +1879,7 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
          }),
         ("typed-atomic-terminal", "surface", "TERMINAL · delivered", "two clauses · one reply", {
             **common, "terminal_priority_status": "applied_after_legacy_m32",
+            "prior_m31_surface_authority": receipt["prior_m31_surface_authority"],
             "prior_m32_surface_authority": True,
             "lineage_authority_transfer_permitted": False,
             "action_coverage_status": "visible_structure_delivered_semantics_unverified",

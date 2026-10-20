@@ -152,9 +152,9 @@ def verify_typed_mixed_atomic_admission_p4(event: dict, tick_result: dict) -> di
         or receipt["m32"].get("status") != "produced"
         or (receipt.get("m31") or {}).get("proposal_id") != m31_id
         or (receipt.get("m32") or {}).get("proposal_id") != m32_id
-        or (receipt.get("m31") or {}).get("surface_authority_retained") is not False
+        or type(m31.get("surface_authority")) is not bool
+        or (receipt.get("m31") or {}).get("surface_authority_retained") is not m31.get("surface_authority")
         or (receipt.get("m32") or {}).get("surface_authority_retained") is not True
-        or m31.get("surface_authority") is not False
         or m32.get("surface_authority") is not True
     ):
         return failed("lineage_receipt_or_authority_mismatch")
@@ -169,6 +169,8 @@ def verify_typed_mixed_atomic_admission_p4(event: dict, tick_result: dict) -> di
         "schema": SCHEMA, "eligible": True, "reason": "current_two_action_direct_parent_verified",
         "event_id": event_id, "raw_input_sha256": digest, "cycle_index": cycle,
         "m31_proposal_id": m31_id, "m32_proposal_id": m32_id,
+        "prior_m31_surface_authority": m31["surface_authority"],
+        "prior_m32_surface_authority": True,
         "actions": deepcopy(actions), "source_role": role,
         "query": query,
     }
@@ -276,6 +278,8 @@ def visible_guard_with_typed_mixed_atomic_delivery_p4(self, reply, logic_data, u
     valid = (
         fresh_admission.get("eligible") is True
         and fresh_admission.get("event_id") == receipt.get("event_id")
+        and fresh_admission.get("prior_m31_surface_authority") is receipt.get("prior_m31_surface_authority")
+        and fresh_admission.get("prior_m32_surface_authority") is receipt.get("prior_m32_surface_authority")
         and fresh_source.get("binding_sha256") == receipt.get("source_binding_sha256")
         and fresh_source.get("authorized_reply_sha256") == receipt.get("source_reply_sha256")
         and _sha(tx.get("candidate")) == receipt.get("committed_visible_candidate_sha256")
@@ -421,7 +425,8 @@ def emit_response_with_typed_mixed_atomic_delivery_p4(self, event, tick_result):
         "cycle_index": admission["cycle_index"], "m31_proposal_id": admission["m31_proposal_id"],
         "m32_proposal_id": admission["m32_proposal_id"],
         "action_ids": [action["action_id"] for action in admission["actions"]],
-        "prior_m31_surface_authority": False, "prior_m32_surface_authority": True,
+        "prior_m31_surface_authority": admission["prior_m31_surface_authority"],
+        "prior_m32_surface_authority": admission["prior_m32_surface_authority"],
         "lineage_authority_transfer_permitted": False,
         "terminal_priority_status": "not_requested",
         "source_status": source_cert.get("status"),

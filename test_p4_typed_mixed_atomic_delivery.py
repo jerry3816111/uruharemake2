@@ -24,13 +24,16 @@ import uruha_typed_mixed_atomic_delivery_p4 as atomic
 DATA = json.loads((Path(__file__).parent / "datasets" /
                    "p4_typed_mixed_atomic_delivery_probe_2026-10-20.json").read_text(encoding="utf-8"))
 BY_ID = {row["id"]: row["input"] for row in DATA["cases"]}
+Q_DATA = json.loads((Path(__file__).parent / "datasets" /
+                     "p4_typed_mixed_atomic_m31_authority_variant_probe_2026-10-21.json").read_text(encoding="utf-8"))
+Q_BY_ID = {row["id"]: row["input"] for row in Q_DATA["cases"]}
 
 
 def _sha(value):
     return hashlib.sha256(str(value or "").encode("utf-8")).hexdigest()
 
 
-def _issued(raw=BY_ID["N2"], cycle=7):
+def _issued(raw=BY_ID["N2"], cycle=7, *, m31_authority=False):
     """Make a linked event/M31/M32 chain without a model, server or registry."""
     certificate = lineage._new_event(raw, cycle)
     event = {"user_input": raw, lineage.EVENT_KEY: certificate, "memory_data": {}}
@@ -49,7 +52,7 @@ def _issued(raw=BY_ID["N2"], cycle=7):
     m31 = {
         "schema": adaptive.SEMANTIC_AUTHORIZATION_SCHEMA_M31,
         "status": "semantically_authorized",
-        "surface_authority": False,
+        "surface_authority": m31_authority,
         "input_digest": _sha(raw)[:16],
         lineage.PRODUCER_KEY: {
             **common,
@@ -131,13 +134,30 @@ def test_linked_two_action_chain_is_only_a_candidate_for_terminal_delivery():
     assert admission.get("semantic_equivalence_verified") is not True
 
 
+@pytest.mark.parametrize("m31_authority", [False, True])
+def test_actual_m31_authority_variant_is_admitted_and_recorded_without_mutating_producers(m31_authority):
+    event, tick = _issued(Q_BY_ID["Q0"], m31_authority=m31_authority)
+    before_m31 = deepcopy(tick["logic"]["semantic_authorization_m31"])
+    before_m32 = deepcopy(tick["logic"]["semantic_commit_repair_m32"])
+    admission = _admit(event, tick)
+    assert admission["eligible"] is True, admission
+    assert admission["prior_m31_surface_authority"] is m31_authority
+    assert admission["prior_m32_surface_authority"] is True
+    assert tick["logic"]["semantic_authorization_m31"] == before_m31
+    assert tick["logic"]["semantic_commit_repair_m32"] == before_m32
+    assert tick["logic"][lineage.LABEL]["authority_transfer_permitted"] is False
+
+
 @pytest.mark.parametrize("mutation", [
     "missing_event", "changed_raw", "wrong_event", "wrong_event_digest",
     "wrong_event_cycle", "missing_action", "duplicate_action_id", "wrong_quote_span",
     "wrong_outside_span", "wrong_receipt_action", "missing_parent", "wrong_parent",
     "indirect_parent", "wrong_m31_digest", "wrong_m32_digest", "wrong_m31_cycle",
     "wrong_m32_cycle", "duplicate_producer_id", "missing_edge", "wrong_edge",
-    "lineage_rejected", "m31_new_authority", "m32_not_authoritative",
+    "lineage_rejected", "m31_receipt_mismatch", "m31_missing_authority",
+    "m31_non_bool_authority", "receipt_m31_missing_authority",
+    "receipt_m31_non_bool_authority", "receipt_m31_opposite_authority",
+    "m32_not_authoritative",
 ])
 def test_event_action_and_producer_tampering_never_admits(mutation):
     event, tick = _issued()
@@ -189,8 +209,18 @@ def test_event_action_and_producer_tampering_never_admits(mutation):
         receipt["producer_edges"][1]["from_id"] = "other"
     elif mutation == "lineage_rejected":
         receipt["status"] = "rejected"
-    elif mutation == "m31_new_authority":
+    elif mutation == "m31_receipt_mismatch":
         m31["surface_authority"] = True
+    elif mutation == "m31_missing_authority":
+        del m31["surface_authority"]
+    elif mutation == "m31_non_bool_authority":
+        m31["surface_authority"] = 1
+    elif mutation == "receipt_m31_missing_authority":
+        del receipt["m31"]["surface_authority_retained"]
+    elif mutation == "receipt_m31_non_bool_authority":
+        receipt["m31"]["surface_authority_retained"] = 0
+    elif mutation == "receipt_m31_opposite_authority":
+        receipt["m31"]["surface_authority_retained"] = True
     elif mutation == "m32_not_authoritative":
         m32["surface_authority"] = False
     decision = _admit(event, tick)
@@ -447,9 +477,10 @@ def test_delivery_audit_does_not_mark_partial_or_downstream_mismatch_as_complete
     assert audit["status"] != "delivered_structure_semantics_unverified"
 
 
-def _transaction_harness(monkeypatch, *, raw=BY_ID["N2"], memory=None, phrase=None):
+def _transaction_harness(monkeypatch, *, raw=BY_ID["N2"], memory=None, phrase=None,
+                         m31_authority=False):
     """Drive the actual opt-in wrapper with only fake speech, guard and storage."""
-    event, tick = _issued(raw)
+    event, tick = _issued(raw, m31_authority=m31_authority)
     event["memory_data"] = _memory([BY_ID["N1"]]) if memory is None else memory
     if phrase is None:
         phrase = "集合場所、まだ決まってないんだ"
@@ -575,6 +606,36 @@ def test_zero_model_full_transaction_delivers_rewrite_and_direct_user_recall(mon
                 if row["label"] == atomic.LABEL) == receipt
 
 
+def test_zero_model_true_m31_variant_delivers_with_truthful_prior_authority(monkeypatch):
+    brain, event, tick, calls = _transaction_harness(
+        monkeypatch, raw=Q_BY_ID["Q0"], memory=_memory([]),
+        phrase="集合場所、まだ調整中なんだ", m31_authority=True,
+    )
+    before_m31 = deepcopy(tick["logic"]["semantic_authorization_m31"])
+    before_m32 = deepcopy(tick["logic"]["semantic_commit_repair_m32"])
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    receipt = result["logic"][atomic.LABEL]
+    assert calls["generate"] == 1
+    assert receipt["status"] == "delivered_structure_semantics_unverified"
+    assert receipt["prior_m31_surface_authority"] is True
+    assert receipt["prior_m32_surface_authority"] is True
+    assert receipt["final_consistent"] is True
+    assert "まだ調整中なんだ" in result["reply"]
+    assert "分からない" in result["reply"]
+    assert tick["logic"]["semantic_authorization_m31"] == before_m31
+    assert tick["logic"]["semantic_commit_repair_m32"]["surface_authority"] is True
+    assert tick["logic"]["semantic_commit_repair_m32"][lineage.PRODUCER_KEY] == before_m32[lineage.PRODUCER_KEY]
+    assert tick["logic"][lineage.LABEL]["m31"]["surface_authority_retained"] is True
+    assert tick["logic"][lineage.LABEL]["authority_transfer_permitted"] is False
+
+
+def test_new_number_in_rewrite_remains_rejected_for_true_m31_variant():
+    admitted, _ = atomic.validate_typed_mixed_rewrite_phrase_p4(
+        "集合場所は2026年12月4日に決まったよ", "集合場所はまだ調整中です",
+    )
+    assert admitted is False
+
+
 def test_zero_model_unknown_source_keeps_rewrite_but_does_not_invent_place(monkeypatch):
     brain, event, tick, calls = _transaction_harness(
         monkeypatch, raw=BY_ID["N0"], memory=_memory([]), phrase="集合場所、まだ確認中なんだ",
@@ -632,6 +693,31 @@ def test_source_lost_between_prepare_and_guard_must_not_leak_stale_place(monkeyp
     assert receipt["final_consistent"] is False
     assert "白磁の掲示板の横" not in result["reply"]
     assert result["reply"] != "「集合場所、まだ決まってないんだ」って感じかな。2026年11月18日の集合場所は白磁の掲示板の横にしたって言ってたな。"
+
+
+def test_m31_authority_drift_between_prepare_and_guard_rejects_terminal_candidate(monkeypatch):
+    brain, event, tick, _ = _transaction_harness(monkeypatch)
+
+    def authority_changes_during_generation(_brain, _source, _outside):
+        tick["logic"]["semantic_authorization_m31"]["surface_authority"] = True
+        tick["logic"][lineage.LABEL]["m31"]["surface_authority_retained"] = True
+        phrase = "集合場所、まだ決まってないんだ"
+        return phrase, {
+            "stage": atomic.rewrite.STAGE, "model": atomic.rewrite.MODEL,
+            "attempted_calls": 1, "completed_calls": 1,
+            "temperature": 0, "max_tokens": 80, "timeout_seconds": 6.0,
+            "prompt_tokens": 12, "completion_tokens": 8, "call_latency_seconds": 0.01,
+            "status": "bounded_shape_accepted_semantics_unverified",
+            "model_phrase_sha256": _sha(phrase),
+        }
+
+    monkeypatch.setattr(atomic.rewrite, "_generate", authority_changes_during_generation)
+    result = atomic.emit_response_with_typed_mixed_atomic_delivery_p4(brain, event, tick)
+    receipt = result["logic"][atomic.LABEL]
+    assert receipt["prior_m31_surface_authority"] is False
+    assert receipt["terminal_priority_status"] == "rejected_at_final_guard"
+    assert receipt["final_consistent"] is False
+    assert "白磁の掲示板の横" not in result["reply"]
 
 
 def test_guard_normalization_cannot_publish_uncommitted_variant(monkeypatch):
