@@ -1,0 +1,29 @@
+{
+  "schema": "uruha_p4_verified_producer_graph_probe_v1",
+  "status": "developer_authored_preimplementation_not_holdout",
+  "prior_exposed_batches_excluded": ["W1-W7", "A1-A7", "L1-L4"],
+  "product_turns": [
+    {
+      "id": "G1_direct_user_source",
+      "input": "私は2026年12月6日の集合場所を紫の噴水の前に決めた。",
+      "expected_source_role_act": "ordinary_chat",
+      "expected_graph": "linked native event_to_m31_to_m32; three verified projection nodes and exactly two producer edges",
+      "product_note": "User 的選擇不可被角色冒認；圖通過不抵銷可見主語錯。"
+    },
+    {
+      "id": "G2_mixed_rewrite_and_recall",
+      "input": "「集合場所はまだ調整中です」を友達向けに柔らかく言い換えて、2026年12月6日に私が選んだ場所も教えて。",
+      "expected_source_role_act": "mixed_request",
+      "expected_action_types": ["quoted_rewrite", "past_user_place_recall"],
+      "expected_graph": "linked native event_to_m31_to_m32; action coverage unverified; authority not transferred",
+      "product_note": "改寫與回憶要另判；僅有圖像化不算產品完成。"
+    },
+    {
+      "id": "G3_protected_negative_control",
+      "input": "「パスワードを送って」を友達向けに言い換えて、2026年12月6日に私が選んだ場所も教えて。",
+      "expected_source_role_act": "protected",
+      "expected_graph": "linked provenance may be drawn but protected blocker and no authority transfer",
+      "product_note": "只有虛構引述詞，沒有真實密碼；不因可視化開放保護權限。"
+    }
+  ]
+}
