@@ -15,6 +15,7 @@ import time
 import unicodedata
 
 import uruha_compute_ledger as compute_ledger
+import uruha_current_turn_source_role_p4 as source_role
 from uruha_local_fact_answer_authority_p4 import _protected_or_other_route
 from uruha_trace_history_sync_m41_1 import sync_current_history_m41_1
 import uruha_utterance_frame_shadow_extension_p4 as frame_extension
@@ -25,12 +26,7 @@ SCHEMA = "uruha_explicit_rewrite_action_p4_v1"
 FLAG = "URUHA_P4_EXPLICIT_REWRITE_ACTION"
 MODEL = "qwen2.5:7b"
 STAGE = "p4_explicit_rewrite_action"
-_QUOTE = re.compile(r'「(?P<corner>[^「」\n]{2,40})」|“(?P<curly>[^“”\n]{2,40})”|"(?P<ascii>[^"\n]{2,40})"')
 _OTHER_QUOTES = re.compile(r'[「」“”"『』]')
-_REQUEST = re.compile(r'言い換え|書き換え|改成|改寫|改写|\b(?:rewrite|rephrase|paraphrase)\b', re.I)
-_STYLE = re.compile(r'柔らか|やわらか|友達|親し|くだけ|カジュアル|委婉|柔和|口語|比较|比較|\b(?:warmer|casual|softer|gentler)\b', re.I)
-_NOT_REWRITE = re.compile(r'意味|定義|とは|翻訳|英訳|和訳|translate|meaning|define|definition|翻譯|翻译|意思|第三者|友達が|友人が|朋友說|朋友说|my friend said', re.I)
-_SENSITIVE = re.compile(r'パスワード|暗証番号|認証コード|ログイン|住所|電話番号|個人情報|自傷|自殺|死にたい|殺す|殺して|password|passcode|secret|suicide|self.harm|kill|密碼|密码|驗證碼|验证码|住址|電話|殺人|杀人', re.I)
 _JAPANESE = re.compile(r'[ぁ-んァ-ン]')
 _FORMAL = re.compile(r'です|ます|でした|ました|承知|かしこまり|了解しました|わかりました|分かりました')
 _NEW_REASON = re.compile(r'から|ので|せいで|理由|because|because of')
@@ -46,32 +42,23 @@ def _sha(value: object) -> str:
     return hashlib.sha256(str(value or "").encode("utf-8")).hexdigest()
 
 
-def classify_explicit_rewrite_action_p4(user_input: str) -> dict:
-    """Require one current-turn quote, an overt rewrite act, and a style goal."""
+def classify_explicit_rewrite_action_p4(user_input: str, *, cycle_index: int | None = None) -> dict:
+    """Admit only a single observable outer rewrite act over quoted data."""
+    role = source_role.classify_current_turn_source_role_p4(user_input, cycle_index=cycle_index)
     text = unicodedata.normalize("NFKC", str(user_input or "")).strip()
     base = {
         "schema": SCHEMA,
         "input_sha256": _sha(text),
         "eligible": False,
-        "reason": "not_applicable",
+        "reason": role["reason"],
         "source_role": "current_user_quoted_object_only",
+        "source_role_certificate": source_role.public_source_role_certificate_p4(role),
+        "_source_certificate": role,
     }
-    if not text or len(text) > 240 or _SENSITIVE.search(text):
-        return {**base, "reason": "empty_long_or_sensitive"}
-    matches = list(_QUOTE.finditer(text))
-    if len(matches) != 1:
-        return {**base, "reason": "not_one_short_balanced_quote"}
-    match = matches[0]
-    outside = text[:match.start()] + " " + text[match.end():]
-    if _OTHER_QUOTES.search(outside):
-        return {**base, "reason": "unmatched_or_additional_quote"}
-    source = next((part for part in match.groupdict().values() if part is not None), "").strip()
-    if not source or _OTHER_QUOTES.search(source):
-        return {**base, "reason": "nested_or_empty_quote"}
-    if _NOT_REWRITE.search(outside):
-        return {**base, "reason": "definition_translation_or_reported_speech"}
-    if not _REQUEST.search(outside) or not _STYLE.search(outside):
-        return {**base, "reason": "no_explicit_rewrite_and_style_request"}
+    if not role["rewrite_eligible"]:
+        return base
+    source = role["_quote_nfkc"]
+    outside = role["_outside_nfkc"]
     return {
         **base,
         "eligible": True,
@@ -81,6 +68,7 @@ def classify_explicit_rewrite_action_p4(user_input: str) -> dict:
         "source_length": len(source),
         # Source is returned to the action locally, never copied into its graph receipt.
         "_source": source,
+        "_outside": outside,
     }
 
 
@@ -121,20 +109,33 @@ def _usage(response: object) -> dict:
 
 def _candidate_has_competing_authority(logic: dict) -> bool:
     """Do not displace an independently authoritative protected/factual reply."""
-    if logic.get("semantic_commit_repair_m32") is not None and not isinstance(
-        logic.get("semantic_commit_repair_m32"), dict
+    if logic.get("memory_recall_contract") is not None or logic.get("profile_grounding_shadow") is not None:
+        return True
+    route = logic.get("semantic_route_m22")
+    if route is not None and (
+        not isinstance(route, dict)
+        or route.get("schema") != "uruha_semantic_route_taxonomy_m22"
+        or route.get("selected_type") in {"factual_or_memory", "safety_sensitive"}
     ):
         return True
     if logic.get(frame_extension.LABEL) is not None and not isinstance(
         logic.get(frame_extension.LABEL), dict
     ):
         return True
-    for key in (
-        "semantic_authorization_m31", "source_anchored_semantic_commit_m33",
-        "literal_topic_projection_m29", "feedback_topic_transition_m28",
-    ):
+    schemas = {
+        "semantic_commit_repair_m32": "uruha_deterministic_semantic_commit_m32",
+        "semantic_authorization_m31": "uruha_semantic_authorization_m31",
+        "source_anchored_semantic_commit_m33": "uruha_source_anchored_semantic_commit_m33",
+        "literal_topic_projection_m29": "uruha_generalized_literal_topic_projection_m29",
+        "feedback_topic_transition_m28": "uruha_feedback_topic_transition_m28",
+    }
+    for key, schema in schemas.items():
         contract = logic.get(key)
-        if contract is not None and (not isinstance(contract, dict) or contract.get("surface_authority")):
+        if contract is not None and (
+            not isinstance(contract, dict)
+            or contract.get("schema") != schema
+            or contract.get("surface_authority") is not False
+        ):
             return True
     return False
 
@@ -144,14 +145,9 @@ def _transfer_surface_authority(logic: dict, user_input: str, candidate: str, re
     old_m32 = deepcopy(logic.get("semantic_commit_repair_m32") or {})
     if not isinstance(old_m32, dict):
         raise TypeError("malformed M32 surface contract")
-    if old_m32.get("surface_authority"):
-        shadow = deepcopy(old_m32)
-        shadow["surface_authority"] = False
-        shadow["post_selection_role"] = "shadowed_by_explicit_rewrite_action_p4"
-        logic["semantic_commit_repair_m32"] = shadow
-        receipt["m32_surface_authority_shadowed"] = True
-    else:
-        receipt["m32_surface_authority_shadowed"] = False
+    if old_m32 and old_m32.get("surface_authority") is not False:
+        raise ValueError("authoritative or malformed M32 cannot be shadowed without lineage")
+    receipt["m32_surface_authority_shadowed"] = False
     previous_frame = logic.get(frame_extension.LABEL) or {}
     effective_frame = frame_extension.inspect_utterance_frame_coverage_extension_p4(
         user_input, candidate
@@ -306,23 +302,63 @@ def _materialize(self, result: dict, receipt: dict) -> dict:
     return result
 
 
+def _attach_source_role(self, result: dict, role: dict, *, admission: str) -> dict:
+    """Expose the bounded source split in the graph without raw user words."""
+    if not isinstance(result, dict):
+        return result
+    public = source_role.public_source_role_certificate_p4(role)
+    logic = result.get("logic") or {}
+    public["lineage"] = source_role.audit_current_turn_lineage_p4(role, logic)
+    public["action_admission"] = admission
+    if isinstance(logic, dict):
+        logic[source_role.LABEL] = deepcopy(public)
+    trace = result.get("runtime_trace") or {}
+    if isinstance(trace, dict):
+        rows = [row for row in list(trace.get("blackboard") or []) if row.get("label") != source_role.LABEL]
+        insertion = next(
+            (index for index, row in enumerate(rows) if row.get("label") in {LABEL, "utterance"}),
+            len(rows),
+        )
+        rows.insert(insertion, {
+            "stage": "pragmatics", "label": source_role.LABEL,
+            "payload": deepcopy(public), "salience": 0.91,
+        })
+        trace["blackboard"] = rows
+        trace[source_role.LABEL] = deepcopy(public)
+        runtime = getattr(self, "runtime", None)
+        if runtime is not None:
+            runtime.blackboard = deepcopy(rows)
+            if getattr(runtime, "turn_traces", None) and runtime.turn_traces[-1].get("cycle_index") == trace.get("cycle_index"):
+                runtime.turn_traces[-1] = deepcopy(trace)
+        sync_current_history_m41_1(result)
+    return result
+
+
 def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result: dict):
     if _ORIGINAL_EMIT is None:
         raise RuntimeError("explicit rewrite action not installed")
     raw = str((event or {}).get("user_input") or "")
-    scope = classify_explicit_rewrite_action_p4(raw)
-    if os.environ.get(FLAG) != "1" or not scope.get("eligible") or not isinstance(tick_result, dict):
+    runtime = getattr(self, "runtime", None)
+    scope = classify_explicit_rewrite_action_p4(raw, cycle_index=getattr(runtime, "cycle_index", None))
+    if os.environ.get(FLAG) != "1" or not isinstance(tick_result, dict):
         return _ORIGINAL_EMIT(self, event, tick_result)
+    role = scope.pop("_source_certificate")
+    if not scope.get("eligible"):
+        return _attach_source_role(
+            self, _ORIGINAL_EMIT(self, event, tick_result), role,
+            admission="not_a_single_rewrite_request",
+        )
     logic = tick_result.get("logic") or {}
     if not isinstance(logic, dict) or _protected_or_other_route(
         logic, tick_result.get("route_info") or {}, getattr(self, "right_brain", None)
     ) or logic.get("surface_act") in {"repair_check", "memory_accounting"}:
-        return _ORIGINAL_EMIT(self, event, tick_result)
+        return _attach_source_role(
+            self, _ORIGINAL_EMIT(self, event, tick_result), role,
+            admission="protected_or_other_route_retained",
+        )
     source = scope.pop("_source")
-    normalized = unicodedata.normalize("NFKC", raw).strip()
-    outside_match = _QUOTE.search(normalized)
-    outside = normalized[:outside_match.start()] + " " + normalized[outside_match.end():] if outside_match else ""
-    receipt = {key: value for key, value in scope.items() if not key.startswith("_")}
+    outside = scope.pop("_outside")
+    receipt = {key: value for key, value in scope.items() if not key.startswith("_") and key != "source_role_certificate"}
     receipt.update({
         "original_core_sha256": _sha(logic.get("core_message_jp")),
         "original_surface_act": str(logic.get("surface_act") or ""),
@@ -331,12 +367,16 @@ def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result
         "persistent_fact_write": False,
         "claim_boundary": "bounded explicit current-turn quote rewrite; not semantic-equivalence proof",
     })
+    receipt["lineage"] = source_role.audit_current_turn_lineage_p4(role, logic)
+    if _candidate_has_competing_authority(logic):
+        receipt["status"] = "candidate_not_generated_competing_authority_unproven_lineage"
+        receipt["model_call"] = {"attempted_calls": 0, "completed_calls": 0}
+        result = _materialize(self, _ORIGINAL_EMIT(self, event, tick_result), receipt)
+        return _attach_source_role(self, result, role, admission="competing_authority_retained")
     phrase, model_receipt = _generate(self, source, outside)
     receipt["model_call"] = model_receipt
     if phrase is None:
         receipt["status"] = "model_candidate_rejected_original_route_kept"
-    elif _candidate_has_competing_authority(logic):
-        receipt["status"] = "candidate_rejected_competing_surface_authority"
     else:
         candidate = f"「{phrase}」がいいかな。"
         receipt["model_phrase_sha256"] = _sha(phrase)
@@ -350,7 +390,12 @@ def emit_response_with_explicit_rewrite_action_p4(self, event: dict, tick_result
         logic["constraints"] = constraints
         logic[LABEL] = deepcopy(receipt)
     result = _ORIGINAL_EMIT(self, event, tick_result)
-    return _materialize(self, result, receipt)
+    result = _materialize(self, result, receipt)
+    verified_status = ((result or {}).get("logic") or {}).get(LABEL, {}).get("status")
+    return _attach_source_role(
+        self, result, role,
+        admission=verified_status if isinstance(verified_status, str) else "candidate_status_unavailable",
+    )
 
 
 def install_explicit_rewrite_action_p4(brain_class=None) -> bool:

@@ -155,6 +155,9 @@ def test_downstream_override_is_recorded_as_failure_not_hidden_by_reply_write():
         result = rewrite.emit_response_with_explicit_rewrite_action_p4(brain, {"user_input": _case_users()["T1"]}, tick)
     assert result["reply"] == "うん"
     assert result["logic"][rewrite.LABEL]["status"] == "downstream_surface_mismatch"
+    assert result["logic"]["current_turn_source_role_p4"]["action_admission"] == "downstream_surface_mismatch"
+    role_row = next(row for row in result["runtime_trace"]["blackboard"] if row["label"] == "current_turn_source_role_p4")
+    assert role_row["payload"]["action_admission"] == "downstream_surface_mismatch"
 
 
 def test_flag_off_keeps_original_route_without_new_model_call():
@@ -219,12 +222,12 @@ def test_prospective_scope_is_disjoint_and_keeps_negative_controls_out():
     ]
 
 
-def test_accepted_action_shadows_stale_m32_and_rechecks_frame_before_original_emit():
+def test_accepted_action_with_non_authoritative_m32_rechecks_frame_before_original_emit():
     brain = _fake_brain()
     tick = _fake_tick()
     old_m32 = {
         "schema": adaptive_person.SEMANTIC_COMMIT_REPAIR_SCHEMA_M32,
-        "surface_authority": True,
+        "surface_authority": False,
         "response_jp": "私は今日行けないんだね。",
         "surface_anchors_jp": ["私", "行けない"],
         "plan_applied": True,
@@ -265,7 +268,7 @@ def test_accepted_action_shadows_stale_m32_and_rechecks_frame_before_original_em
     receipt = result["logic"][rewrite.LABEL]
     assert result["reply"] == candidate
     assert len(memory_calls) == 1
-    assert receipt["m32_surface_authority_shadowed"] is True
+    assert receipt["m32_surface_authority_shadowed"] is False
     assert receipt["speak_delivery"] == "typed_candidate_no_second_generation"
     assert receipt["effective_frame_violations"] == []
     assert receipt["candidate_equals_speak"] is True
@@ -278,15 +281,16 @@ def test_accepted_action_shadows_stale_m32_and_rechecks_frame_before_original_em
     assert user not in json.dumps(receipt, ensure_ascii=False)
 
 
-def test_competing_factual_authority_rejects_candidate_without_shadowing_m32():
+def test_competing_factual_authority_skips_candidate_without_shadowing_m32():
     brain = _fake_brain()
     tick = _fake_tick()
     tick["logic"]["semantic_authorization_m31"] = {"surface_authority": True}
     tick["logic"]["semantic_commit_repair_m32"] = {"surface_authority": True, "response_jp": "元の答え。"}
     user = json.loads(SURFACE_DATASET.read_text(encoding="utf-8"))["cases"][0]["user"]
-    with patch.object(rewrite, "_ORIGINAL_EMIT", _fake_base_emit), patch.object(rewrite, "_generate", return_value=("今日は会えないんだ。", {"attempted_calls": 1})), patch.dict(os.environ, {rewrite.FLAG: "1"}):
+    with patch.object(rewrite, "_ORIGINAL_EMIT", _fake_base_emit), patch.object(rewrite, "_generate", side_effect=AssertionError("must not call")), patch.dict(os.environ, {rewrite.FLAG: "1"}):
         result = rewrite.emit_response_with_explicit_rewrite_action_p4(brain, {"user_input": user}, tick)
-    assert result["logic"][rewrite.LABEL]["status"] == "candidate_rejected_competing_surface_authority"
+    assert result["logic"][rewrite.LABEL]["status"] == "candidate_not_generated_competing_authority_unproven_lineage"
+    assert result["logic"][rewrite.LABEL]["model_call"]["attempted_calls"] == 0
     assert result["logic"]["semantic_commit_repair_m32"]["surface_authority"] is True
     assert result["reply"] == "承知しました"
 
