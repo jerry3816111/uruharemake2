@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-20。**本節是唯一最新續接點；下方明示引述改寫八輪的「下一步」已完成，不重做。**
+
+## 最新結果：P4 改寫表達權限交接有局部機制進展，fresh Safari strict FAIL／REVIEW_REQUIRED
+
+上一批 8 輪 strict FAIL 與原 raw SHA 不改判、不重送。新 8 題／計畫在程式前以 `d3a3057` 凍結，單變因 typed candidate→speech 權限交接及 product SHA 以 `f36d1f0` 推 PR #435；118/118 受影響零模型、preimplementation SHA 2/2、product SHA 10/10。新 0700 隔離 root `uruha-product-qyrlxpja` 先 0-turn 同 PID ready/stop、官方 SHA ONNX 私有離線預熱，後真 Safari session `20261020_140152_33b8ed89` 八題各一次、0 retry；raw 8 行 SHA `3c39b219dc897314db70e1ea553867be0d9d984ca19f884c3a63322a448e63b0`。詳細逐輪、圖、成本、證據邊界見 `analysis/p4_rewrite_surface_authority_fresh_product_probe_result_2026-10-20.md`。
+
+P2 首次有 typed 候選完整走 `speak→guard→P4-W no-op→graph→Safari`，但候選含 `ません` 敬體，品質 FAIL；P1 JSON 解析失敗退原路徑，P3 被誤把改寫指令當回答的 M31 舊權限擋住。**正例 0/3 gold，整批 strict FAIL**；負控 0/5 誤接管、N5 當輪身份通過但不抹除前批 T8 失敗。泡泡＝raw＝graph UTTERANCE 8/8、guard＝泡泡 6/8、episode 0→8；T0 profile DB absent／0 rows，P1–N5 profile 0 rows 且同 digest；8/8 runtime wait ≤20 秒（平均 12.59075 秒）。新增 3 calls／359 prompt＋58 completion tokens／5.129665 秒 call latency；非全系統成本或公平比較。兩 PID planned stop、7894 vacant；只關本次新 Safari tab，原 52 tabs 保留。正式 DB、原始 dirty checkout、無關 `output/graduate_application_report/` 未碰；Goal active。
+
+**下一個必要交付是 0-call 設計審查，不再沿本批曝光題修分**：分開候選 JSON/敬體品質、M31 與 typed action 的當輪來源／表達權限、P4-V/P4-W provenance，以及 N1 詞義和前批身份失真；提出一個有歸因的新設計與 source-disjoint 正負控、成本/圖/安全門檻後才可另立前瞻批。若無法提出不靠固定答案的可證明權限仲裁，保留 `REVIEW_REQUIRED`，改處其他獨立必要產品門檻；不得把 P2 機制成功寫成產品 PASS，也不能用本八句重跑。正式同模型、人評、temporal holdout、VRM／Function Calling 統一驗收 pending。
+
 更新：2026-10-20。**本節是唯一當前續接點；下方「fresh pending」已是歷史，不重做。**
 
 ## 最新結果：P4 明示引述改寫真 Safari 八輪 strict FAIL
