@@ -1,5 +1,15 @@
 # 目前任務卡
 
+更新：2026-10-20。**本節是唯一當前續接點；下方「fresh pending」已是歷史，不重做。**
+
+## 最新結果：P4 明示引述改寫真 Safari 八輪 strict FAIL
+
+前瞻 plan／八句在實作前以 `f10c972` 凍結，opt-in action／測試／薄入口與 product SHA 以 `220fa89` 推既有 PR #435。受影響零模型 135/135、preimplementation SHA 2/2、product SHA 6/6 只代表接線和契約。新 0700 隔離 root `uruha-product-qcphly1z`：0-turn same-PID 啟停、官方 SHA ONNX 私有預熱、T0 空 profile；真 Safari 同一 session `20261020_085958_00abfc97` 八句各一次、0 retry，逐輪 T0–T8 雙快照，八個不同 episode、profile 0 rows／同 digest。raw 八行 SHA `1c45c0bfeead0799849eb77017149e37488f8103f54e1ed7f72d8872d87642ad`；詳細逐輪／圖／成本見 `analysis/p4_explicit_rewrite_action_fresh_product_probe_result_2026-10-20.md`。產品 PID 35013 planned stop，7894 vacant。
+
+新 action 三個正例 3/3 識別、三次本機模型呼叫，但 **0/3 可證明完成候選→最後改寫行動**：T1/T2 候選因敬體拒絕；T3 形狀檢查漏過 `ません` 敬體候選，speech／P4-W 又把它變成「引述內容」說明而非委婉改寫，最後 guard≠泡泡。故 T3 候選品質與下游表達是兩個未通過的門檻，不能只怪下游。T4–T8 新路徑 0/5 誤觸；T8 **身份本身失敗**，選定 `うるはだよ` 但最後是 `は？そういうのうちに求めないで。`，屬獨立 selected→surface 缺陷。Safari 泡泡＝raw＝graph `UTTERANCE` 8/8，guard＝最後 7/8；全輪日文、runtime wait proxy 8/8 ≤20s，平均 14.3962 秒；新 action 3 calls、359 prompt + 36 completion tokens，合計 call latency 4.539817 秒。這些不能外推為功能成功、正式同模型優勢或身份穩定。原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 不碰，Goal active。
+
+**下一個必要交付**：先只讀分因審查 T1–T3 的候選敬體／檢查漏網、T3 typed action 被 speech／P4-W 當成引述轉述、T8 既有身份 core→final 失真；選對產品阻擋最重且單一可歸因變因，依新未曝光正負控與完整產品 gate 做至多一個有根據的修正批次。若仍不過，提出 `REVIEW_REQUIRED`，不重送本八句、不改 gold、不以負控／延遲通過掩蓋正例與身份失敗。正式同模型、temporal holdout、人評、VRM／Function Calling 統一驗收仍 pending。
+
 更新：2026-10-20。**本節取代下方 repair-cue 批次的「下一步」，舊 strict FAIL 不改判。**
 
 ## 當前交付：P4 明示引述改寫 typed action 已接線，fresh 產品驗收仍 pending
