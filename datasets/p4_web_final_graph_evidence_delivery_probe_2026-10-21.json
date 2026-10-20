@@ -1,0 +1,46 @@
+{
+  "schema": "p4_web_final_graph_evidence_delivery_developer_probe_v1",
+  "status": "prospective_preimplementation_not_holdout",
+  "prior_exposed_batches_not_replayed": ["N", "Q", "S", "T"],
+  "strict_batch_policy": "all content, graph final/reload, transport, storage, safety, latency and cost gates or whole product batch FAIL",
+  "cases": [
+    {
+      "id": "G0",
+      "input": "「2030年6月14日の集合場所はまだ調整中です」を友達向けに柔らかく言い換えて、2030年6月13日に私が選んだ場所も教えて。",
+      "kind": "supported_mixed_no_source_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2030年6月14日",
+      "quote_state": "調整中",
+      "recall_date": "2030年6月13日",
+      "recall": "dated_unknown",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "G1",
+      "input": "私は2030年6月16日の集合場所を銀色の水門の横に決めた。",
+      "kind": "direct_user_seed_actor_control",
+      "ledger_expected": false,
+      "actor_must_remain_user": true,
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "G2",
+      "input": "「2030年6月17日の集合場所はまだ確認中です」を友達向けに柔らかく言い換えて、2030年6月16日に私が選んだ場所も教えて。",
+      "kind": "supported_mixed_direct_user_source_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2030年6月17日",
+      "quote_state": "確認中",
+      "recall_date": "2030年6月16日",
+      "recall": "direct_user_source_silver_floodgate",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "G3",
+      "input": "「2030年6月18日の集合場所はもう決まりました」を友達向けに柔らかく言い換えて、2030年6月16日に私が選んだ場所も教えて。",
+      "kind": "unsupported_quote_abstention",
+      "ledger_expected": false,
+      "new_terminal_authority_expected": false,
+      "added_mixed_model_calls": 0
+    }
+  ]
+}
