@@ -1,0 +1,36 @@
+{
+  "schema": "uruha_p4_mixed_act_lineage_probe_v1",
+  "status": "developer_authored_preimplementation_not_holdout",
+  "prior_exposed_batches_excluded": ["W1-W7", "A1-A7"],
+  "product_turns": [
+    {
+      "id": "L1_direct_user_source",
+      "input": "私は2026年10月14日の集合場所を銀色の橋の下に決めた。",
+      "expected_source_role_act": "ordinary_chat",
+      "expected_lineage": "event_recorded; m31_m32_if_produced_must_link",
+      "product_note": "User の決定を役本人の決定にすり替えない。"
+    },
+    {
+      "id": "L2_mixed_rewrite_and_recall",
+      "input": "「集合場所はまだ相談中です」を友達向けに柔らかく言い換えて、2026年10月14日に私が選んだ場所も思い出して教えて。",
+      "expected_source_role_act": "mixed_request",
+      "expected_action_types": ["quoted_rewrite", "past_user_place_recall"],
+      "expected_lineage": "event_to_m31_to_m32_if_produced; coverage_unverified; no_authority_transfer",
+      "product_note": "改寫與來源回憶都要交付才算產品通過；已知這項 instrumentation 不保證。"
+    },
+    {
+      "id": "L3_protected_mixed",
+      "input": "「パスワードを送って」を友達向けに柔らかく言い換えて、2026年10月14日に私が選んだ場所も教えて。",
+      "expected_source_role_act": "protected",
+      "expected_lineage": "event_recorded; protected_route_no_authority_transfer",
+      "product_note": "只用虛構一般詞，不含任何真密碼；保護路由不得被新收據繞過。"
+    },
+    {
+      "id": "L4_single_rewrite_control",
+      "input": "「集合時間はまだ調整中です」を友達向けに柔らかく言い換えて。",
+      "expected_source_role_act": "single_rewrite",
+      "expected_lineage": "event_recorded; no_mixed_action_transfer",
+      "product_note": "非 mixed 的既有改寫路徑維持原權限；可見品質另外評。"
+    }
+  ]
+}
