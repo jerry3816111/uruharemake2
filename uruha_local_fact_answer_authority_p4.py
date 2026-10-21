@@ -7,6 +7,7 @@ path.  The same receipt binds the selected plan and the visible Japanese reply.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from copy import deepcopy
 import hashlib
 import json
@@ -26,13 +27,30 @@ _ORIGINAL_TICK = None
 _ORIGINAL_VISIBLE_GUARD = None
 _ORIGINAL_RUN = None
 _ORIGINAL_EMIT = None
+_ACTIVE_HISTORY_TRANSACTION = ContextVar("local_fact_history_transaction_p4", default=None)
 
 _TIME_QUERY = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})は何時から(?:始まる|だった)[?？]$")
 _PLACE_QUERY = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})はどこに置いた[?？]$")
 _PLACE_QUERY_ALT = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})の置き場[、,]?どこ[?？]$")
+_USER_DECIDED_PLACE_QUERY = re.compile(
+    r"(?P<subject>[^「」『』!?？。]{2,72})[、,](?:さっき)?私が決めたのは"
+    r"どこ(?:だっけ|だった)?[?？]$"
+)
 _TIME_ASSERTION = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})は(?P<value>[0-2]?[0-9]時(?:[0-5]?[0-9]分)?)から始まる[。.]?$")
 _PLACE_ASSERTION = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})は(?P<value>[^「」『』!?？。]{1,40})に置いた[。.]?$")
+_USER_DECIDED_PLACE_ASSERTION = re.compile(
+    r"私は(?P<subject>[^「」『』!?？。]{2,72})を"
+    r"(?P<value>[^「」『』!?？。]{1,40})に決めた[。.]?$"
+)
 _SENSITIVE_SUBJECT = re.compile(r"パスワード|パスコード|暗証番号|認証コード|合言葉|住所|電話番号|口座|秘密", re.I)
+_SENSITIVE_PRIOR_DECISION = re.compile(
+    r"鍵|カギ|キー|財布|現金|貴重品|隠す|隠し"
+)
+_PRIOR_DECISION_CORRECTION = re.compile(
+    r"^(?:さっきのは違う|前のは違う|訂正[、,:：]?|やっぱり違う)[、,:：]?"
+    r"私は(?P<subject>[^「」『』!?？。]{2,72})を"
+    r"(?P<value>[^「」『』!?？。]{1,40})に決めた[。.]?$"
+)
 _UNSUPPORTED_ASSERTION = re.compile(
     r"(?:かも|らしい|たぶん|多分|そう|かな|でしょう|だろう|ない|なかった|違う|じゃない|"
     r"と言|って言|聞いた|教わった|友達|友人|先生|同僚|仮に|もし|例えば|引用|メモ|/|\\|\|)"
@@ -70,13 +88,18 @@ def classify_local_fact_query_p4(user_input: str) -> dict:
         ("local_start_time", _TIME_QUERY),
         ("local_placement", _PLACE_QUERY),
         ("local_placement", _PLACE_QUERY_ALT),
+        ("prior_user_decided_place", _USER_DECIDED_PLACE_QUERY),
     ):
         match = pattern.fullmatch(text)
         if match:
             subject = match.group("subject").strip()
-            if (subject and len(subject) <= 18
+            subject_limit = 48 if slot == "prior_user_decided_place" else 18
+            if (subject and len(subject) <= subject_limit
+                    and (slot != "prior_user_decided_place" or subject.endswith("場所"))
                     and not _UNSUPPORTED_ASSERTION.search(subject)
-                    and not _SENSITIVE_SUBJECT.search(subject)):
+                    and not _SENSITIVE_SUBJECT.search(subject)
+                    and (slot != "prior_user_decided_place"
+                         or not _SENSITIVE_PRIOR_DECISION.search(subject))):
                 return {**base, "eligible": True, "slot": slot,
                         "subject": subject, "reason": "bounded_local_fact_question"}
     return base
@@ -90,7 +113,11 @@ def _direct_user_assertion(user_text: str, slot: str, subject: str) -> str | Non
         "「", "」", "『", "』", "\"", "'", "?", "？", "User:", "Uruha:", "->", "\n", "\r",
     )):
         return None
-    pattern = _TIME_ASSERTION if slot == "local_start_time" else _PLACE_ASSERTION
+    pattern = (
+        _TIME_ASSERTION if slot == "local_start_time" else
+        _USER_DECIDED_PLACE_ASSERTION if slot == "prior_user_decided_place" else
+        _PLACE_ASSERTION
+    )
     match = pattern.fullmatch(text)
     if not match or match.group("subject").strip() != subject:
         return None
@@ -100,6 +127,10 @@ def _direct_user_assertion(user_text: str, slot: str, subject: str) -> str | Non
         if hour > 23:
             return None
     if not value or _UNSUPPORTED_ASSERTION.search(value):
+        return None
+    if slot == "prior_user_decided_place" and (
+        _SENSITIVE_SUBJECT.search(value) or _SENSITIVE_PRIOR_DECISION.search(value)
+    ):
         return None
     return value
 
@@ -185,18 +216,43 @@ def build_local_fact_certificate_p4(user_input: str, memory_data: dict | None) -
     if not query["eligible"]:
         return query
     sources, audit = _handed_user_sources(memory_data or {})
+    unresolved_correction = False
+    if query["slot"] == "prior_user_decided_place":
+        for source in sources:
+            corrected = _PRIOR_DECISION_CORRECTION.fullmatch(_norm(source["user"]))
+            if corrected and corrected.group("subject").strip() == query["subject"]:
+                unresolved_correction = True
+                break
     matches = []
     for source in sources:
         value = _direct_user_assertion(source["user"], query["slot"], query["subject"])
         if value is not None:
-            matches.append({**source, "value": value})
+            matches.append({**source, "value": value, "source_user_sha256": _sha(source["user"])})
+    if query["slot"] == "prior_user_decided_place":
+        # The same raw User turn often arrives through both recent-turn and
+        # typed-episode channels.  Two copies are one observation, not two
+        # independent or conflicting decisions.
+        distinct_sources = {}
+        for row in matches:
+            digest = row["source_user_sha256"]
+            if digest not in distinct_sources or row["source_channel"] == "direct_episode":
+                distinct_sources[digest] = row
+        matches = list(distinct_sources.values())
     values = sorted(set(row["value"] for row in matches))
-    if len(values) == 1:
+    if unresolved_correction:
+        # This gate does not infer whether an explicit revision supersedes
+        # every older statement.  Do not answer from a stale admitted source.
+        reply = "前の場所は訂正してたな。今の決定を確認させて。"
+        status = "unresolved_user_correction"
+        value = source_type = trace_id = memory_id = None
+    elif len(values) == 1:
         chosen = next((row for row in reversed(matches) if row["source_channel"] == "recent_turns"), matches[-1])
         value = values[0]
         reply = (
             f"{query['subject']}は{value}から始まるって言ってたな。"
             if query["slot"] == "local_start_time" else
+            f"前にそっちが決めたのは{value}だよ。"
+            if query["slot"] == "prior_user_decided_place" else
             f"{query['subject']}は{value}に置いたって言ってたな。"
         )
         status = "source_backed"
@@ -208,7 +264,18 @@ def build_local_fact_certificate_p4(user_input: str, memory_data: dict | None) -
             status = "source_value_outside_surface_budget"
             value = source_type = trace_id = memory_id = None
     else:
+        conflicting_places_reply = "そっち、場所を二つ言ってる。今はどっちに決めた？"
+        if query["slot"] == "prior_user_decided_place" and len(values) == 2:
+            named_conflict = f"{values[0]}と{values[1]}、どっちが今の決定？"
+            if len(named_conflict) <= MAX_AUTHORIZED_CORE_CHARS:
+                conflicting_places_reply = named_conflict
+        elif query["slot"] == "prior_user_decided_place" and len(values) > 2:
+            conflicting_places_reply = "場所をいくつか言ってる。今はどれに決めた？"
         reply = (
+            conflicting_places_reply
+            if query["slot"] == "prior_user_decided_place" and values else
+            "そっちが決めた場所は、まだ確認できないな。"
+            if query["slot"] == "prior_user_decided_place" else
             f"{query['subject']}が何時からか、今の会話だけじゃ分からないな。"
             if query["slot"] == "local_start_time" else
             f"{query['subject']}の置き場は、今の会話だけじゃ分からないな。"
@@ -227,11 +294,22 @@ def build_local_fact_certificate_p4(user_input: str, memory_data: dict | None) -
         "source_trace_id": trace_id, "source_memory_id": memory_id,
         "authorized_reply": reply, "authorized_reply_sha256": _sha(reply),
     }
+    binding_fields = (
+        "input_sha256", "slot", "subject", "status", "admitted_value",
+        "source_channel", "source_trace_id", "authorized_reply_sha256",
+    )
+    if query["slot"] == "prior_user_decided_place":
+        cert.update({
+            "source_user_sha256": (
+                chosen["source_user_sha256"] if len(values) == 1 and status == "source_backed"
+                else None
+            ),
+            "admitted_source_trace_ids": [row["trace_id"] for row in matches[:8]],
+            "admitted_source_user_sha256s": [row["source_user_sha256"] for row in matches[:8]],
+        })
+        binding_fields += ("source_user_sha256", "admitted_source_user_sha256s")
     cert["binding_sha256"] = _sha(json.dumps({
-        key: cert.get(key) for key in (
-            "input_sha256", "slot", "subject", "status", "admitted_value",
-            "source_channel", "source_trace_id", "authorized_reply_sha256",
-        )
+        key: cert.get(key) for key in binding_fields
     }, sort_keys=True, ensure_ascii=False))
     return cert
 
@@ -277,7 +355,11 @@ def cognitive_tick_with_local_fact_answer_authority_p4(self, event):
         "relevance": 1.0,
     } if source_backed else {})
     logic.update({
-        "reply_goal": "使用者が話した範囲だけで、開始時刻または置き場を短く答える",
+        "reply_goal": (
+            "使用者自身が決めた場所を、直接発話の範囲だけで短く答える"
+            if cert["slot"] == "prior_user_decided_place" else
+            "使用者が話した範囲だけで、開始時刻または置き場を短く答える"
+        ),
         "jp_summary": core, "core_message_jp": core,
         "planner_path": PLANNER_PATH, "candidate_label": LABEL,
         "response_mode": "direct_answer", "surface_act": "plain_reply",
@@ -289,7 +371,11 @@ def cognitive_tick_with_local_fact_answer_authority_p4(self, event):
         "memory_speakability_reason": "source_certificate_controls_answer",
         "memory_gravity": 1.0 if source_backed else 0.0,
         "memory_use_expected": source_backed,
-        "user_belief": "開始時刻か置き場を聞いている。",
+        "user_belief": (
+            "前に自分で決めた場所を聞いている。"
+            if cert["slot"] == "prior_user_decided_place" else
+            "開始時刻か置き場を聞いている。"
+        ),
         "my_hidden_knowledge": "確認できる User 発話以外は断定しない。",
         "user_expectation": "根拠のある短い返答。",
         "internal_monologue": "", "bayes_candidates": [],
@@ -369,6 +455,64 @@ def cognitive_tick_with_local_fact_answer_authority_p4(self, event):
     return tick
 
 
+def _history_snapshot(right_brain, logic_data: dict) -> dict | None:
+    history = getattr(right_brain, "history", None)
+    names = (
+        "reply_variant_counts", "intent_variant_counts",
+        "normalized_reply_counts", "intent_normalized_counts",
+    )
+    counters = {name: getattr(right_brain, name, None) for name in names}
+    if (not isinstance(history, list)
+            or any(not isinstance(counter, dict) for counter in counters.values())
+            or not callable(getattr(right_brain, "_remember_turn", None))):
+        return None
+    return {
+        "right_brain": right_brain, "logic_id": id(logic_data),
+        "history": deepcopy(history),
+        "counters": {name: deepcopy(counter) for name, counter in counters.items()},
+    }
+
+
+def _commit_visible_history(right_brain, logic_data: dict, user_input: str, selected: str) -> str:
+    """For this new slot only, replace pre-guard speech with the visible reply."""
+    tx = _ACTIVE_HISTORY_TRANSACTION.get()
+    if (not isinstance(tx, dict) or tx.get("right_brain") is not right_brain
+            or tx.get("logic_id") != id(logic_data)):
+        return "transaction_context_unavailable"
+    history = getattr(right_brain, "history", None)
+    if not isinstance(history, list):
+        return "history_unavailable"
+    counters = {name: getattr(right_brain, name, None) for name in tx["counters"]}
+    if any(not isinstance(counter, dict) for counter in counters.values()):
+        return "counter_receipt_unavailable"
+    history[:] = deepcopy(tx["history"])
+    for name, counter in counters.items():
+        counter.clear()
+        counter.update(deepcopy(tx["counters"][name]))
+    # The selected plan's jp_summary is the authorized *assistant* answer.
+    # Never record it in the history entry labelled as a User utterance.
+    right_brain._remember_turn(
+        str(user_input or ""), selected,
+        str(logic_data.get("intent") or "chat"),
+    )
+    return "pre_guard_speech_rolled_back_final_visible_committed"
+
+
+def emit_response_with_local_fact_answer_authority_p4(self, event, tick_result):
+    logic = (tick_result or {}).get("logic") or {}
+    cert = logic.get(LABEL) or {}
+    tx = (
+        _history_snapshot(getattr(self, "right_brain", None), logic)
+        if cert.get("selected_status") == "source_authorized_plan_selected"
+        and cert.get("slot") == "prior_user_decided_place" else None
+    )
+    token = _ACTIVE_HISTORY_TRANSACTION.set(tx)
+    try:
+        return _ORIGINAL_EMIT(self, event, tick_result)
+    finally:
+        _ACTIVE_HISTORY_TRANSACTION.reset(token)
+
+
 def visible_guard_with_local_fact_answer_authority_p4(self, reply, logic_data, user_input="", memory_data=None):
     visible = _ORIGINAL_VISIBLE_GUARD(self, reply, logic_data, user_input=user_input, memory_data=memory_data)
     if not isinstance(logic_data, dict):
@@ -404,6 +548,10 @@ def visible_guard_with_local_fact_answer_authority_p4(self, reply, logic_data, u
     receipt["pre_authority_surface_sha256"] = _sha(visible)
     receipt["final_visible_surface_sha256"] = _sha(selected)
     receipt["final_visible_surface_matches_contract"] = selected == fresh.get("authorized_reply")
+    if bound.get("slot") == "prior_user_decided_place":
+        receipt["right_brain_history_surface_status"] = _commit_visible_history(
+            self, logic_data, user_input, selected,
+        )
     logic_data[LABEL] = receipt
     guard = deepcopy(logic_data.get("visible_language_guard") or {})
     original_reply = str(guard.get("original_reply") or reply or "")
@@ -478,7 +626,7 @@ def install_local_fact_answer_authority_p4() -> bool:
         return finish(self, _ORIGINAL_RUN(self, user_input, input_context=input_context))
 
     def emit(self, event, tick_result):
-        return finish(self, _ORIGINAL_EMIT(self, event, tick_result))
+        return finish(self, emit_response_with_local_fact_answer_authority_p4(self, event, tick_result))
 
     UruhaBrainV4_Mac.run_turn_debug = run
     UruhaBrainV4_Mac.emit_response_if_ready = emit
@@ -489,6 +637,7 @@ def install_local_fact_answer_authority_p4() -> bool:
 __all__ = [
     "LABEL", "SCHEMA", "PLANNER_PATH", "classify_local_fact_query_p4",
     "build_local_fact_certificate_p4", "cognitive_tick_with_local_fact_answer_authority_p4",
+    "emit_response_with_local_fact_answer_authority_p4",
     "visible_guard_with_local_fact_answer_authority_p4",
     "materialize_local_fact_answer_authority_p4", "install_local_fact_answer_authority_p4",
 ]
