@@ -1,7 +1,10 @@
 import json
+import hashlib
+import hmac
 import inspect
 import os
 import re
+import secrets
 import stat
 import subprocess
 import sys
@@ -229,6 +232,9 @@ WEB_LOG_JSONL = os.path.abspath(
 WEB_LOG_TXT = os.path.abspath(
     os.getenv("URUHA_WEB_LOG_TXT_PATH", WEB_CONVERSATION_LOG_TXT_PATH)
 )
+_BROWSER_GRAPH_RECEIPT_SCHEMA = "uruha_browser_graph_receipt_v1"
+_BROWSER_GRAPH_HMAC_KEY = secrets.token_bytes(32)
+_BROWSER_GRAPH_MAX_ROW_BYTES = 16 * 1024 * 1024
 WEB_HEAD = """
 <script>
 (() => {
@@ -1911,6 +1917,153 @@ def _latest_observatory_result():
     return {}
 
 
+def _browser_graph_tombstone():
+    # BrowserState 6.5.1 does not persist falsy values on reset. A truthy,
+    # unauthorized replacement is therefore required to invalidate a receipt.
+    return {"schema": _BROWSER_GRAPH_RECEIPT_SCHEMA, "cleared": True}
+
+
+def _latest_private_log_row():
+    """Read only the last complete JSONL row through one verified file handle.
+
+    The historical observatory helper scans backward past bad rows. That is
+    useful for offline inspection but unsafe for browser-bound page hydration.
+    """
+    try:
+        directory = os.stat(os.path.dirname(WEB_LOG_JSONL), follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(directory.st_mode)
+            or directory.st_uid != os.getuid()
+            or stat.S_IMODE(directory.st_mode) & 0o077
+        ):
+            return None
+        fd = os.open(WEB_LOG_JSONL, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        with os.fdopen(fd, "rb") as handle:
+            before = os.fstat(handle.fileno())
+            if (
+                not stat.S_ISREG(before.st_mode)
+                or before.st_uid != os.getuid()
+                or stat.S_IMODE(before.st_mode) & 0o077
+                or before.st_nlink != 1
+                or before.st_size < 2
+            ):
+                return None
+            handle.seek(before.st_size - 1)
+            if handle.read(1) != b"\n":
+                return None
+            remaining = before.st_size - 1
+            chunks = []
+            row_bytes = 0
+            while remaining > 0:
+                take = min(65536, remaining)
+                start = remaining - take
+                handle.seek(start)
+                chunk = handle.read(take)
+                if len(chunk) != take:
+                    return None
+                previous_newline = chunk.rfind(b"\n")
+                part = chunk[previous_newline + 1:] if previous_newline >= 0 else chunk
+                row_bytes += len(part)
+                if row_bytes > _BROWSER_GRAPH_MAX_ROW_BYTES:
+                    return None
+                chunks.append(part)
+                if previous_newline >= 0:
+                    break
+                remaining = start
+            raw_row = b"".join(reversed(chunks))
+            after = os.fstat(handle.fileno())
+            if (
+                not raw_row
+                or before.st_size != after.st_size
+                or before.st_mtime_ns != after.st_mtime_ns
+                or before.st_ctime_ns != after.st_ctime_ns
+            ):
+                return None
+        record = json.loads(raw_row.decode("utf-8"))
+        if not isinstance(record, dict):
+            return None
+        return record, raw_row
+    except (OSError, UnicodeDecodeError, ValueError, TypeError):
+        return None
+
+
+def _mint_browser_graph_receipt(client_record, expected_session_id):
+    """Authorize only the private, latest, delivered User row for this browser."""
+    if not isinstance(client_record, dict) or not isinstance(expected_session_id, str):
+        return _browser_graph_tombstone()
+    if not expected_session_id or expected_session_id != RUNTIME._session_id:
+        return _browser_graph_tombstone()
+    latest = _latest_private_log_row()
+    if latest is None:
+        return _browser_graph_tombstone()
+    record, raw_row = latest
+    session_id = record.get("session_id")
+    turn_index = record.get("turn_index")
+    if (
+        session_id != expected_session_id
+        or client_record.get("session_id") != session_id
+        or type(turn_index) is not int
+        or turn_index < 1
+        or client_record.get("turn_index") != turn_index
+        or RUNTIME._turn_index != turn_index
+        or record.get("input_mode") not in {"text", "audio"}
+        or client_record.get("user_text") != record.get("user_text")
+        or client_record.get("assistant_reply") != record.get("assistant_reply")
+    ):
+        return _browser_graph_tombstone()
+    return {
+        "schema": _BROWSER_GRAPH_RECEIPT_SCHEMA,
+        "session_id": session_id,
+        "turn_index": turn_index,
+        "mac": hmac.new(_BROWSER_GRAPH_HMAC_KEY, raw_row, hashlib.sha256).hexdigest(),
+    }
+
+
+def _load_browser_graph(receipt):
+    """Hydrate one verified current graph; never scan to a previous positive."""
+    empty = _empty_flow_html("本瀏覽器尚無可驗證的本輪圖像。")
+    if not isinstance(receipt, dict) or set(receipt) != {
+        "schema", "session_id", "turn_index", "mac"
+    }:
+        return empty
+    if receipt.get("schema") != _BROWSER_GRAPH_RECEIPT_SCHEMA:
+        return empty
+    session_id = receipt.get("session_id")
+    turn_index = receipt.get("turn_index")
+    mac = receipt.get("mac")
+    if (
+        not isinstance(session_id, str)
+        or not session_id
+        or type(turn_index) is not int
+        or turn_index < 1
+        or not isinstance(mac, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", mac)
+        or session_id != RUNTIME._session_id
+        or turn_index != RUNTIME._turn_index
+    ):
+        return empty
+    latest = _latest_private_log_row()
+    if latest is None:
+        return empty
+    record, raw_row = latest
+    if (
+        record.get("session_id") != session_id
+        or record.get("turn_index") != turn_index
+        or record.get("input_mode") not in {"text", "audio"}
+        or not hmac.compare_digest(
+            mac,
+            hmac.new(_BROWSER_GRAPH_HMAC_KEY, raw_row, hashlib.sha256).hexdigest(),
+        )
+    ):
+        return empty
+    html = _render_flow_html(_observatory_result_from_log_record(record))
+    # A queued reset or proactive append must not make a graph stale while the
+    # (potentially large) native graph is being rendered.
+    if session_id != RUNTIME._session_id or turn_index != RUNTIME._turn_index:
+        return empty
+    return html
+
+
 def _preview_payload(payload):
     try:
         return json.dumps(payload, ensure_ascii=False, indent=2)
@@ -2756,6 +2909,10 @@ def begin_human_submission(value):
     return RUNTIME.begin_human_turn()
 
 
+def begin_human_submission_with_session(value):
+    return begin_human_submission(value), RUNTIME._session_id
+
+
 def _run_turn(
     user_text,
     auto_tts,
@@ -3214,6 +3371,24 @@ def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0):
         RUNTIME.finish_human_turn()
 
 
+def _with_browser_graph_receipt(stream, expected_session_id):
+    for update in stream:
+        client_record = update[10]
+        if isinstance(client_record, dict) and "session_id" in client_record and "turn_index" in client_record:
+            yield (*update, _mint_browser_graph_receipt(client_record, expected_session_id))
+        else:
+            yield (*update, gr.skip())
+
+
+def submit_text_browser_bound(
+    message, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
+):
+    yield from _with_browser_graph_receipt(
+        submit_text(message, history, auto_tts, frontend_enqueue_started),
+        expected_session_id,
+    )
+
+
 def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started):
     handler_started = time.perf_counter()
     if not audio_path:
@@ -3299,6 +3474,15 @@ def submit_audio(audio_path, history, auto_tts, frontend_enqueue_started=0.0):
         RUNTIME.finish_human_turn()
 
 
+def submit_audio_browser_bound(
+    audio_path, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
+):
+    yield from _with_browser_graph_receipt(
+        submit_audio(audio_path, history, auto_tts, frontend_enqueue_started),
+        expected_session_id,
+    )
+
+
 def handle_audio_stop(
     audio_path,
     history,
@@ -3328,6 +3512,19 @@ def handle_audio_stop(
             RUNTIME.finish_human_turn()
 
 
+def handle_audio_stop_browser_bound(
+    audio_path, history, auto_tts, voice_chat_mode,
+    frontend_enqueue_started=0.0, expected_session_id="",
+):
+    yield from _with_browser_graph_receipt(
+        handle_audio_stop(
+            audio_path, history, auto_tts, voice_chat_mode,
+            frontend_enqueue_started,
+        ),
+        expected_session_id,
+    )
+
+
 def transcribe_audio_only(audio_path):
     if not audio_path:
         return ""
@@ -3339,12 +3536,19 @@ def reset_session():
     return [], [], None, gr.update(value={}), gr.update(value={}), _empty_flow_html("新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), "", ""
 
 
+def reset_session_browser_bound():
+    return (*reset_session(), _browser_graph_tombstone())
+
+
 def build_demo():
     with gr.Blocks(title="UruhaBrain Adaptive Cognition Runtime") as demo:
         history_state = gr.State([])
         latest_turn_state = gr.State({})
         text_enqueue_started_state = gr.State(0.0)
         audio_enqueue_started_state = gr.State(0.0)
+        text_enqueue_session_state = gr.State("")
+        audio_enqueue_session_state = gr.State("")
+        browser_graph_receipt = gr.BrowserState(default_value=_browser_graph_tombstone())
         architecture_payload = _architecture_alignment_payload()
         unified_eval_payload = _unified_eval_json()
 
@@ -3679,7 +3883,7 @@ def build_demo():
                             )
 
                 gr.Markdown("## Live Memory Flow")
-                flow_html = gr.HTML(value=render_memory_observatory(_latest_observatory_result()))
+                flow_html = gr.HTML(value=_empty_flow_html("本瀏覽器尚無可驗證的本輪圖像。"))
                 with gr.Accordion("Cognitive State & Decision Details", open=False):
                     state_html = gr.HTML(value=_empty_html("State Diff", "尚無本輪狀態變化。"))
 
@@ -3894,31 +4098,42 @@ def build_demo():
             queue=False,
         )
 
+        demo.load(
+            fn=_load_browser_graph,
+            inputs=[browser_graph_receipt],
+            outputs=[flow_html],
+            queue=True,
+            show_progress="hidden",
+            api_visibility="private",
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
+        )
+
         text_in.submit(
-            fn=begin_human_submission,
+            fn=begin_human_submission_with_session,
             inputs=[text_in],
-            outputs=[text_enqueue_started_state],
+            outputs=[text_enqueue_started_state, text_enqueue_session_state],
             queue=False,
             show_progress="hidden",
         ).then(
-            fn=submit_text,
-            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state],
-            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status],
+            fn=submit_text_browser_bound,
+            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state, text_enqueue_session_state],
+            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, browser_graph_receipt],
             queue=True,
             concurrency_limit=1,
             concurrency_id="human_turn_m19",
         )
 
         send_btn.click(
-            fn=begin_human_submission,
+            fn=begin_human_submission_with_session,
             inputs=[text_in],
-            outputs=[text_enqueue_started_state],
+            outputs=[text_enqueue_started_state, text_enqueue_session_state],
             queue=False,
             show_progress="hidden",
         ).then(
-            fn=submit_text,
-            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state],
-            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status],
+            fn=submit_text_browser_bound,
+            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state, text_enqueue_session_state],
+            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, browser_graph_receipt],
             queue=True,
             concurrency_limit=1,
             concurrency_id="human_turn_m19",
@@ -3932,40 +4147,42 @@ def build_demo():
         )
 
         send_audio_btn.click(
-            fn=begin_human_submission,
+            fn=begin_human_submission_with_session,
             inputs=[audio_in],
-            outputs=[audio_enqueue_started_state],
+            outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
             queue=False,
             show_progress="hidden",
         ).then(
-            fn=submit_audio,
-            inputs=[audio_in, history_state, auto_tts, audio_enqueue_started_state],
-            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in],
+            fn=submit_audio_browser_bound,
+            inputs=[audio_in, history_state, auto_tts, audio_enqueue_started_state, audio_enqueue_session_state],
+            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in, browser_graph_receipt],
             queue=True,
             concurrency_limit=1,
             concurrency_id="human_turn_m19",
         )
 
         audio_in.stop_recording(
-            fn=begin_human_submission,
+            fn=begin_human_submission_with_session,
             inputs=[audio_in],
-            outputs=[audio_enqueue_started_state],
+            outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
             queue=False,
             show_progress="hidden",
         ).then(
-            fn=handle_audio_stop,
-            inputs=[audio_in, history_state, auto_tts, voice_chat_mode, audio_enqueue_started_state],
-            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in],
+            fn=handle_audio_stop_browser_bound,
+            inputs=[audio_in, history_state, auto_tts, voice_chat_mode, audio_enqueue_started_state, audio_enqueue_session_state],
+            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in, browser_graph_receipt],
             queue=True,
             concurrency_limit=1,
             concurrency_id="human_turn_m19",
         )
 
         reset_btn.click(
-            fn=reset_session,
+            fn=reset_session_browser_bound,
             inputs=None,
-            outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript],
-            queue=False,
+            outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript, browser_graph_receipt],
+            queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         proactive_poll_timer.tick(
