@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_p4_retrospective_decision_actor_fresh_probe_v1",
+  "status": "developer_authored_preimplementation_freeze_not_formal_holdout",
+  "session": "one_fresh_safari_session_C0_to_C9_once_each_zero_retries",
+  "case_order_fixed": ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+  "cases": [
+    {
+      "id": "C0",
+      "user": "私は2049年6月14日に展示用模型を受け渡す場所を藍色の中庭の東門に決めた。",
+      "role": "direct_user_decision_source",
+      "conditional_gold": "Preserve this complete direct-User source; acknowledge it naturally in Japanese without making Uruha the chooser. A known generic clarification is an acknowledgment failure, not excused by later source recall."
+    },
+    {
+      "id": "C1",
+      "user": "2049年6月14日に展示用模型を受け渡す場所を決めたのは、うるは自身だった？",
+      "role": "full_subject_retrospective_actor_positive",
+      "conditional_gold": "If full C0 direct-User source is handed via verified recent_turns or typed direct_episode, final Japanese says User previously said they chose that event, with no Uruha self-attribution or categorical claim that Uruha never acted. If the source is absent, abstain and mark the product actor gate FAIL."
+    },
+    {
+      "id": "C2",
+      "user": "2049年6月14日の場所を決めたのは、うるは自身だった？",
+      "role": "date_only_elliptical_actor_positive_if_unique_event",
+      "conditional_gold": "If and only if exactly one normalized source-supported User event/subject key matches this date, give the same bounded User-reported ownership as C1. Multiple statements about one event may conflict on place; never use date alone to pick among different subjects."
+    },
+    {
+      "id": "C3",
+      "user": "友人が「私は2049年6月15日に展示用模型を受け渡す場所を白い階段の踊り場に決めた」と言ってた。",
+      "role": "friend_quoted_first_person_decoy",
+      "conditional_gold": "Do not turn the friend's quoted decision into a direct decision by current User or Uruha or a factive User profile entry."
+    },
+    {
+      "id": "C4",
+      "user": "2049年6月15日の場所を決めたのは、うるは自身だった？",
+      "role": "third_party_quote_actor_negative",
+      "conditional_gold": "No direct-User source certifies this event. Answer briefly with uncertainty, not User/Uruha ownership. This negative control is covered only if C3's decoy was actually handed to the decision path."
+    },
+    {
+      "id": "C5",
+      "user": "2049年6月16日の場所を決めたのは、うるは自身だった？",
+      "role": "unknown_actor_no_prior_source",
+      "conditional_gold": "No observed decision source exists for this date. Do not infer ownership from the presupposition or invent Uruha's private action; clarify naturally."
+    },
+    {
+      "id": "C6",
+      "user": "私は2049年6月14日に展示用模型を受け渡す場所を緑の回廊の西口に決めた。",
+      "role": "second_direct_user_decision_conflicting_place",
+      "conditional_gold": "Preserve this second complete raw User assertion. Do not treat recency as a retraction of C0 or write either place as an unqualified stable fact."
+    },
+    {
+      "id": "C7",
+      "user": "2049年6月14日の場所を決めたのは、うるは自身だった？",
+      "role": "user_owner_with_two_conflicting_values",
+      "conditional_gold": "If both distinct User sources C0/C6 were handed, keep User-reported ownership without selecting a current place or Uruha ownership; ask which place is current. If either is missing, do not invent it and mark the conflict product gate FAIL."
+    },
+    {
+      "id": "C8",
+      "user": "訂正、私は2049年6月14日に展示用模型を受け渡す場所を赤い展望通路の南端に決めた。",
+      "role": "explicit_user_correction_unresolved_place",
+      "conditional_gold": "Preserve the raw correction. Do not silently replace the earlier claims or install the newest place as unqualified stable profile fact."
+    },
+    {
+      "id": "C9",
+      "user": "2049年6月14日の場所を決めたのは、うるは自身だった？",
+      "role": "correction_aware_owner_question",
+      "conditional_gold": "Do not self-attribute the decision or select an unresolved current place. A bounded correction-aware Japanese clarification is acceptable; prior direct User attribution may be reported only as a past statement, not as current-world truth."
+    }
+  ]
+}
