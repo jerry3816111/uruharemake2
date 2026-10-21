@@ -9,6 +9,7 @@ model invocation, or Safari operation is performed by this controller.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import http.client
 import json
 import os
@@ -19,6 +20,7 @@ import select
 import signal
 import stat
 import subprocess
+import tarfile
 import tempfile
 import time
 
@@ -32,6 +34,14 @@ ROOT = Path(__file__).resolve().parent
 SCHEMA = "uruha_p4_preference_fallback_detached_control_v1"
 CURRENT = "p4_preference_fallback_detached.current.json"
 PREFIX = "p4_preference_fallback_detached."
+PREPARED = "p4_preference_fallback_detached.prepared.json"
+PREPARED_CLAIM = "p4_preference_fallback_detached.prepared-claim.json"
+ONNX_ARCHIVE_SIZE = 83_178_821
+ONNX_ARCHIVE_SHA256 = "913d7300ceae3b2dbc2c50d1de4baacab4be7b9380491c27fab7418616a16ec3"
+ONNX_FILES = frozenset({
+    "config.json", "model.onnx", "special_tokens_map.json",
+    "tokenizer_config.json", "tokenizer.json", "vocab.txt",
+})
 PORT = 7894
 CALIBRATION_CODE = 'print("python-calibrated",flush=True);import time;time.sleep(4)'
 ENTRYPOINT = ROOT / "uruha_web_ui_product_p4_preference_fallback.py"
@@ -126,6 +136,148 @@ def _validate_reuse_tree(root: Path) -> None:
                             raise ControllerError(f"runtime_log_not_private:{child}")
                     else:
                         raise ControllerError(f"runtime_tree_special_file:{child}")
+
+
+def _private_stat(path: Path, *, directory: bool) -> os.stat_result:
+    info = os.lstat(path)
+    wanted = stat.S_ISDIR if directory else stat.S_ISREG
+    if (
+        not wanted(info.st_mode) or info.st_uid != os.getuid()
+        or stat.S_IMODE(info.st_mode) != (0o700 if directory else 0o600)
+        or (not directory and info.st_nlink != 1)
+    ):
+        raise ControllerError(f"prepared_path_not_private:{path}")
+    return info
+
+
+def prepare() -> dict:
+    """Create a controller-owned root without starting Python or touching models."""
+    root, created = base.prepare_runtime_root(None, reuse=False)
+    if not created:
+        raise ControllerError("new_runtime_root_required")
+    base.build_runtime_layout(root)
+    _private_stat(root, directory=True)
+    _private_stat(root / base.MANIFEST_NAME, directory=False)
+    _validate_reuse_tree(root)
+    _private_json(root / PREPARED, {
+        "schema": SCHEMA, "kind": "prepared_first_start", "runtime_root": str(root),
+        "uid": os.getuid(), "mode": "product", "entrypoint": str(ENTRYPOINT),
+        "port": PORT, "prepared_at_unix": time.time(),
+    })
+    return {"ok": True, "runtime_root": str(root), "prepared": True,
+            "started": False, "entrypoint": str(ENTRYPOINT)}
+
+
+def _prepared_root(requested: str) -> Path:
+    given = Path(requested)
+    if given.is_symlink():
+        raise ControllerError("prepared_root_symlink")
+    root = given.resolve(strict=True)
+    temporary_parent = Path(tempfile.gettempdir()).resolve(strict=True)
+    if root.parent != temporary_parent or not root.name.startswith("uruha-product-"):
+        raise ControllerError("prepared_root_not_immediate_temp_child")
+    _private_stat(root, directory=True)
+    _private_stat(root / base.MANIFEST_NAME, directory=False)
+    if not base._valid_launcher_root(root):
+        raise ControllerError("prepared_root_not_launcher_owned")
+    receipt_path = root / PREPARED
+    _private_stat(receipt_path, directory=False)
+    receipt = _read_private_json(receipt_path)
+    if any((
+        receipt.get("schema") != SCHEMA,
+        receipt.get("kind") != "prepared_first_start",
+        receipt.get("runtime_root") != str(root),
+        receipt.get("uid") != os.getuid(),
+        receipt.get("mode") != "product",
+        receipt.get("entrypoint") != str(ENTRYPOINT),
+        receipt.get("port") != PORT,
+    )):
+        raise ControllerError("prepared_receipt_mismatch")
+    if (root / PREPARED_CLAIM).exists() or (root / PREPARED_CLAIM).is_symlink():
+        raise ControllerError("prepared_root_already_claimed")
+    allowed = {base.MANIFEST_NAME, PREPARED, "memory_db", "session_db", "web_logs", ".cache"}
+    if {entry.name for entry in root.iterdir()} - allowed:
+        raise ControllerError("prepared_root_stale_artifacts")
+    for name in ("memory_db", "session_db", "web_logs"):
+        directory = root / name
+        _private_stat(directory, directory=True)
+        if any(directory.iterdir()):
+            raise ControllerError(f"prepared_root_nonempty:{name}")
+    return root
+
+
+def _sha256(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _cache_walk_error(error: OSError) -> None:
+    raise ControllerError("prepared_cache_walk_failed") from error
+
+
+def _validate_prepared_cache(root: Path) -> None:
+    cache = root / ".cache"
+    _private_stat(cache, directory=True)
+    for parent in (cache / "chroma", cache / "chroma" / "onnx_models",
+                   cache / "chroma" / "onnx_models" / "all-MiniLM-L6-v2"):
+        _private_stat(parent, directory=True)
+    model = cache / "chroma" / "onnx_models" / "all-MiniLM-L6-v2"
+    extracted = model / "onnx"
+    _private_stat(extracted, directory=True)
+    # Every cache entry is private and a real inode; no traversal through
+    # aliases, hardlinks, foreign files, or special device nodes is accepted.
+    for directory, dirs, files in os.walk(
+        cache, followlinks=False, onerror=_cache_walk_error
+    ):
+        _private_stat(Path(directory), directory=True)
+        for name in dirs:
+            _private_stat(Path(directory) / name, directory=True)
+        for name in files:
+            _private_stat(Path(directory) / name, directory=False)
+    archive = model / "onnx.tar.gz"
+    private_archive = _private_stat(archive, directory=False)
+    if private_archive.st_size != ONNX_ARCHIVE_SIZE or _sha256(archive) != ONNX_ARCHIVE_SHA256:
+        raise ControllerError("prepared_onnx_archive_size_or_sha_mismatch")
+    host_archive = Path.home() / ".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx.tar.gz"
+    if host_archive.exists():
+        host = os.stat(host_archive)
+        if (host.st_dev, host.st_ino) == (private_archive.st_dev, private_archive.st_ino):
+            raise ControllerError("prepared_onnx_archive_not_independent_inode")
+    if {entry.name for entry in extracted.iterdir()} != ONNX_FILES:
+        raise ControllerError("prepared_onnx_extracted_file_set_mismatch")
+    try:
+        with tarfile.open(archive, "r:gz") as stream:
+            members = stream.getmembers()
+            actual = {member.name for member in members if member.isfile()}
+            if actual != {f"onnx/{name}" for name in ONNX_FILES} or any(
+                not (member.isfile() or member.name == "onnx" and member.isdir())
+                for member in members
+            ):
+                raise ControllerError("prepared_onnx_archive_members_mismatch")
+            for name in ONNX_FILES:
+                target = extracted / name
+                _private_stat(target, directory=False)
+                member = stream.getmember(f"onnx/{name}")
+                source = stream.extractfile(member)
+                if source is None:
+                    raise ControllerError("prepared_onnx_archive_member_unreadable")
+                digest = hashlib.sha256()
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    digest.update(chunk)
+                if target.stat().st_size != member.size or _sha256(target) != digest.hexdigest():
+                    raise ControllerError(f"prepared_onnx_extracted_content_mismatch:{name}")
+    except tarfile.TarError as exc:
+        raise ControllerError("prepared_onnx_archive_unreadable") from exc
+
+
+def _claim_prepared_root(root: Path) -> None:
+    try:
+        _private_json(root / PREPARED_CLAIM, {
+            "schema": SCHEMA, "runtime_root": str(root), "uid": os.getuid(),
+            "entrypoint": str(ENTRYPOINT), "claimed_at_unix": time.time(),
+        })
+    except FileExistsError as exc:
+        raise ControllerError("prepared_root_already_claimed") from exc
 
 
 def _root(requested: str) -> tuple[Path, dict]:
@@ -422,15 +574,28 @@ def _cleanup_failed_start(
 
 
 def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = None,
-          seconds: int = 60) -> dict:
+          prepared_runtime_root: str | None = None, seconds: int = 60) -> dict:
     if mode not in ("product", "inert"):
         raise ControllerError("invalid_mode")
+    if prepared_runtime_root is not None and (
+        mode != "product" or reuse_runtime_root is not None
+    ):
+        raise ControllerError("prepared_start_product_only_and_exclusive")
     if mode == "product" and not python:
         raise ControllerError("explicit_product_python_required")
     if mode == "inert" and not 2 <= seconds <= 180:
         raise ControllerError("inert_seconds_out_of_range")
-    _require_vacant()
-    if reuse_runtime_root is None:
+    if prepared_runtime_root is None:
+        _require_vacant()
+    if prepared_runtime_root is not None:
+        root = _prepared_root(prepared_runtime_root)
+        # One-use claim is recorded before any model import/preflight process.
+        # Failure after this point requires a new prepared root.
+        _claim_prepared_root(root)
+        _validate_prepared_cache(root)
+        _require_vacant()
+        previous_run = None
+    elif reuse_runtime_root is None:
         root, created = base.prepare_runtime_root(None, reuse=False)
         if not created:
             raise ControllerError("new_runtime_root_required")
@@ -481,6 +646,8 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
             raise ControllerError("preflight_python_changed")
         if launcher.ENTRYPOINT != ENTRYPOINT:
             raise ControllerError("product_entrypoint_changed")
+        if prepared_runtime_root is not None:
+            _validate_prepared_cache(root)
     else:
         profile = sandbox.write_sandbox_profile(root)
         env = launchd._isolated_env(layout, port=PORT)
@@ -502,6 +669,8 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
     with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
         os.chmod(stdout_path, 0o600)
         os.chmod(stderr_path, 0o600)
+        if prepared_runtime_root is not None:
+            _validate_prepared_cache(root)
         process = subprocess.Popen(
             command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
             stdout=stdout, stderr=stderr, close_fds=True,
@@ -728,17 +897,21 @@ def stop(requested: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=("start", "status", "verify-ready", "stop"))
+    parser.add_argument("action", choices=("prepare", "start", "status", "verify-ready", "stop"))
     parser.add_argument("--mode", choices=("product", "inert"), default="product")
     parser.add_argument("--python")
     parser.add_argument("--runtime-root")
     parser.add_argument("--reuse-runtime-root")
+    parser.add_argument("--prepared-runtime-root")
     parser.add_argument("--seconds", type=int, default=60)
     args = parser.parse_args(argv)
     try:
-        if args.action == "start":
+        if args.action == "prepare":
+            result = prepare()
+        elif args.action == "start":
             result = start(mode=args.mode, python=args.python,
                            reuse_runtime_root=args.reuse_runtime_root,
+                           prepared_runtime_root=args.prepared_runtime_root,
                            seconds=args.seconds)
         else:
             if not args.runtime_root:
