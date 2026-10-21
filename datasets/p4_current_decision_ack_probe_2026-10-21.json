@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_p4_current_decision_ack_fresh_probe_v1",
+  "status": "developer_authored_preimplementation_freeze_not_formal_holdout",
+  "session": "one_fresh_safari_session_D0_to_D10_once_each_zero_retries",
+  "case_order_fixed": ["D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10"],
+  "cases": [
+    {
+      "id": "D0",
+      "user": "私は2052年4月23日に研究展示の模型を引き渡す場所を琥珀色の回廊の北口に決めた。",
+      "role": "direct_user_decision_source_positive",
+      "conditional_gold": "Natural Japanese acknowledgment of this complete current User decision with explicit User, not Uruha, ownership and the source place; no generic request for more detail or stable profile fact."
+    },
+    {
+      "id": "D1",
+      "user": "2052年4月23日に研究展示の模型を引き渡す場所を決めたのは、うるは自身だった？",
+      "role": "retrospective_actor_regression_positive",
+      "conditional_gold": "If D0 is handed as a verified direct User turn, report that User said they chose it; do not make Uruha the chooser or prove Uruha never acted."
+    },
+    {
+      "id": "D2",
+      "user": "友人が「私は2052年4月24日に研究展示の模型を引き渡す場所を黒い塔の前に決めた」と言ってた。",
+      "role": "friend_quoted_first_person_negative",
+      "conditional_gold": "Do not apply direct-User decision acknowledgment to the friend's first person; preserve friend attribution and avoid a stable User profile fact."
+    },
+    {
+      "id": "D3",
+      "user": "2052年4月24日の場所を決めたのは、うるは自身だった？",
+      "role": "friend_event_actor_regression_negative",
+      "conditional_gold": "If D2 is handed, its quote still certifies neither User nor Uruha ownership; answer with bounded uncertainty."
+    },
+    {
+      "id": "D4",
+      "user": "私は2052年4月23日に研究展示の模型を引き渡す場所を銀色の渡り廊下の西端に決めた。",
+      "role": "second_direct_user_decision_conflicting_place_positive",
+      "conditional_gold": "Naturally acknowledge this exact User-reported decision and place without attributing it to Uruha, silently retracting D0, or installing either place as unqualified stable fact."
+    },
+    {
+      "id": "D5",
+      "user": "2052年4月23日の場所を決めたのは、うるは自身だった？",
+      "role": "two_user_values_actor_regression",
+      "conditional_gold": "If both D0 and D4 are handed, retain User-reported ownership, expose two place claims and ask which is current; do not pick by recency or self-attribute."
+    },
+    {
+      "id": "D6",
+      "user": "訂正、私は2052年4月23日に研究展示の模型を引き渡す場所を青い水門の東側に決めた。",
+      "role": "explicit_user_correction_reported_positive",
+      "conditional_gold": "Naturally acknowledge a current User correction as a report, not an unqualified new world fact; preserve raw correction and earlier claims, with no automatic supersession or stable profile write. Score separately from ordinary decision acknowledgment."
+    },
+    {
+      "id": "D7",
+      "user": "2052年4月23日の場所を決めたのは、うるは自身だった？",
+      "role": "correction_aware_actor_regression",
+      "conditional_gold": "Do not self-attribute or select any unresolved current place. Bounded correction-aware uncertainty is acceptable."
+    },
+    {
+      "id": "D8",
+      "user": "私は2052年4月25日に研究展示の模型を引き渡す場所を緑のテラスに決めたかもしれない。",
+      "role": "uncertain_user_statement_negative",
+      "conditional_gold": "Do not authorize the certain direct-decision acknowledgment or turn the uncertainty into a stable place fact; any final answer must remain natural Japanese and actor-correct."
+    },
+    {
+      "id": "D9",
+      "user": "私は2053年7月9日に音声展示の集合場所を橙色の温室の南口に決めた。",
+      "role": "different_event_direct_user_decision_positive",
+      "conditional_gold": "Naturally acknowledge the new User-reported decision and source place, not Uruha's act; demonstrate the same mechanism on a second unrelated event."
+    },
+    {
+      "id": "D10",
+      "user": "2053年7月9日の場所を決めたのは、うるは自身だった？",
+      "role": "different_event_actor_regression_positive_if_unique",
+      "conditional_gold": "If D9 is handed and uniquely matches this date, report only that User previously said they decided; never infer Uruha's private action or borrow the 2052 event."
+    }
+  ]
+}
