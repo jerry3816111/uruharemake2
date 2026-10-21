@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 from copy import deepcopy
+from datetime import date
 import hashlib
 import json
 import re
@@ -22,6 +23,7 @@ LABEL = "local_fact_answer_authority_p4"
 SCHEMA = "uruha_local_fact_answer_authority_p4_v1"
 PLANNER_PATH = "local_fact_answer_authority_p4"
 MAX_AUTHORIZED_CORE_CHARS = 40
+MAX_ACTOR_SOURCE_ROWS = 8
 _INSTALLED = False
 _ORIGINAL_TICK = None
 _ORIGINAL_VISIBLE_GUARD = None
@@ -36,6 +38,11 @@ _USER_DECIDED_PLACE_QUERY = re.compile(
     r"(?P<subject>[^「」『』!?？。]{2,72})[、,](?:さっき)?私が決めたのは"
     r"どこ(?:だっけ|だった)?[?？]$"
 )
+_USER_DECISION_ACTOR_QUERY = re.compile(
+    r"(?P<subject>[^「」『』!?？。]{2,72})を決めたのは[、,]?"
+    r"(?:うるは|一ノ瀬うるは)(?:自身)?(?:だった|なの|だっけ)[?？]$"
+)
+_DATE_ANCHOR = re.compile(r"(?P<year>\d{4})年(?P<month>\d{1,2})月(?P<day>\d{1,2})日")
 _TIME_ASSERTION = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})は(?P<value>[0-2]?[0-9]時(?:[0-5]?[0-9]分)?)から始まる[。.]?$")
 _PLACE_ASSERTION = re.compile(r"(?P<subject>[^「」『』!?？。]{2,40})は(?P<value>[^「」『』!?？。]{1,40})に置いた[。.]?$")
 _USER_DECIDED_PLACE_ASSERTION = re.compile(
@@ -73,6 +80,17 @@ def _norm(value: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", str(value or "")).strip())
 
 
+def _valid_date_anchor(subject: str) -> str | None:
+    match = _DATE_ANCHOR.match(subject)
+    if not match:
+        return None
+    try:
+        date(int(match.group("year")), int(match.group("month")), int(match.group("day")))
+    except ValueError:
+        return None
+    return match.group(0)
+
+
 def classify_local_fact_query_p4(user_input: str) -> dict:
     raw = str(user_input or "")
     text = _norm(raw)
@@ -89,10 +107,27 @@ def classify_local_fact_query_p4(user_input: str) -> dict:
         ("local_placement", _PLACE_QUERY),
         ("local_placement", _PLACE_QUERY_ALT),
         ("prior_user_decided_place", _USER_DECIDED_PLACE_QUERY),
+        ("prior_user_decision_actor", _USER_DECISION_ACTOR_QUERY),
     ):
         match = pattern.fullmatch(text)
         if match:
             subject = match.group("subject").strip()
+            if slot == "prior_user_decision_actor":
+                anchor = _valid_date_anchor(subject)
+                mode = (
+                    "date_only" if anchor and subject == f"{anchor}の場所" else
+                    "full" if anchor and subject.startswith(f"{anchor}に")
+                    and subject.endswith("場所") else None
+                )
+                if (mode and len(subject) <= 48
+                        and not _UNSUPPORTED_ASSERTION.search(subject)
+                        and not _SENSITIVE_SUBJECT.search(subject)
+                        and not _SENSITIVE_PRIOR_DECISION.search(subject)):
+                    return {**base, "eligible": True, "slot": slot,
+                            "subject": subject, "date_anchor": anchor,
+                            "subject_mode": mode,
+                            "reason": "bounded_retrospective_decision_actor_question"}
+                continue
             subject_limit = 48 if slot == "prior_user_decided_place" else 18
             if (subject and len(subject) <= subject_limit
                     and (slot != "prior_user_decided_place" or subject.endswith("場所"))
@@ -211,11 +246,193 @@ def _handed_user_sources(memory_data: dict) -> tuple[list[dict], dict]:
     return sources, audit
 
 
+def _actor_source_scope(query: dict, subject: str) -> bool:
+    anchor = query.get("date_anchor")
+    if (not anchor or not subject.startswith(f"{anchor}に")
+            or not subject.endswith("場所")
+            or len(_DATE_ANCHOR.findall(subject)) != 1):
+        return False
+    return query.get("subject_mode") == "date_only" or subject == query.get("subject")
+
+
+def _actor_source_subject(query: dict, subject: str) -> bool:
+    return bool(
+        _actor_source_scope(query, subject)
+        and not _UNSUPPORTED_ASSERTION.search(subject)
+        and not _SENSITIVE_SUBJECT.search(subject)
+        and not _SENSITIVE_PRIOR_DECISION.search(subject)
+    )
+
+
+def _unsafe_actor_value(value: str) -> bool:
+    return bool(
+        _UNSUPPORTED_ASSERTION.search(value)
+        or _SENSITIVE_SUBJECT.search(value)
+        or _SENSITIVE_PRIOR_DECISION.search(value)
+    )
+
+
+def _actor_episode_identity_conflicts(memory_data: dict) -> dict:
+    """A handed episode UUID cannot authenticate two different raw records."""
+    provenance = (memory_data or {}).get("memory_provenance") or {}
+    passed_ids = set(provenance.get("passed_to_leftbrain_trace_ids") or [])
+    grouped = {}
+    for row in provenance.get("passed_to_leftbrain") or []:
+        if not isinstance(row, dict) or row.get("source") != "episode":
+            continue
+        if row.get("channel") != "direct_episode":
+            continue
+        memory_id = str(row.get("memory_id") or "")
+        trace_id = str(row.get("trace_id") or "")
+        if not memory_id or trace_id != f"stored:episode:{memory_id}" or trace_id not in passed_ids:
+            continue
+        grouped.setdefault(memory_id, set()).add(_sha(str(row.get("text") or "")))
+    conflicting = {key: values for key, values in grouped.items() if len(values) > 1}
+    identifiers = sorted(conflicting)
+    return {
+        "duplicate_episode_conflict_count": len(identifiers),
+        "duplicate_episode_trace_ids": [f"stored:episode:{key}" for key in identifiers[:MAX_ACTOR_SOURCE_ROWS]],
+        "duplicate_episode_conflict_sha256": _sha(json.dumps(
+            [(key, sorted(conflicting[key])) for key in identifiers],
+            sort_keys=True, ensure_ascii=False,
+        )),
+    }
+
+
+def _prior_user_actor_certificate(query: dict, sources: list[dict], audit: dict,
+                                  identity: dict) -> dict:
+    """A User's raw claim licenses its reported owner, not a world-state fact."""
+    matches = {}
+    corrections = {}
+    unsafe = {}
+    for source in sources:
+        raw = str(source.get("user") or "")
+        text = _norm(raw)
+        correction = _PRIOR_DECISION_CORRECTION.fullmatch(text)
+        if correction and _actor_source_scope(query, correction.group("subject").strip()):
+            if (not _actor_source_subject(query, correction.group("subject").strip())
+                    or _unsafe_actor_value(correction.group("value"))):
+                row = {**source, "source_user_sha256": _sha(raw)}
+                unsafe[row["source_user_sha256"]] = row
+                continue
+            correction_row = {
+                **source,
+                "subject": correction.group("subject").strip(),
+                "source_user_sha256": _sha(raw),
+            }
+            digest = correction_row["source_user_sha256"]
+            if digest not in corrections or source["source_channel"] == "direct_episode":
+                corrections[digest] = correction_row
+        claim = _USER_DECIDED_PLACE_ASSERTION.fullmatch(text)
+        if not claim:
+            continue
+        subject = claim.group("subject").strip()
+        if not _actor_source_scope(query, subject):
+            continue
+        value = (
+            _direct_user_assertion(raw, "prior_user_decided_place", subject)
+            if _actor_source_subject(query, subject) else None
+        )
+        if value is None:
+            row = {**source, "source_user_sha256": _sha(raw)}
+            unsafe[row["source_user_sha256"]] = row
+            continue
+        row = {**source, "subject": subject, "value": value,
+               "source_user_sha256": _sha(raw)}
+        digest = row["source_user_sha256"]
+        if digest not in matches or row["source_channel"] == "direct_episode":
+            matches[digest] = row
+    admitted = list(matches.values())
+    corrected = list(corrections.values())
+    unadmitted = list(unsafe.values())
+    correction_seen = bool(corrected)
+    subjects = sorted({row["subject"] for row in admitted + corrected})
+    values = sorted({row["value"] for row in admitted})
+    if identity["duplicate_episode_conflict_count"]:
+        status = "source_identity_conflict"
+        reply = "その件、誰が決めたかは今の記録じゃ確認できないな。"
+    elif len(admitted) + len(corrected) + len(unadmitted) > MAX_ACTOR_SOURCE_ROWS:
+        status = "actor_source_overflow"
+        reply = "その件、誰が決めたかは今の記録じゃ確認できないな。"
+    elif unadmitted:
+        status = "unadmitted_user_actor_source"
+        reply = "その件、誰が決めたかは今の記録じゃ確認できないな。"
+    elif len(subjects) > 1:
+        status = "ambiguous_user_event"
+        reply = "その日、決めた場所の話が複数ある。どれのこと？"
+    elif correction_seen:
+        status = "unresolved_user_correction"
+        reply = "訂正があったし、うちが決めたとは確認できないな。"
+    elif len(values) > 1:
+        status = "conflicting_user_values"
+        reply = (
+            "そっちが決めた話は二つある。今の場所、どっち？"
+            if len(values) == 2 else
+            "そっちが決めた話がいくつかある。今はどれ？"
+        )
+    elif admitted:
+        status = "source_backed_user_actor"
+        reply = "前にそっちが決めたって話してたよ。うちが決めたとは確認できないな。"
+    else:
+        status = "no_admitted_user_actor_source"
+        reply = "その件、誰が決めたかは今の記録じゃ確認できないな。"
+    if len(reply) > MAX_AUTHORIZED_CORE_CHARS:
+        status = "reply_outside_surface_budget"
+        reply = "ん、今は正確に答えられないな。"
+    chosen = admitted[0] if status == "source_backed_user_actor" else None
+    cert = {
+        **query, **audit, **identity, "status": status, "selected_status": "pending",
+        "admitted_source_count": len(admitted),
+        "distinct_value_count": len(values), "admitted_subjects": subjects[:MAX_ACTOR_SOURCE_ROWS],
+        "admitted_value": None,
+        "source_channel": chosen["source_channel"] if chosen else None,
+        "source_trace_id": chosen["trace_id"] if chosen else None,
+        "source_memory_id": chosen["memory_id"] if chosen else None,
+        "source_user_sha256": chosen["source_user_sha256"] if chosen else None,
+        "admitted_source_trace_ids": [row["trace_id"] for row in admitted[:MAX_ACTOR_SOURCE_ROWS]],
+        "admitted_source_user_sha256s": [row["source_user_sha256"] for row in admitted[:MAX_ACTOR_SOURCE_ROWS]],
+        "correction_source_count": len(corrected),
+        "correction_source_trace_ids": [row["trace_id"] for row in corrected[:MAX_ACTOR_SOURCE_ROWS]],
+        "correction_source_user_sha256s": [row["source_user_sha256"] for row in corrected[:MAX_ACTOR_SOURCE_ROWS]],
+        "unadmitted_source_count": len(unadmitted),
+        "unadmitted_source_trace_ids": [row["trace_id"] for row in unadmitted[:MAX_ACTOR_SOURCE_ROWS]],
+        "unadmitted_source_user_sha256s": [row["source_user_sha256"] for row in unadmitted[:MAX_ACTOR_SOURCE_ROWS]],
+        "authorized_reply": reply, "authorized_reply_sha256": _sha(reply),
+        "reported_user_ownership_only": status in {
+            "source_backed_user_actor", "conflicting_user_values",
+        },
+        "uruha_private_action_inferred": False,
+        "current_place_selected": False,
+        "correction_seen": correction_seen,
+    }
+    cert["binding_sha256"] = _sha(json.dumps({
+        key: cert.get(key) for key in (
+            "input_sha256", "slot", "subject", "date_anchor", "subject_mode",
+            "status", "admitted_subjects", "admitted_source_count",
+            "distinct_value_count", "source_channel", "source_trace_id",
+            "source_user_sha256", "admitted_source_trace_ids",
+            "admitted_source_user_sha256s", "correction_seen",
+            "correction_source_count", "correction_source_trace_ids",
+            "correction_source_user_sha256s",
+            "unadmitted_source_count", "unadmitted_source_trace_ids",
+            "unadmitted_source_user_sha256s",
+            "duplicate_episode_conflict_count", "duplicate_episode_trace_ids",
+            "duplicate_episode_conflict_sha256",
+            "authorized_reply_sha256",
+        )
+    }, sort_keys=True, ensure_ascii=False))
+    return cert
+
+
 def build_local_fact_certificate_p4(user_input: str, memory_data: dict | None) -> dict:
     query = classify_local_fact_query_p4(user_input)
     if not query["eligible"]:
         return query
     sources, audit = _handed_user_sources(memory_data or {})
+    if query["slot"] == "prior_user_decision_actor":
+        return _prior_user_actor_certificate(
+            query, sources, audit, _actor_episode_identity_conflicts(memory_data or {}),
+        )
     unresolved_correction = False
     if query["slot"] == "prior_user_decided_place":
         for source in sources:
@@ -344,18 +561,41 @@ def cognitive_tick_with_local_fact_answer_authority_p4(self, event):
                 "selected_core_sha256": _sha(logic.get("core_message_jp")),
                 "performed_route": str((tick.get("route_info") or {}).get("performed_route") or "")}
     core = cert["authorized_reply"]
-    source_backed = bool(cert["source_trace_id"])
-    source_anchor = ({
-        "kind": "source_bound_local_fact", "source": (
-            "episode" if cert["source_channel"] == "direct_episode" else "recent_turn"
-        ),
-        "trace_id": cert["source_trace_id"], "memory_id": cert["source_memory_id"],
-        "provenance_channel": cert["source_channel"],
-        "jp_anchor": cert["admitted_value"], "terms": [cert["admitted_value"]],
-        "relevance": 1.0,
-    } if source_backed else {})
+    actor_slot = cert["slot"] == "prior_user_decision_actor"
+    source_backed = bool(cert["source_trace_id"] or (
+        actor_slot and cert.get("status") == "conflicting_user_values"
+    ))
+    if actor_slot and source_backed:
+        source_anchor = {
+            "kind": "source_bound_decision_actor", "source": "direct_user_turns",
+            "trace_ids": cert["admitted_source_trace_ids"],
+            "trace_id": cert["source_trace_id"],
+            "memory_id": cert["source_memory_id"],
+            "provenance_channel": cert["source_channel"],
+            # The visible answer reports *who said they decided*, not the
+            # dated subject or either conflicting place value. Keep those
+            # subjects in provenance, while monitor/post-check inspect the
+            # actual bounded ownership phrase the answer is allowed to say.
+            "source_subjects": cert["admitted_subjects"],
+            "jp_anchor": "そっちが決めた",
+            "terms": ["そっちが決めた"], "relevance": 1.0,
+        }
+    elif source_backed:
+        source_anchor = {
+            "kind": "source_bound_local_fact", "source": (
+                "episode" if cert["source_channel"] == "direct_episode" else "recent_turn"
+            ),
+            "trace_id": cert["source_trace_id"], "memory_id": cert["source_memory_id"],
+            "provenance_channel": cert["source_channel"],
+            "jp_anchor": cert["admitted_value"], "terms": [cert["admitted_value"]],
+            "relevance": 1.0,
+        }
+    else:
+        source_anchor = {}
     logic.update({
         "reply_goal": (
+            "決定者を直接の User 発話だけに結びつけ、うるはの未確認行動は断定しない"
+            if actor_slot else
             "使用者自身が決めた場所を、直接発話の範囲だけで短く答える"
             if cert["slot"] == "prior_user_decided_place" else
             "使用者が話した範囲だけで、開始時刻または置き場を短く答える"
@@ -372,6 +612,8 @@ def cognitive_tick_with_local_fact_answer_authority_p4(self, event):
         "memory_gravity": 1.0 if source_backed else 0.0,
         "memory_use_expected": source_backed,
         "user_belief": (
+            "前に誰が場所を決めたかを尋ねている。"
+            if actor_slot else
             "前に自分で決めた場所を聞いている。"
             if cert["slot"] == "prior_user_decided_place" else
             "開始時刻か置き場を聞いている。"
@@ -504,7 +746,9 @@ def emit_response_with_local_fact_answer_authority_p4(self, event, tick_result):
     tx = (
         _history_snapshot(getattr(self, "right_brain", None), logic)
         if cert.get("selected_status") == "source_authorized_plan_selected"
-        and cert.get("slot") == "prior_user_decided_place" else None
+        and cert.get("slot") in {
+            "prior_user_decided_place", "prior_user_decision_actor",
+        } else None
     )
     token = _ACTIVE_HISTORY_TRANSACTION.set(tx)
     try:
@@ -548,7 +792,7 @@ def visible_guard_with_local_fact_answer_authority_p4(self, reply, logic_data, u
     receipt["pre_authority_surface_sha256"] = _sha(visible)
     receipt["final_visible_surface_sha256"] = _sha(selected)
     receipt["final_visible_surface_matches_contract"] = selected == fresh.get("authorized_reply")
-    if bound.get("slot") == "prior_user_decided_place":
+    if bound.get("slot") in {"prior_user_decided_place", "prior_user_decision_actor"}:
         receipt["right_brain_history_surface_status"] = _commit_visible_history(
             self, logic_data, user_input, selected,
         )
