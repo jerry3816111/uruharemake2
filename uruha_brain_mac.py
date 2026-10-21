@@ -10211,7 +10211,10 @@ class RightBrain:
             text = re.sub(r"(?<!一ノ瀬)うるは、", "うち、", text)
             text = re.sub(r"(?<!一ノ瀬)うるは\s", "うち ", text)
             text = text.replace("うちんち", "うち")
-            text = text.replace("私", "うち")
+            # First-person ownership needs the current User/source evidence.
+            # The final visible guard applies a quote-aware persona register
+            # after its bounded User-echo actor check; changing it here would
+            # erase both that evidence and attributed speech in quotations.
         text = text.replace("わかりました", "うん")
         text = text.replace("承知しました", "うん")
         text = text.replace("かしこまりました", "うん")
@@ -10316,6 +10319,25 @@ class RightBrain:
         )
         return allowed
 
+    @staticmethod
+    def _user_visible_quoted_offsets(text):
+        closers = {"「": "」", "『": "』", "“": "”"}
+        all_closers = set(closers.values())
+        offsets = set()
+        stack = []
+        balanced = True
+        for offset, character in enumerate(str(text or "")):
+            if character in closers:
+                stack.append(closers[character])
+            elif character in all_closers:
+                if not stack or character != stack[-1]:
+                    balanced = False
+                else:
+                    stack.pop()
+            if stack:
+                offsets.add(offset)
+        return offsets, bool(balanced and not stack)
+
     def _normalize_user_visible_japanese_surface(self, text):
         text = str(text or "").strip()
         phrase_replacements = (
@@ -10346,9 +10368,10 @@ class RightBrain:
                 text,
                 flags=re.IGNORECASE,
             )
+        quoted_offsets, _ = self._user_visible_quoted_offsets(text)
         text = re.sub(
             r"(?<![一-龠ぁ-んァ-ヶー])私(?=(?:は|が|を|の|も|に|だ|じゃ|、|。|？|！|\s|$))",
-            "うち",
+            lambda match: "私" if match.start() in quoted_offsets else "うち",
             text,
         )
         text = self._localize_model_surface_ascii_terms(text)
@@ -10359,6 +10382,147 @@ class RightBrain:
         text = re.sub(r"[！？]+", lambda match: match.group(0)[0], text)
         text = re.sub(r"(?<=[ぁ-んァ-ヶー一-龠])\s+(?=[ぁ-んァ-ヶー一-龠])", "", text)
         return re.sub(r"\s+", " ", text).strip()
+
+    def _source_bound_user_first_person_surface(self, reply, user_input, logic_data):
+        """Repair only an exact, current-User M32 first-person echo.
+
+        M32's canonical `私` refers to its source User, while `うち` in the
+        final reply would claim the event for Uruha. This bounded check does
+        not infer actor ownership from a model paraphrase or from P4-T's
+        heuristic speaker label. On a plausible but uncertified direct echo,
+        it withholds the attribution rather than fabricating either actor.
+        """
+        reply = str(reply or "").strip()
+        user_input = str(user_input or "").strip()
+        logic_data = logic_data if isinstance(logic_data, dict) else {}
+        source_digest = hashlib.sha256(user_input.encode("utf-8")).hexdigest()
+        trace = {
+            "schema": "uruha_source_bound_user_first_person_surface_p4_v1",
+            "status": "not_applicable",
+            "reason": "no_direct_user_first_person_echo",
+            "source_digest16": source_digest[:16],
+            "source_actor": "unknown",
+            "output_actor": "unchanged",
+            "raw_dialogue_persisted": False,
+            "claim_boundary": "exact current-User M32 echo only; not general actor resolution",
+        }
+        if str(logic_data.get("intent") or "") == "self_intro":
+            return reply, trace
+        # A direct, single User sentence is the only potential owner. Reported
+        # speech, quoted material, questions and corrections are not admitted.
+        direct_user = bool(
+            len(user_input) <= 120
+            and re.fullmatch(r"私は[^「」『』“”\n。！？!?]{2,}[。]?", user_input)
+            and not re.search(r"[はがも]", user_input[len("私は"):])
+            and not re.search(
+                r"[、，]|けど|けれど|一方|そして|また|それに|"
+                r"かも|かもしれ|らしい|聞いた|言ってた|訂正|修正|違う|じゃなく|ではなく|"
+                r"友達|友人|彼女|彼|同僚|母|父|先生|弟|妹|別の人",
+                user_input,
+            )
+        )
+        if "私は" not in user_input or not reply.startswith("私は"):
+            return reply, trace
+        if not reply.endswith(("んだね。", "ね。")):
+            return reply, trace
+
+        trace.update(
+            {
+                "status": "source_unverified",
+                "reason": "direct_echo_certificates_not_verified",
+                "source_actor": "current_user_first_person_candidate",
+                "output_actor": "not_attributed",
+            }
+        )
+        proposition = user_input.rstrip("。")
+        # The opt-in P4 rewrite wrapper attaches its public role certificate
+        # only *after* emit_response_if_ready returns on ordinary-chat turns.
+        # Recompute the same bounded, answer-independent text-role classifier
+        # here from this emit's actual user_input; never borrow a prior role.
+        import uruha_current_turn_source_role_p4 as current_role_p4
+
+        source_role = current_role_p4.classify_current_turn_source_role_p4(user_input)
+        existing_role = logic_data.get("current_turn_source_role_p4")
+        m31 = logic_data.get("semantic_authorization_m31") or {}
+        if existing_role is not None:
+            # A preattached but conflicting role is not silently overridden.
+            if not isinstance(existing_role, dict) or any(
+                existing_role.get(key) != source_role.get(key)
+                for key in ("schema", "raw_input_sha256", "act", "quote_role", "outer_role")
+            ):
+                source_role = {}
+        if not isinstance(m31, dict):
+            m31 = {}
+        m31_candidate = m31.get("m32_repair_candidate") or {}
+        m32 = logic_data.get("semantic_commit_repair_m32") or {}
+        lineage = logic_data.get("mixed_act_lineage_p4") or {}
+        if not isinstance(m31_candidate, dict):
+            m31_candidate = {}
+        if not isinstance(m32, dict):
+            m32 = {}
+        if not isinstance(lineage, dict):
+            lineage = {}
+        event_id = lineage.get("event_id")
+        m31_lineage = lineage.get("m31") or {}
+        m32_lineage = lineage.get("m32") or {}
+        if not isinstance(m31_lineage, dict):
+            m31_lineage = {}
+        if not isinstance(m32_lineage, dict):
+            m32_lineage = {}
+        m31_id = m31_lineage.get("proposal_id")
+        m32_id = m32_lineage.get("proposal_id")
+        expected_edges = [
+            {"from_id": event_id, "to_id": m31_id, "type": "event_to_m31"},
+            {"from_id": m31_id, "to_id": m32_id, "type": "m31_to_m32"},
+        ]
+        expected_echoes = {f"{proposition}んだね。", f"{proposition}ね。"}
+        verified = bool(
+            direct_user
+            and source_role.get("schema") == "uruha_current_turn_source_role_p4_v1"
+            and source_role.get("raw_input_sha256") == source_digest
+            and source_role.get("act") == "ordinary_chat"
+            and source_role.get("quote_role") == "none"
+            and source_role.get("outer_role") == "current_user_utterance"
+            and lineage.get("schema") == "uruha_mixed_act_lineage_p4_v1"
+            and lineage.get("status") == "linked"
+            and lineage.get("raw_input_sha256") == source_digest
+            and lineage.get("source_role_act") == "ordinary_chat"
+            and isinstance(event_id, str) and bool(event_id)
+            and isinstance(m31_id, str) and m31_id.startswith(f"{event_id}:m31:")
+            and isinstance(m32_id, str) and m32_id.startswith(f"{event_id}:m32:")
+            and m31_lineage.get("status") == "produced"
+            and m32_lineage.get("status") == "produced"
+            and m32_lineage.get("surface_authority_retained") is True
+            and lineage.get("producer_edges") == expected_edges
+            and lineage.get("authority_blockers") == []
+            and lineage.get("m33_authoritative") is False
+            and m31.get("input_digest") == source_digest[:16]
+            and m31.get("schema") == "uruha_semantic_authorization_m31"
+            and m31_candidate.get("canonical_ready") is True
+            and m31_candidate.get("subject_jp") == "私"
+            and m31_candidate.get("literal_summary_jp") == proposition
+            and m32.get("status") == "deterministic_commit_repaired"
+            and m32.get("schema") == "uruha_deterministic_semantic_commit_m32"
+            and m32.get("subject_jp") == "私"
+            and m32.get("literal_summary_jp") == proposition
+            and m32.get("response_jp") == reply
+            and logic_data.get("intent") == "deterministic_semantic_commit_m32"
+            and logic_data.get("core_message_jp") == reply
+            and reply in expected_echoes
+        )
+        if verified:
+            trace.update(
+                {
+                    "status": "source_bound_user_echo_repaired",
+                    "reason": "exact_current_user_m31_m32_echo",
+                    "source_actor": "current_user",
+                    "output_actor": "addressed_user",
+                    "role_proof_origin": "recomputed_from_current_emit_user_input",
+                }
+            )
+            return f"そっちは{reply[len('私は'):]}", trace
+        # Never turn an unverified User-shaped echo into Uruha's biography.
+        return "ん、もう少し聞かせて。", trace
 
     def _user_visible_language_rejection_reasons(
         self,
@@ -10383,6 +10547,8 @@ class RightBrain:
             reasons.append("ascii_symbol_artifact")
         if re.search(r"(?:\bUser\s*:|\bUruha\s*:|[-=]>|<[-=])", reply, re.IGNORECASE):
             reasons.append("runtime_trace_artifact")
+        if not self._user_visible_quoted_offsets(reply)[1]:
+            reasons.append("unbalanced_japanese_quote")
         if any(
             marker in reply
             for marker in (
@@ -10642,7 +10808,10 @@ class RightBrain:
         """Apply the final language firewall before memory and UI publication."""
         original_reply = str(reply or "").strip()
         logic_data = logic_data if isinstance(logic_data, dict) else {}
-        normalized = self._normalize_user_visible_japanese_surface(original_reply)
+        actor_reply, actor_boundary = self._source_bound_user_first_person_surface(
+            original_reply, user_input, logic_data
+        )
+        normalized = self._normalize_user_visible_japanese_surface(actor_reply)
         initial_reasons = self._user_visible_language_rejection_reasons(
             normalized,
             user_input=user_input,
@@ -10667,7 +10836,12 @@ class RightBrain:
                 repair_action = "none"
         else:
             final_reply = normalized
-            repair_action = "localized_known_terms" if normalized != original_reply else "none"
+            if actor_boundary["status"] == "source_bound_user_echo_repaired":
+                repair_action = "source_bound_user_actor_deixis"
+            elif actor_boundary["status"] == "source_unverified":
+                repair_action = "unverified_user_actor_fail_closed"
+            else:
+                repair_action = "localized_known_terms" if normalized != original_reply else "none"
 
         if intent != "self_intro" and "unexpected_ascii_leak" in initial_reasons:
             stripped = self._strip_unexpected_user_visible_ascii(
@@ -10731,6 +10905,7 @@ class RightBrain:
                     memory_data=memory_data,
                 )
             ),
+            "actor_boundary": actor_boundary,
             "original_reply": original_reply,
             "final_reply": final_reply,
             "original_reply_sha256": hashlib.sha256(original_reply.encode("utf-8")).hexdigest(),
