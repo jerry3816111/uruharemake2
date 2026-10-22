@@ -1,5 +1,7 @@
 # 目前任務卡
 
+更新：2026-10-23。**接續中的單一核心變因：P4 產品 Web 每輪計算成本收據；事前計畫與 source-disjoint cost0/cost1 題已凍結，尚未改程式或跑新模型。** h0–h3 的 4/4 狹義觀察與整體 strict FAIL 不改；原 Web brain 未接既有 `ComputeLedger`，因此全輪 token 帳缺。計畫 `research/p4_product_turn_compute_receipt_plan_2026-10-23.md` 只放行 Web 產品接線／逐輪 attribution／raw-free 收據與圖卡；案例間使用現成 launcher 的**不同新 root＋新進程**，不把新 session ID 誤當隔離。允許改 ledger／base Web／product entry 與新聚焦 test，先鎖 Git 再實作；先小測、相鄰回歸，再新隔離真 Safari 各一次 0 retry。native Safari PNG/AX 無文件化落盤路徑，saved-visual 仍 FAIL；embedding token、TTS、啟動／背景、OS 資源及正式比較仍 pending，不能把 generated-token coverage 說成全成本。無關 `output/graduate_application_report/`、正式 DB 和原始 dirty checkout 不碰；Goal active。
+
 **獨立只讀 gate review（2026-10-23）：窄義 h0–h3 4/4，但完整產品／教師展示整批 strict FAIL。** Saved native 視覺證據 FAIL，逐題記憶隔離未達，全管線成本 pending；不能將同一 root 的四個 session 冒充四個獨立樣本。詳見下段本輪狀態與產品收據。
 下段「memory DB 0」僅指這次私有 root 的資料庫；正式使用者資料庫未被本輪測試讀寫或聲稱核驗。
 
