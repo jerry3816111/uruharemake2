@@ -2156,11 +2156,132 @@ def _verified_typed_mixed_atomic_projection_p4(result, runtime_trace, producer_p
     }
 
 
+def _verified_current_decision_graph_signals_p4(result, runtime_trace, blackboard):
+    """Project D's selected authority only when this Web turn's terminal trace agrees.
+
+    This is a presentation check, not a new source of world-state authority.
+    The D delivery gate verified the episode before producing terminal_status;
+    ordinary Web observatory payloads do not carry that episode document.
+    """
+    if not isinstance(result, dict) or not isinstance(runtime_trace, dict):
+        return {}
+    logic = result.get("logic")
+    if not isinstance(logic, dict):
+        return {}
+    if not isinstance(logic.get("current_user_decision_ack_authority_p4"), dict):
+        return {}
+    from uruha_current_decision_ack_authority_p4 import (
+        LABEL, PLANNER_PATH, SCHEMA, build_current_decision_ack_certificate_p4,
+    )
+
+    cert = logic.get(LABEL)
+    if not isinstance(cert, dict) or cert.get("schema") != SCHEMA:
+        return {}
+    source = result.get("user_text")
+    reply = result.get("reply")
+    cycle = runtime_trace.get("cycle_index")
+    if not (isinstance(source, str) and source and isinstance(reply, str) and reply
+            and type(cycle) is int and cycle > 0):
+        return {}
+    digest = lambda value: hashlib.sha256(value.encode("utf-8")).hexdigest()
+    if (type(cert.get("cycle_index")) is not int
+            or cert.get("cycle_index") != cycle
+            or cert.get("source_raw_sha256") != digest(source)):
+        return {}
+    route_info = runtime_trace.get("route_info")
+    if not (isinstance(route_info, dict)
+            and isinstance(route_info.get("route"), str)
+            and route_info.get("route") != "low_road"):
+        return {}
+    stamp = {
+        "schema": SCHEMA, "owner_id": cert.get("brain_owner_id"),
+        "event_id": cert.get("event_id"), "cycle_index": cycle,
+        "source_raw_sha256": digest(source),
+    }
+    fresh = build_current_decision_ack_certificate_p4(source, stamp)
+    source_fields = (
+        "schema", "status", "source_type", "owner", "brain_owner_id",
+        "cycle_index", "event_id", "kind", "date", "subject", "place",
+        "correction_marker", "source_raw_sha256", "source_subject_sha256",
+        "source_place_sha256", "authorized_reply", "authorized_reply_sha256",
+        "model_calls_added", "profile_write_authority",
+        "correction_supersession", "world_state_truth_claimed", "binding_sha256",
+    )
+    if fresh is None or any(cert.get(key) != fresh.get(key) for key in source_fields):
+        return {}
+    if not (
+        cert.get("selected_status") == "source_authorized_plan_selected"
+        and cert.get("pre_episode_status") == "verified_before_episode_write"
+        and cert.get("factive_profile_write_status") == "suppressed_for_current_report"
+        and cert.get("visible_surface_status") == "matched"
+        and cert.get("visible_failure_reasons") == []
+        and cert.get("final_visible_surface_matches_contract") is True
+        and cert.get("right_brain_history_surface_status")
+        == "raw_user_and_final_visible_reply_committed"
+        and cert.get("terminal_status") == "trace_and_episode_reported_match"
+        and cert.get("authorized_reply") == reply
+        and all(cert.get(key) == digest(reply) for key in (
+            "authorized_reply_sha256", "pre_episode_reply_sha256",
+            "final_visible_surface_sha256", "terminal_reply_sha256",
+        ))
+        and logic.get("planner_path") == PLANNER_PATH
+        and logic.get("core_message_jp") == reply
+        and logic.get("surface_act") == "plain_reply"
+        and runtime_trace.get(LABEL) == cert
+    ):
+        return {}
+    guard = logic.get("visible_language_guard")
+    if not (isinstance(guard, dict) and guard.get("final_reply") == reply
+            and guard.get("final_reply_sha256") == digest(reply)
+            and guard.get("final_rejection_reasons") == []
+            and guard.get("repair_action") == "current_user_decision_ack_matched"):
+        return {}
+    trace_selected = runtime_trace.get("selected_plan")
+    if not (isinstance(trace_selected, dict)
+            and trace_selected.get("core_message_jp") == reply):
+        return {}
+    rows = {
+        label: [row for row in blackboard
+                if isinstance(row, dict) and row.get("label") == label]
+        for label in (LABEL, "selected_plan", "utterance")
+    }
+    if any(len(items) != 1 for items in rows.values()):
+        return {}
+    d_row = rows[LABEL][0]
+    selected_row = rows["selected_plan"][0]
+    utterance_row = rows["utterance"][0]
+    selected_payload = selected_row.get("payload")
+    utterance_payload = utterance_row.get("payload")
+    if not (
+        d_row.get("stage") == "evidence" and d_row.get("payload") == cert
+        and selected_row.get("stage") == "select"
+        and isinstance(selected_payload, dict)
+        and selected_payload.get("post_gate_selected_plan_authority") == LABEL
+        and selected_payload.get("core_message_jp") == reply
+        and utterance_row.get("stage") == "surface"
+        and isinstance(utterance_payload, dict)
+        and utterance_payload.get("reply") == reply
+    ):
+        return {}
+    if cert["kind"] == "correction_reported":
+        return {
+            LABEL: "使用者本人訂正｜來源與回覆核對",
+            "selected_plan": "已選：當輪訂正承接（D）",
+        }
+    return {
+        LABEL: "使用者本人決定｜來源與回覆核對",
+        "selected_plan": "已選：當輪決定承接（D）",
+    }
+
+
 def collect_cognitive_graph(result):
     """Build a deterministic runtime graph for the visual observatory."""
     result = result or {}
     runtime_trace = result.get("runtime_trace") or {}
     blackboard = list(runtime_trace.get("blackboard") or [])
+    current_decision_signals = _verified_current_decision_graph_signals_p4(
+        result, runtime_trace, blackboard,
+    )
     state_diff = runtime_trace.get("state_diff") or {}
     graph_nodes = []
     graph_edges = []
@@ -2192,7 +2313,7 @@ def collect_cognitive_graph(result):
             node_id,
             kind,
             item.get("label") or item.get("stage") or "runtime",
-            _graph_signal(payload),
+            current_decision_signals.get(item.get("label")) or _graph_signal(payload),
             _graph_detail(payload),
             active=True,
             salience=_safe_float(item.get("salience"), 0.0),
