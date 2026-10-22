@@ -181,23 +181,32 @@ def _guard_with_reported_receipt_destination_p4(
         raise RuntimeError("reported receipt destination final guard mismatch")
     trace["after_digest"] = _sha(visible)
     trace["changed"] = visible != str(reply or "")
-    if trace["changed"]:
-        history = getattr(right_brain, "history", None)
-        intent = str(logic.get("intent") or "")
-        if not (
-            isinstance(history, list) and len(history) >= 2
-            and history[-2].get("role") == "user"
-            and history[-1].get("role") == "assistant"
-            and history[-1].get("intent") == intent
-        ):
-            raise RuntimeError("reported receipt destination current history mismatch")
-        before_history = str(history[-1].get("content") or "")
+    history = getattr(right_brain, "history", None)
+    intent = str(logic.get("intent") or "")
+    if not (
+        isinstance(history, list) and len(history) >= 2
+        and isinstance(history[-2], dict) and isinstance(history[-1], dict)
+        and history[-2].get("role") == "user"
+        and history[-2].get("intent") == intent
+        and history[-1].get("role") == "assistant"
+        and history[-1].get("intent") == intent
+    ):
+        raise RuntimeError("reported receipt destination current history mismatch")
+    # speak records jp_summary, not raw source, immediately before the selected
+    # assistant candidate. Match it when available so an older same-intent pair
+    # cannot be rebound as this turn. Legacy minimal contract fixtures have no
+    # summary; the final pre-episode binding still applies to those fixtures.
+    summary = logic.get("jp_summary")
+    if summary and history[-2].get("content") != summary:
+        raise RuntimeError("reported receipt destination current history mismatch")
+    before_history = str(history[-1].get("content") or "")
+    if before_history != visible:
         status = _sync_selected_short_history(right_brain, before_history, visible, intent)
         if status != "current_assistant_synced":
             raise RuntimeError("reported receipt destination current history mismatch")
         trace["history_status"] = status
     else:
-        trace["history_status"] = "no_visible_change"
+        trace["history_status"] = "current_assistant_already_bound"
     logic[LABEL] = trace
     right_brain._bind_forbidden_projection_shadow_visible_reply(logic, visible)
     return visible
@@ -216,14 +225,21 @@ def _post_check_with_reported_receipt_destination_p4(brain, logic, source, visib
         contract = extract_reported_receipt_destination_p4(source)
         guard = (logic or {}).get("visible_language_guard") or {}
         history = getattr(getattr(brain, "right_brain", None), "history", None)
+        mismatch_codes = []
+        if contract is None or inspect_reported_receipt_destination_p4(contract, visible):
+            mismatch_codes.append("source_relation")
+        if trace.get("after_digest") != _sha(visible):
+            mismatch_codes.append("trace_digest")
+        if guard.get("final_reply") != visible or guard.get("final_reply_sha256") != _sha(visible):
+            mismatch_codes.append("guard_binding")
         if (
-            contract is None or inspect_reported_receipt_destination_p4(contract, visible)
-            or trace.get("after_digest") != _sha(visible)
-            or guard.get("final_reply") != visible or guard.get("final_reply_sha256") != _sha(visible)
-            or not isinstance(history, list) or not history
+            not isinstance(history, list) or not history
+            or not isinstance(history[-1], dict)
             or history[-1].get("role") != "assistant" or history[-1].get("content") != visible
         ):
-            raise RuntimeError("reported receipt destination pre-episode mismatch")
+            mismatch_codes.append("current_history")
+        if mismatch_codes:
+            raise RuntimeError("reported receipt destination pre-episode mismatch: " + ",".join(mismatch_codes))
         trace["pre_episode_status"] = "verified_before_episode_write"
     return prior_post(brain, logic, source, visible, memory_data)
 
