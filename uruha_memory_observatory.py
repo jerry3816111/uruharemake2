@@ -260,6 +260,106 @@ MEMORY_OBSERVATORY_CSS = r"""
 """
 
 MEMORY_OBSERVATORY_CSS += r"""
+.brain-d-focus {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 18px;
+  border: 1px solid rgba(250, 204, 21, 0.42);
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(30, 27, 16, 0.78);
+}
+.brain-d-focus-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #fef3c7;
+  font-size: 13px;
+  font-weight: 800;
+}
+.brain-d-focus-boundary {
+  margin: 10px 0 0;
+  color: #cbd5e1;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.brain-d-focus-chain { display: flex; align-items: stretch; gap: 4px; }
+.brain-d-focus-node {
+  flex: 1 1 0;
+  min-width: 0;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 12px;
+  padding: 8px;
+  background: rgba(15, 23, 42, 0.92);
+}
+.brain-d-focus-node > summary { cursor: pointer; list-style: none; }
+.brain-d-focus-node > summary::-webkit-details-marker { display: none; }
+.brain-d-focus-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #facc15;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.brain-d-focus-value {
+  display: block;
+  color: #f8fafc;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.brain-d-focus-node pre {
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #cbd5e1;
+  font-size: 10px;
+}
+.brain-d-focus-trace { display: block; color: #94a3b8; font-size: 9px; overflow-wrap: anywhere; }
+.brain-d-focus-link {
+  flex: 0 0 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #facc15;
+}
+.brain-d-focus-link svg { width: 28px; height: 18px; }
+.brain-d-focus-link small {
+  width: 34px;
+  color: #cbd5e1;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.brain-full-graph {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+}
+.brain-full-graph > summary {
+  cursor: pointer;
+  border: 1px solid rgba(125, 211, 252, 0.36);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #bae6fd;
+  background: rgba(15, 23, 42, 0.8);
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (max-width: 1050px) {
+  .brain-d-focus-chain { flex-direction: column; }
+  .brain-d-focus-link { flex-basis: 24px; }
+  .brain-d-focus-link svg { transform: rotate(90deg); }
+  .brain-d-focus-link small { width: auto; }
+}
 .brain-graph-shell {
   position: relative;
   z-index: 1;
@@ -2789,6 +2889,187 @@ def collect_cognitive_graph(result):
     }
 
 
+def _verified_d_main_chain_focus_p4(result, graph):
+    """Select only existing D graph nodes and directed record-order segments.
+
+    `is-main` is the blackboard's recorded sequence, not proof that a node
+    semantically caused its successor. The optional write edge is likewise a
+    trace report, not a database durability assertion.
+    """
+    if not isinstance(result, dict) or not isinstance(graph, dict):
+        return None
+    runtime_trace = result.get("runtime_trace")
+    if not isinstance(runtime_trace, dict):
+        return None
+    blackboard = runtime_trace.get("blackboard")
+    if not isinstance(blackboard, list):
+        return None
+    signals = _verified_current_decision_graph_signals_p4(
+        result, runtime_trace, blackboard,
+    )
+    if not signals:
+        return None
+    nodes = graph.get("nodes")
+    edges = graph.get("edges")
+    if not isinstance(nodes, list) or not isinstance(edges, list):
+        return None
+    if any(not isinstance(node, dict) or not isinstance(node.get("id"), str)
+           for node in nodes):
+        return None
+    by_id = {node["id"]: node for node in nodes}
+    if len(by_id) != len(nodes):
+        return None
+
+    def one_blackboard_node(label, kind):
+        positions = [index for index, row in enumerate(blackboard)
+                     if isinstance(row, dict) and row.get("label") == label]
+        if len(positions) != 1 or sum(node.get("label") == label for node in nodes) != 1:
+            return None
+        node = by_id.get(f"runtime-{positions[0]}")
+        if not node or node.get("label") != label or node.get("kind") != kind:
+            return None
+        return node
+
+    from uruha_current_decision_ack_authority_p4 import LABEL
+    input_node = by_id.get("turn-input")
+    d_node = one_blackboard_node(LABEL, "evidence")
+    selected_node = one_blackboard_node("selected_plan", "select")
+    utterance_node = one_blackboard_node("utterance", "surface")
+    output_node = by_id.get("turn-output")
+    anchors = [input_node, d_node, selected_node, utterance_node, output_node]
+    if any(not node for node in anchors):
+        return None
+    if not (input_node.get("kind") == "input"
+            and input_node.get("detail") == result.get("user_text")
+            and output_node.get("kind") == "surface"
+            and output_node.get("detail") == result.get("reply")
+            and d_node.get("signal") == signals[LABEL]
+            and selected_node.get("signal") == signals["selected_plan"]
+            and result["reply"] in utterance_node.get("detail", "")):
+        return None
+
+    main_out = {}
+    for edge in edges:
+        if not isinstance(edge, dict):
+            return None
+        if edge.get("class") == "is-main":
+            main_out.setdefault(edge.get("source"), []).append(edge.get("target"))
+
+    def main_segment(source, target):
+        current = source
+        visited = {source}
+        omitted = 0
+        while current != target:
+            outgoing = main_out.get(current, [])
+            if len(outgoing) != 1 or outgoing[0] not in by_id:
+                return None
+            current = outgoing[0]
+            if current in visited:
+                return None
+            visited.add(current)
+            if current != target:
+                omitted += 1
+        return {
+            "source": source, "target": target,
+            "edge_class": "is-main", "omitted": omitted,
+        }
+
+    segments = []
+    for source, target in zip(anchors, anchors[1:]):
+        segment = main_segment(source["id"], target["id"])
+        if segment is None:
+            return None
+        segments.append(segment)
+
+    write_status = "not_in_focus"
+    writes = runtime_trace.get("memory_writes")
+    if isinstance(writes, list):
+        episodic_positions = [index for index, row in enumerate(writes)
+                              if isinstance(row, dict)
+                              and row.get("layer") == "episodic_memory"]
+        if (len(episodic_positions) == 1
+                and writes[episodic_positions[0]].get("kind") == "turn_episode"
+                and sum(node.get("label") == "episodic_memory"
+                        and str(node.get("id", "")).startswith("write-")
+                        for node in nodes) == 1):
+            write_node = by_id.get(f"write-{episodic_positions[0]}")
+            matching_edges = [edge for edge in edges
+                              if edge.get("source") == "turn-output"
+                              and edge.get("target") == f"write-{episodic_positions[0]}"
+                              and edge.get("class") == "is-active"]
+            if (write_node and write_node.get("kind") == "write"
+                    and write_node.get("label") == "episodic_memory"
+                    and write_node.get("write") is True
+                    and len(matching_edges) == 1):
+                anchors.append(write_node)
+                segments.append({
+                    "source": "turn-output", "target": write_node["id"],
+                    "edge_class": "is-active", "omitted": 0,
+                })
+                write_status = "trace_reported"
+    return {"anchors": anchors, "segments": segments, "write_status": write_status}
+
+
+def _d_main_chain_focus_node_html(node):
+    labels = {
+        "turn-input": "01 · 使用者當輪輸入",
+        "turn-output": "05 · 使用者看到的日文",
+    }
+    label = labels.get(node["id"])
+    if not label:
+        label = {
+            "current_user_decision_ack_authority_p4": "02 · 當輪來源核對",
+            "selected_plan": "03 · 本輪選定計畫",
+            "utterance": "04 · 內部 utterance",
+            "episodic_memory": "06 · 事件記憶（trace 報告）",
+        }.get(node["label"], node["label"])
+    visible = (node["detail"] if node["id"] in {"turn-input", "turn-output"}
+               else node["signal"])
+    return (
+        f'<details class="brain-d-focus-node" data-original-node-id="{escape(node["id"], quote=True)}">'
+        '<summary>'
+        f'<span class="brain-d-focus-label">{escape(label)}</span>'
+        f'<span class="brain-d-focus-value">{escape(str(visible))}</span>'
+        '</summary>'
+        f'<pre>{escape(str(node["detail"]))}</pre>'
+        f'<span class="brain-d-focus-trace">trace · {escape(str(node.get("trace_id") or node["id"]))}</span>'
+        '</details>'
+    )
+
+
+def _d_main_chain_focus_html(focus, graph):
+    if not focus:
+        return ""
+    parts = [_d_main_chain_focus_node_html(focus["anchors"][0])]
+    for segment, node in zip(focus["segments"], focus["anchors"][1:]):
+        description = (f'原圖主鏈 · 記錄順序 · 略去 {segment["omitted"]} 個節點'
+                       if segment["edge_class"] == "is-main"
+                       else "trace 報告寫回 · 非 DB 持久化證明")
+        short_label = (f'+{segment["omitted"]}' if segment["edge_class"] == "is-main"
+                       else "寫回")
+        parts.append(
+            f'<div class="brain-d-focus-link" data-source="{escape(segment["source"], quote=True)}" '
+            f'data-target="{escape(segment["target"], quote=True)}" '
+            f'data-edge-class="{escape(segment["edge_class"], quote=True)}" '
+            f'data-omitted="{segment["omitted"]}" aria-label="{escape(description, quote=True)}">'
+            '<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M1 9 H23 M18 4 L23 9 L18 14" '
+            'fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+            f'<small>{escape(short_label)}</small></div>'
+        )
+        parts.append(_d_main_chain_focus_node_html(node))
+    write_note = ("末端是 trace 報告的 episodic_memory；是否真的落 DB 另用 SQLite 核。"
+                  if focus["write_status"] == "trace_reported"
+                  else "本輪焦點圖沒有可核的 episodic_memory 寫回；不推測其他記憶。")
+    return (
+        '<div class="brain-d-focus" data-p4-d-focus="verified" aria-label="已驗證當輪主鏈折疊視圖">'
+        '<div class="brain-d-focus-head"><span>當輪決定／訂正的紀錄順序</span>'
+        f'<span>原圖 {len(graph["nodes"])} 節點 · {len(graph["edges"])} 邊</span></div>'
+        f'<div class="brain-d-focus-chain">{"".join(parts)}</div>'
+        f'<p class="brain-d-focus-boundary">箭頭 +N 表示略去 N 個原始節點。這是原圖主鏈的記錄順序折疊，不是省略節點不存在，'
+        f'也不是語義因果或外部真實性證明。{escape(write_note)}</p></div>'
+    )
+
+
 def _graph_node_html(node):
     label, icon, color = GRAPH_KIND_META[node["kind"]]
     if node.get("memory"):
@@ -2860,6 +3141,14 @@ def render_memory_observatory(result):
     """Render a progressive runtime graph; full evidence stays in local JSONL."""
     result = result or {}
     graph = collect_cognitive_graph(result)
+    d_focus = _verified_d_main_chain_focus_p4(result, graph)
+    d_focus_html = _d_main_chain_focus_html(d_focus, graph)
+    full_graph_open = (
+        '<details class="brain-full-graph"><summary>'
+        f'展開完整原圖 · {len(graph["nodes"])} 節點／{len(graph["edges"])} 條線'
+        '</summary>' if d_focus else ""
+    )
+    full_graph_close = "</details>" if d_focus else ""
     graph_budget = graph.get("payload_budget_m24") or {}
     graph_detail_bytes = int(graph_budget.get("rendered_detail_bytes") or 0)
     graph_detail_budget = int(graph_budget.get("detail_budget_bytes") or 0)
@@ -3406,6 +3695,7 @@ def render_memory_observatory(result):
         '<div class="memory-subtitle">節點是實際 runtime 事件；連線是資料流。畫面先顯示可追溯摘要，點節點看受限預覽；完整證據保留於本機 trace。</div></div>'
         '<div class="memory-live"><span class="memory-live-dot"></span>LOCAL TRACE · LIVE</div>'
         "</div>"
+        f'{d_focus_html}'
         '<div class="brain-comparison" aria-label="直接生成與 UruhaBrain M34 counterfactual pragmatic branch 差異">'
         '<div class="brain-comparison-card"><div class="brain-comparison-label">DIRECT GENERATION PATH / UNBOUNDED GENERAL PLANNER · RETAINED M19 FAILURE</div>'
         '<div class="brain-comparison-flow">當輪輸入 → 當輪回答；簡單訊息 → 通用模型規劃 → 等待全部完成 → 才能顯示回覆</div>'
@@ -3421,6 +3711,7 @@ def render_memory_observatory(result):
         f'{fidelity_m33_html}'
         f'{fidelity_m32_html}'
         f'{fidelity_html}'
+        f'{full_graph_open}'
         '<div class="brain-graph-shell">'
         '<div class="brain-graph-toolbar"><strong>M37 · Trigger → verified response relation → paraphrase match → branch → Japanese surface</strong>'
         '<div class="brain-graph-legend">'
@@ -3442,5 +3733,5 @@ def render_memory_observatory(result):
         '<marker id="brain-atomic-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">'
         '<path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/></marker></defs>'
         f'{_graph_edges_html(graph)}</svg>{nodes_html}{empty_html}'
-        "</div></div></div></section>"
+        f"</div></div></div>{full_graph_close}</section>"
     )
