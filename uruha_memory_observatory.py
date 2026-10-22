@@ -279,6 +279,7 @@ MEMORY_OBSERVATORY_CSS += r"""
   font-size: 13px;
   font-weight: 800;
 }
+.memory-observatory .brain-d-focus-head > span { color: #fef3c7; }
 .brain-d-focus-boundary {
   margin: 10px 0 0;
   color: #cbd5e1;
@@ -331,6 +332,7 @@ MEMORY_OBSERVATORY_CSS += r"""
   color: #facc15;
 }
 .brain-d-focus-link svg { width: 28px; height: 18px; }
+.memory-observatory .brain-d-focus-link > svg > path { stroke: #facc15; }
 .brain-d-focus-link small {
   width: 34px;
   color: #cbd5e1;
