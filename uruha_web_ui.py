@@ -11,6 +11,7 @@ import sys
 import tempfile
 import threading
 import time
+from contextlib import nullcontext
 from datetime import datetime
 from html import escape
 from pathlib import Path
@@ -71,6 +72,7 @@ from human_feedback_validation import (
     normalize_failure_types,
 )
 from uruha_brain_mac import UruhaBrainV4_Mac
+from uruha_compute_ledger import ComputeLedger
 from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS
 from uruha_m38_memory_observatory import (
     render_memory_observatory_m38 as render_memory_observatory,
@@ -198,6 +200,7 @@ WEB_PREWARM_BRAIN = str(os.getenv("URUHA_WEB_PREWARM_BRAIN", "1")).strip().lower
     "no",
     "off",
 }
+WEB_COMPUTE_LEDGER_ENABLED = os.getenv("URUHA_WEB_COMPUTE_LEDGER", "").strip() == "1"
 WEB_CSS = """
 .wrap {max-width: 1560px; margin: 0 auto;}
 .trace-board {display: flex; gap: 12px; overflow-x: auto; padding: 8px 2px 12px;}
@@ -406,6 +409,7 @@ def _default_taxonomy_catalog():
 class RuntimeManager:
     def __init__(self):
         self._brain = None
+        self._compute_ledger = ComputeLedger() if WEB_COMPUTE_LEDGER_ENABLED else None
         self._brain_init_lock = threading.Lock()
         self._brain_prewarm_thread = None
         self._brain_load_trace = {
@@ -454,7 +458,11 @@ class RuntimeManager:
             )
             print(Fore.CYAN + "🧠 [Web] Loading V2 brain...")
             try:
-                self._brain = UruhaBrainV4_Mac()
+                self._brain = (
+                    UruhaBrainV4_Mac(compute_ledger=self._compute_ledger)
+                    if self._compute_ledger is not None
+                    else UruhaBrainV4_Mac()
+                )
             except Exception as exc:
                 self._brain_load_trace.update(
                     {
@@ -2913,6 +2921,115 @@ def begin_human_submission_with_session(value):
     return begin_human_submission(value), RUNTIME._session_id
 
 
+def _product_compute_receipt(ledger, item_id, checkpoint, input_mode, terminal_error=None):
+    """Build a raw-free turn receipt, never interpreting missing instrumentation as zero."""
+    receipt = {
+        "schema": "uruha_product_turn_compute_receipt_p4_v1",
+        "item_id": item_id,
+        "input_mode": str(input_mode or "text"),
+        "terminal_error_type": type(terminal_error).__name__ if terminal_error is not None else "",
+        "contains_raw_prompt_or_reply": False,
+        "coverage": {
+            "instrumented_generation_and_vector_operations": False,
+            "embedding_tokens": "unavailable",
+            "speech_and_tts": "unavailable",
+            "startup_and_background": "excluded_from_turn",
+            "cpu_rss_energy": "unavailable",
+        },
+    }
+    if ledger is None or checkpoint is None:
+        receipt.update(
+            status="terminal_error" if terminal_error is not None else "unavailable_brain_not_instrumented",
+            accounting_status="unavailable_brain_not_instrumented",
+            snapshot=None,
+        )
+        return receipt
+    try:
+        snapshot = ledger.snapshot_item(item_id, since_call_index=checkpoint)
+    except Exception as exc:
+        receipt.update(
+            status="terminal_error" if terminal_error is not None else "unavailable_snapshot_error",
+            accounting_status="unavailable_snapshot_error",
+            snapshot_error_type=type(exc).__name__,
+            snapshot=None,
+        )
+        return receipt
+    receipt.update(snapshot=snapshot)
+    receipt["coverage"]["instrumented_generation_and_vector_operations"] = True
+    summary = snapshot["summary"]
+    if not snapshot["attribution_complete"]:
+        status = "attribution_ambiguous"
+    elif not summary["generative_token_accounting_complete"]:
+        status = "partial_token_usage"
+    elif summary["generative_call_count"] == 0:
+        status = "scoped_zero_generation"
+    elif not summary["provider_total_token_accounting_complete"]:
+        status = "partial_provider_total"
+    else:
+        status = "captured"
+    if terminal_error is not None:
+        receipt["accounting_status"] = status
+        status = "terminal_error"
+    receipt["status"] = status
+    return receipt
+
+
+def _product_compute_graph_payload(receipt):
+    snapshot = receipt.get("snapshot") or {}
+    summary = snapshot.get("summary") or {}
+    calls = summary.get("generative_call_count")
+    tokens = summary.get("total_tokens")
+    vectors = summary.get("vector_store_operation_count")
+    if receipt["status"].startswith("unavailable"):
+        signal = "計算收據不可用"
+    else:
+        if summary.get("provider_total_token_accounting_complete"):
+            token_signal = f"token {tokens}"
+        elif summary.get("generative_token_accounting_complete"):
+            token_signal = f"P+C {summary.get('summed_prompt_plus_completion_tokens')}（總量未回報）"
+        else:
+            token_signal = "token 部分缺失"
+        prefix = "歸因不完整；" if receipt["status"] == "attribution_ambiguous" else "已接線 "
+        signal = f"{prefix}生成 {calls} 次 · {token_signal} · 記憶操作 {vectors} 次"
+    return {
+        "schema": "uruha_product_turn_compute_graph_p4_v1",
+        "item_id": receipt["item_id"],
+        "status": receipt["status"],
+        "summary": signal,
+        "scoped_call_count": snapshot.get("call_count"),
+        "attribution_complete": snapshot.get("attribution_complete"),
+        "contains_raw_prompt_or_reply": False,
+        "coverage_note": "僅已接線的生成／向量操作；不含聲音、啟動、OS 資源或 embedding token",
+    }
+
+
+def _persist_terminal_compute_failure(receipt):
+    """Best-effort private failure evidence; never mask the original exception."""
+    path = os.path.join(os.path.dirname(WEB_LOG_JSONL), "compute_failures.jsonl")
+    try:
+        directory_info = os.stat(os.path.dirname(path), follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(directory_info.st_mode)
+            or directory_info.st_uid != os.getuid()
+            or stat.S_IMODE(directory_info.st_mode) & 0o077
+        ):
+            return False
+        fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "a", encoding="utf-8") as stream:
+            info = os.fstat(stream.fileno())
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) & 0o077
+                or info.st_nlink != 1
+            ):
+                return False
+            stream.write(json.dumps(receipt, ensure_ascii=False) + "\n")
+        return True
+    except (OSError, TypeError, ValueError):
+        return False
+
+
 def _run_turn(
     user_text,
     auto_tts,
@@ -2930,23 +3047,53 @@ def _run_turn(
     handler_started = float(handler_started or request_started)
     frontend_enqueue_started = float(frontend_enqueue_started or handler_started)
     brain_was_ready = getattr(RUNTIME, "_brain", None) is not None
+    configured_ledger = getattr(RUNTIME, "_compute_ledger", None)
+    compute_item_id = secrets.token_hex(16) if configured_ledger is not None else None
+    compute_receipt = None
     runtime_lock_wait_started = time.perf_counter()
     with RUNTIME._lock:
         runtime_lock_acquired = time.perf_counter()
-        brain = RUNTIME.get_brain()
+        try:
+            brain = RUNTIME.get_brain()
+        except Exception as exc:
+            if compute_item_id is not None:
+                failed = _product_compute_receipt(
+                    None, compute_item_id, None, input_mode, exc,
+                )
+                failed["failure_phase"] = "brain_initialization"
+                _persist_terminal_compute_failure(failed)
+            raise
         brain_ready_at = time.perf_counter()
+        ledger = (
+            configured_ledger
+            if configured_ledger is not None
+            and getattr(brain, "compute_ledger", None) is configured_ledger
+            else None
+        )
+        checkpoint = ledger.checkpoint() if ledger is not None else None
         turn_debug = brain.run_turn_debug
-        if "input_context" in inspect.signature(turn_debug).parameters:
-            turn = turn_debug(
-                user_text,
-                input_context={
-                    "input_mode": str(input_mode or "text"),
-                    "acoustic_summary": acoustic_summary,
-                },
+        try:
+            with ledger.item_scope(compute_item_id, "product_web") if ledger is not None else nullcontext():
+                if "input_context" in inspect.signature(turn_debug).parameters:
+                    turn = turn_debug(
+                        user_text,
+                        input_context={
+                            "input_mode": str(input_mode or "text"),
+                            "acoustic_summary": acoustic_summary,
+                        },
+                    )
+                else:
+                    # Compatibility for narrow test doubles and older runtime adapters.
+                    turn = turn_debug(user_text)
+        except Exception as exc:
+            if compute_item_id is not None:
+                failed = _product_compute_receipt(ledger, compute_item_id, checkpoint, input_mode, exc)
+                failed["durable_private_failure_written"] = _persist_terminal_compute_failure(failed)
+            raise
+        if compute_item_id is not None:
+            compute_receipt = _product_compute_receipt(
+                ledger, compute_item_id, checkpoint, input_mode,
             )
-        else:
-            # Compatibility for narrow test doubles and older runtime adapters.
-            turn = turn_debug(user_text)
     request_finished = time.perf_counter()
     latency = dict(
         (turn.get("runtime_trace") or {}).get("runtime_latency_m19")
@@ -3020,6 +3167,16 @@ def _run_turn(
             "timestamp": datetime.now().isoformat(timespec="seconds"),
         },
     )
+    if compute_receipt is not None:
+        # This is post-turn observation. Keep graph chronology truthful even
+        # when the compact debug payload cannot retain every blackboard node.
+        blackboard.append({
+            "stage": "observe",
+            "label": "product_turn_compute_receipt_p4",
+            "payload": _product_compute_graph_payload(compute_receipt),
+            "salience": 0.97,
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+        })
     replaced = False
     for row in blackboard:
         if row.get("label") in {"runtime_latency_m17", "runtime_latency_m18", "runtime_latency_m19"}:
@@ -3062,7 +3219,7 @@ def _run_turn(
         "routing_path": logic.get("routing_path"),
         "internal_monologue": logic.get("internal_monologue"),
     }
-    return {
+    result = {
         "user_text": user_text,
         "reply": turn["reply"],
         "audio_path": audio_path,
@@ -3074,6 +3231,9 @@ def _run_turn(
         "flow_html": _render_flow_html(turn),
         "state_html": _render_state_diff_html(turn),
     }
+    if compute_receipt is not None:
+        result["compute_receipt"] = compute_receipt
+    return result
 
 
 def _finalize_surface_delivery(
@@ -3162,6 +3322,7 @@ def _finalize_surface_delivery(
 
 def _append_conversation_log(input_mode, result):
     session_id, turn_index = RUNTIME.next_turn_meta()
+    compute_receipt = result.get("compute_receipt")
     record = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "session_id": session_id,
@@ -3174,6 +3335,9 @@ def _append_conversation_log(input_mode, result):
         "cognition_trace": result.get("cognition_trace", {}),
         "memory_snapshot": result.get("memory_snapshot", {}),
     }
+    if isinstance(compute_receipt, dict):
+        record["compute_receipt_item_id"] = compute_receipt.get("item_id")
+        record["compute_receipt_status"] = compute_receipt.get("status")
     episode_doc = _private_semantic_ledger_episode_doc(result)
     # Existing default Web logs may be 0644. Keep their old conversation
     # logging behavior, but never duplicate a full episode there. A private
@@ -3197,6 +3361,13 @@ def _append_conversation_log(input_mode, result):
         )
         if episode_doc and private_log:
             record["episode_doc"] = episode_doc
+        if isinstance(compute_receipt, dict):
+            record["compute_receipt_private_persisted"] = bool(private_log)
+            result["compute_receipt_durable_status"] = (
+                "private_jsonl" if private_log else "unavailable_nonprivate_log"
+            )
+            if private_log:
+                record["compute_receipt"] = compute_receipt
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     with open(WEB_LOG_TXT, "a", encoding="utf-8") as f:
         f.write(

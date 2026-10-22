@@ -484,6 +484,63 @@ class ComputeLedger:
             "calls": calls,
         }
 
+    def checkpoint(self):
+        """Return a call index without copying a long-running process ledger."""
+        with self._lock:
+            return len(self._calls)
+
+    def snapshot_item(self, item_id, *, since_call_index=0):
+        """Copy only one turn's calls; expose concurrent unscoped work separately."""
+        item_id = str(item_id or "")
+        if not item_id or item_id == "unscoped":
+            raise ValueError("item_id_must_be_scoped")
+        if not isinstance(since_call_index, int) or since_call_index < 0:
+            raise ValueError("invalid_checkpoint")
+        with self._lock:
+            if since_call_index > len(self._calls):
+                raise ValueError("checkpoint_after_last_call")
+            window = self._calls[since_call_index:]
+            calls = deepcopy([call for call in window if call.get("item_id") == item_id])
+            unscoped_count = sum(1 for call in window if call.get("item_id") == "unscoped")
+            other_count = sum(
+                1 for call in window
+                if call.get("item_id") not in {item_id, "unscoped"}
+            )
+        # Legacy snapshots retain their frozen request shape. For the new
+        # product receipt, arbitrary provider option keys/values (including
+        # stop strings) must not carry raw dialogue into the private receipt.
+        for call in calls:
+            request = call.get("request")
+            if isinstance(request, dict) and "options" in request:
+                options = request.pop("options")
+                request["options_sha256"] = _json_hash(options)
+                request["options_key_count"] = len(options) if isinstance(options, dict) else None
+        summary = _resource_summary(calls)
+        generative = [
+            call for call in calls
+            if call.get("resource_kind") == "generative_inference"
+        ]
+        summary["provider_total_token_accounting_complete"] = all(
+            (call.get("response") or {}).get("total_tokens") is not None
+            for call in generative
+        )
+        summary["summed_prompt_plus_completion_tokens"] = sum(
+            int((call.get("response") or {}).get("prompt_tokens") or 0)
+            + int((call.get("response") or {}).get("completion_tokens") or 0)
+            for call in generative
+        )
+        return {
+            "schema": "uruha_compute_item_snapshot_v1",
+            "item_id": item_id,
+            "call_count": len(calls),
+            "unscoped_call_count_during_window": unscoped_count,
+            "other_item_call_count_during_window": other_count,
+            "attribution_complete": not (unscoped_count or other_count),
+            "contains_raw_prompt_or_reply": False,
+            "summary": summary,
+            "calls": calls,
+        }
+
     def reset(self):
         with self._lock:
             self._calls = []
