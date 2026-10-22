@@ -1,0 +1,9 @@
+# P4 compute receipt: pre-implementation entrypoint amendment
+
+Date: 2026-10-23. This amendment precedes any compute-receipt code or fresh model/Safari turn. The first frozen plan and cost0/cost1 source are unchanged.
+
+Read-only compatibility check found that `test_p4_o_persisted_reference_time_result.py` requires the exact historical SHA of `uruha_web_ui_product.py`. Editing that file as the first plan allowed would invalidate released evidence. The latest receiving-destination product entry is already `uruha_web_ui_product_p4_reported_receipt_destination.py`; its semantic chain must also remain unchanged.
+
+Revised implementation boundary: **do not edit any existing product entry or launcher/controller**. In `uruha_web_ui.py`, read `URUHA_WEB_COMPUTE_LEDGER=1` during `RuntimeManager` construction, before brain initialization/prewarm, and pass the existing `ComputeLedger` only for this opt-in process; default Web remains uninstrumented. Add per-turn attribution, raw-free private receipt, terminal failure receipt, and native blackboard cost summary there. Add only an additive per-item API to `uruha_compute_ledger.py` and new focused tests. For the prospective product acceptance, launch the unchanged latest product entry under a new launcher-owned sandboxed root with this environment opt-in; first verify the exact executable entrypoint and flag in the process environment. No original/frozen entry SHA may change. This is still the same single cost-observability variable, not a model/answer modification.
+
+If the existing launch path cannot pass a fixed, auditable opt-in flag while preserving its root/PID sandbox checks, freeze a tiny additive launch adapter **before** the new Safari cases rather than altering historical launcher files, bypassing sandbox or claiming the old entry was tested. The cost0/cost1 no-retry and all original failure gates remain unchanged.
