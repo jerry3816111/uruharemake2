@@ -9,6 +9,7 @@ import sys
 import p4_preference_fallback_launchd_control as launchd
 import p4_reported_receipt_destination_detached_control as prior
 import p4_preference_fallback_safe_isolated_product_launcher as product_launcher
+import p4_b_safe_isolated_product_launcher as base_launcher
 
 
 ENTRYPOINT = Path(__file__).resolve().parent / "uruha_web_ui_product_p4_direct_reply_act_m29_priority.py"
@@ -33,7 +34,12 @@ while _pending:
 def main(argv: list[str] | None = None) -> int:
     arm_parser = argparse.ArgumentParser(add_help=False)
     arm_parser.add_argument("--direct-act-arm", choices=("control", "treatment"), default="control")
+    arm_parser.add_argument("--product-port", type=int, default=7894)
     arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
+    try:
+        selected_port = base_launcher.validate_port(arm_args.product_port)
+    except base_launcher.LauncherError as exc:
+        arm_parser.error(str(exc))
     # The arm is a child-process setting for a product start, never a generic
     # process-global option and never inherited from the invoking shell.
     # Parse only the two fields needed to scope the child flag.  The actual
@@ -48,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
         arm_parser.error("treatment requires start --mode product")
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
+    original_port = prior.base_controller.PORT
 
     def compute_env(layout: dict[str, Path], *, port: int | None) -> dict[str, str]:
         env = original_env(layout, port=port)
@@ -62,20 +69,25 @@ def main(argv: list[str] | None = None) -> int:
             })
         return env
 
+    # The base controller consistently uses PORT for prepared receipts,
+    # listener identity, HTTP readiness and exact stop. Scope an opt-in port
+    # to this one CLI call so its default and other wrappers remain unchanged.
+    prior.base_controller.PORT = selected_port
     launchd._isolated_env = compute_env
-    if product_start:
-        # The detached base controller explicitly invokes preflight with
-        # prewarm=False and filters the final environment through that result.
-        # Scope the override to this one product start, for both arms alike.
-        def same_arm_preflight(**kwargs):
-            return original_preflight(**{**kwargs, "prewarm": True})
-
-        product_launcher.preflight_preference_fallback = same_arm_preflight
     try:
+        if product_start:
+            # The detached base controller explicitly invokes preflight with
+            # prewarm=False and filters the final environment through that result.
+            # Scope the override to this one product start, for both arms alike.
+            def same_arm_preflight(**kwargs):
+                return original_preflight(**{**kwargs, "prewarm": True})
+
+            product_launcher.preflight_preference_fallback = same_arm_preflight
         return prior.base_controller.main(forwarded)
     finally:
         launchd._isolated_env = original_env
         product_launcher.preflight_preference_fallback = original_preflight
+        prior.base_controller.PORT = original_port
 
 
 if __name__ == "__main__":
