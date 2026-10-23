@@ -10,6 +10,7 @@ from rightbrain_language_quality import (
     CHINESE_SPECIFIC_RE,
     FOREIGN_SCRIPT_RE,
     NONSTANDARD_CJK_RE,
+    has_bad_language,
 )
 from uruha_brain_mac import RightBrain, UruhaBrainV4_Mac
 import uruha_web_ui
@@ -80,6 +81,35 @@ class UserVisibleJapaneseGuardV211Tests(unittest.TestCase):
         self.assertIn("cjk_language_leak", trace["initial_rejection_reasons"])
         self.assertEqual(trace["repair_action"], "safe_japanese_persona_fallback")
         self.assertEqual(trace["final_rejection_reasons"], [])
+
+    def test_f5_simplified_chinese_residue_is_rejected_before_user_surface(self):
+        raw = "頑張ったね。頑張り继续！そのくらいでいいだろ。"
+        self.assertTrue(has_bad_language(raw))
+
+        final, trace = self.guard(
+            raw,
+            "初めて自分でシャツのボタンを付け直せた。今は一言だけ励まして。",
+            {"scene": "support", "core_message_jp": "頑張ったね。頑張り继续！"},
+        )
+
+        self.assertIn("nonstandard_cjk_surface", trace["initial_rejection_reasons"])
+        self.assertTrue(trace["changed"])
+        self.assertJapaneseVisibleSurface(final)
+        self.assertNotIn("继续", final)
+        # This guard prevents a language leak; a generic fallback does not
+        # establish that the shirt-button event was understood.
+        self.assertNotEqual(final, raw)
+
+    def test_japanese_kanji_controls_remain_available(self):
+        for clean in ("継続", "続けて", "頑張ったね"):
+            self.assertFalse(has_bad_language(clean), clean)
+        final, trace = self.guard(
+            "頑張ったね。",
+            "今日は短く励まして。",
+            {"scene": "support"},
+        )
+        self.assertEqual(final, "頑張ったね。")
+        self.assertFalse(trace["changed"])
 
     def test_english_surface_fails_closed_to_in_character_support_japanese(self):
         final, trace = self.guard(
