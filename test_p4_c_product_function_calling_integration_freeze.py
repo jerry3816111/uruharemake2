@@ -1,10 +1,12 @@
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
 FREEZE = ROOT / "research" / "p4_c_product_function_calling_integration_freeze_2026-09-20.json"
+ADAPTER_FREEZE_COMMIT = "48390dd43c75a59358c2e52087aa95ee0771e9c3"
 
 
 def _sha256(path: Path) -> str:
@@ -13,6 +15,18 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _historical_adapter_sha256(path: str) -> str:
+    result = subprocess.run(
+        [
+            "git", "-C", str(ROOT), "show",
+            f"{ADAPTER_FREEZE_COMMIT}:{path}",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return hashlib.sha256(result.stdout).hexdigest()
 
 
 def test_integration_freeze_binds_core_real_gate_adapter_entry_and_tests():
@@ -24,6 +38,12 @@ def test_integration_freeze_binds_core_real_gate_adapter_entry_and_tests():
     # an immutable historical acceptance test.
     for name, binding in freeze["bindings"].items():
         if name == "product_entry":
+            continue
+        if name == "product_adapter":
+            # The P4-C bytes remain frozen in Git even though a later,
+            # separately specified admission-token fix extends this adapter.
+            assert binding["path"] == "uruha_product_function_calling_p4.py"
+            assert _historical_adapter_sha256(binding["path"]) == binding["sha256"]
             continue
         assert _sha256(ROOT / binding["path"]) == binding["sha256"]
     assert freeze["bindings"]["product_entry"]["sha256"] == (

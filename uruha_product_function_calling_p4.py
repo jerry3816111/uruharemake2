@@ -210,18 +210,25 @@ def run_product_turn_p4_c(
     handler_started: float = 0.0,
     *,
     provider: Any = None,
+    admission_token: str = "",
 ) -> Any:
     text = str(user_text or "").strip()
     gate = core.classify_runtime_status_request(text)
     if not gate.get("selected"):
-        return original_run_turn(
-            user_text,
-            auto_tts,
-            input_mode=input_mode,
-            acoustic_summary=acoustic_summary,
-            frontend_enqueue_started=frontend_enqueue_started,
-            handler_started=handler_started,
-        )
+        ordinary_kwargs = {
+            "input_mode": input_mode,
+            "acoustic_summary": acoustic_summary,
+            "frontend_enqueue_started": frontend_enqueue_started,
+            "handler_started": handler_started,
+        }
+        if admission_token:
+            ordinary_kwargs["admission_token"] = admission_token
+        return original_run_turn(user_text, auto_tts, **ordinary_kwargs)
+    if admission_token:
+        # This synthetic tool route bypasses the original Web cognition path.
+        # Until it has its own admission lifecycle, never report a journaled
+        # browser turn as delivered without a cognition-start/end pair.
+        raise RuntimeError("tool_route_admission_unavailable")
     base_module.RUNTIME.mark_activity()
     started = time.perf_counter()
     function_result = core.run_function_call_turn(
@@ -255,6 +262,7 @@ def install_product_function_calling_p4(
         acoustic_summary=None,
         frontend_enqueue_started=0.0,
         handler_started=0.0,
+        admission_token="",
     ):
         return run_product_turn_p4_c(
             base_module,
@@ -265,6 +273,7 @@ def install_product_function_calling_p4(
             acoustic_summary=acoustic_summary,
             frontend_enqueue_started=frontend_enqueue_started,
             handler_started=handler_started,
+            admission_token=admission_token,
         )
 
     base_module._run_turn = wrapped
