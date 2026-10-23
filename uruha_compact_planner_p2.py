@@ -13,6 +13,7 @@ _CALL = ContextVar("compact_general_plan_p2", default=None)
 _INSTALLED = False
 _SCENES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 _MODES = {"direct_answer", "direct_answer_with_hedge", "clarify_light", "premise_challenge", "reframe_large_question"}
+_PLAN_FIELDS = {"scene", "core_message_jp", "response_mode"}
 _FORMAT = '''[Output JSON schema]
 Return ONLY this compact JSON, no other fields or explanation:
 {"plans":[{"scene":"casual","core_message_jp":"short Japanese meaning","response_mode":"direct_answer"},
@@ -50,24 +51,52 @@ def compact_request(kwargs):
     return transformed
 
 
+def _contract_error(message, code, *, candidate_index=None, missing_count=0, extra_count=0):
+    """Attach only fixed, bounded shape metadata; never copy model text or keys."""
+    error = ValueError(message)
+    error.compact_failure = {"failure_code": code}
+    if candidate_index is not None:
+        error.compact_failure["candidate_index"] = candidate_index
+    if missing_count:
+        error.compact_failure["missing_field_count"] = min(missing_count, 99)
+    if extra_count:
+        error.compact_failure["extra_field_count"] = min(extra_count, 99)
+    return error
+
+
 def expand_compact_response(content, finish_reason):
     if finish_reason != "stop":
-        raise ValueError("P2 compact planner did not finish a complete response")
-    payload = json.loads(content)
+        raise _contract_error("P2 compact planner did not finish a complete response", "finish_incomplete")
+    try:
+        payload = json.loads(content)
+    except (TypeError, ValueError) as exc:
+        raise _contract_error("P2 compact planner returned invalid JSON", "json_invalid") from exc
     if not isinstance(payload, dict) or set(payload) != {"plans"}:
-        raise ValueError("P2 compact planner has an unexpected schema")
+        raise _contract_error("P2 compact planner has an unexpected schema", "root_schema")
     plans = payload["plans"]
     if not isinstance(plans, list) or len(plans) != 3:
-        raise ValueError("P2 compact planner requires exactly three actual candidates")
-    for plan in plans:
-        if not isinstance(plan, dict) or set(plan) != {"scene", "core_message_jp", "response_mode"}:
-            raise ValueError("P2 compact candidate has unexpected fields")
+        raise _contract_error("P2 compact planner requires exactly three actual candidates", "candidate_count")
+    for index, plan in enumerate(plans):
+        if not isinstance(plan, dict):
+            raise _contract_error("P2 compact candidate has unexpected fields", "candidate_not_object", candidate_index=index)
+        fields = set(plan)
+        if fields != _PLAN_FIELDS:
+            missing, extra = len(_PLAN_FIELDS - fields), len(fields - _PLAN_FIELDS)
+            code = ("candidate_missing_and_extra_fields" if missing and extra else
+                    "candidate_missing_fields" if missing else "candidate_extra_fields")
+            raise _contract_error("P2 compact candidate has unexpected fields", code,
+                                  candidate_index=index, missing_count=missing, extra_count=extra)
         core = plan["core_message_jp"]
-        if (plan["scene"] not in _SCENES or plan["response_mode"] not in _MODES
-                or not isinstance(core, str) or not core.strip() or len(core) > 32):
-            raise ValueError("P2 compact candidate is invalid or over budget")
+        if not isinstance(plan["scene"], str) or plan["scene"] not in _SCENES:
+            raise _contract_error("P2 compact candidate is invalid or over budget", "scene_invalid", candidate_index=index)
+        if not isinstance(plan["response_mode"], str) or plan["response_mode"] not in _MODES:
+            raise _contract_error("P2 compact candidate is invalid or over budget", "mode_invalid", candidate_index=index)
+        if not isinstance(core, str) or not core.strip():
+            raise _contract_error("P2 compact candidate is invalid or over budget", "core_invalid", candidate_index=index)
+        if len(core) > 32:
+            raise _contract_error("P2 compact candidate is invalid or over budget", "core_over_budget", candidate_index=index)
     if len({plan["core_message_jp"].strip() for plan in plans}) != 3:
-        raise ValueError("P2 compact planner duplicated candidates")
+        raise _contract_error("P2 compact planner duplicated candidates", "candidate_duplicate")
     return json.dumps({"candidate_plans": plans}, ensure_ascii=False)
 
 
@@ -94,8 +123,10 @@ class _Proxy:
                            compact_system_chars=len(request["messages"][0]["content"]),
                            model=request.get("model"), actual_usage_recorded_by_underlying_ledger=True,
                            raw_prompt_or_response_persisted=False)
+            response_received = False
             try:
                 response = value(**request)
+                response_received = True
                 expanded = expand_compact_response(response.choices[0].message.content, response.choices[0].finish_reason)
                 converted = deepcopy(response)
                 converted.choices[0].message.content = expanded
@@ -103,6 +134,9 @@ class _Proxy:
                 return converted
             except Exception as exc:
                 context["failure_type"] = type(exc).__name__
+                context.update(getattr(exc, "compact_failure", {
+                    "failure_code": "unexpected_response_shape" if response_received else "client_or_transport_exception"
+                }))
                 raise
         return create
 
