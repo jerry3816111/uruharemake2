@@ -9551,6 +9551,7 @@ SOURCE:
         mode="reactive",
         runtime_state=None,
         force_general_planner=False,
+        direct_reply_act_handoff_p4=None,
     ):
         if mode == "proactive":
             selected = self._think_proactive(memory_data, current_psyche, runtime_state=runtime_state)
@@ -9619,6 +9620,18 @@ Keep this instruction internal; the final utterance should sound like ordinary c
 """
             if placement_advice_act_p4 else ""
         )
+        # This opt-in context is supplied only by the current cognitive tick
+        # after M29 and the actual full-planner route have been checked.  The
+        # second validation here prevents a stale/mismatched source from ever
+        # reaching the model.  No inferred user state or fixed surface line is
+        # introduced.
+        direct_reply_act_contract_p4 = ""
+        if direct_reply_act_handoff_p4 is not None:
+            from uruha_direct_reply_act_planner_handoff_p4 import planner_constraint_p4
+
+            direct_reply_act_contract_p4 = planner_constraint_p4(
+                user_input, direct_reply_act_handoff_p4
+            )
         sys_prompt = f"""
 You are the Left Brain Planner for a dual-brain character system.
 Your job is NOT to write the final reply.
@@ -9628,7 +9641,7 @@ You must think like a human planner, not like a one-shot classifier.
 [System Goal]
 - Final output should feel human.
 {persona_goal_line}
-- The right brain must not decide knowledge or policy by itself.{placement_advice_contract_p4}
+- The right brain must not decide knowledge or policy by itself.{placement_advice_contract_p4}{direct_reply_act_contract_p4}
 
 [Memory]
 - Working memory cue: {working_memory_summary}
@@ -9766,6 +9779,8 @@ Return ONLY valid JSON with this structure:
                 "model_call_completed": True,
                 "fallback_used": False,
                 "forced_general_planner": bool(force_general_planner),
+                **({"direct_reply_act_prompt_injected_p4": bool(direct_reply_act_contract_p4)}
+                   if direct_reply_act_handoff_p4 is not None else {}),
                 "raw_dialogue_persisted": False,
             }
             if placement_advice_act_p4:
@@ -9819,6 +9834,8 @@ Return ONLY valid JSON with this structure:
                 "model_call_completed": False,
                 "fallback_used": True,
                 "forced_general_planner": bool(force_general_planner),
+                **({"direct_reply_act_prompt_injected_p4": bool(direct_reply_act_contract_p4)}
+                   if direct_reply_act_handoff_p4 is not None else {}),
                 "error_type": type(e).__name__,
                 "raw_dialogue_persisted": False,
             }
@@ -17154,6 +17171,7 @@ class UruhaBrainV4_Mac:
             "feedback_topic_surface_m28",
             "literal_topic_projection_m29",
             "literal_topic_surface_m29",
+            "direct_reply_act_planner_handoff_p4",
             "semantic_authorization_m31",
             "semantic_authorized_surface_m31",
             "semantic_commit_repair_m32",
@@ -19738,6 +19756,14 @@ class UruhaBrainV4_Mac:
             grounded_profile_logic=grounded_profile_logic,
             task_shape_m22=semantic_route_m22,
         )
+        direct_reply_act_arm_p4 = os.getenv("URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM", "")
+        direct_reply_act_candidate_p4 = None
+        if direct_reply_act_arm_p4 in {"control", "treatment"}:
+            from uruha_direct_reply_act_planner_handoff_p4 import validate_handoff_p4
+
+            direct_reply_act_candidate_p4 = validate_handoff_p4(
+                user_input, literal_topic_projection_m29, source_semantic_atoms_m33
+            )
         m21_planner_started = time.perf_counter()
         if route_info.get("route") == "low_road":
             logic = self.left_brain._build_low_road_plan(user_input, self.psyche.get_state(), mems, route_info)
@@ -19765,11 +19791,17 @@ class UruhaBrainV4_Mac:
             logic = bounded_simple_logic
             m21_route = "bounded_simple_presence"
         else:
+            direct_reply_act_planner_kwargs_p4 = (
+                {"direct_reply_act_handoff_p4": direct_reply_act_candidate_p4}
+                if direct_reply_act_arm_p4 == "treatment" and direct_reply_act_candidate_p4
+                else {}
+            )
             logic = self.left_brain.think(
                 user_input,
                 mems,
                 psyche_before,
                 force_general_planner=m21_deliberative_complexity,
+                **direct_reply_act_planner_kwargs_p4,
             )
             m21_route = "full_planner"
         m21_planner_finished = time.perf_counter()
@@ -19777,6 +19809,21 @@ class UruhaBrainV4_Mac:
             ((logic.get("bounded_slow_path_m21") or {}).get("route"))
             or m21_route
         )
+        direct_reply_act_route_receipt_p4 = None
+        if direct_reply_act_arm_p4 in {"control", "treatment"}:
+            from uruha_direct_reply_act_planner_handoff_p4 import route_receipt_p4
+
+            direct_reply_act_route_receipt_p4 = route_receipt_p4(
+                arm=direct_reply_act_arm_p4,
+                source=user_input,
+                handoff=direct_reply_act_candidate_p4,
+                route=performed_route,
+                planner_prompt_injected=bool(
+                    (logic.get("bounded_slow_path_m21") or {}).get(
+                        "direct_reply_act_prompt_injected_p4"
+                    )
+                ),
+            )
         selected_task_type = str(
             semantic_route_m22.get("selected_type") or "general_conversation"
         )
@@ -20001,6 +20048,10 @@ class UruhaBrainV4_Mac:
             ),
         }
         logic["bounded_slow_path_m21"] = m21_route_trace
+        if direct_reply_act_route_receipt_p4 is not None:
+            logic["direct_reply_act_planner_handoff_p4"] = deepcopy(
+                direct_reply_act_route_receipt_p4
+            )
         logic["semantic_route_m22"] = deepcopy(semantic_route_m22)
         logic["desired_response_mode_m23"] = deepcopy(desired_response_mode_m23)
         logic["explicit_desired_response_m25"] = deepcopy(
@@ -20284,6 +20335,13 @@ class UruhaBrainV4_Mac:
             self.runtime.last_selected_plan,
             salience=0.97,
         )
+        if direct_reply_act_route_receipt_p4 is not None:
+            self._push_blackboard(
+                "plan",
+                "direct_reply_act_planner_handoff_p4",
+                direct_reply_act_route_receipt_p4,
+                salience=0.99 if direct_reply_act_route_receipt_p4.get("planner_prompt_injected") else 0.82,
+            )
         if self.runtime.open_loops:
             self._push_blackboard(
                 "select",

@@ -24,8 +24,23 @@ _QUOTE = re.compile(r"[「」『』“”\"'〈〉《》]")
 _NEGATION = re.compile(r"(?:じゃない|ではない|わけじゃない|いらない|要らない|しないで|やめて|不要|なしで|違う)")
 _REPORTED = re.compile(
     r"(?:メモ\s*[:：]|(?:次の文|この文|例文|引用|翻訳|訳して|翻訳して)|"
-    r"(?:同僚|友人|友達|先生|他人)からの(?:依頼|伝言)|"
-    r"(?:同僚|友人|友達|先生|他人).{0,24}(?:と言った|が言った|と書いた|が書いた))"
+    # Speaker nouns cannot be enumerated: family, roles, and names may all
+    # introduce reported speech.  A preceding attribution makes the source
+    # of a later imperative uncertain, so the direct-act gate fails closed.
+    r"[^。！？!?\n]{1,48}(?:"
+    r"(?:からの|の)(?:依頼|伝言|指示)"
+    r"|(?:が|は)[^。！？!?\n]{0,12}(?:言った|話した|書いた|頼んだ|伝えた)"
+    r"|(?:から|に)[^。！？!?\n]{0,12}(?:頼まれた|伝えられた|指示された)"
+    r"|(?:と|って)(?:言った|書いた)"
+    r")"
+    r"(?:[。！？!?：:]|$))"
+)
+# This admission gate cannot establish who owns an unquoted imperative after
+# a prior speech, report, or request.  Prefer a false negative (ordinary
+# planner still sees the User text) to a false current-User certificate.  This
+# is a finite Japanese cue policy, not universal reported-speech parsing.
+_SOURCE_AMBIGUOUS_PREFIX = re.compile(
+    r"言|話|聞|伝|頼|書|お願い|依頼|指示|要望|要求|引用|メモ|リクエスト"
 )
 _PROTECTED = re.compile(
     r"(?:パスワード|パスコード|暗証番号|認証コード|秘密鍵|個人情報|住所|電話番号|口座|"
@@ -79,6 +94,10 @@ def classify_direct_reply_act_p4(source: str) -> dict:
     cues = list(_CUE.finditer(text))
     if matched is None:
         certificate["status"] = "ambiguous" if cues else "narrative"
+        return certificate
+    if _SOURCE_AMBIGUOUS_PREFIX.search(text[:matched.start()]):
+        certificate["status"] = "ambiguous"
+        certificate["source_kind"] = "reported_or_non_user_text"
         return certificate
     # A unique direct final clause, with no competing earlier command.  The
     # rest of the turn may describe a user event but does not license emotion.

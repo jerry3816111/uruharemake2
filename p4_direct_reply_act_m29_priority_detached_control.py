@@ -3,9 +3,12 @@
 
 from pathlib import Path
 from types import ModuleType
+import argparse
+import sys
 
 import p4_preference_fallback_launchd_control as launchd
 import p4_reported_receipt_destination_detached_control as prior
+import p4_preference_fallback_safe_isolated_product_launcher as product_launcher
 
 
 ENTRYPOINT = Path(__file__).resolve().parent / "uruha_web_ui_product_p4_direct_reply_act_m29_priority.py"
@@ -28,17 +31,51 @@ while _pending:
 
 
 def main(argv: list[str] | None = None) -> int:
+    arm_parser = argparse.ArgumentParser(add_help=False)
+    arm_parser.add_argument("--direct-act-arm", choices=("control", "treatment"), default="control")
+    arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
+    # The arm is a child-process setting for a product start, never a generic
+    # process-global option and never inherited from the invoking shell.
+    # Parse only the two fields needed to scope the child flag.  The actual
+    # detached controller (not launchd's different parser) owns validation of
+    # prepare/start/status/stop and prepared-root arguments.
+    scope_parser = argparse.ArgumentParser(add_help=False)
+    scope_parser.add_argument("action", nargs="?")
+    scope_parser.add_argument("--mode", choices=("product", "inert"), default="product")
+    request, _ = scope_parser.parse_known_args(forwarded)
+    product_start = request.action == "start" and request.mode == "product"
+    if arm_args.direct_act_arm == "treatment" and not product_start:
+        arm_parser.error("treatment requires start --mode product")
     original_env = launchd._isolated_env
+    original_preflight = product_launcher.preflight_preference_fallback
 
     def compute_env(layout: dict[str, Path], *, port: int | None) -> dict[str, str]:
         env = original_env(layout, port=port)
-        return {**env, "URUHA_WEB_COMPUTE_LEDGER": "1"}
+        env = {**env, "URUHA_WEB_COMPUTE_LEDGER": "1"}
+        if product_start:
+            env.update({
+                "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": arm_args.direct_act_arm,
+                "URUHA_WEB_PREWARM_BRAIN": "1",
+                "URUHA_WEB_ACTIVE_DB_RECEIPT_PATH": str(
+                    layout["runtime_root"] / "active_db_receipt.json"
+                ),
+            })
+        return env
 
     launchd._isolated_env = compute_env
+    if product_start:
+        # The detached base controller explicitly invokes preflight with
+        # prewarm=False and filters the final environment through that result.
+        # Scope the override to this one product start, for both arms alike.
+        def same_arm_preflight(**kwargs):
+            return original_preflight(**{**kwargs, "prewarm": True})
+
+        product_launcher.preflight_preference_fallback = same_arm_preflight
     try:
-        return prior.base_controller.main(argv)
+        return prior.base_controller.main(forwarded)
     finally:
         launchd._isolated_env = original_env
+        product_launcher.preflight_preference_fallback = original_preflight
 
 
 if __name__ == "__main__":

@@ -201,6 +201,87 @@ WEB_PREWARM_BRAIN = str(os.getenv("URUHA_WEB_PREWARM_BRAIN", "1")).strip().lower
     "off",
 }
 WEB_COMPUTE_LEDGER_ENABLED = os.getenv("URUHA_WEB_COMPUTE_LEDGER", "").strip() == "1"
+WEB_ACTIVE_DB_RECEIPT_PATH = os.getenv("URUHA_WEB_ACTIVE_DB_RECEIPT_PATH", "").strip()
+_ACTIVE_DB_RECEIPT_SCHEMA = "uruha_web_active_db_receipt_p4_v1"
+
+
+def _write_private_active_db_receipt(payload):
+    """Opt-in same-process diagnostic; never expose it through the Web UI."""
+    if not WEB_ACTIVE_DB_RECEIPT_PATH:
+        return False
+    target = Path(WEB_ACTIVE_DB_RECEIPT_PATH)
+    if not target.is_absolute() or target.name != "active_db_receipt.json":
+        return False
+    root = target.parent
+    try:
+        root_info = os.lstat(root)
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or root_info.st_uid != os.getuid()
+            or stat.S_IMODE(root_info.st_mode) != 0o700
+            or root.resolve(strict=True) != root
+        ):
+            return False
+        # The receipt may only be written next to both controller-scoped DBs.
+        for key, expected_name in (
+            ("URUHA_MEMORY_DB_PATH", "memory_db"),
+            ("URUHA_WEB_SESSION_DB_PATH", "session_db"),
+        ):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db.name != expected_name or db.parent != root:
+                return False
+        try:
+            current = os.lstat(target)
+        except FileNotFoundError:
+            current = None
+        if current is not None and (
+            not stat.S_ISREG(current.st_mode)
+            or current.st_uid != os.getuid()
+            or stat.S_IMODE(current.st_mode) != 0o600
+        ):
+            return False
+        pending = root / f".active_db_receipt.{secrets.token_hex(8)}.tmp"
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(pending, flags, 0o600)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                os.fchmod(stream.fileno(), 0o600)
+                json.dump(payload, stream, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(pending, target)
+            return True
+        finally:
+            if pending.exists():
+                pending.unlink()
+    except (OSError, ValueError, TypeError):
+        # Invalid opt-in measurement fails closed; ordinary Web operation stays unchanged.
+        return False
+
+
+def _live_active_db_path(brain):
+    """Read only the live Chroma client, not DB_PATH or an environment hint."""
+    try:
+        path = brain.memory.client.get_settings().persist_directory
+        if not isinstance(path, str) or not path or not os.path.isabs(path):
+            return None
+        return str(Path(path).resolve(strict=False))
+    except Exception:
+        # Chroma may surface provider-specific settings exceptions; never infer
+        # the active path from the environment when the live read fails.
+        return None
+
+
+def _live_autonomous_tick(brain):
+    try:
+        tick = brain.runtime.autonomous_tick_index
+    except Exception:
+        return None
+    return tick if type(tick) is int and tick >= 0 else None
+
+
 WEB_CSS = """
 .wrap {max-width: 1560px; margin: 0 auto;}
 .trace-board {display: flex; gap: 12px; overflow-x: auto; padding: 8px 2px 12px;}
@@ -433,11 +514,40 @@ class RuntimeManager:
         }
         self._session_id = self._new_session_id()
         self._turn_index = 0
+        self._reset_generation = 0
+        self._human_submission_finish_count = 0
+        self._active_db_phase = "not_started"
+        self._active_db_receipt_lock = threading.Lock()
         self._last_activity_at = time.time()
         self._last_idle_consolidation_at = 0.0
         self._idle_seconds = 300
         self._idle_thread = threading.Thread(target=self._idle_consolidation_loop, daemon=True)
         self._idle_thread.start()
+        self._publish_active_db_receipt()
+
+    def _publish_active_db_receipt(self):
+        if not WEB_ACTIVE_DB_RECEIPT_PATH:
+            return False
+        # Serialize concurrent init/reset/background publications so an older
+        # snapshot cannot replace a newer one after the latter is written.
+        with self._active_db_receipt_lock:
+            brain = self._brain
+            phase = self._active_db_phase
+            active_path = _live_active_db_path(brain) if brain is not None and phase == "ready" else None
+            tick = _live_autonomous_tick(brain) if brain is not None and phase == "ready" else None
+            ready = phase == "ready" and active_path is not None and tick is not None
+            return _write_private_active_db_receipt({
+                "schema": _ACTIVE_DB_RECEIPT_SCHEMA,
+                "pid": os.getpid(),
+                "session_id": self._session_id,
+                "reset_generation": self._reset_generation,
+                "human_submission_finish_count": self._human_submission_finish_count,
+                "brain_status": phase if brain is not None or phase != "ready" else "unavailable",
+                "active_db_status": "available" if ready else "unavailable",
+                "active_db_path": active_path if ready else None,
+                "autonomous_tick_index": tick if ready else None,
+                "contains_raw_dialogue": False,
+            })
 
     def _new_session_id(self):
         return f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid4().hex[:8]}"
@@ -456,6 +566,8 @@ class RuntimeManager:
             self._brain_load_trace.update(
                 {"status": "loading", "started_at": datetime.now().isoformat(timespec="seconds")}
             )
+            self._active_db_phase = "loading"
+            self._publish_active_db_receipt()
             print(Fore.CYAN + "🧠 [Web] Loading V2 brain...")
             try:
                 self._brain = (
@@ -471,6 +583,8 @@ class RuntimeManager:
                         "error_type": type(exc).__name__,
                     }
                 )
+                self._active_db_phase = "error"
+                self._publish_active_db_receipt()
                 raise
             self._brain_load_trace.update(
                 {
@@ -479,6 +593,8 @@ class RuntimeManager:
                     "finished_at": datetime.now().isoformat(timespec="seconds"),
                 }
             )
+            self._active_db_phase = "ready"
+            self._publish_active_db_receipt()
         return self._brain
 
     def start_brain_prewarm(self):
@@ -522,6 +638,7 @@ class RuntimeManager:
     def finish_human_turn(self):
         with self._human_gate_lock:
             self._human_waiters = max(0, self._human_waiters - 1)
+            self._human_submission_finish_count += 1
             self._scheduler_trace.update(
                 {
                     "human_waiters": self._human_waiters,
@@ -529,6 +646,10 @@ class RuntimeManager:
                     "human_priority_active": self._human_waiters > 0,
                 }
             )
+        # Refresh after the generator has delivered its final UI result, so a
+        # post-send receipt reads the live client again rather than a startup
+        # snapshot.  The finish count distinguishes it from an idle refresh.
+        self._publish_active_db_receipt()
 
     def human_turn_pending(self):
         with self._human_gate_lock:
@@ -566,10 +687,13 @@ class RuntimeManager:
                 return None
             self._record_background_decision("running", "background_admitted")
             background_cycle = self._brain.run_background_cycle
-            if "allow_model_maintenance" in inspect.signature(background_cycle).parameters:
-                result = background_cycle(allow_model_maintenance=False)
-            else:
-                result = background_cycle()
+            try:
+                if "allow_model_maintenance" in inspect.signature(background_cycle).parameters:
+                    result = background_cycle(allow_model_maintenance=False)
+                else:
+                    result = background_cycle()
+            finally:
+                self._publish_active_db_receipt()
             self._record_background_decision(
                 "completed" if result else "idle_noop",
                 "background_completed" if result else "background_not_due",
@@ -615,10 +739,20 @@ class RuntimeManager:
                 os.path.join(tempfile.gettempdir(), "uruha_web_session_db"),
             )
         )
-        brain.reset_session(db_path)
+        self._active_db_phase = "resetting"
+        self._publish_active_db_receipt()
+        try:
+            brain.reset_session(db_path)
+        except Exception:
+            self._active_db_phase = "reset_error"
+            self._publish_active_db_receipt()
+            raise
         self._session_id = self._new_session_id()
+        self._reset_generation += 1
         self._turn_index = 0
         self.mark_activity()
+        self._active_db_phase = "ready"
+        self._publish_active_db_receipt()
         return brain
 
 
