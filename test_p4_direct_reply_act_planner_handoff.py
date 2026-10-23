@@ -258,6 +258,7 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
         return kwargs
 
     monkeypatch.setattr(controller.product_launcher, "preflight_preference_fallback", fake_preflight)
+    monkeypatch.setenv("URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH", str(tmp_path / "shell_injected.jsonl"))
 
     def fake_main(forwarded):
         observed.append((list(forwarded), controller.launchd._isolated_env(layout, port=None),
@@ -279,11 +280,13 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
             assert observed[-1][0] == argv
             assert "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM" not in observed[-1][1]
             assert "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM" not in observed[-1][2]
+            assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
         assert controller.main(["start", "--prepared-runtime-root", str(tmp_path), "--python", "venv"]) == 0
         assert observed[-1][1]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "control"
         assert observed[-1][2]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "control"
         assert observed[-1][2]["URUHA_WEB_PREWARM_BRAIN"] == "1"
         assert observed[-1][2]["URUHA_WEB_ACTIVE_DB_RECEIPT_PATH"] == str(tmp_path / "active_db_receipt.json")
+        assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
         assert preflight_calls[-1]["prewarm"] is True
         assert controller.main(["--direct-act-arm", "treatment", "start", "--mode", "product", "--python", "venv"]) == 0
         assert observed[-1][0] == ["start", "--mode", "product", "--python", "venv"]
@@ -291,7 +294,29 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
         assert observed[-1][2]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "treatment"
         assert observed[-1][2]["URUHA_WEB_PREWARM_BRAIN"] == "1"
         assert observed[-1][2]["URUHA_WEB_ACTIVE_DB_RECEIPT_PATH"] == str(tmp_path / "active_db_receipt.json")
+        assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
         assert preflight_calls[-1]["prewarm"] is True
+        assert controller.main([
+            "--turn-admission-journal", "start", "--mode", "product", "--python", "venv"
+        ]) == 0
+        assert observed[-1][0] == ["start", "--mode", "product", "--python", "venv"]
+        assert observed[-1][1]["URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"] == str(
+            tmp_path / "turn_admission_journal.jsonl"
+        )
+        assert observed[-1][2]["URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"] == str(
+            tmp_path / "turn_admission_journal.jsonl"
+        )
+        for action in (
+            ["--turn-admission-journal", "prepare"],
+            ["--turn-admission-journal", "status", "--runtime-root", str(tmp_path)],
+            ["--turn-admission-journal", "verify-ready", "--runtime-root", str(tmp_path)],
+            ["--turn-admission-journal", "stop", "--runtime-root", str(tmp_path)],
+            ["--turn-admission-journal", "start", "--mode", "inert", "--seconds", "2"],
+        ):
+            before = len(observed)
+            with pytest.raises(SystemExit):
+                controller.main(action)
+            assert len(observed) == before
         with pytest.raises(SystemExit):
             controller.main(["--direct-act-arm", "treatment", "prepare"])
     finally:

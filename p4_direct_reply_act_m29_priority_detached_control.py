@@ -35,6 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     arm_parser = argparse.ArgumentParser(add_help=False)
     arm_parser.add_argument("--direct-act-arm", choices=("control", "treatment"), default="control")
     arm_parser.add_argument("--product-port", type=int, default=7894)
+    arm_parser.add_argument("--turn-admission-journal", action="store_true")
     arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
     try:
         selected_port = base_launcher.validate_port(arm_args.product_port)
@@ -52,6 +53,8 @@ def main(argv: list[str] | None = None) -> int:
     product_start = request.action == "start" and request.mode == "product"
     if arm_args.direct_act_arm == "treatment" and not product_start:
         arm_parser.error("treatment requires start --mode product")
+    if arm_args.turn_admission_journal and not product_start:
+        arm_parser.error("turn admission journal requires start --mode product")
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
     original_port = prior.base_controller.PORT
@@ -67,6 +70,10 @@ def main(argv: list[str] | None = None) -> int:
                     layout["runtime_root"] / "active_db_receipt.json"
                 ),
             })
+            if arm_args.turn_admission_journal:
+                env["URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"] = str(
+                    layout["runtime_root"] / "turn_admission_journal.jsonl"
+                )
         return env
 
     # The base controller consistently uses PORT for prepared receipts,

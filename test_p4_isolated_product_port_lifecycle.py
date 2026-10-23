@@ -43,7 +43,10 @@ def test_all_cli_actions_forward_only_the_selected_port_and_restore_default():
         }
         def no_launch_main(argv):
             env = wrapper.launchd._isolated_env(layout, port=base.PORT)
-            observed.append([list(argv), base.PORT, env["URUHA_WEB_PORT"]])
+            observed.append([
+                list(argv), base.PORT, env["URUHA_WEB_PORT"],
+                env.get("URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"),
+            ])
             return 17
         base.main = no_launch_main
         for action in ("prepare", "start", "status", "verify-ready", "stop"):
@@ -55,13 +58,21 @@ def test_all_cli_actions_forward_only_the_selected_port_and_restore_default():
             assert wrapper.launchd._isolated_env is original_env
             assert wrapper.product_launcher.preflight_preference_fallback is original_preflight
         assert wrapper.main(["status", "--runtime-root", "/tmp/unused"]) == 17
-        assert observed[-1][1:] == [7894, "7894"]
-        assert len(observed) == 6
-        assert all(row[1:] == [7914, "7914"] for row in observed[:5])
+        assert observed[-1][1:] == [7894, "7894", None]
+        assert wrapper.main([
+            "--turn-admission-journal", "start", "--mode", "product",
+            "--product-port", "7916",
+        ]) == 17
+        assert observed[-1][1:] == [
+            7916, "7916", "/tmp/port-contract/turn_admission_journal.jsonl",
+        ]
+        assert len(observed) == 7
+        assert all(row[1:] == [7914, "7914", None] for row in observed[:5])
         assert all("--product-port" not in row[0] for row in observed)
+        assert all("--turn-admission-journal" not in row[0] for row in observed)
         print(json.dumps({"actions": len(observed), "default": original_port}))
     """)
-    assert result == {"actions": 6, "default": 7894}
+    assert result == {"actions": 7, "default": 7894}
 
 
 def test_invalid_port_and_exception_leave_all_globals_unchanged():
