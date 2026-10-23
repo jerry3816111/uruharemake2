@@ -72,7 +72,7 @@ from human_feedback_validation import (
     normalize_failure_types,
 )
 from uruha_brain_mac import UruhaBrainV4_Mac
-from uruha_compute_ledger import ComputeLedger
+from uruha_compute_ledger import ComputeLedger, InstrumentedChromaCollection
 from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS
 from uruha_m38_memory_observatory import (
     render_memory_observatory_m38 as render_memory_observatory,
@@ -202,7 +202,19 @@ WEB_PREWARM_BRAIN = str(os.getenv("URUHA_WEB_PREWARM_BRAIN", "1")).strip().lower
 }
 WEB_COMPUTE_LEDGER_ENABLED = os.getenv("URUHA_WEB_COMPUTE_LEDGER", "").strip() == "1"
 WEB_ACTIVE_DB_RECEIPT_PATH = os.getenv("URUHA_WEB_ACTIVE_DB_RECEIPT_PATH", "").strip()
+WEB_TURN_ADMISSION_JOURNAL_PATH = os.getenv("URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH", "").strip()
 _ACTIVE_DB_RECEIPT_SCHEMA = "uruha_web_active_db_receipt_p4_v1"
+_TURN_ADMISSION_SCHEMA = "uruha_web_turn_admission_p4_v1"
+_UNSTARTED_ADMISSION_LEASE_SECONDS = 120.0
+_STARTED_ADMISSION_LEASE_SECONDS = 600.0
+_ADMISSION_TERMINAL_STATUSES = frozenset({
+    "delivered", "aborted", "error", "unknown", "empty_input", "empty_audio",
+    "no_transcript", "no_turn_result", "transcription_only", "invalid",
+})
+
+
+def _safe_admission_submission_id(token):
+    return token if isinstance(token, str) and re.fullmatch(r"[0-9a-f]{32}", token) else ""
 
 
 def _write_private_active_db_receipt(payload):
@@ -280,6 +292,264 @@ def _live_autonomous_tick(brain):
     except Exception:
         return None
     return tick if type(tick) is int and tick >= 0 else None
+
+
+def _append_private_turn_admission_event(path, payload):
+    """Append one raw-free event in the same private root as both test DBs."""
+    if not path:
+        return False
+    target = Path(path)
+    if not target.is_absolute() or target.name != "turn_admission_journal.jsonl":
+        return False
+    root = target.parent
+    try:
+        root_info = os.lstat(root)
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or root_info.st_uid != os.getuid()
+            or stat.S_IMODE(root_info.st_mode) != 0o700
+            or root.resolve(strict=True) != root
+        ):
+            return False
+        for key, name in (("URUHA_MEMORY_DB_PATH", "memory_db"), ("URUHA_WEB_SESSION_DB_PATH", "session_db")):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db.name != name or db.parent != root:
+                return False
+            try:
+                db_info = os.lstat(db)
+            except FileNotFoundError:
+                # session_db is normally created only after Reset. It may be
+                # absent, never a symlink, until it is the live client path.
+                continue
+            if (not stat.S_ISDIR(db_info.st_mode) or db_info.st_uid != os.getuid()
+                    or stat.S_IMODE(db_info.st_mode) != 0o700 or db.resolve(strict=True) != db):
+                return False
+        flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(target, flags, 0o600)
+        try:
+            info = os.fstat(fd)
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600
+                or info.st_nlink != 1
+            ):
+                return False
+            offset = info.st_size
+            row = (json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+            with os.fdopen(fd, "wb") as stream:
+                fd = -1
+                stream.write(row)
+                stream.flush()
+                os.fsync(stream.fileno())
+            # A method return or fsync alone is not an audited record. Read the
+            # exact appended bytes back before releasing a scoped compute item.
+            reader = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            try:
+                reread_info = os.fstat(reader)
+                return bool(
+                    stat.S_ISREG(reread_info.st_mode)
+                    and reread_info.st_uid == os.getuid()
+                    and stat.S_IMODE(reread_info.st_mode) == 0o600
+                    and reread_info.st_nlink == 1
+                    and (reread_info.st_dev, reread_info.st_ino) == (info.st_dev, info.st_ino)
+                    and os.pread(reader, len(row), offset) == row
+                )
+            finally:
+                os.close(reader)
+        finally:
+            if fd >= 0:
+                os.close(fd)
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _isolated_turn_admission_live_db_path(journal_path, live_path):
+    """The live Chroma client must point at one of this trial's real private DBs."""
+    if not journal_path or not live_path:
+        return False
+    target = Path(journal_path)
+    if not target.is_absolute() or target.name != "turn_admission_journal.jsonl":
+        return False
+    root = target.parent
+    try:
+        info = os.lstat(root)
+        if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o700 or root.resolve(strict=True) != root):
+            return False
+        allowed = []
+        for key, name in (("URUHA_MEMORY_DB_PATH", "memory_db"), ("URUHA_WEB_SESSION_DB_PATH", "session_db")):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db != root / name:
+                return False
+            try:
+                db_info = os.lstat(db)
+            except FileNotFoundError:
+                continue
+            if (not stat.S_ISDIR(db_info.st_mode) or db_info.st_uid != os.getuid()
+                    or stat.S_IMODE(db_info.st_mode) != 0o700 or db.resolve(strict=True) != db):
+                return False
+            allowed.append(str(db))
+        return live_path in allowed
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _background_ledger_covers_brain(brain, ledger):
+    """Only count method-level Chroma attribution from the Brain's own wrappers."""
+    if ledger is None or getattr(brain, "compute_ledger", None) is not ledger:
+        return False
+    memory = getattr(brain, "memory", None)
+    if getattr(memory, "compute_ledger", None) is not ledger:
+        return False
+    return all(
+        isinstance(getattr(memory, name, None), InstrumentedChromaCollection)
+        and getattr(getattr(memory, name), "_ledger", None) is ledger
+        for name in ("kb_col", "episode_col", "wisdom_col", "procedural_col", "profile_col")
+    )
+
+
+def _read_private_turn_admission_rows(path):
+    """Read a complete, same-process, gap-free private opt-in journal."""
+    target = Path(path)
+    if not _isolated_turn_admission_live_db_path(path, str(target.parent / "memory_db")):
+        return None
+    try:
+        fd = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        try:
+            info = os.fstat(fd)
+            if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                    or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1
+                    or info.st_size > 16 * 1024 * 1024):
+                return None
+            with os.fdopen(fd, "rb") as stream:
+                fd = -1
+                raw = stream.read()
+            if not raw.endswith(b"\n"):
+                return None
+            rows = [json.loads(line) for line in raw.splitlines()]
+            if [row.get("sequence") for row in rows] != list(range(1, len(rows) + 1)):
+                return None
+            if any(
+                row.get("schema") != _TURN_ADMISSION_SCHEMA
+                or row.get("pid") != os.getpid()
+                or row.get("contains_raw_dialogue") is not False
+                for row in rows
+            ):
+                return None
+            return rows
+        finally:
+            if fd >= 0:
+                os.close(fd)
+    except (OSError, ValueError, TypeError, KeyError, UnicodeDecodeError, AttributeError):
+        return None
+
+
+def _admission_record_rows_verified(path, record):
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    return all(
+        type(expected.get("sequence")) is int
+        and 1 <= expected["sequence"] <= len(rows)
+        and rows[expected["sequence"] - 1] == expected
+        for key in ("arrival_row", "snapshot_row", "start_row", "end_row")
+        if (expected := record.get(key)) is not None
+    )
+
+
+def _verified_background_admission_pair(path, start, end):
+    """Verify the exact two saved JSONL events before ledger evidence retires."""
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    matches_start = [row for row in rows if row.get("sequence") == start["sequence"]]
+    matches_end = [row for row in rows if row.get("sequence") == end["sequence"]]
+    try:
+        return bool(
+                matches_start == [start] and matches_end == [end]
+                and start["event"] == "background_start"
+                and end["event"] == "background_end"
+                and start["submission_id"] == end["submission_id"]
+                and end["start_sequence"] == start["sequence"]
+                and end["start_journal_ok"] is True
+                and end["ledger_status"] == "attributed"
+                and end["ledger_coverage_complete"] is True
+                and _isolated_turn_admission_live_db_path(path, start.get("active_db_path"))
+                and _isolated_turn_admission_live_db_path(path, end.get("active_db_path"))
+                and start.get("active_db_path") == end.get("active_db_path")
+                and start.get("session_id") == end.get("session_id")
+                and start.get("reset_generation") == end.get("reset_generation")
+                and not start.get("independent_worker_active")
+                and not end.get("independent_worker_active")
+                and all(
+                    start.get(key) is not None and end.get(key) is not None
+                    for key in ("runtime_sha256", "memory_sha256", "psyche_sha256")
+                )
+                and end["status"] in {"completed", "idle_noop"}
+                and not end["error_type"]
+                and end["vector_mutation_error_count"] == 0
+            )
+    except (ValueError, TypeError, KeyError):
+        return False
+
+
+def _background_journal_pairs_complete(path):
+    """An unmatched background start cannot be treated as a clean idle gap."""
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    pending = {}
+    seen = set()
+    for row in rows:
+        event = row.get("event")
+        if event == "background_start":
+            item_id = row.get("submission_id")
+            if not isinstance(item_id, str) or not item_id or item_id in seen:
+                return False
+            pending[item_id] = row["sequence"]
+            seen.add(item_id)
+        elif event == "background_end":
+            item_id = row.get("submission_id")
+            start_sequence = row.get("start_sequence")
+            if (not isinstance(item_id, str) or item_id not in pending
+                    or type(start_sequence) is not int or pending[item_id] != start_sequence):
+                return False
+            pending.pop(item_id)
+    return not pending
+
+
+def _private_state_digest(getter):
+    """Expose only a digest of potentially dialogue-bearing live state."""
+    try:
+        payload = json.dumps(getter(), ensure_ascii=False, sort_keys=True, default=str)
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    except Exception:
+        return None
+
+
+def _admission_in_memory_projection(memory):
+    """A pure field read: do not call MemoryManager.get_runtime_snapshot().
+
+    That public snapshot runs a procedural Chroma query. This projection only
+    covers live in-process memory; durable DB operations have a separate,
+    explicitly incomplete method-level compute ledger.
+    """
+    try:
+        fields = vars(memory)
+        required = ("session_profile", "session_turns", "short_term_buffer", "_consolidated_turn_index")
+        if any(key not in fields for key in required):
+            return None
+        names = required + (
+            "_last_consolidation_at", "_last_decay_at", "_last_maintenance_result",
+            "_last_saved_episode_id", "_last_reflection_result",
+            "_last_working_memory_provenance", "_last_profile_state_shadow",
+        )
+        return {key: fields.get(key) for key in names}
+    except (TypeError, ValueError):
+        return None
 
 
 WEB_CSS = """
@@ -522,6 +792,22 @@ class RuntimeManager:
         self._human_submission_finish_count = 0
         self._active_db_phase = "not_started"
         self._active_db_receipt_lock = threading.Lock()
+        self._turn_admission_journal_path = WEB_TURN_ADMISSION_JOURNAL_PATH
+        self._turn_admission_journal_lock = threading.Lock()
+        self._admission_journal_write_latencies_seconds = []
+        self._admission_event_seq = 0
+        self._admission_records = {}
+        self._background_admission_events = []
+        self._admission_audit_invalid = False
+        if self._turn_admission_journal_path:
+            try:
+                # A process starts its sequence at 1. Reusing a nonempty file
+                # would make earlier trial events indistinguishable from ours.
+                self._admission_audit_invalid = os.lstat(self._turn_admission_journal_path).st_size != 0
+            except FileNotFoundError:
+                pass
+            except OSError:
+                self._admission_audit_invalid = True
         self._last_activity_at = time.time()
         self._last_idle_consolidation_at = 0.0
         self._idle_seconds = 300
@@ -566,6 +852,7 @@ class RuntimeManager:
         with self._brain_init_lock:
             if self._brain is not None:
                 return self._brain
+            self._admission_preflight_before_db_effect(creating_brain=True)
             started = time.perf_counter()
             self._brain_load_trace.update(
                 {"status": "loading", "started_at": datetime.now().isoformat(timespec="seconds")}
@@ -625,8 +912,102 @@ class RuntimeManager:
     def mark_activity(self):
         self._last_activity_at = time.time()
 
+    def _admission_enabled(self):
+        return bool(getattr(self, "_turn_admission_journal_path", ""))
+
+    def _admission_preflight_before_db_effect(self, creating_brain=False, reset_path=None):
+        """Reject an unsafe opt-in trial before Chroma construction or reset."""
+        if not self._admission_enabled():
+            return
+        path = self._turn_admission_journal_path
+        root = Path(path).parent
+        if self._admission_audit_invalid or not _isolated_turn_admission_live_db_path(
+            path, str(root / "memory_db"),
+        ):
+            raise RuntimeError("turn_admission_db_preflight_unavailable")
+        if reset_path is not None and Path(reset_path) != root / "session_db":
+            raise RuntimeError("turn_admission_reset_path_not_isolated")
+        if creating_brain:
+            # MemoryManager reads the module global captured at import time,
+            # not the current environment. A prior valid reset may point it
+            # at session_db, so either existing private DB is permitted.
+            loaded_module = sys.modules.get("uruha_brain_mac")
+            loaded_path = getattr(loaded_module, "DB_PATH", None)
+            if not _isolated_turn_admission_live_db_path(path, loaded_path):
+                raise RuntimeError("turn_admission_constructor_db_not_isolated")
+        try:
+            info = os.lstat(path)
+        except FileNotFoundError:
+            if self._admission_event_seq == 0:
+                return
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        except OSError as exc:
+            raise RuntimeError("turn_admission_journal_preflight_unavailable") from exc
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1
+                or info.st_size > 16 * 1024 * 1024):
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        if info.st_size == 0:
+            if self._admission_event_seq == 0:
+                return
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        rows = _read_private_turn_admission_rows(path)
+        if rows is None or len(rows) != self._admission_event_seq:
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+
+    def _admission_event_under_gate(self, event, **fields):
+        """Caller holds human gate; event order is a server-side sequence."""
+        self._admission_event_seq += 1
+        row = {
+            "schema": _TURN_ADMISSION_SCHEMA,
+            "event": event,
+            "sequence": self._admission_event_seq,
+            "pid": os.getpid(),
+            "session_id": self._session_id,
+            "reset_generation": self._reset_generation,
+            "monotonic_ns": time.monotonic_ns(),
+            "contains_raw_dialogue": False,
+            **fields,
+        }
+        with self._turn_admission_journal_lock:
+            write_started = time.perf_counter()
+            saved = _append_private_turn_admission_event(self._turn_admission_journal_path, row)
+            if saved:
+                rows = _read_private_turn_admission_rows(self._turn_admission_journal_path)
+                saved = bool(rows is not None and len(rows) == row["sequence"] and rows[-1] == row)
+            self._admission_journal_write_latencies_seconds.append(time.perf_counter() - write_started)
+            self._admission_journal_write_latencies_seconds = self._admission_journal_write_latencies_seconds[-256:]
+            if not saved:
+                self._admission_audit_invalid = True
+        return row, saved
+
+    def _admission_state(self, brain):
+        workers = (getattr(brain, "_timer_thread", None), getattr(brain, "_event_worker_thread", None))
+        memory_projection = _admission_in_memory_projection(getattr(brain, "memory", None))
+        return {
+            "active_db_path": _live_active_db_path(brain),
+            "autonomous_tick_index": _live_autonomous_tick(brain),
+            "runtime_sha256": _private_state_digest(brain._runtime_public_state)
+            if callable(getattr(brain, "_runtime_public_state", None)) else None,
+            "memory_sha256": _private_state_digest(lambda: memory_projection)
+            if memory_projection is not None else None,
+            "memory_fingerprint_scope": "in_memory_only",
+            "psyche_sha256": _private_state_digest(brain.psyche.get_state)
+            if callable(getattr(getattr(brain, "psyche", None), "get_state", None)) else None,
+            "independent_worker_active": any(thread is not None and thread.is_alive() for thread in workers),
+        }
+
     def begin_human_turn(self):
         """Register human work before it enters Gradio's queued executor."""
+        started, _token = self.begin_human_turn_with_token(source="legacy")
+        return started
+
+    def begin_human_turn_with_token(self, source="browser"):
+        """Register an optional raw-free arrival at the same waiter boundary."""
+        started = time.perf_counter()
+        if source not in {"browser", "direct_no_browser_admission", "legacy"}:
+            raise ValueError("unsupported admission source")
+        token = secrets.token_hex(16) if self._admission_enabled() and source != "legacy" else ""
         with self._human_gate_lock:
             self._human_waiters += 1
             self._scheduler_trace.update(
@@ -636,13 +1017,265 @@ class RuntimeManager:
                     "human_priority_active": True,
                 }
             )
+            if token:
+                row, saved = self._admission_event_under_gate(
+                    "arrival", submission_id=token, source=source,
+                    status="registered", autonomous_tick_index=None, active_db_path=None,
+                )
+                self._admission_records[token] = {
+                    "arrival_sequence": row["sequence"],
+                    "arrival_row": row,
+                    "session_id": self._session_id,
+                    "reset_generation": self._reset_generation,
+                    "source": source,
+                    "journal_ok": saved,
+                    "registered_at": time.monotonic(),
+                    "last_progress_at": time.monotonic(),
+                    "snapshot_pending": True,
+                    "started": False,
+                    "finished": False,
+                    "waiter_released": False,
+                }
         self.mark_activity()
-        return time.perf_counter()
+        if token:
+            # Arrival is already ordered under the gate. This later Brain-lock
+            # sample is deliberately NOT described as the physical click.
+            with self._lock:
+                state = self._admission_state(self._brain) if self._brain is not None else {
+                    "active_db_path": None, "autonomous_tick_index": None,
+                }
+                with self._human_gate_lock:
+                    _row, saved = self._admission_event_under_gate(
+                        "admission_snapshot", submission_id=token,
+                        status="ready" if self._active_db_phase == "ready" else "unavailable",
+                        **state,
+                    )
+                    record = self._admission_records.get(token)
+                    if record is None:
+                        self._admission_audit_invalid = True
+                        raise RuntimeError("turn_admission_expired_before_snapshot")
+                    record["admission_state"] = state
+                    record["snapshot_row"] = _row
+                    record["journal_ok"] = bool(record["journal_ok"] and saved)
+                    record["snapshot_pending"] = False
+                    if state.get("independent_worker_active"):
+                        self._admission_audit_invalid = True
+        return started, token
 
-    def finish_human_turn(self):
+    def admission_session_id(self, token):
+        with self._human_gate_lock:
+            record = self._admission_records.get(token)
+            return record["session_id"] if record else ""
+
+    def _expire_stale_admissions(self):
+        """A lost queued/delivery callback must not suppress background forever."""
+        if not self._admission_enabled():
+            return
+        now = time.monotonic()
+        with self._human_gate_lock:
+            stale = [token for token, record in self._admission_records.items()
+                     if not record.get("snapshot_pending")
+                     and now - record["last_progress_at"] >= (
+                         _STARTED_ADMISSION_LEASE_SECONDS if record["started"]
+                         else _UNSTARTED_ADMISSION_LEASE_SECONDS
+                     )]
+            for token in stale:
+                record = self._admission_records[token]
+                self._admission_audit_invalid = True
+                _row, saved = self._admission_event_under_gate(
+                    "terminal", submission_id=token, status="admission_timeout_unknown",
+                    stage="cognition_or_delivery" if record["started"] else "queued",
+                    active_db_path=None, autonomous_tick_index=None,
+                )
+                if not saved:
+                    self._admission_audit_invalid = True
+                self._admission_records.pop(token, None)
+                if not record["waiter_released"]:
+                    record["waiter_released"] = True
+                    self._human_waiters = max(0, self._human_waiters - 1)
+            if stale:
+                self._scheduler_trace.update({
+                    "human_waiters": self._human_waiters,
+                    "last_decision": "queued_human_admission_expired",
+                    "human_priority_active": self._human_waiters > 0,
+                })
+
+    def start_admitted_turn(self, token, brain):
+        """Call only while the Brain lock is held, before model generation."""
+        if not self._admission_enabled():
+            return None
+        state = self._admission_state(brain)
+        with self._human_gate_lock:
+            record = self._admission_records.get(token) if isinstance(token, str) else None
+            reason = ""
+            if record is None:
+                reason = "missing_or_unknown_token"
+            elif record["started"] or record["finished"]:
+                reason = "duplicate_token"
+            elif not record["journal_ok"]:
+                reason = "arrival_not_durable"
+            elif not _admission_record_rows_verified(self._turn_admission_journal_path, record):
+                reason = "journal_lineage_unavailable"
+            elif not _background_journal_pairs_complete(self._turn_admission_journal_path):
+                reason = "background_journal_pair_unavailable"
+            elif not _isolated_turn_admission_live_db_path(
+                self._turn_admission_journal_path, state.get("active_db_path"),
+            ):
+                reason = "live_db_not_isolated"
+            elif record["session_id"] != self._session_id or record["reset_generation"] != self._reset_generation:
+                reason = "session_or_reset_drift"
+            elif not record.get("admission_state") or not record["admission_state"].get("active_db_path"):
+                reason = "admission_snapshot_unavailable"
+            elif record["admission_state"].get("independent_worker_active"):
+                reason = "independent_worker_active"
+            elif any(record["admission_state"].get(key) is None or state.get(key) is None for key in (
+                "runtime_sha256", "memory_sha256", "psyche_sha256",
+            )):
+                reason = "state_fingerprint_unavailable"
+            elif any(record["admission_state"].get(key) != state.get(key) for key in (
+                "active_db_path", "autonomous_tick_index", "runtime_sha256", "memory_sha256", "psyche_sha256",
+            )):
+                reason = "admission_state_drift"
+            elif self._active_db_phase != "ready" or not state["active_db_path"] or state["autonomous_tick_index"] is None:
+                reason = "live_brain_unavailable"
+            elif state["independent_worker_active"]:
+                reason = "independent_worker_active"
+            elif any(
+                event["start_sequence"] > record["arrival_sequence"]
+                or event["start_sequence"] < record["arrival_sequence"] < event["end_sequence"]
+                for event in self._background_admission_events
+            ):
+                reason = "background_overlapped_arrival"
+            elif any(event["ledger_status"] != "attributed" for event in self._background_admission_events):
+                reason = "background_write_attribution_unavailable"
+            elif self._admission_audit_invalid:
+                reason = "background_audit_unavailable"
+            if reason:
+                self._admission_audit_invalid = True
+                self._admission_event_under_gate(
+                    "invalid", submission_id=_safe_admission_submission_id(token), status=reason,
+                    active_db_path=state["active_db_path"],
+                    autonomous_tick_index=state["autonomous_tick_index"],
+                )
+                raise RuntimeError(f"turn_admission_{reason}")
+            row, saved = self._admission_event_under_gate(
+                "cognition_start", submission_id=token, status="ready", **state,
+            )
+            if not saved:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_start_not_durable")
+            record["started"] = True
+            record["start_sequence"] = row["sequence"]
+            record["start_row"] = row
+            record["start_state"] = state
+            record["last_progress_at"] = time.monotonic()
+            return row
+
+    def end_admitted_cognition(self, token, brain, status="completed"):
+        """Capture the state before releasing the Brain lock."""
+        if not self._admission_enabled():
+            return None
+        state = self._admission_state(brain)
+        if status != "completed" and not re.fullmatch(r"error_[A-Za-z][A-Za-z0-9_]{0,63}", status):
+            status = "error_unknown_type"
+        with self._human_gate_lock:
+            record = self._admission_records.get(token)
+            if not record or not record["started"] or record["finished"]:
+                raise RuntimeError("turn_admission_missing_cognition_start")
+            start_state = record["start_state"]
+            drift = (
+                record["session_id"] != self._session_id
+                or record["reset_generation"] != self._reset_generation
+                or start_state["active_db_path"] != state["active_db_path"]
+                or start_state["autonomous_tick_index"] != state["autonomous_tick_index"]
+                or any(state.get(key) is None for key in (
+                    "runtime_sha256", "memory_sha256", "psyche_sha256",
+                ))
+                or state["independent_worker_active"]
+            )
+            row, saved = self._admission_event_under_gate(
+                "cognition_end", submission_id=token,
+                status="state_drift" if drift else status, **state,
+            )
+            if not saved:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_end_not_durable")
+            record["finished"] = True
+            record["end_state"] = state
+            record["end_row"] = row
+            record["end_journal_ok"] = saved
+            record["last_progress_at"] = time.monotonic()
+            if drift:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_cognition_state_drift")
+            return row
+
+    def finish_human_turn(self, admission_token="", terminal_status="unknown"):
+        # The terminal snapshot is taken after UI/log delivery, but before
+        # lowering the waiter. Otherwise the next idle tick can become Tpost.
+        if self._admission_enabled():
+            with self._lock:
+                state = self._admission_state(self._brain) if self._brain is not None else {
+                    "active_db_path": None, "autonomous_tick_index": None,
+                }
+                with self._human_gate_lock:
+                    record = self._admission_records.pop(admission_token, None)
+                    if terminal_status not in _ADMISSION_TERMINAL_STATUSES:
+                        terminal_status = "unknown_status"
+                        self._admission_audit_invalid = True
+                    drift = bool(record and (
+                        (self._admission_audit_invalid and terminal_status == "delivered")
+                        or not _admission_record_rows_verified(self._turn_admission_journal_path, record)
+                        or (terminal_status == "delivered" and (
+                            not record.get("started") or not record.get("finished")
+                            or not record.get("start_row") or not record.get("end_row")
+                            or not record.get("end_journal_ok")
+                            or record["start_row"].get("status") != "ready"
+                            or record["end_row"].get("status") != "completed"
+                        ))
+                        or record["session_id"] != self._session_id
+                        or record["reset_generation"] != self._reset_generation
+                        or (record.get("start_state") and record["start_state"].get("active_db_path") != state.get("active_db_path"))
+                        or (record.get("end_state") and any(
+                            record["end_state"].get(key) != state.get(key)
+                            for key in (
+                                "active_db_path", "autonomous_tick_index",
+                                "runtime_sha256", "memory_sha256", "psyche_sha256",
+                            )
+                        ))
+                        or (record.get("started") and (
+                            any(state.get(key) is None for key in (
+                                "runtime_sha256", "memory_sha256", "psyche_sha256",
+                            )) or state["independent_worker_active"]
+                        ))
+                        or (record.get("started") and (
+                            not record.get("finished") or not record.get("end_journal_ok")
+                        ))
+                    ))
+                    status = (
+                        "missing_or_unknown_token" if record is None else
+                        "terminal_state_drift" if drift else terminal_status
+                    )
+                    _row, saved = self._admission_event_under_gate(
+                        "terminal", submission_id=_safe_admission_submission_id(admission_token), status=status,
+                        delivery_observation="server_generator_only", **state,
+                    )
+                    if not saved or record is None or drift:
+                        self._admission_audit_invalid = True
+                    if record is not None and not record["waiter_released"]:
+                        record["waiter_released"] = True
+                        self._human_waiters = max(0, self._human_waiters - 1)
+                        self._human_submission_finish_count = getattr(self, "_human_submission_finish_count", 0) + 1
+                        self._scheduler_trace.update({
+                            "human_waiters": self._human_waiters,
+                            "last_decision": "human_completed",
+                            "human_priority_active": self._human_waiters > 0,
+                        })
+            self._publish_active_db_receipt()
+            return
         with self._human_gate_lock:
             self._human_waiters = max(0, self._human_waiters - 1)
-            self._human_submission_finish_count += 1
+            self._human_submission_finish_count = getattr(self, "_human_submission_finish_count", 0) + 1
             self._scheduler_trace.update(
                 {
                     "human_waiters": self._human_waiters,
@@ -674,8 +1307,174 @@ class RuntimeManager:
                 }
             )
 
+    def _run_background_once_attributed_locked(self):
+        """The caller holds the Brain lock; account for one opt-in cycle."""
+        brain = self._brain
+        before = self._admission_state(brain)
+        item_id = f"background_{secrets.token_hex(16)}"
+        with self._human_gate_lock:
+            if self._human_waiters:
+                self._scheduler_trace.update({
+                    "human_waiters": self._human_waiters,
+                    "background_status": "skipped",
+                    "last_decision": "human_arrived_before_background",
+                    "human_priority_active": True,
+                })
+                return None
+            if not _isolated_turn_admission_live_db_path(
+                self._turn_admission_journal_path, before.get("active_db_path"),
+            ):
+                self._admission_audit_invalid = True
+                self._admission_event_under_gate(
+                    "invalid", submission_id="", status="live_db_not_isolated",
+                    active_db_path=before.get("active_db_path"),
+                    autonomous_tick_index=before.get("autonomous_tick_index"),
+                )
+                return None
+            start, start_saved = self._admission_event_under_gate(
+                "background_start", submission_id=item_id, status="admitted", **before,
+            )
+        self._record_background_decision("running", "background_admitted")
+        configured_ledger = getattr(self, "_compute_ledger", None)
+        ledger_coverage_complete = _background_ledger_covers_brain(brain, configured_ledger)
+        ledger = configured_ledger if ledger_coverage_complete else None
+        checkpoint = None
+        result = None
+        error_type = ""
+        snapshot = None
+        try:
+            checkpoint = ledger.checkpoint() if ledger is not None else None
+            cycle = brain.run_background_cycle
+            with ledger.item_scope(item_id, "background_admission") if ledger is not None else nullcontext():
+                if "allow_model_maintenance" in inspect.signature(cycle).parameters:
+                    result = cycle(allow_model_maintenance=False)
+                else:
+                    result = cycle()
+            if result is not None and (
+                not isinstance(result, dict)
+                or (result.get("goal") is not None and not isinstance(result.get("goal"), dict))
+                or (result.get("memory_writes") is not None and not isinstance(result.get("memory_writes"), list))
+            ):
+                raise TypeError("malformed_background_result")
+            return result
+        except BaseException as exc:
+            name = type(exc).__name__
+            error_type = name if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", name) else "UnknownError"
+            raise
+        finally:
+            if ledger is not None:
+                try:
+                    snapshot = ledger.snapshot_item(item_id, since_call_index=checkpoint)
+                except Exception:
+                    snapshot = None
+            if not isinstance(snapshot, dict):
+                snapshot = None
+            calls = snapshot.get("calls") if snapshot is not None else None
+            summary = snapshot.get("summary") if snapshot is not None else None
+            if (snapshot is not None and (
+                not isinstance(calls, list) or not isinstance(summary, dict)
+                or any(not isinstance(call, dict) or not isinstance(call.get("request"), dict) for call in calls)
+                or not isinstance(summary.get("by_resource_kind"), dict)
+                or not isinstance(summary.get("by_operation"), dict)
+            )):
+                snapshot = None
+            calls = snapshot["calls"] if snapshot is not None else []
+            summary = snapshot["summary"] if snapshot is not None else {}
+            mutations = [
+                call for call in calls
+                if call.get("resource_kind") == "vector_store_operation"
+                and (call.get("request") or {}).get("operation") in {"add", "update", "upsert", "delete"}
+            ]
+            compute_summary = None if snapshot is None else {
+                "item_id": item_id,
+                "since_call_index": snapshot.get("since_call_index"),
+                "window_end_call_index": snapshot.get("window_end_call_index"),
+                "call_count": snapshot.get("call_count"),
+                "unscoped_call_count_during_window": snapshot.get("unscoped_call_count_during_window"),
+                "other_item_call_count_during_window": snapshot.get("other_item_call_count_during_window"),
+                "by_resource_kind": {
+                    key: value for key, value in (summary.get("by_resource_kind") or {}).items()
+                    if re.fullmatch(r"[a-z_]{1,48}", str(key)) and type(value) is int
+                },
+                "by_operation": {
+                    key: value for key, value in (summary.get("by_operation") or {}).items()
+                    if re.fullmatch(r"[a-z_]{1,48}", str(key)) and type(value) is int
+                },
+                "prompt_tokens": summary.get("prompt_tokens"),
+                "completion_tokens": summary.get("completion_tokens"),
+                "total_tokens": summary.get("total_tokens"),
+                "generative_token_accounting_complete": summary.get("generative_token_accounting_complete"),
+                "summed_operation_latency_seconds": summary.get("summed_operation_latency_seconds"),
+            }
+            after = self._admission_state(brain)
+            malformed_result = result is not None and not isinstance(result, dict)
+            safe_result = result if isinstance(result, dict) else {}
+            goal = safe_result.get("goal") or {}
+            reported_writes = safe_result.get("memory_writes") or []
+            if not isinstance(goal, dict) or not isinstance(reported_writes, list):
+                malformed_result = True
+                goal = {}
+                reported_writes = []
+            if malformed_result and not error_type:
+                error_type = "MalformedBackgroundResult"
+            goal_kind = str(goal.get("kind") or "")
+            if not re.fullmatch(r"[a-z0-9_]{1,64}", goal_kind):
+                goal_kind = "unknown"
+            with self._human_gate_lock:
+                end, end_saved = self._admission_event_under_gate(
+                    "background_end", submission_id=item_id,
+                    status="error" if error_type else "completed" if result else "idle_noop",
+                    start_sequence=start["sequence"], start_journal_ok=start_saved,
+                    error_type=error_type, goal_kind=goal_kind,
+                    memory_diff_nonempty=bool(safe_result.get("memory_diff")) if not malformed_result else None,
+                    reported_memory_write_count=len(reported_writes) if not malformed_result else None,
+                    ledger_status=(
+                        "attributed" if snapshot and snapshot.get("attribution_complete") is True
+                        else "ambiguous" if snapshot else "unavailable"
+                    ),
+                    ledger_coverage_complete=ledger_coverage_complete,
+                    vector_mutation_returned_count=sum(not call.get("error_type") for call in mutations),
+                    vector_mutation_error_count=sum(bool(call.get("error_type")) for call in mutations),
+                    compute_summary=compute_summary,
+                    **after,
+                )
+                self._background_admission_events.append({
+                    "start_sequence": start["sequence"],
+                    "end_sequence": end["sequence"],
+                    "journal_ok": bool(start_saved and end_saved),
+                    "before": before,
+                    "after": after,
+                    "ledger_status": "attributed" if snapshot and snapshot.get("attribution_complete") is True else "unknown",
+                    "error_type": error_type,
+                })
+                self._background_admission_events = self._background_admission_events[-64:]
+                if (not start_saved or not end_saved or error_type or not snapshot
+                        or snapshot.get("attribution_complete") is not True
+                        or any(call.get("error_type") for call in mutations)):
+                    self._admission_audit_invalid = True
+            pair_verified = bool(
+                start_saved and end_saved and snapshot and snapshot.get("attribution_complete") is True
+                and _verified_background_admission_pair(self._turn_admission_journal_path, start, end)
+            )
+            if snapshot and snapshot.get("attribution_complete") is True and not pair_verified:
+                self._admission_audit_invalid = True
+            if pair_verified:
+                try:
+                    retired = ledger.retire_item_snapshot(snapshot)
+                    if retired is False and calls:
+                        self._admission_audit_invalid = True
+                except Exception:
+                    self._admission_audit_invalid = True
+            self._publish_active_db_receipt()
+            self._record_background_decision(
+                "error" if error_type else "completed" if result else "idle_noop",
+                "background_error" if error_type else "background_completed" if result else "background_not_due",
+            )
+
     def run_background_once(self):
         """Run one cooperative background tick without queueing ahead of a human."""
+        if self._admission_enabled():
+            self._expire_stale_admissions()
         if self._brain is None:
             self._record_background_decision("skipped", "brain_not_ready")
             return None
@@ -686,6 +1485,8 @@ class RuntimeManager:
             self._record_background_decision("skipped", "brain_busy")
             return None
         try:
+            if self._admission_enabled():
+                return self._run_background_once_attributed_locked()
             if self.human_turn_pending():
                 self._record_background_decision("skipped", "human_arrived_before_background")
                 return None
@@ -736,13 +1537,20 @@ class RuntimeManager:
         return self._mouth
 
     def reset_brain_session(self):
-        brain = self.get_brain()
+        # A direct/programmatic reset must respect the same Brain boundary as
+        # a queued human turn; Gradio lane ordering alone is not sufficient.
+        with self._lock:
+            return self._reset_brain_session_locked()
+
+    def _reset_brain_session_locked(self):
         db_path = os.path.abspath(
             os.getenv(
                 "URUHA_WEB_SESSION_DB_PATH",
                 os.path.join(tempfile.gettempdir(), "uruha_web_session_db"),
             )
         )
+        self._admission_preflight_before_db_effect(reset_path=db_path)
+        brain = self.get_brain()
         self._active_db_phase = "resetting"
         self._publish_active_db_receipt()
         try:
@@ -3056,7 +3864,16 @@ def begin_human_submission(value):
 
 
 def begin_human_submission_with_session(value):
+    if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+        started, token = RUNTIME.begin_human_turn_with_token(source="browser")
+        return started, {"session_id": RUNTIME.admission_session_id(token), "admission_token": token}
     return begin_human_submission(value), RUNTIME._session_id
+
+
+def _browser_submission_meta(value):
+    if isinstance(value, dict):
+        return str(value.get("session_id") or ""), str(value.get("admission_token") or "")
+    return str(value or ""), ""
 
 
 def _product_compute_receipt(ledger, item_id, checkpoint, input_mode, terminal_error=None):
@@ -3193,6 +4010,7 @@ def _run_turn(
     acoustic_summary=None,
     frontend_enqueue_started=0.0,
     handler_started=0.0,
+    admission_token="",
 ):
     user_text = (user_text or "").strip()
     if not user_text:
@@ -3220,6 +4038,9 @@ def _run_turn(
                 _persist_terminal_compute_failure(failed)
             raise
         brain_ready_at = time.perf_counter()
+        admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
+        if admission_active:
+            RUNTIME.start_admitted_turn(admission_token, brain)
         ledger = (
             configured_ledger
             if configured_ledger is not None
@@ -3242,12 +4063,19 @@ def _run_turn(
                     # Compatibility for narrow test doubles and older runtime adapters.
                     turn = turn_debug(user_text)
         except Exception as exc:
+            if admission_active:
+                try:
+                    RUNTIME.end_admitted_cognition(admission_token, brain, status=f"error_{type(exc).__name__}")
+                except Exception:
+                    pass  # Keep the original generation error; terminal journal remains invalid.
             if compute_item_id is not None:
                 failed = _product_compute_receipt(ledger, compute_item_id, checkpoint, input_mode, exc)
                 failed["durable_private_failure_written"] = _persist_terminal_compute_failure(failed)
                 if failed["durable_private_failure_written"]:
                     _retire_persisted_product_compute_item(ledger, failed)
             raise
+        if admission_active:
+            RUNTIME.end_admitted_cognition(admission_token, brain)
         if compute_item_id is not None:
             compute_receipt = _product_compute_receipt(
                 ledger, compute_item_id, checkpoint, input_mode,
@@ -3579,9 +4407,42 @@ def poll_proactive_turn(history, auto_tts):
         if human_pending():
             return (gr.skip(),) * 7
         brain = RUNTIME._brain
-        proactive = brain.consume_pending_proactive_turn()
-        memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
-        autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+        if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+            # Brain lock -> human gate matches background admission ordering.
+            # A queue-free arrival cannot occur halfway through a proactive
+            # memory write. Any such delivery invalidates this opt-in trial;
+            # its vector costs are not falsely attributed to a human turn.
+            with RUNTIME._human_gate_lock:
+                if RUNTIME._human_waiters:
+                    return (gr.skip(),) * 7
+                before = RUNTIME._admission_state(brain)
+                try:
+                    proactive = brain.consume_pending_proactive_turn()
+                    memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
+                    autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+                except Exception:
+                    RUNTIME._admission_audit_invalid = True
+                    RUNTIME._admission_event_under_gate(
+                        "invalid", submission_id="", status="proactive_delivery_error",
+                        active_db_path=before.get("active_db_path"),
+                        autonomous_tick_index=before.get("autonomous_tick_index"),
+                    )
+                    raise
+                after = RUNTIME._admission_state(brain)
+                if proactive or any(before.get(key) != after.get(key) for key in (
+                    "active_db_path", "autonomous_tick_index", "runtime_sha256",
+                    "memory_sha256", "psyche_sha256",
+                )):
+                    RUNTIME._admission_audit_invalid = True
+                    RUNTIME._admission_event_under_gate(
+                        "invalid", submission_id="", status="proactive_delivery_unattributed",
+                        active_db_path=after.get("active_db_path"),
+                        autonomous_tick_index=after.get("autonomous_tick_index"),
+                    )
+        else:
+            proactive = brain.consume_pending_proactive_turn()
+            memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
+            autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
     finally:
         RUNTIME._lock.release()
     if not proactive:
@@ -3651,7 +4512,7 @@ def _cleanup_input_audio(audio_path):
         print(Fore.YELLOW + f"⚠️ [Web] Failed to remove input audio: {audio_path} ({exc})")
 
 
-def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started):
+def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started, admission_token=""):
     handler_started = time.perf_counter()
     user_text = (message or "").strip()
     if not user_text:
@@ -3662,12 +4523,14 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started):
     pending_history = _append_history(pending_history, "assistant", "...")
     yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
 
+    admission_kwargs = {"admission_token": admission_token} if admission_token else {}
     result = _run_turn(
         user_text,
         auto_tts,
         input_mode="text",
         frontend_enqueue_started=frontend_enqueue_started,
         handler_started=handler_started,
+        **admission_kwargs,
     )
     if result is None:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
@@ -3711,49 +4574,75 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started):
     yield streamed_history, streamed_history, "", result["audio_path"], debug_payload, client_cognition, result["flow_html"], result["state_html"], client_memory, _status_markdown(), client_record, annotation_context, annotation_status
 
 
-def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0):
+def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0, admission_token=""):
     frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
+    admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
     if frontend_enqueue_started <= 0.0:
-        frontend_enqueue_started = RUNTIME.begin_human_turn()
+        if admission_active:
+            frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
+                source="direct_no_browser_admission",
+            )
+        else:
+            frontend_enqueue_started = RUNTIME.begin_human_turn()
+    terminal_status = "empty_input" if not (message or "").strip() else "aborted"
     try:
         yield from _submit_text_impl(
             message,
             history,
             auto_tts,
             frontend_enqueue_started,
+            admission_token=admission_token,
         )
+        if terminal_status != "empty_input":
+            terminal_status = "delivered"
+    except Exception:
+        terminal_status = "error"
+        raise
     finally:
-        RUNTIME.finish_human_turn()
+        if admission_active:
+            RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+        else:
+            RUNTIME.finish_human_turn()
 
 
 def _with_browser_graph_receipt(stream, expected_session_id):
-    for update in stream:
-        client_record = update[10]
-        if isinstance(client_record, dict) and "session_id" in client_record and "turn_index" in client_record:
-            yield (*update, _mint_browser_graph_receipt(client_record, expected_session_id))
-        else:
-            yield (*update, gr.skip())
+    try:
+        for update in stream:
+            client_record = update[10]
+            if isinstance(client_record, dict) and "session_id" in client_record and "turn_index" in client_record:
+                yield (*update, _mint_browser_graph_receipt(client_record, expected_session_id))
+            else:
+                yield (*update, gr.skip())
+    finally:
+        close = getattr(stream, "close", None)
+        if close is not None:
+            close()
 
 
 def submit_text_browser_bound(
     message, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
 ):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    stream = (
+        submit_text(message, history, auto_tts, frontend_enqueue_started, admission_token=token)
+        if token else submit_text(message, history, auto_tts, frontend_enqueue_started)
+    )
     yield from _with_browser_graph_receipt(
-        submit_text(message, history, auto_tts, frontend_enqueue_started),
-        expected_session_id,
+        stream,
+        session_id,
     )
 
 
-def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started):
+def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=""):
     handler_started = time.perf_counter()
     if not audio_path:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
-        return
+        return "empty_audio"
     text = RUNTIME.get_ears().transcribe_audio_file(audio_path)
     if not text:
         _cleanup_input_audio(audio_path)
         yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("沒有辨識到語音內容。"), _empty_html("State Diff", "沒有辨識到語音內容。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
-        return
+        return "no_transcript"
 
     pending_history = _append_history(history, "user", text)
     pending_history = _append_history(pending_history, "assistant", "...")
@@ -3762,6 +4651,7 @@ def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started):
     # The current audio frontend exposes a transcript but no validated acoustic
     # feature extractor.  Pass that boundary explicitly so the cognitive trace
     # marks prosody/speed/pause evidence unavailable instead of inventing tone.
+    admission_kwargs = {"admission_token": admission_token} if admission_token else {}
     result = _run_turn(
         text,
         auto_tts,
@@ -3769,11 +4659,12 @@ def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started):
         acoustic_summary=None,
         frontend_enqueue_started=frontend_enqueue_started,
         handler_started=handler_started,
+        **admission_kwargs,
     )
     if result is None:
         _cleanup_input_audio(audio_path)
         yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
-        return
+        return "no_turn_result"
     streamed_history = list(pending_history)
     streamed_history[-1] = {"role": "assistant", "content": ""}
     debug_payload = dict(result["debug"])
@@ -3812,29 +4703,49 @@ def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started):
     _cleanup_input_audio(audio_path)
     streamed_history[-1] = {"role": "assistant", "content": result["reply"]}
     yield streamed_history, streamed_history, result["user_text"], result["audio_path"], debug_payload, client_cognition, result["flow_html"], result["state_html"], client_memory, _status_markdown(), client_record, annotation_context, annotation_status, gr.update(value=None)
+    return "delivered"
 
 
-def submit_audio(audio_path, history, auto_tts, frontend_enqueue_started=0.0):
+def submit_audio(audio_path, history, auto_tts, frontend_enqueue_started=0.0, admission_token=""):
     frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
+    admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
     if frontend_enqueue_started <= 0.0:
-        frontend_enqueue_started = RUNTIME.begin_human_turn()
+        if admission_active:
+            frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
+                source="direct_no_browser_admission",
+            )
+        else:
+            frontend_enqueue_started = RUNTIME.begin_human_turn()
+    terminal_status = "aborted"
     try:
-        yield from _submit_audio_impl(
+        terminal_status = (yield from _submit_audio_impl(
             audio_path,
             history,
             auto_tts,
             frontend_enqueue_started,
-        )
+            admission_token=admission_token,
+        )) or "unknown"
+    except Exception:
+        terminal_status = "error"
+        raise
     finally:
-        RUNTIME.finish_human_turn()
+        if admission_active:
+            RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+        else:
+            RUNTIME.finish_human_turn()
 
 
 def submit_audio_browser_bound(
     audio_path, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
 ):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    stream = (
+        submit_audio(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=token)
+        if token else submit_audio(audio_path, history, auto_tts, frontend_enqueue_started)
+    )
     yield from _with_browser_graph_receipt(
-        submit_audio(audio_path, history, auto_tts, frontend_enqueue_started),
-        expected_session_id,
+        stream,
+        session_id,
     )
 
 
@@ -3844,10 +4755,14 @@ def handle_audio_stop(
     auto_tts,
     voice_chat_mode,
     frontend_enqueue_started=0.0,
+    admission_token="",
 ):
     if not audio_path:
         if frontend_enqueue_started:
-            RUNTIME.finish_human_turn()
+            if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status="empty_audio")
+            else:
+                RUNTIME.finish_human_turn()
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         return
     if voice_chat_mode:
@@ -3856,27 +4771,38 @@ def handle_audio_stop(
             history,
             auto_tts,
             frontend_enqueue_started=frontend_enqueue_started,
+            admission_token=admission_token,
         )
         return
+    terminal_status = "aborted"
     try:
         transcript = transcribe_audio_only(audio_path)
         _cleanup_input_audio(audio_path)
         yield history, history, transcript, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("只完成轉錄，尚未送入大腦。"), _empty_html("State Diff", "只完成轉錄，尚未送入大腦。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+        terminal_status = "transcription_only"
+    except Exception:
+        terminal_status = "error"
+        raise
     finally:
         if frontend_enqueue_started:
-            RUNTIME.finish_human_turn()
+            if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+            else:
+                RUNTIME.finish_human_turn()
 
 
 def handle_audio_stop_browser_bound(
     audio_path, history, auto_tts, voice_chat_mode,
     frontend_enqueue_started=0.0, expected_session_id="",
 ):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    admission_kwargs = {"admission_token": token} if token else {}
     yield from _with_browser_graph_receipt(
         handle_audio_stop(
             audio_path, history, auto_tts, voice_chat_mode,
-            frontend_enqueue_started,
+            frontend_enqueue_started, **admission_kwargs,
         ),
-        expected_session_id,
+        session_id,
     )
 
 
