@@ -248,6 +248,7 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
     import p4_direct_reply_act_m29_priority_detached_control as controller
 
     original_main = controller.prior.base_controller.main
+    original_port = controller.prior.base_controller.PORT
     observed = []
     preflight_calls = []
     layout = {"runtime_root": tmp_path, "memory_db": tmp_path, "session_db": tmp_path,
@@ -255,16 +256,21 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
 
     def fake_preflight(**kwargs):
         preflight_calls.append(kwargs)
-        return kwargs
+        return {}, dict(kwargs.get("environ") or {}), layout, False, None
 
     monkeypatch.setattr(controller.product_launcher, "preflight_preference_fallback", fake_preflight)
     monkeypatch.setenv("URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH", str(tmp_path / "shell_injected.jsonl"))
+    monkeypatch.setenv("URUHA_P4_REPAIR_CUE_BOUNDARY", "1")
 
     def fake_main(forwarded):
-        observed.append((list(forwarded), controller.launchd._isolated_env(layout, port=None),
-                         controller.launchd._isolated_env(layout, port=7894)))
+        preflight_env = controller.launchd._isolated_env(layout, port=None)
+        child_allowlist = controller.launchd._isolated_env(
+            layout, port=controller.prior.base_controller.PORT)
+        child_env = None
         if forwarded[0] == "start" and "inert" not in forwarded:
-            controller.product_launcher.preflight_preference_fallback(prewarm=False)
+            _, child_env, _, _, _ = controller.product_launcher.preflight_preference_fallback(
+                prewarm=False, environ=preflight_env)
+        observed.append((list(forwarded), preflight_env, child_allowlist, child_env))
         return 0
 
     monkeypatch.setattr(controller.prior.base_controller, "main", fake_main)
@@ -281,12 +287,18 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
             assert "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM" not in observed[-1][1]
             assert "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM" not in observed[-1][2]
             assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
+            assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][1]
+            assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][2]
+            assert observed[-1][3] is None
         assert controller.main(["start", "--prepared-runtime-root", str(tmp_path), "--python", "venv"]) == 0
         assert observed[-1][1]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "control"
         assert observed[-1][2]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "control"
         assert observed[-1][2]["URUHA_WEB_PREWARM_BRAIN"] == "1"
         assert observed[-1][2]["URUHA_WEB_ACTIVE_DB_RECEIPT_PATH"] == str(tmp_path / "active_db_receipt.json")
         assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][1]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][2]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][3]
         assert preflight_calls[-1]["prewarm"] is True
         assert controller.main(["--direct-act-arm", "treatment", "start", "--mode", "product", "--python", "venv"]) == 0
         assert observed[-1][0] == ["start", "--mode", "product", "--python", "venv"]
@@ -295,6 +307,9 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
         assert observed[-1][2]["URUHA_WEB_PREWARM_BRAIN"] == "1"
         assert observed[-1][2]["URUHA_WEB_ACTIVE_DB_RECEIPT_PATH"] == str(tmp_path / "active_db_receipt.json")
         assert "URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH" not in observed[-1][2]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][1]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][2]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][3]
         assert preflight_calls[-1]["prewarm"] is True
         assert controller.main([
             "--turn-admission-journal", "start", "--mode", "product", "--python", "venv"
@@ -306,12 +321,43 @@ def test_detached_controller_arm_is_only_product_child_env(tmp_path, monkeypatch
         assert observed[-1][2]["URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"] == str(
             tmp_path / "turn_admission_journal.jsonl"
         )
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][1]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][2]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][3]
+        assert controller.main([
+            "--repair-cue-boundary", "--turn-admission-journal",
+            "--direct-act-arm", "treatment", "--product-port", "7914",
+            "start", "--mode", "product", "--python", "venv",
+        ]) == 0
+        assert observed[-1][0] == ["start", "--mode", "product", "--python", "venv"]
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in observed[-1][1]
+        assert observed[-1][2]["URUHA_P4_REPAIR_CUE_BOUNDARY"] == "1"
+        assert observed[-1][3]["URUHA_P4_REPAIR_CUE_BOUNDARY"] == "1"
+        assert observed[-1][2]["URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM"] == "treatment"
+        assert observed[-1][2]["URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH"] == str(
+            tmp_path / "turn_admission_journal.jsonl"
+        )
+        assert observed[-1][2]["URUHA_WEB_PORT"] == "7914"
+        assert controller.prior.base_controller.PORT == original_port
+        assert preflight_calls[-1]["prewarm"] is True
+        assert "URUHA_P4_REPAIR_CUE_BOUNDARY" not in preflight_calls[-1]["environ"]
         for action in (
             ["--turn-admission-journal", "prepare"],
             ["--turn-admission-journal", "status", "--runtime-root", str(tmp_path)],
             ["--turn-admission-journal", "verify-ready", "--runtime-root", str(tmp_path)],
             ["--turn-admission-journal", "stop", "--runtime-root", str(tmp_path)],
             ["--turn-admission-journal", "start", "--mode", "inert", "--seconds", "2"],
+        ):
+            before = len(observed)
+            with pytest.raises(SystemExit):
+                controller.main(action)
+            assert len(observed) == before
+        for action in (
+            ["--repair-cue-boundary", "prepare"],
+            ["--repair-cue-boundary", "status", "--runtime-root", str(tmp_path)],
+            ["--repair-cue-boundary", "verify-ready", "--runtime-root", str(tmp_path)],
+            ["--repair-cue-boundary", "stop", "--runtime-root", str(tmp_path)],
+            ["--repair-cue-boundary", "start", "--mode", "inert", "--seconds", "2"],
         ):
             before = len(observed)
             with pytest.raises(SystemExit):

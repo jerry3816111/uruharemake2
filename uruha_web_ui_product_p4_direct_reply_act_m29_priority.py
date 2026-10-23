@@ -3,6 +3,7 @@
 import uruha_web_ui_product_p4_reported_receipt_destination as _prior
 import uruha_web_ui as base
 from uruha_direct_reply_act_m29_priority_p4 import install_direct_reply_act_m29_priority_p4
+from uruha_repair_cue_boundary_p4 import install_repair_cue_boundary_p4
 
 
 RUNTIME = _prior.RUNTIME
@@ -38,6 +39,9 @@ def install_product_chain() -> None:
     current.install_current_decision_ack_authority_p4()
     _prior.install_reported_receipt_destination_relation_p4()
     install_direct_reply_act_m29_priority_p4()
+    # Existing repair-cue wrapper is inert unless the isolated product child
+    # explicitly enables its flag; do not duplicate its lexical rule here.
+    install_repair_cue_boundary_p4()
 
 
 if __name__ == "__main__":

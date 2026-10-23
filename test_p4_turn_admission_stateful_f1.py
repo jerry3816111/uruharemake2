@@ -15,9 +15,48 @@ DATA = json.loads(
 )
 
 
-@pytest.mark.xfail(strict=True, reason="f1 frozen go/no-go failed: embedded え selects repair_check")
-def test_f1_fake_full_turn_reaches_expected_route_and_episode(tmp_path):
+def test_product_entry_installs_existing_repair_boundary_but_keeps_flag_off_inert(tmp_path):
     observed = _isolated(tmp_path, """
+        import json
+        import os
+
+        import uruha_web_ui_product_p4_direct_reply_act_m29_priority as entry
+        from uruha_brain_mac import RightBrain
+
+        with open("datasets/p4_turn_admission_stateful_f1_probe_2026-10-24.json") as stream:
+            source = json.load(stream)["user_input"]
+        entry.install_product_chain()
+        brain = RightBrain.__new__(RightBrain)
+        logic = {"intent": "chat", "scene": "support", "surface_act": "plain_reply", "response_mode": "direct_answer"}
+        os.environ["URUHA_P4_REPAIR_CUE_BOUNDARY"] = "0"
+        old = brain._dialogue_act_from_plan(logic, source)
+        os.environ["URUHA_P4_REPAIR_CUE_BOUNDARY"] = "1"
+        new = brain._dialogue_act_from_plan(logic, source)
+        true_cue = brain._dialogue_act_from_plan(logic, "え？ もう一度言って。")
+        quoted_cue = brain._dialogue_act_from_plan(logic, "『え？』を字幕にして。")
+        other_cue = brain._dialogue_act_from_plan(logic, "Huh? Could you say that again?")
+        print(json.dumps({
+            "off": old, "on": new, "true_cue": true_cue,
+            "quoted_cue": quoted_cue, "other_cue": other_cue,
+        }, ensure_ascii=False))
+    """)
+    assert observed == {
+        "off": "repair_check",
+        "on": "direct_chat_answer",
+        "true_cue": "repair_check",
+        "quoted_cue": "direct_chat_answer",
+        "other_cue": "repair_check",
+    }
+
+
+@pytest.mark.parametrize(
+    ("repair_enabled", "expected_act"),
+    [(False, "repair_check"), (True, "direct_chat_answer")],
+)
+def test_f1_fake_full_turn_reaches_expected_route_and_episode(
+    tmp_path, repair_enabled, expected_act
+):
+    code = """
         import json
         import os
         from types import SimpleNamespace
@@ -27,6 +66,7 @@ def test_f1_fake_full_turn_reaches_expected_route_and_episode(tmp_path):
         import uruha_contextual_expression_commit_p2 as expression
         import uruha_direct_reply_act_m29_priority_p4 as direct
         import uruha_direct_reply_act_planner_handoff_p4 as handoff
+        import uruha_web_ui_product_p4_direct_reply_act_m29_priority as product_entry
         from uruha_brain_mac import LeftBrain, RightBrain
         from test_personhood_loop_v2_13 import _IsolatedContractBrain
 
@@ -35,8 +75,9 @@ def test_f1_fake_full_turn_reaches_expected_route_and_episode(tmp_path):
         runtime.LEFT_BRAIN_SLOW_PATH_BUDGET_SECONDS = 20.0
         compact.install_compact_planner_p2()
         expression.install_contextual_expression_commit_p2()
-        direct.install_direct_reply_act_m29_priority_p4()
         os.environ[handoff.ARM_ENV] = "control"
+        os.environ["URUHA_P4_REPAIR_CUE_BOUNDARY"] = "__REPAIR_ENABLED__"
+        product_entry.install_product_chain()
         calls = []
 
         def create(**kwargs):
@@ -74,7 +115,10 @@ def test_f1_fake_full_turn_reaches_expected_route_and_episode(tmp_path):
             "episode_count": len(brain.memory.saved_episodes),
             "fake_model_calls": len(calls),
         }, ensure_ascii=False))
-    """)
+    """
+    observed = _isolated(
+        tmp_path, code.replace("__REPAIR_ENABLED__", "1" if repair_enabled else "0")
+    )
     assert observed["direct"] == DATA["expected_direct_reply_act"]
     assert observed["m29_direct"] == DATA["expected_direct_reply_act"]
     assert observed["m29_projection_required"] is False
@@ -83,7 +127,9 @@ def test_f1_fake_full_turn_reaches_expected_route_and_episode(tmp_path):
     assert observed["m21_route"] == DATA["expected_route"]
     assert observed["compact_completed"] is True
     assert observed["scene"] == DATA["expected_scene"]
-    assert observed["act"] == DATA["expected_dialogue_act"], json.dumps(observed, ensure_ascii=False)
+    assert observed["act"] == expected_act, json.dumps(observed, ensure_ascii=False)
+    if repair_enabled:
+        assert observed["act"] == DATA["expected_dialogue_act"]
     assert observed["reply_equals_episode"] is True
     assert observed["episode_count"] == 1
     assert observed["fake_model_calls"] == 1
