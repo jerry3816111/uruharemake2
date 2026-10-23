@@ -223,6 +223,8 @@ def request_shape(kwargs):
 class ComputeLedger:
     def __init__(self):
         self._calls = []
+        self._last_call_index = 0
+        self._retired_through_call_index = 0
         self._lock = threading.Lock()
 
     @contextlib.contextmanager
@@ -470,11 +472,14 @@ class ComputeLedger:
 
     def _append(self, record):
         with self._lock:
-            record["call_index"] = len(self._calls) + 1
+            self._last_call_index += 1
+            record["call_index"] = self._last_call_index
             self._calls.append(record)
 
     def snapshot(self):
         with self._lock:
+            if self._retired_through_call_index:
+                raise RuntimeError("full_snapshot_unavailable_after_item_retirement")
             calls = deepcopy(self._calls)
         return {
             "schema": SCHEMA,
@@ -487,7 +492,7 @@ class ComputeLedger:
     def checkpoint(self):
         """Return a call index without copying a long-running process ledger."""
         with self._lock:
-            return len(self._calls)
+            return self._last_call_index
 
     def snapshot_item(self, item_id, *, since_call_index=0):
         """Copy only one turn's calls; expose concurrent unscoped work separately."""
@@ -497,9 +502,15 @@ class ComputeLedger:
         if not isinstance(since_call_index, int) or since_call_index < 0:
             raise ValueError("invalid_checkpoint")
         with self._lock:
-            if since_call_index > len(self._calls):
+            if since_call_index < self._retired_through_call_index:
+                raise ValueError("checkpoint_contains_retired_calls")
+            if since_call_index > self._last_call_index:
                 raise ValueError("checkpoint_after_last_call")
-            window = self._calls[since_call_index:]
+            window_end_call_index = self._last_call_index
+            window = [
+                call for call in self._calls
+                if call["call_index"] > since_call_index
+            ]
             calls = deepcopy([call for call in window if call.get("item_id") == item_id])
             unscoped_count = sum(1 for call in window if call.get("item_id") == "unscoped")
             other_count = sum(
@@ -532,6 +543,8 @@ class ComputeLedger:
         return {
             "schema": "uruha_compute_item_snapshot_v1",
             "item_id": item_id,
+            "since_call_index": since_call_index,
+            "window_end_call_index": window_end_call_index,
             "call_count": len(calls),
             "unscoped_call_count_during_window": unscoped_count,
             "other_item_call_count_during_window": other_count,
@@ -541,9 +554,67 @@ class ComputeLedger:
             "calls": calls,
         }
 
+    def retire_item_snapshot(self, snapshot):
+        """Forget one fully attributed item after its private receipt was written.
+
+        The caller owns the persistence gate. Other items, prewarm/background
+        calls, and calls appended after this snapshot's end are never removed.
+        A previously issued checkpoint spanning any retired call fails closed.
+        """
+        if not isinstance(snapshot, dict) or snapshot.get("schema") != "uruha_compute_item_snapshot_v1":
+            raise ValueError("invalid_item_snapshot")
+        item_id = snapshot.get("item_id")
+        if not isinstance(item_id, str) or not item_id or item_id == "unscoped":
+            raise ValueError("invalid_item_snapshot")
+        if snapshot.get("attribution_complete") is not True:
+            raise ValueError("ambiguous_item_snapshot_cannot_retire")
+        start = snapshot.get("since_call_index")
+        end = snapshot.get("window_end_call_index")
+        calls = snapshot.get("calls")
+        if (
+            type(start) is not int or type(end) is not int
+            or start < 0 or end < start or not isinstance(calls, list)
+            or snapshot.get("call_count") != len(calls)
+        ):
+            raise ValueError("invalid_item_snapshot")
+        indices = [call.get("call_index") for call in calls if isinstance(call, dict)]
+        if (
+            len(indices) != len(calls)
+            or any(type(index) is not int or not start < index <= end for index in indices)
+            or indices != sorted(set(indices))
+        ):
+            raise ValueError("invalid_item_snapshot")
+        with self._lock:
+            if end > self._last_call_index:
+                raise ValueError("snapshot_end_after_last_call")
+            retained_window = [
+                call for call in self._calls
+                if start < call["call_index"] <= end
+            ]
+            if (
+                [call["call_index"] for call in retained_window] != indices
+                or any(call.get("item_id") != item_id for call in retained_window)
+            ):
+                raise ValueError("snapshot_window_changed_or_ambiguous")
+            if not indices:
+                return 0
+            retired = set(indices)
+            self._calls = [
+                call for call in self._calls
+                if call["call_index"] not in retired
+            ]
+            self._retired_through_call_index = max(
+                self._retired_through_call_index, indices[-1]
+            )
+            return len(indices)
+
     def reset(self):
         with self._lock:
+            if self._retired_through_call_index:
+                raise RuntimeError("reset_requires_new_ledger_after_item_retirement")
             self._calls = []
+            self._last_call_index = 0
+            self._retired_through_call_index = 0
 
 
 class _CompletionProxy:

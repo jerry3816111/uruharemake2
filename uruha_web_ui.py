@@ -3003,6 +3003,24 @@ def _product_compute_graph_payload(receipt):
     }
 
 
+def _retire_persisted_product_compute_item(ledger, receipt):
+    """Release only this privately written, completely attributed turn's calls."""
+    if ledger is None or not isinstance(receipt, dict):
+        return "unavailable_ledger"
+    snapshot = receipt.get("snapshot")
+    if not isinstance(snapshot, dict):
+        return "unavailable_snapshot"
+    if snapshot.get("item_id") != receipt.get("item_id"):
+        return "item_id_mismatch"
+    if snapshot.get("attribution_complete") is not True:
+        return "held_ambiguous"
+    try:
+        retired = ledger.retire_item_snapshot(snapshot)
+    except (ValueError, RuntimeError):
+        return "retirement_error"
+    return "retired" if retired else "no_scoped_calls"
+
+
 def _persist_terminal_compute_failure(receipt):
     """Best-effort private failure evidence; never mask the original exception."""
     path = os.path.join(os.path.dirname(WEB_LOG_JSONL), "compute_failures.jsonl")
@@ -3089,6 +3107,8 @@ def _run_turn(
             if compute_item_id is not None:
                 failed = _product_compute_receipt(ledger, compute_item_id, checkpoint, input_mode, exc)
                 failed["durable_private_failure_written"] = _persist_terminal_compute_failure(failed)
+                if failed["durable_private_failure_written"]:
+                    _retire_persisted_product_compute_item(ledger, failed)
             raise
         if compute_item_id is not None:
             compute_receipt = _product_compute_receipt(
@@ -3369,6 +3389,32 @@ def _append_conversation_log(input_mode, result):
             if private_log:
                 record["compute_receipt"] = compute_receipt
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    if isinstance(compute_receipt, dict):
+        # A successful append is not enough: a previously truncated tail can
+        # glue this JSON object to an invalid row. Retire only after the exact
+        # private row can be read back through the browser-bound verifier.
+        latest = _latest_private_log_row() if private_log else None
+        saved_row = latest[0] if latest else {}
+        private_row_verified = bool(
+            saved_row.get("session_id") == session_id
+            and saved_row.get("turn_index") == turn_index
+            and saved_row.get("input_mode") == input_mode
+            and saved_row.get("user_text") == result["user_text"]
+            and saved_row.get("assistant_reply") == result["reply"]
+            and saved_row.get("compute_receipt") == compute_receipt
+        )
+        result["compute_receipt_durable_status"] = (
+            "private_jsonl" if private_row_verified
+            else "unavailable_private_log_row_unverified" if private_log
+            else "unavailable_nonprivate_log"
+        )
+        result["compute_ledger_retention_status"] = (
+            _retire_persisted_product_compute_item(
+                getattr(RUNTIME, "_compute_ledger", None), compute_receipt,
+            )
+            if private_row_verified else "held_unverified_private_log" if private_log
+            else "held_nonprivate_log"
+        )
     with open(WEB_LOG_TXT, "a", encoding="utf-8") as f:
         f.write(
             f"[{record['timestamp']}] session={session_id} turn={turn_index} mode={input_mode}\n"
