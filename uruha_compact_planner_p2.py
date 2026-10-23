@@ -8,12 +8,39 @@ from contextvars import ContextVar
 from copy import deepcopy
 import json
 import math
+import os
 
 _CALL = ContextVar("compact_general_plan_p2", default=None)
 _INSTALLED = False
 _SCENES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 _MODES = {"direct_answer", "direct_answer_with_hedge", "clarify_light", "premise_challenge", "reframe_large_question"}
 _PLAN_FIELDS = {"scene", "core_message_jp", "response_mode"}
+_SCHEMA_ARM_ENV = "URUHA_P4_COMPACT_JSON_SCHEMA"
+_REQUIRED_JSON_SCHEMA_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "uruha_compact_general_plan_p2",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": {"plans": {
+                "type": "array", "minItems": 3, "maxItems": 3,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "scene": {"type": "string", "enum": sorted(_SCENES)},
+                        "core_message_jp": {"type": "string", "minLength": 1, "maxLength": 32},
+                        "response_mode": {"type": "string", "enum": sorted(_MODES)},
+                    },
+                    "required": ["scene", "core_message_jp", "response_mode"],
+                    "additionalProperties": False,
+                },
+            }},
+            "required": ["plans"],
+            "additionalProperties": False,
+        },
+    },
+}
 _FORMAT = '''[Output JSON schema]
 Return ONLY this compact JSON, no other fields or explanation:
 {"plans":[{"scene":"casual","core_message_jp":"short Japanese meaning","response_mode":"direct_answer"},
@@ -47,7 +74,11 @@ def compact_request(kwargs):
     transformed = deepcopy(kwargs)
     transformed["messages"][0]["content"] = prompt.split(marker, 1)[0] + _FORMAT
     transformed["max_tokens"] = min(int(kwargs.get("max_tokens") or 256), 256)
-    transformed["response_format"] = {"type": "json_object"}
+    transformed["response_format"] = (
+        deepcopy(_REQUIRED_JSON_SCHEMA_FORMAT)
+        if os.environ.get(_SCHEMA_ARM_ENV) == "1"
+        else {"type": "json_object"}
+    )
     return transformed
 
 

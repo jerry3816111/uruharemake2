@@ -37,6 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     arm_parser.add_argument("--product-port", type=int, default=7894)
     arm_parser.add_argument("--turn-admission-journal", action="store_true")
     arm_parser.add_argument("--repair-cue-boundary", action="store_true")
+    arm_parser.add_argument("--compact-json-schema", action="store_true")
     arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
     try:
         selected_port = base_launcher.validate_port(arm_args.product_port)
@@ -58,6 +59,8 @@ def main(argv: list[str] | None = None) -> int:
         arm_parser.error("turn admission journal requires start --mode product")
     if arm_args.repair_cue_boundary and not product_start:
         arm_parser.error("repair cue boundary requires start --mode product")
+    if arm_args.compact_json_schema and not product_start:
+        arm_parser.error("compact JSON schema requires start --mode product")
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
     original_port = prior.base_controller.PORT
@@ -79,6 +82,8 @@ def main(argv: list[str] | None = None) -> int:
                 )
             if arm_args.repair_cue_boundary and port is not None:
                 env["URUHA_P4_REPAIR_CUE_BOUNDARY"] = "1"
+            if arm_args.compact_json_schema and port is not None:
+                env["URUHA_P4_COMPACT_JSON_SCHEMA"] = "1"
         return env
 
     # The base controller consistently uses PORT for prepared receipts,
@@ -100,6 +105,10 @@ def main(argv: list[str] | None = None) -> int:
                     # Only the returned environment for the actual Web child
                     # receives it; launchd's port-scoped allowlist retains it.
                     env = {**env, "URUHA_P4_REPAIR_CUE_BOUNDARY": "1"}
+                if arm_args.compact_json_schema:
+                    # Same child-only scoping as the repair flag: the pure
+                    # preflight environment cannot activate model generation.
+                    env = {**env, "URUHA_P4_COMPACT_JSON_SCHEMA": "1"}
                 return summary, env, layout, created, profile
 
             product_launcher.preflight_preference_fallback = same_arm_preflight
