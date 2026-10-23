@@ -318,6 +318,10 @@ WEB_LOG_TXT = os.path.abspath(
 )
 _BROWSER_GRAPH_RECEIPT_SCHEMA = "uruha_browser_graph_receipt_v1"
 _BROWSER_GRAPH_HMAC_KEY = secrets.token_bytes(32)
+# A client-supplied compatibility marker, not authentication.  A stale Gradio
+# tab may replay an old fn_index against a new process, so Reset must not trust
+# event index alone.  The product builds one demo per process.
+_RESET_INSTANCE_MARKER = secrets.token_urlsafe(32)
 _BROWSER_GRAPH_MAX_ROW_BYTES = 16 * 1024 * 1024
 WEB_HEAD = """
 <script>
@@ -3887,7 +3891,10 @@ def reset_session():
     return [], [], None, gr.update(value={}), gr.update(value={}), _empty_flow_html("新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), "", ""
 
 
-def reset_session_browser_bound():
+def reset_session_browser_bound(reset_marker):
+    if type(reset_marker) is not str or reset_marker != _RESET_INSTANCE_MARKER:
+        # Leave all 14 outputs (including browser graph receipt) untouched.
+        return tuple(gr.skip() for _ in range(14))
     return (*reset_session(), _browser_graph_tombstone())
 
 
@@ -4144,6 +4151,11 @@ def build_demo():
                         with gr.Row():
                             send_btn = gr.Button("Send", variant="primary")
                             reset_btn = gr.Button("Reset Session")
+                        reset_instance_marker = gr.Textbox(
+                            value=_RESET_INSTANCE_MARKER,
+                            visible=False,
+                            interactive=False,
+                        )
                         audio_in = gr.Audio(label="Voice Input", sources=["microphone"], type="filepath", elem_id="uruha-mic")
                         with gr.Row():
                             transcribe_btn = gr.Button("Transcribe Only")
@@ -4529,7 +4541,7 @@ def build_demo():
 
         reset_btn.click(
             fn=reset_session_browser_bound,
-            inputs=None,
+            inputs=[reset_instance_marker],
             outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript, browser_graph_receipt],
             queue=True,
             concurrency_limit=1,

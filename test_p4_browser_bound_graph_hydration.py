@@ -351,7 +351,7 @@ def test_reset_overwrites_receipt_with_truthy_denial(monkeypatch, private_positi
     old = private_positive["receipt"]
     assert "BOUNDED SLOT LEDGER" in web._load_browser_graph(old)
     monkeypatch.setattr(web, "reset_session", lambda: tuple(range(13)))
-    reset = web.reset_session_browser_bound()
+    reset = web.reset_session_browser_bound(web._RESET_INSTANCE_MARKER)
     assert reset[:-1] == tuple(range(13))
     assert reset[-1] == web._browser_graph_tombstone()
     assert isinstance(reset[-1], dict) and reset[-1]
@@ -385,7 +385,10 @@ def test_gradio_bindings_only_hydrate_graph_and_share_human_reset_lane(monkeypat
             (dependency, demo.config["dependencies"][function_id])
         )
     load_fn, load_event = by_name["_load_browser_graph"][0]
-    assert load_event["targets"] == [(0, "load")]
+    # Gradio's component id is process-global across prior build_demo() calls;
+    # this checks the load event without assuming the first Blocks id is zero.
+    assert len(load_event["targets"]) == 1
+    assert load_event["targets"][0][1] == "load"
     assert load_event["inputs"] == [browser_id]
     assert len(load_event["outputs"]) == 1
     flow_id = load_event["outputs"][0]
