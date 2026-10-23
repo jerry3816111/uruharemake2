@@ -12710,7 +12710,8 @@ class RightBrain:
             elif "話題" in core and "戻" in core:
                 add("じゃあ軽めの話にするか。変に重くしなくていいだろ。")
             else:
-                add(f"{core}。そのくらいでいいだろ。")
+                separator = "" if core.endswith(("。", "！", "？")) else "。"
+                add(f"{core}{separator}そのくらいでいいだろ。")
 
         return variants
 
