@@ -39,6 +39,7 @@ import urllib.error
 import urllib.request
 from collections import Counter
 from copy import deepcopy
+from contextvars import ContextVar
 from dataclasses import asdict, dataclass, field
 
 import chromadb
@@ -90,6 +91,27 @@ from rightbrain_language_quality import (
 # ===========================
 init(autoreset=True)
 load_dotenv()
+_P4_SOURCE_EVENT_CORE_HANDOFF = ContextVar("p4_source_event_core_handoff", default=None)
+
+
+def _reconcile_source_event_core_utility_p4(logic):
+    """Do not call a planner choice exercised if later cognition replaced its core.
+
+    This checks the final plan only. Whether the visible utterance preserves the
+    event is a separate product gate, not something a core hash can establish.
+    """
+    audit = logic.get("source_event_core_utility_p4")
+    if not isinstance(audit, dict):
+        return
+    final_hash = hashlib.sha256(
+        str(logic.get("core_message_jp") or "").encode("utf-8")
+    ).hexdigest()
+    audit["final_core_sha256"] = final_hash
+    audit["final_core_matches_winner"] = final_hash == audit.get("winner_core_sha256")
+    audit["audit_stage"] = "post_surface_plan"
+    if audit.get("manipulation_status") == "selection_changed" and not audit["final_core_matches_winner"]:
+        audit["manipulation_status"] = "not_exercised"
+        audit["downstream_core_changed"] = True
 
 
 def _env_float(name, default):
@@ -7566,7 +7588,12 @@ Rules:
 
         return max(0.35, min(1.25, score))
 
-    def _bayesian_rerank(self, plans, current_psyche, memory_data, user_input, internal_monologue=""):
+    def _bayesian_rerank(self, plans, current_psyche, memory_data, user_input, internal_monologue="", source_event_core_handoff_p4=None):
+        if source_event_core_handoff_p4 is None:
+            source_event_core_handoff_p4 = _P4_SOURCE_EVENT_CORE_HANDOFF.get()
+        elif source_event_core_handoff_p4 is False:
+            # A critique-created second set is not the original model triple.
+            source_event_core_handoff_p4 = None
         working_memory = memory_data.get("working_memory_items") or []
         scored = []
         for plan in plans[:3]:
@@ -7593,8 +7620,37 @@ Rules:
         for item in scored:
             item["bayes_probability"] = round(item["bayes_score"] / total, 4)
 
+        old_index = max(range(len(scored)), key=lambda index: scored[index]["bayes_probability"])
+        selected_index = old_index
+        source_event_audit = None
+        if source_event_core_handoff_p4 is not None:
+            from uruha_source_event_core_utility_p4 import assess_candidate_coverage_p4
+
+            source_event_audit = assess_candidate_coverage_p4(
+                user_input, source_event_core_handoff_p4, scored
+            )
+            grounded = [
+                row["original_index"]
+                for row in source_event_audit.get("candidate_coverage", [])
+                if row.get("grounded") is True
+            ]
+            if source_event_audit.get("eligible") and grounded:
+                selected_index = max(grounded, key=lambda index: scored[index]["bayes_probability"])
+            source_event_audit.update({
+                "old_index": old_index,
+                "new_index": selected_index,
+                "old_core_sha256": hashlib.sha256(
+                    str(scored[old_index].get("core_message_jp") or "").encode("utf-8")
+                ).hexdigest(),
+                "winner_core_sha256": hashlib.sha256(
+                    str(scored[selected_index].get("core_message_jp") or "").encode("utf-8")
+                ).hexdigest(),
+                "selection_rule": "grounded_first_then_existing_bayes_score",
+            })
+        best = deepcopy(scored[selected_index])
+        if source_event_audit is not None:
+            best["source_event_core_utility_p4"] = source_event_audit
         scored.sort(key=lambda item: item["bayes_probability"], reverse=True)
-        best = deepcopy(scored[0])
         best["internal_monologue"] = internal_monologue
         best["bayes_candidates"] = [
             {
@@ -7961,6 +8017,7 @@ Rules:
             working_candidates[0],
         )
         selected = None
+        first_source_event_audit = None
 
         max_ticks = max(1, min(PLANNER_MAX_TICKS, int(tick_budget or self._planner_tick_budget(user_input, memory_data, current_psyche))))
         for tick in range(1, max_ticks + 1):
@@ -7970,7 +8027,10 @@ Rules:
                 memory_data,
                 user_input,
                 current_monologue,
+                False if tick > 1 else None,
             )
+            if tick == 1 and isinstance(selected.get("source_event_core_utility_p4"), dict):
+                first_source_event_audit = deepcopy(selected["source_event_core_utility_p4"])
             critique = self._critique_plan(selected, user_input, memory_data, current_psyche)
             tick_entry = {
                 "tick": tick,
@@ -8042,6 +8102,7 @@ Rules:
             memory_data,
             user_input,
             current_monologue,
+            False,
         )
         final["internal_monologue"] = current_monologue
         final["planner_tick_trace"] = tick_trace
@@ -8057,6 +8118,37 @@ Rules:
         final["planner_unresolved_issues"] = list((tick_trace[-1] if tick_trace else {}).get("remaining_issues", []))
         final["planner_repair_applied"] = any(bool(entry.get("revision_applied")) for entry in tick_trace)
         final["planner_repair_success"] = bool(final["planner_repair_applied"] and not final["planner_unresolved_issues"])
+        source_event_audit = (
+            first_source_event_audit
+            if final["planner_repair_applied"] and first_source_event_audit is not None
+            else final.get("source_event_core_utility_p4")
+        )
+        if isinstance(source_event_audit, dict):
+            source_event_audit = deepcopy(source_event_audit)
+            source_event_audit["candidate_set_scope"] = (
+                "initial_model_candidates_only"
+                if final["planner_repair_applied"] else "final_model_candidates"
+            )
+            source_event_audit["final_core_sha256"] = hashlib.sha256(
+                str(final.get("core_message_jp") or "").encode("utf-8")
+            ).hexdigest()
+            source_event_audit["planner_revision_applied"] = bool(final["planner_repair_applied"])
+            source_event_audit["final_core_matches_winner"] = (
+                source_event_audit["final_core_sha256"] == source_event_audit.get("winner_core_sha256")
+            )
+            if source_event_audit.get("status") == "no_grounded_candidate":
+                source_event_audit["manipulation_status"] = "no_grounded_candidate"
+            elif (
+                source_event_audit.get("eligible")
+                and source_event_audit.get("old_index") != source_event_audit.get("new_index")
+                and source_event_audit["final_core_matches_winner"]
+                and not source_event_audit["planner_revision_applied"]
+                and not any(entry.get("resolution") == "final_tick_repair" for entry in tick_trace)
+            ):
+                source_event_audit["manipulation_status"] = "selection_changed"
+            else:
+                source_event_audit["manipulation_status"] = "not_exercised"
+            final["source_event_core_utility_p4"] = source_event_audit
         return final
 
     def _normalize_candidate_bundle(self, payload, user_input, memory_data, current_psyche):
@@ -9552,6 +9644,7 @@ SOURCE:
         runtime_state=None,
         force_general_planner=False,
         direct_reply_act_handoff_p4=None,
+        source_event_core_handoff_p4=None,
     ):
         if mode == "proactive":
             selected = self._think_proactive(memory_data, current_psyche, runtime_state=runtime_state)
@@ -9761,13 +9854,38 @@ Return ONLY valid JSON with this structure:
             raw_content = response.choices[0].message.content
             payload = self._extract_json_from_text(raw_content)
             bundle = self._normalize_candidate_bundle(payload, user_input, memory_data, current_psyche)
-            selected = self._run_multitick_planner(
-                bundle["candidate_plans"],
-                user_input,
-                memory_data,
-                current_psyche,
-                bundle["internal_monologue"],
+            source_event_utility_handoff = None
+            if (
+                source_event_core_handoff_p4 is not None
+                and os.getenv("URUHA_P4_SOURCE_EVENT_CORE_UTILITY") == "1"
+                and os.getenv("URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM") == "control"
+            ):
+                # The compact proxy's current-call audit proves these are the
+                # three completed model candidates, not a generic/fallback plan.
+                from uruha_compact_planner_p2 import _CALL
+
+                compact_audit = _CALL.get()
+                if (
+                    isinstance(compact_audit, dict)
+                    and compact_audit.get("completed") is True
+                    and compact_audit.get("candidate_count") == 3
+                ):
+                    source_event_utility_handoff = source_event_core_handoff_p4
+            source_event_token = (
+                _P4_SOURCE_EVENT_CORE_HANDOFF.set(source_event_utility_handoff)
+                if source_event_utility_handoff is not None else None
             )
+            try:
+                selected = self._run_multitick_planner(
+                    bundle["candidate_plans"],
+                    user_input,
+                    memory_data,
+                    current_psyche,
+                    bundle["internal_monologue"],
+                )
+            finally:
+                if source_event_token is not None:
+                    _P4_SOURCE_EVENT_CORE_HANDOFF.reset(source_event_token)
             selected = self._attach_persona_policy(selected, current_psyche)
             selected["bounded_slow_path_m21"] = {
                 "schema": "uruha_bounded_slow_path_planner_m21",
@@ -9783,6 +9901,13 @@ Return ONLY valid JSON with this structure:
                    if direct_reply_act_handoff_p4 is not None else {}),
                 "raw_dialogue_persisted": False,
             }
+            if isinstance(selected.get("source_event_core_utility_p4"), dict):
+                selected["source_event_core_utility_p4"].update({
+                    "compact_completed": True,
+                    "compact_candidate_count": 3,
+                    "m21_model_call_completed": True,
+                    "m21_fallback_used": False,
+                })
             if placement_advice_act_p4:
                 selected["location_advice_act_handoff_p4"] = {
                     **placement_advice_act_p4,
@@ -17173,6 +17298,7 @@ class UruhaBrainV4_Mac:
             "literal_topic_projection_m29",
             "literal_topic_surface_m29",
             "direct_reply_act_planner_handoff_p4",
+            "source_event_core_utility_p4",
             "semantic_authorization_m31",
             "semantic_authorized_surface_m31",
             "semantic_commit_repair_m32",
@@ -19797,6 +19923,12 @@ class UruhaBrainV4_Mac:
                 if direct_reply_act_arm_p4 == "treatment" and direct_reply_act_candidate_p4
                 else {}
             )
+            if (
+                direct_reply_act_arm_p4 == "control"
+                and os.getenv("URUHA_P4_SOURCE_EVENT_CORE_UTILITY") == "1"
+                and direct_reply_act_candidate_p4
+            ):
+                direct_reply_act_planner_kwargs_p4["source_event_core_handoff_p4"] = direct_reply_act_candidate_p4
             logic = self.left_brain.think(
                 user_input,
                 mems,
@@ -20641,6 +20773,7 @@ class UruhaBrainV4_Mac:
             self_monitor = final_monitor
         logic["self_monitor"] = self_monitor
         post_check = self._attach_reply_post_check(logic, user_input, reply, mems)
+        _reconcile_source_event_core_utility_p4(logic)
         self.runtime.last_reply = reply
         self.runtime.last_selected_plan = self._plan_trace_summary(logic)
         self.runtime.touch_interaction(when=time.time(), reset_drives=True)
@@ -20796,6 +20929,13 @@ class UruhaBrainV4_Mac:
                 else 0.72
             ),
         )
+        if isinstance(logic.get("source_event_core_utility_p4"), dict):
+            self._push_blackboard(
+                "plan",
+                "source_event_core_utility_p4",
+                logic["source_event_core_utility_p4"],
+                salience=0.96,
+            )
         self._push_blackboard("surface", "utterance", {"reply": reply}, salience=1.0)
         self._push_blackboard("surface", "visible_language_guard", language_guard, salience=0.99)
         self._push_blackboard("surface", "self_monitor", self_monitor, salience=0.89)
