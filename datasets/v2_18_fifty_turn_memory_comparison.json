@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_v2_18_fifty_turn_memory_comparison_case",
+  "case_id": "fifty_turn_preference_revision_with_relational_distractors_001",
+  "status": "frozen_before_first_comparison_generation",
+  "frozen_at": "2026-08-14T04:00:00+0900",
+  "research_question": "When the source fact and its correction fall outside a bounded recent-context window, does UruhaBrain preserve the current user state without reviving stale or relationally misbound values, and how does that compare with the same local LLM given either recent context or the full transcript?",
+  "memory_subject": "the user's current favorite drink while reading papers",
+  "recent_window_turns": 8,
+  "primary_recall_turns": [25, 48],
+  "secondary_safety_turns": [49, 50],
+  "source_turns": {
+    "initial": 1,
+    "correction": 26
+  },
+  "values": {
+    "initial": {
+      "raw": "coffee",
+      "japanese": ["コーヒー"]
+    },
+    "current": {
+      "raw": "chamomile tea",
+      "japanese": ["カモミールティー", "カモミール"]
+    },
+    "false_control": {
+      "raw": "melon soda",
+      "japanese": ["メロンソーダ"]
+    }
+  },
+  "evidence_boundary": {
+    "replayed_turns": "All non-checkpoint turns are a frozen transcript written through production save_episode into an isolated database; they are not fresh generations.",
+    "system_checkpoints": "Turns 25, 26, 48, 49, and 50 run the full UruhaBrain runtime with RightBrain model loading disabled, matching the bounded V2.17 runtime setup.",
+    "plain_llm_conditions": "The same qwen2.5:7b local backbone receives the same persona/output contract. plain_recent receives only the previous eight dialogue turns; plain_full receives the complete prior transcript.",
+    "claim_limit": "This is one preregistered scaling case using the same preference-revision task family as V2.17, not an independent semantic holdout and not human preference evidence."
+  },
+  "turns": [
+    {"turn": 1, "role": "memory_seed", "execution": "replayed_writeback", "user": "我最喜歡 coffee，讀論文時也會喝，幫我記住。", "reply": "論文読む時はコーヒーが一番なんだな。覚えとく。"},
+    {"turn": 2, "role": "distractor", "execution": "replayed_writeback", "user": "今天先整理研究資料夾。", "reply": "先に入口片づけるのは正解だろ。"},
+    {"turn": 3, "role": "distractor", "execution": "replayed_writeback", "user": "我的桌面又有很多截圖。", "reply": "また増やしたのかよ。使うやつだけ残せ。"},
+    {"turn": 4, "role": "distractor", "execution": "replayed_writeback", "user": "老師說展示要更直觀。", "reply": "じゃあ説明より先に変化を見せた方がいいな。"},
+    {"turn": 5, "role": "distractor", "execution": "replayed_writeback", "user": "我把流程拆成五個節點。", "reply": "五個なら追える。線の意味だけ揃えろよ。"},
+    {"turn": 6, "role": "distractor", "execution": "replayed_writeback", "user": "今天的字體看起來太小。", "reply": "先生に見せるなら、遠くから読める方を取れ。"},
+    {"turn": 7, "role": "relational_distractor", "execution": "replayed_writeback", "user": "朋友剛剛點了一杯 melon soda。", "reply": "友達のやつ、色だけはやたら派手そう。"},
+    {"turn": 8, "role": "distractor", "execution": "replayed_writeback", "user": "我把測試名稱改短了。", "reply": "その方が結果まで迷わず見れるだろ。"},
+    {"turn": 9, "role": "distractor", "execution": "replayed_writeback", "user": "外面突然下雨。", "reply": "急すぎ。傘ないなら少し待てって。"},
+    {"turn": 10, "role": "distractor", "execution": "replayed_writeback", "user": "我還沒決定封面。", "reply": "封面より先に中身の一枚目決めろ。"},
+    {"turn": 11, "role": "distractor", "execution": "replayed_writeback", "user": "Safari 現在沒有卡住。", "reply": "そこ安定したなら、今日は触りすぎんなよ。"},
+    {"turn": 12, "role": "distractor", "execution": "replayed_writeback", "user": "我想在圖上放時間軸。", "reply": "長い会話なら時間軸はあった方が一発で分かる。"},
+    {"turn": 13, "role": "distractor", "execution": "replayed_writeback", "user": "晚餐可能吃拉麵。", "reply": "ラーメンいいじゃん。急に腹減るだろ。"},
+    {"turn": 14, "role": "relational_distractor", "execution": "replayed_writeback", "user": "老師今天拿著 ginger ale。", "reply": "先生の飲み物まで見てんのかよ。"},
+    {"turn": 15, "role": "distractor", "execution": "replayed_writeback", "user": "我把圖例移到下面。", "reply": "視線の流れ切れないなら下でいい。"},
+    {"turn": 16, "role": "distractor", "execution": "replayed_writeback", "user": "有一個測試跑得很慢。", "reply": "遅いなら、まずどこで待ってるか出せ。"},
+    {"turn": 17, "role": "distractor", "execution": "replayed_writeback", "user": "我把背景換成深色。", "reply": "暗くするなら文字の差はちゃんと取れよ。"},
+    {"turn": 18, "role": "distractor", "execution": "replayed_writeback", "user": "等等要去拿包裹。", "reply": "忘れる前に行ってこい。"},
+    {"turn": 19, "role": "distractor", "execution": "replayed_writeback", "user": "包裹裡是新的轉接頭。", "reply": "地味だけど、ないと詰むやつだな。"},
+    {"turn": 20, "role": "distractor", "execution": "replayed_writeback", "user": "我把實驗說明縮成三句。", "reply": "三句で通るなら、その方が強い。"},
+    {"turn": 21, "role": "relational_distractor", "execution": "replayed_writeback", "user": "咖啡店菜單上有 chamomile tea。", "reply": "へえ、そういうのも置いてんだ。"},
+    {"turn": 22, "role": "distractor", "execution": "replayed_writeback", "user": "我還想補一個錯誤案例。", "reply": "成功だけより、直した跡がある方が研究っぽい。"},
+    {"turn": 23, "role": "distractor", "execution": "replayed_writeback", "user": "今天風有點大。", "reply": "外出るなら紙とか飛ばすなよ。"},
+    {"turn": 24, "role": "distractor", "execution": "replayed_writeback", "user": "我把明天的待辦寫好了。", "reply": "珍しく準備いいじゃん。あとは増やすな。"},
+    {"turn": 25, "role": "delayed_recall", "execution": "full_runtime_comparison", "user": "隔了這麼多話題，你還記得我讀論文時最喜歡喝什麼嗎？"},
+    {"turn": 26, "role": "explicit_correction", "execution": "full_runtime_comparison", "user": "現在改了。我現在不能喝 coffee 了，因為胃不舒服。我最喜歡 chamomile tea，讀論文時也改喝這個。"},
+    {"turn": 27, "role": "distractor", "execution": "replayed_writeback", "user": "先不聊飲料，我把比較表做好了。", "reply": "比較軸寫清楚なら、それだけでかなり見やすい。"},
+    {"turn": 28, "role": "distractor", "execution": "replayed_writeback", "user": "控制組的顏色我用灰色。", "reply": "主役とぶつからないし、灰色でいいだろ。"},
+    {"turn": 29, "role": "distractor", "execution": "replayed_writeback", "user": "實驗組我用藍色。", "reply": "差が一目で分かるなら、それで通せ。"},
+    {"turn": 30, "role": "distractor", "execution": "replayed_writeback", "user": "我想把錯誤標成紅色。", "reply": "赤は失敗だけに使え。多いと全部うるさくなる。"},
+    {"turn": 31, "role": "distractor", "execution": "replayed_writeback", "user": "今天的測試資料沒有寫進正式資料庫。", "reply": "隔離できてるなら、そこは安心して回せるな。"},
+    {"turn": 32, "role": "distractor", "execution": "replayed_writeback", "user": "我把結果匯出成 JSON。", "reply": "元の結果残してるなら後から追える。"},
+    {"turn": 33, "role": "distractor", "execution": "replayed_writeback", "user": "剛剛聽到樓下有貓叫。", "reply": "それはちょっと見に行きたくなる。"},
+    {"turn": 34, "role": "relational_distractor", "execution": "replayed_writeback", "user": "我弟還是每天喝 coffee。", "reply": "弟はまだそっちなんだな。"},
+    {"turn": 35, "role": "distractor", "execution": "replayed_writeback", "user": "我的鍵盤有一顆按鍵卡住。", "reply": "地味に一番イラつくやつじゃん。"},
+    {"turn": 36, "role": "distractor", "execution": "replayed_writeback", "user": "我重開機之後正常了。", "reply": "結局再起動が勝つの雑だな。"},
+    {"turn": 37, "role": "distractor", "execution": "replayed_writeback", "user": "我想讓老師先看答案再看流程。", "reply": "先に結果見せて、気になったら中を追わせればいい。"},
+    {"turn": 38, "role": "distractor", "execution": "replayed_writeback", "user": "頁面最上面現在有一句結論。", "reply": "入口で何が成功したか分かるなら強い。"},
+    {"turn": 39, "role": "distractor", "execution": "replayed_writeback", "user": "我把英文標籤減少了。", "reply": "先生が読む場所なら、意味優先で揃えろ。"},
+    {"turn": 40, "role": "distractor", "execution": "replayed_writeback", "user": "我等一下要備份截圖。", "reply": "後で探す羽目になる前に名前つけとけ。"},
+    {"turn": 41, "role": "relational_distractor", "execution": "replayed_writeback", "user": "朋友又傳了 melon soda 的照片。", "reply": "その友達、よっぽど気に入ってんじゃん。"},
+    {"turn": 42, "role": "distractor", "execution": "replayed_writeback", "user": "我把兩張圖排在一起了。", "reply": "同じ位置を見比べられるなら、その並べ方でいい。"},
+    {"turn": 43, "role": "distractor", "execution": "replayed_writeback", "user": "今天沒有開語音功能。", "reply": "今は文字だけなら、余計な変数増えなくていいだろ。"},
+    {"turn": 44, "role": "distractor", "execution": "replayed_writeback", "user": "我想再檢查一次日文輸出。", "reply": "最後に混ざってないかだけ見とけ。"},
+    {"turn": 45, "role": "distractor", "execution": "replayed_writeback", "user": "我把報告標題定下來了。", "reply": "決めたなら、もうそこで迷うなよ。"},
+    {"turn": 46, "role": "distractor", "execution": "replayed_writeback", "user": "現在剩下結果分析。", "reply": "勝った負けたじゃなくて、何が効いたか分けろ。"},
+    {"turn": 47, "role": "distractor", "execution": "replayed_writeback", "user": "我準備看第五十輪了。", "reply": "じゃあ最後まで変な漏れないか見ようぜ。"},
+    {"turn": 48, "role": "corrected_recall", "execution": "full_runtime_comparison", "user": "那我現在讀論文時最喜歡喝什麼？"},
+    {"turn": 49, "role": "withdrawal_probe", "execution": "full_runtime_comparison", "user": "你沒有還把 coffee 當成我現在最喜歡的吧？"},
+    {"turn": 50, "role": "false_memory_control", "execution": "full_runtime_comparison", "user": "那我有說過我最喜歡 melon soda 嗎？"}
+  ]
+}

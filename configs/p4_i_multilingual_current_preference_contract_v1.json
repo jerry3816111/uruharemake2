@@ -1,0 +1,161 @@
+{
+  "schema": "uruha_p4_i_multilingual_current_preference_contract_v1",
+  "version": "1.0.0",
+  "single_changed_variable": "product_only_projection_of_p4_h_selected_explicit_current_preference_acts_into_scope_aware_typed_active_and_historical_profile_state",
+  "prechange_counterexample": {
+    "result_path": "analysis/p4_h_multilingual_preference_memory_act_result_2026-09-21.json",
+    "result_sha256": "14421789de50ba587d48a64ed3499485f600a25ce55bc7f5fa45baab3cd7de37",
+    "release_path": "research/p4_h_multilingual_preference_memory_act_release_2026-09-21.json",
+    "release_sha256": "318439f01435878bbbf627b9fdde07736ef717ba7ef7a07bd9a67736225924c4",
+    "observed_english_write_likes": [],
+    "observed_chinese_correction_likes": [],
+    "observed_chinese_correction_dislikes": [
+      "氣泡水"
+    ],
+    "new_current_value_missing_from_typed_like": "熱可可",
+    "same_case_may_be_rerun": false
+  },
+  "activation_requirements": [
+    "the_frozen_p4_h_classifier_selects_an_explicit_first_person_write_or_correction",
+    "exactly_one_current_positive_preference_value_is_extractable",
+    "corrections_contain_exactly_one_distinct_explicitly_negated_old_value",
+    "the_input_is_not_safety_sensitive_hypothetical_quoted_third_person_or_function_or_vrm_action"
+  ],
+  "typed_state_contract": {
+    "subject": "user",
+    "positive_fact_type": "like",
+    "negative_fact_type_when_explicitly_negated": "dislike",
+    "current_preference_cardinality": "single_per_scope",
+    "predicate_namespace": "current_preference_scope",
+    "history_policy": "same_scope_older_positive_records_become_historical_without_deletion_or_rewrite",
+    "unrelated_scope_policy": "active_records_in_other_scopes_remain_active",
+    "correction_policy": "write_new_positive_current_record_and_write_old_negative_record_only_when_the_old_value_is_explicitly_negated",
+    "source_epistemic_status": "observed_explicit_user_self_report",
+    "raw_dialogue_in_p4_i_trace": false,
+    "answer_use_authorized": false
+  },
+  "sequences": [
+    {
+      "id": "en_drink_update",
+      "language": "en",
+      "scope": "drink",
+      "write_input": "I prefer chamomile tea. Please remember that as my current drink preference.",
+      "write_value": "chamomile tea",
+      "correction_input": "Correction: I do not prefer chamomile tea anymore. I prefer black coffee now.",
+      "old_value": "chamomile tea",
+      "new_value": "black coffee"
+    },
+    {
+      "id": "zh_drink_update",
+      "language": "zh",
+      "scope": "飲料",
+      "write_input": "我喜歡無糖綠茶，請記住這是我現在的飲料偏好。",
+      "write_value": "無糖綠茶",
+      "correction_input": "更正：我現在不喜歡無糖綠茶了，現在比較喜歡玄米茶。",
+      "old_value": "無糖綠茶",
+      "new_value": "玄米茶"
+    },
+    {
+      "id": "ja_general_update",
+      "language": "ja",
+      "scope": "general",
+      "write_input": "今はほうじ茶が好き。今の好みとして覚えといて。",
+      "write_value": "ほうじ茶",
+      "correction_input": "訂正。もうほうじ茶は好みじゃない。今は玄米茶が好き。",
+      "old_value": "ほうじ茶",
+      "new_value": "玄米茶"
+    }
+  ],
+  "scope_isolation_case": {
+    "first_input": "I prefer sencha. Please remember that as my current drink preference.",
+    "first_scope": "drink",
+    "first_value": "sencha",
+    "second_input": "I prefer almonds. Please remember that as my current snack preference.",
+    "second_scope": "snack",
+    "second_value": "almonds",
+    "expected_active_current_preference_count": 2,
+    "expected_historical_current_preference_count": 0
+  },
+  "negative_cases": [
+    {
+      "id": "ordinary_like_without_memory_request",
+      "input": "I like coffee."
+    },
+    {
+      "id": "third_person_memory",
+      "input": "Rina prefers coffee. Remember that."
+    },
+    {
+      "id": "hypothetical_preference",
+      "input": "If I preferred black tea, would you remember it?"
+    },
+    {
+      "id": "quoted_preference",
+      "input": "Translate the sentence: I prefer black tea. Please remember that as my current drink preference."
+    },
+    {
+      "id": "protected_risk",
+      "input": "I prefer tea. Please remember that as my current drink preference. I want to kill myself."
+    },
+    {
+      "id": "function_command",
+      "input": "I prefer tea. Please remember that as my current drink preference, then open the browser."
+    },
+    {
+      "id": "ambiguous_multiple_positive_values",
+      "input": "I prefer tea. I prefer coffee. Please remember that as my current drink preference."
+    },
+    {
+      "id": "correction_same_old_and_new",
+      "input": "Correction: I do not prefer tea anymore. I prefer tea now."
+    }
+  ],
+  "required_provenance_fields": [
+    "source_language",
+    "source_input_sha256",
+    "preference_act",
+    "preference_scope",
+    "classifier_cue_id",
+    "epistemic_status",
+    "valid_from"
+  ],
+  "required_trace": {
+    "label": "multilingual_current_preference_p4",
+    "stage": "memory",
+    "raw_dialogue_persisted": false,
+    "fields": [
+      "act",
+      "language",
+      "scope",
+      "current_memory_id",
+      "previous_current_memory_id",
+      "negative_old_memory_id",
+      "active_current_ids",
+      "historical_current_ids",
+      "history_preserved",
+      "answer_use_authorized"
+    ]
+  },
+  "success_criteria": {
+    "all_three_language_sequences_extract_exact_values": true,
+    "write_creates_one_typed_active_current_preference": true,
+    "correction_creates_new_active_and_moves_prior_same_scope_positive_to_history": true,
+    "explicitly_negated_old_value_is_written_as_dislike": true,
+    "session_profile_likes_contains_only_the_new_same_scope_value_after_correction": true,
+    "different_scopes_remain_active_together": true,
+    "all_negative_cases_delegate_to_the_existing_writer_unchanged": true,
+    "temporary_chroma_roundtrip_preserves_scalar_metadata": true,
+    "graph_trace_contains_no_raw_dialogue": true
+  },
+  "invariants": {
+    "p4_h_planner_or_visible_surface_changed": false,
+    "episode_write_or_episode_document_changed": false,
+    "p4_f_retrieval_parser_or_recall_changed": false,
+    "profile_state_shadow_answer_use_activated": false,
+    "research_dataset_baseline_or_gate_changed": false,
+    "production_memory_accessed": false,
+    "old_profile_records_deleted_or_rewritten": false,
+    "private_psychological_state_inferred": false
+  },
+  "claim_boundary": "This contract establishes only a bounded product projection from explicit multilingual user self-reports to typed current-preference state and preserved same-scope history. It does not establish cross-restart conversational recall, open-world preference understanding, human-like memory, felt understanding, user preference, LLM superiority or a human equation."
+}

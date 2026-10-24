@@ -1,0 +1,150 @@
+{
+  "schema": "uruha_m56_blinded_execution_capsule_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_real_m55_rows_m56_generation_or_target_outcome_access",
+  "single_changed_variable": "materialize condition-specific information views, complete prediction commitments, and a separately authorized scorer from the already frozen M56 preflight",
+  "bindings": {
+    "m56_preflight_implementation_freeze": {
+      "path": "research/m56_fair_comparison_preflight_implementation_freeze_2026-09-01.json",
+      "sha256": "b9098f784e2da2ff683820a466b8f8979b0917a3faec4c60a5541d94f8e8445d"
+    },
+    "m56_preflight_contract": {
+      "path": "configs/m56_fair_comparison_preflight_v1.json",
+      "sha256": "184493d9c466d02625edddbfb0be19838c791fb3c4e011f8905e9da0fc3980b2"
+    },
+    "m56_packet_preflight": {
+      "path": "m56_fair_comparison_preflight.py",
+      "sha256": "752020c98de1b56d03dee993edc2a7be3c30e4d38daa7005f36ae1bbf6478c94"
+    },
+    "probability_metrics": {
+      "path": "longitudinal_human_model/metrics.py",
+      "sha256": "d0f198714fa71df661869a8f20150c7b7a57c87913bac4b1f25fc0b6fadfc789"
+    },
+    "paired_statistics": {
+      "path": "longitudinal_human_model/statistical_evaluation.py",
+      "sha256": "a8a4c931c326f2abc85d5a42cff609bb024635efb017daf1c8e880587aac2ee8"
+    },
+    "b0_b3_baselines": {
+      "path": "longitudinal_human_model/baselines.py",
+      "sha256": "8e5cff0491814061c0678554998464948153704f6762bc9460f37b69a68178cc"
+    },
+    "b4_b5_baselines": {
+      "path": "longitudinal_human_model/strong_baselines.py",
+      "sha256": "deabfdf3c01ccb541e853eb7931933e0871b71dec35dee30c509b302229a48c2"
+    },
+    "equation_v1_contract": {
+      "path": "configs/m54_human_response_equation_v1.json",
+      "sha256": "0b3c98853c20511bb3224b6ecaded5e99c01e3697c2b62cc8a8ee54cedf9fb0a"
+    },
+    "equation_v1_runtime_adapter": {
+      "path": "uruha_human_response_equation_m54.py",
+      "sha256": "70ec5a6fae67268b58fbb60b7f576479d99d16a3f87849c6462763580430a165"
+    }
+  },
+  "schemas": {
+    "execution_capsule": "uruha_m56_blinded_execution_capsule_v1",
+    "summary_artifact": "uruha_m56_b4_summary_artifact_v1",
+    "prediction_submission": "uruha_m56_prediction_submission_v1",
+    "commitment_receipt": "uruha_m56_prediction_commitment_receipt_v1",
+    "score_report": "uruha_m56_separate_score_report_v1"
+  },
+  "condition_views": {
+    "B0_PRIOR": {
+      "model_used": false,
+      "visible": ["candidate_behavior_labels", "pre_cutoff_historical_behavior_counts"],
+      "history_representation": "counts_only"
+    },
+    "B1_BASE_LLM": {
+      "model_used": true,
+      "visible": ["current_pre_cutoff_event", "candidate_behavior_labels", "minimal_target_identity"],
+      "history_representation": "none"
+    },
+    "B2_PERSONA_PROMPT": {
+      "model_used": true,
+      "visible": ["B1_view", "frozen_pre_target_persona_summary"],
+      "history_representation": "none"
+    },
+    "B3_RAG": {
+      "model_used": true,
+      "visible": ["B2_view", "deterministic_top4_pre_cutoff_history"],
+      "history_representation": "retrieved_top4"
+    },
+    "B4_FULL_HISTORY_SUMMARY": {
+      "model_used": true,
+      "visible": ["current_pre_cutoff_event", "candidate_behavior_labels", "minimal_target_identity", "frozen_model_summary_artifact"],
+      "history_representation": "separately_built_summary"
+    },
+    "B5_STRUCTURED_HISTORY": {
+      "model_used": true,
+      "visible": ["current_pre_cutoff_event", "candidate_behavior_labels", "frozen_pre_target_persona_summary", "all_pre_cutoff_history"],
+      "history_representation": "structured_full_history"
+    },
+    "OURS_HYBRID": {
+      "model_used": true,
+      "visible": ["same_source_information_object_as_B5", "equation_v1_definition", "pre_outcome_fit_artifact", "state_and_transition_trace"],
+      "history_representation": "same_source_object_as_B5_plus_explicit_mechanism"
+    }
+  },
+  "view_invariants": {
+    "all_views_cutoff_bound": true,
+    "outcome_fields_forbidden": true,
+    "B1_and_B2_history_count_required": 0,
+    "B3_history_limit": 4,
+    "B4_prediction_view_contains_raw_history": false,
+    "B5_and_Ours_source_information_hash_equal": true,
+    "B5_must_not_receive_equation_state_or_transition": true,
+    "Ours_requires_pre_outcome_fit_artifact_hash": true,
+    "Ours_requires_state_snapshot_and_transition_trace_hashes": true
+  },
+  "ordering_and_commitment": {
+    "task_order": "packet_sample_order_then_sample_specific_condition_order",
+    "every_sample_condition_pair_required": true,
+    "missing_or_duplicate_row_invalidates_submission": true,
+    "probability_labels_exact": true,
+    "probability_sum_tolerance": 0.000001,
+    "selected_behavior_must_equal_frozen_argmax": true,
+    "outcome_key_access_before_commitment_forbidden": true,
+    "complete_submission_hash_algorithm": "sha256_canonical_json",
+    "commitment_receipt_created_before_scoring": true,
+    "submission_change_after_commitment_invalidates_scoring": true
+  },
+  "resource_execution": {
+    "B0_prediction_model_calls_per_sample": 0,
+    "B1_B2_B3_B4_B5_prediction_model_calls_per_sample": 1,
+    "Ours_semantic_model_calls_per_sample": 1,
+    "B4_summary_build_calls": "one_per_distinct_nonempty_history_signature",
+    "B4_empty_history_summary": "deterministic_zero_call_no_history_artifact",
+    "retry_count_required": 0,
+    "fallback_count_required": 0,
+    "same_model_artifact_hardware_and_options_required": true,
+    "actual_prompt_completion_tokens_latency_and_peak_memory_required": true,
+    "B5_Ours_prompt_token_difference_fraction_max_without_sensitivity": 0.05,
+    "all_B4_summary_and_Ours_upstream_costs_included": true
+  },
+  "scoring": {
+    "proper_target": "primary_actual_observed_behavior_one_hot",
+    "acceptable_labels_apply_to": ["top1", "top3", "mrr", "ndcg"],
+    "bootstrap_repetitions": 20000,
+    "bootstrap_seed": 560901,
+    "sign_flip_exact_pair_limit": 20,
+    "sign_flip_monte_carlo_draws": 20000,
+    "sign_flip_seed": 560902,
+    "co_primary": ["paired_brier_delta_ours_minus_b5", "paired_nll_delta_ours_minus_b5"],
+    "success_requires_both_bootstrap_upper_bounds_below_zero": true,
+    "top1_delta_minimum": -0.05,
+    "ece_role": "descriptive_only",
+    "semantic_irrelevant_memory_ground_truth": "unavailable_unless_separately_human_annotated",
+    "unauthorized_or_post_cutoff_evidence_rate_required": 0
+  },
+  "authorization": {
+    "current_real_capsule_build": false,
+    "current_model_execution": false,
+    "current_target_outcome_access": false,
+    "current_formal_scoring": false,
+    "current_formal_result_claim": false,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "synthetic_engineering_score_may_authorize_formal_claim": false
+  },
+  "claim_boundary": "A pass establishes only condition-view isolation, complete prediction commitment, resource-audited submission, and separate-scorer engineering. Synthetic scoring is not M55 human evidence, M56 model evidence, Equation V1 validity, Uruha prediction, private-state truth, LLM superiority, or production readiness."
+}

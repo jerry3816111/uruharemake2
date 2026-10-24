@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_third_party_question_evidence_fresh_probe_v1",
+  "authorship": "developer_authored_source_only_pre_model",
+  "status": "pre_exposure",
+  "claim_boundary": "Prospective local product probe of bounded unknown third-party questions only; not independent holdout, human evaluation, or same-model comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [0, 0, 0, 0, 0, 0],
+  "expected_distinct_turn_episode_count": 6,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "unknown_third_party_question_cold_start",
+      "input": "先生は焙じ茶りんごゼリーが好き？",
+      "expected_selected_planner_path": "third_party_question_evidence_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_source_act": "question",
+      "expected_evidence_status": "not_found_in_available_context",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese that directly says current available information cannot establish whether the teacher likes 焙じ茶りんごゼリー; preserve teacher/item, do not imply confirmation, prior knowledge, or the user's/Uruha's own preference."
+    },
+    {
+      "turn": 2,
+      "role": "real_food_offer_negative_control",
+      "input": "海苔昆布おにぎり、一口いる？",
+      "forbidden_question_evidence_gate": true,
+      "expected_selected_intent": "food_offer_generic",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese answer to the offer; no claim that any person likes this food, no profile write."
+    },
+    {
+      "turn": 3,
+      "role": "different_unknown_third_party_before_restart",
+      "input": "祖母は柚子炭酸ゼリーが好き？",
+      "expected_selected_planner_path": "third_party_question_evidence_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_source_act": "question",
+      "expected_evidence_status": "not_found_in_available_context",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese acknowledging that the currently visible evidence cannot determine the grandmother's 柚子炭酸ゼリー preference; preserve X/Y and uncertainty."
+    },
+    {
+      "turn": 4,
+      "role": "prospectively_repeated_question_after_same_db_restart_not_retry",
+      "input": "先生は焙じ茶りんごゼリーが好き？",
+      "expected_selected_planner_path": "third_party_question_evidence_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_source_act": "question",
+      "expected_evidence_status": "not_found_in_available_context",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "The earlier identical user question is not evidence for the teacher's preference. After restart, still answer explicitly unknown in natural Japanese; may acknowledge a repeat but cannot invent a preference or a remembered answer. This exact repetition was frozen before T1 and is not a result-driven retry."
+    },
+    {
+      "turn": 5,
+      "role": "unknown_relation_with_non_sweet_object_after_restart",
+      "input": "父は深煎り麦茶が好き？",
+      "expected_selected_planner_path": "third_party_question_evidence_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_source_act": "question",
+      "expected_evidence_status": "not_found_in_available_context",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese expressing that available evidence does not settle whether the father likes 深煎り麦茶; preserve owner, item, and unknown status."
+    },
+    {
+      "turn": 6,
+      "role": "unknown_coworker_question_after_restart",
+      "input": "同僚は黒糖生姜ラテが好き？",
+      "expected_selected_planner_path": "third_party_question_evidence_p4",
+      "expected_early_signal_intent": "chat",
+      "expected_source_act": "question",
+      "expected_evidence_status": "not_found_in_available_context",
+      "expected_m31_model_call_completed": false,
+      "expected_full_planner_model_call_completed": false,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese explicitly preserving uncertainty about whether the coworker likes 黒糖生姜ラテ, without unsupported comparison, confirmation, or user/Uruha preference transfer."
+    }
+  ]
+}

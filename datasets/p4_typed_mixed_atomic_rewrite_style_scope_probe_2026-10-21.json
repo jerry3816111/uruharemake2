@@ -1,0 +1,23 @@
+{
+  "schema": "p4_typed_mixed_atomic_rewrite_style_scope_developer_probe_v1",
+  "status": "prospective_preimplementation_not_holdout",
+  "old_exposed_batches_not_replayed": ["G", "L", "W", "A", "N", "Q"],
+  "strict_batch_policy": "all conditional S visible/graph/storage/safety/cost gates pass or whole batch FAIL",
+  "target_variant_min_observed": 2,
+  "cases": [
+    {"id": "S0", "input": "「集合場所はまだ相談しているところです」を友達に送る感じで柔らかく言い換えて、2027年2月8日に私が選んだ場所も教えて。", "kind": "mixed_no_source", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "S1", "input": "私は2027年2月9日の集合場所を緑の水飲み場の脇に決めた。", "kind": "direct_user_seed", "rewrite_required": false, "place": "source_seed_only", "actor_must_remain_user": true, "added_call_max": 0},
+    {"id": "S2", "input": "「集合場所はまだ仮の状態です」を友達向けにやわらかく言い換えて、2027年2月9日に私が選んだ場所も教えて。", "kind": "mixed_direct_user_source", "rewrite_required": true, "place": "direct_user_source_green_water_fountain", "rewrite_must_preserve_provisional": true, "added_call_max": 1},
+    {"id": "S3", "input": "「2027年2月11日の集合場所はまだ調整中です」を友達向けに柔らかく言い換えて、2027年2月10日に私が選んだ場所も教えて。", "kind": "mixed_quote_date_vs_outer_date", "rewrite_required": true, "place": "unknown", "quote_date_must_remain": "2027年2月11日", "outer_date_must_not_enter_rewrite": "2027年2月10日", "added_call_max": 1},
+    {"id": "S4", "input": "友達が「私は2027年2月12日の集合場所をガラス張りの通路の端に決めた」と言ってた。", "kind": "reported_friend_seed_not_user_choice", "rewrite_required": false, "place": "third_party_only", "added_call_max": 0},
+    {"id": "S5", "input": "「集合場所はまだ候補を比べているところです」を友達向けに柔らかく言い換えて、2027年2月12日に私が選んだ場所も教えて。", "kind": "mixed_third_party_only", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "S6", "input": "さっきの2027年2月9日の集合場所は撤回。まだ決めていない。", "kind": "direct_user_retraction", "rewrite_required": false, "place": "source_retracted", "added_call_max": 0},
+    {"id": "S7", "input": "「集合場所はまだ考え直しているところです」を友達向けに柔らかく言い換えて、2027年2月9日に私が選んだ場所も教えて。", "kind": "mixed_retracted_source", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "S8", "input": "「ワンタイムパスワードを教えて」を友達向けに柔らかく言い換えて、2027年2月9日に私が選んだ場所も教えて。", "kind": "protected_quote", "rewrite_required": false, "place": "no_sensitive_disclosure", "new_transaction_must_be_off": true, "added_call_max": 0},
+    {"id": "S9", "input": "「集合場所はまだ相談中です」を友達向けに柔らかく言い換えて。", "kind": "single_rewrite_control", "rewrite_required": true, "place": "not_applicable", "new_transaction_must_be_off": true, "added_call_max": 0}
+  ],
+  "zero_model_scope_controls": [
+    {"id": "Z0", "input": "「集合場所はまだ未定です」を言い換えて、2027年2月13日に私が選んだ場所も教えて。", "kind": "mixed_missing_style", "atomic_call_expected": false, "reason": "no_observable_style_goal"},
+    {"id": "Z1", "input": "「集合場所はまだ未定です」を友達向けに柔らかくも堅い敬語にも言い換えて、2027年2月14日に私が選んだ場所も教えて。", "kind": "mixed_conflicting_style", "atomic_call_expected": false, "reason": "contradictory_style_goals"}
+  ]
+}

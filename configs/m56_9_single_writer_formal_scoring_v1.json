@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_m56_single_writer_formal_scoring_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_any_real_m56_target_outcome_access",
+  "single_changed_variable": "same-host same-run concurrent ownership of the M56.8 scoring delegate",
+  "public_api": {
+    "function": "execute_single_writer_durable_release_gated_formal_scoring",
+    "parameters": [
+      "run_id"
+    ],
+    "lock_or_wait_override_allowed": false,
+    "prediction_or_outcome_injection_allowed": false,
+    "result_or_readiness_injection_allowed": false,
+    "metric_threshold_retry_fallback_or_bypass_injection_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_8_durable_release_gated_scoring_v1.json": "87fda5f8d2c8603e8657616a48c3d21d80d21e8a08796ce5c0e6570476dbbc3a",
+    "m56_8_durable_release_gated_scoring.py": "824ab1091422c260991e7cdcfe635d42d4b226de218e9a5536f61ea3dea8f47a",
+    "research/m56_8_durable_release_gated_scoring_implementation_freeze_2026-09-03.json": "84466a3423a44ecf007a26e339cd811440ba9be484b70a5031d4647c73b0646c"
+  },
+  "lock_boundary": {
+    "scope": "one_local_host_and_one_run_id",
+    "mechanism": "nonblocking_os_advisory_exclusive_lock",
+    "fixed_file_in_private_telemetry_compartment": true,
+    "valid_m56_8_run_required_before_lock_file_creation": true,
+    "regular_file_required": true,
+    "current_process_owner_required": true,
+    "single_hard_link_required": true,
+    "descriptor_path_identity_revalidated": true,
+    "held_for_entire_m56_8_delegate": true,
+    "released_on_normal_return_or_exception": true,
+    "released_by_os_on_process_death": true,
+    "symlink_allowed": false,
+    "group_or_world_permissions_allowed": false,
+    "persistent_lock_file_is_authority": false
+  },
+  "contention_policy": {
+    "simultaneous_same_run_delegate_entries": 1,
+    "simultaneous_same_run_private_outcome_loads": 1,
+    "wait_allowed": false,
+    "contender_m56_8_entry_allowed": false,
+    "contender_private_outcome_access_allowed": false,
+    "contender_score_or_result_write_allowed": false,
+    "retry_count": 0,
+    "fallback_count": 0
+  },
+  "sequential_replay_boundary": {
+    "overlapping_duplicate_outcome_join_prevented": true,
+    "sequential_invocation_after_lock_release_may_reopen_outcome": true,
+    "exactly_once_outcome_access_across_process_lifetimes": false,
+    "distributed_lock_claimed": false,
+    "same_host_malicious_access_cryptographically_prevented": false
+  },
+  "unchanged_m56_8_semantics": {
+    "m56_7_durable_release_and_m56_8_gate": true,
+    "m56_4_prediction_outcome_and_score_contract": true,
+    "condition_metrics_thresholds_and_primary_contrast": true,
+    "model_prompts_options_calls_and_resources": true,
+    "human_evidence_gates": true,
+    "result_commitment_content": true
+  },
+  "authorization": {
+    "current_formal_scoring": false,
+    "current_target_outcome_access": false,
+    "current_formal_result": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "M56.9 can establish only one cooperative same-host owner for overlapping scoring calls on the same run id before the unchanged M56.8 delegate. It does not provide exactly-once outcome access across sequential restarts, a distributed or malicious-host security boundary, human evidence, model-performance evidence, Equation V1 validity, a solved human-response equation, full-pipeline evidence or production readiness."
+}

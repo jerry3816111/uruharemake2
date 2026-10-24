@@ -1,0 +1,239 @@
+{
+  "schema": "uruha_source_anchored_semantic_atom_reserve_m33_v1",
+  "sealed_at": "2026-08-25",
+  "status": "sealed_before_m33_implementation",
+  "claim_boundary": "author-constructed source-disjoint controlled reserve; not independently authored, professionally translated, open-domain, or human-rated",
+  "cases": [
+    {
+      "case_id": "m33r_zh_entity_relative_time_01",
+      "language": "zh",
+      "category": "entity_relative_time",
+      "candidate_context": "fresh_session",
+      "input": "周經理大後天下午兩點跟阿凱開會。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "relative_time", "clock_time", "relation", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["周マネージャー", "周部長", "周さん"]},
+        {"label": "relative_time", "any_of": ["明々後日", "三日後"]},
+        {"label": "clock_time", "any_of": ["午後二時", "午後2時"]},
+        {"label": "relation", "any_of": ["アカイ", "阿凱"]},
+        {"label": "event", "any_of": ["会議", "ミーティング"]}
+      ]
+    },
+    {
+      "case_id": "m33r_zh_negated_object_quantity_02",
+      "language": "zh",
+      "category": "negated_object_quantity",
+      "candidate_context": "fresh_session",
+      "input": "抽屜裡沒有兩把剪刀。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_atom_types": ["container", "object", "quantity", "negation"],
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["引き出し"]},
+        {"label": "object", "any_of": ["はさみ", "ハサミ"]},
+        {"label": "quantity", "any_of": ["二本", "2本", "二丁", "2丁"]},
+        {"label": "negation", "any_of": ["ない", "入っていない", "入ってない"]}
+      ]
+    },
+    {
+      "case_id": "m33r_zh_change_weekday_03",
+      "language": "zh",
+      "category": "change_weekday",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "訪談改到下週四上午十點。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["event", "change", "weekday", "clock_time"],
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["面談", "インタビュー"]},
+        {"label": "change", "any_of": ["変更", "変わった", "移った"]},
+        {"label": "weekday", "any_of": ["来週木曜", "来週の木曜", "来週木曜日", "来週の木曜日"]},
+        {"label": "clock_time", "any_of": ["午前十時", "午前10時"]}
+      ]
+    },
+    {
+      "case_id": "m33r_zh_spatial_relation_04",
+      "language": "zh",
+      "category": "spatial_relation",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "小雨把六張白色卡片放在藍盒子裡。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "object", "quantity", "container", "spatial_relation", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["シャオユー", "小雨"]},
+        {"label": "object", "any_of": ["白いカード", "白色のカード"]},
+        {"label": "quantity", "any_of": ["六枚", "6枚"]},
+        {"label": "container", "any_of": ["青い箱", "青色の箱"]},
+        {"label": "spatial_relation", "any_of": ["中", "入れた"]}
+      ]
+    },
+    {
+      "case_id": "m33r_zh_incomplete_05",
+      "language": "zh",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "如果下週四那個……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_atom_types": [],
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m33r_en_entity_relative_time_06",
+      "language": "en",
+      "category": "entity_relative_time",
+      "candidate_context": "fresh_session",
+      "input": "Priya meets Omar at 3:30 p.m. the day after tomorrow.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "relative_time", "clock_time", "relation", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["プリヤ"]},
+        {"label": "relation", "any_of": ["オマール", "オマー"]},
+        {"label": "relative_time", "any_of": ["明後日"]},
+        {"label": "clock_time", "any_of": ["午後三時半", "午後3時半", "15時30分"]},
+        {"label": "event", "any_of": ["会う", "会います", "面会"]}
+      ]
+    },
+    {
+      "case_id": "m33r_en_negated_object_quantity_07",
+      "language": "en",
+      "category": "negated_object_quantity",
+      "candidate_context": "fresh_session",
+      "input": "The drawer does not contain two silver keys.",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_atom_types": ["container", "object", "quantity", "negation"],
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["引き出し"]},
+        {"label": "object", "any_of": ["銀の鍵", "銀色の鍵"]},
+        {"label": "quantity", "any_of": ["二本", "2本", "二つ", "2つ"]},
+        {"label": "negation", "any_of": ["ない", "入っていない", "入ってない"]}
+      ]
+    },
+    {
+      "case_id": "m33r_en_change_weekday_08",
+      "language": "en",
+      "category": "change_weekday",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "The workshop was moved from Tuesday to Friday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["event", "change", "source_weekday", "target_weekday"],
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["ワークショップ"]},
+        {"label": "change", "any_of": ["変更", "移った", "変わった"]},
+        {"label": "source_weekday", "any_of": ["火曜", "火曜日"]},
+        {"label": "target_weekday", "any_of": ["金曜", "金曜日"]}
+      ]
+    },
+    {
+      "case_id": "m33r_en_spatial_relation_09",
+      "language": "en",
+      "category": "spatial_relation",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "Lena placed five green notebooks beside the printer.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "object", "quantity", "spatial_relation", "landmark", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["レナ"]},
+        {"label": "object", "any_of": ["緑のノート", "緑色のノート"]},
+        {"label": "quantity", "any_of": ["五冊", "5冊"]},
+        {"label": "landmark", "any_of": ["プリンター"]},
+        {"label": "spatial_relation", "any_of": ["横", "そば"]}
+      ]
+    },
+    {
+      "case_id": "m33r_en_incomplete_10",
+      "language": "en",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "The folder beside the...",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_atom_types": [],
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m33r_ja_entity_time_11",
+      "language": "ja",
+      "category": "entity_time",
+      "candidate_context": "fresh_session",
+      "input": "佐藤さんは再来週の月曜午後一時に戻る。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "relative_time", "weekday", "clock_time", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["佐藤さん", "佐藤"]},
+        {"label": "relative_time", "any_of": ["再来週"]},
+        {"label": "weekday", "any_of": ["月曜", "月曜日"]},
+        {"label": "clock_time", "any_of": ["午後一時", "午後1時", "13時"]},
+        {"label": "event", "any_of": ["戻る", "帰る"]}
+      ]
+    },
+    {
+      "case_id": "m33r_ja_limited_quantity_12",
+      "language": "ja",
+      "category": "limited_quantity",
+      "candidate_context": "fresh_session",
+      "input": "引き出しには青い封筒が二枚しかない。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_atom_types": ["container", "object", "quantity", "limitation"],
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["引き出し"]},
+        {"label": "object", "any_of": ["青い封筒", "青色の封筒"]},
+        {"label": "quantity", "any_of": ["二枚", "2枚"]},
+        {"label": "limitation", "any_of": ["しかない"]}
+      ]
+    },
+    {
+      "case_id": "m33r_ja_change_range_13",
+      "language": "ja",
+      "category": "change_range",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "面談は木曜日から土曜日に変更された。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["event", "change", "source_weekday", "target_weekday"],
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["面談"]},
+        {"label": "change", "any_of": ["変更された", "変更", "移った"]},
+        {"label": "source_weekday", "any_of": ["木曜", "木曜日"]},
+        {"label": "target_weekday", "any_of": ["土曜", "土曜日"]}
+      ]
+    },
+    {
+      "case_id": "m33r_ja_spatial_relation_14",
+      "language": "ja",
+      "category": "spatial_relation",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "ユナは三本の白い傘を玄関の横に置いた。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_atom_types": ["entity", "object", "quantity", "spatial_relation", "landmark", "event"],
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["ユナ"]},
+        {"label": "object", "any_of": ["白い傘", "白色の傘"]},
+        {"label": "quantity", "any_of": ["三本", "3本"]},
+        {"label": "landmark", "any_of": ["玄関"]},
+        {"label": "spatial_relation", "any_of": ["横"]}
+      ]
+    },
+    {
+      "case_id": "m33r_ja_incomplete_15",
+      "language": "ja",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "来週の金曜日に、あの……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_atom_types": [],
+      "required_japanese_groups": []
+    }
+  ]
+}

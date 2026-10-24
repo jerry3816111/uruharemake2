@@ -1,0 +1,65 @@
+{
+  "schema": "uruha_p4_w_frame_preserving_visible_repair_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_w_frame_preserving_visible_repair_v1.json",
+    "sha256": "4203036c78d5367c462632f5e94dd0b2a6dab6edcf594a3994bc98b769787a3a",
+    "development_case_count": 4,
+    "holdout_case_count": 12,
+    "faithful_control_count": 8
+  },
+  "predecessor": {
+    "module": "uruha_utterance_frame_shadow_extension_p4.py",
+    "module_sha256": "5282dd47ccfb70be7dafd91145ea1a2012749419332171a3ef16b08b7c63025d",
+    "entry": "uruha_web_ui_product_p4_v.py",
+    "entry_sha256": "2b2bf0f4e7c4ab2c22ddefbf469b04e59e9ea1a651816381de4c994ceb79d168",
+    "released_product_entry": "uruha_web_ui_product.py",
+    "released_product_entry_sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694"
+  },
+  "single_changed_variable": "When and only when the frozen P4-V effective trace reports a frame violation, deterministically transform the Japanese candidate into a surface that preserves the already-classified speaker ownership, embedding, evidential stance and speech act.",
+  "implementation_boundary": {
+    "frame_classifier_change_allowed": false,
+    "p4_t_or_p4_v_change_allowed": false,
+    "released_product_entry_change_allowed": false,
+    "prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "memory_write_added_allowed": false,
+    "faithful_candidate_change_allowed": false,
+    "case_id_or_source_exact_match_routing_allowed": false,
+    "generic_violation_to_surface_transform_allowed": true,
+    "allowed_implementation_files": [
+      "uruha_frame_preserving_visible_repair_p4.py",
+      "uruha_web_ui_product_p4_w.py",
+      "test_p4_w_frame_preserving_visible_repair.py",
+      "test_p4_w_frame_preserving_visible_repair_result.py"
+    ]
+  },
+  "gates": {
+    "development_case_count": 4,
+    "development_exact_before_violation_count": 4,
+    "development_exact_reply_count": 4,
+    "development_zero_unresolved_count": 4,
+    "holdout_case_count": 12,
+    "holdout_exact_before_violation_count": 12,
+    "holdout_exact_reply_count": 12,
+    "holdout_zero_unresolved_count": 12,
+    "faithful_control_count": 8,
+    "faithful_control_unchanged_count": 8,
+    "visible_japanese_count": 24,
+    "trace_count": 24,
+    "raw_source_or_reply_trace_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "failure_policy": {
+    "dataset_expected_reply_or_gate_change_after_implementation": false,
+    "maximum_informed_correction_batches": 2,
+    "failed_results_must_be_preserved": true,
+    "p4_u_or_p4_v_exposed_cases_may_be_called_holdout": false,
+    "safari_execution_requires_separate_frozen_real_turn_contract": true
+  },
+  "claim_boundary": "A pass proves one bounded deterministic Japanese frame-preserving repair on 4 exposed development failures, 12 prospectively frozen developer-authored multilingual failures and 8 controls. It does not establish real-model or Safari behavior, open-domain semantic preservation, natural-distribution accuracy, human preference, felt understanding, strong-LLM advantage or a human equation."
+}

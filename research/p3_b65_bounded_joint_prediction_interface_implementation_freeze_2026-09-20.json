@@ -1,0 +1,45 @@
+{
+  "schema": "uruha_p3_b65_bounded_joint_prediction_interface_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b65_model_calls_or_future_access",
+  "authorization_basis": "standing user authorization plus the new-interface design gate recorded after terminal B64",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b65_bounded_joint_prediction_interface_v1.json",
+      "sha256": "35cc6472ed9b68f971b65750271f1d607ff491ba0398bdea39ae9112dc4d5851"
+    },
+    "implementation": {
+      "path": "p3_b65_bounded_joint_prediction_interface.py",
+      "sha256": "46380b02c97a65b2c0d3ab40a24570156a1eafe122ed6c5d4107b57a5b14c0d1"
+    },
+    "tests": {
+      "path": "test_p3_b65_bounded_joint_prediction_interface.py",
+      "sha256": "9d374b53e791485c555438497fc5603687431cdbb9cb27d29e5508026121eb8b"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b65_bounded_joint_prediction_interface.py -k 'not implementation_freeze'",
+    "passed": 9,
+    "failed": 0,
+    "same_schema_equal_budget_and_future_lock_checked": true
+  },
+  "model_call_count_at_freeze": 0,
+  "future_outcome_access_count_at_freeze": 0,
+  "outcome_score_count_at_freeze": 0,
+  "new_interface_not_correction": true,
+  "single_architecture_change": "replace the failed two-call free-standing representation interface with one bounded joint state-and-prediction call per condition",
+  "fairness_controls": [
+    "same qwen3.5:9b model",
+    "same real pre-cutoff context artifact",
+    "same target and six behavior labels",
+    "same fixed JSON schema for both conditions",
+    "same 512 completion-token ceiling per condition",
+    "same temperature 0, seed 260920, num_ctx 8192, and think=false",
+    "same one-call graph and condition order",
+    "zero retry or fallback",
+    "future outcome remains locked"
+  ],
+  "success_condition": "exactly two provider-boundary-counted calls freeze baseline and system predictions while discarding state text and preserving only state hashes before future access",
+  "failure_condition": "any provider, schema, bound, probability, language, accounting, call-count, retry, or future-access violation produces a terminal redacted failure",
+  "claim_boundary": "B65 success establishes one-row interface feasibility only. Prediction accuracy and any pragmatic advantage require a separately frozen future-outcome unlock and scoring stage."
+}

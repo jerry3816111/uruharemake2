@@ -1,0 +1,161 @@
+{
+  "schema": "uruha_p4_profile_write_ack_fresh_probe_v1",
+  "case_id": "p4_profile_ack_fresh_20261001_01",
+  "status": "developer_authored_prospective_product_probe_not_holdout",
+  "turn_count": 11,
+  "restart_after_turn": 4,
+  "core_intervention": "profile_owner_admission_bound_to_visible_memory_acknowledgement",
+  "global_expected": {
+    "exact_input_once_per_turn": true,
+    "distinct_persisted_turn_episode_count": 11,
+    "rejected_profile_act_keeps_episode": true,
+    "visible_language": "ja",
+    "truth_node_status_each_turn": "matched",
+    "truth_node_count_each_turn": 1,
+    "rejected_p4_h_success_graph_count": 0,
+    "graph_utterance_equals_visible_reply": true,
+    "rejected_act_must_not_promise_user_preference_write": true,
+    "accepted_act_keeps_existing_acknowledgement": true,
+    "graph_and_visible_reply_same_turn": true,
+    "profile_forbidden_values": [
+      "枇杷葉茶",
+      "rosehip tea",
+      "茉莉米茶",
+      "cranberry tea",
+      "juniper tea",
+      "黒糖生姜"
+    ],
+    "forbidden_values_must_also_be_absent_as_substrings_of_user_profile_value": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ja_selected_friend_message_rejected",
+      "input": "友達からの伝言。今は枇杷葉茶が好き。今の好みとして覚えといて。",
+      "expected_new_user_profile": [],
+      "expected_ack_class": "noncommit_user_profile",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "selected_source_has_unresolved_preamble",
+      "expected_writer_evidence": "writer_not_invoked",
+      "visible_rubric": "Do not promise a user-profile write; do not present the friend's statement as the user's own preference."
+    },
+    {
+      "turn": 2,
+      "role": "ja_direct_current_drink_write",
+      "input": "今は山桃茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "山桃茶", "scope": "drink"}],
+      "expected_ack_class": "existing_write_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 3,
+      "role": "ja_direct_current_drink_correction",
+      "input": "訂正。もう山桃茶は好みじゃない。今は桂皮茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_new_user_profile": [
+        {"fact_type": "like", "value": "桂皮茶", "scope": "drink"},
+        {"fact_type": "dislike", "value": "山桃茶", "scope": "drink"}
+      ],
+      "expected_prior_current_value_state": "historical_in_resolver_not_physical_metadata_mutation",
+      "expected_ack_class": "existing_correction_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、訂正の内容はそのまま覚えとく。"
+    },
+    {
+      "turn": 4,
+      "role": "en_quoted_friend_selected_rejected",
+      "input": "My friend said, \"I like rosehip tea.\" Please remember my current drink preference.",
+      "expected_new_user_profile": [],
+      "expected_ack_class": "noncommit_user_profile",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "quoted_scope",
+      "expected_writer_evidence": "writer_not_invoked",
+      "visible_rubric": "Do not promise a user-profile write; do not present the quoted friend's statement as the user's own preference."
+    },
+    {
+      "turn": 5,
+      "role": "zh_direct_current_snack_write_after_restart",
+      "input": "我現在喜歡黑芝麻糕。請記住我現在的點心偏好。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "黑芝麻糕", "scope": "點心"}],
+      "expected_ack_class": "existing_write_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 6,
+      "role": "zh_reported_friend_selected_rejected",
+      "input": "朋友說我現在喜歡茉莉米茶。請記住我現在的飲品偏好。",
+      "expected_new_user_profile": [],
+      "expected_ack_class": "noncommit_user_profile",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "third_person_or_reported_scope",
+      "expected_writer_evidence": "writer_not_invoked",
+      "visible_rubric": "Do not promise a user-profile write; do not present the friend's report as the user's own preference."
+    },
+    {
+      "turn": 7,
+      "role": "en_direct_current_music_write",
+      "input": "I like ambient jazz. Please remember my current music preference.",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "ambient jazz", "scope": "music"}],
+      "expected_ack_class": "existing_write_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 8,
+      "role": "en_ambiguous_two_values_selected_rejected",
+      "input": "I like cranberry tea. I like juniper tea. Please remember my current drink preference.",
+      "expected_new_user_profile": [],
+      "expected_ack_class": "ambiguous_self_candidates_clarification_no_commit",
+      "expected_owner_admission": "rejected",
+      "expected_owner_reason": "selected_act_ambiguous_extraction",
+      "expected_writer_evidence": "writer_not_invoked",
+      "visible_rubric": "Acknowledge two possible user preferences but do not select or write one; ask which should count as the current drink preference. Do not call these third-party facts."
+    },
+    {
+      "turn": 9,
+      "role": "ja_same_old_value_drink_scope_write",
+      "input": "今はルバーブが好き。今の飲み物の好みとして覚えといて。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "ルバーブ", "scope": "drink"}],
+      "expected_ack_class": "existing_write_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 10,
+      "role": "ja_same_old_value_food_scope_write",
+      "input": "今はルバーブが好き。今の食べ物の好みとして覚えといて。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "ルバーブ", "scope": "食べ物"}],
+      "expected_ack_class": "existing_write_acknowledgement",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_writer_status": "typed_write_completed",
+      "expected_visible_exact": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn": 11,
+      "role": "ja_unscoped_correction_old_value_multiple_active_scopes",
+      "input": "訂正。もうルバーブは好みじゃない。今は黒糖生姜が好き。今の好みとして覚えといて。",
+      "expected_new_user_profile": [],
+      "expected_ack_class": "state_ambiguous_correction_clarification_no_commit",
+      "expected_owner_admission": "admitted",
+      "expected_owner_reason": null,
+      "expected_state_guard_reason": "old_value_has_multiple_active_scopes",
+      "expected_typed_writer_status": "ambiguous_extraction",
+      "expected_typed_writer_reason": "old_value_has_multiple_active_scopes",
+      "expected_writer_status": "typed_write_not_completed",
+      "expected_legacy_fallback_suppressed": true,
+      "visible_rubric": "The old preference is active in two scopes; ask which scope is being corrected. Do not promise or claim a write and do not call the preference third-party."
+    }
+  ]
+}

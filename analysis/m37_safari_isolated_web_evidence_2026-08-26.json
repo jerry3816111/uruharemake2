@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_m37_safari_isolated_web_evidence_v1",
+  "date": "2026-08-26",
+  "session_id": "20260826_172645_44e75253",
+  "url": "http://127.0.0.1:7874/?m37safari=1",
+  "isolation": {
+    "temporary_root": "/tmp/uruha-m37-safari.UHAhdm",
+    "adaptive_person_model_path": "/tmp/uruha-m37-safari.UHAhdm/adaptive-person-model.json",
+    "web_log_path": "/tmp/uruha-m37-safari.UHAhdm/web-log.jsonl",
+    "formal_memory_database_touched": false,
+    "raw_dialogue_persisted_in_adaptive_store": false,
+    "private_state_truth_claimed": false
+  },
+  "safari_tabs": {
+    "before": 25,
+    "after": 26,
+    "existing_tabs_closed": 0,
+    "new_m37_tab_safe_to_close": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "input_language": "en",
+      "user_text": "If my report gets stuck and stops moving, just stay here with me.",
+      "assistant_reply": "うん。今は質問しないで、ちょっとここにいる。そのくらいでいいだろ。",
+      "m37_status": "candidate_waiting_for_verification",
+      "trigger_predicate": "task_stall",
+      "response_policy": "share_arousal",
+      "persisted_relation_count": 0,
+      "authoritative": false
+    },
+    {
+      "turn": 2,
+      "input_language": "en",
+      "user_text": "Exactly, keep that arrangement.",
+      "assistant_reply": "一回、今は放っといてほしいのか、少し聞いてほしいのかだけ教えて。",
+      "m37_status": "verified_relation_persisted",
+      "trigger_predicate": "task_stall",
+      "response_policy": "share_arousal",
+      "persisted_relation_count": 1,
+      "authoritative": false
+    },
+    {
+      "turn": 3,
+      "input_language": "en",
+      "user_text": "The report is stalled again and I can't make any progress.",
+      "assistant_reply": "そりゃ頭止まんねえわ。結果来るまでうちも一緒にそわそわしとく。",
+      "m37_status": "matched_verified_trigger_relation",
+      "trigger_predicate": "task_stall",
+      "response_policy": "share_arousal",
+      "persisted_relation_count": 1,
+      "authoritative": true
+    },
+    {
+      "turn": 4,
+      "input_language": "zh",
+      "user_text": "這份報告又卡住，進度完全推不動。",
+      "assistant_reply": "レポートが進まないね",
+      "m37_status": "matched_verified_trigger_relation",
+      "trigger_predicate": "task_stall",
+      "response_policy": "share_arousal",
+      "persisted_relation_count": 1,
+      "authoritative": true
+    }
+  ],
+  "observed_gates": {
+    "candidate_before_support": true,
+    "persist_only_after_support": true,
+    "english_paraphrase_match": true,
+    "cross_lingual_chinese_match": true,
+    "visible_reply_japanese_format": "4/4",
+    "surface_semantic_grounding": "fail",
+    "felt_understanding": "not_established"
+  },
+  "surface_findings": [
+    "Turn 2 persisted the relation internally, but the visible reply asked a new clarification instead of naturally acknowledging the support.",
+    "Turn 3 selected share_arousal, but introduced an unsupported waiting-for-results frame not present in the report-stall input.",
+    "Turn 4 matched the verified relation cross-lingually, but the visible reply only restated the literal problem and did not realize share_arousal.",
+    "The formal automatic surface proxy therefore overestimates real Web surface quality for this isolated sequence."
+  ],
+  "screenshots": [
+    "analysis/m37_safari_verified_relation_persisted_2026-08-26.jpeg",
+    "analysis/m37_safari_crosslingual_trigger_match_chat_2026-08-26.jpeg",
+    "analysis/m37_safari_runtime_summary_2026-08-26.jpeg",
+    "analysis/m37_safari_runtime_node_graph_2026-08-26.jpeg"
+  ],
+  "claim": "The isolated Safari run confirms M37 candidate, verification-gated persistence, English paraphrase reuse, Chinese cross-lingual trigger reuse, and Japanese-format delivery. It does not pass a product-level surface-grounding or felt-understanding gate."
+}

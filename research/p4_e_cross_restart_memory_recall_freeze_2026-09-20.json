@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_p4_e_cross_restart_memory_recall_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_p4_e_real_product_turn",
+  "parent_checkpoint": {
+    "commit": "f1e7c57",
+    "release": {
+      "path": "research/p4_d_local_vrm_renderer_release_2026-09-20.json",
+      "sha256": "cb7993efce2574ce7c630ec67c9feb92eb8d0993f9030b587bb73a978774baf8"
+    }
+  },
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_e_cross_restart_memory_recall_contract_v1.json",
+      "sha256": "2b1689e7b355d3307bbef46a0b5115e1e1b4f88779da97b30661d542984305fc"
+    },
+    "gate": {
+      "path": "p4_e_cross_restart_memory_gate.py",
+      "sha256": "7f221bd8f03b1a5ebe457df5e6cbb767b62848c6d5cff932de06c946eeed1767"
+    },
+    "gate_test": {
+      "path": "test_p4_e_cross_restart_memory_gate.py",
+      "sha256": "cba615c4021f680b7da90af4ba0a9e380ae73ecc307e803d70e13b6e13ad3f42"
+    }
+  },
+  "pre_execution_evidence": {
+    "contract_and_fail_closed_gate_tests_passed": 11,
+    "real_p4_e_product_turn_count": 0,
+    "p4_e_process_start_count": 0,
+    "production_memory_access_count": 0,
+    "post_turn_memory_seed_count": 0,
+    "result_known_before_freeze": false
+  },
+  "execution_order": [
+    "stop the prior P4-D isolated server without deleting its runtime",
+    "start a newly created P4-E isolated root on localhost with the sandboxed P4-B launcher",
+    "submit exactly session_1.input in Safari and wait for durable turn completion",
+    "record old PID session id runtime root memory path and conversation row",
+    "terminate the old product process and prove it exited",
+    "start once with --reuse-runtime on the same P4-E root and record a different PID",
+    "reload the same Safari product tab and record a different product session id",
+    "confirm the browser-only VRM stage returned to waiting_for_local_vrm",
+    "submit exactly session_2.input once",
+    "record visible reply selected speaker memory id trace id planner path graph node and call accounting",
+    "run the frozen gate once and preserve pass or fail"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "prompt_change_allowed": false,
+    "fact_or_localization_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "same_result_rerun_allowed": false,
+    "repair_after_terminal_result": "new separately reviewed case only; the P4-E result remains immutable"
+  },
+  "authorized_external_effects": {
+    "localhost_product_process_starts": 2,
+    "safari_product_turns": 2,
+    "local_ollama_calls_maximum": 1,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0
+  },
+  "claim_boundary": "This freeze authorizes one product restart acceptance case. It is not a fresh research holdout and cannot establish general memory or a scientific advantage."
+}

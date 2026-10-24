@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_p4_n_source_bound_japanese_identity_localization_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_implementation",
+  "implementation_checkpoint": {
+    "commit": "019049380c6019b62f1aa7081903cb931c5944ff",
+    "p4_m_terminal_release": {
+      "path": "research/p4_m_cross_language_correction_delivery_release_2026-09-22.json",
+      "sha256": "fdc87a22817af9a9fe8516d20818601928f99a9693e79f02444f30d1c44af799"
+    },
+    "typed_recall_before": {
+      "path": "uruha_typed_current_preference_recall_p4.py",
+      "sha256": "dbec8a2cd9a6b4bbc1faeb13add35f1b491e038c0cccb377bcc137bda7750aff"
+    },
+    "existing_recall_tests": {
+      "path": "test_p4_j_typed_current_preference_recall.py",
+      "sha256": "aa9fb79806fbfb46dfaf2915ed12553fb4b8d10f7ff69a2bc34a11e5fd42955b"
+    }
+  },
+  "design_bindings": {
+    "contract": {
+      "path": "configs/p4_n_source_bound_japanese_identity_localization_contract_v1.json",
+      "sha256": "2f5cee4ff3307dbef6b1fde41fca0821b192c386b47371499dd3f1443969195b"
+    },
+    "prechange": {
+      "path": "analysis/p4_n_source_bound_japanese_identity_localization_prechange_2026-09-22.json",
+      "sha256": "1883eca2daa7c043d94ee9e5bb55955e1437befe79f948e2a1e4d3a7eaa03cac"
+    },
+    "contract_test": {
+      "path": "test_p4_n_source_bound_japanese_identity_localization_contract.py",
+      "sha256": "efebf7c7c7ad8dcd2348189dbc7dda4664cddabd5cb2d40302016a7d5b2d5938"
+    }
+  },
+  "single_changed_variable": "source_provenance_bounded_japanese_identity_localization",
+  "allowed_product_files": [
+    "uruha_typed_current_preference_recall_p4.py"
+  ],
+  "required_implementation": [
+    "keep the finite localization map as the first strategy",
+    "add one metadata-aware identity strategy requiring exact Japanese explicit-self-report provenance",
+    "normalize with NFKC then require 1 to 24 codepoints from the frozen Japanese character classes only",
+    "reject ASCII letters digits spaces controls and sentence punctuation",
+    "report the chosen surface strategy and whether identity localization was applied",
+    "keep all active-only exact-scope provenance historical negative episode and no-model guards"
+  ],
+  "execution_order": [
+    "commit and push this design freeze before editing product code",
+    "add the frozen positive and fail-closed negative tests",
+    "make one scoped implementation change in the allowed product file",
+    "run P4-N exact tests then P4-J P4-I P4-L P4-M and product-entry affected regression",
+    "release the offline result with explicit before and after evidence",
+    "only after a separate real-product acceptance freeze may a new unexposed value be executed"
+  ],
+  "forbidden_change": [
+    "do not add 柚子茶 or any P4-M exposed answer to the finite map",
+    "do not rerun P4-M or change its gate expected answer or terminal result",
+    "do not authorize identity localization for English Chinese unknown or mixed-script values",
+    "do not weaken active-only exact-scope required provenance or abstention behavior",
+    "do not add model translation network access production memory external deployment or research advantage claims"
+  ],
+  "authorized_external_effects": {
+    "local_product_process_starts": 0,
+    "safari_product_turns": 0,
+    "local_product_planner_model_calls": 0,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0
+  },
+  "claim_boundary": "This freeze authorizes one offline implementation seam for source-bound safe Japanese identity localization. A pass cannot erase the P4-M failure or establish arbitrary echoing, translation, open-domain memory, long-dialogue reliability, felt understanding, LLM superiority or a human equation."
+}

@@ -78,6 +78,58 @@ class RuntimeState:
         }
     )
     last_prediction_error: dict = field(default_factory=dict)
+    current_user_hypothesis: dict = field(default_factory=dict)
+    last_hypothesis_verification: dict = field(default_factory=dict)
+    hypothesis_history: list = field(default_factory=list)
+    hypothesis_calibration: dict = field(
+        default_factory=lambda: {
+            "schema": "uruha_hypothesis_calibration_v2_12",
+            "supported": 0,
+            "contradicted": 0,
+            "uncertain": 0,
+            "confidence_multiplier": 1.0,
+            "last_adjustment": 0.0,
+            "last_reason": "no_previous_hypothesis",
+            "sample_count": 0,
+        }
+    )
+    current_pragmatic_understanding: dict = field(default_factory=dict)
+    last_pragmatic_verification: dict = field(default_factory=dict)
+    longitudinal_user_model: dict = field(
+        default_factory=lambda: {
+            "schema": "uruha_longitudinal_other_model_v2_13",
+            "claim_scope": "functional_other_model_not_mind_reading",
+            "storage_scope": "runtime_session_model",
+            "fact_memory_write_allowed_for_inferences": False,
+            "layers": {"stable": [], "situational": [], "provisional": []},
+            "typed_calibration": {
+                "schema": "uruha_typed_prediction_calibration_v2_13",
+                "categories": {},
+                "most_reliable": None,
+                "least_reliable": None,
+                "sample_count": 0,
+            },
+            "active_validation": {
+                "schema": "uruha_active_validation_strategy_v2_13",
+                "status": "none",
+                "pending": None,
+                "history": [],
+            },
+            "revision_history": [],
+            "decay_history": [],
+            "last_update_turn": 0,
+            "last_update_at": None,
+        }
+    )
+    last_longitudinal_model_update: dict = field(default_factory=dict)
+    last_personhood_loop: dict = field(default_factory=dict)
+    adaptive_person_model: dict = field(default_factory=dict)
+    last_adaptive_person_feedback: dict = field(default_factory=dict)
+    current_desired_response_state: dict = field(default_factory=dict)
+    last_desired_response_decision: dict = field(default_factory=dict)
+    last_adaptive_person_persistence: dict = field(default_factory=dict)
+    current_pragmatic_branch_m34: dict = field(default_factory=dict)
+    last_pragmatic_branch_verification_m34: dict = field(default_factory=dict)
 
     def touch_interaction(self, when=None, reset_drives=False):
         now = float(when if when is not None else time.time())
@@ -132,3 +184,68 @@ class RuntimeState:
 
     def remember_prediction_error(self, payload):
         self.last_prediction_error = dict(payload or {})
+
+    def remember_hypothesis_verification(self, payload):
+        self.last_hypothesis_verification = dict(payload or {})
+        previous_id = self.last_hypothesis_verification.get("previous_hypothesis_id")
+        if previous_id and self.hypothesis_history:
+            for record in reversed(self.hypothesis_history):
+                if (record.get("hypothesis") or {}).get("hypothesis_id") == previous_id:
+                    record["verification_after_next_turn"] = dict(self.last_hypothesis_verification)
+                    break
+
+    def remember_user_hypothesis(self, payload):
+        self.current_user_hypothesis = dict(payload or {})
+        if not self.current_user_hypothesis:
+            return
+        self.hypothesis_history.append(
+            {
+                "hypothesis": dict(self.current_user_hypothesis),
+                "verification_after_next_turn": None,
+            }
+        )
+        if len(self.hypothesis_history) > 12:
+            self.hypothesis_history = self.hypothesis_history[-12:]
+
+    def set_hypothesis_calibration(self, payload):
+        self.hypothesis_calibration = dict(payload or {})
+
+    def remember_pragmatic_understanding(self, payload):
+        self.current_pragmatic_understanding = dict(payload or {})
+
+    def remember_pragmatic_verification(self, payload):
+        self.last_pragmatic_verification = dict(payload or {})
+
+    def set_longitudinal_user_model(self, payload, update_trace=None):
+        self.longitudinal_user_model = dict(payload or {})
+        self.last_longitudinal_model_update = dict(update_trace or {})
+
+    def set_personhood_loop(self, payload):
+        self.last_personhood_loop = dict(payload or {})
+
+    def set_adaptive_person_model(self, payload, persistence_trace=None):
+        self.adaptive_person_model = dict(payload or {})
+        if persistence_trace is not None:
+            self.last_adaptive_person_persistence = dict(persistence_trace or {})
+
+    def remember_adaptive_person_feedback(self, payload):
+        self.last_adaptive_person_feedback = dict(payload or {})
+
+    def remember_desired_response_decision(self, state, decision):
+        self.current_desired_response_state = dict(state or {})
+        self.last_desired_response_decision = dict(decision or {})
+
+    def remember_pragmatic_branch_m34(self, payload):
+        branch = dict(payload or {})
+        self.current_pragmatic_branch_m34 = branch
+        self.last_pragmatic_branch_verification_m34 = dict(
+            branch.get("previous_branch_verification") or {}
+        )
+
+
+# M38 is installed from the shared runtime boundary so CLI, Web, and tests use
+# the same observable feedback-linkage contract without rewriting frozen M37
+# implementation files.
+from uruha_target_guarded_feedback_m38 import install_m38_feedback_linkage
+
+install_m38_feedback_linkage()

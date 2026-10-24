@@ -1,0 +1,80 @@
+{
+  "schema": "uruha_p3_baseline_instruction_language_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "isolate_baseline_instruction_language_effect_on_shared_japanese_surface",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "stage_tokenizer_binding": {
+    "path": "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json",
+    "sha256": "e360e626931d40ff52f5a217131541701a1eb69831fa3b249214dbb4fed5774f",
+    "required_status": "stage_provider_binding_pass"
+  },
+  "source": {
+    "source_id": "p3-b11-synthetic-en-001",
+    "case_id": "p3-b11-synthetic-instruction-language",
+    "turn_id": "p3-b11-synthetic-u1",
+    "session_id": "p3-b11-synthetic-s1",
+    "language": "en",
+    "content": "A neighbor asked whether I can join a crowded weekend cleanup. I said I have not decided yet.",
+    "content_sha256": "d9ca3ce2a80bd1482f6e9b57328ed9a3ce07e104e5a08613f51034f288c22502",
+    "visible_prefix": [],
+    "developer_case_source": false,
+    "annotations_exist": false
+  },
+  "arms": {
+    "english_instructions": {
+      "direct_instruction": "Use the entire visible conversation history, including earlier sessions. Consider the user's likely purpose, explicit corrections, uncertainty, relationship and relevant memory. Produce the best grounded response under the shared persona contract. Output only the final Japanese reply. Do not invent facts or mention evaluation.",
+      "deliberate_instructions": [
+        "Using the entire visible history and shared persona contract, draft the best Japanese reply. You may consider alternative interpretations privately. Return a draft only.",
+        "Check the draft against the complete visible history. Identify unsupported assumptions, missed requests or corrections, wrong speakers, and language/persona problems. Give concise revision notes. You receive no answer key.",
+        "Using the complete visible history, draft and revision notes, produce only the best final Japanese reply under the shared persona contract."
+      ]
+    },
+    "japanese_instructions": {
+      "direct_instruction": "過去のセッションを含む、ユーザーに見えている会話履歴をすべて使う。相手のあり得る目的、明示された訂正、不確実性、関係性、関連する記憶を考慮し、共通人格契約に従った根拠のある最善の返答を作る。最終的な自然な日本語の返答だけを出力し、事実を作ったり評価に言及したりしない。",
+      "deliberate_instructions": [
+        "ユーザーに見えている会話履歴のすべてと共通人格契約を使い、最善の自然な日本語の返答案を作る。別の解釈は内部で検討してよい。日本語の返答案だけを出力する。",
+        "返答案を、ユーザーに見えている会話履歴のすべてと照合する。根拠のない推測、見落とした依頼や訂正、話者の取り違え、言語や人格の問題を確認し、日本語で短い修正点だけを出す。正解情報は与えられていない。",
+        "ユーザーに見えている会話履歴のすべて、返答案、修正点を使い、共通人格契約に従った最善の最終返答を作る。自然な日本語の返答だけを出力する。"
+      ]
+    }
+  },
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "direct_completion_cap": 768,
+    "deliberate_completion_caps": [256, 256, 256]
+  },
+  "transport": {
+    "backend": "openai_compatible_local",
+    "url": "http://127.0.0.1:11434/v1/chat/completions",
+    "per_call_timeout_seconds": 60
+  },
+  "execution_boundary": {
+    "provider_calls_exact": 8,
+    "calls_per_arm_exact": 4,
+    "automatic_retry": false,
+    "concurrency": 1,
+    "localhost_only": true,
+    "developer_case_access": false,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "all_eight_calls_exact": true,
+    "both_arms_have_direct_and_deliberate_finals": true,
+    "japanese_instruction_surface_pass_count_greater_than_english": true,
+    "all_outputs_and_failures_retained": true
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "uruha_p4_relationship_question_evidence_fresh_probe_v1",
+  "status": "developer_authored_pre_product_freeze_not_formal_holdout",
+  "design_reference": "research/p4_relationship_question_evidence_plan_2026-10-16.md",
+  "case_id": "p4_relationship_question_evidence_fresh_2026_10_16",
+  "core_intervention": "full_current_turn_evidence_for_bare_japanese_relationship_question_cue",
+  "turn_count": 6,
+  "restart_after_turn": 3,
+  "global_expected": {
+    "exact_input_once_per_turn": true,
+    "answer_retry_count": 0,
+    "session_count": 2,
+    "planned_process_restart_count": 1,
+    "same_isolated_db_after_restart": true,
+    "distinct_persisted_turn_episode_count": 6,
+    "visible_language": "natural_ja",
+    "graph_utterance_equals_visible_reply_each_turn": true,
+    "profile_row_id_set_deltas": [0, 1, 0, 0, 1, 0],
+    "expected_final_user_profile_rows": [
+      {"fact_type": "like", "value": "昆布生姜スープ", "preference_scope": null},
+      {"fact_type": "like", "value": "柚子豆乳", "preference_scope": null}
+    ],
+    "legacy_preference_scope_null_means_metadata_key_absent": true,
+    "forbidden_user_profile_values": ["好き", "私", "你", "me", "シナモン胡桃パン"],
+    "no_new_dislike_or_favorite_row": true,
+    "known_non_target_failures_remain_outside_route_pass_claim": [
+      "2026-10-02 interrupted postposed-denial product strict FAIL",
+      "whole-graph raw input exposure",
+      "friend attribution and quoted-scope M31/M32 cases"
+    ]
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ja_bare_relationship_question_positive_route",
+      "input": "ねえ、好き?",
+      "expected_ask_like_me": true,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; with no preceding object in this session, address the user's interpersonal liking question without inventing a profile fact."
+    },
+    {
+      "turn": 2,
+      "role": "ja_direct_item_preference_negative_route",
+      "input": "私は昆布生姜スープが好き。",
+      "expected_ask_like_me": false,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [{"fact_type": "like", "value": "昆布生姜スープ"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; respond to the user's soup preference, not as though the user asked whether Uruha likes them. Do not invent a relational confession."
+    },
+    {
+      "turn": 3,
+      "role": "zh_explicit_relationship_target_positive_control_before_restart",
+      "input": "說真的，你喜歡我嗎？",
+      "expected_ask_like_me": true,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; respond to the explicit interpersonal question without claiming a food preference or an unsupported remembered fact."
+    },
+    {
+      "turn": 4,
+      "role": "ja_item_question_negative_route_after_restart",
+      "input": "シナモン胡桃パン、好き？",
+      "expected_ask_like_me": false,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; answer or gently clarify liking for the named bread, not interpersonal liking for the user."
+    },
+    {
+      "turn": 5,
+      "role": "ja_mixed_preference_and_trailing_bare_question",
+      "input": "私は柚子豆乳が好き。好き?",
+      "expected_ask_like_me": false,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [{"fact_type": "like", "value": "柚子豆乳"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; retain the user's drink preference and treat the trailing question as item-related or ambiguous. Do not claim a certain interpersonal liking request."
+    },
+    {
+      "turn": 6,
+      "role": "en_explicit_relationship_target_positive_control",
+      "input": "Honestly, do you like me?",
+      "expected_ask_like_me": true,
+      "expected_owner_path": "legacy",
+      "expected_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; answer the explicit interpersonal question in the bounded persona style, without leaking internal analysis or inventing profile facts."
+    }
+  ]
+}

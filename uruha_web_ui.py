@@ -1,11 +1,17 @@
 import json
+import hashlib
+import hmac
+import inspect
 import os
 import re
+import secrets
+import stat
 import subprocess
 import sys
 import tempfile
 import threading
 import time
+from contextlib import nullcontext
 from datetime import datetime
 from html import escape
 from pathlib import Path
@@ -66,8 +72,120 @@ from human_feedback_validation import (
     normalize_failure_types,
 )
 from uruha_brain_mac import UruhaBrainV4_Mac
-from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS, render_memory_observatory
+from uruha_compute_ledger import ComputeLedger, InstrumentedChromaCollection
+from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS
+from uruha_m38_memory_observatory import (
+    render_memory_observatory_m38 as render_memory_observatory,
+)
+from uruha_equation_lab import (
+    DEFAULT_CASE_ID as DEFAULT_EQUATION_CASE_ID,
+    EQUATION_LAB_CSS,
+    case_choices as equation_case_choices,
+    phase_choices as equation_phase_choices,
+    render_equation_lab,
+    show_feedback_correction,
+)
+from uruha_long_dialogue_memory_lab import (
+    DEFAULT_CHECKPOINT as DEFAULT_LONG_MEMORY_CHECKPOINT,
+    LONG_DIALOGUE_LAB_CSS,
+    checkpoint_choices as long_memory_checkpoint_choices,
+    render_long_dialogue_lab,
+)
+from uruha_fifty_turn_comparison_lab import (
+    DEFAULT_CHECKPOINT as DEFAULT_FIFTY_COMPARISON_CHECKPOINT,
+    FIFTY_COMPARISON_CSS,
+    checkpoint_choices as fifty_comparison_checkpoint_choices,
+    render_fifty_turn_comparison,
+)
+from uruha_memory_repair_lab import (
+    DEFAULT_CHECKPOINT as DEFAULT_MEMORY_REPAIR_CHECKPOINT,
+    MEMORY_REPAIR_LAB_CSS,
+    checkpoint_choices as memory_repair_checkpoint_choices,
+    render_memory_repair_lab,
+)
+from uruha_temporal_prediction_lab import (
+    DEFAULT_SAMPLE_ID as DEFAULT_TEMPORAL_SAMPLE_ID,
+    TEMPORAL_PREDICTION_LAB_CSS,
+    render_temporal_prediction_lab,
+    sample_choices as temporal_sample_choices,
+)
+from uruha_structured_memory_lab import (
+    DEFAULT_QUERY_ID as DEFAULT_STRUCTURED_MEMORY_QUERY_ID,
+    STRUCTURED_MEMORY_LAB_CSS,
+    query_choices as structured_memory_query_choices,
+    render_structured_memory_lab,
+)
+from uruha_human_state_lab import (
+    DEFAULT_STATE_ID as DEFAULT_HUMAN_STATE_ID,
+    HUMAN_STATE_LAB_CSS,
+    render_human_state_lab,
+    state_choices as human_state_choices,
+)
+from uruha_transition_lab import (
+    DEFAULT_TRANSITION_ID,
+    TRANSITION_LAB_CSS,
+    render_transition_lab,
+    transition_choices,
+)
+from uruha_behavior_predictor_lab import (
+    BEHAVIOR_PREDICTOR_LAB_CSS,
+    DEFAULT_BEHAVIOR_SAMPLE_ID,
+    behavior_sample_choices,
+    render_behavior_predictor_lab,
+)
+from uruha_ablation_lab import (
+    ABLATION_LAB_CSS,
+    DEFAULT_ABLATION_COMPONENT,
+    ablation_component_choices,
+    render_ablation_lab,
+)
+from uruha_robustness_lab import (
+    DEFAULT_ROLLING_CUTOFF,
+    ROBUSTNESS_LAB_CSS,
+    render_robustness_lab,
+    rolling_cutoff_choices,
+)
+from uruha_transfer_lab import (
+    DEFAULT_TRANSFER_CUTOFF,
+    TRANSFER_LAB_CSS,
+    render_transfer_lab,
+    transfer_cutoff_choices,
+)
+from uruha_language_lab import (
+    DEFAULT_LANGUAGE_SAMPLE_ID,
+    LANGUAGE_LAB_CSS,
+    language_case_choices,
+    render_language_lab,
+)
+from uruha_register_lab import (
+    DEFAULT_REGISTER_CASE_ID,
+    REGISTER_LAB_CSS,
+    register_case_choices,
+    render_register_lab,
+)
+from uruha_register_rating_lab import (
+    DEFAULT_BLIND_ITEM_ID,
+    RATING_LAB_CSS,
+    blind_item_choices,
+    render_blind_rating_item,
+    render_rater_progress,
+    save_blind_rating,
+)
+from uruha_research_closure_lab import (
+    DEFAULT_CLOSURE_STAGE,
+    RESEARCH_CLOSURE_CSS,
+    closure_stage_choices,
+    render_research_closure,
+)
 from uruha_senses import UruhaEars, UruhaMouth
+from uruha_teacher_demo import (
+    DEFAULT_SCENARIO_ID,
+    TEACHER_DEMO_CSS,
+    advance_teacher_demo,
+    render_teacher_demo,
+    scenario_choices,
+    step_choices,
+)
 
 init(autoreset=True)
 
@@ -76,6 +194,365 @@ WEB_WHISPER_DEVICE = os.getenv("URUHA_WEB_WHISPER_DEVICE", "cpu")
 WEB_TTS_BASE_URL = os.getenv("URUHA_TTS_BASE_URL", "http://127.0.0.1:5001")
 WEB_SERVER_NAME = os.getenv("URUHA_WEB_HOST", "127.0.0.1")
 WEB_SERVER_PORT = int(os.getenv("URUHA_WEB_PORT", "7860"))
+WEB_PREWARM_BRAIN = str(os.getenv("URUHA_WEB_PREWARM_BRAIN", "1")).strip().lower() not in {
+    "0",
+    "false",
+    "no",
+    "off",
+}
+WEB_COMPUTE_LEDGER_ENABLED = os.getenv("URUHA_WEB_COMPUTE_LEDGER", "").strip() == "1"
+WEB_ACTIVE_DB_RECEIPT_PATH = os.getenv("URUHA_WEB_ACTIVE_DB_RECEIPT_PATH", "").strip()
+WEB_TURN_ADMISSION_JOURNAL_PATH = os.getenv("URUHA_WEB_TURN_ADMISSION_JOURNAL_PATH", "").strip()
+_ACTIVE_DB_RECEIPT_SCHEMA = "uruha_web_active_db_receipt_p4_v1"
+_TURN_ADMISSION_SCHEMA = "uruha_web_turn_admission_p4_v1"
+_UNSTARTED_ADMISSION_LEASE_SECONDS = 120.0
+_STARTED_ADMISSION_LEASE_SECONDS = 600.0
+_ADMISSION_TERMINAL_STATUSES = frozenset({
+    "delivered", "aborted", "error", "unknown", "empty_input", "empty_audio",
+    "no_transcript", "no_turn_result", "transcription_only", "invalid",
+    "exact_input_rejected", "exact_input_aborted_after_cognition",
+})
+
+
+def _safe_admission_submission_id(token):
+    return token if isinstance(token, str) and re.fullmatch(r"[0-9a-f]{32}", token) else ""
+
+
+def _write_private_active_db_receipt(payload):
+    """Opt-in same-process diagnostic; never expose it through the Web UI."""
+    if not WEB_ACTIVE_DB_RECEIPT_PATH:
+        return False
+    target = Path(WEB_ACTIVE_DB_RECEIPT_PATH)
+    if not target.is_absolute() or target.name != "active_db_receipt.json":
+        return False
+    root = target.parent
+    try:
+        root_info = os.lstat(root)
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or root_info.st_uid != os.getuid()
+            or stat.S_IMODE(root_info.st_mode) != 0o700
+            or root.resolve(strict=True) != root
+        ):
+            return False
+        # The receipt may only be written next to both controller-scoped DBs.
+        for key, expected_name in (
+            ("URUHA_MEMORY_DB_PATH", "memory_db"),
+            ("URUHA_WEB_SESSION_DB_PATH", "session_db"),
+        ):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db.name != expected_name or db.parent != root:
+                return False
+        try:
+            current = os.lstat(target)
+        except FileNotFoundError:
+            current = None
+        if current is not None and (
+            not stat.S_ISREG(current.st_mode)
+            or current.st_uid != os.getuid()
+            or stat.S_IMODE(current.st_mode) != 0o600
+        ):
+            return False
+        pending = root / f".active_db_receipt.{secrets.token_hex(8)}.tmp"
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(pending, flags, 0o600)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                os.fchmod(stream.fileno(), 0o600)
+                json.dump(payload, stream, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(pending, target)
+            return True
+        finally:
+            if pending.exists():
+                pending.unlink()
+    except (OSError, ValueError, TypeError):
+        # Invalid opt-in measurement fails closed; ordinary Web operation stays unchanged.
+        return False
+
+
+def _live_active_db_path(brain):
+    """Read only the live Chroma client, not DB_PATH or an environment hint."""
+    try:
+        path = brain.memory.client.get_settings().persist_directory
+        if not isinstance(path, str) or not path or not os.path.isabs(path):
+            return None
+        return str(Path(path).resolve(strict=False))
+    except Exception:
+        # Chroma may surface provider-specific settings exceptions; never infer
+        # the active path from the environment when the live read fails.
+        return None
+
+
+def _live_autonomous_tick(brain):
+    try:
+        tick = brain.runtime.autonomous_tick_index
+    except Exception:
+        return None
+    return tick if type(tick) is int and tick >= 0 else None
+
+
+def _append_private_turn_admission_event(path, payload):
+    """Append one raw-free event in the same private root as both test DBs."""
+    if not path:
+        return False
+    target = Path(path)
+    if not target.is_absolute() or target.name != "turn_admission_journal.jsonl":
+        return False
+    root = target.parent
+    try:
+        root_info = os.lstat(root)
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or root_info.st_uid != os.getuid()
+            or stat.S_IMODE(root_info.st_mode) != 0o700
+            or root.resolve(strict=True) != root
+        ):
+            return False
+        for key, name in (("URUHA_MEMORY_DB_PATH", "memory_db"), ("URUHA_WEB_SESSION_DB_PATH", "session_db")):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db.name != name or db.parent != root:
+                return False
+            try:
+                db_info = os.lstat(db)
+            except FileNotFoundError:
+                # session_db is normally created only after Reset. It may be
+                # absent, never a symlink, until it is the live client path.
+                continue
+            if (not stat.S_ISDIR(db_info.st_mode) or db_info.st_uid != os.getuid()
+                    or stat.S_IMODE(db_info.st_mode) != 0o700 or db.resolve(strict=True) != db):
+                return False
+        flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(target, flags, 0o600)
+        try:
+            info = os.fstat(fd)
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600
+                or info.st_nlink != 1
+            ):
+                return False
+            offset = info.st_size
+            row = (json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+            with os.fdopen(fd, "wb") as stream:
+                fd = -1
+                stream.write(row)
+                stream.flush()
+                os.fsync(stream.fileno())
+            # A method return or fsync alone is not an audited record. Read the
+            # exact appended bytes back before releasing a scoped compute item.
+            reader = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            try:
+                reread_info = os.fstat(reader)
+                return bool(
+                    stat.S_ISREG(reread_info.st_mode)
+                    and reread_info.st_uid == os.getuid()
+                    and stat.S_IMODE(reread_info.st_mode) == 0o600
+                    and reread_info.st_nlink == 1
+                    and (reread_info.st_dev, reread_info.st_ino) == (info.st_dev, info.st_ino)
+                    and os.pread(reader, len(row), offset) == row
+                )
+            finally:
+                os.close(reader)
+        finally:
+            if fd >= 0:
+                os.close(fd)
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _isolated_turn_admission_live_db_path(journal_path, live_path):
+    """The live Chroma client must point at one of this trial's real private DBs."""
+    if not journal_path or not live_path:
+        return False
+    target = Path(journal_path)
+    if not target.is_absolute() or target.name != "turn_admission_journal.jsonl":
+        return False
+    root = target.parent
+    try:
+        info = os.lstat(root)
+        if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o700 or root.resolve(strict=True) != root):
+            return False
+        allowed = []
+        for key, name in (("URUHA_MEMORY_DB_PATH", "memory_db"), ("URUHA_WEB_SESSION_DB_PATH", "session_db")):
+            configured = os.getenv(key, "")
+            db = Path(configured)
+            if not configured or not db.is_absolute() or db != root / name:
+                return False
+            try:
+                db_info = os.lstat(db)
+            except FileNotFoundError:
+                continue
+            if (not stat.S_ISDIR(db_info.st_mode) or db_info.st_uid != os.getuid()
+                    or stat.S_IMODE(db_info.st_mode) != 0o700 or db.resolve(strict=True) != db):
+                return False
+            allowed.append(str(db))
+        return live_path in allowed
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _background_ledger_covers_brain(brain, ledger):
+    """Only count method-level Chroma attribution from the Brain's own wrappers."""
+    if ledger is None or getattr(brain, "compute_ledger", None) is not ledger:
+        return False
+    memory = getattr(brain, "memory", None)
+    if getattr(memory, "compute_ledger", None) is not ledger:
+        return False
+    return all(
+        isinstance(getattr(memory, name, None), InstrumentedChromaCollection)
+        and getattr(getattr(memory, name), "_ledger", None) is ledger
+        for name in ("kb_col", "episode_col", "wisdom_col", "procedural_col", "profile_col")
+    )
+
+
+def _read_private_turn_admission_rows(path):
+    """Read a complete, same-process, gap-free private opt-in journal."""
+    target = Path(path)
+    if not _isolated_turn_admission_live_db_path(path, str(target.parent / "memory_db")):
+        return None
+    try:
+        fd = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        try:
+            info = os.fstat(fd)
+            if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                    or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1
+                    or info.st_size > 16 * 1024 * 1024):
+                return None
+            with os.fdopen(fd, "rb") as stream:
+                fd = -1
+                raw = stream.read()
+            if not raw.endswith(b"\n"):
+                return None
+            rows = [json.loads(line) for line in raw.splitlines()]
+            if [row.get("sequence") for row in rows] != list(range(1, len(rows) + 1)):
+                return None
+            if any(
+                row.get("schema") != _TURN_ADMISSION_SCHEMA
+                or row.get("pid") != os.getpid()
+                or row.get("contains_raw_dialogue") is not False
+                for row in rows
+            ):
+                return None
+            return rows
+        finally:
+            if fd >= 0:
+                os.close(fd)
+    except (OSError, ValueError, TypeError, KeyError, UnicodeDecodeError, AttributeError):
+        return None
+
+
+def _admission_record_rows_verified(path, record):
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    return all(
+        type(expected.get("sequence")) is int
+        and 1 <= expected["sequence"] <= len(rows)
+        and rows[expected["sequence"] - 1] == expected
+        for key in ("arrival_row", "snapshot_row", "start_row", "end_row")
+        if (expected := record.get(key)) is not None
+    )
+
+
+def _verified_background_admission_pair(path, start, end):
+    """Verify the exact two saved JSONL events before ledger evidence retires."""
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    matches_start = [row for row in rows if row.get("sequence") == start["sequence"]]
+    matches_end = [row for row in rows if row.get("sequence") == end["sequence"]]
+    try:
+        return bool(
+                matches_start == [start] and matches_end == [end]
+                and start["event"] == "background_start"
+                and end["event"] == "background_end"
+                and start["submission_id"] == end["submission_id"]
+                and end["start_sequence"] == start["sequence"]
+                and end["start_journal_ok"] is True
+                and end["ledger_status"] == "attributed"
+                and end["ledger_coverage_complete"] is True
+                and _isolated_turn_admission_live_db_path(path, start.get("active_db_path"))
+                and _isolated_turn_admission_live_db_path(path, end.get("active_db_path"))
+                and start.get("active_db_path") == end.get("active_db_path")
+                and start.get("session_id") == end.get("session_id")
+                and start.get("reset_generation") == end.get("reset_generation")
+                and not start.get("independent_worker_active")
+                and not end.get("independent_worker_active")
+                and all(
+                    start.get(key) is not None and end.get(key) is not None
+                    for key in ("runtime_sha256", "memory_sha256", "psyche_sha256")
+                )
+                and end["status"] in {"completed", "idle_noop"}
+                and not end["error_type"]
+                and end["vector_mutation_error_count"] == 0
+            )
+    except (ValueError, TypeError, KeyError):
+        return False
+
+
+def _background_journal_pairs_complete(path):
+    """An unmatched background start cannot be treated as a clean idle gap."""
+    rows = _read_private_turn_admission_rows(path)
+    if rows is None:
+        return False
+    pending = {}
+    seen = set()
+    for row in rows:
+        event = row.get("event")
+        if event == "background_start":
+            item_id = row.get("submission_id")
+            if not isinstance(item_id, str) or not item_id or item_id in seen:
+                return False
+            pending[item_id] = row["sequence"]
+            seen.add(item_id)
+        elif event == "background_end":
+            item_id = row.get("submission_id")
+            start_sequence = row.get("start_sequence")
+            if (not isinstance(item_id, str) or item_id not in pending
+                    or type(start_sequence) is not int or pending[item_id] != start_sequence):
+                return False
+            pending.pop(item_id)
+    return not pending
+
+
+def _private_state_digest(getter):
+    """Expose only a digest of potentially dialogue-bearing live state."""
+    try:
+        payload = json.dumps(getter(), ensure_ascii=False, sort_keys=True, default=str)
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    except Exception:
+        return None
+
+
+def _admission_in_memory_projection(memory):
+    """A pure field read: do not call MemoryManager.get_runtime_snapshot().
+
+    That public snapshot runs a procedural Chroma query. This projection only
+    covers live in-process memory; durable DB operations have a separate,
+    explicitly incomplete method-level compute ledger.
+    """
+    try:
+        fields = vars(memory)
+        required = ("session_profile", "session_turns", "short_term_buffer", "_consolidated_turn_index")
+        if any(key not in fields for key in required):
+            return None
+        names = required + (
+            "_last_consolidation_at", "_last_decay_at", "_last_maintenance_result",
+            "_last_saved_episode_id", "_last_reflection_result",
+            "_last_working_memory_provenance", "_last_profile_state_shadow",
+        )
+        return {key: fields.get(key) for key in names}
+    except (TypeError, ValueError):
+        return None
+
+
 WEB_CSS = """
 .wrap {max-width: 1560px; margin: 0 auto;}
 .trace-board {display: flex; gap: 12px; overflow-x: auto; padding: 8px 2px 12px;}
@@ -92,7 +569,7 @@ WEB_CSS = """
 .state-list {margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.5;}
 .trace-chip {display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: #e5e7eb; color: #111827; margin: 0 6px 6px 0;}
 .muted {color: #6b7280;}
-""" + MEMORY_OBSERVATORY_CSS
+""" + RESEARCH_CLOSURE_CSS + RATING_LAB_CSS + REGISTER_LAB_CSS + LANGUAGE_LAB_CSS + TRANSFER_LAB_CSS + ROBUSTNESS_LAB_CSS + ABLATION_LAB_CSS + BEHAVIOR_PREDICTOR_LAB_CSS + TRANSITION_LAB_CSS + HUMAN_STATE_LAB_CSS + STRUCTURED_MEMORY_LAB_CSS + TEMPORAL_PREDICTION_LAB_CSS + MEMORY_OBSERVATORY_CSS + TEACHER_DEMO_CSS + EQUATION_LAB_CSS + LONG_DIALOGUE_LAB_CSS + FIFTY_COMPARISON_CSS + MEMORY_REPAIR_LAB_CSS
 ARCH_DATASET_SCRIPT = os.path.join(BASE_DIR, "build_cognitive_architecture_eval_dataset.py")
 ARCH_EVAL_SCRIPT = os.path.join(BASE_DIR, "cognitive_architecture_eval.py")
 ANNOTATION_QUEUE_SCRIPT = os.path.join(BASE_DIR, "build_annotation_candidate_queue.py")
@@ -104,8 +581,19 @@ REGRESSION_DIFF_SCRIPT = os.path.join(BASE_DIR, "build_human_feedback_regression
 ARCH_REPORT_PATH = COGNITIVE_ARCHITECTURE_REPORT_PATH
 V2_REPORT_PATH = V2_HUMAN_ANSWER_REPORT_PATH
 UNIFIED_SUMMARY_SCRIPT = os.path.join(BASE_DIR, "build_unified_eval_summary.py")
-WEB_LOG_JSONL = WEB_CONVERSATION_LOG_JSONL_PATH
-WEB_LOG_TXT = WEB_CONVERSATION_LOG_TXT_PATH
+WEB_LOG_JSONL = os.path.abspath(
+    os.getenv("URUHA_WEB_LOG_JSONL_PATH", WEB_CONVERSATION_LOG_JSONL_PATH)
+)
+WEB_LOG_TXT = os.path.abspath(
+    os.getenv("URUHA_WEB_LOG_TXT_PATH", WEB_CONVERSATION_LOG_TXT_PATH)
+)
+_BROWSER_GRAPH_RECEIPT_SCHEMA = "uruha_browser_graph_receipt_v1"
+_BROWSER_GRAPH_HMAC_KEY = secrets.token_bytes(32)
+# A client-supplied compatibility marker, not authentication.  A stale Gradio
+# tab may replay an old fn_index against a new process, so Reset must not trust
+# event index alone.  The product builds one demo per process.
+_RESET_INSTANCE_MARKER = secrets.token_urlsafe(32)
+_BROWSER_GRAPH_MAX_ROW_BYTES = 16 * 1024 * 1024
 WEB_HEAD = """
 <script>
 (() => {
@@ -143,7 +631,7 @@ WEB_HEAD = """
 
   const setRecordLabel = () => {
     const record = findRecordButton();
-    if (record) {
+    if (record && window.__uruhaVadAttached && record.textContent !== "Just Start Talking") {
       record.textContent = "Just Start Talking";
     }
   };
@@ -205,25 +693,35 @@ WEB_HEAD = """
         micVad.start();
         window.__uruhaVadAttached = true;
         window.__uruhaVad = micVad;
+        setRecordLabel();
       } catch (error) {
         console.error("Uruha VAD init failed:", error);
       }
     }, 500);
   };
 
+  const attachVoiceModeToggle = () => {
+    const input = document.querySelector("#voice-chat-mode input[type='checkbox']");
+    if (!input || input === window.__uruhaVoiceModeInput) return;
+    const enableHandsFree = () => {
+      if (input.checked) attachVad();
+    };
+    input.addEventListener("change", enableHandsFree);
+    window.__uruhaVoiceModeInput = input;
+  };
+
   const watchDom = () => {
     attachPlayerWatcher();
+    attachVoiceModeToggle();
     setRecordLabel();
   };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
-      attachVad();
       watchDom();
       new MutationObserver(watchDom).observe(document.body, { childList: true, subtree: true });
     }, { once: true });
   } else {
-    attachVad();
     watchDom();
     new MutationObserver(watchDom).observe(document.body, { childList: true, subtree: true });
   }
@@ -231,6 +729,8 @@ WEB_HEAD = """
 </script>
 """
 os.makedirs(WEB_LOG_DIR, exist_ok=True)
+for _web_log_path in {WEB_LOG_JSONL, WEB_LOG_TXT}:
+    os.makedirs(os.path.dirname(_web_log_path), exist_ok=True)
 
 
 def _default_taxonomy_catalog():
@@ -265,16 +765,80 @@ def _default_taxonomy_catalog():
 class RuntimeManager:
     def __init__(self):
         self._brain = None
+        self._compute_ledger = ComputeLedger() if WEB_COMPUTE_LEDGER_ENABLED else None
+        self._brain_init_lock = threading.Lock()
+        self._brain_prewarm_thread = None
+        self._brain_load_trace = {
+            "schema": "uruha_brain_initialization_m17",
+            "status": "not_started",
+            "elapsed_seconds": 0.0,
+            "prewarm_enabled": bool(WEB_PREWARM_BRAIN),
+        }
         self._ears = None
         self._mouth = None
         self._lock = threading.Lock()
+        self._human_gate_lock = threading.Lock()
+        self._human_waiters = 0
+        self._scheduler_trace = {
+            "schema": "uruha_human_priority_scheduler_m19",
+            "human_waiters": 0,
+            "background_status": "not_started",
+            "last_decision": "startup",
+            "background_model_maintenance_allowed": False,
+            "contains_raw_dialogue": False,
+        }
         self._session_id = self._new_session_id()
         self._turn_index = 0
+        self._reset_generation = 0
+        self._human_submission_finish_count = 0
+        self._active_db_phase = "not_started"
+        self._active_db_receipt_lock = threading.Lock()
+        self._turn_admission_journal_path = WEB_TURN_ADMISSION_JOURNAL_PATH
+        self._turn_admission_journal_lock = threading.Lock()
+        self._admission_journal_write_latencies_seconds = []
+        self._admission_event_seq = 0
+        self._admission_records = {}
+        self._background_admission_events = []
+        self._admission_audit_invalid = False
+        if self._turn_admission_journal_path:
+            try:
+                # A process starts its sequence at 1. Reusing a nonempty file
+                # would make earlier trial events indistinguishable from ours.
+                self._admission_audit_invalid = os.lstat(self._turn_admission_journal_path).st_size != 0
+            except FileNotFoundError:
+                pass
+            except OSError:
+                self._admission_audit_invalid = True
         self._last_activity_at = time.time()
         self._last_idle_consolidation_at = 0.0
         self._idle_seconds = 300
         self._idle_thread = threading.Thread(target=self._idle_consolidation_loop, daemon=True)
         self._idle_thread.start()
+        self._publish_active_db_receipt()
+
+    def _publish_active_db_receipt(self):
+        if not WEB_ACTIVE_DB_RECEIPT_PATH:
+            return False
+        # Serialize concurrent init/reset/background publications so an older
+        # snapshot cannot replace a newer one after the latter is written.
+        with self._active_db_receipt_lock:
+            brain = self._brain
+            phase = self._active_db_phase
+            active_path = _live_active_db_path(brain) if brain is not None and phase == "ready" else None
+            tick = _live_autonomous_tick(brain) if brain is not None and phase == "ready" else None
+            ready = phase == "ready" and active_path is not None and tick is not None
+            return _write_private_active_db_receipt({
+                "schema": _ACTIVE_DB_RECEIPT_SCHEMA,
+                "pid": os.getpid(),
+                "session_id": self._session_id,
+                "reset_generation": self._reset_generation,
+                "human_submission_finish_count": self._human_submission_finish_count,
+                "brain_status": phase if brain is not None or phase != "ready" else "unavailable",
+                "active_db_status": "available" if ready else "unavailable",
+                "active_db_path": active_path if ready else None,
+                "autonomous_tick_index": tick if ready else None,
+                "contains_raw_dialogue": False,
+            })
 
     def _new_session_id(self):
         return f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid4().hex[:8]}"
@@ -284,25 +848,713 @@ class RuntimeManager:
         return self._session_id, self._turn_index
 
     def get_brain(self):
-        if self._brain is None:
+        if self._brain is not None:
+            return self._brain
+        with self._brain_init_lock:
+            if self._brain is not None:
+                return self._brain
+            self._admission_preflight_before_db_effect(creating_brain=True)
+            started = time.perf_counter()
+            self._brain_load_trace.update(
+                {"status": "loading", "started_at": datetime.now().isoformat(timespec="seconds")}
+            )
+            self._active_db_phase = "loading"
+            self._publish_active_db_receipt()
             print(Fore.CYAN + "🧠 [Web] Loading V2 brain...")
-            self._brain = UruhaBrainV4_Mac()
+            try:
+                self._brain = (
+                    UruhaBrainV4_Mac(compute_ledger=self._compute_ledger)
+                    if self._compute_ledger is not None
+                    else UruhaBrainV4_Mac()
+                )
+            except Exception as exc:
+                self._brain_load_trace.update(
+                    {
+                        "status": "error",
+                        "elapsed_seconds": round(time.perf_counter() - started, 4),
+                        "error_type": type(exc).__name__,
+                    }
+                )
+                self._active_db_phase = "error"
+                self._publish_active_db_receipt()
+                raise
+            self._brain_load_trace.update(
+                {
+                    "status": "ready",
+                    "elapsed_seconds": round(time.perf_counter() - started, 4),
+                    "finished_at": datetime.now().isoformat(timespec="seconds"),
+                }
+            )
+            self._active_db_phase = "ready"
+            self._publish_active_db_receipt()
         return self._brain
+
+    def start_brain_prewarm(self):
+        if not WEB_PREWARM_BRAIN or self._brain is not None:
+            return False
+        if self._brain_prewarm_thread and self._brain_prewarm_thread.is_alive():
+            return False
+
+        def load():
+            try:
+                self.get_brain()
+            except Exception as exc:
+                print(Fore.YELLOW + f"⚠️ [Web] Brain prewarm failed: {type(exc).__name__}")
+
+        self._brain_load_trace["status"] = "queued"
+        self._brain_prewarm_thread = threading.Thread(
+            target=load,
+            daemon=True,
+            name="uruha-brain-prewarm",
+        )
+        self._brain_prewarm_thread.start()
+        return True
 
     def mark_activity(self):
         self._last_activity_at = time.time()
 
+    def _admission_enabled(self):
+        return bool(getattr(self, "_turn_admission_journal_path", ""))
+
+    def _admission_preflight_before_db_effect(self, creating_brain=False, reset_path=None):
+        """Reject an unsafe opt-in trial before Chroma construction or reset."""
+        if not self._admission_enabled():
+            return
+        path = self._turn_admission_journal_path
+        root = Path(path).parent
+        if self._admission_audit_invalid or not _isolated_turn_admission_live_db_path(
+            path, str(root / "memory_db"),
+        ):
+            raise RuntimeError("turn_admission_db_preflight_unavailable")
+        if reset_path is not None and Path(reset_path) != root / "session_db":
+            raise RuntimeError("turn_admission_reset_path_not_isolated")
+        if creating_brain:
+            # MemoryManager reads the module global captured at import time,
+            # not the current environment. A prior valid reset may point it
+            # at session_db, so either existing private DB is permitted.
+            loaded_module = sys.modules.get("uruha_brain_mac")
+            loaded_path = getattr(loaded_module, "DB_PATH", None)
+            if not _isolated_turn_admission_live_db_path(path, loaded_path):
+                raise RuntimeError("turn_admission_constructor_db_not_isolated")
+        try:
+            info = os.lstat(path)
+        except FileNotFoundError:
+            if self._admission_event_seq == 0:
+                return
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        except OSError as exc:
+            raise RuntimeError("turn_admission_journal_preflight_unavailable") from exc
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1
+                or info.st_size > 16 * 1024 * 1024):
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        if info.st_size == 0:
+            if self._admission_event_seq == 0:
+                return
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+        rows = _read_private_turn_admission_rows(path)
+        if rows is None or len(rows) != self._admission_event_seq:
+            raise RuntimeError("turn_admission_journal_preflight_unavailable")
+
+    def _admission_event_under_gate(self, event, **fields):
+        """Caller holds human gate; event order is a server-side sequence."""
+        self._admission_event_seq += 1
+        row = {
+            "schema": _TURN_ADMISSION_SCHEMA,
+            "event": event,
+            "sequence": self._admission_event_seq,
+            "pid": os.getpid(),
+            "session_id": self._session_id,
+            "reset_generation": self._reset_generation,
+            "monotonic_ns": time.monotonic_ns(),
+            "contains_raw_dialogue": False,
+            **fields,
+        }
+        with self._turn_admission_journal_lock:
+            write_started = time.perf_counter()
+            saved = _append_private_turn_admission_event(self._turn_admission_journal_path, row)
+            if saved:
+                rows = _read_private_turn_admission_rows(self._turn_admission_journal_path)
+                saved = bool(rows is not None and len(rows) == row["sequence"] and rows[-1] == row)
+            self._admission_journal_write_latencies_seconds.append(time.perf_counter() - write_started)
+            self._admission_journal_write_latencies_seconds = self._admission_journal_write_latencies_seconds[-256:]
+            if not saved:
+                self._admission_audit_invalid = True
+        return row, saved
+
+    def _admission_state(self, brain):
+        workers = (getattr(brain, "_timer_thread", None), getattr(brain, "_event_worker_thread", None))
+        memory_projection = _admission_in_memory_projection(getattr(brain, "memory", None))
+        return {
+            "active_db_path": _live_active_db_path(brain),
+            "autonomous_tick_index": _live_autonomous_tick(brain),
+            "runtime_sha256": _private_state_digest(brain._runtime_public_state)
+            if callable(getattr(brain, "_runtime_public_state", None)) else None,
+            "memory_sha256": _private_state_digest(lambda: memory_projection)
+            if memory_projection is not None else None,
+            "memory_fingerprint_scope": "in_memory_only",
+            "psyche_sha256": _private_state_digest(brain.psyche.get_state)
+            if callable(getattr(getattr(brain, "psyche", None), "get_state", None)) else None,
+            "independent_worker_active": any(thread is not None and thread.is_alive() for thread in workers),
+        }
+
+    def begin_human_turn(self):
+        """Register human work before it enters Gradio's queued executor."""
+        started, _token = self.begin_human_turn_with_token(source="legacy")
+        return started
+
+    def begin_human_turn_with_token(self, source="browser"):
+        """Register an optional raw-free arrival at the same waiter boundary."""
+        started = time.perf_counter()
+        if source not in {"browser", "direct_no_browser_admission", "legacy"}:
+            raise ValueError("unsupported admission source")
+        token = secrets.token_hex(16) if self._admission_enabled() and source != "legacy" else ""
+        waiter_registered = False
+        stage = "arrival"
+        try:
+            with self._human_gate_lock:
+                self._human_waiters += 1
+                waiter_registered = True
+                self._scheduler_trace.update(
+                    {
+                        "human_waiters": self._human_waiters,
+                        "last_decision": "human_admitted",
+                        "human_priority_active": True,
+                    }
+                )
+                if token:
+                    row, saved = self._admission_event_under_gate(
+                        "arrival", submission_id=token, source=source,
+                        status="registered", autonomous_tick_index=None, active_db_path=None,
+                    )
+                    self._admission_records[token] = {
+                        "arrival_sequence": row["sequence"],
+                        "arrival_row": row,
+                        "session_id": self._session_id,
+                        "reset_generation": self._reset_generation,
+                        "source": source,
+                        "journal_ok": saved,
+                        "registered_at": time.monotonic(),
+                        "last_progress_at": time.monotonic(),
+                        "snapshot_pending": True,
+                        "started": False,
+                        "finished": False,
+                        "waiter_released": False,
+                    }
+            self.mark_activity()
+            if token:
+                stage = "snapshot"
+                # Arrival is already ordered under the gate. This later Brain-lock
+                # sample is deliberately NOT described as the physical click.
+                with self._lock:
+                    state = self._admission_state(self._brain) if self._brain is not None else {
+                        "active_db_path": None, "autonomous_tick_index": None,
+                    }
+                    with self._human_gate_lock:
+                        _row, saved = self._admission_event_under_gate(
+                            "admission_snapshot", submission_id=token,
+                            status="ready" if self._active_db_phase == "ready" else "unavailable",
+                            **state,
+                        )
+                        record = self._admission_records.get(token)
+                        if record is None:
+                            self._admission_audit_invalid = True
+                            raise RuntimeError("turn_admission_expired_before_snapshot")
+                        record["admission_state"] = state
+                        record["snapshot_row"] = _row
+                        record["journal_ok"] = bool(record["journal_ok"] and saved)
+                        record["snapshot_pending"] = False
+                        if state.get("independent_worker_active"):
+                            self._admission_audit_invalid = True
+            return started, token
+        except BaseException:
+            if waiter_registered:
+                with self._human_gate_lock:
+                    record = self._admission_records.pop(token, None) if token else None
+                    # The token has not been returned to a caller, and a pending
+                    # snapshot cannot expire; this method still owns its waiter.
+                    if record is None or not record["waiter_released"]:
+                        self._human_waiters = max(0, self._human_waiters - 1)
+                    if record is not None:
+                        record["waiter_released"] = True
+                    if token:
+                        self._admission_audit_invalid = True
+                        if record is not None:
+                            try:
+                                self._admission_event_under_gate(
+                                    "terminal", submission_id=token,
+                                    status="admission_registration_failed", stage=stage,
+                                    active_db_path=None, autonomous_tick_index=None,
+                                )
+                            except BaseException:
+                                # Preserve the original failure; the audit is invalid.
+                                pass
+                    self._scheduler_trace.update({
+                        "human_waiters": self._human_waiters,
+                        "last_decision": "human_registration_failed",
+                        "human_priority_active": self._human_waiters > 0,
+                    })
+            raise
+
+    def admission_session_id(self, token):
+        with self._human_gate_lock:
+            record = self._admission_records.get(token)
+            return record["session_id"] if record else ""
+
+    def _expire_stale_admissions(self):
+        """A lost queued/delivery callback must not suppress background forever."""
+        if not self._admission_enabled():
+            return
+        now = time.monotonic()
+        with self._human_gate_lock:
+            stale = [token for token, record in self._admission_records.items()
+                     if not record.get("snapshot_pending")
+                     and now - record["last_progress_at"] >= (
+                         _STARTED_ADMISSION_LEASE_SECONDS if record["started"]
+                         else _UNSTARTED_ADMISSION_LEASE_SECONDS
+                     )]
+            for token in stale:
+                record = self._admission_records[token]
+                self._admission_audit_invalid = True
+                _row, saved = self._admission_event_under_gate(
+                    "terminal", submission_id=token, status="admission_timeout_unknown",
+                    stage="cognition_or_delivery" if record["started"] else "queued",
+                    active_db_path=None, autonomous_tick_index=None,
+                )
+                if not saved:
+                    self._admission_audit_invalid = True
+                self._admission_records.pop(token, None)
+                if not record["waiter_released"]:
+                    record["waiter_released"] = True
+                    self._human_waiters = max(0, self._human_waiters - 1)
+            if stale:
+                self._scheduler_trace.update({
+                    "human_waiters": self._human_waiters,
+                    "last_decision": "queued_human_admission_expired",
+                    "human_priority_active": self._human_waiters > 0,
+                })
+
+    def start_admitted_turn(self, token, brain):
+        """Call only while the Brain lock is held, before model generation."""
+        if not self._admission_enabled():
+            return None
+        state = self._admission_state(brain)
+        with self._human_gate_lock:
+            record = self._admission_records.get(token) if isinstance(token, str) else None
+            reason = ""
+            if record is None:
+                reason = "missing_or_unknown_token"
+            elif record["started"] or record["finished"]:
+                reason = "duplicate_token"
+            elif not record["journal_ok"]:
+                reason = "arrival_not_durable"
+            elif not _admission_record_rows_verified(self._turn_admission_journal_path, record):
+                reason = "journal_lineage_unavailable"
+            elif not _background_journal_pairs_complete(self._turn_admission_journal_path):
+                reason = "background_journal_pair_unavailable"
+            elif not _isolated_turn_admission_live_db_path(
+                self._turn_admission_journal_path, state.get("active_db_path"),
+            ):
+                reason = "live_db_not_isolated"
+            elif record["session_id"] != self._session_id or record["reset_generation"] != self._reset_generation:
+                reason = "session_or_reset_drift"
+            elif not record.get("admission_state") or not record["admission_state"].get("active_db_path"):
+                reason = "admission_snapshot_unavailable"
+            elif record["admission_state"].get("independent_worker_active"):
+                reason = "independent_worker_active"
+            elif any(record["admission_state"].get(key) is None or state.get(key) is None for key in (
+                "runtime_sha256", "memory_sha256", "psyche_sha256",
+            )):
+                reason = "state_fingerprint_unavailable"
+            elif any(record["admission_state"].get(key) != state.get(key) for key in (
+                "active_db_path", "autonomous_tick_index", "runtime_sha256", "memory_sha256", "psyche_sha256",
+            )):
+                reason = "admission_state_drift"
+            elif self._active_db_phase != "ready" or not state["active_db_path"] or state["autonomous_tick_index"] is None:
+                reason = "live_brain_unavailable"
+            elif state["independent_worker_active"]:
+                reason = "independent_worker_active"
+            elif any(
+                event["start_sequence"] > record["arrival_sequence"]
+                or event["start_sequence"] < record["arrival_sequence"] < event["end_sequence"]
+                for event in self._background_admission_events
+            ):
+                reason = "background_overlapped_arrival"
+            elif any(event["ledger_status"] != "attributed" for event in self._background_admission_events):
+                reason = "background_write_attribution_unavailable"
+            elif self._admission_audit_invalid:
+                reason = "background_audit_unavailable"
+            if reason:
+                self._admission_audit_invalid = True
+                self._admission_event_under_gate(
+                    "invalid", submission_id=_safe_admission_submission_id(token), status=reason,
+                    active_db_path=state["active_db_path"],
+                    autonomous_tick_index=state["autonomous_tick_index"],
+                )
+                raise RuntimeError(f"turn_admission_{reason}")
+            row, saved = self._admission_event_under_gate(
+                "cognition_start", submission_id=token, status="ready", **state,
+            )
+            if not saved:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_start_not_durable")
+            record["started"] = True
+            record["start_sequence"] = row["sequence"]
+            record["start_row"] = row
+            record["start_state"] = state
+            record["last_progress_at"] = time.monotonic()
+            return row
+
+    def end_admitted_cognition(self, token, brain, status="completed"):
+        """Capture the state before releasing the Brain lock."""
+        if not self._admission_enabled():
+            return None
+        state = self._admission_state(brain)
+        if status != "completed" and not re.fullmatch(r"error_[A-Za-z][A-Za-z0-9_]{0,63}", status):
+            status = "error_unknown_type"
+        with self._human_gate_lock:
+            record = self._admission_records.get(token)
+            if not record or not record["started"] or record["finished"]:
+                raise RuntimeError("turn_admission_missing_cognition_start")
+            start_state = record["start_state"]
+            drift = (
+                record["session_id"] != self._session_id
+                or record["reset_generation"] != self._reset_generation
+                or start_state["active_db_path"] != state["active_db_path"]
+                or start_state["autonomous_tick_index"] != state["autonomous_tick_index"]
+                or any(state.get(key) is None for key in (
+                    "runtime_sha256", "memory_sha256", "psyche_sha256",
+                ))
+                or state["independent_worker_active"]
+            )
+            row, saved = self._admission_event_under_gate(
+                "cognition_end", submission_id=token,
+                status="state_drift" if drift else status, **state,
+            )
+            if not saved:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_end_not_durable")
+            record["finished"] = True
+            record["end_state"] = state
+            record["end_row"] = row
+            record["end_journal_ok"] = saved
+            record["last_progress_at"] = time.monotonic()
+            if drift:
+                self._admission_audit_invalid = True
+                raise RuntimeError("turn_admission_cognition_state_drift")
+            return row
+
+    def finish_human_turn(self, admission_token="", terminal_status="unknown"):
+        # The terminal snapshot is taken after UI/log delivery, but before
+        # lowering the waiter. Otherwise the next idle tick can become Tpost.
+        if self._admission_enabled():
+            with self._lock:
+                state = self._admission_state(self._brain) if self._brain is not None else {
+                    "active_db_path": None, "autonomous_tick_index": None,
+                }
+                with self._human_gate_lock:
+                    record = self._admission_records.pop(admission_token, None)
+                    if terminal_status not in _ADMISSION_TERMINAL_STATUSES:
+                        terminal_status = "unknown_status"
+                        self._admission_audit_invalid = True
+                    drift = bool(record and (
+                        (self._admission_audit_invalid and terminal_status == "delivered")
+                        or not _admission_record_rows_verified(self._turn_admission_journal_path, record)
+                        or (terminal_status == "delivered" and (
+                            not record.get("started") or not record.get("finished")
+                            or not record.get("start_row") or not record.get("end_row")
+                            or not record.get("end_journal_ok")
+                            or record["start_row"].get("status") != "ready"
+                            or record["end_row"].get("status") != "completed"
+                        ))
+                        or record["session_id"] != self._session_id
+                        or record["reset_generation"] != self._reset_generation
+                        or (record.get("start_state") and record["start_state"].get("active_db_path") != state.get("active_db_path"))
+                        or (record.get("end_state") and any(
+                            record["end_state"].get(key) != state.get(key)
+                            for key in (
+                                "active_db_path", "autonomous_tick_index",
+                                "runtime_sha256", "memory_sha256", "psyche_sha256",
+                            )
+                        ))
+                        or (record.get("started") and (
+                            any(state.get(key) is None for key in (
+                                "runtime_sha256", "memory_sha256", "psyche_sha256",
+                            )) or state["independent_worker_active"]
+                        ))
+                        or (record.get("started") and (
+                            not record.get("finished") or not record.get("end_journal_ok")
+                        ))
+                    ))
+                    status = (
+                        "missing_or_unknown_token" if record is None else
+                        "terminal_state_drift" if drift else terminal_status
+                    )
+                    _row, saved = self._admission_event_under_gate(
+                        "terminal", submission_id=_safe_admission_submission_id(admission_token), status=status,
+                        delivery_observation="server_generator_only", **state,
+                    )
+                    if not saved or record is None or drift:
+                        self._admission_audit_invalid = True
+                    if record is not None and not record["waiter_released"]:
+                        record["waiter_released"] = True
+                        self._human_waiters = max(0, self._human_waiters - 1)
+                        self._human_submission_finish_count = getattr(self, "_human_submission_finish_count", 0) + 1
+                        self._scheduler_trace.update({
+                            "human_waiters": self._human_waiters,
+                            "last_decision": "human_completed",
+                            "human_priority_active": self._human_waiters > 0,
+                        })
+            self._publish_active_db_receipt()
+            return
+        with self._human_gate_lock:
+            self._human_waiters = max(0, self._human_waiters - 1)
+            self._human_submission_finish_count = getattr(self, "_human_submission_finish_count", 0) + 1
+            self._scheduler_trace.update(
+                {
+                    "human_waiters": self._human_waiters,
+                    "last_decision": "human_completed",
+                    "human_priority_active": self._human_waiters > 0,
+                }
+            )
+        # Refresh after the generator has delivered its final UI result, so a
+        # post-send receipt reads the live client again rather than a startup
+        # snapshot.  The finish count distinguishes it from an idle refresh.
+        self._publish_active_db_receipt()
+
+    def human_turn_pending(self):
+        with self._human_gate_lock:
+            return self._human_waiters > 0
+
+    def scheduler_trace(self):
+        with self._human_gate_lock:
+            return dict(self._scheduler_trace)
+
+    def _record_background_decision(self, status, decision):
+        with self._human_gate_lock:
+            self._scheduler_trace.update(
+                {
+                    "human_waiters": self._human_waiters,
+                    "background_status": status,
+                    "last_decision": decision,
+                    "human_priority_active": self._human_waiters > 0,
+                }
+            )
+
+    def _run_background_once_attributed_locked(self):
+        """The caller holds the Brain lock; account for one opt-in cycle."""
+        brain = self._brain
+        before = self._admission_state(brain)
+        item_id = f"background_{secrets.token_hex(16)}"
+        with self._human_gate_lock:
+            if self._human_waiters:
+                self._scheduler_trace.update({
+                    "human_waiters": self._human_waiters,
+                    "background_status": "skipped",
+                    "last_decision": "human_arrived_before_background",
+                    "human_priority_active": True,
+                })
+                return None
+            if not _isolated_turn_admission_live_db_path(
+                self._turn_admission_journal_path, before.get("active_db_path"),
+            ):
+                self._admission_audit_invalid = True
+                self._admission_event_under_gate(
+                    "invalid", submission_id="", status="live_db_not_isolated",
+                    active_db_path=before.get("active_db_path"),
+                    autonomous_tick_index=before.get("autonomous_tick_index"),
+                )
+                return None
+            start, start_saved = self._admission_event_under_gate(
+                "background_start", submission_id=item_id, status="admitted", **before,
+            )
+        self._record_background_decision("running", "background_admitted")
+        configured_ledger = getattr(self, "_compute_ledger", None)
+        ledger_coverage_complete = _background_ledger_covers_brain(brain, configured_ledger)
+        ledger = configured_ledger if ledger_coverage_complete else None
+        checkpoint = None
+        result = None
+        error_type = ""
+        snapshot = None
+        try:
+            checkpoint = ledger.checkpoint() if ledger is not None else None
+            cycle = brain.run_background_cycle
+            with ledger.item_scope(item_id, "background_admission") if ledger is not None else nullcontext():
+                if "allow_model_maintenance" in inspect.signature(cycle).parameters:
+                    result = cycle(allow_model_maintenance=False)
+                else:
+                    result = cycle()
+            if result is not None and (
+                not isinstance(result, dict)
+                or (result.get("goal") is not None and not isinstance(result.get("goal"), dict))
+                or (result.get("memory_writes") is not None and not isinstance(result.get("memory_writes"), list))
+            ):
+                raise TypeError("malformed_background_result")
+            return result
+        except BaseException as exc:
+            name = type(exc).__name__
+            error_type = name if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", name) else "UnknownError"
+            raise
+        finally:
+            if ledger is not None:
+                try:
+                    snapshot = ledger.snapshot_item(item_id, since_call_index=checkpoint)
+                except Exception:
+                    snapshot = None
+            if not isinstance(snapshot, dict):
+                snapshot = None
+            calls = snapshot.get("calls") if snapshot is not None else None
+            summary = snapshot.get("summary") if snapshot is not None else None
+            if (snapshot is not None and (
+                not isinstance(calls, list) or not isinstance(summary, dict)
+                or any(not isinstance(call, dict) or not isinstance(call.get("request"), dict) for call in calls)
+                or not isinstance(summary.get("by_resource_kind"), dict)
+                or not isinstance(summary.get("by_operation"), dict)
+            )):
+                snapshot = None
+            calls = snapshot["calls"] if snapshot is not None else []
+            summary = snapshot["summary"] if snapshot is not None else {}
+            mutations = [
+                call for call in calls
+                if call.get("resource_kind") == "vector_store_operation"
+                and (call.get("request") or {}).get("operation") in {"add", "update", "upsert", "delete"}
+            ]
+            compute_summary = None if snapshot is None else {
+                "item_id": item_id,
+                "since_call_index": snapshot.get("since_call_index"),
+                "window_end_call_index": snapshot.get("window_end_call_index"),
+                "call_count": snapshot.get("call_count"),
+                "unscoped_call_count_during_window": snapshot.get("unscoped_call_count_during_window"),
+                "other_item_call_count_during_window": snapshot.get("other_item_call_count_during_window"),
+                "by_resource_kind": {
+                    key: value for key, value in (summary.get("by_resource_kind") or {}).items()
+                    if re.fullmatch(r"[a-z_]{1,48}", str(key)) and type(value) is int
+                },
+                "by_operation": {
+                    key: value for key, value in (summary.get("by_operation") or {}).items()
+                    if re.fullmatch(r"[a-z_]{1,48}", str(key)) and type(value) is int
+                },
+                "prompt_tokens": summary.get("prompt_tokens"),
+                "completion_tokens": summary.get("completion_tokens"),
+                "total_tokens": summary.get("total_tokens"),
+                "generative_token_accounting_complete": summary.get("generative_token_accounting_complete"),
+                "summed_operation_latency_seconds": summary.get("summed_operation_latency_seconds"),
+            }
+            after = self._admission_state(brain)
+            malformed_result = result is not None and not isinstance(result, dict)
+            safe_result = result if isinstance(result, dict) else {}
+            goal = safe_result.get("goal") or {}
+            reported_writes = safe_result.get("memory_writes") or []
+            if not isinstance(goal, dict) or not isinstance(reported_writes, list):
+                malformed_result = True
+                goal = {}
+                reported_writes = []
+            if malformed_result and not error_type:
+                error_type = "MalformedBackgroundResult"
+            goal_kind = str(goal.get("kind") or "")
+            if not re.fullmatch(r"[a-z0-9_]{1,64}", goal_kind):
+                goal_kind = "unknown"
+            with self._human_gate_lock:
+                end, end_saved = self._admission_event_under_gate(
+                    "background_end", submission_id=item_id,
+                    status="error" if error_type else "completed" if result else "idle_noop",
+                    start_sequence=start["sequence"], start_journal_ok=start_saved,
+                    error_type=error_type, goal_kind=goal_kind,
+                    memory_diff_nonempty=bool(safe_result.get("memory_diff")) if not malformed_result else None,
+                    reported_memory_write_count=len(reported_writes) if not malformed_result else None,
+                    ledger_status=(
+                        "attributed" if snapshot and snapshot.get("attribution_complete") is True
+                        else "ambiguous" if snapshot else "unavailable"
+                    ),
+                    ledger_coverage_complete=ledger_coverage_complete,
+                    vector_mutation_returned_count=sum(not call.get("error_type") for call in mutations),
+                    vector_mutation_error_count=sum(bool(call.get("error_type")) for call in mutations),
+                    compute_summary=compute_summary,
+                    **after,
+                )
+                self._background_admission_events.append({
+                    "start_sequence": start["sequence"],
+                    "end_sequence": end["sequence"],
+                    "journal_ok": bool(start_saved and end_saved),
+                    "before": before,
+                    "after": after,
+                    "ledger_status": "attributed" if snapshot and snapshot.get("attribution_complete") is True else "unknown",
+                    "error_type": error_type,
+                })
+                self._background_admission_events = self._background_admission_events[-64:]
+                if (not start_saved or not end_saved or error_type or not snapshot
+                        or snapshot.get("attribution_complete") is not True
+                        or any(call.get("error_type") for call in mutations)):
+                    self._admission_audit_invalid = True
+            pair_verified = bool(
+                start_saved and end_saved and snapshot and snapshot.get("attribution_complete") is True
+                and _verified_background_admission_pair(self._turn_admission_journal_path, start, end)
+            )
+            if snapshot and snapshot.get("attribution_complete") is True and not pair_verified:
+                self._admission_audit_invalid = True
+            if pair_verified:
+                try:
+                    retired = ledger.retire_item_snapshot(snapshot)
+                    if retired is False and calls:
+                        self._admission_audit_invalid = True
+                except Exception:
+                    self._admission_audit_invalid = True
+            self._publish_active_db_receipt()
+            self._record_background_decision(
+                "error" if error_type else "completed" if result else "idle_noop",
+                "background_error" if error_type else "background_completed" if result else "background_not_due",
+            )
+
+    def run_background_once(self):
+        """Run one cooperative background tick without queueing ahead of a human."""
+        if self._admission_enabled():
+            self._expire_stale_admissions()
+        if self._brain is None:
+            self._record_background_decision("skipped", "brain_not_ready")
+            return None
+        if self.human_turn_pending():
+            self._record_background_decision("skipped", "human_waiting")
+            return None
+        if not self._lock.acquire(blocking=False):
+            self._record_background_decision("skipped", "brain_busy")
+            return None
+        try:
+            if self._admission_enabled():
+                return self._run_background_once_attributed_locked()
+            if self.human_turn_pending():
+                self._record_background_decision("skipped", "human_arrived_before_background")
+                return None
+            self._record_background_decision("running", "background_admitted")
+            background_cycle = self._brain.run_background_cycle
+            try:
+                if "allow_model_maintenance" in inspect.signature(background_cycle).parameters:
+                    result = background_cycle(allow_model_maintenance=False)
+                else:
+                    result = background_cycle()
+            finally:
+                self._publish_active_db_receipt()
+            self._record_background_decision(
+                "completed" if result else "idle_noop",
+                "background_completed" if result else "background_not_due",
+            )
+            return result
+        finally:
+            self._lock.release()
+
     def _idle_consolidation_loop(self):
         while True:
             time.sleep(10)
-            if self._brain is None:
-                continue
             try:
-                with self._lock:
-                    result = self._brain.run_background_cycle()
+                result = self.run_background_once()
                 if result:
                     self._last_idle_consolidation_at = time.time()
-                    print(Fore.CYAN + f"🧠 [Web] Autonomous background cycle: {result}")
+                    goal = result.get("goal") or {}
+                    print(
+                        Fore.CYAN
+                        + "🧠 [Web] Autonomous background cycle: "
+                        + f"goal={goal.get('kind') or 'unknown'} "
+                        + f"writes={len(result.get('memory_writes') or [])}"
+                    )
             except Exception as exc:
                 print(Fore.YELLOW + f"⚠️ [Web] Autonomous cycle failed: {exc}")
 
@@ -319,12 +1571,34 @@ class RuntimeManager:
         return self._mouth
 
     def reset_brain_session(self):
+        # A direct/programmatic reset must respect the same Brain boundary as
+        # a queued human turn; Gradio lane ordering alone is not sufficient.
+        with self._lock:
+            return self._reset_brain_session_locked()
+
+    def _reset_brain_session_locked(self):
+        db_path = os.path.abspath(
+            os.getenv(
+                "URUHA_WEB_SESSION_DB_PATH",
+                os.path.join(tempfile.gettempdir(), "uruha_web_session_db"),
+            )
+        )
+        self._admission_preflight_before_db_effect(reset_path=db_path)
         brain = self.get_brain()
-        db_path = os.path.join(tempfile.gettempdir(), "uruha_web_session_db")
-        brain.reset_session(db_path)
+        self._active_db_phase = "resetting"
+        self._publish_active_db_receipt()
+        try:
+            brain.reset_session(db_path)
+        except Exception:
+            self._active_db_phase = "reset_error"
+            self._publish_active_db_receipt()
+            raise
         self._session_id = self._new_session_id()
+        self._reset_generation += 1
         self._turn_index = 0
         self.mark_activity()
+        self._active_db_phase = "ready"
+        self._publish_active_db_receipt()
         return brain
 
 
@@ -556,7 +1830,20 @@ def _annotation_candidate_markdown():
 
 
 def _annotation_draft_queue_payload():
-    return _load_json(ANNOTATION_DRAFT_QUEUE_JSON_PATH) or {}
+    # Draft builders retain the complete local source_record. Never forward a
+    # private episode witness through the JSON widget or annotation gr.State.
+    def without_private_episode(value):
+        if isinstance(value, dict):
+            return {
+                key: without_private_episode(item)
+                for key, item in value.items()
+                if key != "episode_doc"
+            }
+        if isinstance(value, list):
+            return [without_private_episode(item) for item in value]
+        return value
+
+    return without_private_episode(_load_json(ANNOTATION_DRAFT_QUEUE_JSON_PATH) or {})
 
 
 def _annotation_draft_queue_markdown():
@@ -936,7 +2223,7 @@ def _assemble_regression_panel_bundle(current_picker_val, diff_ran=True, diff_st
 
 def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=False):
     eval_info = _get_file_info(HUMAN_FEEDBACK_REGRESSION_EVAL_REPORT_JSON_PATH)
-    
+
     snap_meta = None
     baseline_title = "Baseline"
     invalid_selection = False
@@ -963,15 +2250,15 @@ def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=Fal
     else:
         diff_report = _load_json(HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH)
         diff_info = _get_file_info(HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH)
-    
+
     lines = ["### Regression Data Provenance & Freshness"]
-    
+
     # 1. Current Eval
     if eval_info:
         lines.append(f"- **Current Eval**: `{eval_info['time_str']}` ({eval_info['name']})")
     else:
         lines.append("- **Current Eval**: `missing` (請先執行 Replay Eval)")
-        
+
     # 2. Baseline
     if invalid_selection:
         lines.append(f"- **{baseline_title}**: `❌ File Missing` ({os.path.basename(selected_meta_path or 'null')})")
@@ -979,13 +2266,13 @@ def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=Fal
         lines.append(f"- **{baseline_title}**: `{snap_meta.get('created_at', '-')}` ({snap_meta.get('label', 'manual')})")
     else:
         lines.append(f"- **{baseline_title}**: `missing` (請先建立 Snapshot)")
-        
+
     # 3. Current Diff
     diff_prov = diff_report.get("baseline_provenance") or {}
     diff_baseline_label = diff_prov.get("label", "unknown")
     diff_baseline_path = diff_prov.get("path", "")
     diff_baseline_time = diff_prov.get("created_at", "unknown time")
-    
+
     if diff_unavailable:
         lines.append("- **Current Diff**: `unavailable` (本次執行未產出)")
     elif diff_info:
@@ -993,7 +2280,7 @@ def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=Fal
         lines.append(f"- **Current Diff**: `{diff_info['time_str']}` (Baseline: {diff_baseline_id})")
     else:
         lines.append("- **Current Diff**: `missing` (請執行 Run Regression Diff)")
-        
+
     # 4. Freshness & Match Logic
     freshness = "unknown"
     if diff_unavailable:
@@ -1009,15 +2296,15 @@ def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=Fal
         # Convert meta path to expected snapshot json path
         expected_snap_json = snap_meta.get("snapshot_json")
         actual_diff_baseline_json = diff_baseline_path
-        
+
         # 4b. Check Time Freshness
         diff_mtime = diff_info["mtime"]
         eval_mtime = eval_info["mtime"]
-        
+
         snap_mtime = 0
         if expected_snap_json and os.path.exists(expected_snap_json):
             snap_mtime = os.path.getmtime(expected_snap_json)
-        
+
         # Determine status
         if not actual_diff_baseline_json:
             freshness = "⚠️ **UNKNOWN / LEGACY**: Diff report lacks baseline provenance. Cannot verify alignment. Please rerun diff."
@@ -1030,7 +2317,7 @@ def _regression_freshness_markdown(selected_meta_path=None, diff_unavailable=Fal
             freshness = "❌ **STALE**: Diff is older than Baseline modification"
         else:
             freshness = "✅ **CURRENT**: Diff matches selected Baseline and latest Eval"
-            
+
     lines.append(f"\n**Overall Status**: {freshness}")
     return "\n".join(lines)
 
@@ -1056,7 +2343,7 @@ def _regression_snapshot_markdown():
     meta = _load_latest_snapshot_metadata()
     if not meta:
         return "### Latest Regression Baseline\n- 目前無任何快照。"
-    
+
     return "\n".join([
         "### Latest Regression Baseline",
         f"- **Label**: `{meta.get('label', 'unknown')}`",
@@ -1072,7 +2359,7 @@ def create_regression_snapshot(label):
     label = str(label or "manual").strip()
     if not label:
         label = "manual"
-        
+
     if not os.path.exists(HUMAN_FEEDBACK_REGRESSION_EVAL_REPORT_JSON_PATH):
         return (
             f"❌ 建立快照失敗：找不到目前的評測報表 {HUMAN_FEEDBACK_REGRESSION_EVAL_REPORT_JSON_PATH}。請先執行 Replay Eval。",
@@ -1080,11 +2367,11 @@ def create_regression_snapshot(label):
             _regression_freshness_markdown(),
             gr.update() # snapshot_picker
         )
-    
+
     try:
         cmd = [sys.executable, os.path.join(BASE_DIR, "snapshot_human_feedback_regression_eval.py"), "--label", label]
         subprocess.run(cmd, cwd=BASE_DIR, check=True, timeout=60)
-        
+
         new_choices = _snapshot_picker_choices()
         new_value = (new_choices[0][1] if new_choices else "") # 自動選中最新
 
@@ -1112,7 +2399,7 @@ def run_regression_diff_manually(selected_meta_path):
             bundle["diff_json"],
             bundle["fresh_md"]
         )
-    
+
     snap_meta = None
     if not selected_meta_path:
         # 1. Empty Selection -> Fallback to latest
@@ -1138,7 +2425,7 @@ def run_regression_diff_manually(selected_meta_path):
             bundle["diff_json"],
             bundle["fresh_md"]
         )
-        
+
     try:
         snap_json = snap_meta.get("snapshot_json")
         if not snap_json or not os.path.exists(snap_json):
@@ -1152,7 +2439,7 @@ def run_regression_diff_manually(selected_meta_path):
 
         cmd = [sys.executable, REGRESSION_DIFF_SCRIPT, "--before", snap_json]
         subprocess.run(cmd, cwd=BASE_DIR, check=True, timeout=600)
-        
+
         bundle = _assemble_regression_panel_bundle(selected_meta_path, diff_ran=True, run_replay=False)
         return (
             f"✅ 已成功對標刷新 Regression Diff (Baseline: {snap_meta.get('label', 'unknown')})",
@@ -1184,12 +2471,12 @@ def _run_architecture_checks(current_snap_picker_val):
     ]
     for cmd in commands:
         subprocess.run(cmd, cwd=BASE_DIR, check=True, timeout=600)
-    
+
     # 解析並重跑 diff
     baseline_json, resolve_status = _resolve_auto_diff_baseline_json(current_snap_picker_val)
     auto_diff_success = False
     failure_reason = resolve_status
-    
+
     if baseline_json and resolve_status in ("success", "fallback_latest"):
         try:
             subprocess.run([sys.executable, REGRESSION_DIFF_SCRIPT, "--before", baseline_json], cwd=BASE_DIR, check=True, timeout=600)
@@ -1199,11 +2486,11 @@ def _run_architecture_checks(current_snap_picker_val):
             failure_reason = "subprocess_failed"
     else:
         auto_diff_success = False
-    
+
     bundle = _assemble_regression_panel_bundle(
-        current_snap_picker_val, 
-        diff_ran=auto_diff_success, 
-        diff_status=failure_reason, 
+        current_snap_picker_val,
+        diff_ran=auto_diff_success,
+        diff_status=failure_reason,
         surface="architecture"
     )
 
@@ -1277,6 +2564,494 @@ def _extract_memory_payload(result):
     }
 
 
+M24_CLIENT_COGNITION_BUDGET_BYTES = 360_000
+M24_CLIENT_MEMORY_BUDGET_BYTES = 120_000
+M24_CLIENT_TURN_BUDGET_BYTES = 520_000
+
+
+def _json_size_m24(value):
+    try:
+        return len(json.dumps(value, ensure_ascii=False, default=str).encode("utf-8"))
+    except Exception:
+        return len(str(value or "").encode("utf-8"))
+
+
+def _bounded_client_value_m24(value, depth=0):
+    """Bound browser payloads while the complete turn remains in local JSONL."""
+    if depth >= 5:
+        if isinstance(value, dict):
+            return {"__m24_omitted__": f"dict:{len(value)}"}
+        if isinstance(value, list):
+            return {"__m24_omitted__": f"list:{len(value)}"}
+    if isinstance(value, dict):
+        keys = list(value.keys())
+        retained = keys[:48]
+        preview = {
+            str(key): _bounded_client_value_m24(value.get(key), depth + 1)
+            for key in retained
+        }
+        if len(keys) > len(retained):
+            preview["__m24_omitted_keys__"] = len(keys) - len(retained)
+        return preview
+    if isinstance(value, list):
+        retained = value[:16]
+        preview = [_bounded_client_value_m24(item, depth + 1) for item in retained]
+        if len(value) > len(retained):
+            preview.append({"__m24_omitted_items__": len(value) - len(retained)})
+        return preview
+    if isinstance(value, str) and len(value) > 900:
+        return value[:820] + f"… [M24 omitted {len(value) - 820} chars]"
+    return value
+
+
+def _compact_runtime_trace_m24(runtime_trace):
+    runtime_trace = runtime_trace or {}
+    retained_keys = (
+        "cycle_index",
+        "focus",
+        "goal",
+        "route_info",
+        "blackboard",
+        "selected_plan",
+        "planner_tick_trace",
+        "visible_language_guard",
+        "user_mental_state_hypothesis",
+        "hypothesis_verification",
+        "hypothesis_calibration",
+        "human_pragmatic_understanding_v2_13",
+        "pragmatic_verification_v2_13",
+        "longitudinal_user_model_v2_13",
+        "longitudinal_model_update_v2_13",
+        "personhood_loop_v2_13",
+        "adaptive_person_model_m18",
+        "adaptive_person_feedback_m18",
+        "adaptive_context_scope_m18",
+        "adaptive_scope_hierarchy_m18",
+        "desired_response_state_m18",
+        "desired_response_candidates_m18",
+        "adaptive_response_dimensions_m18",
+        "desired_response_prediction_m18",
+        "adaptive_person_persistence_m18",
+        "adaptive_person_surface_commitment_m18",
+        "current_turn_semantic_commit_m48",
+        "explicit_conversation_act_p3_b50",
+        "semantic_preserving_japanese_repair_m49",
+        "runtime_latency_m19",
+        "human_priority_scheduler_m19",
+        "correction_aware_surface_m20",
+        "correction_surface_commit_m20",
+        "surface_delivery_m20",
+        "bounded_slow_path_planner_m21",
+        "semantic_route_classifier_m22",
+        "semantic_route_outcome_m22",
+        "desired_response_mode_m23",
+        "desired_response_surface_contract_m23",
+        "explicit_desired_response_m25",
+        "implicit_desired_response_m26",
+        "causal_outcome_calibration_m27",
+        "feedback_topic_transition_m28",
+        "literal_topic_projection_m29",
+        "semantic_authorization_m31",
+        "semantic_commit_repair_m32",
+        "source_semantic_atoms_m33",
+        "semantic_atom_verification_m33",
+        "source_anchored_semantic_commit_m33",
+        "counterfactual_pragmatic_branch_m34",
+        "memory_diff",
+        "memory_writes",
+    )
+    return _bounded_client_value_m24(
+        {key: runtime_trace.get(key) for key in retained_keys if key in runtime_trace}
+    )
+
+
+def _compact_runtime_state_m24(runtime_state):
+    runtime_state = runtime_state or {}
+    compact = {
+        key: runtime_state.get(key)
+        for key in (
+            "cycle_index",
+            "current_focus",
+            "active_goal",
+            "psyche",
+            "open_loops",
+            "adaptive_person_model",
+            "current_desired_response_state",
+            "last_desired_response_decision",
+            "last_state_diff",
+            "scheduler",
+        )
+        if key in runtime_state
+    }
+    compact["retained_history_counts"] = {
+        "recent_turn_traces": len(runtime_state.get("recent_turn_traces") or []),
+        "recent_autonomous_traces": len(runtime_state.get("recent_autonomous_traces") or []),
+        "full_history_in_browser": False,
+    }
+    return _bounded_client_value_m24(compact)
+
+
+def _client_cognition_payload_m24(cognition):
+    """Return the progressive browser view, not the complete research record."""
+    cognition = cognition or {}
+    compact = {
+        key: _bounded_client_value_m24(cognition.get(key))
+        for key in (
+            "route_info",
+            "psyche_before",
+            "psyche_after",
+            "internal_monologue",
+            "planner_tick_trace",
+            "planner_tick_count",
+            "self_correction_applied",
+            "response_mode",
+            "surface_act",
+            "payload_level",
+            "cognitive_mode",
+            "premise_check",
+            "subjective_note_jp",
+            "grounding",
+            "bayes_candidates",
+            "working_memory_summary",
+            "working_memory_items",
+            "memory_provenance",
+            "reflection",
+            "memory_runtime",
+        )
+        if key in cognition
+    }
+    compact["runtime_trace"] = _compact_runtime_trace_m24(
+        cognition.get("runtime_trace")
+    )
+    compact["runtime_state"] = _compact_runtime_state_m24(
+        cognition.get("runtime_state")
+    )
+    original_bytes = _json_size_m24(cognition)
+    compact_bytes = _json_size_m24(compact)
+    compact["payload_budget_m24"] = {
+        "schema": "uruha_progressive_client_payload_m24",
+        "original_cognition_bytes": original_bytes,
+        "browser_cognition_bytes": compact_bytes,
+        "browser_budget_bytes": M24_CLIENT_COGNITION_BUDGET_BYTES,
+        "budget_met": compact_bytes <= M24_CLIENT_COGNITION_BUDGET_BYTES,
+        "full_trace_retained_in": "local_web_jsonl",
+        "progressive_detail": True,
+    }
+    return compact
+
+
+def _client_memory_payload_m24(memory):
+    memory = memory or {}
+    compact = _bounded_client_value_m24(memory)
+    compact_bytes = _json_size_m24(compact)
+    if isinstance(compact, dict):
+        compact["payload_budget_m24"] = {
+            "schema": "uruha_progressive_memory_payload_m24",
+            "original_memory_bytes": _json_size_m24(memory),
+            "browser_memory_bytes": compact_bytes,
+            "browser_budget_bytes": M24_CLIENT_MEMORY_BUDGET_BYTES,
+            "budget_met": compact_bytes <= M24_CLIENT_MEMORY_BUDGET_BYTES,
+            "full_trace_retained_in": "local_web_jsonl",
+        }
+    return compact
+
+
+def _client_turn_record_m24(record, cognition, memory):
+    record = record or {}
+    compact = {
+        key: record.get(key)
+        for key in (
+            "timestamp",
+            "session_id",
+            "turn_index",
+            "input_mode",
+            "user_text",
+            "assistant_reply",
+            "planner_debug",
+        )
+        if key in record
+    }
+    logic = record.get("logic") or {}
+    compact["logic"] = _bounded_client_value_m24(
+        {
+            key: logic.get(key)
+            for key in (
+                "intent",
+                "scene",
+                "response_mode",
+                "surface_act",
+                "payload_level",
+                "grounding",
+                "routing_path",
+                "desired_response_mode_m23",
+                "desired_response_surface_contract_m23",
+                "explicit_desired_response_m25",
+                "implicit_desired_response_m26",
+                "causal_outcome_calibration_m27",
+                "feedback_topic_transition_m28",
+                "literal_topic_projection_m29",
+                "semantic_authorization_m31",
+                "semantic_commit_repair_m32",
+                "source_semantic_atoms_m33",
+                "semantic_atom_verification_m33",
+                "source_anchored_semantic_commit_m33",
+                "counterfactual_pragmatic_branch_m34",
+                "semantic_route_classifier_m22",
+                "semantic_route_outcome_m22",
+                "bounded_slow_path_planner_m21",
+            )
+            if key in logic
+        }
+    )
+    compact["cognition_trace"] = cognition
+    compact["memory_snapshot"] = memory
+    compact_bytes = _json_size_m24(compact)
+    compact["payload_budget_m24"] = {
+        "schema": "uruha_progressive_turn_state_m24",
+        "original_turn_bytes": _json_size_m24(record),
+        "browser_turn_bytes": compact_bytes,
+        "browser_budget_bytes": M24_CLIENT_TURN_BUDGET_BYTES,
+        "budget_met": compact_bytes <= M24_CLIENT_TURN_BUDGET_BYTES,
+        "full_turn_retained_in": "local_web_jsonl",
+    }
+    return compact
+
+
+def _observatory_result_from_log_record(record):
+    record = record or {}
+    cognition = record.get("cognition_trace") or {}
+    episode_doc = _private_semantic_ledger_episode_doc(record)
+    # For a verified ledger, never manufacture a missing source snapshot from
+    # another trace field on reload. Ordinary historical graphs keep their
+    # previous best-effort fallback.
+    snapshot = record.get("memory_snapshot")
+    if episode_doc:
+        memory_data = dict(snapshot) if isinstance(snapshot, dict) and snapshot else None
+    else:
+        memory_data = dict(snapshot or {})
+        if not memory_data.get("working_memory_items"):
+            memory_data["working_memory_items"] = cognition.get("working_memory_items") or []
+        if not memory_data.get("memory_provenance"):
+            memory_data["memory_provenance"] = cognition.get("memory_provenance") or {}
+    return {
+        "user_text": record.get("user_text") or "",
+        "reply": record.get("assistant_reply") or "",
+        "logic": record.get("logic") if isinstance(record.get("logic"), dict) else {},
+        "episode_doc": episode_doc,
+        "memory_data": memory_data,
+        "runtime_trace": cognition.get("runtime_trace") or {},
+        "runtime_state": cognition.get("runtime_state") or {},
+    }
+
+
+def _private_semantic_ledger_episode_doc(result):
+    """Keep a real delivered episode witness server-side, never in client JSON.
+
+    The observatory still rechecks the complete source/terminal/episode chain.
+    This selector only accepts the exact saved-episode serialization for this
+    turn. It does not claim a DB readback or cryptographic attestation.
+    """
+    if not isinstance(result, dict):
+        return ""
+    logic = result.get("logic")
+    receipt = logic.get("typed_mixed_atomic_delivery_p4") if isinstance(logic, dict) else None
+    ledger = receipt.get("semantic_ledger") if isinstance(receipt, dict) else None
+    doc = result.get("episode_doc")
+    if (
+        not isinstance(receipt, dict)
+        or receipt.get("status") != "delivered_structure_semantics_unverified"
+        or not isinstance(ledger, dict)
+        or ledger.get("status") != "bounded_slot_fidelity_verified"
+        or not isinstance(doc, str)
+    ):
+        return ""
+    timestamp = doc[len("Time: "):len("Time: ") + 19] if doc.startswith("Time: ") else ""
+    try:
+        if datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S") != timestamp:
+            return ""
+    except ValueError:
+        return ""
+    reply = result.get("reply") if "reply" in result else result.get("assistant_reply")
+    psyche = (result.get("psyche_after") if "psyche_after" in result
+              else (result.get("cognition_trace") or {}).get("psyche_after"))
+    if not isinstance(reply, str) or "user_text" not in result or psyche is None:
+        return ""
+    expected = (
+        f"Time: {timestamp} | Intent: {logic.get('intent', 'chat')} | "
+        f"Scene: {logic.get('scene', 'casual')} | "
+        f"CognitiveMode: {logic.get('cognitive_mode', 'direct')} | "
+        f"PremiseCheck: {logic.get('premise_check', 'accept')} | "
+        f"Routing: {logic.get('routing_path', 'high_road')} | "
+        f"User: {result['user_text']} | Summary: {logic.get('jp_summary', '')} | "
+        f"Uruha: {reply} | Mood: {psyche}"
+    )
+    return doc if doc == expected else ""
+
+
+def _latest_observatory_result():
+    try:
+        with open(WEB_LOG_JSONL, "r", encoding="utf-8") as handle:
+            lines = handle.readlines()
+    except OSError:
+        return {}
+    for line in reversed(lines):
+        try:
+            record = json.loads(line)
+        except (TypeError, ValueError):
+            continue
+        result = _observatory_result_from_log_record(record)
+        if result.get("runtime_trace", {}).get("blackboard"):
+            return result
+    return {}
+
+
+def _browser_graph_tombstone():
+    # BrowserState 6.5.1 does not persist falsy values on reset. A truthy,
+    # unauthorized replacement is therefore required to invalidate a receipt.
+    return {"schema": _BROWSER_GRAPH_RECEIPT_SCHEMA, "cleared": True}
+
+
+def _latest_private_log_row():
+    """Read only the last complete JSONL row through one verified file handle.
+
+    The historical observatory helper scans backward past bad rows. That is
+    useful for offline inspection but unsafe for browser-bound page hydration.
+    """
+    try:
+        directory = os.stat(os.path.dirname(WEB_LOG_JSONL), follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(directory.st_mode)
+            or directory.st_uid != os.getuid()
+            or stat.S_IMODE(directory.st_mode) & 0o077
+        ):
+            return None
+        fd = os.open(WEB_LOG_JSONL, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        with os.fdopen(fd, "rb") as handle:
+            before = os.fstat(handle.fileno())
+            if (
+                not stat.S_ISREG(before.st_mode)
+                or before.st_uid != os.getuid()
+                or stat.S_IMODE(before.st_mode) & 0o077
+                or before.st_nlink != 1
+                or before.st_size < 2
+            ):
+                return None
+            handle.seek(before.st_size - 1)
+            if handle.read(1) != b"\n":
+                return None
+            remaining = before.st_size - 1
+            chunks = []
+            row_bytes = 0
+            while remaining > 0:
+                take = min(65536, remaining)
+                start = remaining - take
+                handle.seek(start)
+                chunk = handle.read(take)
+                if len(chunk) != take:
+                    return None
+                previous_newline = chunk.rfind(b"\n")
+                part = chunk[previous_newline + 1:] if previous_newline >= 0 else chunk
+                row_bytes += len(part)
+                if row_bytes > _BROWSER_GRAPH_MAX_ROW_BYTES:
+                    return None
+                chunks.append(part)
+                if previous_newline >= 0:
+                    break
+                remaining = start
+            raw_row = b"".join(reversed(chunks))
+            after = os.fstat(handle.fileno())
+            if (
+                not raw_row
+                or before.st_size != after.st_size
+                or before.st_mtime_ns != after.st_mtime_ns
+                or before.st_ctime_ns != after.st_ctime_ns
+            ):
+                return None
+        record = json.loads(raw_row.decode("utf-8"))
+        if not isinstance(record, dict):
+            return None
+        return record, raw_row
+    except (OSError, UnicodeDecodeError, ValueError, TypeError):
+        return None
+
+
+def _mint_browser_graph_receipt(client_record, expected_session_id):
+    """Authorize only the private, latest, delivered User row for this browser."""
+    if not isinstance(client_record, dict) or not isinstance(expected_session_id, str):
+        return _browser_graph_tombstone()
+    if not expected_session_id or expected_session_id != RUNTIME._session_id:
+        return _browser_graph_tombstone()
+    latest = _latest_private_log_row()
+    if latest is None:
+        return _browser_graph_tombstone()
+    record, raw_row = latest
+    session_id = record.get("session_id")
+    turn_index = record.get("turn_index")
+    if (
+        session_id != expected_session_id
+        or client_record.get("session_id") != session_id
+        or type(turn_index) is not int
+        or turn_index < 1
+        or client_record.get("turn_index") != turn_index
+        or RUNTIME._turn_index != turn_index
+        or record.get("input_mode") not in {"text", "audio"}
+        or client_record.get("user_text") != record.get("user_text")
+        or client_record.get("assistant_reply") != record.get("assistant_reply")
+    ):
+        return _browser_graph_tombstone()
+    return {
+        "schema": _BROWSER_GRAPH_RECEIPT_SCHEMA,
+        "session_id": session_id,
+        "turn_index": turn_index,
+        "mac": hmac.new(_BROWSER_GRAPH_HMAC_KEY, raw_row, hashlib.sha256).hexdigest(),
+    }
+
+
+def _load_browser_graph(receipt):
+    """Hydrate one verified current graph; never scan to a previous positive."""
+    empty = _empty_flow_html("本瀏覽器尚無可驗證的本輪圖像。")
+    if not isinstance(receipt, dict) or set(receipt) != {
+        "schema", "session_id", "turn_index", "mac"
+    }:
+        return empty
+    if receipt.get("schema") != _BROWSER_GRAPH_RECEIPT_SCHEMA:
+        return empty
+    session_id = receipt.get("session_id")
+    turn_index = receipt.get("turn_index")
+    mac = receipt.get("mac")
+    if (
+        not isinstance(session_id, str)
+        or not session_id
+        or type(turn_index) is not int
+        or turn_index < 1
+        or not isinstance(mac, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", mac)
+        or session_id != RUNTIME._session_id
+        or turn_index != RUNTIME._turn_index
+    ):
+        return empty
+    latest = _latest_private_log_row()
+    if latest is None:
+        return empty
+    record, raw_row = latest
+    if (
+        record.get("session_id") != session_id
+        or record.get("turn_index") != turn_index
+        or record.get("input_mode") not in {"text", "audio"}
+        or not hmac.compare_digest(
+            mac,
+            hmac.new(_BROWSER_GRAPH_HMAC_KEY, raw_row, hashlib.sha256).hexdigest(),
+        )
+    ):
+        return empty
+    html = _render_flow_html(_observatory_result_from_log_record(record))
+    # A queued reset or proactive append must not make a graph stale while the
+    # (potentially large) native graph is being rendered.
+    if session_id != RUNTIME._session_id or turn_index != RUNTIME._turn_index:
+        return empty
+    return html
+
+
 def _preview_payload(payload):
     try:
         return json.dumps(payload, ensure_ascii=False, indent=2)
@@ -1299,40 +3074,11 @@ def _empty_html(title, body):
 
 
 def _empty_flow_html(body):
-    return render_memory_observatory({}) + _empty_html("Cognitive Flow", body)
+    return render_memory_observatory({})
 
 
 def _render_flow_html(result):
-    runtime_trace = (result or {}).get("runtime_trace") or {}
-    blackboard = runtime_trace.get("blackboard") or []
-    memory_observatory = render_memory_observatory(result)
-    if not blackboard:
-        return memory_observatory + _empty_html("Cognitive Flow", "尚無本輪知識流。")
-
-    cards = []
-    for index, item in enumerate(blackboard):
-        payload_text = _preview_payload(item.get("payload"))
-        cards.append(
-            (
-                '<div class="trace-card">'
-                f'<div class="trace-stage">{escape(str(item.get("stage", "stage")))}</div>'
-                f'<div class="trace-label">{escape(str(item.get("label", "node")))}</div>'
-                f'<div class="trace-meta">salience={float(item.get("salience", 0.0)):.2f}</div>'
-                f'<pre class="trace-pre">{escape(payload_text)}</pre>'
-                "</div>"
-            )
-        )
-        if index != len(blackboard) - 1:
-            cards.append('<div class="trace-arrow">→</div>')
-
-    header = runtime_trace.get("focus") or "current_turn"
-    goal = runtime_trace.get("goal") or "reply"
-    return (
-        memory_observatory
-        +
-        f'<div class="muted" style="margin-bottom:8px;">focus={escape(str(header))} / goal={escape(str(goal))}</div>'
-        f'<div class="trace-board">{"".join(cards)}</div>'
-    )
+    return render_memory_observatory(result)
 
 
 def _render_state_diff_html(result):
@@ -1764,17 +3510,17 @@ def _run_regression_eval_downstream_reports(selected_meta_path=None):
     """執行 regression replay 及其後的 diff 報表。回傳 (success, status)"""
     # 1. 執行 replay eval
     subprocess.run([sys.executable, REGRESSION_EVAL_SCRIPT], cwd=BASE_DIR, check=True, timeout=600)
-    
+
     # 2. 解析 baseline
     baseline_json, resolve_status = _resolve_auto_diff_baseline_json(selected_meta_path)
-    
+
     if baseline_json and resolve_status in ("success", "fallback_latest"):
         try:
             subprocess.run([sys.executable, REGRESSION_DIFF_SCRIPT, "--before", baseline_json], cwd=BASE_DIR, check=True, timeout=600)
             return True, resolve_status
         except Exception:
             return False, "subprocess_failed"
-    
+
     return False, resolve_status
 
 
@@ -1943,11 +3689,11 @@ def refresh_annotation_batch_workbench(bucket_code, severity, reason_code, take_
     available_buckets = _annotation_batch_bucket_choices()
     available_severities = _annotation_batch_severity_choices()
     available_reasons = _annotation_batch_reason_choices()
-    
+
     bucket_code = bucket_code if bucket_code in {v for _, v in available_buckets} else "__ALL__"
     severity = severity if severity in {v for _, v in available_severities} else "ALL"
     reason_code = reason_code if reason_code in {v for _, v in available_reasons} else "ALL"
-    
+
     return (
         gr.update(choices=available_buckets, value=bucket_code),
         gr.update(choices=available_severities, value=severity),
@@ -1962,7 +3708,7 @@ def batch_accept_annotation_drafts(bucket_code, severity, reason_code, take_coun
     rows = _annotation_draft_rows(bucket_code, severity, reason_code, limit=take_count)
 
     # 內部輔助函數，確保回傳值數量正確 (15個)
-    def _make_return_payload(msg, hist_md, hist_json, dr_choices, dr_prev, b_choices, b_sev, b_reas, b_prev, 
+    def _make_return_payload(msg, hist_md, hist_json, dr_choices, dr_prev, b_choices, b_sev, b_reas, b_prev,
                              reg_eval_md=None, reg_eval_json=None, reg_diff_md=None, reg_diff_json=None,
                              reg_fresh_md=None, reg_snap_picker=None):
         return (
@@ -1977,7 +3723,7 @@ def batch_accept_annotation_drafts(bucket_code, severity, reason_code, take_coun
 
     if not rows:
         history_md, history_json = refresh_annotation_history(history_limit)
-        
+
         diff_status = None
         if run_replay:
             _, diff_status = _resolve_auto_diff_baseline_json(current_snap_picker_val)
@@ -2050,12 +3796,12 @@ def batch_accept_annotation_drafts(bucket_code, severity, reason_code, take_coun
     diff_msg = ""
     diff_ran = False
     diff_status = "no_new_accepts" # 預設狀態
-    
+
     if run_replay:
         if accepted:
             diff_ran, diff_status = _run_regression_eval_downstream_reports(current_snap_picker_val)
             replay_msg = " + 執行了 Regression Replay"
-            
+
             reason_text = _replay_diff_status_text(diff_status)
             diff_msg = " (+ Regression Diff)" if diff_ran else f" (Diff 跳過：{reason_text})"
         else:
@@ -2119,9 +3865,10 @@ def _iter_reply_chunks(text):
     if re.search(r"[A-Za-z]", text) and not re.search(r"[\u4e00-\u9fff\u3040-\u30ff]", text):
         words = text.split()
         assembled = []
-        for word in words:
+        for index, word in enumerate(words, start=1):
             assembled.append(word)
-            yield " ".join(assembled)
+            if index % 4 == 0 or index == len(words):
+                yield " ".join(assembled)
         return
 
     tokens = re.findall(r"[\u4e00-\u9fff\u3040-\u30ff]{1,3}|[A-Za-z0-9']+|[^\w\s]", text, flags=re.UNICODE)
@@ -2130,23 +3877,461 @@ def _iter_reply_chunks(text):
         return
 
     built = ""
-    for token in tokens:
+    last_emitted_length = 0
+    for index, token in enumerate(tokens):
         if re.fullmatch(r"[A-Za-z0-9']+", token):
             built = f"{built} {token}".strip()
         else:
             built += token
-        yield built
+        punctuation_boundary = bool(re.fullmatch(r"[、。！？!?]", token))
+        final_token = index == len(tokens) - 1
+        if punctuation_boundary or final_token or len(built) - last_emitted_length >= 12:
+            yield built
+            last_emitted_length = len(built)
 
 
-def _run_turn(user_text, auto_tts):
+def begin_human_submission(value):
+    """Queue-free admission marker used by text and audio UI events."""
+    if value in (None, ""):
+        return 0.0
+    return RUNTIME.begin_human_turn()
+
+
+def begin_human_submission_with_session(value):
+    if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+        started, token = RUNTIME.begin_human_turn_with_token(source="browser")
+        return started, {"session_id": RUNTIME.admission_session_id(token), "admission_token": token}
+    return begin_human_submission(value), RUNTIME._session_id
+
+
+def _exact_input_surface_arm():
+    arm = os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM", "")
+    return arm if arm in {"off", "on"} else ""
+
+
+def _exact_input_capability_root():
+    return os.getenv("URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT", "")
+
+
+_EXACT_ENQUEUE_LOCK = threading.Lock()
+_EXACT_PENDING_ADMISSION = None
+
+
+def _release_exact_enqueue_claim(claim):
+    global _EXACT_PENDING_ADMISSION
+    with _EXACT_ENQUEUE_LOCK:
+        pending = _EXACT_PENDING_ADMISSION
+        if pending is not None and pending["claim"] is claim:
+            _EXACT_PENDING_ADMISSION = None
+
+
+def begin_exact_text_submission_with_session(value, request: gr.Request | None = None):
+    """Claim the one-use research input before admission, memory, or UI yield."""
+    global _EXACT_PENDING_ADMISSION
+    arm = _exact_input_surface_arm()
+    if not arm:
+        return begin_human_submission_with_session(value)
+    session_key = getattr(request, "session_hash", None)
+    if not isinstance(session_key, str) or not session_key:
+        return 0.0, {
+            "session_id": getattr(RUNTIME, "_session_id", ""),
+            "exact_input_rejected": "browser_session_unavailable",
+        }
+    from uruha_source_event_exact_input_capability_p4 import (
+        ExactInputCapabilityError, abandon_unreserved_exact_input_claim,
+        claim_exact_input_permit, close_exact_input_claim,
+    )
+
+    with _EXACT_ENQUEUE_LOCK:
+        pending = _EXACT_PENDING_ADMISSION
+        if (pending is not None and pending["runtime"] is RUNTIME
+                and pending["session_key"] == session_key):
+            if abandon_unreserved_exact_input_claim(pending["claim"]):
+                # The first queued callback has not reserved its State yet.
+                # Cancel its admission before a second queue-free result can
+                # overwrite that State and strand a human waiter.
+                _EXACT_PENDING_ADMISSION = None
+                if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                    RUNTIME.finish_human_turn(
+                        admission_token=pending["token"],
+                        terminal_status="exact_input_rejected",
+                    )
+                else:
+                    RUNTIME.finish_human_turn()
+            return 0.0, {
+                "session_id": getattr(RUNTIME, "_session_id", ""),
+                "exact_input_rejected": "claim_already_in_progress",
+            }
+        if pending is not None and pending["runtime"] is not RUNTIME:
+            _EXACT_PENDING_ADMISSION = None
+        try:
+            claim = claim_exact_input_permit(_exact_input_capability_root(), value, arm)
+        except ExactInputCapabilityError as exc:
+            return 0.0, {
+                "session_id": getattr(RUNTIME, "_session_id", ""),
+                "exact_input_rejected": exc.reason,
+            }
+        try:
+            started, meta = begin_human_submission_with_session(value)
+        except BaseException:
+            close_exact_input_claim(claim)
+            raise
+        if not isinstance(meta, dict):
+            meta = {"session_id": str(meta or "")}
+        _EXACT_PENDING_ADMISSION = {
+            "runtime": RUNTIME, "claim": claim,
+            "token": str(meta.get("admission_token") or ""),
+            "session_key": session_key,
+        }
+        return started, {**meta, "exact_input_claim": claim}
+
+
+def begin_exact_audio_submission_with_session(_value):
+    if _exact_input_surface_arm():
+        return 0.0, {
+            "session_id": getattr(RUNTIME, "_session_id", ""),
+            "exact_input_rejected": "audio_unavailable_for_exact_text_probe",
+        }
+    return begin_human_submission_with_session(_value)
+
+
+def _browser_submission_meta(value):
+    if isinstance(value, dict):
+        return str(value.get("session_id") or ""), str(value.get("admission_token") or "")
+    return str(value or ""), ""
+
+
+def _product_compute_receipt(ledger, item_id, checkpoint, input_mode, terminal_error=None):
+    """Build a raw-free turn receipt, never interpreting missing instrumentation as zero."""
+    receipt = {
+        "schema": "uruha_product_turn_compute_receipt_p4_v1",
+        "item_id": item_id,
+        "input_mode": str(input_mode or "text"),
+        "terminal_error_type": type(terminal_error).__name__ if terminal_error is not None else "",
+        "contains_raw_prompt_or_reply": False,
+        "coverage": {
+            "instrumented_generation_and_vector_operations": False,
+            "embedding_tokens": "unavailable",
+            "speech_and_tts": "unavailable",
+            "startup_and_background": "excluded_from_turn",
+            "cpu_rss_energy": "unavailable",
+        },
+    }
+    if ledger is None or checkpoint is None:
+        receipt.update(
+            status="terminal_error" if terminal_error is not None else "unavailable_brain_not_instrumented",
+            accounting_status="unavailable_brain_not_instrumented",
+            snapshot=None,
+        )
+        return receipt
+    try:
+        snapshot = ledger.snapshot_item(item_id, since_call_index=checkpoint)
+    except Exception as exc:
+        receipt.update(
+            status="terminal_error" if terminal_error is not None else "unavailable_snapshot_error",
+            accounting_status="unavailable_snapshot_error",
+            snapshot_error_type=type(exc).__name__,
+            snapshot=None,
+        )
+        return receipt
+    receipt.update(snapshot=snapshot)
+    receipt["coverage"]["instrumented_generation_and_vector_operations"] = True
+    summary = snapshot["summary"]
+    if not snapshot["attribution_complete"]:
+        status = "attribution_ambiguous"
+    elif not summary["generative_token_accounting_complete"]:
+        status = "partial_token_usage"
+    elif summary["generative_call_count"] == 0:
+        status = "scoped_zero_generation"
+    elif not summary["provider_total_token_accounting_complete"]:
+        status = "partial_provider_total"
+    else:
+        status = "captured"
+    if terminal_error is not None:
+        receipt["accounting_status"] = status
+        status = "terminal_error"
+    receipt["status"] = status
+    return receipt
+
+
+def _product_compute_graph_payload(receipt):
+    snapshot = receipt.get("snapshot") or {}
+    summary = snapshot.get("summary") or {}
+    calls = summary.get("generative_call_count")
+    tokens = summary.get("total_tokens")
+    vectors = summary.get("vector_store_operation_count")
+    if receipt["status"].startswith("unavailable"):
+        signal = "計算收據不可用"
+    else:
+        if summary.get("provider_total_token_accounting_complete"):
+            token_signal = f"token {tokens}"
+        elif summary.get("generative_token_accounting_complete"):
+            token_signal = f"P+C {summary.get('summed_prompt_plus_completion_tokens')}（總量未回報）"
+        else:
+            token_signal = "token 部分缺失"
+        prefix = "歸因不完整；" if receipt["status"] == "attribution_ambiguous" else "已接線 "
+        signal = f"{prefix}生成 {calls} 次 · {token_signal} · 記憶操作 {vectors} 次"
+    return {
+        "schema": "uruha_product_turn_compute_graph_p4_v1",
+        "item_id": receipt["item_id"],
+        "status": receipt["status"],
+        "summary": signal,
+        "scoped_call_count": snapshot.get("call_count"),
+        "attribution_complete": snapshot.get("attribution_complete"),
+        "contains_raw_prompt_or_reply": False,
+        "coverage_note": "僅已接線的生成／向量操作；不含聲音、啟動、OS 資源或 embedding token",
+    }
+
+
+def _retire_persisted_product_compute_item(ledger, receipt):
+    """Release only this privately written, completely attributed turn's calls."""
+    if ledger is None or not isinstance(receipt, dict):
+        return "unavailable_ledger"
+    snapshot = receipt.get("snapshot")
+    if not isinstance(snapshot, dict):
+        return "unavailable_snapshot"
+    if snapshot.get("item_id") != receipt.get("item_id"):
+        return "item_id_mismatch"
+    if snapshot.get("attribution_complete") is not True:
+        return "held_ambiguous"
+    try:
+        retired = ledger.retire_item_snapshot(snapshot)
+    except (ValueError, RuntimeError):
+        return "retirement_error"
+    return "retired" if retired else "no_scoped_calls"
+
+
+def _persist_terminal_compute_failure(receipt):
+    """Best-effort private failure evidence; never mask the original exception."""
+    path = os.path.join(os.path.dirname(WEB_LOG_JSONL), "compute_failures.jsonl")
+    try:
+        directory_info = os.stat(os.path.dirname(path), follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(directory_info.st_mode)
+            or directory_info.st_uid != os.getuid()
+            or stat.S_IMODE(directory_info.st_mode) & 0o077
+        ):
+            return False
+        fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "a", encoding="utf-8") as stream:
+            info = os.fstat(stream.fileno())
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) & 0o077
+                or info.st_nlink != 1
+            ):
+                return False
+            stream.write(json.dumps(receipt, ensure_ascii=False) + "\n")
+        return True
+    except (OSError, TypeError, ValueError):
+        return False
+
+
+def _run_turn(
+    user_text,
+    auto_tts,
+    input_mode="text",
+    acoustic_summary=None,
+    frontend_enqueue_started=0.0,
+    handler_started=0.0,
+    admission_token="",
+    exact_input_claim=None,
+):
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, validate_exact_input_claim,
+        )
+
+        if input_mode != "text":
+            raise ExactInputCapabilityError("input_mode_not_text", pre_turn_safe=True)
+        try:
+            validate_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), user_text, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            raise ExactInputCapabilityError(exc.reason, pre_turn_safe=True) from exc
+        if not isinstance(user_text, str) or user_text != user_text.strip():
+            raise RuntimeError("exact_input_changed_by_web_strip")
     user_text = (user_text or "").strip()
     if not user_text:
         return None
 
     RUNTIME.mark_activity()
+    request_started = time.perf_counter()
+    handler_started = float(handler_started or request_started)
+    frontend_enqueue_started = float(frontend_enqueue_started or handler_started)
+    brain_was_ready = getattr(RUNTIME, "_brain", None) is not None
+    configured_ledger = getattr(RUNTIME, "_compute_ledger", None)
+    compute_item_id = secrets.token_hex(16) if configured_ledger is not None else None
+    compute_receipt = None
+    runtime_lock_wait_started = time.perf_counter()
     with RUNTIME._lock:
-        brain = RUNTIME.get_brain()
-        turn = brain.run_turn_debug(user_text)
+        runtime_lock_acquired = time.perf_counter()
+        try:
+            brain = RUNTIME.get_brain()
+        except Exception as exc:
+            if compute_item_id is not None:
+                failed = _product_compute_receipt(
+                    None, compute_item_id, None, input_mode, exc,
+                )
+                failed["failure_phase"] = "brain_initialization"
+                _persist_terminal_compute_failure(failed)
+            raise
+        brain_ready_at = time.perf_counter()
+        admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
+        if admission_active:
+            RUNTIME.start_admitted_turn(admission_token, brain)
+        ledger = (
+            configured_ledger
+            if configured_ledger is not None
+            and getattr(brain, "compute_ledger", None) is configured_ledger
+            else None
+        )
+        checkpoint = ledger.checkpoint() if ledger is not None else None
+        turn_debug = brain.run_turn_debug
+        try:
+            if arm:
+                from uruha_source_event_exact_input_capability_p4 import scoped_exact_input_claim
+
+                exact_scope = scoped_exact_input_claim(exact_input_claim)
+            else:
+                exact_scope = nullcontext()
+            with exact_scope:
+                with ledger.item_scope(compute_item_id, "product_web") if ledger is not None else nullcontext():
+                    if "input_context" in inspect.signature(turn_debug).parameters:
+                        turn = turn_debug(
+                            user_text,
+                            input_context={
+                                "input_mode": str(input_mode or "text"),
+                                "acoustic_summary": acoustic_summary,
+                            },
+                        )
+                    else:
+                        # Compatibility for narrow test doubles and older runtime adapters.
+                        turn = turn_debug(user_text)
+        except Exception as exc:
+            if admission_active:
+                try:
+                    RUNTIME.end_admitted_cognition(admission_token, brain, status=f"error_{type(exc).__name__}")
+                except Exception:
+                    pass  # Keep the original generation error; terminal journal remains invalid.
+            if compute_item_id is not None:
+                failed = _product_compute_receipt(ledger, compute_item_id, checkpoint, input_mode, exc)
+                failed["durable_private_failure_written"] = _persist_terminal_compute_failure(failed)
+                if failed["durable_private_failure_written"]:
+                    _retire_persisted_product_compute_item(ledger, failed)
+            raise
+        if admission_active:
+            RUNTIME.end_admitted_cognition(admission_token, brain)
+        if compute_item_id is not None:
+            compute_receipt = _product_compute_receipt(
+                ledger, compute_item_id, checkpoint, input_mode,
+            )
+    request_finished = time.perf_counter()
+    latency = dict(
+        (turn.get("runtime_trace") or {}).get("runtime_latency_m19")
+        or (turn.get("runtime_trace") or {}).get("runtime_latency_m18")
+        or (turn.get("runtime_trace") or {}).get("runtime_latency_m17")
+        or {}
+    )
+    latency.update(
+        {
+            "schema": "uruha_runtime_latency_m19",
+            "frontend_queue_wait_seconds": round(
+                max(0.0, handler_started - frontend_enqueue_started), 4
+            ),
+            "runtime_lock_wait_seconds": round(
+                runtime_lock_acquired - runtime_lock_wait_started, 4
+            ),
+            "cold_brain_initialization_seconds": (
+                0.0
+                if brain_was_ready
+                else float((getattr(RUNTIME, "_brain_load_trace", {}) or {}).get("elapsed_seconds") or 0.0)
+            ),
+            "request_wait_for_brain_seconds": round(brain_ready_at - request_started, 4),
+            "brain_work_seconds": round(request_finished - brain_ready_at, 4),
+            "surface_stream_seconds": 0.0,
+            "handler_total_seconds": round(request_finished - handler_started, 4),
+            "end_to_end_after_enqueue_seconds": round(
+                request_finished - frontend_enqueue_started, 4
+            ),
+            "user_wait_seconds": round(request_finished - frontend_enqueue_started, 4),
+            "delivery_complete": False,
+            "prewarm_status": str((getattr(RUNTIME, "_brain_load_trace", {}) or {}).get("status") or "unknown"),
+            "contains_raw_dialogue": False,
+        }
+    )
+    latency["target_met"] = latency["user_wait_seconds"] <= float(
+        latency.get("target_seconds") or 20.0
+    )
+    turn.setdefault("logic", {})["runtime_latency_m17"] = dict(latency)
+    turn.setdefault("logic", {})["runtime_latency_m18"] = dict(latency)
+    turn.setdefault("logic", {})["runtime_latency_m19"] = dict(latency)
+    runtime_trace = turn.setdefault("runtime_trace", {})
+    runtime_trace["runtime_latency_m17"] = dict(latency)
+    runtime_trace["runtime_latency_m18"] = dict(latency)
+    runtime_trace["runtime_latency_m19"] = dict(latency)
+    blackboard = list(runtime_trace.get("blackboard") or [])
+    scheduler_snapshot = getattr(RUNTIME, "scheduler_trace", None)
+    scheduler_trace = (
+        scheduler_snapshot()
+        if callable(scheduler_snapshot)
+        else {
+            "schema": "uruha_human_priority_scheduler_m19",
+            "human_waiters": 0,
+            "last_decision": "legacy_runtime_adapter",
+            "contains_raw_dialogue": False,
+        }
+    )
+    scheduler_trace.update(
+        {
+            "admission": "human_first",
+            "frontend_queue_isolated": True,
+            "poll_is_nonblocking": True,
+        }
+    )
+    blackboard.insert(
+        0,
+        {
+            "stage": "observe",
+            "label": "human_priority_scheduler_m19",
+            "payload": scheduler_trace,
+            "salience": 0.98,
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+        },
+    )
+    if compute_receipt is not None:
+        # This is post-turn observation. Keep graph chronology truthful even
+        # when the compact debug payload cannot retain every blackboard node.
+        blackboard.append({
+            "stage": "observe",
+            "label": "product_turn_compute_receipt_p4",
+            "payload": _product_compute_graph_payload(compute_receipt),
+            "salience": 0.97,
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+        })
+    replaced = False
+    for row in blackboard:
+        if row.get("label") in {"runtime_latency_m17", "runtime_latency_m18", "runtime_latency_m19"}:
+            row["label"] = "runtime_latency_m19"
+            row["payload"] = dict(latency)
+            replaced = True
+    if not replaced:
+        blackboard.append(
+            {
+                "stage": "observe",
+                "label": "runtime_latency_m19",
+                "payload": dict(latency),
+                "salience": 0.94,
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+            }
+        )
+    runtime_trace["blackboard"] = blackboard
+    # The brain trace starts after ingestion, so carry the actual Web input into
+    # the same payload used by the runtime node graph.
+    turn["user_text"] = user_text
 
     audio_path = None
     if auto_tts:
@@ -2169,21 +4354,110 @@ def _run_turn(user_text, auto_tts):
         "routing_path": logic.get("routing_path"),
         "internal_monologue": logic.get("internal_monologue"),
     }
-    return {
+    result = {
         "user_text": user_text,
         "reply": turn["reply"],
         "audio_path": audio_path,
         "debug": debug,
         "logic": logic,
+        "episode_doc": _private_semantic_ledger_episode_doc(turn),
         "memory_snapshot": _extract_memory_payload(turn),
         "cognition_trace": _extract_trace_payload(turn),
         "flow_html": _render_flow_html(turn),
         "state_html": _render_state_diff_html(turn),
     }
+    if compute_receipt is not None:
+        result["compute_receipt"] = compute_receipt
+    return result
+
+
+def _finalize_surface_delivery(
+    result,
+    frontend_enqueue_started,
+    handler_started,
+    surface_started,
+    stream_chunk_count=0,
+    lightweight_payload_update_count=0,
+    full_payload_update_count=1,
+):
+    """Attach actual browser-delivery timing and redraw the final node graph."""
+    finished_at = time.perf_counter()
+    handler_started = float(handler_started or surface_started)
+    frontend_enqueue_started = float(frontend_enqueue_started or handler_started)
+    runtime_trace = (result.get("cognition_trace") or {}).get("runtime_trace") or {}
+    latency = dict(
+        runtime_trace.get("runtime_latency_m19")
+        or runtime_trace.get("runtime_latency_m18")
+        or {}
+    )
+    latency.update(
+        {
+            "schema": "uruha_runtime_latency_m19",
+            "surface_stream_seconds": round(max(0.0, finished_at - surface_started), 4),
+            "handler_total_seconds": round(max(0.0, finished_at - handler_started), 4),
+            "end_to_end_after_enqueue_seconds": round(
+                max(0.0, finished_at - frontend_enqueue_started), 4
+            ),
+            "user_wait_seconds": round(
+                max(0.0, finished_at - frontend_enqueue_started), 4
+            ),
+            "delivery_complete": True,
+            "contains_raw_dialogue": False,
+        }
+    )
+    latency["target_met"] = latency["user_wait_seconds"] <= float(
+        latency.get("target_seconds") or 20.0
+    )
+    surface_delivery = {
+        "schema": "uruha_lightweight_surface_delivery_m20",
+        "stream_chunk_count": int(stream_chunk_count),
+        "lightweight_payload_update_count": int(lightweight_payload_update_count),
+        "full_payload_update_count": int(full_payload_update_count),
+        "full_cognitive_payload_during_partial_stream": False,
+        "final_graph_commit_once": int(full_payload_update_count) == 1,
+        "surface_stream_seconds": latency["surface_stream_seconds"],
+        "contains_raw_dialogue": False,
+    }
+    result.setdefault("logic", {})["runtime_latency_m19"] = dict(latency)
+    result.setdefault("logic", {})["surface_delivery_m20"] = dict(surface_delivery)
+    runtime_trace["runtime_latency_m19"] = dict(latency)
+    runtime_trace["runtime_latency_m18"] = dict(latency)
+    runtime_trace["surface_delivery_m20"] = dict(surface_delivery)
+    blackboard = runtime_trace.get("blackboard") or []
+    for row in runtime_trace.get("blackboard") or []:
+        if row.get("label") == "runtime_latency_m19":
+            row["payload"] = dict(latency)
+    blackboard.insert(
+        max(0, len(blackboard) - 1),
+        {
+            "stage": "surface",
+            "label": "surface_delivery_m20",
+            "payload": dict(surface_delivery),
+            "salience": 0.98,
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+        },
+    )
+    episode_doc = _private_semantic_ledger_episode_doc(result)
+    snapshot = result.get("memory_snapshot")
+    observatory_result = {
+        "user_text": result.get("user_text") or "",
+        "reply": result.get("reply") or "",
+        "logic": result.get("logic") or {},
+        "episode_doc": episode_doc,
+        "memory_data": (
+            (snapshot if isinstance(snapshot, dict) and snapshot else None)
+            if episode_doc else snapshot or {}
+        ),
+        "runtime_trace": runtime_trace,
+        "runtime_state": (result.get("cognition_trace") or {}).get("runtime_state") or {},
+    }
+    result["flow_html"] = _render_flow_html(observatory_result)
+    return latency
 
 
 def _append_conversation_log(input_mode, result):
     session_id, turn_index = RUNTIME.next_turn_meta()
+    compute_receipt = result.get("compute_receipt")
     record = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "session_id": session_id,
@@ -2196,8 +4470,66 @@ def _append_conversation_log(input_mode, result):
         "cognition_trace": result.get("cognition_trace", {}),
         "memory_snapshot": result.get("memory_snapshot", {}),
     }
-    with open(WEB_LOG_JSONL, "a", encoding="utf-8") as f:
+    if isinstance(compute_receipt, dict):
+        record["compute_receipt_item_id"] = compute_receipt.get("item_id")
+        record["compute_receipt_status"] = compute_receipt.get("status")
+    episode_doc = _private_semantic_ledger_episode_doc(result)
+    # Existing default Web logs may be 0644. Keep their old conversation
+    # logging behavior, but never duplicate a full episode there. A private
+    # owner-only directory and 0600 regular file are required for reload proof.
+    log_fd = os.open(
+        WEB_LOG_JSONL,
+        os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW,
+        0o600,
+    )
+    with os.fdopen(log_fd, "a", encoding="utf-8") as f:
+        directory_info = os.stat(os.path.dirname(WEB_LOG_JSONL), follow_symlinks=False)
+        file_info = os.fstat(f.fileno())
+        private_log = (
+            stat.S_ISDIR(directory_info.st_mode)
+            and directory_info.st_uid == os.getuid()
+            and not stat.S_IMODE(directory_info.st_mode) & 0o077
+            and stat.S_ISREG(file_info.st_mode)
+            and file_info.st_uid == os.getuid()
+            and not stat.S_IMODE(file_info.st_mode) & 0o077
+            and file_info.st_nlink == 1
+        )
+        if episode_doc and private_log:
+            record["episode_doc"] = episode_doc
+        if isinstance(compute_receipt, dict):
+            record["compute_receipt_private_persisted"] = bool(private_log)
+            result["compute_receipt_durable_status"] = (
+                "private_jsonl" if private_log else "unavailable_nonprivate_log"
+            )
+            if private_log:
+                record["compute_receipt"] = compute_receipt
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    if isinstance(compute_receipt, dict):
+        # A successful append is not enough: a previously truncated tail can
+        # glue this JSON object to an invalid row. Retire only after the exact
+        # private row can be read back through the browser-bound verifier.
+        latest = _latest_private_log_row() if private_log else None
+        saved_row = latest[0] if latest else {}
+        private_row_verified = bool(
+            saved_row.get("session_id") == session_id
+            and saved_row.get("turn_index") == turn_index
+            and saved_row.get("input_mode") == input_mode
+            and saved_row.get("user_text") == result["user_text"]
+            and saved_row.get("assistant_reply") == result["reply"]
+            and saved_row.get("compute_receipt") == compute_receipt
+        )
+        result["compute_receipt_durable_status"] = (
+            "private_jsonl" if private_row_verified
+            else "unavailable_private_log_row_unverified" if private_log
+            else "unavailable_nonprivate_log"
+        )
+        result["compute_ledger_retention_status"] = (
+            _retire_persisted_product_compute_item(
+                getattr(RUNTIME, "_compute_ledger", None), compute_receipt,
+            )
+            if private_row_verified else "held_unverified_private_log" if private_log
+            else "held_nonprivate_log"
+        )
     with open(WEB_LOG_TXT, "a", encoding="utf-8") as f:
         f.write(
             f"[{record['timestamp']}] session={session_id} turn={turn_index} mode={input_mode}\n"
@@ -2211,14 +4543,60 @@ def _append_conversation_log(input_mode, result):
 
 
 def poll_proactive_turn(history, auto_tts):
-    if RUNTIME._brain is None:
+    if _exact_input_surface_arm():
+        # This one-turn diagnostic has no authority for autonomous visible speech.
+        return (gr.skip(),) * 7
+    human_pending = getattr(RUNTIME, "human_turn_pending", lambda: False)
+    if RUNTIME._brain is None or human_pending():
         return (gr.skip(),) * 7
 
-    with RUNTIME._lock:
+    if not RUNTIME._lock.acquire(blocking=False):
+        record_decision = getattr(RUNTIME, "_record_background_decision", None)
+        if callable(record_decision):
+            record_decision("skipped", "proactive_poll_brain_busy")
+        return (gr.skip(),) * 7
+    try:
+        if human_pending():
+            return (gr.skip(),) * 7
         brain = RUNTIME._brain
-        proactive = brain.consume_pending_proactive_turn()
-        memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
-        autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+        if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+            # Brain lock -> human gate matches background admission ordering.
+            # A queue-free arrival cannot occur halfway through a proactive
+            # memory write. Any such delivery invalidates this opt-in trial;
+            # its vector costs are not falsely attributed to a human turn.
+            with RUNTIME._human_gate_lock:
+                if RUNTIME._human_waiters:
+                    return (gr.skip(),) * 7
+                before = RUNTIME._admission_state(brain)
+                try:
+                    proactive = brain.consume_pending_proactive_turn()
+                    memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
+                    autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+                except Exception:
+                    RUNTIME._admission_audit_invalid = True
+                    RUNTIME._admission_event_under_gate(
+                        "invalid", submission_id="", status="proactive_delivery_error",
+                        active_db_path=before.get("active_db_path"),
+                        autonomous_tick_index=before.get("autonomous_tick_index"),
+                    )
+                    raise
+                after = RUNTIME._admission_state(brain)
+                if proactive or any(before.get(key) != after.get(key) for key in (
+                    "active_db_path", "autonomous_tick_index", "runtime_sha256",
+                    "memory_sha256", "psyche_sha256",
+                )):
+                    RUNTIME._admission_audit_invalid = True
+                    RUNTIME._admission_event_under_gate(
+                        "invalid", submission_id="", status="proactive_delivery_unattributed",
+                        active_db_path=after.get("active_db_path"),
+                        autonomous_tick_index=after.get("autonomous_tick_index"),
+                    )
+        else:
+            proactive = brain.consume_pending_proactive_turn()
+            memory_snapshot = brain.memory.get_runtime_snapshot() if proactive else {}
+            autonomous_trace = brain.runtime.last_autonomous_result if proactive else {}
+    finally:
+        RUNTIME._lock.release()
     if not proactive:
         return (gr.skip(),) * 7
 
@@ -2286,7 +4664,47 @@ def _cleanup_input_audio(audio_path):
         print(Fore.YELLOW + f"⚠️ [Web] Failed to remove input audio: {audio_path} ({exc})")
 
 
-def submit_text(message, history, auto_tts):
+def _exact_input_text_rejection(history, reason, *, pre_turn_safe=True):
+    safe_reason = reason if reason in {
+        "missing_permit", "input_not_approved", "permit_mismatch", "permit_already_spent",
+        "invalid_capability_root", "current_run_unavailable", "audio_unavailable_for_exact_text_probe",
+        "claim_mismatch", "invalid_input", "input_mode_not_text",
+        "same_turn_claim_already_reserved", "private_path_unavailable",
+        "permit_does_not_authorize_input", "claim_already_in_progress",
+        "browser_session_unavailable", "unknown",
+    } else "unknown"
+    if pre_turn_safe:
+        note = f"本次隔離測試不接受此輸入（{safe_reason}）；未送入角色或記憶。"
+    else:
+        note = (
+            f"本次隔離測試在認知入口後中止（{safe_reason}）；可能已有內部讀寫，"
+            "未產生本輪可見角色回覆，需核對隔離紀錄。"
+        )
+    return (
+        history, history, "", None, gr.update(value={}), gr.update(value={}),
+        _empty_flow_html(note), _empty_html("State Diff", note),
+        gr.update(value={}), note, gr.skip(), gr.skip(), gr.skip(),
+    )
+
+
+def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started,
+                      admission_token="", exact_input_claim=None):
+    handler_started = time.perf_counter()
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, validate_exact_input_claim,
+        )
+
+        try:
+            validate_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), message, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            yield _exact_input_text_rejection(history, exc.reason)
+            return "exact_input_rejected"
+        if not isinstance(message, str) or message != message.strip():
+            raise RuntimeError("exact_input_changed_by_web_strip")
     user_text = (message or "").strip()
     if not user_text:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
@@ -2296,84 +4714,398 @@ def submit_text(message, history, auto_tts):
     pending_history = _append_history(pending_history, "assistant", "...")
     yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
 
-    result = _run_turn(user_text, auto_tts)
+    admission_kwargs = {"admission_token": admission_token} if admission_token else {}
+    try:
+        result = _run_turn(
+            user_text,
+            auto_tts,
+            input_mode="text",
+            frontend_enqueue_started=frontend_enqueue_started,
+            handler_started=handler_started,
+            exact_input_claim=exact_input_claim,
+            **admission_kwargs,
+        )
+    except Exception as exc:
+        if not arm:
+            raise
+        from uruha_source_event_exact_input_capability_p4 import ExactInputCapabilityError
+
+        if not isinstance(exc, ExactInputCapabilityError):
+            raise
+        pre_turn_safe = getattr(exc, "pre_turn_safe", False)
+        yield _exact_input_text_rejection(
+            history, exc.reason, pre_turn_safe=pre_turn_safe,
+        )
+        return (
+            "exact_input_rejected" if pre_turn_safe
+            else "exact_input_aborted_after_cognition"
+        )
     if result is None:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
-    log_record = _append_conversation_log("text", result)
-    annotation_context = _annotation_context_markdown(log_record)
-    annotation_status = "新輪次已可標記。"
-
     streamed_history = list(pending_history)
     streamed_history[-1] = {"role": "assistant", "content": ""}
     debug_payload = dict(result["debug"])
+    surface_started = time.perf_counter()
+    lightweight_updates = 1
+    yield streamed_history, streamed_history, "", None, gr.skip(), gr.skip(), gr.skip(), gr.skip(), gr.skip(), _thinking_status("streaming_reply"), gr.skip(), gr.skip(), gr.skip()
+
+    partials = list(_iter_reply_chunks(result["reply"]))
+    for partial in partials:
+        streamed_history[-1] = {"role": "assistant", "content": partial}
+        lightweight_updates += 1
+        yield streamed_history, streamed_history, "", None, gr.skip(), gr.skip(), gr.skip(), gr.skip(), gr.skip(), _thinking_status("streaming_reply"), gr.skip(), gr.skip(), gr.skip()
+        time.sleep(0.01)
+
+    _finalize_surface_delivery(
+        result,
+        frontend_enqueue_started,
+        handler_started,
+        surface_started,
+        stream_chunk_count=len(partials),
+        lightweight_payload_update_count=lightweight_updates,
+        full_payload_update_count=1,
+    )
+    log_record = _append_conversation_log("text", result)
+    annotation_context = _annotation_context_markdown(log_record)
+    annotation_status = "新輪次已可標記。"
     debug_payload["turn_index"] = log_record["turn_index"]
     debug_payload["session_id"] = log_record["session_id"]
-    yield streamed_history, streamed_history, "", None, debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _thinking_status("streaming_reply"), log_record, annotation_context, annotation_status
-
-    for partial in _iter_reply_chunks(result["reply"]):
-        streamed_history[-1] = {"role": "assistant", "content": partial}
-        yield streamed_history, streamed_history, "", None, debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _thinking_status("streaming_reply"), log_record, annotation_context, annotation_status
-        time.sleep(0.03)
-
+    client_cognition = _client_cognition_payload_m24(result["cognition_trace"])
+    client_memory = _client_memory_payload_m24(result["memory_snapshot"])
+    client_record = _client_turn_record_m24(
+        log_record,
+        client_cognition,
+        client_memory,
+    )
     streamed_history[-1] = {"role": "assistant", "content": result["reply"]}
-    yield streamed_history, streamed_history, "", result["audio_path"], debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _status_markdown(), log_record, annotation_context, annotation_status
+    yield streamed_history, streamed_history, "", result["audio_path"], debug_payload, client_cognition, result["flow_html"], result["state_html"], client_memory, _status_markdown(), client_record, annotation_context, annotation_status
 
 
-def submit_audio(audio_path, history, auto_tts):
+def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0,
+                admission_token="", exact_input_claim=None):
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, claim_exact_input_permit,
+            reserve_exact_input_claim,
+        )
+
+        try:
+            if exact_input_claim is None:
+                exact_input_claim = claim_exact_input_permit(
+                    _exact_input_capability_root(), message, arm,
+                )
+            if not isinstance(message, str) or message != message.strip():
+                raise ExactInputCapabilityError("claim_mismatch")
+            reserve_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), message, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            from uruha_source_event_exact_input_capability_p4 import (
+                abandon_unreserved_exact_input_claim,
+            )
+
+            owns_aborted_admission = abandon_unreserved_exact_input_claim(exact_input_claim)
+            if owns_aborted_admission and (frontend_enqueue_started or admission_token):
+                if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                    RUNTIME.finish_human_turn(
+                        admission_token=admission_token, terminal_status="exact_input_rejected",
+                    )
+                else:
+                    RUNTIME.finish_human_turn()
+            if owns_aborted_admission:
+                _release_exact_enqueue_claim(exact_input_claim)
+            yield _exact_input_text_rejection(history, exc.reason)
+            return
+    frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
+    admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
+    try:
+        if frontend_enqueue_started <= 0.0:
+            if admission_active:
+                frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
+                    source="direct_no_browser_admission",
+                )
+            else:
+                frontend_enqueue_started = RUNTIME.begin_human_turn()
+    except BaseException:
+        if exact_input_claim is not None:
+            from uruha_source_event_exact_input_capability_p4 import close_exact_input_claim
+
+            close_exact_input_claim(exact_input_claim)
+            _release_exact_enqueue_claim(exact_input_claim)
+        raise
+    terminal_status = "empty_input" if not (message or "").strip() else "aborted"
+    try:
+        outcome = yield from _submit_text_impl(
+            message,
+            history,
+            auto_tts,
+            frontend_enqueue_started,
+            admission_token=admission_token,
+            exact_input_claim=exact_input_claim,
+        )
+        if terminal_status != "empty_input":
+            terminal_status = outcome or "delivered"
+    except Exception:
+        terminal_status = "error"
+        raise
+    finally:
+        try:
+            if admission_active:
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+            else:
+                RUNTIME.finish_human_turn()
+        finally:
+            if exact_input_claim is not None:
+                from uruha_source_event_exact_input_capability_p4 import close_exact_input_claim
+
+                close_exact_input_claim(exact_input_claim)
+                _release_exact_enqueue_claim(exact_input_claim)
+
+
+def _with_browser_graph_receipt(stream, expected_session_id):
+    try:
+        for update in stream:
+            client_record = update[10]
+            if isinstance(client_record, dict) and "session_id" in client_record and "turn_index" in client_record:
+                yield (*update, _mint_browser_graph_receipt(client_record, expected_session_id))
+            else:
+                yield (*update, gr.skip())
+    finally:
+        close = getattr(stream, "close", None)
+        if close is not None:
+            close()
+
+
+def submit_text_browser_bound(
+    message, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
+):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_text_rejection(history, expected_session_id["exact_input_rejected"]), gr.skip())
+        return
+    exact_claim = (
+        expected_session_id.get("exact_input_claim")
+        if isinstance(expected_session_id, dict) else None
+    )
+    exact_kwargs = (
+        {"exact_input_claim": exact_claim}
+        if _exact_input_surface_arm() or exact_claim is not None else {}
+    )
+    stream = (
+        submit_text(message, history, auto_tts, frontend_enqueue_started,
+                    admission_token=token, **exact_kwargs)
+        if token else submit_text(message, history, auto_tts, frontend_enqueue_started,
+                                  **exact_kwargs)
+    )
+    yield from _with_browser_graph_receipt(
+        stream,
+        session_id,
+    )
+
+
+def _exact_input_audio_rejection(history):
+    note = "本次隔離測試只接受已授權的文字輸入；未轉錄、未送入角色或記憶。"
+    return (
+        history, history, "", None, gr.update(value={}), gr.update(value={}),
+        _empty_flow_html(note), _empty_html("State Diff", note),
+        gr.update(value={}), note, gr.skip(), gr.skip(), gr.skip(),
+        gr.update(value=None),
+    )
+
+
+def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=""):
+    handler_started = time.perf_counter()
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return "audio_unavailable_for_exact_text_probe"
     if not audio_path:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
-        return
+        return "empty_audio"
     text = RUNTIME.get_ears().transcribe_audio_file(audio_path)
     if not text:
         _cleanup_input_audio(audio_path)
         yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("沒有辨識到語音內容。"), _empty_html("State Diff", "沒有辨識到語音內容。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
-        return
+        return "no_transcript"
 
     pending_history = _append_history(history, "user", text)
     pending_history = _append_history(pending_history, "assistant", "...")
     yield pending_history, pending_history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip(), gr.skip()
 
-    result = _run_turn(text, auto_tts)
+    # The current audio frontend exposes a transcript but no validated acoustic
+    # feature extractor.  Pass that boundary explicitly so the cognitive trace
+    # marks prosody/speed/pause evidence unavailable instead of inventing tone.
+    admission_kwargs = {"admission_token": admission_token} if admission_token else {}
+    result = _run_turn(
+        text,
+        auto_tts,
+        input_mode="audio",
+        acoustic_summary=None,
+        frontend_enqueue_started=frontend_enqueue_started,
+        handler_started=handler_started,
+        **admission_kwargs,
+    )
     if result is None:
         _cleanup_input_audio(audio_path)
         yield history, history, text, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
-        return
-    log_record = _append_conversation_log("audio", result)
-    annotation_context = _annotation_context_markdown(log_record)
-    annotation_status = "新輪次已可標記。"
-
+        return "no_turn_result"
     streamed_history = list(pending_history)
     streamed_history[-1] = {"role": "assistant", "content": ""}
     debug_payload = dict(result["debug"])
+    surface_started = time.perf_counter()
+    lightweight_updates = 1
+    yield streamed_history, streamed_history, result["user_text"], None, gr.skip(), gr.skip(), gr.skip(), gr.skip(), gr.skip(), _thinking_status("streaming_reply"), gr.skip(), gr.skip(), gr.skip(), gr.skip()
+
+    partials = list(_iter_reply_chunks(result["reply"]))
+    for partial in partials:
+        streamed_history[-1] = {"role": "assistant", "content": partial}
+        lightweight_updates += 1
+        yield streamed_history, streamed_history, result["user_text"], None, gr.skip(), gr.skip(), gr.skip(), gr.skip(), gr.skip(), _thinking_status("streaming_reply"), gr.skip(), gr.skip(), gr.skip(), gr.skip()
+        time.sleep(0.01)
+
+    _finalize_surface_delivery(
+        result,
+        frontend_enqueue_started,
+        handler_started,
+        surface_started,
+        stream_chunk_count=len(partials),
+        lightweight_payload_update_count=lightweight_updates,
+        full_payload_update_count=1,
+    )
+    log_record = _append_conversation_log("audio", result)
+    annotation_context = _annotation_context_markdown(log_record)
+    annotation_status = "新輪次已可標記。"
     debug_payload["turn_index"] = log_record["turn_index"]
     debug_payload["session_id"] = log_record["session_id"]
-    yield streamed_history, streamed_history, result["user_text"], None, debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _thinking_status("streaming_reply"), log_record, annotation_context, annotation_status, gr.skip()
-
-    for partial in _iter_reply_chunks(result["reply"]):
-        streamed_history[-1] = {"role": "assistant", "content": partial}
-        yield streamed_history, streamed_history, result["user_text"], None, debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _thinking_status("streaming_reply"), log_record, annotation_context, annotation_status, gr.skip()
-        time.sleep(0.03)
-
+    client_cognition = _client_cognition_payload_m24(result["cognition_trace"])
+    client_memory = _client_memory_payload_m24(result["memory_snapshot"])
+    client_record = _client_turn_record_m24(
+        log_record,
+        client_cognition,
+        client_memory,
+    )
     _cleanup_input_audio(audio_path)
     streamed_history[-1] = {"role": "assistant", "content": result["reply"]}
-    yield streamed_history, streamed_history, result["user_text"], result["audio_path"], debug_payload, result["cognition_trace"], result["flow_html"], result["state_html"], result["memory_snapshot"], _status_markdown(), log_record, annotation_context, annotation_status, gr.update(value=None)
+    yield streamed_history, streamed_history, result["user_text"], result["audio_path"], debug_payload, client_cognition, result["flow_html"], result["state_html"], client_memory, _status_markdown(), client_record, annotation_context, annotation_status, gr.update(value=None)
+    return "delivered"
 
 
-def handle_audio_stop(audio_path, history, auto_tts, voice_chat_mode):
+def submit_audio(audio_path, history, auto_tts, frontend_enqueue_started=0.0, admission_token=""):
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return
+    frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
+    admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
+    if frontend_enqueue_started <= 0.0:
+        if admission_active:
+            frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
+                source="direct_no_browser_admission",
+            )
+        else:
+            frontend_enqueue_started = RUNTIME.begin_human_turn()
+    terminal_status = "aborted"
+    try:
+        terminal_status = (yield from _submit_audio_impl(
+            audio_path,
+            history,
+            auto_tts,
+            frontend_enqueue_started,
+            admission_token=admission_token,
+        )) or "unknown"
+    except Exception:
+        terminal_status = "error"
+        raise
+    finally:
+        if admission_active:
+            RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+        else:
+            RUNTIME.finish_human_turn()
+
+
+def submit_audio_browser_bound(
+    audio_path, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
+):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_audio_rejection(history), gr.skip())
+        return
+    stream = (
+        submit_audio(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=token)
+        if token else submit_audio(audio_path, history, auto_tts, frontend_enqueue_started)
+    )
+    yield from _with_browser_graph_receipt(
+        stream,
+        session_id,
+    )
+
+
+def handle_audio_stop(
+    audio_path,
+    history,
+    auto_tts,
+    voice_chat_mode,
+    frontend_enqueue_started=0.0,
+    admission_token="",
+):
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return
     if not audio_path:
+        if frontend_enqueue_started:
+            if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status="empty_audio")
+            else:
+                RUNTIME.finish_human_turn()
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         return
     if voice_chat_mode:
-        yield from submit_audio(audio_path, history, auto_tts)
+        yield from submit_audio(
+            audio_path,
+            history,
+            auto_tts,
+            frontend_enqueue_started=frontend_enqueue_started,
+            admission_token=admission_token,
+        )
         return
+    terminal_status = "aborted"
+    try:
+        transcript = transcribe_audio_only(audio_path)
+        _cleanup_input_audio(audio_path)
+        yield history, history, transcript, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("只完成轉錄，尚未送入大腦。"), _empty_html("State Diff", "只完成轉錄，尚未送入大腦。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+        terminal_status = "transcription_only"
+    except Exception:
+        terminal_status = "error"
+        raise
+    finally:
+        if frontend_enqueue_started:
+            if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+            else:
+                RUNTIME.finish_human_turn()
 
-    transcript = transcribe_audio_only(audio_path)
-    _cleanup_input_audio(audio_path)
-    yield history, history, transcript, None, gr.update(value={}), gr.update(value={}), _empty_flow_html("只完成轉錄，尚未送入大腦。"), _empty_html("State Diff", "只完成轉錄，尚未送入大腦。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.update(value=None)
+
+def handle_audio_stop_browser_bound(
+    audio_path, history, auto_tts, voice_chat_mode,
+    frontend_enqueue_started=0.0, expected_session_id="",
+):
+    session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_audio_rejection(history), gr.skip())
+        return
+    admission_kwargs = {"admission_token": token} if token else {}
+    yield from _with_browser_graph_receipt(
+        handle_audio_stop(
+            audio_path, history, auto_tts, voice_chat_mode,
+            frontend_enqueue_started, **admission_kwargs,
+        ),
+        session_id,
+    )
 
 
 def transcribe_audio_only(audio_path):
+    if _exact_input_surface_arm():
+        return ""
     if not audio_path:
         return ""
     return RUNTIME.get_ears().transcribe_audio_file(audio_path)
@@ -2381,24 +5113,258 @@ def transcribe_audio_only(audio_path):
 
 def reset_session():
     RUNTIME.reset_brain_session()
-    return [], [], None, gr.update(value={}), gr.update(value={}), _empty_flow_html("新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), ""
+    return [], [], None, gr.update(value={}), gr.update(value={}), _empty_flow_html("新 session，等待輸入。"), _empty_html("State Diff", "新 session，尚無狀態變化。"), gr.update(value={}), _status_markdown(), {}, _annotation_context_markdown({}), "", ""
+
+
+def reset_session_browser_bound(reset_marker):
+    if type(reset_marker) is not str or reset_marker != _RESET_INSTANCE_MARKER:
+        # Leave all 14 outputs (including browser graph receipt) untouched.
+        return tuple(gr.skip() for _ in range(14))
+    return (*reset_session(), _browser_graph_tombstone())
 
 
 def build_demo():
-    with gr.Blocks(title="Uruha Memory Observatory") as demo:
+    with gr.Blocks(title="UruhaBrain Adaptive Cognition Runtime") as demo:
         history_state = gr.State([])
         latest_turn_state = gr.State({})
+        text_enqueue_started_state = gr.State(0.0)
+        audio_enqueue_started_state = gr.State(0.0)
+        text_enqueue_session_state = gr.State("")
+        audio_enqueue_session_state = gr.State("")
+        browser_graph_receipt = gr.BrowserState(default_value=_browser_graph_tombstone())
         architecture_payload = _architecture_alignment_payload()
         unified_eval_payload = _unified_eval_json()
 
         gr.Markdown(
-            "# Uruha Memory Observatory\n"
-            "本機認知型對話系統：直接看見記憶如何被檢索、選入、傳給決策並寫回。\n\n"
-            "可直接輸入文字，或對著麥克風說話；每輪結束後，下方記憶星圖會同步更新。"
+            "# UruhaBrain Adaptive Cognition Runtime\n"
+            "開發目標是讓記憶、語用理解、期待回覆預測與錯誤修正真正參與每一輪對話。\n\n"
+            "Chat 是主要產品入口；下方節點圖會顯示這一輪用了哪些狀態、選了哪種回覆方式，以及下一輪回饋如何改變個人模型。研究分頁保留為功能驗證紀錄，不再是開發主畫面。"
         )
 
-        with gr.Tabs():
-            with gr.Tab("Chat"):
+        with gr.Tabs(selected="chat"):
+            with gr.Tab("Research Closure · M11"):
+                closure_stage_selector = gr.Radio(
+                    choices=closure_stage_choices(),
+                    value=DEFAULT_CLOSURE_STAGE,
+                    label="切換證據階段；先看失敗是否被誠實保留",
+                )
+                closure_lab_html = gr.HTML(
+                    value=render_research_closure(DEFAULT_CLOSURE_STAGE)
+                )
+
+            with gr.Tab("Register Repair · M10.2"):
+                register_case_selector = gr.Radio(
+                    choices=register_case_choices(),
+                    value=DEFAULT_REGISTER_CASE_ID,
+                    label="切換 18 個 source-disjoint cases，查看自然口吻修正是否保留行為",
+                )
+                register_lab_html = gr.HTML(
+                    value=render_register_lab(DEFAULT_REGISTER_CASE_ID)
+                )
+
+            with gr.Tab("Blind Rating · M10.3"):
+                gr.Markdown(
+                    "## 真人盲評入口（目前不是結果）\n"
+                    "A/B 來源不顯示，答案 key 不會載入這個頁面。請用匿名代號完成全部 18 案；至少三位互不代填、未看過 key 的真人，才進入正式分析。"
+                )
+                with gr.Row():
+                    blind_rater_id = gr.Textbox(
+                        label="匿名評分代號",
+                        placeholder="至少 4 字元；只儲存單向雜湊，不儲存原字串",
+                    )
+                    blind_item_selector = gr.Dropdown(
+                        choices=blind_item_choices(),
+                        value=DEFAULT_BLIND_ITEM_ID,
+                        label="18 個凍結案例",
+                    )
+                blind_progress_html = gr.HTML(value=render_rater_progress(""))
+                blind_item_html = gr.HTML(
+                    value=render_blind_rating_item(DEFAULT_BLIND_ITEM_ID)
+                )
+                gr.Markdown("### 四個維度都要分別評 A 與 B（1=很差，5=很好）")
+                with gr.Row():
+                    blind_semantic_a = gr.Radio([1, 2, 3, 4, 5], label="語意保留 · A")
+                    blind_semantic_b = gr.Radio([1, 2, 3, 4, 5], label="語意保留 · B")
+                with gr.Row():
+                    blind_behavior_a = gr.Radio([1, 2, 3, 4, 5], label="行為符合 · A")
+                    blind_behavior_b = gr.Radio([1, 2, 3, 4, 5], label="行為符合 · B")
+                with gr.Row():
+                    blind_natural_a = gr.Radio([1, 2, 3, 4, 5], label="自然口語日文 · A")
+                    blind_natural_b = gr.Radio([1, 2, 3, 4, 5], label="自然口語日文 · B")
+                with gr.Row():
+                    blind_boundary_a = gr.Radio([1, 2, 3, 4, 5], label="不過度斷言 · A")
+                    blind_boundary_b = gr.Radio([1, 2, 3, 4, 5], label="不過度斷言 · B")
+                blind_preference = gr.Radio(
+                    choices=["A", "B", "tie", "both_bad"],
+                    label="整體偏好",
+                )
+                blind_independent = gr.Checkbox(
+                    label="我是獨立真人評分者，沒有替另一位評分者代填",
+                    value=False,
+                )
+                blind_key_unseen = gr.Checkbox(
+                    label="評分前我沒有看過 A/B 對應條件的答案 key",
+                    value=False,
+                )
+                blind_notes = gr.Textbox(label="可選備註", lines=2)
+                blind_save = gr.Button("保存這一案", variant="primary")
+                blind_save_status = gr.Markdown("尚未保存。")
+
+            with gr.Tab("Behavior→Language · M10"):
+                language_sample_selector = gr.Radio(
+                    choices=language_case_choices(),
+                    value=DEFAULT_LANGUAGE_SAMPLE_ID,
+                    label="切換 16 個事件，查看行為預測如何變成日文，以及錯誤在哪一層",
+                )
+                language_lab_html = gr.HTML(
+                    value=render_language_lab(DEFAULT_LANGUAGE_SAMPLE_ID)
+                )
+
+            with gr.Tab("Transfer · M9"):
+                transfer_cutoff_selector = gr.Radio(
+                    choices=transfer_cutoff_choices(),
+                    value=DEFAULT_TRANSFER_CUTOFF,
+                    label="切換第二人 Mira 的四個 sealed future windows",
+                )
+                transfer_lab_html = gr.HTML(
+                    value=render_transfer_lab(DEFAULT_TRANSFER_CUTOFF)
+                )
+
+            with gr.Tab("Robustness · M8"):
+                rolling_cutoff_selector = gr.Radio(
+                    choices=rolling_cutoff_choices(),
+                    value=DEFAULT_ROLLING_CUTOFF,
+                    label="切換四個 sealed future windows，觀察同一系統的時間穩定性",
+                )
+                robustness_lab_html = gr.HTML(
+                    value=render_robustness_lab(DEFAULT_ROLLING_CUTOFF)
+                )
+
+            with gr.Tab("Ablation Lab · M7"):
+                ablation_component_selector = gr.Radio(
+                    choices=ablation_component_choices(),
+                    value=DEFAULT_ABLATION_COMPONENT,
+                    label="切換要拔掉的認知元件，查看實際機率與指標變化",
+                )
+                ablation_lab_html = gr.HTML(
+                    value=render_ablation_lab(DEFAULT_ABLATION_COMPONENT)
+                )
+
+            with gr.Tab("Behavior Predictor · M6"):
+                behavior_sample_selector = gr.Radio(
+                    choices=behavior_sample_choices(),
+                    value=DEFAULT_BEHAVIOR_SAMPLE_ID,
+                    label="切換 8 個 frozen future behavior holdout",
+                )
+                behavior_predictor_html = gr.HTML(
+                    value=render_behavior_predictor_lab(DEFAULT_BEHAVIOR_SAMPLE_ID)
+                )
+
+            with gr.Tab("State Transition · M5"):
+                transition_selector = gr.Radio(
+                    choices=transition_choices(),
+                    value=DEFAULT_TRANSITION_ID,
+                    label="切換 8 個未參與訓練的 holdout 事件",
+                )
+                transition_html = gr.HTML(
+                    value=render_transition_lab(DEFAULT_TRANSITION_ID)
+                )
+
+            with gr.Tab("HumanState · M4"):
+                human_state_selector = gr.Radio(
+                    choices=human_state_choices(),
+                    value=DEFAULT_HUMAN_STATE_ID,
+                    label="切換 2 個 timestamped state snapshots",
+                )
+                human_state_html = gr.HTML(
+                    value=render_human_state_lab(DEFAULT_HUMAN_STATE_ID)
+                )
+
+            with gr.Tab("Memory Core · M3"):
+                structured_memory_query = gr.Radio(
+                    choices=structured_memory_query_choices(),
+                    value=DEFAULT_STRUCTURED_MEMORY_QUERY_ID,
+                    label="切換 6 個記憶檢索情境",
+                )
+                structured_memory_html = gr.HTML(
+                    value=render_structured_memory_lab(DEFAULT_STRUCTURED_MEMORY_QUERY_ID)
+                )
+
+            with gr.Tab("Temporal Twin · M2"):
+                temporal_sample = gr.Radio(
+                    choices=temporal_sample_choices(),
+                    value=DEFAULT_TEMPORAL_SAMPLE_ID,
+                    label="切換 12 個被鎖住未來的預測事件",
+                )
+                temporal_lab_html = gr.HTML(
+                    value=render_temporal_prediction_lab(DEFAULT_TEMPORAL_SAMPLE_ID)
+                )
+
+            with gr.Tab("50-Turn Repair"):
+                memory_repair_checkpoint = gr.Radio(
+                    choices=memory_repair_checkpoint_choices(),
+                    value=DEFAULT_MEMORY_REPAIR_CHECKPOINT,
+                    label="查看修正後的五個嚴格 checkpoint",
+                )
+                memory_repair_html = gr.HTML(
+                    value=render_memory_repair_lab(DEFAULT_MEMORY_REPAIR_CHECKPOINT)
+                )
+
+            with gr.Tab("50-Turn A/B"):
+                fifty_comparison_checkpoint = gr.Radio(
+                    choices=fifty_comparison_checkpoint_choices(),
+                    value=DEFAULT_FIFTY_COMPARISON_CHECKPOINT,
+                    label="查看五個公平比較 checkpoint",
+                )
+                fifty_comparison_html = gr.HTML(
+                    value=render_fifty_turn_comparison(DEFAULT_FIFTY_COMPARISON_CHECKPOINT)
+                )
+
+            with gr.Tab("Long Memory Lab"):
+                long_memory_checkpoint = gr.Radio(
+                    choices=long_memory_checkpoint_choices(),
+                    value=DEFAULT_LONG_MEMORY_CHECKPOINT,
+                    label="查看記憶回溯的四個關鍵點",
+                )
+                long_memory_lab_html = gr.HTML(
+                    value=render_long_dialogue_lab(DEFAULT_LONG_MEMORY_CHECKPOINT)
+                )
+
+            with gr.Tab("Equation Lab"):
+                with gr.Row():
+                    equation_scenario = gr.Radio(
+                        choices=equation_case_choices(),
+                        value=DEFAULT_EQUATION_CASE_ID,
+                        label="同一句話的六種情境",
+                    )
+                    equation_phase = gr.Radio(
+                        choices=equation_phase_choices(),
+                        value="1",
+                        label="方程式階段",
+                    )
+                    equation_feedback_btn = gr.Button("展示猜錯後如何校正", variant="primary")
+                equation_lab_html = gr.HTML(
+                    value=render_equation_lab(DEFAULT_EQUATION_CASE_ID, "1")
+                )
+
+            with gr.Tab("V2.15 Evidence"):
+                with gr.Row():
+                    teacher_scenario = gr.Radio(
+                        choices=scenario_choices(),
+                        value=DEFAULT_SCENARIO_ID,
+                        label="展示案例",
+                    )
+                    teacher_step = gr.Radio(
+                        choices=step_choices(),
+                        value="1",
+                        label="證據步驟",
+                    )
+                    teacher_next_btn = gr.Button("下一個證據步驟", variant="primary")
+                teacher_demo_html = gr.HTML(
+                    value=render_teacher_demo(DEFAULT_SCENARIO_ID, "1")
+                )
+
+            with gr.Tab("Chat", id="chat"):
                 proactive_poll_timer = gr.Timer(value=2.0, active=True)
                 with gr.Row(elem_classes=["wrap"]):
                     with gr.Column(scale=3):
@@ -2410,13 +5376,18 @@ def build_demo():
                         with gr.Row():
                             send_btn = gr.Button("Send", variant="primary")
                             reset_btn = gr.Button("Reset Session")
+                        reset_instance_marker = gr.Textbox(
+                            value=_RESET_INSTANCE_MARKER,
+                            visible=False,
+                            interactive=False,
+                        )
                         audio_in = gr.Audio(label="Voice Input", sources=["microphone"], type="filepath", elem_id="uruha-mic")
                         with gr.Row():
                             transcribe_btn = gr.Button("Transcribe Only")
                             send_audio_btn = gr.Button("Transcribe + Send")
                         transcript = gr.Textbox(label="Transcript", lines=2)
-                        auto_tts = gr.Checkbox(value=True, label="Auto TTS")
-                        voice_chat_mode = gr.Checkbox(value=True, label="Voice Chat Mode (auto-send after recording)", elem_id="voice-chat-mode")
+                        auto_tts = gr.Checkbox(value=False, label="Auto TTS (requires local TTS server)")
+                        voice_chat_mode = gr.Checkbox(value=False, label="Voice Chat Mode (enable hands-free auto-send)", elem_id="voice-chat-mode")
 
                         with gr.Accordion("Planner / Reply Debug", open=False):
                             debug_json = gr.JSON(label="Planner Debug")
@@ -2500,7 +5471,7 @@ def build_demo():
                             )
 
                 gr.Markdown("## Live Memory Flow")
-                flow_html = gr.HTML(value=_empty_flow_html("尚無本輪知識流。"))
+                flow_html = gr.HTML(value=_empty_flow_html("本瀏覽器尚無可驗證的本輪圖像。"))
                 with gr.Accordion("Cognitive State & Decision Details", open=False):
                     state_html = gr.HTML(value=_empty_html("State Diff", "尚無本輪狀態變化。"))
 
@@ -2508,13 +5479,13 @@ def build_demo():
                 architecture_md = gr.Markdown(_architecture_markdown())
                 with gr.Row():
                     rerun_arch_btn = gr.Button("Run Architecture Checks", variant="primary")
-                
+
                 with gr.Accordion("Regression Baseline Control", open=True):
                     with gr.Row():
                         snapshot_label_in = gr.Textbox(label="Snapshot Label", placeholder="e.g. before_patch_a", value="manual")
                         snapshot_btn = gr.Button("Snapshot Current Regression Eval", variant="secondary")
                         run_diff_btn = gr.Button("Run Regression Diff", variant="primary")
-                    
+
                     snapshot_picker = gr.Dropdown(
                         choices=_snapshot_picker_choices(),
                         value=(_all_snapshot_meta_paths() or [""])[0],
@@ -2525,7 +5496,7 @@ def build_demo():
                     with gr.Row():
                         snapshot_status_md = gr.Markdown(_regression_snapshot_markdown())
                         diff_status_md = gr.Markdown("")
-                    
+
                     regression_freshness_md = gr.Markdown(_regression_freshness_markdown())
 
                 alignment_json = gr.JSON(label="Alignment Snapshot", value=architecture_payload)
@@ -2543,18 +5514,217 @@ def build_demo():
                 regression_diff_md = gr.Markdown(_regression_diff_markdown())
                 regression_diff_json = gr.JSON(label="Human Feedback Regression Diff", value=_load_json(HUMAN_FEEDBACK_REGRESSION_DIFF_REPORT_JSON_PATH))
 
-        text_in.submit(
-            fn=submit_text,
-            inputs=[text_in, history_state, auto_tts],
-            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status],
+        closure_stage_selector.change(
+            fn=render_research_closure,
+            inputs=[closure_stage_selector],
+            outputs=[closure_lab_html],
+            queue=False,
+        )
+
+        register_case_selector.change(
+            fn=render_register_lab,
+            inputs=[register_case_selector],
+            outputs=[register_lab_html],
+            queue=False,
+        )
+
+        blind_item_selector.change(
+            fn=render_blind_rating_item,
+            inputs=[blind_item_selector],
+            outputs=[blind_item_html],
+            queue=False,
+        )
+
+        blind_rater_id.change(
+            fn=render_rater_progress,
+            inputs=[blind_rater_id],
+            outputs=[blind_progress_html],
+            queue=False,
+        )
+
+        blind_save.click(
+            fn=save_blind_rating,
+            inputs=[
+                blind_rater_id,
+                blind_item_selector,
+                blind_semantic_a,
+                blind_semantic_b,
+                blind_behavior_a,
+                blind_behavior_b,
+                blind_natural_a,
+                blind_natural_b,
+                blind_boundary_a,
+                blind_boundary_b,
+                blind_preference,
+                blind_independent,
+                blind_key_unseen,
+                blind_notes,
+            ],
+            outputs=[blind_save_status, blind_progress_html],
+            queue=False,
+        )
+
+        language_sample_selector.change(
+            fn=render_language_lab,
+            inputs=[language_sample_selector],
+            outputs=[language_lab_html],
+            queue=False,
+        )
+
+        transfer_cutoff_selector.change(
+            fn=render_transfer_lab,
+            inputs=[transfer_cutoff_selector],
+            outputs=[transfer_lab_html],
+            queue=False,
+        )
+
+        rolling_cutoff_selector.change(
+            fn=render_robustness_lab,
+            inputs=[rolling_cutoff_selector],
+            outputs=[robustness_lab_html],
+            queue=False,
+        )
+
+        ablation_component_selector.change(
+            fn=render_ablation_lab,
+            inputs=[ablation_component_selector],
+            outputs=[ablation_lab_html],
+            queue=False,
+        )
+
+        behavior_sample_selector.change(
+            fn=render_behavior_predictor_lab,
+            inputs=[behavior_sample_selector],
+            outputs=[behavior_predictor_html],
+            queue=False,
+        )
+
+        transition_selector.change(
+            fn=render_transition_lab,
+            inputs=[transition_selector],
+            outputs=[transition_html],
+            queue=False,
+        )
+
+        human_state_selector.change(
+            fn=render_human_state_lab,
+            inputs=[human_state_selector],
+            outputs=[human_state_html],
+            queue=False,
+        )
+
+        structured_memory_query.change(
+            fn=render_structured_memory_lab,
+            inputs=[structured_memory_query],
+            outputs=[structured_memory_html],
+            queue=False,
+        )
+
+        temporal_sample.change(
+            fn=render_temporal_prediction_lab,
+            inputs=[temporal_sample],
+            outputs=[temporal_lab_html],
+            queue=False,
+        )
+
+        memory_repair_checkpoint.change(
+            fn=render_memory_repair_lab,
+            inputs=[memory_repair_checkpoint],
+            outputs=[memory_repair_html],
+            queue=False,
+        )
+
+        fifty_comparison_checkpoint.change(
+            fn=render_fifty_turn_comparison,
+            inputs=[fifty_comparison_checkpoint],
+            outputs=[fifty_comparison_html],
+            queue=False,
+        )
+
+        long_memory_checkpoint.change(
+            fn=render_long_dialogue_lab,
+            inputs=[long_memory_checkpoint],
+            outputs=[long_memory_lab_html],
+            queue=False,
+        )
+
+        equation_scenario.change(
+            fn=render_equation_lab,
+            inputs=[equation_scenario, equation_phase],
+            outputs=[equation_lab_html],
+            queue=False,
+        )
+        equation_phase.change(
+            fn=render_equation_lab,
+            inputs=[equation_scenario, equation_phase],
+            outputs=[equation_lab_html],
+            queue=False,
+        )
+        equation_feedback_btn.click(
+            fn=show_feedback_correction,
+            inputs=[equation_scenario, equation_phase],
+            outputs=[equation_scenario, equation_phase, equation_lab_html],
+            queue=False,
+        )
+
+        teacher_scenario.change(
+            fn=render_teacher_demo,
+            inputs=[teacher_scenario, teacher_step],
+            outputs=[teacher_demo_html],
+            queue=False,
+        )
+        teacher_step.change(
+            fn=render_teacher_demo,
+            inputs=[teacher_scenario, teacher_step],
+            outputs=[teacher_demo_html],
+            queue=False,
+        )
+        teacher_next_btn.click(
+            fn=advance_teacher_demo,
+            inputs=[teacher_scenario, teacher_step],
+            outputs=[teacher_step, teacher_demo_html],
+            queue=False,
+        )
+
+        demo.load(
+            fn=_load_browser_graph,
+            inputs=[browser_graph_receipt],
+            outputs=[flow_html],
             queue=True,
+            show_progress="hidden",
+            api_visibility="private",
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
+        )
+
+        text_in.submit(
+            fn=begin_exact_text_submission_with_session,
+            inputs=[text_in],
+            outputs=[text_enqueue_started_state, text_enqueue_session_state],
+            queue=False,
+            show_progress="hidden",
+        ).then(
+            fn=submit_text_browser_bound,
+            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state, text_enqueue_session_state],
+            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, browser_graph_receipt],
+            queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         send_btn.click(
-            fn=submit_text,
-            inputs=[text_in, history_state, auto_tts],
-            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status],
+            fn=begin_exact_text_submission_with_session,
+            inputs=[text_in],
+            outputs=[text_enqueue_started_state, text_enqueue_session_state],
+            queue=False,
+            show_progress="hidden",
+        ).then(
+            fn=submit_text_browser_bound,
+            inputs=[text_in, history_state, auto_tts, text_enqueue_started_state, text_enqueue_session_state],
+            outputs=[chatbot, history_state, text_in, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, browser_graph_receipt],
             queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         transcribe_btn.click(
@@ -2565,33 +5735,50 @@ def build_demo():
         )
 
         send_audio_btn.click(
-            fn=submit_audio,
-            inputs=[audio_in, history_state, auto_tts],
-            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in],
+            fn=begin_exact_audio_submission_with_session,
+            inputs=[audio_in],
+            outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
+            queue=False,
+            show_progress="hidden",
+        ).then(
+            fn=submit_audio_browser_bound,
+            inputs=[audio_in, history_state, auto_tts, audio_enqueue_started_state, audio_enqueue_session_state],
+            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in, browser_graph_receipt],
             queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         audio_in.stop_recording(
-            fn=handle_audio_stop,
-            inputs=[audio_in, history_state, auto_tts, voice_chat_mode],
-            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in],
+            fn=begin_exact_audio_submission_with_session,
+            inputs=[audio_in],
+            outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
+            queue=False,
+            show_progress="hidden",
+        ).then(
+            fn=handle_audio_stop_browser_bound,
+            inputs=[audio_in, history_state, auto_tts, voice_chat_mode, audio_enqueue_started_state, audio_enqueue_session_state],
+            outputs=[chatbot, history_state, transcript, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, audio_in, browser_graph_receipt],
             queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         reset_btn.click(
-            fn=reset_session,
-            inputs=None,
-            outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript],
-            queue=False,
+            fn=reset_session_browser_bound,
+            inputs=[reset_instance_marker],
+            outputs=[chatbot, history_state, audio_out, debug_json, cognition_json, flow_html, state_html, memory_json, status, latest_turn_state, annotation_context, annotation_status, transcript, browser_graph_receipt],
+            queue=True,
+            concurrency_limit=1,
+            concurrency_id="human_turn_m19",
         )
 
         proactive_poll_timer.tick(
             fn=poll_proactive_turn,
             inputs=[history_state, auto_tts],
             outputs=[chatbot, history_state, audio_out, status, latest_turn_state, annotation_context, annotation_status],
-            queue=True,
+            queue=False,
             trigger_mode="always_last",
-            concurrency_limit=1,
         )
 
         annotation_save_btn.click(
@@ -2798,7 +5985,8 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     demo = build_demo()
-    demo.queue(default_concurrency_limit=1)
+    demo.queue(default_concurrency_limit=4)
+    RUNTIME.start_brain_prewarm()
     demo.launch(
         server_name=WEB_SERVER_NAME,
         server_port=WEB_SERVER_PORT,

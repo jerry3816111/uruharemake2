@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_p4_source_bound_preference_fresh_probe_v1",
+  "status": "developer_authored_pre_product_freeze_not_formal_holdout",
+  "case_id": "p4_source_bound_preference_fresh_2026_10_16",
+  "design_reference": "research/p4_source_bound_preference_fallback_plan_2026-10-16.md",
+  "boundary_review": "research/p4_source_bound_preference_object_boundary_review_2026-10-16.md",
+  "core_intervention": "source_admitted_simple_self_preference_avoids_second_general_planner_call",
+  "turn_count": 5,
+  "restart_after_turn": 3,
+  "global_expected": {
+    "exact_input_once_per_turn": true,
+    "answer_retry_count": 0,
+    "session_count": 2,
+    "planned_process_restart_count": 1,
+    "same_isolated_db_after_restart": true,
+    "distinct_persisted_turn_episode_count": 5,
+    "visible_language": "natural_ja",
+    "graph_utterance_equals_visible_reply_each_turn": true,
+    "per_turn_user_wait_seconds_max": 20,
+    "profile_row_id_set_deltas": [1, 0, 1, 0, 1],
+    "expected_final_user_profile_rows": [
+      {"fact_type": "like", "value": "黒豆きなこ餅", "preference_scope": null},
+      {"fact_type": "like", "value": "青じそ梅せんべい", "preference_scope": null},
+      {"fact_type": "like", "value": "黒糖ほうじ茶", "preference_scope": null}
+    ],
+    "legacy_preference_scope_null_means_metadata_key_absent": true,
+    "forbidden_user_profile_values": ["小豆柚子羊羹", "うち", "好き"],
+    "no_new_dislike_or_favorite_row": true,
+    "bounded_claim_only": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "new_self_object_preference_fallback",
+      "input": "私は黒豆きなこ餅が好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "黒豆きなこ餅"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; lightly acknowledge this current self-reported food preference, without a relationship confession or unobserved memory-write promise."
+    },
+    {
+      "turn": 2,
+      "role": "new_third_party_source_negative_control",
+      "input": "友達は小豆柚子羊羹が好き。",
+      "forbidden_selected_intents": ["ask_like_me"],
+      "forbidden_selected_planner_paths": ["source_bound_preference_fallback_p4"],
+      "expected_owner_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; preserve that this is the friend's preference, not the user's own fact; do not claim it was remembered as the user's profile. A low-pressure clarification is acceptable."
+    },
+    {
+      "turn": 3,
+      "role": "second_new_self_object_preference_before_restart",
+      "input": "私は青じそ梅せんべいが好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "青じそ梅せんべい"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; acknowledge this new item and do not conflate it with the friend's preference or assert unobserved recall."
+    },
+    {
+      "turn": 4,
+      "role": "existing_relationship_rule_priority_after_restart",
+      "input": "ねえ、うちのこと好き？",
+      "expected_selected_intent": "ask_like_me",
+      "forbidden_selected_planner_paths": ["source_bound_preference_fallback_p4"],
+      "expected_owner_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; answer the interpersonal question in the bounded persona style without pretending an item preference or private fact."
+    },
+    {
+      "turn": 5,
+      "role": "third_new_self_object_preference_after_restart",
+      "input": "私は黒糖ほうじ茶が好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "黒糖ほうじ茶"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; acknowledge the new preference without reinterpreting the earlier relationship question or fabricating a remembered preference."
+    }
+  ]
+}

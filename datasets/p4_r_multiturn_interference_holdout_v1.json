@@ -1,0 +1,120 @@
+{
+  "schema": "uruha_p4_r_multiturn_interference_holdout_v1",
+  "case_id": "p4_r_cross_scope_and_recency_interference_001",
+  "status": "prospectively_frozen_before_execution",
+  "turn_count": 12,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "target_write",
+      "user": "今は月桃茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_p4_i_act": "write",
+      "expected_scope": "drink",
+      "expected_current_value": "月桃茶"
+    },
+    {
+      "turn": 2,
+      "role": "ordinary_distractor",
+      "user": "今日は先に発表資料の順番を直した。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 3,
+      "role": "third_person_drink_distractor",
+      "user": "友達は柿の葉茶が好きらしい。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 4,
+      "role": "quoted_drink_distractor",
+      "user": "引用として「今は紫蘇茶が好き」と書いた。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 5,
+      "role": "other_scope_write",
+      "user": "I like cooperative games. Please remember this as my current game preference.",
+      "expected_p4_i_act": "write",
+      "expected_scope": "game",
+      "expected_current_value": "cooperative games"
+    },
+    {
+      "turn": 6,
+      "role": "pre_correction_recall",
+      "user": "What is my current drink preference?",
+      "expected_p4_i_act": null,
+      "expected_system_value": "月桃茶",
+      "expected_system_surface": "今の飲み物の好みは月桃茶。前のじゃなくて、今の方ね。",
+      "expected_baseline_value": "紫蘇茶"
+    },
+    {
+      "turn": 7,
+      "role": "ordinary_distractor",
+      "user": "グラフの説明は短い方が見やすい。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 8,
+      "role": "target_correction",
+      "user": "もう月桃茶は好きじゃない。今はよもぎ茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_p4_i_act": "correction",
+      "expected_scope": "drink",
+      "expected_previous_value": "月桃茶",
+      "expected_current_value": "よもぎ茶"
+    },
+    {
+      "turn": 9,
+      "role": "third_person_old_value_distractor",
+      "user": "先生は月桃茶が好きらしい。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 10,
+      "role": "hypothetical_drink_distractor",
+      "user": "もし私が「今は杜仲茶が好き」と言ったら、その文は仮定として扱って。",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 11,
+      "role": "cross_language_third_person_distractor",
+      "user": "My friend now prefers 紫蘇茶.",
+      "expected_p4_i_act": null
+    },
+    {
+      "turn": 12,
+      "role": "post_correction_recall",
+      "user": "我現在的飲料偏好是什麼？",
+      "expected_p4_i_act": null,
+      "expected_system_value": "よもぎ茶",
+      "expected_system_surface": "今の飲み物の好みはよもぎ茶。前のじゃなくて、今の方ね。",
+      "expected_baseline_value": "紫蘇茶"
+    }
+  ],
+  "baseline": {
+    "id": "recent_five_turn_lexical_drink_mention",
+    "history_window_user_turns": 5,
+    "selection": "latest Japanese token ending in 茶 from prior user turns",
+    "speaker_negation_quote_hypothesis_understanding": false,
+    "model_call_count": 0
+  },
+  "system": {
+    "id": "p4_typed_current_preference_lineage",
+    "write_gate": "P4-H observable explicit memory act",
+    "state": "P4-I typed current preference",
+    "scope_projection": "P4-L exact alias canonicalization",
+    "recall": "P4-J active exact-scope only",
+    "japanese_value_surface": "P4-N source-bound Japanese identity",
+    "reference_time": "P4-O one persisted validity instant",
+    "model_call_count": 0
+  },
+  "novelty": {
+    "repository_occurrences_before_dataset_creation": {
+      "月桃茶": 0,
+      "よもぎ茶": 0,
+      "柿の葉茶": 0,
+      "紫蘇茶": 0,
+      "杜仲茶": 0
+    }
+  },
+  "claim_boundary": "This holdout isolates recency, speaker, quotation, hypothetical and cross-scope interference for the released typed current-preference mechanism. Its lexical recency baseline is a diagnostic baseline, not a strong LLM. A pass cannot establish open-domain long-dialogue memory, human preference, LLM superiority or a human equation."
+}

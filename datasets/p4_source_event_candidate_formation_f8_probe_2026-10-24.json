@@ -1,0 +1,50 @@
+{
+  "schema": "p4_source_event_candidate_formation_f8_developer_probe_v1",
+  "status": "source_only_before_f8_generation",
+  "evidence_class": "developer_authored_not_formal_holdout",
+  "planner_comparison_source": "初めて自分で夜の星を撮った。今は一言だけ励まして。",
+  "planner_visible_gold": {
+    "must": [
+      "自然な短い日本語で、初めて自分で夜の星を撮った事実を受け止める",
+      "一言の控えめな励ましを返す"
+    ],
+    "must_not": [
+      "夜の星を描いた・見ただけなどへ完成動作を変える",
+      "一般的な称賛だけで自分で夜の星を撮ったことを落とす",
+      "撮影の手順を教える、不要な質問をする、中国語や英語を混ぜる、未報告の経験や心理を捏造する"
+    ]
+  },
+  "safari_confirmation_source": "初めて自分で山の地図を読んだ。今は一言だけ励まして。",
+  "safari_visible_gold": {
+    "must": [
+      "自然な短い日本語で、初めて自分で山の地図を読んだ事実を受け止める",
+      "一言の控えめな励ましを返す"
+    ],
+    "must_not": [
+      "山の地図を買った・これから読むと誤認する、一般的な称賛だけで出来事を落とす",
+      "手順・追問・混語・未報告の経験や心理を捏造する"
+    ]
+  },
+  "contract_sources": [
+    {"id": "positive-care", "source": "初めて自分で古い手帳を直した。今は一言だけ労って。", "prompt_injection_expected": true},
+    {"id": "positive-not-first-time", "source": "自分で古い本を包んだ。今は一言だけ励まして。", "prompt_injection_expected": true},
+    {"id": "boundary-20", "source": "自分で青い紙の古い山道用の大きな地図帳を読んだ。今は一言だけ励まして。", "prompt_injection_expected": true},
+    {"id": "boundary-21", "source": "自分で青い紙の古い山道用の大きな案内地図を読んだ。今は一言だけ励まして。", "prompt_injection_expected": false},
+    {"id": "third-party", "source": "友達が夜の星を撮った。今は一言だけ励まして。", "prompt_injection_expected": false},
+    {"id": "quoted", "source": "「初めて自分で夜の星を撮った」。今は一言だけ励まして。", "prompt_injection_expected": false},
+    {"id": "negated", "source": "初めて自分で夜の星を撮らなかった。今は一言だけ励まして。", "prompt_injection_expected": false},
+    {"id": "two-sentences", "source": "初めて自分で夜の星を撮った。嬉しかった。今は一言だけ励まして。", "prompt_injection_expected": false},
+    {"id": "english", "source": "I photographed stars at night for the first time. Please encourage me briefly.", "prompt_injection_expected": false},
+    {"id": "too-long", "source": "初めて自分でたくさんの小さな青い印のある古い山道用の紙の大きな地図を読んだ。今は一言だけ励まして。", "prompt_injection_expected": false}
+  ],
+  "comparison": "same_model_same_frozen_planner_inputs_only_f8_prompt_segment_changes_not_full_product_comparison",
+  "paired_outcome_labels": {
+    "off_fail_on_pass": "diagnostic_candidate_formation_improvement_not_general_causal_proof",
+    "off_pass_on_pass": "parity_no_added_value_proven",
+    "off_fail_on_fail": "both_fail",
+    "off_pass_on_fail": "regression"
+  },
+  "safari_admission": "only_off_fail_on_pass_and_on_selected_original_core_passes_full_planner_visible_gold_and_f7_grounded_coverage",
+  "prior_probe_retry_prohibited": true,
+  "resource_cap": {"completed_generations_per_arm_max": 1, "provider_tokens_per_arm_max": 2000, "planner_wall_seconds_max": 20, "confirmation_safari_sends_max": 1, "confirmation_user_wait_seconds_max": 20}
+}

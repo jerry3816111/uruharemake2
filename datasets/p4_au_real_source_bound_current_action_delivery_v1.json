@@ -1,0 +1,42 @@
+{
+  "schema": "uruha_p4_au_real_source_bound_current_action_delivery_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "partition": "fresh_private_runtime_product_acceptance",
+  "turns": [
+    {
+      "turn": 1,
+      "input_language": "zh",
+      "input": "我今晚腦中的想法像排隊一樣不停冒出來，怎麼都慢不下來。",
+      "expected_selected_policy": "calibrate_need",
+      "expected_visible_action_act": "low_pressure_clarification"
+    },
+    {
+      "turn": 2,
+      "input_language": "zh",
+      "input": "你先問清楚是對的；我現在需要一個能立刻做的步驟。",
+      "expected_previous_action_outcome": "supported",
+      "expected_current_request_policy": "solve_regulation",
+      "expected_prior_source_handoff": "exact_turn_1_user_source",
+      "expected_visible_action_act": "verified_practical_help"
+    }
+  ],
+  "surface_contract": {
+    "visible_language": "natural_japanese",
+    "exact_visible_string_is_gate": false,
+    "exact_visible_string_must_be_recorded": true,
+    "generic_promise_counts_as_practical_action": false,
+    "additional_clarification_counts_as_practical_action": false,
+    "m39_action_act_must_match": true,
+    "m45_delivered_must_be_true": true,
+    "m46_content_and_surface_must_pass": true
+  },
+  "source_contract": {
+    "turn_2_prior_source_must_equal_turn_1_user_source": true,
+    "assistant_reply_may_be_task_source": false,
+    "private_inference_may_be_task_source": false,
+    "current_turn_may_replace_turn_1_problem": false,
+    "source_trace_must_be_raw_free": true
+  },
+  "claim_boundary": "A pass is one fresh two-turn private-runtime/Safari path in which the exact prior user problem reaches the existing action-delivery gate and a source-consistent practical Japanese action is delivered after verified feedback. It does not establish human usefulness, preference, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}

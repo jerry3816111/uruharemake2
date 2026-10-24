@@ -1,0 +1,74 @@
+{
+  "schema": "ilhdt_m1_preregistration_v1",
+  "experiment_id": "m1_temporal_prediction_observatory_synthetic_fixture_v1_1",
+  "status": "frozen_before_v1_1_generation_after_v1_transport_failure",
+  "claim_level": "synthetic_fixture_engineering_evidence_only_nonfresh_protocol_rerun",
+  "formal_target_claim": false,
+  "predecessor_result": "analysis/m1_temporal_prediction_observatory_synthetic_first_generation_raw.json",
+  "predecessor_status": "invalid_incomplete_run_29_of_48_rows",
+  "single_change": "Accept either the preregistered wrapper {probabilities: {label: number}} or a top-level object containing exactly the same frozen label-to-number map. No probability values are repaired, filled, or altered.",
+  "unchanged": [
+    "dataset and outcomes",
+    "B0-B3 definitions",
+    "all prompts",
+    "model and model options",
+    "seed and decoding parameters",
+    "retrieval top_n and prior smoothing",
+    "metrics and success criteria",
+    "no retry and fail-closed policy"
+  ],
+  "freshness_boundary": "The samples were already processed in V1. V1.1 is an engineering protocol remediation, not a fresh scientific holdout.",
+  "dataset": "datasets/m1_temporal_prediction_synthetic_fixture_v1.json",
+  "baselines": [
+    "B0_PRIOR",
+    "B1_BASE_LLM",
+    "B2_PERSONA_PROMPT",
+    "B3_RAG"
+  ],
+  "single_model_rule": "B1, B2, and B3 use the same frozen local model and generation options; B0 is deterministic and has no model call.",
+  "model": {
+    "provider": "local_ollama",
+    "name": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "options": {
+      "temperature": 0,
+      "seed": 240815,
+      "num_ctx": 4096,
+      "num_predict": 420
+    }
+  },
+  "prior_smoothing": 1.0,
+  "rag_top_n": 4,
+  "metrics": {
+    "primary": [
+      "brier_score",
+      "negative_log_likelihood",
+      "expected_calibration_error"
+    ],
+    "secondary": [
+      "top1_accuracy",
+      "top_k_accuracy",
+      "macro_f1",
+      "weighted_f1",
+      "mean_reciprocal_rank",
+      "mean_ndcg"
+    ],
+    "top_k": 3,
+    "ece_bins": 5
+  },
+  "success_criteria": {
+    "engineering": [
+      "all temporal and lock checks pass",
+      "48 prediction rows are emitted with no transport or schema failure",
+      "every row contains a normalized six-label probability distribution",
+      "the observatory renders cutoff, hidden future, predictions, outcome, calibration, provenance, and cost"
+    ],
+    "scientific": "none: this is a nonfresh synthetic protocol rerun and cannot establish a real-person prediction advantage"
+  },
+  "failure_policy": "Any missing row, invalid probability contract, hash mismatch, or leakage violation invalidates the run. Do not retry individual rows.",
+  "privacy": {
+    "store_raw_prompt": false,
+    "store_model_text": false,
+    "store_prompt_hash": true
+  }
+}

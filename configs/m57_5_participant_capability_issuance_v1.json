@@ -1,0 +1,65 @@
+{
+  "schema": "uruha_m57_5_participant_capability_issuance_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_before_any_real_capability_issuance",
+  "single_changed_variable": "separate_participant_capability_issuance_and_token_surface_hardening",
+  "frozen_dependencies": {
+    "research/m57_4_component_evidence_collection_implementation_freeze_2026-09-04.json": "55b99d583537b4b6111bd5d25b93a8d42931e37be5071f64689a102aa2362e3d",
+    "configs/m57_4_component_evidence_collection_v1.json": "dc1949a44c66e5850c5a925a330a42ce10938c14860d8861b9b6317a7a44c45d",
+    "m57_4_component_evidence_collection.py": "09c964d246322b540041c44950c777c8f5ee026e82e3618d880ab391325466d0"
+  },
+  "issuance": {
+    "role_slots": ["coder_a", "coder_b", "adjudicator"],
+    "delivery_root_must_be_new_absolute_local_directory": true,
+    "delivery_root_mode": "0700",
+    "role_directory_mode": "0700",
+    "envelope_file_mode": "0600",
+    "one_envelope_per_role": true,
+    "public_initialization_result_contains_raw_role_token": false,
+    "central_commitment_contains_raw_role_token": false,
+    "pre_initialization_full_sync_intent_required": true,
+    "partial_or_intent_only_retry_allowed": false,
+    "completed_identical_replay_allowed": true
+  },
+  "claim": {
+    "correct_run_role_path_and_hash_required": true,
+    "outcome_state_absence_revalidated": true,
+    "one_time_claim_receipt_required": true,
+    "second_claim_allowed": false,
+    "raw_role_token_removed_from_claimed_envelope": true,
+    "server_holds_role_token_in_memory_only_after_claim": true,
+    "server_restart_after_claim_supported": false
+  },
+  "browser_session": {
+    "role_token_in_argv": false,
+    "role_token_in_url_or_query": false,
+    "role_token_in_html_or_form": false,
+    "role_token_in_cookie": false,
+    "host_only_session_cookie": true,
+    "http_only_cookie": true,
+    "same_site_strict_cookie": true,
+    "secure_cookie_flag_on_plain_loopback_http": false,
+    "per_server_random_session_id": true,
+    "per_server_random_csrf_token": true,
+    "csrf_required_for_post": true,
+    "cache_control_no_store": true,
+    "referrer_policy_no_referrer": true,
+    "content_security_policy_restrictive": true
+  },
+  "preserved_boundaries": {
+    "m57_4_frozen_files_changed": false,
+    "m57_4_ledger_or_manifest_semantics_changed": false,
+    "target_outcome_access_count": 0,
+    "model_call_count": 0,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "synthetic_fixture_may_become_formal": false,
+    "m58_authorized": false
+  },
+  "public_functions": {
+    "initialize_separated_participant_capabilities": ["run_id", "participant_roster", "delivery_root"],
+    "validate_participant_capability_issuance": ["run_id"],
+    "serve_secure_collection": ["run_id", "role_slot", "envelope_path", "port"]
+  },
+  "claim_boundary": "M57.5 may remove raw M57.4 bearer tokens from the coordinator-facing result, command line, browser URL/history, HTML/form and browser cookie while adding separate private envelopes, one-time claim receipts, local session cookies and CSRF checks. On one macOS account, filesystem modes and separate paths are cooperative application controls, not proof of three physical humans or adversarial isolation. Plain localhost HTTP is not network TLS. The milestone cannot create human evidence, validate private state or Equation V1, prove LLM superiority, solve a human-response equation, authorize formal M57/M58, or establish production security."
+}

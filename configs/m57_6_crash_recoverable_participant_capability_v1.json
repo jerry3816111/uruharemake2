@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_m57_6_crash_recoverable_participant_capability_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_before_any_real_recovery_secret",
+  "single_changed_variable": "participant_owned_encrypted_post_claim_restart_recovery",
+  "frozen_dependencies": {
+    "research/m57_5_participant_capability_issuance_implementation_freeze_2026-09-04.json": "8853c95b84316beee5a705f7435b6abe1f50f3f83377a425e25f7025b8a8165a",
+    "configs/m57_5_participant_capability_issuance_v1.json": "01370a80da2d09a2ca4f5f1f00a9068a3b8d197483d5a4d7af22ff152b6f8f40",
+    "m57_5_participant_capability_issuance.py": "880091aa1b63475eebc0c125927ed87bf5ff1f6ebbe924d0fd1ae315ab3e8ca4"
+  },
+  "accepted_crypto_backend": {
+    "distribution": "cryptography",
+    "exact_version": "50.0.1",
+    "kdf": "Scrypt",
+    "kdf_n": 32768,
+    "kdf_r": 8,
+    "kdf_p": 1,
+    "derived_key_bytes": 32,
+    "salt_bytes": 16,
+    "aead": "AESGCM",
+    "aead_key_bits": 256,
+    "nonce_bytes": 12,
+    "ciphertext_includes_authentication_tag": true,
+    "missing_or_version_drift_fails_closed": true,
+    "dependency_installed_by_this_milestone": false
+  },
+  "recovery_secret": {
+    "public_cli_uses_tty_getpass": true,
+    "first_activation_requires_confirmation": true,
+    "minimum_utf8_bytes": 20,
+    "maximum_utf8_bytes": 1024,
+    "accepted_from_argv": false,
+    "accepted_from_environment": false,
+    "accepted_from_browser": false,
+    "persisted_in_file_or_log": false,
+    "raw_secret_returned_in_public_metadata": false,
+    "python_memory_zeroization_guaranteed": false
+  },
+  "vault": {
+    "one_encrypted_vault_per_claimed_role": true,
+    "vault_file_mode": "0600",
+    "vault_binds_run_role_participant_m57_5_commitment_token_hash_and_envelope_hash": true,
+    "vault_full_sync_precedes_m57_5_claim": true,
+    "raw_role_token_in_vault_json": false,
+    "raw_recovery_secret_in_vault_json": false,
+    "wrong_secret_or_tamper_error_is_indistinguishable": true
+  },
+  "state_machine": {
+    "full_sync_intent_precedes_vault": true,
+    "vault_before_claim_restart_supported": true,
+    "claim_before_activation_commit_restart_supported": true,
+    "claim_receipt_before_envelope_scrub_repair_supported": true,
+    "identical_active_restart_supported": true,
+    "changed_run_role_path_or_crypto_parameters_allowed": false,
+    "spent_envelope_without_valid_vault_allowed": false,
+    "outcome_state_absence_revalidated_before_every_recovery": true
+  },
+  "browser_session": {
+    "uses_independent_m57_5_style_cookie_and_csrf": true,
+    "role_token_in_argv": false,
+    "role_token_in_url_or_query": false,
+    "role_token_in_html_or_form": false,
+    "role_token_in_cookie": false,
+    "recovery_secret_in_argv": false,
+    "recovery_secret_in_url_or_query": false,
+    "recovery_secret_in_html_or_form": false,
+    "recovery_secret_in_cookie": false,
+    "loopback_plain_http_claims_tls": false
+  },
+  "public_functions": {
+    "audit_crypto_backend": [],
+    "validate_recoverable_capability": ["run_id", "role_slot"],
+    "serve_recoverable_collection": ["run_id", "role_slot", "envelope_path", "port"]
+  },
+  "preserved_boundaries": {
+    "m57_5_frozen_files_changed": false,
+    "m57_4_or_m57_5_evidence_semantics_changed": false,
+    "target_outcome_access_count": 0,
+    "model_call_count": 0,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "synthetic_fixture_may_become_formal": false,
+    "m58_authorized": false
+  },
+  "claim_boundary": "M57.6 may make a successfully encrypted, participant-secret-bound M57.5 role capability restartable on the accepted local crypto runtime. It cannot recover a deleted vault, prove who supplied a secret, protect against a malicious same-account process, guarantee Python memory zeroization, claim TLS or general deployment portability, create human component labels, validate Equation V1, prove UruhaBrain superiority, solve a human-response equation, or authorize formal M57/M58."
+}

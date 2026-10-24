@@ -1,0 +1,33 @@
+{
+  "schema": "uruha_p4_o_additive_product_entry_amendment_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_second_and_final_accepted_implementation_batch",
+  "reason": "both the released P4-N adapter and its product entry are immutable evidence-bound artifacts",
+  "unchanged": [
+    "P4-O research question, development case, exact surface and one-time reference-time default",
+    "all success, failure, no-retry and zero-model-call requirements",
+    "the additive adapter architecture from the first amendment",
+    "the ban on rerunning the exposed そば茶 case"
+  ],
+  "required_architecture": {
+    "adapter": "uruha_persisted_reference_time_p4.py",
+    "new_product_entry": "uruha_web_ui_product_p4_o.py",
+    "base_product_entry": "uruha_web_ui_product.py",
+    "installation_order": "import the released base product entry, then install P4-O, then expose and launch the same runtime/UI",
+    "released_p4_n_adapter_mutation_allowed": false,
+    "released_product_entry_mutation_allowed": false
+  },
+  "allowed_implementation_files": [
+    "uruha_persisted_reference_time_p4.py",
+    "uruha_web_ui_product_p4_o.py"
+  ],
+  "required_verification": [
+    "both released P4-N adapter and released product entry hashes remain unchanged",
+    "the new entry imports the released product entry before installing P4-O",
+    "the new entry reuses the released runtime and base UI launch configuration",
+    "the real temporary Chroma regression and temporal boundary tests pass",
+    "all P4-N result and release bindings pass"
+  ],
+  "terminal_policy": "This is the second informed correction batch. Any further implementation-boundary failure becomes REVIEW_REQUIRED without a third architecture patch.",
+  "real_execution_policy": "No Safari/product case before an offline pass and release checkpoint."
+}

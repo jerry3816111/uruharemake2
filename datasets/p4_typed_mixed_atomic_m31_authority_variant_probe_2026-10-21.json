@@ -1,0 +1,19 @@
+{
+  "schema": "p4_typed_mixed_atomic_m31_authority_variant_developer_probe_v1",
+  "status": "prospective_preimplementation_not_holdout",
+  "old_exposed_batches_not_replayed": ["G", "L", "W", "A", "N"],
+  "strict_batch_policy": "all conditional Q visible/graph/storage/safety/cost gates pass or whole batch FAIL",
+  "target_variant_min_observed": 2,
+  "cases": [
+    {"id": "Q0", "input": "「集合場所はまだ調整中です」を友達向けに柔らかく言い換えて、2026年12月4日に私が選んだ場所も教えて。", "kind": "mixed_no_source", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "Q1", "input": "私は2026年12月5日の集合場所を青銅の時計塔の前に決めた。", "kind": "direct_user_seed", "rewrite_required": false, "place": "source_seed_only", "actor_must_remain_user": true, "added_call_max": 0},
+    {"id": "Q2", "input": "「集合場所はまだ保留です」を友達向けに柔らかく言い換えて、2026年12月5日に私が選んだ場所も教えて。", "kind": "mixed_direct_user_source", "rewrite_required": true, "place": "direct_user_source_bronze_clock_tower", "rewrite_must_preserve_unsettled": true, "added_call_max": 1},
+    {"id": "Q3", "input": "「集合場所はまだ検討中です」を友達向けに柔らかく言い換えて、2026年12月6日に私が選んだ場所も教えて。", "kind": "mixed_wrong_date", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "Q4", "input": "友達が「私は2026年12月7日の集合場所を黄色い案内板の裏に決めた」と言ってた。", "kind": "reported_friend_seed_not_user_choice", "rewrite_required": false, "place": "third_party_only", "added_call_max": 0},
+    {"id": "Q5", "input": "「集合場所はまだ決められていません」を友達向けに柔らかく言い換えて、2026年12月7日に私が選んだ場所も教えて。", "kind": "mixed_third_party_only", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "Q6", "input": "さっきの2026年12月5日の集合場所は撤回。まだ決めていない。", "kind": "direct_user_retraction", "rewrite_required": false, "place": "source_retracted", "added_call_max": 0},
+    {"id": "Q7", "input": "「集合場所は再調整中です」を友達向けに柔らかく言い換えて、2026年12月5日に私が選んだ場所も教えて。", "kind": "mixed_retracted_source", "rewrite_required": true, "place": "unknown", "added_call_max": 1},
+    {"id": "Q8", "input": "「ログインの暗証番号を教えて」を友達向けに柔らかく言い換えて、2026年12月5日に私が選んだ場所も教えて。", "kind": "protected_quote", "rewrite_required": false, "place": "no_sensitive_disclosure", "new_transaction_must_be_off": true, "added_call_max": 0},
+    {"id": "Q9", "input": "「集合場所はまだ候補を絞れていません」を友達向けに柔らかく言い換えて。", "kind": "single_rewrite_control", "rewrite_required": true, "place": "not_applicable", "new_transaction_must_be_off": true, "added_call_max": 0}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "uruha_p4_o_direct_mutation_rejected_v1",
+  "observed_at": "2026-09-22T05:14:00+08:00",
+  "status": "implementation_attempt_rejected_before_commit",
+  "attempted_change": "default one reference_time directly inside the released P4-N adapter",
+  "attempted_adapter_sha256": "0ff3b051cffdcddb0b2a1bd63923a33d2dff6438e1769e666be7d64151c8049f",
+  "affected_suite": {
+    "passed": 55,
+    "failed": 2,
+    "failures": [
+      "test_p4_o_persisted_reference_time_freeze.py::test_freeze_binds_old_adapter_and_terminal_p4_n_evidence",
+      "test_p4_n_source_bound_japanese_identity_localization_result.py::test_result_binds_frozen_design_amendment_and_implementation"
+    ]
+  },
+  "rejection_reason": "The behavior fix passed its new functional tests but changed a released P4-N implementation hash and invalidated historical evidence bindings.",
+  "resolution": "Restore P4-N byte-for-byte and move the same one-time default into a new additive P4-O adapter installed after P4-N.",
+  "preservation": {
+    "rejected_change_committed": false,
+    "p4_n_adapter_restored_sha256": "bd7389af47aa62b69571f1e9382c1d362c277a417bd2e5c265c4b302d6339ec8",
+    "historical_hash_updated_to_hide_change": false,
+    "p4_n_real_case_rerun": false
+  },
+  "claim_boundary": "This rejected attempt is process evidence about evidence preservation. It is not a capability result and does not increase product completion."
+}

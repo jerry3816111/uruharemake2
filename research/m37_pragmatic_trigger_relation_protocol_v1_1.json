@@ -1,0 +1,111 @@
+{
+  "schema": "uruha_pragmatic_trigger_relation_protocol_m37_v1_1",
+  "frozen_at": "2026-08-26",
+  "status": "sealed_after_independent_response_policy_validation_before_m37_runtime_implementation",
+  "supersedes_invalid_preimplementation_protocol": {
+    "path": "research/m37_pragmatic_trigger_relation_protocol.json",
+    "sha256": "3596a10682d6ff18fbf90aceb83931a7631f7c6ab30e22ab655246b1bd19f3bb",
+    "failure_evidence_path": "analysis/m37_preimplementation_reserve_v1_validation_failure_2026-08-26.json",
+    "failure_evidence_sha256": "bbf2771b244b3f2af6cc3e3137a8fdb5eb9bd7b4418715cbf088a7a5249552f6"
+  },
+  "research_question": "Can a verified future response-form agreement be stored as a typed observable-trigger to response-policy relation and later select the intended branch across morphology and bounded paraphrase, under the same-model current-turn baseline controls?",
+  "single_core_variable": "M37 adds typed trigger-relation extraction, support-gated persistence, and current-trigger matching. It does not change feedback correction linkage, Japanese surface-act verification, base model, persona contract, factual-memory authority, or final visible-language guard.",
+  "operational_definition": {
+    "relation_candidate": "one future or recurring conditional marker, exactly one bounded observable trigger predicate, and exactly one explicit response-form policy in the seed turn",
+    "verification": "the next user turn must decisively support the seed response prediction before the relation becomes reusable",
+    "current_match": "a later turn independently expresses the same typed trigger predicate; raw seed wording and the seed turn's request act are not required",
+    "unknown_boundary": "unrecognized, multiple, or current-only predicates do not create a reusable relation"
+  },
+  "conditions": {
+    "baseline": "qwen3.5:9b receives only the current visible turn and the shared public-Uruha expression contract; it does not receive seed history, verified trigger relations, system trace, or selected policy",
+    "system": "the same qwen3.5:9b realizes the authoritative response branch selected from the verified M37 typed trigger relation"
+  },
+  "annotation_integrity_gate": {
+    "pre_m37_classifier": "classify_explicit_desired_response_m25",
+    "required_pass_count": 12,
+    "observed_pass_count": 12,
+    "observed_error_count": 0,
+    "rule": "every seed expected policy must already equal the independent pre-M37 explicit-response classifier result; M37 may not add response-policy vocabulary for reserve rows"
+  },
+  "reserve": {
+    "path": "datasets/m37_pragmatic_trigger_relation_reserve_v1_1.json",
+    "sha256": "0ef035f6f131191776c4d5eaceac58f91ddd30856804b22b731770ac97b150de",
+    "case_count": 12,
+    "pair_count": 6,
+    "languages": ["zh", "en", "ja"],
+    "trigger_predicates": ["cognitive_overactivity", "task_stall", "waiting_for_outcome"],
+    "source_disjoint_from": [
+      "datasets/m35_same_model_longitudinal_pragmatic_reserve_v1.json",
+      "datasets/m36_compositional_multilingual_pragmatic_reserve_v1.json",
+      "V2.14 human pragmatic holdout"
+    ],
+    "pair_rule": "current_input is byte-identical inside each pair; seed trigger meaning is held constant while the explicitly requested future response policy changes",
+    "surface_rule": "seed and current trigger wording differ; exact reserve sentences must not be added to runtime code",
+    "post_seal_rule": "do not edit v1.1 wording, labels, predicates, thresholds, or pair membership after this protocol is frozen"
+  },
+  "controlled_variables": [
+    "qwen3.5:9b model identity",
+    "temperature zero and fixed seed",
+    "byte-identical current utterance within each counterfactual pair",
+    "same public-Uruha expression and natural-Japanese-visible contract",
+    "same output token budget and local machine",
+    "paired real prompt-token difference at most two tokens",
+    "same current-turn baseline prompt family as M35/M36",
+    "no feedback-linkage or semantic-surface-act remediation in M37"
+  ],
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260826,
+    "num_ctx": 4096,
+    "num_predict": 112,
+    "input_token_budget": 1280,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "frozen_success_gates": {
+    "reserve_validation_error_count_max": 0,
+    "transport_error_count_max": 0,
+    "json_parse_error_count_max": 0,
+    "paired_prompt_token_gate_rate_min": 1.0,
+    "system_relation_candidate_accuracy_min": 1.0,
+    "system_relation_persistence_accuracy_min": 1.0,
+    "system_relation_current_match_accuracy_min": 1.0,
+    "system_mechanism_current_policy_accuracy_min": 1.0,
+    "system_current_policy_accuracy_min": 0.9166,
+    "system_minus_baseline_current_policy_accuracy_min": 0.30,
+    "system_pair_divergence_rate_min": 1.0,
+    "baseline_pair_policy_invariance_rate_min": 1.0,
+    "system_current_surface_proxy_match_rate_min": 0.8333,
+    "visible_japanese_rate_each_condition_min": 1.0,
+    "unverified_mental_fact_write_count_max": 0,
+    "raw_dialogue_persisted_count_max": 0,
+    "system_to_baseline_scored_prompt_token_ratio_max": 1.01,
+    "system_to_baseline_completion_token_ratio_max": 1.35,
+    "system_to_baseline_latency_ratio_max": 1.50
+  },
+  "required_development_regressions": [
+    "M36 English bounce-around seed matches a later bouncing predicate without exact-sentence code",
+    "conditional trigger and requested response policy are stored as separate typed fields",
+    "current-only arousal language does not create a reusable future relation",
+    "multiple trigger predicates fail closed",
+    "unsupported relation candidates are not reusable",
+    "M36 annotation integrity, M34 revision, protected routes, raw-free persistence, persona, and visible Japanese do not regress"
+  ],
+  "future_human_gate": {
+    "required_for_felt_understanding_claim": true,
+    "minimum_independent_blind_raters": 3,
+    "dimensions": [
+      "implicit_need_caught_without_overclaiming",
+      "overinterpretation_or_fabrication",
+      "correction_quality",
+      "cross_turn_consistency",
+      "felt_understanding_preference"
+    ]
+  },
+  "claim_boundary": "a pass supports only controlled source-disjoint evidence that verified trigger relations survive the implemented morphology and paraphrase families; it does not establish private-intent truth, open-domain semantic equivalence, human felt-understanding preference, general LLM superiority, or a human-brain equation",
+  "post_result_rule": "do not modify M37 runtime, evaluator, model prompts, v1.1 reserve, v1.1 protocol, thresholds, labels, or formal raw result from M37 reserve outcomes; failures move to M38 or a separately named milestone"
+}

@@ -1,0 +1,191 @@
+{
+  "schema": "uruha_p3_judge_json_conformance_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "isolate_json_serialization_constraint_after_b17_truncation",
+  "before_failure": {
+    "path": "analysis/p3_b17_case03_proxy_grade_result_2026-09-15.json",
+    "sha256": "ee2e39a2ef8fed10b279b7df519c641667d49836eb8e812c68ca54fe06e6e3f4",
+    "required_status": "failed_after_judge_intent_retained"
+  },
+  "synthetic_fixture": {
+    "fixture_id": "p3-b18-schema-only-01",
+    "visible_history": [],
+    "current_turn": {
+      "turn_id": "synthetic-u1",
+      "content": "予定はまだ決めていない。"
+    },
+    "annotation": {
+      "turn_id": "synthetic-u1",
+      "visible_evidence_turn_ids": [
+        "synthetic-u1"
+      ],
+      "exact_source_spans": [
+        "まだ決めていない"
+      ],
+      "pragmatic_possibilities": [
+        "decision_is_pending",
+        "desired_action_is_unknown"
+      ],
+      "preferred_response_behaviors": [
+        "preserve the unresolved decision"
+      ],
+      "unacceptable_unsupported_claims": [
+        "the user definitely wants to attend"
+      ],
+      "event_kind": "none",
+      "correction_eligible": false
+    },
+    "anonymous_replies": {
+      "A": "まだ決めてないんだね。",
+      "B": "絶対行きたいんだね。"
+    }
+  },
+  "conditions": [
+    "json_object",
+    "json_schema"
+  ],
+  "judge": {
+    "model": "qwen3.5:9b",
+    "digest": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 384,
+    "timeout_seconds": 30,
+    "retries": 0
+  },
+  "response_formats": {
+    "json_object": {
+      "type": "json_object"
+    },
+    "json_schema": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "p3_dialogue_judgment",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scores",
+            "preference"
+          ],
+          "properties": {
+            "scores": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reply_slot",
+                  "attunement",
+                  "grounding",
+                  "correction",
+                  "continuity",
+                  "unsupported_assertion",
+                  "japanese_issue",
+                  "identity_issue",
+                  "evidence_turn_ids",
+                  "reply_quote"
+                ],
+                "properties": {
+                  "reply_slot": {
+                    "type": "string",
+                    "enum": [
+                      "A",
+                      "B"
+                    ]
+                  },
+                  "attunement": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1,
+                      2
+                    ]
+                  },
+                  "grounding": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1,
+                      2
+                    ]
+                  },
+                  "correction": {
+                    "type": "null"
+                  },
+                  "continuity": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1,
+                      2
+                    ]
+                  },
+                  "unsupported_assertion": {
+                    "type": "boolean"
+                  },
+                  "japanese_issue": {
+                    "type": "boolean"
+                  },
+                  "identity_issue": {
+                    "type": "boolean"
+                  },
+                  "evidence_turn_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "synthetic-u1"
+                      ]
+                    }
+                  },
+                  "reply_quote": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            "preference": {
+              "type": "string",
+              "enum": [
+                "A",
+                "B",
+                "tie"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "execution_boundary": {
+    "calls_exact": 2,
+    "one_call_per_condition": true,
+    "automatic_retry": false,
+    "continue_after_received_invalid_response": true,
+    "stop_after_transport_uncertainty": true,
+    "localhost_only": true,
+    "developer_case_access": false,
+    "annotation_file_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "success": {
+    "json_schema_complete_and_strictly_valid": true,
+    "both_conditions_exactly_accounted": true,
+    "no_retry": true,
+    "authorizes_case03_rerun": false,
+    "authorizes_quality_claim": false
+  }
+}

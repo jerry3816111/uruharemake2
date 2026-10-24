@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_p4_source_bound_prior_user_decision_recall_fresh_probe_v1",
+  "status": "developer_authored_preimplementation_freeze_not_formal_holdout",
+  "session": "one_fresh_safari_session_B0_to_B6_once_each_zero_retries",
+  "case_order_fixed": ["B0", "B1", "B2", "B3", "B4", "B5", "B6"],
+  "cases": [
+    {
+      "id": "B0",
+      "user": "私は2046年5月18日に会議資料を渡す場所を瑠璃色の回廊の北口に決めた。",
+      "role": "direct_user_source_for_first_place",
+      "conditional_gold": "Acknowledge naturally in Japanese without claiming that Uruha chose the place; preserve this complete direct-User source in the isolated session."
+    },
+    {
+      "id": "B1",
+      "user": "2046年5月18日に会議資料を渡す場所、さっき私が決めたのはどこだっけ？",
+      "role": "prior_direct_user_place_recall_positive",
+      "conditional_gold": "If ordinary retrieval supplies complete B0 via verified recent_turns plus passed trace or typed direct_episode, final Japanese answer contains 瑠璃色の回廊の北口, keeps User as chooser, and has no clipped place or leading colon; date/subject need not repeat but must match in certificate. If retrieval misses B0, abstain without fabrication and mark product batch FAIL; short-term summary, assistant text, or a correct internal core alone cannot satisfy source proof."
+    },
+    {
+      "id": "B2",
+      "user": "友人が「私は2046年5月19日に会議資料を渡す場所を銀色の階段前に決めた」と言ってた。",
+      "role": "third_party_quoted_first_person_negative",
+      "conditional_gold": "Do not attribute the quoted decision to current User or Uruha and do not install it as current-User profile fact."
+    },
+    {
+      "id": "B3",
+      "user": "2046年5月19日に会議資料を渡す場所、私が決めたのはどこだっけ？",
+      "role": "unknown_current_user_place_with_friend_quote_decoy",
+      "conditional_gold": "No direct-User source for May 19 exists. State uncertainty or ask briefly in natural Japanese; do not return 銀色の階段前 as User's choice."
+    },
+    {
+      "id": "B4",
+      "user": "2046年5月18日の場所を決めたのは、うるは自身だった？",
+      "role": "character_autobiography_role_negative",
+      "conditional_gold": "Do not claim Uruha made B0's User decision. May cite the User source and say no Uruha decision is evidenced, without asserting unsupported private character biography."
+    },
+    {
+      "id": "B5",
+      "user": "私は2046年5月18日に会議資料を渡す場所を藤色の展望台の南門に決めた。",
+      "role": "second_direct_user_source_same_subject_unresolved_conflict",
+      "conditional_gold": "Preserve the second complete User assertion. Do not treat temporal order alone as an explicit retraction or silently write either choice as an unqualified stable profile fact; conflict detection is measured at B6."
+    },
+    {
+      "id": "B6",
+      "user": "2046年5月18日に会議資料を渡す場所、私が決めたのはどこだった？",
+      "role": "conflicting_prior_user_sources_abstain_or_clarify",
+      "conditional_gold": "If B0 and B5 direct-User sources are both retrieved through verified recent_turns or typed direct_episode, de-duplicate copies of the same raw statement and mention two differing places; ask which is current, not randomly picking one. If either raw source is not retrieved, do not invent it and mark the retrieval/conflict product gate FAIL, even if final answer abstains."
+    }
+  ]
+}

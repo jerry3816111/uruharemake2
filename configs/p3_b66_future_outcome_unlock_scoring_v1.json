@@ -1,0 +1,112 @@
+{
+  "schema": "uruha_p3_b66_future_outcome_unlock_scoring_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_prediction_pair_before_future_outcome_access",
+  "research_question": "After binding the immutable B65 prediction pair, which condition assigns more probability to a deterministic observable-label proxy derived from the first post-cutoff Japanese caption cues?",
+  "claim_level": "single_real_row_deterministic_proxy_not_human_label_or_formal_m56",
+  "bindings": {
+    "b65_release": {
+      "path": "research/p3_b65_bounded_joint_prediction_release_2026-09-20.json",
+      "sha256": "bdba38e0d86880295919275fabbe2779b3d2cae5144978912dcf3681ef5a92f9"
+    },
+    "b65_saved_prediction": {
+      "path": "analysis/p3_b65_bounded_joint_prediction_result_2026-09-20.json",
+      "sha256": "d693d0fcbe06b96ecb63f014eabe556f83cae5098210c96fe457f887f497587d"
+    },
+    "b61_native_downloader_implementation": {
+      "path": "p3_b61_native_subtitle_cutoff_extractor.py",
+      "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"
+    },
+    "b61_native_downloader_contract": {
+      "path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json",
+      "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "future_start_milliseconds": 3181000,
+    "future_end_milliseconds": 3241000,
+    "include_rule": "cue_start_gte_future_start_and_cue_end_lte_future_end",
+    "selected_track_type": "automatic",
+    "selected_language_code": "ja",
+    "selected_format": "json3",
+    "minimum_future_cue_count": 1
+  },
+  "private_acquisition": {
+    "reuse_b61_native_downloader_command_and_private_file_contract": true,
+    "native_downloader_process_invocation_count_max": 1,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "private_full_caption_may_be_temporarily_observed": true,
+    "private_full_caption_deleted_before_public_scoring": true,
+    "raw_full_caption_stdout_stderr_filename_or_hash_persistence_allowed": false,
+    "maximum_private_caption_bytes": 10485760
+  },
+  "public_outcome": {
+    "root": "external_data/p3_b66_public_future_outcome",
+    "artifact_schema": "uruha_p3_b66_public_future_outcome_v1",
+    "manifest_schema": "uruha_p3_b66_public_future_outcome_manifest_v1",
+    "persist_only_projected_future_window": true,
+    "context_window_cues_persisted": false,
+    "first_behavior_target_max_cues": 3,
+    "first_behavior_target_max_seconds_from_first_cue": 12.0,
+    "evidence_excerpt_max_characters": 120
+  },
+  "observable_label_proxy": {
+    "normalization": "unicode_text_as_captioned_remove_whitespace_casefold",
+    "ordered_rules": [
+      {
+        "label": "direct_rejection",
+        "markers": ["無理", "やだ", "嫌", "いらない", "しない", "できない", "断る", "拒否"]
+      },
+      {
+        "label": "ask_clarification",
+        "markers": ["？", "?", "誰だ", "だれ", "何だ", "なに", "どこ", "どっち", "どうする", "どうしよう", "なんで", "なぜ"]
+      },
+      {
+        "label": "defer_commitment",
+        "markers": ["あとで", "後で", "今は", "一旦保留", "また今度", "保留", "考えとく"]
+      },
+      {
+        "label": "pause_and_reassess",
+        "markers": ["待って", "ちょっと待", "一旦", "様子見", "確認しよう", "落ち着", "止ま", "怖い"]
+      },
+      {
+        "label": "accept_support_and_continue",
+        "markers": ["ありがとう", "助かる", "お願い", "頼む", "任せ", "もらう", "いいよ", "了解"]
+      }
+    ],
+    "default_label": "acknowledge_then_continue",
+    "proxy_is_not_human_ground_truth": true
+  },
+  "frozen_metrics": {
+    "primary": "actual_label_probability_higher_is_better",
+    "selected_label_hit": true,
+    "multiclass_brier": "sum_over_six_labels_squared_probability_error_lower_is_better",
+    "log_loss": "negative_natural_log_of_actual_label_probability_with_floor_1e-15_lower_is_better",
+    "descriptive_text_only": "normalized_japanese_character_bigram_jaccard",
+    "winner_rule": "higher_actual_label_probability_then_lower_brier_then_tie",
+    "prediction_or_metric_change_after_future_access_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b66_future_outcome_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "scored_result.json",
+    "model_or_judge_call_count_required": 0,
+    "training_or_product_write_count_required": 0
+  },
+  "denied_actions": {
+    "prediction_mutation_after_unlock": true,
+    "model_or_llm_judge_call": true,
+    "human_semantic_relabel_in_this_stage": true,
+    "context_artifact_or_private_prediction_state_read": true,
+    "raw_full_caption_persistence": true,
+    "retry_or_source_substitution": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B66 can report one deterministic caption-based proxy outcome for the already frozen B65 pair. The proxy can be wrong because automatic captions and keyword rules are not human ground truth; one row cannot establish general pragmatic advantage, individual prediction ability, human understanding, or a human-response equation."
+}

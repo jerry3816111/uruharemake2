@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_p4_c_real_provider_gate_result_v1",
+  "version": "1.0.0",
+  "status": "real_positive_call_and_zero_call_negative_guards_pass",
+  "freeze_binding": {
+    "path": "research/p4_c_read_only_function_calling_implementation_freeze_2026-09-20.json",
+    "sha256": "03fded2ce9adbd1379ae379f1d487dafd71bca6f74def6f3bdd81d86c7a8b3d1"
+  },
+  "positive": {
+    "input_language": "en",
+    "input_sha256": "8fe1b5256f66666dc9718577191787c6c84d63274a679b7db6f8b569e80347b6",
+    "raw_input_persisted": false,
+    "provider": "local_ollama_chat_tools",
+    "model": "qwen3.5:9b",
+    "model_identity_match": true,
+    "model_call_count": 1,
+    "retry_count": 0,
+    "prompt_tokens": 310,
+    "completion_tokens": 15,
+    "provider_latency_seconds": 6.1879,
+    "tool_call_count": 1,
+    "tool_name": "get_runtime_status",
+    "tool_arguments": {},
+    "validation": "passed_exact_single_allowlisted_call",
+    "fixture_tool_execution_count": 1,
+    "production_runtime_read_count": 0,
+    "tool_result_bytes": 157,
+    "visible_reply_ja": "うん、脳は起動済み。記録は1ターン、記憶は隔離環境。今使えるのは読み取り専用の状態確認だけ。",
+    "trace_label_count": 5,
+    "trace_labels": [
+      "function_request_p4_c",
+      "function_model_decision_p4_c",
+      "function_validated_call_p4_c",
+      "function_tool_result_p4_c",
+      "function_surface_p4_c"
+    ]
+  },
+  "negative_guards": {
+    "case_count": 6,
+    "cases": [
+      "ordinary_conversation",
+      "negated_request",
+      "hypothetical_or_conditional",
+      "quoted_or_translation_request",
+      "third_person_or_example_request",
+      "prompt_injection_or_other_tool_request"
+    ],
+    "provider_call_count": 0,
+    "tool_execution_count": 0,
+    "all_statuses": "fallthrough_existing_chat"
+  },
+  "access_accounting": {
+    "real_local_model_call_count": 1,
+    "local_loopback_http_request_count": 1,
+    "retry_or_fallback_count": 0,
+    "external_network_call_count": 0,
+    "production_memory_read_count": 0,
+    "production_memory_write_count": 0,
+    "file_write_tool_count": 0,
+    "shell_tool_count": 0,
+    "physical_vrm_action_count": 0,
+    "safari_operation_count": 0
+  },
+  "next_gate": {
+    "product_integration_authorized": true,
+    "integration_scope": "product-only explicit status request branch plus same-turn graph",
+    "must_preserve_existing_chat_for_all_nonselected_inputs": true,
+    "isolated_safari_acceptance_required": true
+  },
+  "claim_boundary": "This proves one frozen local model emitted the exact read-only call and six executable negative gates made zero provider calls. The tool result was an isolated fixture, not live product state; no Web or Safari integration has passed yet."
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "uruha_p3_tokenizer_binding_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "bind_offline_hf_chat_template_counts_to_two_local_ollama_provider_usage_routes",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "developer_smoke_freeze": {
+    "path": "research/p3_b2_developer_smoke_data_freeze_2026-09-13.json",
+    "sha256": "9aa600750036007c972998e43fbdac447dbf5088ddd92b90c5816b49d6c0e63d"
+  },
+  "model": {
+    "ollama_model": "qwen2.5:7b",
+    "ollama_blob_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "hf_tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+    "local_files_only": true,
+    "add_generation_prompt": true
+  },
+  "transports": [
+    {
+      "id": "openai_compatible_local",
+      "url": "http://127.0.0.1:11434/v1/chat/completions",
+      "usage_prompt_field": "usage.prompt_tokens",
+      "usage_completion_field": "usage.completion_tokens"
+    },
+    {
+      "id": "native_ollama_chat",
+      "url": "http://127.0.0.1:11434/api/chat",
+      "usage_prompt_field": "prompt_eval_count",
+      "usage_completion_field": "eval_count"
+    }
+  ],
+  "generation_options": {
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 1,
+    "stream": false,
+    "transport_retries": 0,
+    "concurrency": 1,
+    "per_call_timeout_seconds": 45,
+    "total_wall_seconds_max": 240
+  },
+  "fixtures": [
+    {
+      "fixture_id": "binding-fit-01-ja-short",
+      "role": "fit",
+      "messages_sha256": "ab0b656c2c0b41ca75f5f5e9a095e706883bdbcacd21704ec6a46960102c63b0",
+      "messages": [
+        {"role": "system", "content": "短い日本語で返す。"},
+        {"role": "user", "content": "今日は少し眠い。"}
+      ]
+    },
+    {
+      "fixture_id": "binding-fit-02-zh-structured",
+      "role": "fit",
+      "messages_sha256": "c7080e9a33f475f8299a406500c1cb85258f01597756f1ec2fef6106ea06d8c6",
+      "messages": [
+        {"role": "system", "content": "Return one JSON object with keys state and reply. Do not add markdown."},
+        {"role": "user", "content": "我只是想確認這段中文在同一個聊天模板裡會被算成多少 token。"}
+      ]
+    },
+    {
+      "fixture_id": "binding-fit-03-en-multiturn",
+      "role": "fit",
+      "messages_sha256": "91bcfbb1fe981d225b698c03b541cb6ed18abb40f0177f1a7dce6355dfb5b5a0",
+      "messages": [
+        {"role": "system", "content": "Answer naturally in Japanese and preserve speaker attribution."},
+        {"role": "user", "content": "Rin likes the red notebook; I prefer the grey one."},
+        {"role": "assistant", "content": "うん、好みは別々なんだな。"},
+        {"role": "user", "content": "Which one did I say I prefer?"}
+      ]
+    },
+    {
+      "fixture_id": "binding-verify-04-crosslingual",
+      "role": "verification",
+      "messages_sha256": "7df8783a13b722e9f9a59c874029f59891770369e281d3b03488a05392d0e10d",
+      "messages": [
+        {"role": "system", "content": "入力言語に関係なく、根拠のある短い日本語だけを返す。"},
+        {"role": "user", "content": "先不要給建議，我只是把背景說完。"},
+        {"role": "assistant", "content": "分かった、まだ結論を急がない。"},
+        {"role": "user", "content": "Now I want one concrete next step, but don't assume why I changed my mind."}
+      ]
+    }
+  ],
+  "fit_and_verification": {
+    "estimator": "provider_prompt_tokens = hf_chat_template_tokens + integer_transport_offset",
+    "fit_fixture_ids": [
+      "binding-fit-01-ja-short",
+      "binding-fit-02-zh-structured",
+      "binding-fit-03-en-multiturn"
+    ],
+    "verification_fixture_ids": ["binding-verify-04-crosslingual"],
+    "fit_offsets_must_be_identical_within_each_transport": true,
+    "verification_prediction_must_be_exact": true,
+    "provider_counts_must_match_across_transports": true,
+    "tolerance_tokens": 0,
+    "post_result_fixture_or_tolerance_change_allowed": false
+  },
+  "execution_boundary": {
+    "expected_provider_calls": 8,
+    "maximum_provider_calls": 8,
+    "maximum_completion_tokens_total": 8,
+    "localhost_only": true,
+    "remote_paid_calls_allowed": false,
+    "retain_output_text": false,
+    "retain_output_sha256": true,
+    "intent_without_complete_is_terminal": true,
+    "automatic_retry": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "developer_smoke_access_allowed": false,
+    "annotation_access_allowed": false,
+    "production_database_access_allowed": false
+  }
+}

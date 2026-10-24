@@ -39,6 +39,9 @@ except ModuleNotFoundError:
 # 匯入大腦與感官模組 (增加詳細錯誤印出，精準抓蟲)
 try:
     from uruha_brain_mac import UruhaBrainV4_Mac
+    from uruha_semantic_persona_surface_m39 import install_m39_surface_verifier
+
+    install_m39_surface_verifier()
 except Exception as e:
     print(Fore.RED + f"❌ 載入 uruha_brain_mac.py 失敗！")
     print(Fore.YELLOW + f"詳細錯誤原因: {e}")
@@ -82,10 +85,10 @@ def main():
         try:
             # ➡️ 步驟 A：聆聽 (STT)
             user_text = ears.listen_and_transcribe()
-            
+
             if not user_text:
                 continue
-                
+
             if any(word in user_text.lower() for word in ["再見", "退出", "exit", "bye", "goodbye"]):
                 print(Fore.CYAN + "\nUruha: おやすみなさい！またね～ (系統關閉中...)")
                 mouth.speak_and_play("おやすみなさい！またね")
@@ -94,15 +97,15 @@ def main():
             # ➡️ 步驟 B：思考 (Brain)
             print(Style.DIM + "🧠 [大腦思考中...]")
             start_think = time.time()
-            
+
             reply = brain.live(user_text)
-            
+
             end_think = time.time()
             print(f"{Fore.CYAN}Uruha: {Fore.WHITE}{reply} {Style.DIM}(思考耗時: {round(end_think - start_think, 2)}s)")
 
             # ➡️ 步驟 C：說話 (TTS)
             mouth.speak_and_play(reply)
-            
+
             time.sleep(0.5)
 
         except KeyboardInterrupt:

@@ -1,0 +1,55 @@
+{
+  "schema": "ilhdt_m3_preregistration_v1",
+  "experiment_id": "m3_structured_memory_synthetic_mechanism_v1",
+  "registered_at": "2026-08-15T03:00:00+09:00",
+  "master_spec_sha256": "6f0a12f1ed5992baebae22ae10b3f614c54317bc575a86ce37761b49f85dc389",
+  "dataset": "datasets/m3_structured_memory_synthetic_fixture_v1.json",
+  "claim_level": "synthetic_memory_mechanism_evidence_only",
+  "formal_target_claim": false,
+  "semantic_relevance_provider": "deterministic_lexical_proxy_v1",
+  "parameters_not_fitted": true,
+  "parameter_note": "Equal component weights are a neutral engineering probe, not an empirically estimated human model.",
+  "memory_strength": {
+    "weights": {
+      "semantic_relevance": 1.0,
+      "recency": 1.0,
+      "frequency": 1.0,
+      "importance": 1.0,
+      "emotional_salience": 1.0,
+      "relationship_relevance": 1.0,
+      "confidence": 1.0
+    },
+    "recency_half_life_days": 120.0,
+    "frequency_saturation_count": 3.0
+  },
+  "retrieval": {
+    "top_k": 2,
+    "tie_break": "score_desc_then_memory_id_asc"
+  },
+  "ablations": [
+    "none",
+    "semantic_relevance",
+    "recency",
+    "frequency",
+    "importance",
+    "emotional_salience",
+    "relationship_relevance",
+    "confidence"
+  ],
+  "success_contract": {
+    "query_count": 6,
+    "record_count": 14,
+    "full_condition_recall_at_2": 1.0,
+    "future_memory_selected_count": 0,
+    "expired_memory_selected_count": 0,
+    "all_components_have_nonzero_observed_contribution": true,
+    "at_least_one_single_component_ablation_changes_a_rank_or_score": true
+  },
+  "forbidden_claims": [
+    "Uruha memory prediction validated",
+    "weights estimate a real human",
+    "lexical proxy is semantic understanding",
+    "memory model improves behavior prediction",
+    "human digital twin completed"
+  ]
+}

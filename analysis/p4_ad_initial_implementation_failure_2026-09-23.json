@@ -1,0 +1,77 @@
+{
+  "schema": "uruha_p4_ad_initial_implementation_failure_v1",
+  "status": "fail",
+  "failed_gates": [
+    "holdout_ambiguity_zh_01:status_mismatch",
+    "holdout_ambiguity_zh_01:required_candidate_modes_missing",
+    "holdout_ambiguity_zh_01:candidate_contract_failed",
+    "holdout_ambiguity_zh_01:private_unknown_boundary_missing",
+    "holdout_ambiguity_zh_02:status_mismatch",
+    "holdout_ambiguity_zh_02:required_candidate_modes_missing",
+    "holdout_ambiguity_zh_02:candidate_contract_failed",
+    "holdout_ambiguity_zh_02:private_unknown_boundary_missing",
+    "holdout_ambiguity_zh_03:status_mismatch",
+    "holdout_ambiguity_zh_03:required_candidate_modes_missing",
+    "holdout_ambiguity_zh_03:candidate_contract_failed",
+    "holdout_ambiguity_zh_03:private_unknown_boundary_missing",
+    "holdout_ambiguity_ja_02:status_mismatch",
+    "holdout_ambiguity_ja_02:required_candidate_modes_missing",
+    "holdout_ambiguity_ja_02:candidate_contract_failed",
+    "holdout_ambiguity_ja_02:private_unknown_boundary_missing",
+    "metric_mismatch:holdout_exact_status_count",
+    "metric_mismatch:holdout_required_candidate_modes_complete_count",
+    "metric_mismatch:candidate_contract_pass_count"
+  ],
+  "metrics": {
+    "development_exact_status_count": 3,
+    "development_exact_selected_action_count": 3,
+    "holdout_exact_status_count": 5,
+    "holdout_required_candidate_modes_complete_count": 5,
+    "literal_control_false_positive_count": 0,
+    "candidate_contract_pass_count": 8,
+    "selected_action_private_truth_commitment_count": 0,
+    "raw_input_trace_count": 0,
+    "visible_reply_changed_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "failed_case_observations": [
+    {
+      "case_id": "holdout_ambiguity_zh_01",
+      "existing_observable_trigger": "cognitive_overactivity",
+      "trigger_status": "single_observable_trigger",
+      "older_upstream_state_active": false,
+      "result_status": "not_applicable"
+    },
+    {
+      "case_id": "holdout_ambiguity_zh_02",
+      "existing_observable_trigger": "cognitive_overactivity",
+      "trigger_status": "single_observable_trigger",
+      "older_upstream_state_active": false,
+      "result_status": "not_applicable"
+    },
+    {
+      "case_id": "holdout_ambiguity_zh_03",
+      "existing_observable_trigger": "cognitive_overactivity",
+      "trigger_status": "single_observable_trigger",
+      "older_upstream_state_active": false,
+      "result_status": "not_applicable"
+    },
+    {
+      "case_id": "holdout_ambiguity_ja_02",
+      "existing_observable_trigger": "cognitive_overactivity",
+      "trigger_status": "single_observable_trigger",
+      "older_upstream_state_active": false,
+      "result_status": "not_applicable"
+    }
+  ],
+  "interpretation": "The existing bounded multilingual observable-trigger extractor found cognitive_overactivity in every failed case, but the older upstream emotional-bid path did not activate. The first correction may reuse that already-existing typed trigger inside the additive shadow ledger; it may not add lexical cases, edit the frozen dataset, alter visible replies or change predecessor files.",
+  "correction_budget": {
+    "maximum_informed_batches": 2,
+    "used_after_this_failure": 0,
+    "next_batch": 1
+  },
+  "claim_boundary": "Preserved initial implementation failure; it is not a holdout pass and cannot be omitted from the final report."
+}

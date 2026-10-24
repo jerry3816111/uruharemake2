@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_p4_az_previous_turn_cjk_ellipsis_authority_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_az_previous_turn_cjk_ellipsis_authority_v1.json",
+    "sha256": "d0ca4a5224ca7c2d3ec05b655c375640f4c52a1836b403621b149c852a24ae3a",
+    "case_count": 19,
+    "development_count": 1,
+    "fresh_positive_count": 6,
+    "fresh_control_count": 12,
+    "predecessor_positive_count": 6
+  },
+  "predecessors": {
+    "p4_ay_module": [
+      "uruha_response_form_constraint_boundary_p4.py",
+      "ad1900bb13ada6e0b2d62f72bc155787399b7ff662e285080c68244355eb4efb"
+    ],
+    "p4_aw_module": [
+      "uruha_cjk_subject_ellipsis_action_authority_p4.py",
+      "63f372937348d51165da450252a9f088318a16b8a0b519c3e29f4b470b284a07"
+    ],
+    "p4_ay_dataset": [
+      "datasets/p4_ay_response_form_constraint_boundary_v1.json",
+      "956080cc3f367e92a9f43e49869df959108a665c90fae89de7e81b0fca5c5173"
+    ],
+    "p4_ay_evidence": [
+      "analysis/p4_ay_response_form_constraint_boundary_evidence_2026-09-26.json",
+      "fe307171baca3ecd7999c9169aef7b389fe184a0c27213a4385ba73dcfc829a3"
+    ],
+    "p4_ay_tests": [
+      "test_p4_ay_response_form_constraint_boundary.py",
+      "35e9dc44bf8effe6a0a6dac5d6ac1063c0d70061035e21a43a7d14b2b48136cc"
+    ]
+  },
+  "single_variable": {
+    "name": "exact_previous_turn_chinese_subject_ellipsis_source_authority",
+    "allowed_change": "After exact P4-AX/P4-AT feedback and P4-AY current-task discrimination, authorize only the immediately previous direct Chinese subject-ellipsis cognitive-overactivity source while preserving speaker_role=unspecified.",
+    "forbidden_changes": [
+      "source_role_rewrite_to_user_first_person",
+      "p4_aw_trigger_or_current_turn_action_authority",
+      "p4_ax_or_p4_at_feedback_authority",
+      "p4_ay_task_replacement_discrimination",
+      "p4_au_turn_window_budget_trigger_or_non_role_guards",
+      "third_party_quote_meta_report_hypothetical_physical_or_resolved_authority",
+      "candidate_score_or_order",
+      "m53_m46_m45_or_m39_review_and_fail_closed",
+      "prompt_model_call_or_visible_reply",
+      "factual_or_long_term_memory",
+      "assistant_or_private_inference_source",
+      "raw_dialogue_trace",
+      "p4_ax_real_jsondecodeerror_result"
+    ]
+  },
+  "offline_gates": {
+    "case_count": 19,
+    "development_authorized_count": 1,
+    "development_prior_source_linked_count": 1,
+    "fresh_positive_authorized_count": 6,
+    "fresh_positive_prior_source_linked_count": 6,
+    "fresh_positive_exact_source_identity_count": 6,
+    "fresh_positive_downstream_action_contract_count": 6,
+    "fresh_control_prior_source_added_count": 0,
+    "fresh_control_expected_status_count": 12,
+    "blocked_source_authority_control_count": 12,
+    "predecessor_positive_prior_source_present_count": 6,
+    "source_role_preserved_unspecified_count": 7,
+    "exact_feedback_chain_preserved_count": 7,
+    "typed_cognitive_trigger_count": 7,
+    "p4_ay_task_boundary_mutation_count": 0,
+    "p4_au_non_role_guard_bypass_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "added_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "assistant_source_count": 0,
+    "private_inference_source_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "visible_reply_change_count": 0,
+    "full_fresh_string_patch_count": 0
+  },
+  "failure_policy": {
+    "same_fresh_case_retry_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "speaker_role_may_be_rewritten_to_first_person": false,
+    "missing_exact_feedback_chain_may_count_as_authorized": false,
+    "third_party_meta_report_hypothetical_physical_or_resolved_may_count_as_authorized": false,
+    "p4_au_non_role_guards_may_be_bypassed": false,
+    "offline_pass_may_rewrite_p4_ay_failure": false,
+    "offline_pass_may_fix_or_hide_m45_json_failure": false,
+    "fresh_safari_case_required_after_offline_pass": true
+  },
+  "claim_boundary": "A pass establishes only bounded previous-turn Chinese subject-ellipsis source authority under an exact observable execution-and-feedback chain. It does not identify a private mental state, establish open-domain coreference, plan quality, advice usefulness, a human equation, or superiority over a matched strong LLM."
+}

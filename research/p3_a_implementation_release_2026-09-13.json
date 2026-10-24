@@ -1,0 +1,72 @@
+{
+  "schema": "uruha_p3_a_implementation_release_v1",
+  "status": "implementation_frozen_for_p3b_adapter",
+  "review_date": "2026-09-13",
+  "review_type": "self_review_not_independent",
+  "reviewed_base_commit": "701905e7ebfc7860149dd38b843176588f2886d2",
+  "product_source_commit": "34bef3d01d236873b4aa384b76aba2893ff9949d",
+  "design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "7273e2a70945e9d4f71ea5058869ec156d0badc14b649371b1fa9ea5811107d6"
+  },
+  "implementation_sha256": {
+    "p3_product_comparison.py": "5e3a02f6312b4f819c23e26dd7b54d08e7641e122b33b5e4b22d4dbe411deddd",
+    "run_p3_product_comparison.py": "ed2327a9941bf855bb710774ee92ce70a5b029906f19878bc87bb35181d76034",
+    "test_p3_product_comparison.py": "6072ee8e00bbd8f55302cdd4891783b1750a690a26e4b09983f266ca6b485122"
+  },
+  "contract": {
+    "path": "analysis/p3_a_self_review_contract_2026-09-13.json",
+    "file_sha256": "d6f67dd9a0cdf923f83dc951e11acc7873df2b91a0eb7c4424e3724cfbe7c99c",
+    "manifest_sha256": "9517e8d4f7aee25360c31d8ec760077bea44e80c91d1781cc20d07cd99a922fd",
+    "real_model_calls": 0,
+    "network_calls": 0,
+    "paid_calls": 0
+  },
+  "review_checks": {
+    "generation_view_self_validating": true,
+    "common_source_pairing_validated": true,
+    "per_call_usage_retained": true,
+    "aggregate_budget_reconciles_to_calls": true,
+    "condition_wall_includes_worker_time": true,
+    "checkpoint_no_retry_and_integrity_validated": true,
+    "openai_compatible_and_native_route_model_gate_mocked": true,
+    "real_product_worker_validated": false,
+    "provider_tokenizer_binding_validated": false,
+    "independent_review_completed": false
+  },
+  "authorized_next": {
+    "stage": "P3-B1",
+    "split": "developer_smoke",
+    "actions": [
+      "implement_isolated_product_worker_adapter",
+      "perform_zero_generation_import_and_environment_preflight",
+      "add_adapter_contract_tests"
+    ],
+    "real_generation_authorized": false,
+    "corpus_generation_authorized": false,
+    "confirmation_access_authorized": false,
+    "production_database_access_authorized": false,
+    "external_deployment_authorized": false
+  },
+  "resource_limits_for_future_release": {
+    "generation_model": "qwen2.5:7b",
+    "aggregate_prompt_tokens_max_per_condition_turn": 32768,
+    "aggregate_completion_tokens_max_per_condition_turn": 768,
+    "wall_seconds_max_per_condition_turn": 60,
+    "per_call_context_total_tokens_max": 8192,
+    "common_history_tokens_max": 6000,
+    "direct_calls_max": 1,
+    "deliberate_calls_max": 3,
+    "system_calls_max": 4,
+    "concurrency": 1,
+    "transport_retries": 0
+  },
+  "blocked_until_separate_release": [
+    "any_real_generation",
+    "developer_smoke_execution",
+    "confirmation_data_creation_or_access",
+    "proxy_scoring",
+    "quality_or_cost_claim"
+  ],
+  "claim_boundary": "This self-review freezes only the offline P3-A harness contract. It is not independent review and is not product, generation, quality, human-preference, or superiority evidence."
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "p4_mixed_past_place_source_authority_probe_v1",
+  "status": "preimplementation_researcher_authored_not_independent_holdout",
+  "date": "2026-10-20",
+  "contract_cases": [
+    {
+      "id": "D1_recent_direct",
+      "sources": [{"channel": "recent_turns", "user": "私は2026年10月11日の集合場所を藍色の階段前に決めた。"}],
+      "query": "「集合場所はまだ保留です」を友達向けに柔らかく言い換えて、2026年10月11日に私が選んだ場所も思い出して。",
+      "expected_status": "source_backed",
+      "expected_value": "藍色の階段前"
+    },
+    {
+      "id": "D2_typed_episode_after_restart",
+      "sources": [{"channel": "direct_episode", "user": "私は2026年10月12日の集合場所を若草色の橋の北端に決めた。"}],
+      "query": "「集合場所は確認中です」を友達向けに柔らかく言い換えて、2026年10月12日に私が選んだ場所も教えて。",
+      "expected_status": "source_backed",
+      "expected_value": "若草色の橋の北端"
+    },
+    {
+      "id": "D3_relative_unknown",
+      "sources": [],
+      "query": "「集合場所は未確定」を友達向けに柔らかく言い換えて、一昨日私が選んだ場所も思い出して。",
+      "expected_status": "relative_time_unverifiable",
+      "expected_value": null
+    },
+    {
+      "id": "D4_conflicting_direct",
+      "sources": [
+        {"channel": "recent_turns", "user": "私は2026年10月13日の集合場所を白い水門前に決めた。"},
+        {"channel": "direct_episode", "user": "私は2026年10月13日の集合場所を黒い水門前に決めた。"}
+      ],
+      "query": "「集合先は保留です」を友達向けに柔らかく言い換えて、2026年10月13日に私が選んだ場所も思い出して。",
+      "expected_status": "conflicting_user_sources",
+      "expected_value": null
+    },
+    {
+      "id": "D5_retraction",
+      "sources": [
+        {"channel": "direct_episode", "user": "私は2026年10月14日の集合場所を青い噴水横に決めた。"},
+        {"channel": "recent_turns", "user": "2026年10月14日の集合場所は青い噴水横じゃない。さっきのは間違い。"}
+      ],
+      "query": "「集合場所は調整中」を友達向けに柔らかく言い換えて、2026年10月14日に私が選んだ場所も教えて。",
+      "expected_status": "source_retracted_or_ambiguous",
+      "expected_value": null
+    },
+    {
+      "id": "D6_third_party_quote",
+      "sources": [{"channel": "recent_turns", "user": "友達が『私は2026年10月15日の集合場所を紫の灯台前に決めた』と言った。"}],
+      "query": "「集合先はまだ未定」を友達向けに柔らかく言い換えて、2026年10月15日に私が選んだ場所も思い出して。",
+      "expected_status": "no_admitted_user_source",
+      "expected_value": null
+    },
+    {
+      "id": "D7_assistant_summary_decoy",
+      "sources": [{"channel": "direct_episode", "user": "集合場所はまだ分からない。", "summary": "2026年10月16日の集合場所は金色の門前。", "assistant": "2026年10月16日は金色の門前に決めたよね。"}],
+      "query": "「集合先は未確定」を友達向けに柔らかく言い換えて、2026年10月16日に私が選んだ場所も教えて。",
+      "expected_status": "no_admitted_user_source",
+      "expected_value": null
+    },
+    {
+      "id": "D8_current_presupposition",
+      "sources": [],
+      "query": "「集合先は保留」を友達向けに柔らかく言い換えて、2026年10月17日に私が選んだ赤い門の場所も思い出して。",
+      "expected_status": "no_admitted_user_source",
+      "expected_value": null
+    },
+    {
+      "id": "D9_unhanded_source",
+      "sources": [{"channel": "recent_turns_unhanded", "user": "私は2026年10月18日の集合場所を銀色のアーチ下に決めた。"}],
+      "query": "「集合先は保留中」を友達向けに柔らかく言い換えて、2026年10月18日に私が選んだ場所も教えて。",
+      "expected_status": "no_admitted_user_source",
+      "expected_value": null
+    },
+    {
+      "id": "D10_not_mixed_control",
+      "sources": [],
+      "query": "2026年10月19日の集合場所はどこ？",
+      "expected_status": "ineligible",
+      "expected_value": null
+    },
+    {
+      "id": "D11_protected_control",
+      "sources": [],
+      "query": "「認証コードは紙にある」を友達向けに柔らかく言い換えて、昨日私が選んだ場所も教えて。",
+      "expected_status": "ineligible",
+      "expected_value": null
+    }
+  ],
+  "product_sequence": [
+    {"id": "W1_seed", "input": "私は2026年10月9日の集合場所を翡翠色のアーチ下に決めた。", "expected": "seed_only"},
+    {"id": "W2_source_backed_mixed", "input": "「集合場所は検討中です」を友達向けに柔らかく言い換えて、2026年10月9日に私が選んだ場所も思い出して。", "expected": "source_backed:翡翠色のアーチ下"},
+    {"id": "W3_relative_unknown", "input": "「集合先は保留です」を友達向けに柔らかく言い換えて、一昨日私が選んだ場所も教えて。", "expected": "unknown_without_place"},
+    {"id": "W4_third_party_seed", "input": "友達が『私は2026年10月8日の集合場所を緑のテント前に決めた』と言った。", "expected": "seed_only"},
+    {"id": "W5_third_party_not_promoted", "input": "「集合場所は再確認中」を友達向けに柔らかく言い換えて、2026年10月8日に私が選んだ場所も思い出して。", "expected": "unknown_without_place"},
+    {"id": "W6_conflict_seed", "input": "私は2026年10月9日の集合場所を琥珀色の時計台前に決めた。", "expected": "seed_only"},
+    {"id": "W7_conflict_unknown", "input": "「集合先はまだ仮です」を友達向けに柔らかく言い換えて、2026年10月9日に私が選んだ場所も教えて。", "expected": "conflict_without_place"}
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "schema": "p4_m46_reviewer_necessity_v1",
+  "version": "1.0.0",
+  "status": "sealed_before_model_execution",
+  "development_only": true,
+  "annotation_provenance": "Developer-authored prospective proxy, not independent human judgment or a holdout.",
+  "claim_boundary": "Source-only M51 generation cases and hand-authored challenge packets for an offline M46 reviewer necessity ablation. These packets are not observed M51 model outputs, and no product bypass is authorized.",
+  "generation_cases": [
+    {
+      "case_id": "p4_m46_gen_zh_scaffold_001",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:gen01",
+        "kind": "current_user",
+        "text": "我把社團活動紀錄的素材貼在同一頁，還沒有章節。只給我一個先建立架構的小動作；不要替我編造活動內容。"
+      },
+      "predeclared_source_support": {
+        "literal_goal": "為社團活動紀錄建立可繼續整理的架構",
+        "constraints": ["只要一個小動作", "不得編造活動內容"],
+        "forbidden_inference": ["素材已按特定時間或主題整理", "使用者的私人動機或截止時間"]
+      }
+    },
+    {
+      "case_id": "p4_m46_gen_zh_group_001",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:gen02",
+        "kind": "current_user",
+        "text": "我的借書清單把已歸還和未歸還混在一起。只照這兩類標記兩筆就停，原有內容不要刪。"
+      },
+      "predeclared_source_support": {
+        "literal_goal": "依歸還狀態整理借書清單中的兩筆",
+        "constraints": ["分組規則為已歸還／未歸還", "兩筆後停止", "不得刪除原內容"],
+        "forbidden_inference": ["擅自判定未寫明的書籍歸還狀態", "清空或重寫整份清單"]
+      }
+    },
+    {
+      "case_id": "p4_m46_gen_en_extract_001",
+      "language": "en",
+      "source": {
+        "id": "current:gen03",
+        "kind": "current_user",
+        "text": "The workshop transcript mixes audience questions with setup chatter. For a FAQ draft, pull out exactly one question that was actually asked, then stop; do not invent an answer."
+      },
+      "predeclared_source_support": {
+        "literal_goal": "從工作坊逐字稿取出一個實際被問過的問題",
+        "constraints": ["只取一題後停止", "不得編造答案", "不能把設備閒聊當作提問"],
+        "forbidden_inference": ["逐字稿中未提供的具體問題文字", "擅自完成整份 FAQ"]
+      }
+    },
+    {
+      "case_id": "p4_m46_gen_en_verify_001",
+      "language": "en",
+      "source": {
+        "id": "current:gen04",
+        "kind": "current_user",
+        "text": "Before printing the event flyer, check once whether the venue line says Room B. Do not change the date or print it yet."
+      },
+      "predeclared_source_support": {
+        "literal_goal": "印製前確認活動傳單的場地欄是否寫 Room B",
+        "constraints": ["只檢查一次", "不得修改日期", "此時不得印製"],
+        "forbidden_inference": ["聲稱已看到傳單內容", "擅自改日期或開始印製"]
+      }
+    },
+    {
+      "case_id": "p4_m46_gen_ja_obstacle_001",
+      "language": "ja",
+      "source": {
+        "id": "current:gen05",
+        "kind": "current_user",
+        "text": "資料を読む画面で右側のメニューが開いたまま本文を隠している。本文は変えず、そのメニューだけ閉じて見える状態にしたい。"
+      },
+      "predeclared_source_support": {
+        "literal_goal": "畫面右側選單不再遮住資料本文",
+        "constraints": ["只關閉遮住本文的選單", "不得修改本文"],
+        "forbidden_inference": ["聲稱系統已替使用者操作介面", "關閉資料本身或其他程式"]
+      }
+    },
+    {
+      "case_id": "p4_m46_gen_ja_atomic_001",
+      "language": "ja",
+      "source": {
+        "id": "current:gen06",
+        "kind": "current_user",
+        "text": "申込用紙の「参加人数」は二人と決まっていて、そこだけ未記入。ほかの欄は触らず、その欄に人数を書いたら終わり。"
+      },
+      "predeclared_source_support": {
+        "literal_goal": "僅在申請表的參加人數欄填入已知的二人",
+        "constraints": ["其他欄位不動", "填完該欄即停止"],
+        "forbidden_inference": ["擅自推定其他欄位內容", "聲稱表單已提交"]
+      }
+    }
+  ],
+  "challenge_packets": [
+    {
+      "packet_id": "p4_m46_fixture_valid_zh_001",
+      "category": "valid",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:fixture01",
+        "kind": "current_user",
+        "text": "我的志工活動日誌已有日期，但沒有段落標題。先給我一個小步驟建立架構，不要替我補寫活動內容。"
+      },
+      "batch": {
+        "sid": "current:fixture01",
+        "span": "我的志工活動日誌已有日期，但沒有段落標題。先給我一個小步驟建立架構，不要替我補寫活動內容。",
+        "goal": "志工活動日誌を整理しやすくする",
+        "unknown": "活動内容の詳細は不明",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "見出し二つ", "verb": "書く", "effect": "日誌に整理用の見出しが二つできた状態", "stop": "見出しを二つ書いたら止める", "instruction": "まず日誌に見出し二つだけ書いて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "活動の感想", "verb": "考える", "effect": "感想をまだ書いていない状態", "stop": "一つ考えたら止める", "instruction": "活動の感想を一つ考えて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": true, "reason": "在既有日誌建立兩個可用標題，不補造活動內容；屬來源任務的可觀察、可逆進展。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_valid_en_001",
+      "category": "valid",
+      "language": "en",
+      "source": {
+        "id": "current:fixture02",
+        "kind": "current_user",
+        "text": "My training notes mix participant questions with room setup details. Pull out one question actually present in the notes for a later FAQ; leave answers unwritten."
+      },
+      "batch": {
+        "sid": "current:fixture02",
+        "span": "My training notes mix participant questions with room setup details. Pull out one question actually present in the notes for a later FAQ; leave answers unwritten.",
+        "goal": "研修メモから実際の質問を一つ拾う",
+        "unknown": "質問の具体的な文面は不明",
+        "items": [
+          {"mechanism": "extract_relevant_subset", "object": "実際の質問一つ", "verb": "抜き出す", "effect": "実際の質問が一つ別に記された状態", "stop": "質問を一つ抜き出したら止める", "instruction": "メモから実際の質問一つだけ抜き出して、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "部屋の情報", "verb": "眺める", "effect": "部屋の情報を見ただけの状態", "stop": "一つ見たら止める", "instruction": "部屋の情報を一つ眺めて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": true, "reason": "從原筆記擷取實際問題、不猜問題文字或答案；有明確停止點。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_valid_ja_001",
+      "category": "valid",
+      "language": "ja",
+      "source": {
+        "id": "current:fixture03",
+        "kind": "current_user",
+        "text": "研修の申込書で参加人数だけ空欄で、人数は二人と決まっている。ほかは変えず、その欄を埋めたら終わり。"
+      },
+      "batch": {
+        "sid": "current:fixture03",
+        "span": "研修の申込書で参加人数だけ空欄で、人数は二人と決まっている。ほかは変えず、その欄を埋めたら終わり。",
+        "goal": "研修の申込書の参加人数欄を埋める",
+        "unknown": "ほかの記入条件は不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "参加人数欄", "verb": "書く", "effect": "参加人数欄に二人と書かれた状態", "stop": "人数欄を埋めたら止める", "instruction": "まず参加人数欄に二人と書いて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "申込書の見た目", "verb": "眺める", "effect": "申込書を見ただけの状態", "stop": "一度見たら止める", "instruction": "申込書の見た目を一度眺めて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": true, "reason": "已知數值、欄位與完成條件均在來源，填入該欄是原子任務，沒有擴張至其他欄位。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_wrong_task_001",
+      "category": "wrong_task",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:fixture04",
+        "kind": "current_user",
+        "text": "我現在要整理採訪問題清單；答案草稿先不要動。只給我一個能整理問題的小步驟。"
+      },
+      "batch": {
+        "sid": "current:fixture04",
+        "span": "我現在要整理採訪問題清單；答案草稿先不要動。只給我一個能整理問題的小步驟。",
+        "goal": "採訪の質問一覧を整理する",
+        "unknown": "質問の内容は不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "回答草稿の一文", "verb": "書く", "effect": "回答草稿に一文が増えた状態", "stop": "一文だけ書いたら止める", "instruction": "回答草稿の一文を一つ書いて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "質問の数", "verb": "考える", "effect": "質問数を考えただけの状態", "stop": "一度考えたら止める", "instruction": "質問の数を一度考えて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "有精確來源卻改動來源明令不要動的答案草稿，未推進採訪問題清單。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_unsupported_specificity_001",
+      "category": "unsupported_specificity",
+      "language": "en",
+      "source": {
+        "id": "current:fixture05",
+        "kind": "current_user",
+        "text": "My rehearsal checklist is scattered. Give me one reversible organizing step; I have not settled a deadline or venue."
+      },
+      "batch": {
+        "sid": "current:fixture05",
+        "span": "My rehearsal checklist is scattered. Give me one reversible organizing step; I have not settled a deadline or venue.",
+        "goal": "リハーサルのチェック項目を整理する",
+        "unknown": "締切と会場は未定",
+        "items": [
+          {"mechanism": "structure_scaffold", "object": "午後五時の会場表", "verb": "書く", "effect": "午後五時の会場表ができた状態", "stop": "会場表を一つ書いたら止める", "instruction": "午後五時の会場表を一つ書いて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "作業の気分", "verb": "考える", "effect": "気分を考えただけの状態", "stop": "一度考えたら止める", "instruction": "作業の気分を一度考えて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "來源明示截止時間與場地未定，卻捏造下午五點的場地表。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_private_inference_001",
+      "category": "private_inference",
+      "language": "ja",
+      "source": {
+        "id": "current:fixture06",
+        "kind": "current_user",
+        "text": "イベントの連絡事項をまだ並べていない。今は一つずつ整理したいが、理由は話していない。"
+      },
+      "batch": {
+        "sid": "current:fixture06",
+        "span": "イベントの連絡事項をまだ並べていない。今は一つずつ整理したいが、理由は話していない。",
+        "goal": "失敗が怖くて連絡事項を避ける気持ちを処理する",
+        "unknown": "本人の心理状態は不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "失敗への怖さ", "verb": "書く", "effect": "失敗への怖さが一つ書き出された状態", "stop": "怖さを一つ書いたら止める", "instruction": "失敗への怖さを一つ書いて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "連絡事項の数", "verb": "考える", "effect": "数を考えただけの状態", "stop": "一度考えたら止める", "instruction": "連絡事項の数を一度考えて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "把未知的私人恐懼當成確定目標，沒有整理事件聯絡事項。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_non_action_001",
+      "category": "non_action",
+      "language": "en",
+      "source": {
+        "id": "current:fixture07",
+        "kind": "current_user",
+        "text": "The opening page of my club newsletter is still empty. I want one practical step that changes the draft, not just encouragement."
+      },
+      "batch": {
+        "sid": "current:fixture07",
+        "span": "The opening page of my club newsletter is still empty. I want one practical step that changes the draft, not just encouragement.",
+        "goal": "会報の冒頭ページを進める",
+        "unknown": "会報の内容は不明",
+        "items": [
+          {"mechanism": "direct_atomic_completion", "object": "作成作業", "verb": "進める", "effect": "作成作業が一つ進んだ状態", "stop": "一つ進めたら止める", "instruction": "作成作業を一つ進めて、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "会報の名前", "verb": "眺める", "effect": "名前を見ただけの状態", "stop": "一度見たら止める", "instruction": "会報の名前を一度眺めて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "『作成作業を進める』只重述任務，沒有可執行的操作或可觀察的工作物變化。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_surface_001",
+      "category": "surface",
+      "language": "ja",
+      "source": {
+        "id": "current:fixture08",
+        "kind": "current_user",
+        "text": "資料を見る画面で右の案内パネルが本文に重なっている。本文は変えず、パネルだけ閉じて読みたい。"
+      },
+      "batch": {
+        "sid": "current:fixture08",
+        "span": "資料を見る画面で右の案内パネルが本文に重なっている。本文は変えず、パネルだけ閉じて読みたい。",
+        "goal": "資料の本文を読める状態にする",
+        "unknown": "画面の操作方法は不明",
+        "items": [
+          {"mechanism": "remove_named_obstacle", "object": "案内パネル", "verb": "閉じる", "effect": "案内パネルが閉じて本文を読める状態", "stop": "パネル一つを閉じたら止める", "instruction": "うちが案内パネルを一つ閉じておくから、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "画面の色", "verb": "眺める", "effect": "色を見ただけの状態", "stop": "一度見たら止める", "instruction": "画面の色を一度眺めて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "行動本身可用，但最終句聲稱助手已替使用者關閉其畫面上的面板，形成身份／行動者錯置。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": true, "arm_b_would_allow": true}
+    },
+    {
+      "packet_id": "p4_m46_fixture_guard_block_001",
+      "category": "guard_block",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:fixture09",
+        "kind": "current_user",
+        "text": "我想把兩個樣本盒照標籤顏色分開放，盒內物品先不要碰。"
+      },
+      "batch": {
+        "sid": "current:fixture09",
+        "span": "我想把兩個樣本盒照標籤顏色分開放，盒內物品先不要碰。",
+        "goal": "二つの標本箱をラベルの色で分ける",
+        "unknown": "箱の色は不明",
+        "items": [
+          {"mechanism": "random_rearrangement", "object": "標本箱二つ", "verb": "動かす", "effect": "標本箱の位置が入れ替わった状態", "stop": "二つ動かしたら止める", "instruction": "標本箱二つを適当に動かして、そこで止めよ。"},
+          {"mechanism": "unknown", "object": "箱の配置", "verb": "眺める", "effect": "配置を見ただけの状態", "stop": "一度見たら止める", "instruction": "箱の配置を一度眺めて、そこで止めよ。"}
+        ]
+      },
+      "gold": {"accept": false, "reason": "隨意移動盒子不依來源指定的標籤顏色規則；首候選使用 M46 明列不可交付的 mechanism。"},
+      "expected_deterministic_guard": {"selected_index": 0, "selected_structural_pass": false, "arm_b_would_allow": false}
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "uruha_p4_temporal_specific_recall_admission_fresh_probe_v1",
+  "authorship": "developer_authored_unseen_product_probe_not_formal_holdout",
+  "status": "frozen_before_implementation_and_first_model_generation",
+  "sessions": 2,
+  "restart_after_turn": 4,
+  "same_isolated_db_after_restart": true,
+  "retry_count_per_turn": 0,
+  "turns": [
+    {"turn": 1, "role": "direct_source_a", "input": "校庭の集合場所は銀色の門の前だよ。", "conditional_gold": "Store this as a direct user-source episode without turning it into a profile fact."},
+    {"turn": 2, "role": "relationship_distractor_a", "input": "ねえ、まだ私のこと覚えてる？", "conditional_gold": "Answer the direct relationship question naturally; no specific factual recall takeover."},
+    {"turn": 3, "role": "temporal_specific_recall_a", "input": "少し前に言った校庭の集合場所、覚えてる？", "conditional_gold": "Only if the T1 direct User episode is retrieved and uniquely validated, answer with its source-bound silver-gate location. Do not use T2 or a generic context anchor as factual proof."},
+    {"turn": 4, "role": "quoted_query_edit_control", "input": "「少し前に言った校庭の集合場所、覚えてる？」って台詞、自然？", "conditional_gold": "Answer the outer wording question; the quoted recall question must not execute. Planned same-DB restart follows."},
+    {"turn": 5, "role": "direct_source_b_after_restart", "input": "図書室の待ち合わせ席は窓際の三番だよ。", "conditional_gold": "Store a second, distinct direct user-source episode after restart, without profile-fact write."},
+    {"turn": 6, "role": "ordinary_distractor_b", "input": "今日はちょっと眠いな。", "conditional_gold": "Ordinary conversational response; this is not a recollection source for T7."},
+    {"turn": 7, "role": "temporal_specific_recall_b", "input": "ちょっと前に話した図書室の待ち合わせ席、覚えてる？", "conditional_gold": "Only if T5 direct User episode is retrieved and uniquely validated, answer with its source-bound window-side seat number; do not use T6 or T1."},
+    {"turn": 8, "role": "missing_source_control", "input": "少し前に言った屋上の看板の色、覚えてる？", "conditional_gold": "No direct user-source episode for this focus exists; give natural, low-pressure Japanese uncertainty without inventing a color or quoting unrelated context."}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "uruha_p4_reported_ack_source_scoped_memory_fresh_probe_v1",
+  "authorship": "developer_authored_pre_exposure_product_cases",
+  "status": "pre_exposure",
+  "claim_boundary": "One prospective B correction batch; not independent holdout, human rating, or strong-LLM comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 4,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 8,
+  "turns": [
+    {"turn": 1, "role": "ordinary_report_without_prior_target", "input": "先輩は「先に確認して」と言っていた。", "expected_source_certificate": true, "conditional_gold": "If A admitted, M31 deferred, high/general and selected reported act with no anchor or traceable passive episode, B must be final-visible source-scoped Japanese acknowledgment; no global target-unknown assertion."},
+    {"turn": 2, "role": "known_target_setup", "input": "確認する対象は明日の教室番号だよ。", "expected_source_certificate": false, "conditional_gold": "B ineligible; this current-user statement supplies a target for later contradiction check, not permission to convert conjecture into profile fact."},
+    {"turn": 3, "role": "ordinary_report_after_known_target", "input": "先輩が「先に確認してね」と言った。", "expected_source_certificate": true, "conditional_gold": "Same conditional B final-visible requirement as T1; if prior target appears in background, the final must not say the target is globally unknown or attribute it to the quoted speaker."},
+    {"turn": 4, "role": "protected_report_before_restart", "input": "兄が「先に確認してね」と言ってた。", "expected_source_certificate": true, "conditional_gold": "If actual route/seed is protected, B must not take over and original M31 runs; otherwise protected coverage missing."},
+    {"turn": 5, "role": "ordinary_report_after_same_db_restart", "input": "先輩は「先に確認してね」と言った。", "expected_source_certificate": true, "conditional_gold": "Same positive conditional gate as T1 after planned restart; final source-scoped Japanese acknowledgment, not global unknown or generic fallback."},
+    {"turn": 6, "role": "explicit_recall_negative", "input": "さっき言った確認対象、覚えてる？", "expected_source_certificate": false, "conditional_gold": "B ineligible; assess ordinary recall separately, no invented target or B takeover."},
+    {"turn": 7, "role": "mixed_direct_request_negative", "input": "同僚は「先に確認して」と言った。うるはは私に何を確認すべきか聞いて。", "expected_source_certificate": false, "conditional_gold": "B ineligible; current direct request retains authority and the quoted imperative is not a command to the assistant."},
+    {"turn": 8, "role": "unknown_nonreport_negative", "input": "確認するものはまだ決めてないよ。", "expected_source_certificate": false, "conditional_gold": "B ineligible; no invented check target, actor, or completed check."}
+  ]
+}

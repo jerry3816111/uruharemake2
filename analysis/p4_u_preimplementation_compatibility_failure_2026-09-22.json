@@ -1,0 +1,69 @@
+{
+  "schema": "uruha_p4_u_preimplementation_compatibility_failure_v1",
+  "status": "failed_before_product_integration",
+  "frozen_contract": "configs/p4_u_frame_preserving_surface_repair_acceptance_v1.json",
+  "frozen_dataset_sha256": "b87d849c1453e3a3e52a32e824a41a0443c04ef947e2f5052fea8f1e6bc0d48a",
+  "observed": {
+    "development_expected_before_violation_count": 4,
+    "development_exact_before_violation_count": 4,
+    "holdout_expected_before_violation_count": 12,
+    "holdout_exact_before_violation_count": 5,
+    "holdout_exact_reply_count_in_rejected_prototype": 6,
+    "faithful_control_false_positive_count": 0,
+    "model_call_count": 0,
+    "memory_write_count": 0,
+    "product_integration_count": 0,
+    "safari_turn_count": 0
+  },
+  "mismatches": [
+    {
+      "case_id": "holdout_owner_zh_u01",
+      "category": "p4_t_owner_projection_predicate_gap",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "observed_before_violations": []
+    },
+    {
+      "case_id": "holdout_owner_en_u01",
+      "category": "p4_t_owner_projection_predicate_gap",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "observed_before_violations": []
+    },
+    {
+      "case_id": "holdout_owner_ja_u01",
+      "category": "p4_t_owner_projection_predicate_gap",
+      "expected_before_violations": ["speaker_owner_shift_user_to_agent"],
+      "observed_before_violations": []
+    },
+    {
+      "case_id": "holdout_quote_en_u01",
+      "category": "p4_t_english_report_marker_gap",
+      "expected_before_violations": ["quoted_content_promoted_to_assertion"],
+      "observed_before_violations": []
+    },
+    {
+      "case_id": "holdout_hypothetical_zh_u01",
+      "category": "p4_t_frame_instruction_gap",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "observed_before_violations": ["hypothetical_content_promoted_to_assertion"]
+    },
+    {
+      "case_id": "holdout_hypothetical_en_u01",
+      "category": "p4_t_frame_instruction_and_promotion_gap",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "observed_before_violations": []
+    },
+    {
+      "case_id": "holdout_hypothetical_ja_u01",
+      "category": "p4_t_generic_hypothetical_promotion_gap",
+      "expected_before_violations": ["hypothetical_content_promoted_to_assertion", "hypothetical_instruction_dropped"],
+      "observed_before_violations": ["hypothetical_instruction_dropped"]
+    }
+  ],
+  "decision": {
+    "p4_u_pass_claim_allowed": false,
+    "p4_u_holdout_reuse_allowed": false,
+    "reason": "The frozen P4-U single-variable contract permits repair only when the released P4-T frame reports a violation. Seven of twelve new holdout cases violate that precondition, so adding a second classifier inside P4-U would break the frozen contract.",
+    "next_required_work": "Freeze a separate P4-V P4-T coverage extension using these now-exposed cases only as development failures and a new unseen multilingual holdout. Surface repair must later use another fresh holdout."
+  },
+  "claim_boundary": "This negative result proves a bounded predecessor-coverage incompatibility, not that frame-preserving repair is impossible."
+}

@@ -1,0 +1,876 @@
+{
+  "schema": "uruha_semantic_authorization_evaluation_m31_v1",
+  "created_at": "2026-08-25T06:42:47.028276+00:00",
+  "evidence_scope": "sealed_reserve_confirmation",
+  "protocol_path": "research/m31_semantic_authorization_reserve_protocol.json",
+  "protocol_sha256": "35b11227a38e3328dccff43d10016efe8f35bb61f9fa2b03d73804626b2a839d",
+  "dataset_path": "datasets/m31_semantic_authorization_reserve_v1.json",
+  "dataset_sha256": "2d522b692ef188b6f33b696d1e523466dbb1fa551e8740626fc0358bafde9bbb",
+  "proposal_model": "deterministic_m29_candidate_gate",
+  "authorization_model": "qwen3.5:9b",
+  "decision": "fail_one_or_more_frozen_gates",
+  "metrics": {
+    "case_count": 12,
+    "valid_count": 9,
+    "incomplete_count": 3,
+    "outcome_counts": {
+      "faithful_authority": 4,
+      "false_reject": 5,
+      "true_abstention": 3
+    },
+    "overall_faithful_valid_rate": 0.4444,
+    "false_authority_valid_rate": 0.0,
+    "false_reject_valid_rate": 0.5556,
+    "unsafe_incomplete_authority_count": 0,
+    "negation_polarity_accuracy": 0.6667,
+    "unsupported_addition_authority_count": 0,
+    "by_language": {
+      "zh": {
+        "valid_count": 3,
+        "faithful_count": 0,
+        "faithful_rate": 0.0
+      },
+      "en": {
+        "valid_count": 3,
+        "faithful_count": 2,
+        "faithful_rate": 0.6667
+      },
+      "ja": {
+        "valid_count": 3,
+        "faithful_count": 2,
+        "faithful_rate": 0.6667
+      }
+    },
+    "median_total_seconds": 9.043,
+    "p95_total_seconds": 9.6916,
+    "raw_dialogue_persisted_count": 0,
+    "model_response_raw_persisted_count": 0
+  },
+  "gate_results": {
+    "overall_faithful_valid_rate_min": false,
+    "per_language_faithful_valid_rate_min": false,
+    "false_authority_valid_rate_max": true,
+    "false_reject_valid_rate_max": false,
+    "unsafe_incomplete_authority_count_max": true,
+    "negation_polarity_accuracy_min": true,
+    "unsupported_addition_authority_count_max": true,
+    "median_total_seconds_max": true,
+    "p95_total_seconds_max": true
+  },
+  "rows": [
+    {
+      "case_id": "m31r_zh_entity_time_01",
+      "language": "zh",
+      "category": "entity_time",
+      "input_digest": "864e2ef86bad8458",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantic_authority_rejected",
+      "projection_reason": "one_or_more_semantic_authorization_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "predicate",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 9.4297,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantic_authority_rejected",
+      "m31_authorization_reason": "one_or_more_semantic_authorization_checks_failed",
+      "m31_seconds": 9.4297,
+      "total_seconds": 9.4297,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": false,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_zh_negation_quantity_02",
+      "language": "zh",
+      "category": "negation_quantity",
+      "input_digest": "2977f5ade8b86fb9",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantic_authority_rejected",
+      "projection_reason": "one_or_more_semantic_authorization_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "object",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "quantity",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "negation",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 8.7588,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantic_authority_rejected",
+      "m31_authorization_reason": "one_or_more_semantic_authorization_checks_failed",
+      "m31_seconds": 8.7588,
+      "total_seconds": 8.7588,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": false,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": false,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_zh_change_time_03",
+      "language": "zh",
+      "category": "change_time",
+      "input_digest": "8cfc2c6c48df77b5",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantic_authority_rejected",
+      "projection_reason": "one_or_more_semantic_authorization_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "object",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "change",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 9.0489,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantic_authority_rejected",
+      "m31_authorization_reason": "one_or_more_semantic_authorization_checks_failed",
+      "m31_seconds": 9.0489,
+      "total_seconds": 9.0489,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": false,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_zh_incomplete_04",
+      "language": "zh",
+      "category": "incomplete",
+      "input_digest": "933b14b4a468b5db",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "projection_not_attempted",
+      "m29_projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "not_applicable",
+      "m31_authorization_reason": "m29_projection_not_required",
+      "m31_seconds": 0.0,
+      "total_seconds": 0.0,
+      "authorization_checks": {},
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {}
+    },
+    {
+      "case_id": "m31r_en_entity_quantity_time_05",
+      "language": "en",
+      "category": "entity_quantity_time",
+      "input_digest": "f9bc936a65c355ea",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantically_authorized",
+      "projection_reason": "source_first_semantics_and_safe_surface_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "giver",
+          "passed": true,
+          "matched": [
+            "ダニエル"
+          ]
+        },
+        {
+          "label": "recipient",
+          "passed": true,
+          "matched": [
+            "メイ"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "四本"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "赤いペン"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": true,
+          "matched": [
+            "火曜",
+            "火曜日"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "渡した"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "ダニエル",
+      "predicate_jp": "メイに赤いペン四本を渡した",
+      "time_jp": "火曜日",
+      "literal_summary_jp": "ダニエルは火曜日にメイに赤いペン四本を渡した",
+      "response_jp": "赤いペン四本、火曜日",
+      "validation_checks": {},
+      "elapsed_seconds": 9.6916,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantically_authorized",
+      "m31_authorization_reason": "source_first_semantics_and_safe_surface_validated",
+      "m31_seconds": 9.6916,
+      "total_seconds": 9.6916,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": "independent_semantic_repair",
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_en_negation_06",
+      "language": "en",
+      "category": "negation",
+      "input_digest": "c716bb73bc9b4152",
+      "authority_expected": true,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "subject",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "time",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "negation",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "negated",
+      "observed_polarity": "unknown",
+      "polarity_passed": false,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "projection_not_attempted",
+      "m29_projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "not_applicable",
+      "m31_authorization_reason": "m29_projection_not_required",
+      "m31_seconds": 0.0,
+      "total_seconds": 0.0,
+      "authorization_checks": {},
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {}
+    },
+    {
+      "case_id": "m31r_en_change_time_07",
+      "language": "en",
+      "category": "change_time",
+      "input_digest": "d621e6686272a1db",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantically_authorized",
+      "projection_reason": "source_first_semantics_and_safe_surface_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "予約"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": true,
+          "matched": [
+            "来週の金曜",
+            "来週の金曜日"
+          ]
+        },
+        {
+          "label": "change",
+          "passed": true,
+          "matched": [
+            "変更"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "予約",
+      "predicate_jp": "来週の金曜日に移動した",
+      "time_jp": "来週の金曜日",
+      "literal_summary_jp": "予約が来週の金曜日に変更された",
+      "response_jp": "来週の金曜日ね。",
+      "validation_checks": {},
+      "elapsed_seconds": 8.8645,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantically_authorized",
+      "m31_authorization_reason": "source_first_semantics_and_safe_surface_validated",
+      "m31_seconds": 8.8645,
+      "total_seconds": 8.8645,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": "independent_semantic_repair",
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_en_incomplete_08",
+      "language": "en",
+      "category": "incomplete",
+      "input_digest": "6c4b8fa3d89ebd8f",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "projection_not_attempted",
+      "m29_projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "not_applicable",
+      "m31_authorization_reason": "m29_projection_not_required",
+      "m31_seconds": 0.0,
+      "total_seconds": 0.0,
+      "authorization_checks": {},
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {}
+    },
+    {
+      "case_id": "m31r_ja_entity_time_09",
+      "language": "ja",
+      "category": "entity_time",
+      "input_digest": "165c9451dc70a043",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantically_authorized",
+      "projection_reason": "source_first_semantics_and_safe_surface_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "佐藤"
+          ]
+        },
+        {
+          "label": "time",
+          "passed": true,
+          "matched": [
+            "来月二十日"
+          ]
+        },
+        {
+          "label": "place",
+          "passed": true,
+          "matched": [
+            "東京"
+          ]
+        },
+        {
+          "label": "predicate",
+          "passed": true,
+          "matched": [
+            "行く"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": "佐藤さん",
+      "predicate_jp": "東京へ行く",
+      "time_jp": "来月二十日",
+      "literal_summary_jp": "佐藤さんは来月二十日に東京に行く",
+      "response_jp": "佐藤さん、東京へ行くんだね。来月二十日か。",
+      "validation_checks": {},
+      "elapsed_seconds": 9.6052,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantically_authorized",
+      "m31_authorization_reason": "source_first_semantics_and_safe_surface_validated",
+      "m31_seconds": 9.6052,
+      "total_seconds": 9.6052,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": "independent_semantic_repair",
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_ja_negation_quantity_10",
+      "language": "ja",
+      "category": "negation_quantity",
+      "input_digest": "f048a5ea525a54a9",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantically_authorized",
+      "projection_reason": "source_first_semantics_and_safe_surface_validated",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "container",
+          "passed": true,
+          "matched": [
+            "箱"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "りんご"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "二個"
+          ]
+        },
+        {
+          "label": "negation",
+          "passed": true,
+          "matched": [
+            "しかない"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": "この箱のりんご",
+      "predicate_jp": "二個しかない",
+      "time_jp": "二個",
+      "literal_summary_jp": "この箱にはりんごが二個しかない",
+      "response_jp": "りんごは二個しかねえよ",
+      "validation_checks": {},
+      "elapsed_seconds": 9.037,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantically_authorized",
+      "m31_authorization_reason": "source_first_semantics_and_safe_surface_validated",
+      "m31_seconds": 9.037,
+      "total_seconds": 9.037,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": true,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": true,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": "independent_semantic_repair",
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_ja_relation_time_11",
+      "language": "ja",
+      "category": "relation_time",
+      "input_digest": "9ed45c25171080e7",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "semantic_authority_rejected",
+      "projection_reason": "one_or_more_semantic_authorization_checks_failed",
+      "surface_authority": false,
+      "outcome": "false_reject",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "start",
+          "passed": false,
+          "matched": []
+        },
+        {
+          "label": "end",
+          "passed": false,
+          "matched": []
+        }
+      ],
+      "semantic_groups_passed": false,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 8.7821,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "candidate_superseded_by_source_first_m31",
+      "m29_projection_reason": "m31_uses_exact_source_before_untrusted_generation",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "semantic_authority_rejected",
+      "m31_authorization_reason": "one_or_more_semantic_authorization_checks_failed",
+      "m31_seconds": 8.7821,
+      "total_seconds": 8.7821,
+      "authorization_checks": {
+        "proposal_or_repair_path_valid": false,
+        "unsupported_addition_absent": true,
+        "local_unsupported_addition_absent": true,
+        "canonical_source_fields_present": true,
+        "source_polarity_canonical": true,
+        "safe_japanese_surface_present": true,
+        "safe_foreign_script_absent": true,
+        "safe_casual_register_only": true,
+        "safe_surface_anchors_visible": false,
+        "safe_surface_anchors_grounded_in_canonical": true,
+        "confidence_gte_0_80": true
+      },
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {
+        "safe_response_semantics_faithful": false,
+        "subject_preserved": false,
+        "predicate_preserved": false,
+        "time_quantity_relation_preserved": false,
+        "polarity_preserved": false,
+        "unsupported_addition_absent": true
+      }
+    },
+    {
+      "case_id": "m31r_ja_incomplete_12",
+      "language": "ja",
+      "category": "incomplete",
+      "input_digest": "8e307801a0fe2a59",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "m29_projection_status": "projection_not_attempted",
+      "m29_projection_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "m29_seconds": 0.0,
+      "m31_authorization_status": "not_applicable",
+      "m31_authorization_reason": "m29_projection_not_required",
+      "m31_seconds": 0.0,
+      "total_seconds": 0.0,
+      "authorization_checks": {},
+      "error_tags": [],
+      "repair_mode": null,
+      "surface_self_checks": {}
+    }
+  ],
+  "claim_boundary": "sealed controlled reserve created before M31 implementation; not independently authored, professionally translated, or human-rated"
+}

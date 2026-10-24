@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_p3_prechange_compute_accounting_gap_v1",
+  "date": "2026-09-09",
+  "branch": "codex/v2-15-pragmatic-research-showcase",
+  "head": "84145fd488d4b48f45e71bed6a626c6fbffcf6e6",
+  "evidence_kind": "read_only_prechange_audit",
+  "product_run": {
+    "path": "analysis/p2_speaker_attribution_recall_local_run2_2026-09-09.json",
+    "sha256": "56e0436acdd6a96d7a2bf8ef53e65c028e6f5b84ba1e92a840a2ce77dce353c2",
+    "turn_count": 9,
+    "ledger_call_count": 2,
+    "ledger_backends": [
+      "openai_compatible_local"
+    ],
+    "declared_scope": "OpenAI-compatible calls only; native urllib calls, embeddings and uninstrumented inference may be absent"
+  },
+  "missing_paths": {
+    "chromadb_text_operations": {
+      "source": "uruha_brain_mac.py::MemoryManager.query_all_layers/save_episode",
+      "minimum_per_turn": {
+        "query_text_operations": 4,
+        "document_add_operations": 1
+      },
+      "minimum_unaccounted_operations_for_product_run": 45,
+      "note": "This is a static lower bound. Profile writes, working-memory retrieval, consolidation and other collection operations can add more."
+    },
+    "native_ollama_chat": {
+      "source": "uruha_brain_mac.py::LeftBrain._native_semantic_authorizer_m31",
+      "transport": "urllib.request.urlopen",
+      "ledger_recorded_before_change": false,
+      "note": "The P2 run does not prove this branch executed; the audit establishes that a reachable product inference path is outside the ledger."
+    }
+  },
+  "source_sha256": {
+    "uruha_compute_ledger.py": "bee3402c4710f9cea4aacbcb7179c1460847902dc8418a61097046690bca3395",
+    "uruha_brain_mac.py": "752975a95ee4c7ef3a791d1833130350c9695d280a7e0fb3d11892101550f66c",
+    "run_product_restart_probe.py": "cebd48b62cc4188a827cc8ee7f47f5f4e60cf47fc6209d04a47f9409761f0dd2"
+  },
+  "decision": "p3_fair_cost_comparison_not_ready",
+  "reason": "The ledger undercounts system-side inference and vector-memory work, so equal or lower recorded tokens cannot yet support a cost claim.",
+  "formal_holdout_opened": false,
+  "model_calls_added": 0,
+  "production_memory_writes": 0
+}

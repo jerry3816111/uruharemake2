@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_p4_bc_raw_dialogue_typed_spec_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_model_execution",
+  "research_question": "Can qwen3.5:9b or qwen3.5:4b map entirely new Chinese, English, and Japanese raw user sources into the exact source-bound six-template P4-BB typed spec, reject eight out-of-ontology controls, compile through frozen P4-BB, and finish each single model call within 20 seconds?",
+  "dataset": {
+    "path": "datasets/p4_bc_raw_dialogue_typed_spec_v1.json",
+    "sha256": "f6193d49325543a048179dfa4663fad2b349079302aae109969f17823fea2df9"
+  },
+  "prompt": {
+    "path": "configs/p4_bc_raw_dialogue_typed_spec_prompt_v1.txt",
+    "sha256": "28d476bb38260bfbc1cba24bbf9ab224c74739b33c0e104671b0eac681065401"
+  },
+  "downstream_compiler": {
+    "path": "uruha_typed_action_compiler_p4.py",
+    "sha256": "9b88a9ea122b5e1ee838872548e69ca1953d8c7c722fe89dc41347c771f98309"
+  },
+  "models": ["qwen3.5:9b", "qwen3.5:4b"],
+  "controlled_constants": {
+    "temperature": 0,
+    "seed": 20260927,
+    "num_ctx": 4096,
+    "num_predict": 480,
+    "think": false,
+    "stream": false,
+    "hardware": "Apple M2 Pro 12-core 32GB",
+    "same_prompt": true,
+    "same_dynamic_schema": true,
+    "same_cases_and_order": true,
+    "prewarm_models_once_in_fixed_order": ["qwen3.5:9b", "qwen3.5:4b"],
+    "prewarm_scored_as_case_latency": false,
+    "keep_alive": "30m",
+    "retry_count": 0
+  },
+  "output_contract": {
+    "status": ["typed_spec", "unavailable"],
+    "template_id": [
+      "blank_work_three_headings",
+      "binary_rule_two_piles",
+      "extract_one_by_named_rule",
+      "verify_one_named_condition",
+      "close_one_named_obstacle",
+      "write_one_atomic_value",
+      "unavailable"
+    ],
+    "safety_class": ["low_risk_reversible", "unavailable"],
+    "source_identity_is_dynamic_enum": true,
+    "evidence_atom_count_for_typed_spec": 3,
+    "unused_slots_must_be_empty": true,
+    "unavailable_has_no_atoms_or_slots": true,
+    "unavailable_reason_vocabulary_is_dataset_bound": true
+  },
+  "execution": {
+    "call_timeout_seconds": 30,
+    "single_call_latency_target_seconds": 20,
+    "execute_each_model_case_once": true,
+    "record_prompt_tokens": true,
+    "record_completion_tokens": true,
+    "record_wall_seconds_per_call": true,
+    "record_prewarm_separately": true
+  },
+  "formal_gates_per_model": {
+    "case_count": 14,
+    "json_parse_success_count": 14,
+    "positive_typed_spec_count": 6,
+    "positive_exact_spec_count": 6,
+    "positive_template_exact_count": 6,
+    "positive_evidence_exact_count": 6,
+    "positive_slots_exact_count": 6,
+    "positive_downstream_compiled_count": 6,
+    "positive_downstream_mechanism_exact_count": 6,
+    "positive_natural_japanese_count": 6,
+    "control_unavailable_count": 8,
+    "control_reason_exact_count": 8,
+    "control_false_spec_count": 0,
+    "assistant_or_private_source_count": 0,
+    "token_accounting_complete": true,
+    "maximum_call_seconds": 20
+  },
+  "selection_rule": "A model is eligible only if every frozen gate passes. If both pass, select lower median call latency, breaking ties by fewer completion tokens. If neither passes, preserve both negative results and do not change product runtime.",
+  "allowed_files_after_freeze": [
+    "run_p4_bc_raw_dialogue_typed_spec.py",
+    "test_p4_bc_raw_dialogue_typed_spec_freeze.py",
+    "test_p4_bc_raw_dialogue_typed_spec_harness.py",
+    "test_p4_bc_raw_dialogue_typed_spec_result.py",
+    "analysis/p4_bc_raw_dialogue_typed_spec_evidence_2026-09-27.json",
+    "analysis/p4_bc_raw_dialogue_typed_spec_acceptance_2026-09-27.md",
+    "analysis/p4_bc_raw_dialogue_typed_spec_failure_2026-09-27.md",
+    "CURRENT_TASK.md"
+  ],
+  "failure_policy": {
+    "same_model_case_retry_allowed": false,
+    "post_result_dataset_prompt_schema_or_gate_change_allowed": false,
+    "p4_bb_exposed_source_may_be_substituted": false,
+    "approximate_template_or_reason_may_count_as_exact": false,
+    "compiler_pass_may_replace_wrong_typed_spec": false,
+    "timeout_or_json_failure_may_count_as_pass": false,
+    "failed_model_may_be_hidden_by_other_model": false,
+    "runtime_integration_before_result_allowed": false
+  },
+  "claim_boundary": "A pass would establish only bounded raw-source classification/extraction into six fixed developer-authored templates on these non-independent proxy cases. It would not establish open-domain pragmatic understanding, human usefulness, felt understanding, matched strong-LLM advantage, or a human equation."
+}

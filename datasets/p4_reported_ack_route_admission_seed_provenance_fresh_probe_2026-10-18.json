@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_p4_reported_ack_seed_provenance_fresh_probe_v1",
+  "authorship": "developer_authored_pre_exposure_product_cases",
+  "status": "pre_exposure",
+  "claim_boundary": "One prospective correction batch for M31 seed provenance; not independent holdout or visible reported-ack product PASS.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 4,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 8,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ordinary_no_rule_report_a",
+      "input": "友達が「先に確認してね」と言っていた。",
+      "expected_source_certificate": true,
+      "preflight_seed_status": "no_rule_match",
+      "conditional_m31_gold": "Defer with zero original M31 call only when same-turn certificate, no_rule_match marker plus empty seed, actual chat/casual, high_road/deliberative, exclusive M22 general_conversation and no grounding all agree. Otherwise original M31 and positive runtime coverage missing.",
+      "visible_diagnostic": "Natural Japanese should acknowledge reported speech without treating it as an assistant command; selected-to-visible fidelity belongs to B."
+    },
+    {
+      "turn": 2,
+      "role": "protected_seed_full_report_a",
+      "input": "妹が「先に確認してね」と言ってた。",
+      "expected_source_certificate": true,
+      "preflight_seed_status": "matched_rule",
+      "conditional_m31_gold": "If runtime seed or route or M22 is protected, reject and call original M31 once. If runtime is ordinary, apply the full ordinary conditional admission rule and mark protected coverage missing.",
+      "visible_diagnostic": "No invented private facts about sister; Japanese guard remains active."
+    },
+    {
+      "turn": 3,
+      "role": "mixed_quote_and_direct_request_negative",
+      "input": "先輩が「まず先に確認して」と言っていた。でも今は、うるはは私に先に欲しい返し方を聞いて。",
+      "expected_source_certificate": false,
+      "preflight_seed_status": "no_rule_match",
+      "conditional_m31_gold": "No single-report certificate or reported-ack defer; do not suppress the user's current direct request to ask about reply style.",
+      "visible_diagnostic": "May ask the desired reply style in natural Japanese; do not obey the quotation as a current command."
+    },
+    {
+      "turn": 4,
+      "role": "ordinary_nonreport_before_restart",
+      "input": "びっくりした、急に集合時間が変わったんだ。",
+      "expected_source_certificate": false,
+      "preflight_seed_status": "no_rule_match",
+      "conditional_m31_gold": "No single-report certificate and no reported-ack defer.",
+      "visible_diagnostic": "No claim of checking an external schedule or adding a long-term fact."
+    },
+    {
+      "turn": 5,
+      "role": "ordinary_no_rule_report_b_after_restart",
+      "input": "先生は「まず先に確認して」と言った。",
+      "expected_source_certificate": true,
+      "preflight_seed_status": "no_rule_match",
+      "conditional_m31_gold": "Same full ordinary admission condition as T1, using the explicit no_rule_match marker and empty seed. Otherwise original M31 and positive runtime coverage missing if no other positive.",
+      "visible_diagnostic": "Do not invent the teacher's motive or the object to check; B scores final acknowledgement separately."
+    },
+    {
+      "turn": 6,
+      "role": "factual_memory_negative",
+      "input": "この会話で、私が番号を伝えたか覚えてる？",
+      "expected_source_certificate": false,
+      "preflight_seed_status": "matched_rule",
+      "conditional_m31_gold": "No reported-ack defer; factual or memory routing must not gain source-report priority.",
+      "visible_diagnostic": "No invented number. If none was given, natural Japanese should say so or express uncertainty."
+    },
+    {
+      "turn": 7,
+      "role": "protected_seed_full_report_b",
+      "input": "同僚が「まず先に確認して」と言ってた。",
+      "expected_source_certificate": true,
+      "preflight_seed_status": "matched_rule",
+      "conditional_m31_gold": "If runtime context is protected or low-road, reject and call original M31 once. If not protected, ordinary conditional admission applies and protected coverage remains missing.",
+      "visible_diagnostic": "No invented private facts about colleague."
+    },
+    {
+      "turn": 8,
+      "role": "unknown_nonreport_negative",
+      "input": "何を確認するか、まだ決めてないんだ。",
+      "expected_source_certificate": false,
+      "preflight_seed_status": "no_rule_match",
+      "conditional_m31_gold": "No source-qualified report or defer; do not manufacture actor, checked object, or a completed check.",
+      "visible_diagnostic": "Natural low-pressure Japanese response may acknowledge the undecided object."
+    }
+  ]
+}

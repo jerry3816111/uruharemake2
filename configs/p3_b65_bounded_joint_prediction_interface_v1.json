@@ -1,0 +1,114 @@
+{
+  "schema": "uruha_p3_b65_bounded_joint_prediction_interface_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_new_interface_before_model_calls_or_future_access",
+  "research_question": "Can a separately designed bounded joint state-and-prediction interface produce a complete same-model literal-versus-pragmatic prediction pair on the real pre-cutoff row without increasing the prior 512-token per-condition ceiling or accessing the future?",
+  "claim_level": "single_real_row_interface_feasibility_not_prediction_accuracy_or_formal_m56",
+  "bindings": {
+    "b64_terminal_review": {
+      "path": "research/p3_b64_final_equal_budget_prediction_review_required_2026-09-20.json",
+      "sha256": "3595fb57edbc8c3b763baf6fd414e6f2b6117cda25bca30fbd75e1e99d7fa373"
+    },
+    "b61_release": {
+      "path": "research/p3_b61_native_subtitle_cutoff_extractor_release_2026-09-20.json",
+      "sha256": "b9e9e5bad747fd9cda170e382f6f35d10c7ae9a017ceb6a882c86ca071031ada"
+    },
+    "public_reader": {
+      "path": "p3_b60_caption_context_reader.py",
+      "sha256": "ed0b45b34bba35e95137375311e5ee2b3f9129afa9ab498a9905a76f0ec426b9"
+    }
+  },
+  "input": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "context_seconds": [3000.0, 3180.0],
+    "future_outcome_seconds": [3181.0, 3241.0],
+    "public_root": "external_data/p3_b61_public_caption_context",
+    "artifact_id": "p3-b60-7a690e386e094578",
+    "artifact_sha256": "7a690e386e0945785f0dbe8d5573a2eda6f7ed6be64c28e01ee9e4cbbd5d0537",
+    "cue_count": 65,
+    "future_outcome_access_before_complete_prediction_pair_required": 0,
+    "private_acquisition_module_import_allowed": false
+  },
+  "target": {
+    "reference_person": "一ノ瀬うるは",
+    "persona_boundary": "public livestream behavior only; no private state, childhood, or unseen fact inference",
+    "task": "predict the next observable communicative behavior after the cutoff",
+    "candidate_behavior_labels": [
+      "acknowledge_then_continue",
+      "accept_support_and_continue",
+      "ask_clarification",
+      "defer_commitment",
+      "direct_rejection",
+      "pause_and_reassess"
+    ]
+  },
+  "conditions": {
+    "BASELINE_LITERAL": {
+      "state_rule": "summarize only literal observable sequence; interpretation must not infer emotion, relationship, hidden intent, or implicit need",
+      "alternative_rule": "use unknown when the observable sequence does not provide a literal alternative"
+    },
+    "SYSTEM_PRAGMATIC_STATE": {
+      "state_rule": "form one falsifiable pragmatic interpretation and one alternative from only observable evidence, with uncertainty explicit",
+      "alternative_rule": "do not assert private or unseen facts"
+    }
+  },
+  "fairness": {
+    "same_base_model": true,
+    "same_context_artifact": true,
+    "same_target_labels_and_output_schema": true,
+    "same_single_call_graph": true,
+    "same_options_and_completion_ceiling": true,
+    "completion_token_ceiling_each_condition": 512,
+    "model_call_count_exact": 2,
+    "condition_order": ["BASELINE_LITERAL", "SYSTEM_PRAGMATIC_STATE"],
+    "actual_prompt_completion_tokens_and_latency_recorded": true,
+    "unequal_actual_token_use_must_be_reported": true
+  },
+  "model": {
+    "provider": "local_ollama",
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "name": "qwen3.5:9b",
+    "timeout_seconds": 180,
+    "think": false,
+    "options": {
+      "temperature": 0,
+      "seed": 260920,
+      "num_ctx": 8192,
+      "num_predict": 512
+    }
+  },
+  "joint_output_contract": {
+    "same_json_schema_both_conditions": true,
+    "state_fields": ["observed_literal", "interpretation", "alternative", "confidence"],
+    "observed_literal_max_characters": 120,
+    "interpretation_max_characters": 120,
+    "alternative_max_characters": 120,
+    "predicted_next_content_language": "ja",
+    "predicted_next_content_max_characters": 160,
+    "brief_evidence_max_characters": 120,
+    "probabilities_exactly_all_labels": true,
+    "probabilities_sum_tolerance": 0.000001,
+    "state_text_persistence_allowed": false,
+    "raw_prompt_or_model_response_persistence_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b65_bounded_joint_prediction_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "prediction_result.json",
+    "retry_or_condition_fallback_allowed": false,
+    "intent_without_complete_result_is_terminal": true,
+    "success_next": "separately_freeze_future_outcome_unlock_and_scoring",
+    "failure_next": "preserve_failure_and_redesign_only_after_review"
+  },
+  "denied_actions": {
+    "future_outcome_access_before_complete_prediction_pair": true,
+    "private_acquisition_state_read": true,
+    "caption_raw_or_post_cutoff_read": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true,
+    "retry_or_post_result_prompt_tuning": true
+  },
+  "claim_boundary": "B65 can establish only whether a new bounded joint interface freezes one exploratory prediction pair under equal resources. It cannot establish prediction correctness, pragmatic advantage, human understanding, or a human-response equation before separately unlocking and scoring the future, and one row cannot establish general advantage."
+}

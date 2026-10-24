@@ -1,0 +1,82 @@
+{
+  "schema": "uruha_p4_r_multiturn_interference_result_v1",
+  "observed_at": "2026-09-22T08:45:00+08:00",
+  "status": "pass",
+  "freeze_checkpoint": {
+    "commit": "fc070cdf2079f8b75406608f46a83d5ed0a0e9a8",
+    "freeze": {
+      "path": "research/p4_r_multiturn_interference_freeze_2026-09-22.json",
+      "sha256": "673528a75faebc4b53917f5ebaa34a33de8367941c17ee7ea4e8ee6bcebe74de"
+    }
+  },
+  "implementation_checkpoint": "dfc1f78e2102988fee3691ed786da95efaa293b4",
+  "evidence": {
+    "path": "analysis/p4_r_multiturn_interference_evidence_2026-09-22.json",
+    "sha256": "977689ae35bbf1a209609187223e64db1d3931832bf84296cb29251fac09ec00"
+  },
+  "gate_result": {
+    "status": "pass",
+    "failed_gate_count": 0,
+    "failed_gates": []
+  },
+  "comparison": {
+    "shared_transcript_turns": 12,
+    "shared_recall_turns": [6, 12],
+    "baseline": {
+      "name": "recent-five-turn lexical drink mention",
+      "model_calls": 0,
+      "exact_recall": "0/2",
+      "turn_6_selected": "紫蘇茶",
+      "turn_6_source_turn": 4,
+      "turn_12_selected": "紫蘇茶",
+      "turn_12_source_turn": 11,
+      "interpretation": "The diagnostic baseline follows the latest surface token and cannot distinguish the user's current state from quoted or third-person mentions."
+    },
+    "system": {
+      "name": "P4 typed current-preference lineage",
+      "model_calls": 0,
+      "exact_recall": "2/2",
+      "turn_6_visible_surface": "今の飲み物の好みは月桃茶。前のじゃなくて、今の方ね。",
+      "turn_12_visible_surface": "今の飲み物の好みはよもぎ茶。前のじゃなくて、今の方ね。",
+      "system_minus_baseline_accuracy": 1.0
+    }
+  },
+  "mechanism_evidence": {
+    "non_write_distractor_selected_count": 0,
+    "distractor_types": [
+      "ordinary",
+      "third_person",
+      "quotation",
+      "hypothetical",
+      "cross_language_third_person",
+      "other_preference_scope"
+    ],
+    "final_drink_active_values": ["よもぎ茶"],
+    "final_drink_historical_values": ["月桃茶"],
+    "final_drink_explicit_negative_values": ["月桃茶"],
+    "final_game_active_values": ["cooperative games"],
+    "correction_previous_link_valid": true,
+    "negative_correction_link_valid": true,
+    "historical_answer_use_count": 0,
+    "negative_answer_use_count": 0,
+    "recall_profile_write_count": 0,
+    "unverified_mental_fact_write_count": 0,
+    "raw_dialogue_persisted_in_typed_profile": false
+  },
+  "accounting": {
+    "dataset_execution_count": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "local_model_call_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "safari_turn_count": 0
+  },
+  "relationship_to_prior_long_dialogue_work": {
+    "v2_22_strong_full_context_comparison_replaced": false,
+    "prior_result": "V2.22 remained 4/5 for both UruhaBrain and full-context LLM, with higher UruhaBrain token and latency cost.",
+    "new_result": "P4-R isolates the released typed-state mechanism against a deterministic recency failure mode; it is not new strong-LLM evidence."
+  },
+  "claim_boundary": "P4-R supports a narrow causal statement: on one prospectively frozen 12-turn transcript, explicit typed state and correction lineage resisted recency, speaker, quotation, hypothetical and cross-scope interference that defeated a zero-model lexical-recency diagnostic baseline. It does not prove advantage over a strong LLM, full product or Safari behavior, open-domain or 50-turn memory, felt understanding, human preference, future prediction or a human equation."
+}

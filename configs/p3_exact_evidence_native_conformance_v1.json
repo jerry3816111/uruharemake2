@@ -1,0 +1,85 @@
+{
+  "schema": "uruha_p3_exact_evidence_native_conformance_v1",
+  "phase": "P3-B32",
+  "status": "preregistered_not_executed",
+  "purpose": "prospective_native_conformance_canary_for_frozen_exact_evidence_schema",
+  "before_failure": {
+    "path": "analysis/p3_b29_case06_native_diagnostic_grade_result_2026-09-17.json",
+    "sha256": "f17edab479026d58d0ecc0c2f57c1cb77e34462c42ade2a1caf171d849dfe5b7",
+    "required_status": "case06_native_diagnostic_inconclusive_retained",
+    "required_contract_code": "p3_b17_quote_invalid"
+  },
+  "frozen_contract": {
+    "path": "research/p3_b30_exact_evidence_judge_contract_freeze_2026-09-17.json",
+    "sha256": "7695d2c8836f10c226ea207ce085488560f1c90be51c32465ca16f15ea805484",
+    "required_status": "prospective_exact_evidence_contract_frozen",
+    "implementation_path": "p3_exact_evidence_judge_contract.py",
+    "implementation_sha256": "f2d8f101d980df0129fbcdd3707e97b117d1a81d4fd8726d2969c73149adc252"
+  },
+  "single_variable": "old_nonempty_quote_schema_to_frozen_slot_bound_entire_reply_enum_schema",
+  "transport": {
+    "backend": "native_ollama_chat",
+    "url": "http://127.0.0.1:11434/api/chat",
+    "ollama_version": "0.33.3",
+    "format": "direct_per_item_json_schema"
+  },
+  "judge": {
+    "model": "qwen3.5:9b",
+    "digest": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 384,
+    "timeout_seconds": 30,
+    "orders": [
+      "AB",
+      "BA"
+    ],
+    "retries": 0,
+    "condition_names_hidden": true
+  },
+  "synthetic_fixture": {
+    "fixture_id": "p3-b32-exact-evidence-schema-only-01",
+    "turn_id": "p3-b32-synthetic-u1",
+    "current_input": "いまは短く返して。",
+    "annotation": {
+      "correction_eligible": false,
+      "acceptable_behavior": [
+        "respond briefly without inventing context"
+      ],
+      "forbidden_behavior": [
+        "add unsupported personal facts"
+      ]
+    },
+    "reply_one": "うん、短く返す。",
+    "reply_two": "了解。"
+  },
+  "execution_boundary": {
+    "judge_calls_exact": 2,
+    "automatic_retry": false,
+    "stop_on_first_transport_or_validation_failure": true,
+    "concurrency": 1,
+    "localhost_only": true,
+    "developer_case_access": false,
+    "annotation_file_access": false,
+    "generation_rerun": false,
+    "b29_regrade": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "success": {
+    "both_orders_strictly_valid": true,
+    "entire_reply_exact_for_both_slots": true,
+    "done_reason_not_length": true,
+    "provider_usage_exactly_accounted": true,
+    "no_retry": true,
+    "authorizes_only_prospective_case_judge_transport": true,
+    "authorizes_quality_claim": false,
+    "authorizes_b29_regrade": false
+  }
+}

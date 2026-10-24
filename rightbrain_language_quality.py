@@ -57,7 +57,7 @@ NONSTANDARD_CJK_RE = re.compile(
 # historical dataset builders can reproduce their original labels while every
 # current runtime/evaluation path rejects them by default.
 AUDITED_CHINESE_SPECIFIC_RE = re.compile(r"呢|小姐|看到一個|看到一个")
-AUDITED_NONSTANDARD_CJK_RE = re.compile(r"[业头戏戲张蔍蔜蔱变结]|遜晚")
+AUDITED_NONSTANDARD_CJK_RE = re.compile(r"[业头戏戲张蔍蔜蔱变结继续]|遜晚")
 POLITE_RE = re.compile(
     r"(?:"
     r"(?:です|ます|でした|ません|ましょう|ください|ございました|しましょう)"

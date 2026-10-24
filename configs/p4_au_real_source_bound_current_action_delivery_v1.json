@@ -1,0 +1,81 @@
+{
+  "schema": "uruha_p4_au_real_source_bound_current_action_delivery_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "dataset": {
+    "path": "datasets/p4_au_real_source_bound_current_action_delivery_v1.json",
+    "sha256": "1967089df985626e97a5888652a27e0565438add467033b3993baf1fece47ebc",
+    "turn_count": 2
+  },
+  "implementation": {
+    "commit": "97eebc6",
+    "module": [
+      "uruha_source_bound_current_action_delivery_p4.py",
+      "40052de9bb88832e9e706a098af1feef543fbac134792ea69858627a84c5277b"
+    ],
+    "product_entry": [
+      "uruha_web_ui_product_p4_au.py",
+      "a1ca5e34d424ea29936b451604e711ae4ae893e4f29ce62ff0fd494e81325429"
+    ],
+    "launcher": [
+      "p4_au_safe_isolated_product_launcher.py",
+      "97835c65d0add2f722782f120ece5eaa9edf690affebf71049ea6be8be070d6f"
+    ],
+    "offline_evidence": [
+      "analysis/p4_au_source_bound_current_action_delivery_evidence_2026-09-26.json",
+      "31a774651973ad55cc7b0d2d3744e79b9090ed6e3617f69e03883b2b41ce291f"
+    ]
+  },
+  "execution": {
+    "port": 7884,
+    "private_runtime_required": true,
+    "safari_required": true,
+    "turns_must_run_in_one_session": true,
+    "rerun_or_retry_after_result_allowed": false,
+    "timeout_per_turn_seconds": 75,
+    "latency_must_be_recorded": true,
+    "model_calls_and_tokens_must_be_recorded": true
+  },
+  "formal_gates": {
+    "turn_count": 2,
+    "natural_japanese_visible_count": 2,
+    "durable_episode_count": 2,
+    "graph_visible_count": 2,
+    "turn_1_p4_as_executed_count": 1,
+    "turn_1_exact_m44_receipt_count": 1,
+    "turn_1_exact_p4_ag_binding_count": 1,
+    "turn_1_future_locked_count": 1,
+    "turn_2_p4_at_closed_supported_count": 1,
+    "turn_2_exact_prediction_identity_count": 1,
+    "turn_2_current_solve_policy_count": 1,
+    "turn_2_p4_au_prior_source_linked_count": 1,
+    "turn_2_p4_au_exact_turn_1_source_count": 1,
+    "turn_2_p4_au_raw_trace_count": 0,
+    "turn_2_m45_delivered_count": 1,
+    "turn_2_m46_verified_count": 1,
+    "turn_2_m46_content_passed_count": 1,
+    "turn_2_m46_surface_passed_count": 1,
+    "turn_2_m39_practical_act_count": 1,
+    "turn_2_generic_promise_or_clarification_count": 0,
+    "turn_2_temporal_supported_current_count": 1,
+    "turn_2_strictly_earlier_action_count": 1,
+    "turn_2_prior_future_consumed_count": 1,
+    "turn_2_same_turn_outcome_backdated_count": 0,
+    "p4_au_node_before_m50_m45_utterance_count": 1,
+    "p4_au_new_model_call_count": 0,
+    "p4_au_factual_memory_write_count": 0,
+    "assistant_or_private_inference_source_count": 0,
+    "exact_visible_string_gate_count": 0
+  },
+  "failure_policy": {
+    "same_input_rerun_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "timeout_may_count_as_delivery": false,
+    "generic_promise_may_count_as_delivery": false,
+    "clarification_may_count_as_delivery": false,
+    "policy_detection_without_surface_action_may_count_as_delivery": false,
+    "missing_prior_source_may_use_assistant_or_inferred_fallback": false,
+    "failed_result_may_be_hidden_by_offline_pass": false
+  },
+  "claim_boundary": "A pass is one fresh two-turn private-runtime/Safari path in which the exact prior user problem reaches the existing action-delivery gate and a source-consistent practical Japanese action is delivered after verified feedback. It does not establish human usefulness, preference, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}

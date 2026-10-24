@@ -1,0 +1,30 @@
+{
+  "schema": "uruha_m56_11_preimplementation_actual_process_death_probe_v1",
+  "version": "1.0.0",
+  "status": "temporary_forged_fixture_probe_before_m56_11_implementation",
+  "real_target_outcome_access_count": 0,
+  "formal_model_call_count": 0,
+  "scenarios": {
+    "after_outcome_load_before_checkpoint": {
+      "child_exit_code": 71,
+      "intent_exists": true,
+      "checkpoint_exists": false,
+      "failure_exists_before_restart": false,
+      "restart": "fail_closed_and_terminal_failure_committed",
+      "restart_additional_outcome_loads": 0,
+      "failure_exists_after_restart": true
+    },
+    "after_checkpoint_before_canonical_result": {
+      "child_exit_code": 72,
+      "intent_exists": true,
+      "checkpoint_exists": true,
+      "canonical_report_exists_before_restart": false,
+      "result_exists_before_restart": false,
+      "restart": "completed_from_checkpoint",
+      "restart_additional_outcome_loads": 0,
+      "formal_result_created": true
+    }
+  },
+  "probe_result": "both_expected_process_death_states_observed",
+  "claim_boundary": "This one-off probe uses os._exit in child processes over temporary forged 30-row fixtures. It motivated a separately frozen reproducible crash matrix; it is not a power-cut test, real target access, human evidence or formal scientific result."
+}

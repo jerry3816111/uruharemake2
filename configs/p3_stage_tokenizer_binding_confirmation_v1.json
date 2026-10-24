@@ -1,0 +1,122 @@
+{
+  "schema": "uruha_p3_stage_tokenizer_binding_confirmation_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "confirm_adjacent_assistant_collation_for_every_baseline_stage_shape",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "prior_binding_result": {
+    "path": "analysis/p3_b8_stage_tokenizer_binding_result_2026-09-15.json",
+    "sha256": "0a2a35b86e82e31c98a692fb71e424ab277759519ff8729d4b137ca9739d9b49",
+    "required_status": "stage_binding_failed_retained"
+  },
+  "failed_baseline_acceptance": {
+    "path": "analysis/p3_b8_stage_tokenizer_binding_acceptance_2026-09-15.md",
+    "sha256": "1940e4035466ee78b75df5d27ade684d23398d0601b3275dfef71b3dd9dd40a3",
+    "required_status": "FAILED_RETAINED / SECOND CORRECTION REQUIRED"
+  },
+  "model": {
+    "ollama_model": "qwen2.5:7b",
+    "ollama_blob_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "hf_tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+    "hf_snapshot_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "hf_chat_template_sha256": "2e2d2512cfe46af53dc1eed45368ecaab26ac4461c480e6b69fe571cf0ceaa75",
+    "ollama_template_sha256": "eb4402837c7829a690fa845de4d7f3fd842c2adee476d5341da8a46ea9255175"
+  },
+  "transports": [
+    {
+      "id": "openai_compatible_local",
+      "url": "http://127.0.0.1:11434/v1/chat/completions",
+      "usage_prompt_field": "usage.prompt_tokens",
+      "usage_completion_field": "usage.completion_tokens"
+    }
+  ],
+  "generation_options": {
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 1,
+    "stream": false,
+    "transport_retries": 0,
+    "concurrency": 1,
+    "per_call_timeout_seconds": 30,
+    "total_wall_seconds_max": 120
+  },
+  "counter_contract": {
+    "non_assistant_final": "hf_apply_chat_template_add_generation_prompt_true",
+    "assistant_final": "hf_apply_chat_template_add_generation_prompt_false_then_remove_one_terminal_im_end_newline",
+    "adjacent_assistant": "merge_content_with_two_newlines_before_template",
+    "fit_after_provider_access": false,
+    "allowed_global_offset": 0,
+    "verification_tolerance_tokens": 0
+  },
+  "fixtures": [
+    {
+      "fixture_id": "stage-confirm-direct",
+      "role": "fit",
+      "stage": "direct",
+      "synthetic_user": "夕方になると、急に集中できなくなる。",
+      "private_scratch": [],
+      "messages_sha256": "ab5dc0d3090d2f1062584ee247567f055af25eceb5c5d774d9c65b83a7b945a4"
+    },
+    {
+      "fixture_id": "stage-confirm-draft",
+      "role": "fit",
+      "stage": "draft",
+      "synthetic_user": "作業を終えたあと、少しだけ気が抜ける。",
+      "private_scratch": [],
+      "messages_sha256": "5202582b0f4b71b89fa5e8fab508bed82d588bb0c4efbfdb8260e71fb15baf5b"
+    },
+    {
+      "fixture_id": "stage-confirm-critique",
+      "role": "fit",
+      "stage": "critique",
+      "synthetic_user": "夕方になると、急に集中できなくなる。",
+      "private_scratch": [
+        "無理に続けず、少し休んでもいいと思う。"
+      ],
+      "messages_sha256": "2027c81828127ba148296e2e5592cf74f7084fd6392a6743ee088a5faf91044b"
+    },
+    {
+      "fixture_id": "stage-confirm-revise",
+      "role": "verification",
+      "stage": "revise",
+      "synthetic_user": "作業を終えたあと、少しだけ気が抜ける。",
+      "private_scratch": [
+        "今は少し休んで、気持ちを切り替えてもいいと思う。",
+        "状態を決めつけず、簡潔で自然な日本語に直す。"
+      ],
+      "messages_sha256": "55f3e94c1ecbc186c138f7d34e5b3b8bd1442d452d06ca62f767c12817f58425"
+    }
+  ],
+  "fit_and_verification": {
+    "fit_fixture_ids": [
+      "stage-confirm-direct",
+      "stage-confirm-draft",
+      "stage-confirm-critique"
+    ],
+    "verification_fixture_ids": [
+      "stage-confirm-revise"
+    ],
+    "expected_offset_tokens": 0,
+    "tolerance_tokens": 0
+  },
+  "execution_boundary": {
+    "expected_provider_calls": 4,
+    "maximum_provider_calls": 4,
+    "maximum_completion_tokens_total": 4,
+    "automatic_retry": false,
+    "localhost_only": true,
+    "failed_p3_b7_request_reuse": false,
+    "developer_smoke_access": false,
+    "annotation_access": false,
+    "future_turn_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  }
+}

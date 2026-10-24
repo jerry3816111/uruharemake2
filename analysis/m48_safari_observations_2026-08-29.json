@@ -1,0 +1,39 @@
+{
+  "schema": "m48_safari_observations_v1",
+  "status": "PASS_surface_contract_FAIL_source_aligned_pipeline",
+  "browser": "Safari",
+  "formal_session_id": "20260829_221224_2ffcdcb6",
+  "formal_turns": 7,
+  "summary": {
+    "trace_contract": "7/7",
+    "visible_japanese": "7/7",
+    "actual_m48_repairs": "1",
+    "repair_contract_pass": "1/1",
+    "not_needed": "1",
+    "fail_closed_or_blocked": "4",
+    "m46_delivered": "2/6 practical-help turns",
+    "bounded_author_source_alignment": "1/2 delivered actions",
+    "model_calls_completed": 8,
+    "prompt_tokens": 6678,
+    "completion_tokens": 1863,
+    "m46_m48_path_seconds_sum": 99.70422
+  },
+  "key_observations": [
+    "The first Safari run exposed action_verb_jp=分けよ. Initial M48 could not realize an already-imperative verb and failed closed; the raw failure is retained.",
+    "After bounded imperative support, the Chinese letter/receipt plan still failed because action_step did not contain its declared object. M48 correctly refused to invent the binding.",
+    "Japanese color grouping and English misplaced receipt plans were blocked by M46 nonprogress or task-relabel violations; M48 did not repair them.",
+    "The ordinary English blank-report turn was already surface-valid and delivered without M48 changes.",
+    "The Japanese report turn had only instruction_missing_visible_stop. M48 preserved the existing object and operation, added a visible stop, and M46 delivered it.",
+    "However, the source asked for three headings while the upstream plan and reply changed the target to a heading plus introduction. Same-model M46 review passed this. It is retained as a source-to-plan semantic failure, not a usefulness success.",
+    "The final no-method turn stayed outside M48 and M46 and produced Japanese listening."
+  ],
+  "isolation": {
+    "formal_root": "/tmp/uruha-m48-safari2.Yglzdn",
+    "first_failure_root": "/tmp/uruha-m48-safari.Ff43xP",
+    "idle_visible_proactive_enabled": false,
+    "original_checkout_db_sha256": "9bd050bd638ff20940e5db5bde52bbf65d70203fc09b15474f23c65ce19f895f",
+    "safe_worktree_db_sha256": "eb3483f83ae12da8a5203c356662cac574749625b594b84a6b28370f3dbb6cf4"
+  },
+  "browser_boundary": "One existing Safari test tab was reused. It now shows an offline rendering of the frozen real turn-6 runtime trace; the live isolated server remains on port 7889. No new tab was opened or unrelated tab closed.",
+  "claim_boundary": "Actual scripted Safari integration evidence, not unseen holdout, blind human judgment, action-quality superiority, or proof of human understanding."
+}

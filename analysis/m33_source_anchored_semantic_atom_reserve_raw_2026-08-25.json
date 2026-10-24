@@ -1,0 +1,1293 @@
+{
+  "schema": "uruha_source_anchored_semantic_atom_evaluation_m33_v1",
+  "generated_at": "2026-08-25T07:58:00.782507+00:00",
+  "mode": "reserve",
+  "dataset_path": "datasets/m33_source_anchored_semantic_atom_reserve_v1.json",
+  "dataset_sha256": "b86025e70692c9bfe46aaa5e984968c6c4fe279fa24ce9104ab95644177f022c",
+  "protocol_path": "research/m33_source_anchored_semantic_atom_reserve_protocol.json",
+  "protocol_sha256": "c399ed361562d02ffb93c2434ca206c5e6599e407c0301d1cf3fb49a89ebab09",
+  "implementation_freeze_sha256": "1db3523d213114c62e3060377e7fedd3274500089bcbf5784cd6eeee96555b1b",
+  "decision": "pass_all_frozen_gates",
+  "metrics": {
+    "case_count": 15,
+    "valid_count": 12,
+    "incomplete_count": 3,
+    "outcome_counts": {
+      "faithful_authority": 12,
+      "true_abstention": 3
+    },
+    "overall_faithful_valid_rate": 1.0,
+    "false_authority_valid_rate": 0.0,
+    "false_reject_valid_rate": 0.0,
+    "unsafe_incomplete_authority_count": 0,
+    "negation_polarity_accuracy": 1.0,
+    "unsupported_addition_authority_count": 0,
+    "by_language": {
+      "zh": {
+        "valid_count": 4,
+        "faithful_count": 4,
+        "faithful_rate": 1.0
+      },
+      "en": {
+        "valid_count": 4,
+        "faithful_count": 4,
+        "faithful_rate": 1.0
+      },
+      "ja": {
+        "valid_count": 4,
+        "faithful_count": 4,
+        "faithful_rate": 1.0
+      }
+    },
+    "median_total_seconds": 9.2464,
+    "p95_total_seconds": 13.2376,
+    "raw_dialogue_persisted_count": 0,
+    "model_response_raw_persisted_count": 0,
+    "fresh_session_valid_count": 6,
+    "fresh_session_faithful_rate": 1.0,
+    "direct_japanese_valid_count": 4,
+    "direct_japanese_faithful_rate": 1.0,
+    "change_operator_valid_count": 3,
+    "change_operator_faithful_rate": 1.0,
+    "negated_or_limited_quantity_valid_count": 3,
+    "negated_or_limited_quantity_faithful_rate": 1.0,
+    "required_source_atom_trace_coverage": 1.0,
+    "source_conflict_authority_count": 0,
+    "m31_authority_count": 0,
+    "m32_authority_count": 0,
+    "m33_authority_count": 12,
+    "m33_conflict_repair_count": 5
+  },
+  "gate_results": {
+    "overall_faithful_valid_rate_min": true,
+    "per_language_faithful_valid_rate_min": true,
+    "false_authority_valid_rate_max": true,
+    "false_reject_valid_rate_max": true,
+    "unsafe_incomplete_authority_count_max": true,
+    "negation_polarity_accuracy_min": true,
+    "unsupported_addition_authority_count_max": true,
+    "median_total_seconds_max": true,
+    "p95_total_seconds_max": true,
+    "fresh_session_faithful_valid_rate": true,
+    "direct_japanese_faithful_valid_rate": true,
+    "change_operator_faithful_rate": true,
+    "negated_or_limited_quantity_faithful_rate": true,
+    "required_source_atom_trace_coverage": true,
+    "source_conflict_authority_count": true
+  },
+  "rows": [
+    {
+      "case_id": "m33r_zh_entity_relative_time_01",
+      "language": "zh",
+      "category": "entity_relative_time",
+      "input_digest": "03c07ca2fa4c37c9",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "周マネージャー"
+          ]
+        },
+        {
+          "label": "relative_time",
+          "passed": true,
+          "matched": [
+            "明々後日"
+          ]
+        },
+        {
+          "label": "clock_time",
+          "passed": true,
+          "matched": [
+            "午後二時"
+          ]
+        },
+        {
+          "label": "relation",
+          "passed": true,
+          "matched": [
+            "アカイ"
+          ]
+        },
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "会議"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "周マネージャーは明々後日の午後二時にアカイと会議する",
+      "response_jp": "周マネージャーは明々後日の午後二時にアカイと会議するんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relation",
+        "relative_time"
+      ],
+      "source_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relation",
+        "relative_time"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_zh_entity_meeting_relative_time_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 13.2376,
+      "m32_status": "deterministic_commit_repaired",
+      "m33_verification_status": "source_canonical_conflict",
+      "m33_source_conflict_detected": true,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 13.2376
+    },
+    {
+      "case_id": "m33r_zh_negated_object_quantity_02",
+      "language": "zh",
+      "category": "negated_object_quantity",
+      "input_digest": "c4b70ed0b850a159",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "container",
+          "passed": true,
+          "matched": [
+            "引き出し"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "はさみ"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "二本"
+          ]
+        },
+        {
+          "label": "negation",
+          "passed": true,
+          "matched": [
+            "ない"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "引き出しには二本のはさみがない",
+      "response_jp": "引き出しには二本のはさみがないんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "container",
+        "negation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_types": [
+        "container",
+        "negation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_zh_negated_container_quantity_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 8.6126,
+      "m32_status": "deterministic_commit_repaired",
+      "m33_verification_status": "source_canonical_conflict",
+      "m33_source_conflict_detected": true,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 8.6126
+    },
+    {
+      "case_id": "m33r_zh_change_weekday_03",
+      "language": "zh",
+      "category": "change_weekday",
+      "input_digest": "08d71abdf01134c2",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "面談"
+          ]
+        },
+        {
+          "label": "change",
+          "passed": true,
+          "matched": [
+            "変更"
+          ]
+        },
+        {
+          "label": "weekday",
+          "passed": true,
+          "matched": [
+            "来週の木曜",
+            "来週の木曜日"
+          ]
+        },
+        {
+          "label": "clock_time",
+          "passed": true,
+          "matched": [
+            "午前十時"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "面談は来週の木曜日午前十時に変更された",
+      "response_jp": "面談は来週の木曜日午前十時に変更されたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "change",
+        "clock_time",
+        "event",
+        "weekday"
+      ],
+      "source_atom_types": [
+        "change",
+        "clock_time",
+        "event",
+        "weekday"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_zh_change_target_time_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 9.506,
+      "m32_status": "repair_rejected",
+      "m33_verification_status": "source_canonical_conflict",
+      "m33_source_conflict_detected": true,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 9.506
+    },
+    {
+      "case_id": "m33r_zh_spatial_relation_04",
+      "language": "zh",
+      "category": "spatial_relation",
+      "input_digest": "9abd4edbf62f7225",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "シャオユー"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "白いカード"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "六枚"
+          ]
+        },
+        {
+          "label": "container",
+          "passed": true,
+          "matched": [
+            "青い箱"
+          ]
+        },
+        {
+          "label": "spatial_relation",
+          "passed": true,
+          "matched": [
+            "中",
+            "入れた"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "シャオユーは六枚の白いカードを青い箱の中に入れた",
+      "response_jp": "シャオユーは六枚の白いカードを青い箱の中に入れたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "container",
+        "entity",
+        "event",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_types": [
+        "container",
+        "entity",
+        "event",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_zh_spatial_put_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantic_authority_rejected",
+      "m31_seconds": 9.3694,
+      "m32_status": "repair_rejected",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 9.3694
+    },
+    {
+      "case_id": "m33r_zh_incomplete_05",
+      "language": "zh",
+      "category": "incomplete",
+      "input_digest": "6aea281b4c625541",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [],
+      "source_atom_types": [],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "not_applicable",
+      "source_rule_id": null,
+      "direct_japanese_identity": false,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "not_applicable",
+      "m33_source_conflict_detected": false,
+      "m33_status": "not_applicable",
+      "m33_repair_kind": null,
+      "m33_surface_authority": false,
+      "final_authority_source": "none",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_en_entity_relative_time_06",
+      "language": "en",
+      "category": "entity_relative_time",
+      "input_digest": "3a7d70962943cd11",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "プリヤ"
+          ]
+        },
+        {
+          "label": "relation",
+          "passed": true,
+          "matched": [
+            "オマール",
+            "オマー"
+          ]
+        },
+        {
+          "label": "relative_time",
+          "passed": true,
+          "matched": [
+            "明後日"
+          ]
+        },
+        {
+          "label": "clock_time",
+          "passed": true,
+          "matched": [
+            "午後3時半"
+          ]
+        },
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "会う"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "プリヤは明後日の午後3時半にオマールと会う",
+      "response_jp": "プリヤは明後日の午後3時半にオマールと会うんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relation",
+        "relative_time"
+      ],
+      "source_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relation",
+        "relative_time"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_en_entity_meeting_relative_time_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 10.0574,
+      "m32_status": "deterministic_commit_repaired",
+      "m33_verification_status": "source_canonical_conflict",
+      "m33_source_conflict_detected": true,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 10.0574
+    },
+    {
+      "case_id": "m33r_en_negated_object_quantity_07",
+      "language": "en",
+      "category": "negated_object_quantity",
+      "input_digest": "e5b53ed763f7dcf4",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "container",
+          "passed": true,
+          "matched": [
+            "引き出し"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "銀の鍵"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "二本"
+          ]
+        },
+        {
+          "label": "negation",
+          "passed": true,
+          "matched": [
+            "ない"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "引き出しには二本の銀の鍵がない",
+      "response_jp": "引き出しには二本の銀の鍵がないんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "container",
+        "negation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_types": [
+        "container",
+        "negation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_en_negated_container_quantity_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 8.1803,
+      "m32_status": "deterministic_commit_repaired",
+      "m33_verification_status": "source_canonical_conflict",
+      "m33_source_conflict_detected": true,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_atom_bounded_reconstruction",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 8.1803
+    },
+    {
+      "case_id": "m33r_en_change_weekday_08",
+      "language": "en",
+      "category": "change_weekday",
+      "input_digest": "e45377c95c04ebab",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "ワークショップ"
+          ]
+        },
+        {
+          "label": "change",
+          "passed": true,
+          "matched": [
+            "変更"
+          ]
+        },
+        {
+          "label": "source_weekday",
+          "passed": true,
+          "matched": [
+            "火曜",
+            "火曜日"
+          ]
+        },
+        {
+          "label": "target_weekday",
+          "passed": true,
+          "matched": [
+            "金曜",
+            "金曜日"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "ワークショップは火曜日から金曜日に変更された",
+      "response_jp": "ワークショップは火曜日から金曜日に変更されたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "change",
+        "event",
+        "source_weekday",
+        "target_weekday"
+      ],
+      "source_atom_types": [
+        "change",
+        "event",
+        "source_weekday",
+        "target_weekday"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_en_change_source_target_weekday_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 8.4954,
+      "m32_status": "deterministic_commit_repaired",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_verified_canonical_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 8.4954
+    },
+    {
+      "case_id": "m33r_en_spatial_relation_09",
+      "language": "en",
+      "category": "spatial_relation",
+      "input_digest": "b6cc1dd99950a44e",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "レナ"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "緑のノート"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "五冊"
+          ]
+        },
+        {
+          "label": "landmark",
+          "passed": true,
+          "matched": [
+            "プリンター"
+          ]
+        },
+        {
+          "label": "spatial_relation",
+          "passed": true,
+          "matched": [
+            "横"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "レナは五冊の緑のノートをプリンターの横に置いた",
+      "response_jp": "レナは五冊の緑のノートをプリンターの横に置いたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "entity",
+        "event",
+        "landmark",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_types": [
+        "entity",
+        "event",
+        "landmark",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_en_spatial_put_v1",
+      "direct_japanese_identity": false,
+      "m31_status": "semantically_authorized",
+      "m31_seconds": 9.1235,
+      "m32_status": "repair_rejected",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "source_verified_canonical_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 9.1235
+    },
+    {
+      "case_id": "m33r_en_incomplete_10",
+      "language": "en",
+      "category": "incomplete",
+      "input_digest": "21f8575b0e781e36",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [],
+      "source_atom_types": [],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "not_applicable",
+      "source_rule_id": null,
+      "direct_japanese_identity": false,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "not_applicable",
+      "m33_source_conflict_detected": false,
+      "m33_status": "not_applicable",
+      "m33_repair_kind": null,
+      "m33_surface_authority": false,
+      "final_authority_source": "none",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_ja_entity_time_11",
+      "language": "ja",
+      "category": "entity_time",
+      "input_digest": "fea6fd2352ae1b58",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "佐藤さん",
+            "佐藤"
+          ]
+        },
+        {
+          "label": "relative_time",
+          "passed": true,
+          "matched": [
+            "再来週"
+          ]
+        },
+        {
+          "label": "weekday",
+          "passed": true,
+          "matched": [
+            "月曜"
+          ]
+        },
+        {
+          "label": "clock_time",
+          "passed": true,
+          "matched": [
+            "午後一時"
+          ]
+        },
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "戻る"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "佐藤さんは再来週の月曜午後一時に戻る",
+      "response_jp": "佐藤さんは再来週の月曜午後一時に戻るんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relative_time",
+        "weekday"
+      ],
+      "source_atom_types": [
+        "clock_time",
+        "entity",
+        "event",
+        "relative_time",
+        "weekday"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_ja_entity_time_identity_v1",
+      "direct_japanese_identity": true,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "direct_japanese_identity_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_ja_limited_quantity_12",
+      "language": "ja",
+      "category": "limited_quantity",
+      "input_digest": "193227f4eb6bfa23",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "fresh_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "container",
+          "passed": true,
+          "matched": [
+            "引き出し"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "青い封筒"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "二枚"
+          ]
+        },
+        {
+          "label": "limitation",
+          "passed": true,
+          "matched": [
+            "しかない"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "negated",
+      "observed_polarity": "negated",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "引き出しには青い封筒が二枚しかない",
+      "response_jp": "引き出しには青い封筒が二枚しかないんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [
+        "container",
+        "limitation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_types": [
+        "container",
+        "limitation",
+        "object",
+        "quantity"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_ja_limited_quantity_identity_v1",
+      "direct_japanese_identity": true,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "direct_japanese_identity_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_ja_change_range_13",
+      "language": "ja",
+      "category": "change_range",
+      "input_digest": "e4a351b6d40951cb",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "event",
+          "passed": true,
+          "matched": [
+            "面談"
+          ]
+        },
+        {
+          "label": "change",
+          "passed": true,
+          "matched": [
+            "変更された",
+            "変更"
+          ]
+        },
+        {
+          "label": "source_weekday",
+          "passed": true,
+          "matched": [
+            "木曜",
+            "木曜日"
+          ]
+        },
+        {
+          "label": "target_weekday",
+          "passed": true,
+          "matched": [
+            "土曜",
+            "土曜日"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "面談は木曜日から土曜日に変更された",
+      "response_jp": "面談は木曜日から土曜日に変更されたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "change",
+        "event",
+        "source_weekday",
+        "target_weekday"
+      ],
+      "source_atom_types": [
+        "change",
+        "event",
+        "source_weekday",
+        "target_weekday"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_ja_change_identity_v1",
+      "direct_japanese_identity": true,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "direct_japanese_identity_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_ja_spatial_relation_14",
+      "language": "ja",
+      "category": "spatial_relation",
+      "input_digest": "1189640bf26127cf",
+      "authority_expected": true,
+      "candidate_status": "projection_candidate",
+      "candidate_reason": "unlinked_self_contained_literal_topic_requires_grounded_projection",
+      "projection_status": "source_anchored_semantic_committed",
+      "projection_reason": "bounded_source_atoms_committed_to_japanese_surface",
+      "surface_authority": true,
+      "outcome": "faithful_authority",
+      "group_results": [
+        {
+          "label": "entity",
+          "passed": true,
+          "matched": [
+            "ユナ"
+          ]
+        },
+        {
+          "label": "object",
+          "passed": true,
+          "matched": [
+            "白い傘"
+          ]
+        },
+        {
+          "label": "quantity",
+          "passed": true,
+          "matched": [
+            "三本"
+          ]
+        },
+        {
+          "label": "landmark",
+          "passed": true,
+          "matched": [
+            "玄関"
+          ]
+        },
+        {
+          "label": "spatial_relation",
+          "passed": true,
+          "matched": [
+            "横"
+          ]
+        }
+      ],
+      "semantic_groups_passed": true,
+      "expected_polarity": "affirmed",
+      "observed_polarity": "affirmed",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": "ユナは三本の白い傘を玄関の横に置いた",
+      "response_jp": "ユナは三本の白い傘を玄関の横に置いたんだね。",
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "previous_unlinked_unknown",
+      "required_atom_types": [
+        "entity",
+        "event",
+        "landmark",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_types": [
+        "entity",
+        "event",
+        "landmark",
+        "object",
+        "quantity",
+        "spatial_relation"
+      ],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "source_atoms_extracted",
+      "source_rule_id": "m33_ja_spatial_put_identity_v1",
+      "direct_japanese_identity": true,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "source_atoms_verified",
+      "m33_source_conflict_detected": false,
+      "m33_status": "source_anchored_semantic_committed",
+      "m33_repair_kind": "direct_japanese_identity_commit",
+      "m33_surface_authority": true,
+      "final_authority_source": "m33",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    },
+    {
+      "case_id": "m33r_ja_incomplete_15",
+      "language": "ja",
+      "category": "incomplete",
+      "input_digest": "0412d85baf7ef322",
+      "authority_expected": false,
+      "candidate_status": "not_candidate",
+      "candidate_reason": "current_turn_does_not_require_generalized_literal_projection",
+      "projection_status": "not_applicable",
+      "projection_reason": "m29_projection_not_required",
+      "surface_authority": false,
+      "outcome": "true_abstention",
+      "group_results": [],
+      "semantic_groups_passed": true,
+      "expected_polarity": "unknown",
+      "observed_polarity": "unknown",
+      "polarity_passed": true,
+      "subject_jp": null,
+      "predicate_jp": null,
+      "time_jp": null,
+      "literal_summary_jp": null,
+      "response_jp": null,
+      "validation_checks": {},
+      "elapsed_seconds": 0.0,
+      "raw_dialogue_persisted": false,
+      "model_response_raw_persisted": false,
+      "candidate_context": "fresh_session",
+      "required_atom_types": [],
+      "source_atom_types": [],
+      "source_atom_trace_complete": true,
+      "source_atom_ledger_status": "not_applicable",
+      "source_rule_id": null,
+      "direct_japanese_identity": false,
+      "m31_status": "not_applicable",
+      "m31_seconds": 0.0,
+      "m32_status": "not_applicable",
+      "m33_verification_status": "not_applicable",
+      "m33_source_conflict_detected": false,
+      "m33_status": "not_applicable",
+      "m33_repair_kind": null,
+      "m33_surface_authority": false,
+      "final_authority_source": "none",
+      "unresolved_source_conflict_authority": false,
+      "total_seconds": 0.0
+    }
+  ],
+  "claim_boundary": "first sealed controlled reserve"
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "uruha_p3_b52_metadata_only_source_selection_v3",
+  "version": "3.0.0",
+  "status": "preregistered_after_explicit_design_review_before_v3_network_access",
+  "design_review": {
+    "review_artifact": "analysis/p3_b52_metadata_only_source_freeze_review_required_2026-09-17.md",
+    "selected_option": "C_official_atom_preselection_then_no_replacement_postcheck",
+    "user_authorization": "continue_after_review_presented",
+    "authorized_at": "2026-09-17"
+  },
+  "single_changed_variable": "select one source ID from official Atom channel/video/date metadata before duration/live-status verification; the selected ID cannot be replaced if postcheck fails",
+  "bindings": {
+    "v1_selection_contract": {
+      "path": "configs/p3_b52_metadata_only_source_selection_v1.json",
+      "sha256": "bc86d7c3a76b7ff9b2bef1709d54dd388e4995c0f79dfa19f93e2e9524fc6a3f"
+    },
+    "v2_retained_failure": {
+      "path": "analysis/p3_b52_v2_metadata_retrieval_failure_2026-09-17.json",
+      "sha256": "3f736d5ac88acbd8304a2f2b7f7c5d6af6f17e124450089a845a71fa5cd7f422"
+    },
+    "known_source_exclusions": {
+      "path": "research/p3_b52_known_source_exclusions_2026-09-17.json",
+      "sha256": "a9ce55a8a7abe49102d759870b28e188cd547c6074ed7648c7ff45643a8757e3"
+    }
+  },
+  "target": {
+    "target_id": "ichinose_uruha_public_persona",
+    "platform": "youtube",
+    "publisher_channel_id": "UC5LyYg6cCA4yHEYvtUsir3g",
+    "official_atom_endpoint": "https://www.youtube.com/feeds/videos.xml?channel_id=UC5LyYg6cCA4yHEYvtUsir3g"
+  },
+  "preselection": {
+    "published_on_or_after": "2026-04-01",
+    "published_on_or_before": "2026-09-15",
+    "maximum_feed_entries": 15,
+    "required_keys": [
+      "source_id",
+      "platform",
+      "video_id",
+      "publisher_channel_id",
+      "published_at"
+    ],
+    "allowed_keys": [
+      "source_id",
+      "platform",
+      "video_id",
+      "publisher_channel_id",
+      "published_at"
+    ],
+    "forbidden_keys": [
+      "title",
+      "description",
+      "media_group",
+      "transcript",
+      "captions",
+      "comments",
+      "categories",
+      "tags",
+      "thumbnails",
+      "view_count",
+      "like_count",
+      "comment_count"
+    ],
+    "seed": "p3-b52-task-a-source-2026-09-17-v1",
+    "score": "sha256(seed + vertical_bar + video_id + vertical_bar + published_at)",
+    "winner": "lexicographically smallest score",
+    "known_source_exclusions_required": true
+  },
+  "atom_retrieval_policy": {
+    "official_endpoint_only": true,
+    "raw_response_storage": false,
+    "raw_response_logging": false,
+    "parser_reads_only": [
+      "yt:videoId",
+      "yt:channelId",
+      "atom:published"
+    ],
+    "title_storage": false,
+    "description_storage": false,
+    "media_download": false,
+    "caption_or_transcript_access": false,
+    "comment_access": false,
+    "model_calls": 0
+  },
+  "postselection_check": {
+    "selected_video_id_must_not_change": true,
+    "automatic_replacement": false,
+    "transport": "yt-dlp single-watch metadata with six allowlisted stdout columns",
+    "stdout_columns": [
+      "id",
+      "channel_id",
+      "upload_date",
+      "duration",
+      "availability",
+      "live_status"
+    ],
+    "minimum_duration_seconds": 1800,
+    "maximum_duration_seconds": 43200,
+    "required_availability": "public",
+    "required_live_status": "was_live",
+    "wrong_channel_or_date_or_metadata_failure": "retain_selected_id_as_ineligible_and_end_without_replacement",
+    "raw_response_storage": false,
+    "title_output": false,
+    "description_output": false,
+    "media_download": false,
+    "caption_or_transcript_access": false,
+    "comment_access": false,
+    "model_calls": 0
+  },
+  "execution_boundary": {
+    "maximum_v3_atom_retrievals": 1,
+    "maximum_selected_id_postchecks": 1,
+    "target_segment_access": false,
+    "future_response_access": false,
+    "gold_annotation": false,
+    "model_generation": false,
+    "formal_m56_artifact_change": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "A pass establishes one deterministic content-blind official source reservation only. A failed postcheck is retained without replacement. Neither outcome creates a temporal event, behavior label, model prediction, formal M56 row, or evidence of system advantage."
+}

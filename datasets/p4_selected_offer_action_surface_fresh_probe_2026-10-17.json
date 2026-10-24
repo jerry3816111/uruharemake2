@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p4_selected_offer_action_surface_fresh_probe_v1",
+  "authorship": "developer_authored_prospective_source_only_pre_model",
+  "status": "pre_exposure",
+  "claim_boundary": "One bounded local product/Safari action-to-utterance probe. Not independent holdout, human preference evidence, or same-model LLM comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [0, 0, 0, 0, 0, 0],
+  "expected_distinct_turn_episode_count": 6,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "new_grounded_direct_savory_offer_cold_start",
+      "input": "胡椒ポテト、一口いる？",
+      "expected_offer_item": "ポテト",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_dialogue_act": "concrete_offer_response",
+      "expected_selected_surface_act_one_of": ["named_offer_accept", "named_offer_light_accept"],
+      "expected_new_offer_audit_status": "visible_action_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese answer to this direct offer, including ポテト and a clearly affirmative acceptance of a bite; no generic 'I understand', unsupported repeat claim, hunger or private-state claim."
+    },
+    {
+      "turn": 2,
+      "role": "quoted_third_party_offer_scope_negative_control",
+      "input": "友達に「チーズバーガー、一口いる？」って聞かれた。",
+      "forbidden_new_offer_audit_node": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese that treats the line as the user's report about a friend, not an offer made by the user to Uruha. No invented friend preference or direct bite acceptance."
+    },
+    {
+      "turn": 3,
+      "role": "different_food_class_before_restart",
+      "input": "焼きアップルパイ、一口いる？",
+      "expected_offer_item": "アップルパイ",
+      "expected_selected_intent": "food_offer_sweet",
+      "expected_selected_dialogue_act": "concrete_offer_response",
+      "expected_selected_surface_act_one_of": ["named_offer_accept", "named_offer_light_accept"],
+      "expected_new_offer_audit_status": "visible_action_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese acceptance of the offered アップルパイ, with an actual acceptance act. A vague topic acknowledgement is insufficient."
+    },
+    {
+      "turn": 4,
+      "role": "new_grounded_offer_after_planned_same_db_restart",
+      "input": "味噌山椒おにぎり、一口いる？",
+      "expected_offer_item": "おにぎり",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_dialogue_act": "concrete_offer_response",
+      "expected_selected_surface_act_one_of": ["named_offer_accept", "named_offer_light_accept"],
+      "expected_new_offer_audit_status": "visible_action_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese accepting the current おにぎり offer after the same isolated DB restart. Do not confuse the earlier food with the current item or assert unobserved past events."
+    },
+    {
+      "turn": 5,
+      "role": "chinese_direct_offer_scope_negative_control",
+      "input": "你要吃一口烤披薩嗎？",
+      "forbidden_new_offer_audit_node": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "A natural Japanese response to the Chinese offer; the Japanese-only bounded source gate must not claim it handled this turn. No mixed Chinese or English in the visible reply."
+    },
+    {
+      "turn": 6,
+      "role": "new_grounded_offer_after_cross_turn_context",
+      "input": "バターピザ、一口いる？",
+      "expected_offer_item": "ピザ",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_dialogue_act": "concrete_offer_response",
+      "expected_selected_surface_act_one_of": ["named_offer_accept", "named_offer_light_accept"],
+      "expected_new_offer_audit_status": "visible_action_preserved",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese acceptance of the current ピザ offer, without swapping in the previous food or merely discussing food."
+    }
+  ]
+}

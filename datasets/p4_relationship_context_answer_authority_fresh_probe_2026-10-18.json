@@ -1,0 +1,17 @@
+{
+  "schema": "uruha_p4_relationship_context_answer_authority_fresh_probe_v1",
+  "authorship": "developer_authored_unseen_product_probe_not_formal_holdout",
+  "status": "frozen_before_implementation_and_first_model_generation",
+  "sessions": 2,
+  "restart_after_turn": 4,
+  "same_isolated_db_after_restart": true,
+  "retry_count_per_turn": 0,
+  "turns": [
+    {"turn": 1, "role": "quoted_relationship_line_source_a", "input": "「まだ私のこと覚えてる？」って台詞、重すぎる？", "conditional_gold": "Answer the outer wording/tone question. The quoted question is not a user relationship request or a factual user assertion."},
+    {"turn": 2, "role": "direct_relationship_after_quoted_source_a", "input": "ねえ、私のことまだ覚えてる？", "conditional_gold": "If selected ask_miss_me with generic context from T1, retain retrieval trace but revoke that context as visible answer authority. Answer the current relationship question naturally in Japanese without citing the quoted line as a remembered personal fact."},
+    {"turn": 3, "role": "direct_factual_source", "input": "集合の目印は青い時計の下だよ。", "conditional_gold": "Create a direct user-source episode, not a profile fact."},
+    {"turn": 4, "role": "direct_factual_recall_control", "input": "少し前に言った集合の目印、覚えてる？", "conditional_gold": "Preserve source-bound factual recall of T3; if T3 is not retrieved, mark coverage FAIL rather than guessing. Planned same-DB restart follows."},
+    {"turn": 5, "role": "quoted_relationship_line_source_b_after_restart", "input": "「ちゃんと私のこと覚えてる？」って台詞、重すぎる？", "conditional_gold": "After restart, answer only the outer tone question; create a separately traceable episode but not a user-person fact."},
+    {"turn": 6, "role": "direct_relationship_after_quoted_source_b", "input": "ちゃんと私のこと、まだ覚えてる？", "conditional_gold": "If selected ask_miss_me with generic context from T5, revoke only generic context answer authority. Final Japanese should address the real relationship question without quoting T5 as proof of personal memory."}
+  ]
+}

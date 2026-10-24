@@ -1,0 +1,52 @@
+{
+  "schema": "uruha_m38_target_guarded_multiscript_feedback_protocol_v1",
+  "created_at": "2026-08-26",
+  "research_question": "Does requiring both an observable correction reference and one unique explicit response-policy replacement improve linkage to the immediately pending prediction without turning ordinary multilingual negation into correction?",
+  "intervention": "M38 target-guarded multiscript linkage classifier and canonical feedback adapter",
+  "baseline": "frozen pre-M38 observe_next_turn feedback linkage behavior",
+  "controls": [
+    "identical pending prediction and feedback input",
+    "no model generation call for the linkage mechanism",
+    "same downstream M34 revision contract",
+    "raw feedback excluded from persisted adaptive store",
+    "M37 typed trigger relation behavior unchanged"
+  ],
+  "reserve": {
+    "case_count": 18,
+    "languages": {"zh": 6, "en": 6, "ja": 6},
+    "categories": {
+      "unique_target_correction": 9,
+      "ordinary_negation": 6,
+      "targetless_rejection": 3
+    },
+    "source_disjoint_rule": "No feedback_input may equal an M36 feedback_input after whitespace and punctuation normalization.",
+    "annotation_rule": "A contradicted row must identify exactly one replacement policy different from the pending policy. Ordinary negation and targetless rejection must remain uncertain and unlinked."
+  },
+  "operational_definition": {
+    "correction_reference": "observable language that rejects or revises the prior response, not merely a negated proposition",
+    "unique_replacement": "exactly one of listen_presence, solve_regulation, share_arousal, or playful_tease is explicitly requested",
+    "linked_contradiction": "pending prediction exists, correction reference is present, unique replacement is present, and replacement differs from the pending policy",
+    "fail_closed": "missing pending prediction, no replacement, multiple replacement policies, or ordinary proposition negation yields uncertain and unlinked"
+  },
+  "primary_metrics": [
+    "overall linkage outcome accuracy",
+    "unique-target correction recall",
+    "replacement-policy accuracy",
+    "ordinary-negation false-linkage count",
+    "targetless-rejection false-linkage count",
+    "M34 contradiction revision accuracy",
+    "raw-dialogue persistence count"
+  ],
+  "frozen_gates": {
+    "overall_linkage_accuracy_min": 1.0,
+    "unique_target_correction_recall_min": 1.0,
+    "replacement_policy_accuracy_min": 1.0,
+    "ordinary_negation_false_linkage_max": 0,
+    "targetless_rejection_false_linkage_max": 0,
+    "m34_contradiction_revision_accuracy_min": 1.0,
+    "raw_dialogue_persistence_max": 0,
+    "unverified_mental_fact_write_max": 0,
+    "p95_linkage_latency_seconds_max": 0.01
+  },
+  "evidence_boundary": "Passing establishes a bounded observable feedback-linkage mechanism, not private intent truth, natural Japanese quality, felt-understanding, or open-domain discourse correction."
+}

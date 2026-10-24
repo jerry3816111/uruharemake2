@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_av_real_neutral_operational_role_delivery_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "dataset": {
+    "path": "datasets/p4_av_real_neutral_operational_role_delivery_v1.json",
+    "sha256": "7840c9c15e6cda5fbfa6ec9f7a67595593e35decba590afd447227faff687262",
+    "turn_count": 2
+  },
+  "implementation": {
+    "commit": "83ea808",
+    "module": [
+      "uruha_neutral_operational_role_authorization_p4.py",
+      "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"
+    ],
+    "product_entry": [
+      "uruha_web_ui_product_p4_av.py",
+      "0352374cc5a664bf59364d8de3da2bf6ba377ba2a21416c6f8060d464d712dfe"
+    ],
+    "launcher": [
+      "p4_av_safe_isolated_product_launcher.py",
+      "5399fe8b65d4805592c02c81f90252d963d03a7dd3f282c8f821d72ab645407b"
+    ],
+    "offline_evidence": [
+      "analysis/p4_av_neutral_operational_role_authorization_evidence_2026-09-26.json",
+      "86366637988f13ce4ac8fd9159831ad61a5d3c0a2e14c3f9ebca8b76a8ebb8ea"
+    ]
+  },
+  "execution": {
+    "port": 7885,
+    "private_runtime_required": true,
+    "safari_required": true,
+    "turns_must_run_in_one_session": true,
+    "rerun_or_retry_after_result_allowed": false,
+    "timeout_per_turn_seconds": 75,
+    "latency_must_be_recorded": true,
+    "model_calls_and_tokens_must_be_recorded": true
+  },
+  "formal_gates": {
+    "turn_count": 2,
+    "natural_japanese_visible_count": 2,
+    "durable_episode_count": 2,
+    "graph_visible_count": 2,
+    "turn_1_p4_as_executed_count": 1,
+    "turn_1_exact_m44_receipt_count": 1,
+    "turn_1_exact_p4_ag_binding_count": 1,
+    "turn_1_future_locked_count": 1,
+    "turn_2_p4_at_closed_supported_count": 1,
+    "turn_2_exact_prediction_identity_count": 1,
+    "turn_2_current_solve_policy_count": 1,
+    "turn_2_p4_au_prior_source_linked_count": 1,
+    "turn_2_p4_au_exact_turn_1_source_count": 1,
+    "turn_2_p4_av_authorized_count": 1,
+    "turn_2_p4_av_operational_role_count_minimum": 1,
+    "turn_2_p4_av_remaining_unsupported_count": 0,
+    "turn_2_m53_authorized_count": 1,
+    "turn_2_m45_delivered_count": 1,
+    "turn_2_m46_verified_count": 1,
+    "turn_2_m46_content_passed_count": 1,
+    "turn_2_m46_surface_passed_count": 1,
+    "turn_2_m39_practical_act_count": 1,
+    "turn_2_generic_promise_or_clarification_count": 0,
+    "turn_2_temporal_supported_current_count": 1,
+    "turn_2_strictly_earlier_action_count": 1,
+    "turn_2_prior_future_consumed_count": 1,
+    "turn_2_same_turn_outcome_backdated_count": 0,
+    "p4_av_node_before_m53_m46_m45_utterance_count": 1,
+    "p4_av_plan_mutation_count": 0,
+    "p4_av_new_model_call_count": 0,
+    "p4_av_factual_memory_write_count": 0,
+    "p4_av_raw_label_trace_count": 0,
+    "p4_av_m46_review_bypass_count": 0,
+    "p4_av_m45_or_m39_gate_weakening_count": 0,
+    "assistant_or_private_inference_source_count": 0,
+    "exact_visible_string_gate_count": 0
+  },
+  "failure_policy": {
+    "same_input_rerun_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "missing_p4_av_node_may_count_as_pass": false,
+    "timeout_may_count_as_delivery": false,
+    "generic_promise_may_count_as_delivery": false,
+    "clarification_may_count_as_delivery": false,
+    "internal_plan_without_visible_action_may_count_as_delivery": false,
+    "failed_result_may_be_hidden_by_offline_pass": false
+  },
+  "claim_boundary": "A pass is one fresh two-turn private-runtime/Safari path in which exact prior-source handoff, bounded neutral-role authorization, independent plan review, and visible practical-action delivery all succeed. It does not establish advice usefulness, human preference, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}

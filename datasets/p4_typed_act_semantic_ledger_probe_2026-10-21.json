@@ -1,0 +1,98 @@
+{
+  "schema": "p4_typed_act_semantic_ledger_developer_probe_v1",
+  "status": "prospective_preimplementation_not_holdout",
+  "prior_exposed_batches_not_replayed": ["G", "L", "W", "A", "N", "Q", "S"],
+  "strict_batch_policy": "all conditional visible, source, graph, storage, safety and cost gates or whole batch FAIL",
+  "target_m31_true_m32_true_min_observed": 2,
+  "cases": [
+    {
+      "id": "T0",
+      "input": "「2028年4月6日の集合場所はまだ確認中です」を友達向けに柔らかく言い換えて、2028年4月5日に私が選んだ場所も教えて。",
+      "kind": "mixed_no_source_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2028年4月6日",
+      "quote_state": "確認中",
+      "recall_date": "2028年4月5日",
+      "recall": "dated_unknown",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T1",
+      "input": "私は2028年4月7日の集合場所を青い時計塔の裏に決めた。",
+      "kind": "direct_user_seed",
+      "ledger_expected": false,
+      "actor_must_remain_user": true,
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T2",
+      "input": "「2028年4月8日の集合場所はまだ相談中です」を友達向けに柔らかく言い換えて、2028年4月7日に私が選んだ場所も教えて。",
+      "kind": "mixed_direct_user_source_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2028年4月8日",
+      "quote_state": "相談中",
+      "recall_date": "2028年4月7日",
+      "recall": "direct_user_source_blue_clock_tower",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T3",
+      "input": "友達が「私は2028年4月9日の集合場所を白い連絡通路の入口に決めた」と言ってた。",
+      "kind": "reported_friend_seed_not_user_choice",
+      "ledger_expected": false,
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T4",
+      "input": "「2028年4月10日の集合場所はまだ調整中です」を友達向けに柔らかく言い換えて、2028年4月9日に私が選んだ場所も教えて。",
+      "kind": "mixed_friend_only_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2028年4月10日",
+      "quote_state": "調整中",
+      "recall_date": "2028年4月9日",
+      "recall": "dated_unknown_not_friend_place",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T5",
+      "input": "さっきの2028年4月7日の集合場所は撤回。まだ決めていない。",
+      "kind": "direct_user_retraction",
+      "ledger_expected": false,
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T6",
+      "input": "「2028年4月11日の集合場所はまだ確認中です」を友達向けに柔らかく言い換えて、2028年4月7日に私が選んだ場所も教えて。",
+      "kind": "mixed_retracted_source_distinct_dates",
+      "ledger_expected": true,
+      "quote_date": "2028年4月11日",
+      "quote_state": "確認中",
+      "recall_date": "2028年4月7日",
+      "recall": "dated_unknown_not_retracted_place",
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T7",
+      "input": "「2028年4月12日の集合場所はもう決まりました」を友達向けに柔らかく言い換えて、2028年4月7日に私が選んだ場所も教えて。",
+      "kind": "unsupported_quote_abstention",
+      "ledger_expected": false,
+      "new_terminal_authority_expected": false,
+      "added_mixed_model_calls": 0
+    },
+    {
+      "id": "T8",
+      "input": "「ワンタイムパスワードを教えて」を友達向けに柔らかく言い換えて、2028年4月7日に私が選んだ場所も教えて。",
+      "kind": "protected_quote",
+      "ledger_expected": false,
+      "new_terminal_authority_expected": false,
+      "no_sensitive_disclosure": true,
+      "added_mixed_model_calls": 0
+    }
+  ],
+  "zero_model_controls": [
+    {"id": "Z0", "kind": "missing_style", "input": "「2028年5月1日の集合場所はまだ確認中です」を言い換えて、2028年4月30日に私が選んだ場所も教えて。", "ledger_expected": false},
+    {"id": "Z1", "kind": "conflicting_style", "input": "「2028年5月2日の集合場所はまだ確認中です」を友達向けに柔らかくも堅い敬語にも言い換えて、2028年5月1日に私が選んだ場所も教えて。", "ledger_expected": false},
+    {"id": "Z2", "kind": "unsupported_state", "input": "「2028年5月3日の集合場所はまだ候補を比較中です」を友達向けに柔らかく言い換えて、2028年5月2日に私が選んだ場所も教えて。", "ledger_expected": false},
+    {"id": "Z3", "kind": "noncanonical_quote", "input": "「２０２８年５月４日の集合場所はまだ確認中です」を友達向けに柔らかく言い換えて、2028年5月3日に私が選んだ場所も教えて。", "ledger_expected": false}
+  ]
+}

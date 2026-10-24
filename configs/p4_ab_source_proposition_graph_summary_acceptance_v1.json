@@ -1,0 +1,54 @@
+{
+  "schema": "uruha_p4_ab_source_proposition_graph_summary_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_ab_source_proposition_graph_summary_v1.json",
+    "sha256": "7d3a78e6f15313650bad413296f8c61f0dbb42b2e23ef1fd11dcdf2260813ba6",
+    "case_count": 4
+  },
+  "predecessor": {
+    "module": "uruha_source_bound_proposition_preservation_p4.py",
+    "sha256": "e181d1c193be74ecd5d5cadd9628216dbfbfb7cfb498c31fa6531936004c1b58"
+  },
+  "implementation_target": {
+    "module": "uruha_memory_observatory.py",
+    "before_sha256": "c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76",
+    "allowed_function": "_graph_signal",
+    "single_variable": "render the existing typed P4-Z payload as one human-readable graph-node signal"
+  },
+  "required_summary_dimensions": [
+    "source_frame_family",
+    "speaker_ownership",
+    "known_proposition_fields",
+    "surface_action",
+    "violation_count_before_to_after"
+  ],
+  "gates": {
+    "presentation_case_count": 4,
+    "summary_exact_count": 4,
+    "summary_over_42_count": 0,
+    "payload_mutation_count": 0,
+    "raw_sensitive_token_count": 0,
+    "unrelated_control_exact_count": 1,
+    "visible_reply_change_count": 0,
+    "p4_z_logic_change_count": 0,
+    "trace_detail_change_count": 0,
+    "model_call_count": 0,
+    "memory_write_count": 0
+  },
+  "change_policy": {
+    "visible_reply_change_allowed": false,
+    "p4_z_logic_change_allowed": false,
+    "trace_detail_change_allowed": false,
+    "model_call_allowed": false,
+    "memory_write_allowed": false,
+    "raw_source_or_reply_in_summary_allowed": false
+  },
+  "failure_policy": {
+    "expected_summary_rewrite_after_result_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "product_behavior_claim_from_unit_only_allowed": false
+  },
+  "claim_boundary": "A pass proves that four frozen P4-Z trace states receive concise, exact, raw-free graph summaries without changing logic, reply, detail, model calls or memory writes. It is a presentation result, not new semantic understanding, repair accuracy, human preference or strong-LLM advantage."
+}

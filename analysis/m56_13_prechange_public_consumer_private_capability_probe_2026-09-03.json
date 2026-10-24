@@ -1,0 +1,31 @@
+{
+  "schema": "uruha_m56_13_prechange_public_consumer_private_capability_probe_v1",
+  "version": "1.0.0",
+  "status": "all_existing_public_consumers_require_private_state_loader",
+  "public_consumer_count": 3,
+  "private_loader_call_count": 3,
+  "consumers": {
+    "dashboard": {
+      "available": false,
+      "error_class": "PermissionError",
+      "private_loader_called": true
+    },
+    "log": {
+      "available": false,
+      "error_class": "PermissionError",
+      "private_loader_called": true
+    },
+    "telemetry": {
+      "available": false,
+      "error_class": "PermissionError",
+      "private_loader_called": true
+    }
+  },
+  "m56_private_module_import_count_in_consumer_module": 4,
+  "m56_12_three_surface_median_seconds": 0.43307129200547934,
+  "real_target_outcome_access_count": 0,
+  "formal_model_call_count": 0,
+  "observed_private_data_leak": false,
+  "interpretation": "M56.12 redacts outputs correctly, but dashboard, log and telemetry still call the private-state validator independently. This proves retained private capability and repeated validation, not an output leak.",
+  "claim_boundary": "Monkeypatched capability-denial probe over function wiring only; no real run, private outcome, human evidence or production process isolation."
+}

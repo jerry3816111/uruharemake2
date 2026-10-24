@@ -1,0 +1,281 @@
+{
+  "schema": "uruha_p4_bb_typed_action_compiler_dataset_v1",
+  "version": "1.0.0",
+  "status": "sealed_before_implementation",
+  "development_only": true,
+  "positive_cases": [
+    {
+      "case_id": "p4_bb_zh_scaffold_001",
+      "language": "zh-TW",
+      "source": {
+        "id": "current:1",
+        "kind": "current_user",
+        "text": "我的簡報還是一片空白，先給我一個現在能做的步驟。"
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "current:1",
+        "source_span": "我的簡報還是一片空白，先給我一個現在能做的步驟。",
+        "template_id": "blank_work_three_headings",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "簡報"},
+          {"role": "state", "text": "一片空白"},
+          {"role": "request", "text": "一個現在能做的步驟"}
+        ],
+        "slots": {
+          "work_object_jp": "発表資料",
+          "scaffold_unit_jp": "見出し",
+          "count_word_jp": "三つ",
+          "unknown_constraint_jp": "詳しい提出条件は不明"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "current:1",
+        "goal_source_span": "我的簡報還是一片空白，先給我一個現在能做的步驟。",
+        "task_goal_jp": "発表資料の作成を始める",
+        "criterion_basis": "safe_proposed_criterion",
+        "progress_criterion_jp": "見出しが三つ書かれた状態",
+        "progress_mechanism": "structure_scaffold",
+        "action_object_jp": "見出しを三つ",
+        "action_verb_jp": "書く",
+        "action_step_jp": "メモに見出しを三つだけ書く",
+        "expected_state_change_jp": "発表資料に最小の骨組みができる",
+        "completion_jp": "見出しを三つ書いたら止める",
+        "unknown_constraint_jp": "詳しい提出条件は不明",
+        "instruction_jp": "まずメモに見出しを三つだけ書いて、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_bb_zh_group_001",
+      "language": "zh-TW",
+      "source": {
+        "id": "prior:2",
+        "kind": "linked_previous_user",
+        "text": "桌上的收據混在一起，請先按有沒有公司抬頭分成兩堆，做完就停。"
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "prior:2",
+        "source_span": "桌上的收據混在一起，請先按有沒有公司抬頭分成兩堆，做完就停。",
+        "template_id": "binary_rule_two_piles",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "收據"},
+          {"role": "rule", "text": "有沒有公司抬頭"},
+          {"role": "completion", "text": "做完就停"}
+        ],
+        "slots": {
+          "items_jp": "机の領収書",
+          "left_label_jp": "会社名あり",
+          "right_label_jp": "会社名なし",
+          "unknown_constraint_jp": "領収書の枚数は不明"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "prior:2",
+        "goal_source_span": "桌上的收據混在一起，請先按有沒有公司抬頭分成兩堆，做完就停。",
+        "task_goal_jp": "机の領収書を会社名の有無で分ける",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "領収書が会社名ありと会社名なしの二群に分かれた状態",
+        "progress_mechanism": "group_by_rule",
+        "action_object_jp": "机の領収書",
+        "action_verb_jp": "置く",
+        "action_step_jp": "机の領収書を、会社名ありは左、会社名なしは右に置く",
+        "expected_state_change_jp": "領収書が会社名の有無で二群になる",
+        "completion_jp": "全部置いたら止める",
+        "unknown_constraint_jp": "領収書の枚数は不明",
+        "instruction_jp": "机の領収書を、会社名ありは左、会社名なしは右に置いて、全部置いたら止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_bb_en_extract_001",
+      "language": "en",
+      "source": {
+        "id": "current:3",
+        "kind": "current_user",
+        "text": "My meeting notes mix decisions and side comments. Pull out one decision and stop."
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "current:3",
+        "source_span": "My meeting notes mix decisions and side comments. Pull out one decision and stop.",
+        "template_id": "extract_one_by_named_rule",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "meeting notes"},
+          {"role": "selection_rule", "text": "decision"},
+          {"role": "completion", "text": "one decision and stop"}
+        ],
+        "slots": {
+          "collection_jp": "会議メモ",
+          "selected_item_jp": "決定事項",
+          "unknown_constraint_jp": "メモの長さは不明"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "current:3",
+        "goal_source_span": "My meeting notes mix decisions and side comments. Pull out one decision and stop.",
+        "task_goal_jp": "会議メモから決定事項を見つける",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "決定事項が一つ抜き出された状態",
+        "progress_mechanism": "extract_relevant_subset",
+        "action_object_jp": "決定事項",
+        "action_verb_jp": "抜き出す",
+        "action_step_jp": "会議メモから決定事項を一つだけ抜き出す",
+        "expected_state_change_jp": "雑談から決定事項が一つ分離される",
+        "completion_jp": "一つ抜き出したら止める",
+        "unknown_constraint_jp": "メモの長さは不明",
+        "instruction_jp": "会議メモから決定事項を一つだけ抜き出して、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_bb_en_verify_001",
+      "language": "en",
+      "source": {
+        "id": "current:4",
+        "kind": "current_user",
+        "text": "I need to send this email, but first check whether the subject line names the project. One check only."
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "current:4",
+        "source_span": "I need to send this email, but first check whether the subject line names the project. One check only.",
+        "template_id": "verify_one_named_condition",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "subject line"},
+          {"role": "condition", "text": "names the project"},
+          {"role": "limit", "text": "One check only"}
+        ],
+        "slots": {
+          "target_jp": "メールの件名",
+          "condition_jp": "プロジェクト名が入っている",
+          "unknown_constraint_jp": "正しいプロジェクト名は不明"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "current:4",
+        "goal_source_span": "I need to send this email, but first check whether the subject line names the project. One check only.",
+        "task_goal_jp": "メールの件名を送信前に確認する",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "件名にプロジェクト名があるか確認済みの状態",
+        "progress_mechanism": "verify_named_condition",
+        "action_object_jp": "メールの件名",
+        "action_verb_jp": "確認する",
+        "action_step_jp": "メールの件名にプロジェクト名が入っているか一回確認する",
+        "expected_state_change_jp": "件名の条件が確認済みになる",
+        "completion_jp": "一回確認したら止める",
+        "unknown_constraint_jp": "正しいプロジェクト名は不明",
+        "instruction_jp": "まずメールの件名だけ見て、プロジェクト名が入っているか一回確認したら、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_bb_ja_remove_001",
+      "language": "ja",
+      "source": {
+        "id": "current:5",
+        "kind": "current_user",
+        "text": "作業画面に使っていないタブが多すぎる。まず一つ閉じたら止めたい。"
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "current:5",
+        "source_span": "作業画面に使っていないタブが多すぎる。まず一つ閉じたら止めたい。",
+        "template_id": "close_one_named_obstacle",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "作業画面"},
+          {"role": "obstacle", "text": "使っていないタブ"},
+          {"role": "limit", "text": "一つ閉じたら止めたい"}
+        ],
+        "slots": {
+          "obstacle_jp": "使っていないタブ",
+          "unknown_constraint_jp": "どのタブが不要かは利用者が画面で確認する"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "current:5",
+        "goal_source_span": "作業画面に使っていないタブが多すぎる。まず一つ閉じたら止めたい。",
+        "task_goal_jp": "作業画面の不要なタブを減らす",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "使っていないタブが一つ少ない状態",
+        "progress_mechanism": "remove_named_obstacle",
+        "action_object_jp": "使っていないタブ",
+        "action_verb_jp": "閉じる",
+        "action_step_jp": "使っていないタブを一つ閉じる",
+        "expected_state_change_jp": "作業画面の不要なタブが一つ減る",
+        "completion_jp": "一つ閉じたら止める",
+        "unknown_constraint_jp": "どのタブが不要かは利用者が画面で確認する",
+        "instruction_jp": "使っていないタブを一つだけ閉じて、そこで止めよ。"
+      }
+    },
+    {
+      "case_id": "p4_bb_ja_atomic_001",
+      "language": "ja",
+      "source": {
+        "id": "current:6",
+        "kind": "current_user",
+        "text": "空欄には今日の日付だけ入れれば終わる。最初の一手だけ教えて。"
+      },
+      "task_spec": {
+        "schema": "uruha_typed_task_spec_p4_bb",
+        "source_id": "current:6",
+        "source_span": "空欄には今日の日付だけ入れれば終わる。最初の一手だけ教えて。",
+        "template_id": "write_one_atomic_value",
+        "safety_class": "low_risk_reversible",
+        "evidence_atoms": [
+          {"role": "task_object", "text": "空欄"},
+          {"role": "value", "text": "今日の日付"},
+          {"role": "limit", "text": "だけ入れれば終わる"}
+        ],
+        "slots": {
+          "atomic_object_jp": "今日の日付",
+          "unknown_constraint_jp": "指定の日付形式は不明"
+        }
+      },
+      "expected_plan": {
+        "status": "action",
+        "goal_source_id": "current:6",
+        "goal_source_span": "空欄には今日の日付だけ入れれば終わる。最初の一手だけ教えて。",
+        "task_goal_jp": "空欄に今日の日付を入れる",
+        "criterion_basis": "direct_from_source",
+        "progress_criterion_jp": "空欄に今日の日付が一つ書かれた状態",
+        "progress_mechanism": "direct_atomic_completion",
+        "action_object_jp": "今日の日付",
+        "action_verb_jp": "書く",
+        "action_step_jp": "空欄に今日の日付だけ書く",
+        "expected_state_change_jp": "空欄が今日の日付で埋まる",
+        "completion_jp": "日付を書いたら止める",
+        "unknown_constraint_jp": "指定の日付形式は不明",
+        "instruction_jp": "まず空欄に今日の日付だけ書いて、そこで止めよ。"
+      }
+    }
+  ],
+  "control_cases": [
+    {"case_id": "p4_bb_control_source_id_mismatch", "base_case_id": "p4_bb_zh_scaffold_001", "mutation": {"op": "replace", "path": "task_spec.source_id", "value": "current:999"}, "expected_reason": "source_identity_mismatch"},
+    {"case_id": "p4_bb_control_source_span_mismatch", "base_case_id": "p4_bb_en_extract_001", "mutation": {"op": "replace", "path": "task_spec.source_span", "value": "Only a fragment"}, "expected_reason": "source_identity_mismatch"},
+    {"case_id": "p4_bb_control_assistant_source", "base_case_id": "p4_bb_ja_atomic_001", "mutation": {"op": "replace", "path": "source.kind", "value": "assistant"}, "expected_reason": "source_kind_not_allowed"},
+    {"case_id": "p4_bb_control_missing_atom", "base_case_id": "p4_bb_en_verify_001", "mutation": {"op": "replace", "path": "task_spec.evidence_atoms.1.text", "value": "private urgency"}, "expected_reason": "evidence_atom_not_exact"},
+    {"case_id": "p4_bb_control_missing_required_slot", "base_case_id": "p4_bb_zh_scaffold_001", "mutation": {"op": "remove", "path": "task_spec.slots.scaffold_unit_jp"}, "expected_reason": "slot_contract_mismatch"},
+    {"case_id": "p4_bb_control_extra_private_slot", "base_case_id": "p4_bb_en_extract_001", "mutation": {"op": "add", "path": "task_spec.slots.private_motive_jp", "value": "失敗が怖い"}, "expected_reason": "slot_contract_mismatch"},
+    {"case_id": "p4_bb_control_unsupported_template", "base_case_id": "p4_bb_ja_atomic_001", "mutation": {"op": "replace", "path": "task_spec.template_id", "value": "guess_private_motive"}, "expected_reason": "unsupported_template"},
+    {"case_id": "p4_bb_control_destructive_safety", "base_case_id": "p4_bb_ja_remove_001", "mutation": {"op": "replace", "path": "task_spec.safety_class", "value": "destructive"}, "expected_reason": "safety_class_not_allowed"},
+    {"case_id": "p4_bb_control_non_japanese_slot", "base_case_id": "p4_bb_zh_scaffold_001", "mutation": {"op": "replace", "path": "task_spec.slots.work_object_jp", "value": "簡報"}, "expected_reason": "invalid_japanese_slot"},
+    {"case_id": "p4_bb_control_missing_rule_role", "base_case_id": "p4_bb_zh_group_001", "mutation": {"op": "remove", "path": "task_spec.evidence_atoms.1"}, "expected_reason": "evidence_role_contract_mismatch"},
+    {"case_id": "p4_bb_control_oversized_count", "base_case_id": "p4_bb_zh_scaffold_001", "mutation": {"op": "replace", "path": "task_spec.slots.count_word_jp", "value": "五十個"}, "expected_reason": "slot_value_not_allowed"},
+    {"case_id": "p4_bb_control_missing_task_spec", "base_case_id": "p4_bb_en_extract_001", "mutation": {"op": "remove", "path": "task_spec"}, "expected_reason": "missing_typed_task_spec"}
+  ],
+  "reuse_policy": {
+    "p4_ba_cases_are_exposed_development_only": true,
+    "these_cases_may_be_called_holdout": false,
+    "post_result_case_or_gate_change_allowed": false,
+    "failed_outputs_must_be_preserved": true
+  },
+  "claim_boundary": "This dataset tests only compilation from an already-authorized typed task spec. It does not test deriving that spec from raw dialogue, advice usefulness, human preference, open-domain coverage, matched-LLM advantage, or a human equation."
+}

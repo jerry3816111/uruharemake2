@@ -1,0 +1,43 @@
+{
+  "schema": "uruha_m39_semantic_persona_surface_protocol_v1",
+  "milestone": "M39 Semantic + Persona Surface-Act Verifier",
+  "frozen_before_implementation": true,
+  "single_core_variable": "whether a final Japanese surface verifier audits and, when bounded evidence permits, repairs the visible reply so source roles and observable facts are preserved and the already-selected response policy is actually performed",
+  "dataset_path": "datasets/m39_semantic_persona_surface_reserve_v1.json",
+  "baseline": "the retained pre-M39 branch-surface audit, which treats selected/performed policy metadata plus a non-empty Japanese reply as sufficient and does not inspect semantic roles or actual surface act",
+  "intervention": "post-language-guard M39 semantic/persona surface audit with bounded policy-aware repair; branch selection, M37 relation and M38 linkage remain unchanged",
+  "scored_categories": [
+    "speaker_role_inversion",
+    "third_party_role_inversion",
+    "unsupported_event_addition",
+    "unsupported_time_addition",
+    "unsupported_cause_addition",
+    "selected_policy_not_realized",
+    "safe_noninterference",
+    "persona_register_mismatch",
+    "protected_route_noninterference"
+  ],
+  "gates": {
+    "overall_expected_action_accuracy_min": 0.9,
+    "role_inversion_repair_recall_min": 1.0,
+    "unsupported_addition_repair_recall_min": 0.8,
+    "policy_realization_repair_recall_min": 0.9,
+    "safe_noninterference_rate_min": 1.0,
+    "protected_route_noninterference_rate_min": 1.0,
+    "post_repair_policy_act_match_min": 0.95,
+    "post_repair_forbidden_concept_rate_max": 0.0,
+    "visible_japanese_format_rate_min": 1.0,
+    "formal_register_rate_max": 0.0,
+    "raw_dialogue_persistence_count_max": 0,
+    "unverified_mental_fact_write_count_max": 0,
+    "p95_verifier_latency_seconds_max": 0.02
+  },
+  "formal_run_rule": "After implementation freeze, execute this reserve exactly once. Retain PASS or FAIL without result-driven edits. Any remediation uses a later milestone and a new source-disjoint reserve.",
+  "protected_routes": ["safety_sensitive", "factual_or_memory", "deliberation"],
+  "evidence_layers": {
+    "contract": "deterministic verifier audit and repair metrics",
+    "web": "isolated Safari turns with visible reply and runtime graph inspection",
+    "human": "not available unless separately collected blind ratings exist"
+  },
+  "claim_boundary": "Passing establishes a bounded final-surface integrity mechanism. It does not establish private intent truth, open-domain semantic equivalence, naturalness by human preference, Uruha equivalence, consciousness, or overall superiority to a strong LLM."
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "uruha_p4_c_read_only_function_calling_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_offline_contract_before_any_p4_c_model_call",
+  "purpose": "Add one model-mediated, allowlisted, read-only runtime-status tool seam without authorizing general tools or VRM execution.",
+  "before_evidence": {
+    "inventory_release": "research/p4_a_unified_local_entry_inventory_release_2026-09-20.json",
+    "function_calling_status": "research_policy_only_not_product_runtime",
+    "runtime_tool_schema_present": false,
+    "runtime_tool_result_loop_present": false
+  },
+  "single_changed_variable": "one get_runtime_status function-call path for explicit current status requests",
+  "request_gate": {
+    "supported_input_languages": [
+      "zh",
+      "en",
+      "ja"
+    ],
+    "requires_explicit_current_status_request": true,
+    "blocked_contexts": [
+      "ordinary_conversation",
+      "negated_request",
+      "hypothetical_or_conditional",
+      "quoted_or_translation_request",
+      "third_person_or_example_request",
+      "prompt_injection_or_other_tool_request"
+    ],
+    "blocked_requests_fall_through_to_existing_chat": true,
+    "request_payload_may_persist_raw_dialogue": false
+  },
+  "tool": {
+    "name": "get_runtime_status",
+    "description": "Read a bounded status summary for this local UruhaBrain runtime.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "maximum_calls_per_turn": 1,
+    "side_effects": "none",
+    "allowed_result_fields": [
+      "schema",
+      "brain_loaded",
+      "turn_count",
+      "memory_isolation",
+      "tool_capability"
+    ],
+    "forbidden_result_content": [
+      "filesystem_path",
+      "session_id",
+      "dialogue",
+      "memory_content",
+      "secret",
+      "credential",
+      "environment_value",
+      "network_address"
+    ],
+    "maximum_serialized_result_bytes": 640
+  },
+  "provider": {
+    "kind": "local_ollama_chat_tools",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "model": "qwen3.5:9b",
+    "model_blob_sha256": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "timeout_seconds": 90,
+    "stream": false,
+    "think": false,
+    "options": {
+      "temperature": 0,
+      "seed": 260920,
+      "top_p": 1,
+      "num_ctx": 4096,
+      "num_predict": 96
+    },
+    "retry_or_fallback_allowed": false,
+    "raw_prompt_or_response_persistence_allowed": false
+  },
+  "validation": {
+    "exact_tool_name": true,
+    "exact_empty_arguments": true,
+    "exactly_one_tool_call": true,
+    "malformed_unknown_duplicate_or_extra_argument_call_fails_closed": true,
+    "executor_exception_fails_closed": true,
+    "tool_not_executed_on_any_validation_failure": true
+  },
+  "visible_surface": {
+    "language": "natural_japanese",
+    "exposes_internal_analysis": false,
+    "success_max_characters": 120,
+    "failure_max_characters": 80,
+    "failure_must_not_claim_status_was_read": true
+  },
+  "trace": {
+    "ordered_labels": [
+      "function_request_p4_c",
+      "function_model_decision_p4_c",
+      "function_validated_call_p4_c",
+      "function_tool_result_p4_c",
+      "function_surface_p4_c"
+    ],
+    "raw_dialogue_or_provider_response_allowed": false,
+    "same_turn_product_graph_required_before_release": true
+  },
+  "offline_acceptance": {
+    "required_cases": [
+      "valid_single_call",
+      "no_call",
+      "wrong_tool",
+      "extra_arguments",
+      "duplicate_calls",
+      "malformed_arguments",
+      "provider_exception",
+      "executor_exception",
+      "ordinary_conversation_fallthrough",
+      "negation_fallthrough",
+      "hypothetical_fallthrough",
+      "prompt_injection_fallthrough",
+      "zh_en_ja_explicit_request_detection"
+    ],
+    "model_call_count": 0,
+    "tool_execution_side_effect_count": 0,
+    "production_memory_read_count": 0,
+    "production_memory_write_count": 0,
+    "physical_vrm_action_count": 0
+  },
+  "release_order": [
+    "contract",
+    "offline_fake_provider_tests",
+    "implementation_freeze_commit",
+    "one_real_positive_model_call",
+    "real_negative_request_guards",
+    "product_integration",
+    "isolated_safari_acceptance"
+  ],
+  "denied_actions": {
+    "shell_execution": true,
+    "file_write_tool": true,
+    "external_network_tool": true,
+    "login_or_paid_api": true,
+    "production_memory_mutation": true,
+    "vrm_execution": true,
+    "general_tool_registry": true,
+    "automatic_retry": true
+  },
+  "claim_boundary": "Offline fake-provider acceptance proves only gate, schema, validation, fail-closed execution and trace mechanics. Real model selection and Safari product wiring remain separate gates; this does not establish general Function Calling or VRM readiness."
+}

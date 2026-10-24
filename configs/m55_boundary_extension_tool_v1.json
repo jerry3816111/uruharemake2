@@ -1,0 +1,91 @@
+{
+  "schema": "uruha_m55_boundary_extension_tool_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_v7_reliability_or_target_content_access",
+  "single_changed_variable": "add a separate two-human prediction-boundary ledger beside frozen V9 without changing V9 entries, codebook, sampling frame, reliability gates, target content, model, prompt, runtime, memory, or holdout",
+  "bindings": {
+    "temporal_row_contract": {
+      "path": "configs/m55_temporal_row_contract_v1.json",
+      "sha256": "e94f0900f36163b5456324edfd3aff4b2a93d68ffd8e27287bb6c6fb6e9231d7"
+    },
+    "target_v9_result_lock": {
+      "path": "configs/public_persona_target_calibration_coding_v9_result_lock.json",
+      "sha256": "3572c8b5c5b125eac479e6c4082ee410add90b4ed8300c8ced6d3b63aea660fd"
+    },
+    "target_sampling_frame": {
+      "path": "datasets/public_persona_target_calibration_sampling_frame_v9.json",
+      "sha256": "fccac49c7cf2df6b54be2fc9af4182b9c6f20f646d909597c7c0c1831c71d4ae"
+    },
+    "target_source_metadata": {
+      "path": "datasets/public_persona_target_calibration_source_metadata_v9.json",
+      "sha256": "d1e151870cf73d92d454d1b74264b28891629dd1288996bd973480d8fb9402c7"
+    },
+    "behavior_codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    },
+    "event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "frozen_v9_tool": {
+      "path": "public_persona_target_calibration_coding_v9.py",
+      "sha256": "2a1971c1aedd9eaa76d6bfb07eb17e5f5918e332d7ffa3f5e4b9cac76650ded1"
+    }
+  },
+  "private_storage": {
+    "root": "analysis/local_m55_boundary_extension_v1/",
+    "gitignored": true,
+    "atomic_write": true,
+    "one_coder_per_ledger": true,
+    "other_coder_visible_before_both_complete": false,
+    "source_v9_entry_bound_by_sha256": true
+  },
+  "individual_entry": {
+    "schema": "uruha_m55_private_boundary_extension_ledger_v1",
+    "required_fields": [
+      "sampling_slot_id",
+      "source_id",
+      "coder_pseudonym",
+      "source_v9_entry_hash",
+      "event_start_seconds",
+      "observable_input_start_seconds",
+      "prediction_cutoff_seconds",
+      "observable_behavior_start_seconds",
+      "observable_behavior_end_seconds",
+      "event_end_seconds",
+      "observable_input_paraphrase",
+      "completed_event_summary",
+      "annotation_confidence",
+      "prediction_boundary_attestation",
+      "outcome_excluded_from_input_attestation",
+      "paraphrase_and_no_quote_attestation",
+      "updated_at"
+    ],
+    "time_order": "event_start <= input_start < cutoff < behavior_start < behavior_end <= event_end",
+    "whole_event_context_reuse_as_input_forbidden": true,
+    "input_paraphrase_must_be_new_precutoff_only": true,
+    "paraphrase_max_characters": 500
+  },
+  "comparison": {
+    "both_ledgers_complete_before_cross_coder_visibility": true,
+    "distinct_coder_pseudonyms_required": true,
+    "report_contains_text_or_paraphrase": false,
+    "report_contains_only_hashes_counts_and_temporal_differences": true,
+    "automatic_average_or_merge_forbidden": true,
+    "original_independent_entries_preserved": true,
+    "explicit_human_adjudication_required_for_formal_record_pack": true
+  },
+  "authorization": {
+    "real_initialization_requires_v7_reliability_pass": true,
+    "real_serving_requires_v7_reliability_pass": true,
+    "synthetic_demo_authorizes_human_reliability": false,
+    "synthetic_demo_authorizes_target_coding": false,
+    "synthetic_demo_authorizes_m55_completion": false,
+    "tool_or_comparison_alone_authorizes_m56": false,
+    "sealed_holdout_access": false,
+    "model_execution": false,
+    "production_memory_write": false
+  },
+  "claim_boundary": "A pass proves only that two isolated humans can record and compare leakage-resistant prediction boundaries without changing frozen V9 or exposing each other before completion. It does not create human labels, validate Equation V1, complete M55, authorize M56, infer private mental state, or prove a human-brain equation."
+}

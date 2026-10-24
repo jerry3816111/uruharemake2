@@ -1,0 +1,99 @@
+{
+  "schema": "uruha_p3_b67_same_source_multiwindow_predictions_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_replication_context_acquisition_model_calls_or_future_access",
+  "research_question": "Does the unchanged B65 equal-resource joint interface produce a complete paired prediction batch on four preregistered, non-overlapping, not-yet-exposed windows from the same public source?",
+  "claim_level": "same_source_development_replication_not_independent_holdout_or_formal_m56",
+  "bindings": {
+    "b66_release": {
+      "path": "research/p3_b66_future_outcome_scoring_release_2026-09-20.json",
+      "sha256": "88bc97ff48b69b7a78962b73523e9b18716b12d008ece6cdfb0e41263a5f8d8a"
+    },
+    "b65_contract": {
+      "path": "configs/p3_b65_bounded_joint_prediction_interface_v1.json",
+      "sha256": "35cc6472ed9b68f971b65750271f1d607ff491ba0398bdea39ae9112dc4d5851"
+    },
+    "b65_implementation": {
+      "path": "p3_b65_bounded_joint_prediction_interface.py",
+      "sha256": "46380b02c97a65b2c0d3ab40a24570156a1eafe122ed6c5d4107b57a5b14c0d1"
+    },
+    "b61_native_downloader_implementation": {
+      "path": "p3_b61_native_subtitle_cutoff_extractor.py",
+      "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"
+    },
+    "b61_native_downloader_contract": {
+      "path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json",
+      "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "selected_track_type": "automatic",
+    "selected_language_code": "ja",
+    "selected_format": "json3",
+    "rows": [
+      {"row_id": "r0600", "context_milliseconds": [600000, 780000], "future_milliseconds": [781000, 841000]},
+      {"row_id": "r1200", "context_milliseconds": [1200000, 1380000], "future_milliseconds": [1381000, 1441000]},
+      {"row_id": "r1800", "context_milliseconds": [1800000, 1980000], "future_milliseconds": [1981000, 2041000]},
+      {"row_id": "r2400", "context_milliseconds": [2400000, 2580000], "future_milliseconds": [2581000, 2641000]}
+    ],
+    "row_selection_basis": "fixed six-hundred-second spacing before any B67 caption projection or model call",
+    "minimum_context_cues_each_row": 1,
+    "prediction_side_future_access_before_complete_batch_required": 0
+  },
+  "private_acquisition": {
+    "reuse_b61_native_downloader_command_and_private_file_contract": true,
+    "native_downloader_process_invocation_count_max": 1,
+    "retry_or_fallback_allowed": false,
+    "cookies_login_paid_api_or_account_access_allowed": false,
+    "private_full_caption_may_be_temporarily_observed": true,
+    "private_full_caption_deleted_before_fresh_context_reader_and_model": true,
+    "raw_full_caption_or_any_future_cue_persistence_allowed": false,
+    "maximum_private_caption_bytes": 10485760
+  },
+  "public_context_batch": {
+    "root": "external_data/p3_b67_public_context_batch",
+    "artifact_schema": "uruha_p3_b67_public_context_row_v1",
+    "manifest_schema": "uruha_p3_b67_public_context_row_manifest_v1",
+    "artifact_count_exact": 4,
+    "fresh_reader_process_count": 1,
+    "persist_only_context_cues": true,
+    "future_cues_or_ranges_persisted": false
+  },
+  "prediction_experiment": {
+    "reuse_b65_joint_prompt_schema_and_parser_without_change": true,
+    "condition_order": ["BASELINE_LITERAL", "SYSTEM_PRAGMATIC_STATE"],
+    "row_order": ["r0600", "r1200", "r1800", "r2400"],
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 260920,
+    "num_ctx": 8192,
+    "think": false,
+    "completion_token_ceiling_each_condition": 512,
+    "same_json_schema_both_conditions": true,
+    "model_call_count_exact": 8,
+    "state_text_persistence_allowed": false,
+    "raw_prompt_or_response_persistence_allowed": false
+  },
+  "execution": {
+    "state_root": "external_data/p3_b67_same_source_prediction_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "prediction_batch.json",
+    "retry_or_condition_fallback_allowed": false,
+    "intent_without_complete_result_is_terminal": true,
+    "success_next": "separately_freeze_all_four_future_outcomes_and_aggregate_scoring",
+    "failure_next": "preserve_incomplete_batch_without_future_access"
+  },
+  "denied_actions": {
+    "b65_prompt_schema_parser_model_option_or_budget_change": true,
+    "future_cue_publication_or_model_access": true,
+    "row_selection_change_after_caption_access": true,
+    "partial_batch_future_unlock": true,
+    "retry_or_post_result_tuning": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_external_deployment": true
+  },
+  "claim_boundary": "B67 can establish only whether the unchanged B65 interface freezes eight predictions on four preregistered windows from the same source. It cannot establish correctness before B68, and same-source development rows are not independent holdout evidence or a general advantage result."
+}

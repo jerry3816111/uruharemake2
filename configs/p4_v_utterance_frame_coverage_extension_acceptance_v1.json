@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_p4_v_utterance_frame_coverage_extension_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_v_utterance_frame_coverage_extension_v1.json",
+    "sha256": "8df997ed9aa2c6818158e5768df49a74d4285b1d99a58e0cdad41c67cbcfe071",
+    "development_case_count": 7,
+    "holdout_case_count": 9,
+    "faithful_control_count": 9
+  },
+  "predecessor": {
+    "module": "uruha_utterance_frame_shadow_p4.py",
+    "module_sha256": "b530692a5253dc5306817497c2b890f67e6a9091aaa0477b371da7e1edec135b",
+    "entry": "uruha_web_ui_product_p4_t.py",
+    "entry_sha256": "45499d727d65ab42de37205680275f0267280728088bd75a159106bb7d6a0b91",
+    "released_product_entry": "uruha_web_ui_product.py",
+    "released_product_entry_sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694"
+  },
+  "single_changed_variable": "Add one deterministic shadow-only coverage layer for abstract cross-lingual action/time alignment, report-source markers and hypothetical framing; preserve the released P4-T trace and visible candidate.",
+  "implementation_boundary": {
+    "visible_reply_change_allowed": false,
+    "p4_t_module_or_entry_change_allowed": false,
+    "released_product_entry_change_allowed": false,
+    "prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "memory_write_added_allowed": false,
+    "case_id_or_source_exact_match_routing_allowed": false,
+    "abstract_action_time_report_hypothetical_rules_allowed": true,
+    "new_trace_and_graph_node_allowed": true,
+    "allowed_implementation_files": [
+      "uruha_utterance_frame_shadow_extension_p4.py",
+      "uruha_web_ui_product_p4_v.py",
+      "test_p4_v_utterance_frame_coverage_extension.py",
+      "test_p4_v_utterance_frame_coverage_extension_result.py"
+    ]
+  },
+  "gates": {
+    "development_case_count": 7,
+    "development_exact_base_violation_count": 7,
+    "development_exact_extension_evidence_count": 7,
+    "development_exact_violation_count": 7,
+    "holdout_case_count": 9,
+    "holdout_exact_base_violation_count": 9,
+    "holdout_exact_extension_evidence_count": 9,
+    "holdout_exact_violation_count": 9,
+    "faithful_control_count": 9,
+    "faithful_control_exact_base_violation_count": 9,
+    "faithful_control_exact_extension_evidence_count": 9,
+    "faithful_control_false_positive_count": 0,
+    "candidate_unchanged_count": 25,
+    "shadow_trace_count": 25,
+    "raw_source_or_reply_trace_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "failure_policy": {
+    "dataset_expected_label_or_gate_change_after_implementation": false,
+    "maximum_informed_correction_batches": 2,
+    "failed_results_must_be_preserved": true,
+    "p4_u_exposed_cases_may_be_called_holdout": false,
+    "later_surface_repair_requires_another_fresh_holdout": true
+  },
+  "claim_boundary": "A pass proves one bounded deterministic shadow coverage extension on 7 exposed development failures, 9 prospectively frozen developer-authored multilingual failures and 9 controls. It does not prove visible repair, open-domain semantic equivalence, natural-distribution accuracy, felt understanding, human preference, strong-LLM advantage or a human equation."
+}

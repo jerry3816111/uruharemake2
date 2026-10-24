@@ -1,0 +1,58 @@
+{
+  "schema": "uruha_p4_ao_reachable_temporal_graph_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_after_p4_an_failure_before_formal_runtime",
+  "dataset": {
+    "path": "datasets/p4_ao_reachable_temporal_graph_v1.json",
+    "sha256": "a664b0668dcd9d162872c286c8955eedd12292769ada1e16ef88ed465d0fd37a",
+    "turn_count": 3
+  },
+  "predecessors": {
+    "post_turn_delivery": ["uruha_post_turn_temporal_graph_delivery_p4.py", "ad6d612eb82c021bd5860c12d1b368f5c062e37d07262e3ff76fb6bc9838a7ba"],
+    "product_entry": ["uruha_web_ui_product_p4_an.py", "7fd50c105703e0abf9fc65890f5cc5a7ee1d3936c4261828657f808f7bd3c76e"],
+    "isolated_launcher": ["p4_an_safe_isolated_product_launcher.py", "6fc32cfab7a5794b307d2e236442a3ce2a9f69cf7494530b1d80de2c63449a8a"]
+  },
+  "implementation_boundary": {
+    "product_code_change_allowed": false,
+    "temporal_state_machine_change_allowed": false,
+    "detector_or_classifier_change_allowed": false,
+    "candidate_ranking_change_allowed": false,
+    "reply_or_prompt_change_allowed": false,
+    "model_call_added_allowed": false,
+    "factual_memory_write_allowed": false,
+    "raw_dialogue_in_graph_allowed": false,
+    "p4_am_or_p4_an_status_rewrite_allowed": false
+  },
+  "real_gates": {
+    "turn_count": 3,
+    "japanese_visible_reply_count": 3,
+    "durable_episode_count": 3,
+    "graph_visible_count": 3,
+    "temporal_node_count": 3,
+    "node_before_utterance_count": 3,
+    "logic_graph_payload_exact_count": 3,
+    "final_blackboard_contains_node_count": 3,
+    "safari_node_visually_observed_count": 3,
+    "first_turn_released_m37_path_count": 1,
+    "later_explicit_calibrate_path_count": 2,
+    "first_turn_empty_past_count": 1,
+    "second_turn_current_verification_not_past_count": 1,
+    "third_turn_verified_past_count": 1,
+    "six_candidate_present_count": 3,
+    "current_future_locked_count": 3,
+    "previous_supported_transition_count": 2,
+    "same_turn_outcome_promoted_to_past_count": 0,
+    "raw_or_private_payload_leak_count": 0,
+    "p4_ao_added_model_call_count": 0,
+    "p4_ao_factual_memory_write_count": 0,
+    "maximum_turn_latency_seconds": 30.0,
+    "maximum_total_latency_seconds": 90.0
+  },
+  "failure_policy": {
+    "same_real_case_rerun_allowed": false,
+    "gate_change_after_real_result_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "external_deployment_authorized": false
+  },
+  "claim_boundary": "A pass shows one fresh isolated three-turn product/Safari cycle through already reachable released trigger paths and the P4-AN delivery hook. It does not repair P4-AH ordering, establish forecast accuracy, human preference, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}

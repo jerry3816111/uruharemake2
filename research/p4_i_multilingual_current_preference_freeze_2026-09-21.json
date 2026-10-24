@@ -1,0 +1,89 @@
+{
+  "schema": "uruha_p4_i_multilingual_current_preference_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_p4_i_implementation",
+  "design_review": {
+    "single_changed_variable": "product-only scope-aware typed current-preference write and same-scope supersession for P4-H-selected multilingual explicit self-reports",
+    "reason": "The passing P4-H execution preserved both utterances as episodes but left English and new Chinese current values absent from typed likes, so a truthful memory acknowledgement still lacks complete typed current-preference semantics.",
+    "prechange_commit": "8dd664c8137378baf1782b7f37d36b600a6dbf28",
+    "review_independence": "same_agent_non_independent_design_review",
+    "scope_approved": true
+  },
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_i_multilingual_current_preference_contract_v1.json",
+      "sha256": "49d07f29446999b0e31776802c5e0c3b6f955feb7bb8d191fc3ef7bc164cee28"
+    },
+    "freeze_test": {
+      "path": "test_p4_i_multilingual_current_preference_freeze.py",
+      "sha256": "4123ad3a242fc406595d186cc81e09682efb99d3c63d3794b6718cd2eb6a0309"
+    },
+    "p4_h_result": {
+      "path": "analysis/p4_h_multilingual_preference_memory_act_result_2026-09-21.json",
+      "sha256": "14421789de50ba587d48a64ed3499485f600a25ce55bc7f5fa45baab3cd7de37"
+    },
+    "p4_h_release": {
+      "path": "research/p4_h_multilingual_preference_memory_act_release_2026-09-21.json",
+      "sha256": "318439f01435878bbbf627b9fdde07736ef717ba7ef7a07bd9a67736225924c4"
+    },
+    "brain_runtime": {
+      "path": "uruha_brain_mac.py",
+      "sha256": "3216483ad97b70bd93fb7178843cc8de5a5efdd713397d9a76bb56eb4437dc3e"
+    },
+    "profile_memory": {
+      "path": "uruha_profile_memory.py",
+      "sha256": "073f48d627d1be57e8991255ff194c6e91ace6099d01942ebe4226cf4a7a1841"
+    },
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "3e8bba344eac821ddcd4cca281df1b863a2c4c3e86341522554fd1fd5ac7019d"
+    },
+    "p4_h_authority": {
+      "path": "uruha_explicit_preference_acknowledgement_p4.py",
+      "sha256": "6147627d173cda77301507c278d1c5eb80171ec890c6645b2352d875e3f1b4bd"
+    }
+  },
+  "authorized_changes": [
+    "uruha_multilingual_current_preference_p4.py",
+    "test_p4_i_multilingual_current_preference.py",
+    "uruha_web_ui_product.py"
+  ],
+  "implementation_requirements": [
+    "reuse the frozen P4-H classifier as the activation gate without changing P4-H plan or surface behavior",
+    "extract exactly one explicit current positive value and for corrections one distinct explicitly negated old value",
+    "derive an explicit preference scope when stated and otherwise use general; inherit a unique matching active old scope during correction",
+    "write a new typed positive record with a scope-specific single-value predicate",
+    "write a negative old-value record only for an explicit correction negation",
+    "preserve prior records and let deterministic validity resolution classify older same-scope positives as historical",
+    "keep unrelated scopes simultaneously active",
+    "attach scalar source language input digest act scope classifier cue epistemic and temporal provenance",
+    "update the in-session profile consistently while keeping persistent profile shadow out of answer generation",
+    "materialize one raw-dialogue-free memory-stage node in the runtime graph",
+    "delegate all non-selected or ambiguous inputs to the unchanged existing profile writer"
+  ],
+  "verification_order": [
+    "run this frozen contract and immutable-before binding test",
+    "implement only the authorized adapter test and product-entry files",
+    "run exact three-language parser writer supersession scope-isolation and negative-delegation tests",
+    "run affected V68 V69 P4-F P4-G and P4-H regressions",
+    "import the product entry and verify the product-only writer snapshot and graph wrappers are installed",
+    "commit and push the implementation before freezing any new cross-restart real case"
+  ],
+  "failure_policy": {
+    "same_p4_h_case_rerun_allowed": false,
+    "p4_h_plan_or_surface_change_allowed": false,
+    "episode_rewrite_or_profile_shadow_answer_activation_allowed": false,
+    "research_baseline_gate_or_data_change_allowed": false,
+    "negative_case_weakening_allowed": false,
+    "implementation_batches_maximum": 2
+  },
+  "authorized_external_effects_before_implementation_release": {
+    "real_product_turns": 0,
+    "local_model_calls": 0,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0
+  },
+  "claim_boundary": "P4-I offline success would establish only a bounded product typed-state mechanism for explicit current preferences. It cannot establish cross-restart conversational recall, full runtime or Safari behavior, open-world understanding, human-like memory, user preference, LLM superiority or a human equation."
+}

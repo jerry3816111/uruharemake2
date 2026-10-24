@@ -1,0 +1,86 @@
+{
+  "schema": "uruha_p4_av_neutral_operational_role_authorization_evidence_v1",
+  "status": "pass",
+  "frozen_before_implementation": true,
+  "correction_batches_used": 0,
+  "contract": {
+    "path": "configs/p4_av_neutral_operational_role_authorization_v1.json",
+    "freeze_commit": "3c5437d",
+    "dataset_path": "datasets/p4_av_neutral_operational_role_authorization_v1.json",
+    "dataset_sha256": "7112fd466322ba945048012d5a459591468b2247cb4bace7e6613be86fe82bb2"
+  },
+  "implementation": {
+    "module": [
+      "uruha_neutral_operational_role_authorization_p4.py",
+      "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"
+    ],
+    "product_entry": [
+      "uruha_web_ui_product_p4_av.py",
+      "0352374cc5a664bf59364d8de3da2bf6ba377ba2a21416c6f8060d464d712dfe"
+    ],
+    "launcher": [
+      "p4_av_safe_isolated_product_launcher.py",
+      "5399fe8b65d4805592c02c81f90252d963d03a7dd3f282c8f821d72ab645407b"
+    ],
+    "predecessor_m53_sha256": "e911faa7927ab4f8e7925bc064b7b49e542caafe4ec0b46eab72c66135a0de0a"
+  },
+  "cases": [
+    ["dev_p4_au_role_family_zh", "exposed_development", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_zh_now_later_items", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_zh_next_hold_field", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_en_now_later_content", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_en_now_hold_things", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_ja_now_later_content", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["fresh_ja_next_hold_items", "fresh_positive", "blocked", "authorized_operational_roles", "authorized", 2, 0],
+    ["control_invented_topics", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_hidden_priority", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_hidden_emotion", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_diagnosis", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_hidden_preference", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_hidden_feasibility", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_arbitrary_content", "fresh_control", "blocked", "blocked_unsupported_label", "blocked", 0, 2],
+    ["control_exact_source_labels", "predecessor_control", "authorized", "predecessor_preserved", "authorized", 0, 0],
+    ["control_existing_neutral_headings", "predecessor_control", "authorized", "predecessor_preserved", "authorized", 0, 0],
+    ["control_unquoted_grouping", "predecessor_control", "no_named_labels", "predecessor_preserved", "no_named_labels", 0, 0]
+  ],
+  "case_columns": [
+    "case_id",
+    "split",
+    "predecessor_status",
+    "p4_av_status",
+    "final_m53_status",
+    "operational_role_count",
+    "remaining_unsupported_count"
+  ],
+  "metrics": {
+    "case_count": 17,
+    "development_authorized_count": 1,
+    "fresh_positive_authorized_count": 6,
+    "fresh_positive_predecessor_blocked_count": 6,
+    "fresh_control_blocked_count": 7,
+    "predecessor_control_preserved_count": 3,
+    "plan_mutation_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "added_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "raw_label_persisted_count": 0,
+    "m46_review_bypass_count": 0,
+    "m45_or_m39_gate_weakening_count": 0,
+    "visible_reply_change_count": 0,
+    "full_positive_string_patch_count": 0
+  },
+  "product_preflight": {
+    "status": "ready",
+    "port": 7885,
+    "private_runtime": true,
+    "sandbox_enabled": true,
+    "runtime_reused": true,
+    "role_guard_installed": true,
+    "server_started": false,
+    "model_call_count": 0,
+    "safari_operation_count": 0
+  },
+  "failed_gates": [],
+  "claim_boundary": "This pass establishes only a bounded distinction between quoted Japanese workflow-role labels and unsupported concrete labels in frozen plans. It does not prove plan usefulness, safe open-domain semantics, felt understanding, human preference, a human equation, or superiority over a matched LLM.",
+  "next_step": "Commit this fixed implementation, then prospectively freeze a new two-turn private-runtime/Safari case. The exposed P4-AU pair must not be rerun and cannot become P4-AV formal evidence."
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "uruha_p4_c_product_function_calling_integration_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_isolated_product_restart",
+  "bindings": {
+    "core_freeze": {
+      "path": "research/p4_c_read_only_function_calling_implementation_freeze_2026-09-20.json",
+      "sha256": "03fded2ce9adbd1379ae379f1d487dafd71bca6f74def6f3bdd81d86c7a8b3d1"
+    },
+    "real_provider_gate_result": {
+      "path": "analysis/p4_c_real_provider_gate_result_2026-09-20.json",
+      "sha256": "9ba0e933d583ac1c2281eceaa2880685cac9a14c0bfc590bcd0aa9f2c5ec6be4"
+    },
+    "product_adapter": {
+      "path": "uruha_product_function_calling_p4.py",
+      "sha256": "7173e8c5dcf3f201a4e4597361e66e08c4230d6c2e220763bf4bbf233c58af6c"
+    },
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "854349c160f6cd15c716b545d68b9c7970561ad5d793fa670e797d842883df0e"
+    },
+    "product_tests": {
+      "path": "test_uruha_product_function_calling_p4.py",
+      "sha256": "24613888a172ba45e61a42b99fdc1e313a3767974fb1a8aa558811da969e6b56"
+    }
+  },
+  "integration_contract": {
+    "selected_input_path": "explicit current runtime status request only",
+    "nonselected_input_path": "original product _run_turn unchanged",
+    "live_status_fields": [
+      "brain_loaded",
+      "turn_count",
+      "memory_isolation",
+      "tool_capability"
+    ],
+    "brain_initialization_allowed_by_status_reader": false,
+    "memory_content_read_allowed": false,
+    "memory_write_allowed": false,
+    "same_turn_trace_labels": [
+      "function_request_p4_c",
+      "function_model_decision_p4_c",
+      "function_validated_call_p4_c",
+      "function_tool_result_p4_c",
+      "function_surface_p4_c"
+    ],
+    "failure_surface_claims_status_read": false
+  },
+  "offline_verification": {
+    "affected_suite_pass_count": 56,
+    "python_compile_passed": true,
+    "git_diff_check_passed": true,
+    "unsandboxed_product_import_probe_passed": true,
+    "sandboxed_product_import_probe_passed": true,
+    "server_start_count": 0,
+    "safari_operation_count": 0
+  },
+  "post_commit_acceptance": {
+    "reuse_existing_isolated_runtime_root": true,
+    "restart_existing_localhost_server": true,
+    "explicit_status_request_model_call_ceiling": 1,
+    "ordinary_conversation_regression_model_call_ceiling_added_by_p4_c": 0,
+    "check_visible_japanese_reply": true,
+    "check_same_turn_five_node_path": true,
+    "check_isolated_memory_status": true,
+    "check_git_remains_clean": true,
+    "physical_vrm_execution": false
+  },
+  "claim_boundary": "This freeze establishes product wiring and importability, not a successful Web turn. Safari, live runtime values, graph visibility and ordinary-chat regression remain pending until post-commit acceptance."
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "uruha_m56_9_single_writer_formal_scoring_concurrency_evidence_v1",
+  "date": "2026-09-03",
+  "data_kind": "temporary_forged_30_row_engineering_fixture",
+  "pre_change_reproduction": {
+    "entry_point": "execute_durable_release_gated_formal_scoring",
+    "overlapping_callers": 2,
+    "private_outcome_loader_calls": 2,
+    "successful_callers": 1,
+    "late_failed_callers": 1,
+    "late_failure_type": "FileExistsError while creating formal_score_commitment.json",
+    "rejection_before_private_outcome": false
+  },
+  "post_change_verification": {
+    "entry_point": "execute_single_writer_durable_release_gated_formal_scoring",
+    "overlapping_callers": 2,
+    "m56_8_delegate_entries": 1,
+    "private_outcome_loader_calls": 1,
+    "successful_callers": 1,
+    "rejected_before_m56_8_callers": 1,
+    "contender_score_report_or_result_writes": 0,
+    "unchanged_m56_4_seven_condition_result": true
+  },
+  "explicit_unresolved_boundary": {
+    "sequential_callers_after_lock_release": 2,
+    "private_outcome_loader_calls": 2,
+    "exactly_once_across_process_lifetimes": false
+  },
+  "formal_model_calls": 0,
+  "real_target_outcome_access": 0,
+  "human_evidence_count": 0,
+  "claim_boundary": "This evidence isolates overlapping same-host scoring ownership. It is not formal data, human evidence, an exactly-once restart protocol, distributed locking, model performance or Equation V1 validation."
+}

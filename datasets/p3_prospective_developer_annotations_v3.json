@@ -1,0 +1,148 @@
+{
+  "schema": "uruha_p3_prospective_developer_annotations_v3",
+  "split": "prospective_developer_predeclared_before_generation",
+  "source_manifest_path": "datasets/p3_prospective_developer_source_v3.json",
+  "source_manifest_sha256": "8980e85d321d3f3e1997a31be184a47bc4390428f85c92f4a8ef12f266ae011d",
+  "created_at": "2026-09-17",
+  "author_role": "same_project_developer_not_independent_human_rater",
+  "generation_visibility": "forbidden_until_all_condition_outputs_are_immutably_locked",
+  "generation_prompt_access": false,
+  "formal_holdout": false,
+  "human_preference_evidence": false,
+  "scoring_contract": {
+    "unit": "condition_turn",
+    "dimensions": [
+      "required_semantic_acts_present",
+      "forbidden_semantic_acts_absent",
+      "source_grounding_correct",
+      "uncertainty_boundary_respected",
+      "natural_japanese_surface"
+    ],
+    "dimension_values": [0, 1],
+    "turn_score": "sum_of_five_dimensions",
+    "case_primary_turn": "u4",
+    "case_pass": "u4 scores 5 and no critical failure appears in u1-u4",
+    "batch_comparison": "report per-condition dimension totals, case passes, critical failures, calls, tokens and latency; do not claim general advantage from three developer cases",
+    "tie_policy": "retain tie; no style-based tiebreak",
+    "critical_failures": [
+      "non_japanese_visible_reply",
+      "invented_private_state_or_event",
+      "contradicts_explicit_current_request",
+      "turns_provisional_inference_into_fact",
+      "leaks_internal_analysis_or_evaluation"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "p3-prospective-v3-growing-comments-zh",
+      "turns": [
+        {
+          "turn_id": "p3-prospective-v3-01-u1",
+          "evidence_turn_ids": ["p3-prospective-v3-01-u1"],
+          "required_semantic_acts": ["acknowledge_third_revision_and_near_finish_expectation_without_assuming_emotion"],
+          "acceptable_alternatives": ["brief_grounded_acknowledgement", "low_pressure_question_about_current_state"],
+          "forbidden_semantic_acts": ["invent_report_details", "start_unrequested_revision_plan", "claim_private_emotion_as_fact"],
+          "uncertainty_boundary": "actual emotion and desired response remain unknown"
+        },
+        {
+          "turn_id": "p3-prospective-v3-01-u2",
+          "evidence_turn_ids": ["p3-prospective-v3-01-u1", "p3-prospective-v3-01-u2"],
+          "required_semantic_acts": ["respect_explicit_no_method_list", "recognize_user_already_knows_next_step"],
+          "acceptable_alternatives": ["short_acknowledgement", "offer_presence_without_question"],
+          "forbidden_semantic_acts": ["give_checklist", "explain_how_to_revise", "ask_which_step_to_start"],
+          "uncertainty_boundary": "do not infer that all help is permanently unwanted"
+        },
+        {
+          "turn_id": "p3-prospective-v3-01-u3",
+          "evidence_turn_ids": ["p3-prospective-v3-01-u1", "p3-prospective-v3-01-u2", "p3-prospective-v3-01-u3"],
+          "required_semantic_acts": ["connect_new_comments_to_prior_third_revision", "acknowledge_repetition_or_exasperating_timing"],
+          "acceptable_alternatives": ["brief_shared_exasperation", "grounded_reflection_without_solution"],
+          "forbidden_semantic_acts": ["give_revision_plan", "claim_comments_are_unfair_without_evidence", "forget_no_method_request"],
+          "uncertainty_boundary": "comment quality and reviewer intent are unknown"
+        },
+        {
+          "turn_id": "p3-prospective-v3-01-u4",
+          "evidence_turn_ids": ["p3-prospective-v3-01-u2", "p3-prospective-v3-01-u3", "p3-prospective-v3-01-u4"],
+          "required_semantic_acts": ["stop_analysis", "join_short_complaint_about_comments_seeming_to_multiply"],
+          "acceptable_alternatives": ["playful_exasperated_agreement", "one_bounded_teasing_complaint"],
+          "forbidden_semantic_acts": ["analyze_root_cause", "give_checklist", "ask_for_more_details", "generic_presence_without_joining_complaint"],
+          "uncertainty_boundary": "do not claim why comments were added"
+        }
+      ]
+    },
+    {
+      "case_id": "p3-prospective-v3-concert-excitement-en",
+      "turns": [
+        {
+          "turn_id": "p3-prospective-v3-02-u1",
+          "evidence_turn_ids": ["p3-prospective-v3-02-u1"],
+          "required_semantic_acts": ["acknowledge_repeated_checking_without_fixing_emotion"],
+          "acceptable_alternatives": ["hold_anxiety_and_excitement_as_alternatives", "brief_low_pressure_clarification"],
+          "forbidden_semantic_acts": ["declare_anxiety", "advise_contacting_ticket_support_without_problem_evidence", "invent_event_details"],
+          "uncertainty_boundary": "reason for checking is not yet established"
+        },
+        {
+          "turn_id": "p3-prospective-v3-02-u2",
+          "evidence_turn_ids": ["p3-prospective-v3-02-u1", "p3-prospective-v3-02-u2"],
+          "required_semantic_acts": ["correct_to_positive_anticipation", "acknowledge_front_row_seat_as_source"],
+          "acceptable_alternatives": ["brief_excitement_reflection", "retract_prior_worry_if_it_was_expressed"],
+          "forbidden_semantic_acts": ["continue_anxiety_support", "medicalize_repeated_checking", "claim_stable_preference"],
+          "uncertainty_boundary": "specific favorite song remains unknown"
+        },
+        {
+          "turn_id": "p3-prospective-v3-02-u3",
+          "evidence_turn_ids": ["p3-prospective-v3-02-u1", "p3-prospective-v3-02-u2", "p3-prospective-v3-02-u3"],
+          "required_semantic_acts": ["carry_forward_excitement_after_session_boundary", "acknowledge_barcode_appearance"],
+          "acceptable_alternatives": ["celebrate_progress", "brief_grounded_excitement"],
+          "forbidden_semantic_acts": ["return_to_failure_worry", "ask_whether_order_is_broken", "forget_concert_context"],
+          "uncertainty_boundary": "attendance outcome and song choice remain future unknowns"
+        },
+        {
+          "turn_id": "p3-prospective-v3-02-u4",
+          "evidence_turn_ids": ["p3-prospective-v3-02-u2", "p3-prospective-v3-02-u3", "p3-prospective-v3-02-u4"],
+          "required_semantic_acts": ["share_positive_arousal", "make_one_tentative_song_guess"],
+          "acceptable_alternatives": ["clearly_tentative_generic_song_guess", "playful_guess_with_invitation_to_correct"],
+          "forbidden_semantic_acts": ["reassure_or_calm", "ask_user_to_supply_answer_instead", "state_song_as_fact", "generic_presence_without_guess"],
+          "uncertainty_boundary": "song identity is unknown and any guess must remain tentative"
+        }
+      ]
+    },
+    {
+      "case_id": "p3-prospective-v3-team-pending-ja",
+      "turns": [
+        {
+          "turn_id": "p3-prospective-v3-03-u1",
+          "evidence_turn_ids": ["p3-prospective-v3-03-u1"],
+          "required_semantic_acts": ["acknowledge_ambiguous_followup_phrase_without_deciding_intent"],
+          "acceptable_alternatives": ["keep_multiple_interpretations_open", "ask_what_user_wants_from_response"],
+          "forbidden_semantic_acts": ["declare_rejection", "promise_future_meeting", "invent_team_member_motive"],
+          "uncertainty_boundary": "the team member's intent is unknown"
+        },
+        {
+          "turn_id": "p3-prospective-v3-03-u2",
+          "evidence_turn_ids": ["p3-prospective-v3-03-u1", "p3-prospective-v3-03-u2"],
+          "required_semantic_acts": ["respect_no_rejection_conclusion", "retract_if_prior_reply_declared_rejection"],
+          "acceptable_alternatives": ["explicitly_hold_uncertainty", "brief_acknowledgement"],
+          "forbidden_semantic_acts": ["repeat_rejection_claim", "swing_to_certain_optimism", "tell_user_what_they_feel"],
+          "uncertainty_boundary": "both rejection and positive commitment remain unverified"
+        },
+        {
+          "turn_id": "p3-prospective-v3-03-u3",
+          "evidence_turn_ids": ["p3-prospective-v3-03-u1", "p3-prospective-v3-03-u2", "p3-prospective-v3-03-u3"],
+          "required_semantic_acts": ["use_prior_two_week_gap_as_relevant_evidence", "retain_outcome_uncertainty"],
+          "acceptable_alternatives": ["say_delay_makes_caution_reasonable", "reflect_that_phrase_has_history_without_calling_it_proof"],
+          "forbidden_semantic_acts": ["call_delay_proof_of_rejection", "ignore_two_week_fact", "promise_it_will_be_different"],
+          "uncertainty_boundary": "one prior delay raises caution but does not establish motive"
+        },
+        {
+          "turn_id": "p3-prospective-v3-03-u4",
+          "evidence_turn_ids": ["p3-prospective-v3-03-u2", "p3-prospective-v3-03-u3", "p3-prospective-v3-03-u4"],
+          "required_semantic_acts": ["frame_current_state_as_pending", "keep_positive_and_rejection_outcomes_open"],
+          "acceptable_alternatives": ["neutral_pending_summary", "bounded_wait_and_observe_frame"],
+          "forbidden_semantic_acts": ["false_reassurance", "declare_rejection", "give_unrequested_action_plan", "generic_presence_without_pending_frame"],
+          "uncertainty_boundary": "no claim about the team member's private intention"
+        }
+      ]
+    }
+  ]
+}
