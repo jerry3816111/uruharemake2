@@ -37,7 +37,9 @@ def _private_json(path: Path, payload: dict) -> None:
 
 
 @pytest.fixture
-def prepared_run():
+def prepared_run(request):
+    arm = getattr(request, "param", "on")
+    assert arm in {"off", "on"}
     with tempfile.TemporaryDirectory(
         prefix="uruha-product-capability-unit-",
         dir=Path(tempfile.gettempdir()).resolve(),
@@ -61,10 +63,26 @@ def prepared_run():
         _private_json(root / "p4_preference_fallback_detached.current.json", {
             "schema": CONTROL_SCHEMA, "run_id": RUN_ID, "uid": os.getuid(),
         })
-        _private_json(root / f"p4_preference_fallback_detached.{RUN_ID}.json", {
+        metadata_path = root / f"p4_preference_fallback_detached.{RUN_ID}.json"
+        child_flags = {
+            "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+            "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+            "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+            "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm,
+            "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+            "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+        }
+        _private_json(metadata_path, {
             "schema": CONTROL_SCHEMA, "runtime_root": str(root), "run_id": RUN_ID,
             "uid": os.getuid(), "mode": "product", "port": 7937, "pid": os.getpid(),
             "pre_main_command": f"/synthetic/python {ENTRYPOINT}",
+            "env_keys": sorted(child_flags),
+        })
+        _private_json(cache / f"p4_source_surface_child_flags.{RUN_ID}.json", {
+            "schema": "uruha_p4_source_surface_child_flags_v1",
+            "runtime_root": str(root), "run_id": RUN_ID,
+            "pid": os.getpid(), "port": 7937,
+            "flags": child_flags, "candidate_prompt_absent": True,
         })
         yield root
 
@@ -87,6 +105,36 @@ def test_frozen_manifest_issues_only_two_preapproved_hashes(prepared_run):
     with pytest.raises(cap.ExactInputCapabilityError) as duplicate:
         cap.issue_exact_input_permit(prepared_run, "cap_fixed_envelope", "on")
     assert _reason(duplicate) == "capability_already_used_or_issued"
+
+
+def test_missing_or_mismatched_child_attestation_rejects_before_spent(prepared_run):
+    receipt_path = prepared_run / ".cache" / f"p4_source_surface_child_flags.{RUN_ID}.json"
+    original = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt_path.unlink()  # isolated synthetic fixture only
+    with pytest.raises(cap.ExactInputCapabilityError) as missing:
+        cap.issue_exact_input_permit(prepared_run, "cap_fixed_envelope", "on")
+    assert _reason(missing) == "child_arm_not_attested"
+    _private_json(receipt_path, original)
+    cap.issue_exact_input_permit(prepared_run, "cap_fixed_envelope", "on")
+    original["flags"]["URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM"] = "off"
+    _private_json(receipt_path, original)
+    with pytest.raises(cap.ExactInputCapabilityError) as mismatch:
+        cap.claim_exact_input_permit(prepared_run, ENVELOPE, "on")
+    assert _reason(mismatch) == "child_arm_not_attested"
+    assert not (prepared_run / ".cache" / cap.CAPABILITY_DIRECTORY / cap.SPENT_NAME).exists()
+
+
+def test_attestation_is_rechecked_after_claim_before_cognition(prepared_run):
+    cap.issue_exact_input_permit(prepared_run, "cap_fixed_envelope", "on")
+    claim = cap.claim_exact_input_permit(prepared_run, ENVELOPE, "on")
+    receipt_path = prepared_run / ".cache" / f"p4_source_surface_child_flags.{RUN_ID}.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["pid"] += 1
+    _private_json(receipt_path, receipt)
+    with pytest.raises(cap.ExactInputCapabilityError) as denied:
+        cap.validate_exact_input_claim(claim, prepared_run, ENVELOPE, "on")
+    assert _reason(denied) == "child_arm_not_attested"
+    cap.close_exact_input_claim(claim)
 
 
 @pytest.mark.parametrize("source", [
@@ -125,6 +173,7 @@ def test_missing_permit_wrong_arm_and_reuse_after_claim(prepared_run):
     assert "slot" not in cap.public_claim_receipt(claim)
 
 
+@pytest.mark.parametrize("prepared_run", ["off"], indirect=True)
 def test_short_lived_scope_requires_exact_text_current_run_and_spent_marker(prepared_run):
     cap.issue_exact_input_permit(prepared_run, "cap_fixed_envelope", "off")
     claim = cap.claim_exact_input_permit(prepared_run, ENVELOPE, "off")

@@ -60,10 +60,11 @@ surface 處理 **0 新 provider calls**。未授權的萬引／侵占／錢包�
 ## 下一個必要 gate
 
 admission 部分註冊例外的零模型回滾核驗、off/on 同初始狀態斷言、圖上 receipt 的 reason/SHA 白名單、
-擴大受影響回歸與獨立只讀複核已完成；只 stage 本批範圍 commit/push、核 PR exact head。
-其後依凍結計畫才可在新的隔離 root，
-用真 M21 對 A 做一次 off/on 條件式配對：每臂最多 1 generation、0 retry、
-≤2000 provider tokens、≤20s，off FAIL／on final visible gold PASS 才能進新的 B 單次 Safari。
+擴大受影響回歸與獨立只讀複核已完成；本批已由 `83b93c5` 提交推送，任務卡更新 `0d68b20`，
+PR #435 head 已核對。下一步依凍結計畫在新隔離 root 執行 A：**總共最多一次**真 Qwen M21 generation，
+再將同一份完整 post-M21 boundary 深拷貝給 off/on 重放，兩臂各 0 新 provider、0 retry；
+總 provider tokens ≤2000、M21 planner wall ≤20s。不能把舊 f8 的兩次抽樣方法套用在 A。
+只有 off FAIL／on final visible gold PASS 才能進新的 B 單次 Safari。
 任一 gate 失敗即保留原件與 REVIEW_REQUIRED，不換題追分。B 仍須核泡泡／raw／guard／UTTERANCE／episode／
 graph、成本、持久化、原生畫面；圖像 PNG/AX 不能保存則該層 pending。正式同模型比較、人評、temporal holdout、
 VRM／Function Calling 統一驗收另保留 pending。

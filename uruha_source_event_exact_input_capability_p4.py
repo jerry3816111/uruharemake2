@@ -183,6 +183,37 @@ def _root_and_run(root: str | Path) -> tuple[Path, str]:
     return resolved, run_id
 
 
+def _require_attested_child_arm(root: Path, run_id: str, arm: str) -> None:
+    """Never issue or use a diagnostic permit for an unattested product child."""
+    metadata = _read_private_json(root / f"p4_preference_fallback_detached.{run_id}.json")
+    expected_flags = {
+        "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+        "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+        "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+        "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm,
+        "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+        "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+    }
+    try:
+        receipt = _read_private_json(root / ".cache" / f"p4_source_surface_child_flags.{run_id}.json")
+    except CapabilityDenied as exc:
+        raise CapabilityDenied("child_arm_not_attested") from exc
+    keys = metadata.get("env_keys")
+    if (not isinstance(keys, list) or not set(expected_flags).issubset(set(keys))
+            or "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT" in keys
+            or set(receipt) != {
+                "schema", "runtime_root", "run_id", "pid", "port", "flags", "candidate_prompt_absent",
+            }
+            or receipt.get("schema") != "uruha_p4_source_surface_child_flags_v1"
+            or receipt.get("runtime_root") != str(root)
+            or receipt.get("run_id") != run_id
+            or receipt.get("pid") != metadata.get("pid")
+            or receipt.get("port") != metadata.get("port")
+            or receipt.get("flags") != expected_flags
+            or receipt.get("candidate_prompt_absent") is not True):
+        raise CapabilityDenied("child_arm_not_attested")
+
+
 def current_exact_input_run_id(root: str | Path) -> str:
     """Read the current run ID only after private prepared-run validation."""
     return _root_and_run(root)[1]
@@ -265,6 +296,7 @@ def issue_exact_input_permit(root: str | Path, case_id: str, arm: str) -> dict:
     if not isinstance(case_id, str) or case_id not in approved:
         raise CapabilityDenied("case_not_approved")
     runtime_root, run_id = _root_and_run(root)
+    _require_attested_child_arm(runtime_root, run_id, arm)
     directory = _capability_dir(runtime_root, create=True)
     if (directory / SPENT_NAME).exists() or (directory / SPENT_NAME).is_symlink():
         raise CapabilityDenied("capability_already_used_or_issued")
@@ -317,6 +349,7 @@ def claim_exact_input_permit(root: str | Path, user_text: str, arm: str) -> Exac
         not isinstance(slot, str) or not _SLOT.fullmatch(slot),
     )):
         raise CapabilityDenied("permit_does_not_authorize_input")
+    _require_attested_child_arm(runtime_root, run_id, arm)
     _write_exclusive_json(directory / SPENT_NAME, {
         "schema": SCHEMA, "status": "claimed", "run_id": run_id,
         "case_id": case_id, "input_sha256": input_sha256,
@@ -420,6 +453,7 @@ def validate_exact_input_claim(
         spent.get("slot_sha256") != _sha(claim._slot.encode("ascii")),
     )):
         raise CapabilityDenied("same_turn_spent_marker_mismatch")
+    _require_attested_child_arm(runtime_root, run_id, arm)
     return claim
 
 

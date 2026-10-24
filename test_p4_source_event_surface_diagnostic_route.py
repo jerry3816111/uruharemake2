@@ -15,6 +15,7 @@ import io
 import json
 import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import tempfile
@@ -52,7 +53,7 @@ def _private_json(path: Path, payload: dict) -> None:
 
 
 @contextmanager
-def _synthetic_prepared_run(arm: str):
+def _synthetic_prepared_run(arm: str, *, attested: bool = True):
     """Fake controller metadata for no-provider capability contracts only."""
     with tempfile.TemporaryDirectory(
         prefix=f"uruha-product-source-surface-{arm}-",
@@ -77,11 +78,27 @@ def _synthetic_prepared_run(arm: str):
         _private_json(root / "p4_preference_fallback_detached.current.json", {
             "schema": schema, "run_id": run_id, "uid": os.getuid(),
         })
+        child_flags = {
+            "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+            "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+            "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+            "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm,
+            "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+            "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+        }
         _private_json(root / f"p4_preference_fallback_detached.{run_id}.json", {
             "schema": schema, "runtime_root": str(root), "run_id": run_id,
             "uid": os.getuid(), "mode": "product", "port": 7938,
             "pid": os.getpid(), "pre_main_command": f"/synthetic/python {entrypoint}",
+            "env_keys": sorted(child_flags),
         })
+        if attested:
+            _private_json(root / ".cache" / f"p4_source_surface_child_flags.{run_id}.json", {
+                "schema": "uruha_p4_source_surface_child_flags_v1",
+                "runtime_root": str(root), "run_id": run_id,
+                "pid": os.getpid(), "port": 7938,
+                "flags": child_flags, "candidate_prompt_absent": True,
+            })
         yield root
 
 
@@ -598,6 +615,7 @@ def test_child_only_surface_arm_controller_contract(monkeypatch, tmp_path):
         "text_log": tmp_path / "web_logs/conversation.txt",
     }
     observed = []
+    attestations = []
 
     def preflight(**kwargs):
         return {}, dict(kwargs["environ"]), layout, False, None
@@ -607,7 +625,7 @@ def test_child_only_surface_arm_controller_contract(monkeypatch, tmp_path):
         child = controller.launchd._isolated_env(layout, port=7938)
         if argv[0] == "start" and "product" in argv:
             _, final, _, _, _ = controller.product_launcher.preflight_preference_fallback(
-                environ=base, prewarm=False
+                environ=base, prewarm=False, port=7938,
             )
             observed.append((base, child, final))
         else:
@@ -616,6 +634,10 @@ def test_child_only_surface_arm_controller_contract(monkeypatch, tmp_path):
 
     monkeypatch.setattr(controller.product_launcher, "preflight_preference_fallback", preflight)
     monkeypatch.setattr(controller.prior.base_controller, "main", no_launch)
+    monkeypatch.setattr(
+        controller, "_record_source_surface_child_flags",
+        lambda root, arm, env: attestations.append((root, arm, dict(env))),
+    )
     monkeypatch.setenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM", "on")
     assert controller.main(["prepare"]) == 0
     assert "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM" not in observed[-1][1]
@@ -631,6 +653,11 @@ def test_child_only_surface_arm_controller_contract(monkeypatch, tmp_path):
         assert final["URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM"] == arm
         assert child["URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT"] == str(layout["runtime_root"])
         assert final["URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT"] == str(layout["runtime_root"])
+        assert child["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] == "0"
+        assert final["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] == "0"
+        assert attestations[-1][0:2] == (str(layout["runtime_root"]), arm)
+        assert attestations[-1][2]["URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM"] == arm
+    assert len(attestations) == 2
     for rejected in (
         ["--source-event-surface-arm", "on", "prepare"],
         ["--source-event-surface-arm", "on", "start", "--mode", "inert"],
@@ -645,3 +672,113 @@ def test_child_only_surface_arm_controller_contract(monkeypatch, tmp_path):
         with pytest.raises(SystemExit):
             controller.main(rejected)
         assert len(observed) == before
+
+
+def test_controller_records_run_bound_private_child_arm_values():
+    import p4_direct_reply_act_m29_priority_detached_control as controller
+
+    with _synthetic_prepared_run("off", attested=False) as root:
+        run_id = exact_cap.current_exact_input_run_id(root)
+        metadata_path = root / f"p4_preference_fallback_detached.{run_id}.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        flags = {
+            "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+            "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+            "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+            "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": "off",
+            "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+            "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+        }
+        metadata["env_keys"] = sorted(flags)
+        _private_json(metadata_path, metadata)
+        controller._record_source_surface_child_flags(str(root), "off", flags)
+        receipt_path = root / ".cache" / f"p4_source_surface_child_flags.{run_id}.json"
+        receipt = exact_cap._read_private_json(receipt_path)
+        assert receipt == {
+            "schema": controller.SOURCE_SURFACE_ATTESTATION_SCHEMA,
+            "runtime_root": str(root), "run_id": run_id,
+            "pid": metadata["pid"], "port": metadata["port"],
+            "flags": flags, "candidate_prompt_absent": True,
+        }
+        assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+        with pytest.raises(exact_cap.ExactInputCapabilityError):
+            controller._record_source_surface_child_flags(str(root), "off", flags)
+
+
+@pytest.mark.parametrize("change", [
+    {"URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": "on"},
+    {"URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "0"},
+    {"URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "1"},
+    {"URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT": "1"},
+])
+def test_controller_rejects_wrong_private_child_flags(change):
+    import p4_direct_reply_act_m29_priority_detached_control as controller
+
+    with _synthetic_prepared_run("off", attested=False) as root:
+        run_id = exact_cap.current_exact_input_run_id(root)
+        metadata_path = root / f"p4_preference_fallback_detached.{run_id}.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        flags = {
+            "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+            "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+            "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+            "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": "off",
+            "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+            "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+        }
+        flags.update(change)
+        metadata["env_keys"] = sorted(flags)
+        _private_json(metadata_path, metadata)
+        with pytest.raises(RuntimeError, match="source_surface_child_flags_not_attestable"):
+            controller._record_source_surface_child_flags(str(root), "off", flags)
+        assert not (root / ".cache" / f"p4_source_surface_child_flags.{run_id}.json").exists()
+
+
+def test_controller_attestation_failure_hides_success_and_attempts_exact_stop(monkeypatch, tmp_path, capsys):
+    import p4_direct_reply_act_m29_priority_detached_control as controller
+
+    layout = {
+        "runtime_root": tmp_path / "prepared",
+        "memory_db": tmp_path / "memory",
+        "session_db": tmp_path / "session",
+        "web_logs": tmp_path / "web_logs",
+        "jsonl_log": tmp_path / "web_logs/conversation.jsonl",
+        "text_log": tmp_path / "web_logs/conversation.txt",
+    }
+    root = str(layout["runtime_root"])
+    stops = []
+
+    def preflight(**kwargs):
+        return {}, dict(kwargs["environ"]), layout, False, None
+
+    def started(argv):
+        controller.product_launcher.preflight_preference_fallback(
+            environ=controller.launchd._isolated_env(layout, port=None),
+            port=7938, prewarm=False,
+        )
+        print(json.dumps({"ok": True, "runtime_root": root}))
+        return 0
+
+    monkeypatch.setattr(controller.product_launcher, "preflight_preference_fallback", preflight)
+    monkeypatch.setattr(controller.prior.base_controller, "main", started)
+    monkeypatch.setattr(
+        controller, "_record_source_surface_child_flags",
+        lambda *_args: (_ for _ in ()).throw(RuntimeError("test_attestation_failure")),
+    )
+    monkeypatch.setattr(
+        controller.prior.base_controller, "stop",
+        lambda target: stops.append(target) or {"ok": True},
+    )
+    assert controller.main([
+        "--source-event-surface-arm", "on", "--source-event-core-utility",
+        "--compact-json-schema", "--direct-act-arm", "control", "--product-port", "7938",
+        "start", "--mode", "product", "--prepared-runtime-root", root,
+    ]) == 2
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) == 1
+    receipt = json.loads(lines[0])
+    assert receipt == {
+        "ok": False, "error": "source_surface_child_flags_attestation_failed",
+        "runtime_root": root, "exact_stop": {"ok": True, "stop_attempt_file": None},
+    }
+    assert stops == [root]

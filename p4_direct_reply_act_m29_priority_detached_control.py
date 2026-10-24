@@ -4,6 +4,9 @@
 from pathlib import Path
 from types import ModuleType
 import argparse
+from contextlib import redirect_stdout
+import io
+import json
 import sys
 
 import p4_preference_fallback_launchd_control as launchd
@@ -13,6 +16,7 @@ import p4_b_safe_isolated_product_launcher as base_launcher
 
 
 ENTRYPOINT = Path(__file__).resolve().parent / "uruha_web_ui_product_p4_direct_reply_act_m29_priority.py"
+SOURCE_SURFACE_ATTESTATION_SCHEMA = "uruha_p4_source_surface_child_flags_v1"
 _seen = set()
 _pending = [prior]
 while _pending:
@@ -29,6 +33,35 @@ while _pending:
         dependency = getattr(controller, name, None)
         if isinstance(dependency, ModuleType) and dependency.__name__.startswith("p4_"):
             _pending.append(dependency)
+
+
+def _record_source_surface_child_flags(prepared_root: str, arm: str, child_env: dict[str, str]) -> None:
+    """Bind the actual start's allowlisted child flags to its private run ID."""
+    import uruha_source_event_exact_input_capability_p4 as cap
+
+    root, run_id = cap._root_and_run(prepared_root)
+    metadata = cap._read_private_json(root / f"p4_preference_fallback_detached.{run_id}.json")
+    expected = {
+        "URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM": "control",
+        "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+        "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1",
+        "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm,
+        "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(root),
+        "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0",
+    }
+    if (arm not in {"off", "on"} or any(child_env.get(key) != value for key, value in expected.items())
+            or "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT" in child_env
+            or not set(expected).issubset(set(metadata.get("env_keys") or []))
+            or "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT" in metadata.get("env_keys", [])):
+        raise RuntimeError("source_surface_child_flags_not_attestable")
+    cap._private_stat(root / ".cache", directory=True)
+    cap._write_exclusive_json(root / ".cache" / f"p4_source_surface_child_flags.{run_id}.json", {
+        "schema": SOURCE_SURFACE_ATTESTATION_SCHEMA,
+        "runtime_root": str(root), "run_id": run_id,
+        "pid": metadata.get("pid"), "port": metadata.get("port"),
+        "flags": expected,
+        "candidate_prompt_absent": True,
+    })
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -84,6 +117,7 @@ def main(argv: list[str] | None = None) -> int:
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
     original_port = prior.base_controller.PORT
+    attested_child_env: dict[str, str] | None = None
 
     def compute_env(layout: dict[str, Path], *, port: int | None) -> dict[str, str]:
         env = original_env(layout, port=port)
@@ -111,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
             if arm_args.source_event_surface_arm and port is not None:
                 env["URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM"] = arm_args.source_event_surface_arm
                 env["URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT"] = str(layout["runtime_root"])
+                env["URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED"] = "0"
         return env
 
     # The base controller consistently uses PORT for prepared receipts,
@@ -124,6 +159,7 @@ def main(argv: list[str] | None = None) -> int:
             # prewarm=False and filters the final environment through that result.
             # Scope the override to this one product start, for both arms alike.
             def same_arm_preflight(**kwargs):
+                nonlocal attested_child_env
                 summary, env, layout, created, profile = original_preflight(
                     **{**kwargs, "prewarm": True}
                 )
@@ -143,10 +179,48 @@ def main(argv: list[str] | None = None) -> int:
                 if arm_args.source_event_surface_arm:
                     env = {**env, "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm_args.source_event_surface_arm}
                     env = {**env, "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(layout["runtime_root"])}
+                    env = {**env, "URUHA_RIGHT_BRAIN_MODEL_BLEND_ENABLED": "0"}
+                    if kwargs.get("port") == selected_port:
+                        attested_child_env = dict(env)
                 return summary, env, layout, created, profile
 
             product_launcher.preflight_preference_fallback = same_arm_preflight
-        return prior.base_controller.main(forwarded)
+        # For this diagnostic only, do not publish the base controller's
+        # successful start receipt before the run-bound flag receipt exists.
+        buffered = io.StringIO() if arm_args.source_event_surface_arm else None
+        if buffered is None:
+            exit_code = prior.base_controller.main(forwarded)
+        else:
+            with redirect_stdout(buffered):
+                exit_code = prior.base_controller.main(forwarded)
+        if exit_code == 0 and arm_args.source_event_surface_arm:
+            try:
+                if attested_child_env is None:
+                    raise RuntimeError("source_surface_child_env_not_observed")
+                _record_source_surface_child_flags(
+                    request.prepared_runtime_root, arm_args.source_event_surface_arm,
+                    attested_child_env,
+                )
+            except Exception:
+                # Only this newly started exact prepared root is in scope.
+                # The underlying stop verifies identity before signalling.
+                try:
+                    stopped = prior.base_controller.stop(request.prepared_runtime_root)
+                    cleanup = {
+                        "ok": stopped.get("ok") is True,
+                        "stop_attempt_file": stopped.get("stop_attempt_file"),
+                    }
+                except Exception as stop_error:
+                    cleanup = {"ok": False, "error_type": type(stop_error).__name__}
+                print(json.dumps({
+                    "ok": False, "error": "source_surface_child_flags_attestation_failed",
+                    "runtime_root": request.prepared_runtime_root,
+                    "exact_stop": cleanup,
+                }, ensure_ascii=False))
+                return 2
+        if buffered is not None:
+            print(buffered.getvalue(), end="")
+        return exit_code
     finally:
         launchd._isolated_env = original_env
         product_launcher.preflight_preference_fallback = original_preflight
