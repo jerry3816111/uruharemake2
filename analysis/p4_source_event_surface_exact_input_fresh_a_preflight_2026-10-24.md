@@ -15,8 +15,9 @@ runner WIP 中找到三個真執行前阻斷：一次性標記可由更換 priva
 
 本次只補 A 執行及其必要安全接線：`p4_source_event_surface_exact_input_fresh_a.py` 預設沒有執行模式，
 `--preflight-only` 以 fake 三候選驗來源、模型 digest、off/default/on、同一 post-M21 `logic+route_info`
-和相同認知後 surface 可讀狀態／event SHA，真 provider 0。`--execute` 另需兩個 live prepared/current／
-HTTP ready 的不同 controller root、各自 run-bound child flag 證據、私有 0700 證據 parent 與一份
+和相同認知後 surface 可讀狀態／event SHA，真 provider 0。`--execute` **目前先以
+`REVIEW_REQUIRED` 鎖閉**：凍結的 2000 provider total-token 上限尚無送前可證硬界。解鎖後仍另需兩個
+live prepared/current／HTTP ready 的不同 controller root、各自 run-bound child flag 證據、私有 0700 證據 parent 與一份
 **使用者提供的作者自然度／人格評分**的外部 0600 檔。缺其中一項不進真 M21；runner 不把合成
 assertion 冒充真人。兩臂事先各 claim 一次 permit；全機固定私有 0700 目錄的 O_EXCL A marker
 跨 evidence parent 阻止第二次嘗試。呼叫前寫原始 request 私有收據；最多一個 no-retry M21
@@ -41,7 +42,8 @@ controller 啟動時的 allowlisted child flags 綁 run ID／PID／port 存私�
   不相同；不宣稱跨次位元決定性。
 - 受影響合併測試：**277 passed／1 skipped／2 xfailed**（159.84 秒），含 capability、Web
   拒絕、controller、f7/f8、M29、personhood、graph 及新 A 假執行；2 xfail 是舊有未解
-  安全反例，1 skip 是歷史產品碼快照，不計 PASS。`py_compile`、`git diff --check` 通過。
+  安全反例，1 skip 是歷史產品碼快照，不計 PASS。資源入口鎖閉後新 runner 聚焦
+  **23/23 passed**（52.49 秒）；`py_compile`、`git diff --check` 通過。
 - 假執行覆蓋一次 provider call、兩臂 0 追加 call、跨 parent 的第二次嘗試拒絕、超 token／
   超 wall／不完整 finish 不重試且保留私有 terminal receipt、request drift 前置拒絕、錯
   child attestation 不發 permit。這些都是合成契約，不是實際 token、延遲或品質數據。
@@ -54,12 +56,16 @@ controller 啟動時的 allowlisted child flags 綁 run ID／PID／port 存私�
 Web child 的完整執行、真 Browser graph 時序、持久 DB 或一般使用者輸入安全。runner 拒絕繼承
 `URUHA_*` import-time 環境，並核實實際 M21 request byte digest 與 fake preflight 相同；它仍
 不能證明所有非白名單設定與已啟動 Web child 完全相同。`max_tokens=256` 是 completion cap，
-`≤2000 provider total tokens` 由 response usage **事後**判 FAIL，並非可在呼叫前保證的
-實耗硬上限；若 prompt 意外超支，已耗成本仍必須保留。真 A 前需依這個界線審視是否接受此
-一次性資源風險，不能將事後 gate 寫成預付硬保證。
+`≤2000 provider total tokens` 原本只由 response usage **事後**判 FAIL，並非可在呼叫前保證的
+實耗硬上限；若 prompt 意外超支，成本已花掉。只讀資源審查量到固定 fake request canonical
+約 5414 UTF-8 bytes；本機 HF tokenizer 的 1024 prompt-token／加輸出 cap 1280 只是**代理估算**，
+沒有驗證它與 Ollama 伺服端 template/tokenizer 的精確上界相同。因此真 A 入口新增雙重拒絕：CLI
+在讀取真 root／permit／provider 之前直接回 `review_required`，內層 create 函式亦在發送前要求
+目前尚未存在的已審核 token-upper-bound verifier。不能用作者「可接受風險」直接改掉凍結硬上限；
+需先做 0-provider exact-tokenizer/template 設計核證或事前正式設計修訂。
 
-固定句的人類作者自然度／人格核尚未取得，無外部 0600 評分檔、無兩個真 ready root，故沒有
-執行 `--execute` 或消耗 A 一次性 slot。真 A 若任何模型路由、相同 request、成本、off/on
+固定句的人類作者自然度／人格核尚未取得，無外部 0600 評分檔、無兩個真 ready root，且送前
+token 上界未證，故沒有執行真 A 或消耗 A 一次性 slot。真 A 若任何模型路由、相同 request、成本、off/on
 visible gold 失敗，保留 FAIL，B 不送；即使 A 成功，還要核真回覆自然度才准 B 的一次原生
 Safari。正式強 LLM 公平對照、獨立人評、temporal holdout、一般安全、no-send transaction、
 VRM／Function Calling 一體產品與完整人類反應方程式均未由本項證明。

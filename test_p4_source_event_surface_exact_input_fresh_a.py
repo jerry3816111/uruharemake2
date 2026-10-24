@@ -119,6 +119,26 @@ def test_execute_requires_explicit_private_roots_and_evidence_parent():
     assert denied.value.code == 2
 
 
+def test_execute_is_locked_before_any_real_provider_until_hard_token_bound(monkeypatch, capsys):
+    monkeypatch.setattr(
+        probe, "_run_execute",
+        lambda *_args: (_ for _ in ()).throw(AssertionError("trial_must_not_start")),
+    )
+    assert probe.main([
+        "--execute", "--off-root", "/missing-off", "--on-root", "/missing-on",
+        "--private-parent", "/missing-parent", "--fixed-gold-review", "/missing-review",
+    ]) == 2
+    denied = json.loads(capsys.readouterr().err)
+    assert denied == {
+        "status": "review_required",
+        "reason_code": "pre_send_provider_total_token_bound_unverified",
+        "provider_generations": 0,
+        "b_safari_authorized": False,
+    }
+    with pytest.raises(RuntimeError, match="pre_send_provider_total_token_bound_unverified"):
+        probe._require_pre_send_token_upper_bound({"model": probe.MODEL})
+
+
 def test_real_controller_reader_requires_matching_run_bound_child_values(monkeypatch):
     import p4_direct_reply_act_m29_priority_detached_control as controller
     import uruha_source_event_exact_input_capability_p4 as cap
@@ -341,6 +361,7 @@ def test_ambiguous_provider_failure_keeps_private_attempt_and_never_retries(monk
     )
     monkeypatch.setattr(probe, "_model_digest", lambda: probe.MODEL_DIGEST)
     monkeypatch.setattr(probe, "_require_request_parity", lambda _request, _preflight: "synthetic_unit_stub")
+    monkeypatch.setattr(probe, "_require_pre_send_token_upper_bound", lambda _request: None)
 
     def fake_create(**kwargs):
         attempts.append(kwargs)
@@ -400,6 +421,7 @@ def test_fake_execute_uses_one_provider_boundary_for_both_arms(monkeypatch, tmp_
     )
     monkeypatch.setattr(probe, "_model_digest", lambda: probe.MODEL_DIGEST)
     monkeypatch.setattr(probe, "_require_request_parity", lambda _request, _preflight: "synthetic_unit_stub")
+    monkeypatch.setattr(probe, "_require_pre_send_token_upper_bound", lambda _request: None)
     plans = json.loads(probe.FIXED.read_text(encoding="utf-8"))["fixed_compact_plans"]
 
     def fake_create(**kwargs):
@@ -489,6 +511,7 @@ def test_fake_execute_resource_and_finish_failures_are_terminal(monkeypatch, tmp
             )
             patch.setattr(probe, "_model_digest", lambda: probe.MODEL_DIGEST)
             patch.setattr(probe, "_require_request_parity", lambda _request, _preflight: "synthetic_unit_stub")
+            patch.setattr(probe, "_require_pre_send_token_upper_bound", lambda _request: None)
             if scenario == "over_wall":
                 patch.setattr(probe, "_planner_elapsed_seconds", lambda _started: 20.001)
 

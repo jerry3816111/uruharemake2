@@ -139,6 +139,22 @@ def _require_request_parity(request: dict, preflight: dict) -> str:
     return actual
 
 
+def _require_pre_send_token_upper_bound(_request: dict) -> None:
+    """Fail closed until exact Ollama prompt-token accounting is reviewed.
+
+    ``max_tokens=256`` caps only completion; response usage can detect, but
+    cannot prevent, a >2000 total-token spend. A local HF tokenizer proxy is
+    not a verified upper bound for this frozen Ollama request.
+    """
+    raise RuntimeError("pre_send_provider_total_token_bound_unverified")
+
+
+def _pre_send_bound_ready() -> bool:
+    # A future reviewed exact-tokenizer implementation must replace this
+    # together with _require_pre_send_token_upper_bound, not just flip a flag.
+    return False
+
+
 def _private_root(parent: Path) -> Path:
     if parent.is_symlink():
         raise ValueError("private_parent_symlink")
@@ -714,6 +730,7 @@ def _run_execute(source: str, off_root: Path, on_root: Path, parent: Path,
             if captured:
                 raise RuntimeError("second_provider_attempt_prohibited")
             _require_request_parity(kwargs, preflight)
+            _require_pre_send_token_upper_bound(kwargs)
             captured.append(deepcopy(kwargs))
             report["provider_attempts"] = 1
             # Persist the exact request before crossing the ambiguous provider
@@ -842,6 +859,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not all((args.off_root, args.on_root, args.private_parent, args.fixed_gold_review)):
         parser.error("execute requires two live controller roots, private parent, and external human-author fixed-gold review")
+    # A frozen total-token ceiling is not a hard bound until the exact local
+    # server tokenizer/template are validated before this one-shot call.
+    if not _pre_send_bound_ready():
+        print(json.dumps({
+            "status": "review_required",
+            "reason_code": "pre_send_provider_total_token_bound_unverified",
+            "provider_generations": 0,
+            "b_safari_authorized": False,
+        }, sort_keys=True), file=sys.stderr)
+        return 2
     try:
         report = _run_execute(source, args.off_root, args.on_root, args.private_parent,
                               args.fixed_gold_review)
