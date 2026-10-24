@@ -8466,6 +8466,9 @@ Current input:
         return plan, contract
 
     def _native_semantic_authorizer_m31(self, prompt):
+        resource_gate = getattr(self.compute_ledger, "p4_b_resource_gate", None)
+        if resource_gate is not None:
+            resource_gate.deny_other_generation("ollama_native_m31")
         request_body = {
             "model": M31_SEMANTIC_VERIFIER_MODEL,
             "messages": [
@@ -15253,6 +15256,9 @@ You are Ichinose Uruha.
         return inputs, trace
 
     def _generate_model_text(self, messages, generation_kwargs):
+        resource_gate = getattr(self.compute_ledger, "p4_b_resource_gate", None)
+        if resource_gate is not None:
+            resource_gate.deny_other_generation("rightbrain_local")
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,

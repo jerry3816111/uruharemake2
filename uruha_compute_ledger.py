@@ -221,7 +221,13 @@ def request_shape(kwargs):
 
 
 class ComputeLedger:
-    def __init__(self):
+    def __init__(self, *, p4_b_resource_gate=None):
+        if p4_b_resource_gate is not None:
+            from uruha_p4_b_resource_gate import P4BResourceGate
+
+            if not isinstance(p4_b_resource_gate, P4BResourceGate):
+                raise TypeError("p4_b_resource_gate must be a P4BResourceGate")
+        self.p4_b_resource_gate = p4_b_resource_gate
         self._calls = []
         self._last_call_index = 0
         self._retired_through_call_index = 0
@@ -623,6 +629,11 @@ class _CompletionProxy:
         self._ledger = ledger
 
     def create(self, *args, **kwargs):
+        gate = self._ledger.p4_b_resource_gate
+        if gate is not None:
+            if args:
+                gate.deny_other_generation("openai_positional_request")
+            gate.admit_openai(_STAGE.get(), kwargs)
         started = time.perf_counter()
         response = None
         error = None
@@ -633,12 +644,16 @@ class _CompletionProxy:
             error = exc
             raise
         finally:
-            self._ledger.record_chat_completion(
-                kwargs,
-                response,
-                time.perf_counter() - started,
-                error=error,
-            )
+            try:
+                self._ledger.record_chat_completion(
+                    kwargs,
+                    response,
+                    time.perf_counter() - started,
+                    error=error,
+                )
+            finally:
+                if gate is not None:
+                    gate.observe_openai_result(response, error)
 
 
 class _ChatProxy:
