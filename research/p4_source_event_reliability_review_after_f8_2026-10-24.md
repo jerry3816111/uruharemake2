@@ -39,3 +39,7 @@ Raw 事件槽只能在**當輪 ephemeral context** 傳遞，不可直接放進�
 ## 接續決策
 
 本頁只完成兩次失敗後的原因與設計選項收斂；同一團隊的獨立代理只讀審查確認方向合理，並指出 Web 預設 deterministic surface、歸因、raw 洩漏及 final no-send 的必要修正。**審查不是新題／門檻凍結或產品放行。**下一步先用既有隔離契約夾具，事前凍結固定 M21 plan/candidates、final utterance gold、guard 改寫／錯來源負控、零新增生成與 no-send 狀態／檔案 digest 不變條件；再確定 deterministic surface 接線與可恢復 blocked UI/延後寫入或回滾，經只讀審查後才能凍結新 source-disjoint 題及實作。若此路徑不可安全實現，保留 f7/f8 負結論，優先消融或停用無益的 opt-in f8，而不是衍生 f9/f10 題號。P4 其他獨立功能可照當前產品工作流繼續，不因這個子項 `REVIEW_REQUIRED` 把整個長期 Goal 假設為受阻。
+
+## 後續範圍釐清：診斷實驗不等於產品承諾
+
+再對照 f7d 私有真 Safari 的做法後，將上文 **no-send／全部狀態不變** 明確限定為「產品可承諾錯答絕不送出或持久化」的強契約；它**不是**做隔離 opt-in 診斷前的技術必需。可另凍結較窄協定：相同固定 M21 候選，唯一 treatment 為來源槽→deterministic surface，最後 auditor 在兩臂都只觀察、不阻止送出；錯句若出現，私有泡泡／JSONL／episode 原樣保存並判 strict FAIL，flag 預設關閉，失敗 DB 不復用。這與 f7d/f8 保留負結果的原則相同，卻**不能**宣稱 fail-closed、無殘留、已可部署的產品修復或正式因果優勢。此窄版需以獨立的前瞻計畫、題本、gold、成本與只讀審查取代上文的產品放行門檻後，才可改碼或送模型；不能默默拿原產品契約作診斷結果。草案在 `research/p4_source_event_surface_diagnostic_plan_2026-10-24.md`。
