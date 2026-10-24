@@ -211,6 +211,7 @@ def run_product_turn_p4_c(
     *,
     provider: Any = None,
     admission_token: str = "",
+    exact_input_claim: Any = None,
 ) -> Any:
     text = str(user_text or "").strip()
     gate = core.classify_runtime_status_request(text)
@@ -223,8 +224,10 @@ def run_product_turn_p4_c(
         }
         if admission_token:
             ordinary_kwargs["admission_token"] = admission_token
+        if exact_input_claim is not None:
+            ordinary_kwargs["exact_input_claim"] = exact_input_claim
         return original_run_turn(user_text, auto_tts, **ordinary_kwargs)
-    if admission_token:
+    if admission_token or exact_input_claim is not None:
         # This synthetic tool route bypasses the original Web cognition path.
         # Until it has its own admission lifecycle, never report a journaled
         # browser turn as delivered without a cognition-start/end pair.
@@ -263,6 +266,7 @@ def install_product_function_calling_p4(
         frontend_enqueue_started=0.0,
         handler_started=0.0,
         admission_token="",
+        exact_input_claim=None,
     ):
         return run_product_turn_p4_c(
             base_module,
@@ -274,6 +278,7 @@ def install_product_function_calling_p4(
             frontend_enqueue_started=frontend_enqueue_started,
             handler_started=handler_started,
             admission_token=admission_token,
+            exact_input_claim=exact_input_claim,
         )
 
     base_module._run_turn = wrapped
