@@ -6,16 +6,24 @@ No answer inventory, synthetic model response, or learning-outcome mutation.
 """
 from contextvars import ContextVar
 from copy import deepcopy
+import hashlib
 import json
 import math
 import os
 
 _CALL = ContextVar("compact_general_plan_p2", default=None)
+_SOURCE_EVENT_CONSTRAINT = ContextVar("source_event_candidate_prompt_p4", default=None)
 _INSTALLED = False
 _SCENES = {"casual", "support", "invite", "jealousy", "boundary", "refusal", "ooc_defense"}
 _MODES = {"direct_answer", "direct_answer_with_hedge", "clarify_light", "premise_challenge", "reframe_large_question"}
 _PLAN_FIELDS = {"scene", "core_message_jp", "response_mode"}
 _SCHEMA_ARM_ENV = "URUHA_P4_COMPACT_JSON_SCHEMA"
+_SOURCE_EVENT_ARM_ENV = "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT"
+_SOURCE_EVENT_RECEIPT_SCHEMA = "uruha_source_event_candidate_formation_p4_v1"
+_SOURCE_EVENT_REASONS = {
+    "invalid_source", "invalid_handoff", "unsupported_source_event",
+    "relation_over_budget", "source_event_verified", "source_mismatch",
+}
 _REQUIRED_JSON_SCHEMA_FORMAT = {
     "type": "json_schema",
     "json_schema": {
@@ -73,6 +81,18 @@ def compact_request(kwargs):
         return None
     transformed = deepcopy(kwargs)
     transformed["messages"][0]["content"] = prompt.split(marker, 1)[0] + _FORMAT
+    source_constraint = _SOURCE_EVENT_CONSTRAINT.get()
+    if (
+        os.environ.get(_SOURCE_EVENT_ARM_ENV) == "1"
+        and isinstance(source_constraint, dict)
+        and isinstance(source_constraint.get("segment"), str)
+        and source_constraint["segment"]
+        and isinstance(source_constraint.get("receipt"), dict)
+        and (receipt := _safe_source_event_receipt(source_constraint["receipt"])) is not None
+        and receipt["constraint_available"] is True
+        and _source_event_context_matches_user(kwargs, receipt)
+    ):
+        transformed["messages"][0]["content"] += source_constraint["segment"]
     transformed["max_tokens"] = min(int(kwargs.get("max_tokens") or 256), 256)
     transformed["response_format"] = (
         deepcopy(_REQUIRED_JSON_SCHEMA_FORMAT)
@@ -80,6 +100,81 @@ def compact_request(kwargs):
         else {"type": "json_object"}
     )
     return transformed
+
+
+def _source_event_context_matches_user(kwargs, receipt):
+    messages = kwargs.get("messages") or []
+    if not isinstance(messages, list) or len(messages) < 2:
+        return False
+    user_message = messages[-1]
+    if not isinstance(user_message, dict) or user_message.get("role") != "user":
+        return False
+    content = user_message.get("content")
+    prefix = "User Input: "
+    if not isinstance(content, str) or not content.startswith(prefix):
+        return False
+    source = content[len(prefix):]
+    return hashlib.sha256(source.encode("utf-8")).hexdigest() == receipt.get("input_sha256")
+
+
+def _safe_source_event_receipt(value):
+    """Project only bounded provenance metadata into audit/graph state."""
+    if not isinstance(value, dict) or value.get("schema") != _SOURCE_EVENT_RECEIPT_SCHEMA:
+        return None
+
+    def safe_sha(key):
+        candidate = value.get(key)
+        return candidate if (
+            isinstance(candidate, str) and len(candidate) == 64
+            and all(char in "0123456789abcdef" for char in candidate)
+        ) else None
+
+    codepoints = value.get("relation_codepoints")
+    if type(codepoints) is not int or not 0 <= codepoints <= 256:
+        codepoints = None
+    reason = value.get("reason")
+    status = value.get("status")
+    return {
+        "schema": _SOURCE_EVENT_RECEIPT_SCHEMA,
+        "status": status if isinstance(status, str) and status in {"abstained", "authorized", "prompt_injected"} else "abstained",
+        "reason": reason if isinstance(reason, str) and reason in _SOURCE_EVENT_REASONS else "invalid_source",
+        "input_sha256": safe_sha("input_sha256"),
+        "event_sha256": safe_sha("event_sha256"),
+        "object_sha256": safe_sha("object_sha256"),
+        "action_sha256": safe_sha("action_sha256"),
+        "relation_codepoints": codepoints,
+        "first_time_observed": value.get("first_time_observed") if type(value.get("first_time_observed")) is bool else None,
+        "constraint_available": value.get("constraint_available") is True,
+        "prompt_injected": value.get("prompt_injected") is True,
+        "raw_dialogue_persisted": False,
+        "private_state_truth_claimed": False,
+    }
+
+
+def _source_event_request_receipt(original, transformed):
+    if os.environ.get(_SOURCE_EVENT_ARM_ENV) != "1":
+        return None
+    source_constraint = _SOURCE_EVENT_CONSTRAINT.get()
+    if not isinstance(source_constraint, dict) or not isinstance(source_constraint.get("receipt"), dict):
+        return None
+    receipt = _safe_source_event_receipt(source_constraint["receipt"])
+    if receipt is None:
+        return None
+    segment = source_constraint.get("segment")
+    injected = bool(
+        isinstance(segment, str)
+        and segment
+        and receipt.get("constraint_available") is True
+        and _source_event_context_matches_user(original, receipt)
+        and transformed["messages"][0]["content"].endswith(segment)
+    )
+    receipt["prompt_injected"] = injected
+    if injected:
+        receipt["status"] = "prompt_injected"
+    elif receipt.get("constraint_available") is True:
+        receipt["status"] = "abstained"
+        receipt["reason"] = "source_mismatch"
+    return receipt
 
 
 def _contract_error(message, code, *, candidate_index=None, missing_count=0, extra_count=0):
@@ -154,6 +249,9 @@ class _Proxy:
                            compact_system_chars=len(request["messages"][0]["content"]),
                            model=request.get("model"), actual_usage_recorded_by_underlying_ledger=True,
                            raw_prompt_or_response_persisted=False)
+            source_event_receipt = _source_event_request_receipt(kwargs, request)
+            if source_event_receipt is not None:
+                context["source_event_candidate_prompt_p4"] = source_event_receipt
             response_received = False
             try:
                 response = value(**request)
@@ -177,10 +275,25 @@ def materialize_compact_trace(result):
     label = "compact_general_plan_p2"
     payload = ((result.get("logic") or {}).get("bounded_slow_path_m21") or {}).get(label)
     trace = result.setdefault("runtime_trace", {})
-    rows = [row for row in trace.get("blackboard", []) if row.get("label") != label]
+    rows = [
+        row for row in trace.get("blackboard", [])
+        if row.get("label") not in {label, "source_event_candidate_prompt_p4"}
+    ]
     if isinstance(payload, dict) and payload.get("schema") == "uruha_compact_general_plan_p2":
         index = next((i for i, row in enumerate(rows) if row.get("label") == "selected_plan"), len(rows))
-        rows.insert(index, {"stage": "plan", "label": label, "payload": deepcopy(payload), "salience": 0.95})
+        safe_payload = deepcopy(payload)
+        source_event_receipt = _safe_source_event_receipt(payload.get("source_event_candidate_prompt_p4"))
+        if source_event_receipt is None:
+            safe_payload.pop("source_event_candidate_prompt_p4", None)
+        else:
+            safe_payload["source_event_candidate_prompt_p4"] = source_event_receipt
+        if source_event_receipt is not None:
+            rows.insert(index, {
+                "stage": "plan", "label": "source_event_candidate_prompt_p4",
+                "payload": deepcopy(source_event_receipt), "salience": 0.95,
+            })
+            index += 1
+        rows.insert(index, {"stage": "plan", "label": label, "payload": safe_payload, "salience": 0.95})
     trace["blackboard"] = rows
 
 

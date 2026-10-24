@@ -9725,6 +9725,22 @@ Keep this instruction internal; the final utterance should sound like ordinary c
             direct_reply_act_contract_p4 = planner_constraint_p4(
                 user_input, direct_reply_act_handoff_p4
             )
+        source_event_candidate_constraint_p4 = None
+        if (
+            source_event_core_handoff_p4 is not None
+            and os.getenv("URUHA_P4_DIRECT_REPLY_ACT_HANDOFF_ARM") == "control"
+            and os.getenv("URUHA_P4_SOURCE_EVENT_CORE_UTILITY") == "1"
+            and os.getenv("URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT") == "1"
+        ):
+            from uruha_source_event_candidate_formation_p4 import build_source_event_constraint_p4
+
+            segment, receipt = build_source_event_constraint_p4(
+                user_input, source_event_core_handoff_p4
+            )
+            source_event_candidate_constraint_p4 = {
+                "segment": segment,
+                "receipt": receipt,
+            }
         sys_prompt = f"""
 You are the Left Brain Planner for a dual-brain character system.
 Your job is NOT to write the final reply.
@@ -9834,16 +9850,27 @@ Return ONLY valid JSON with this structure:
 """
         slow_path_started = time.perf_counter()
         try:
-            with ucl.ledger_stage(self.compute_ledger, "leftbrain_general_plan"):
-                response = self.client_logic.chat.completions.create(
-                    model="qwen2.5:7b",
-                    messages=[
-                        {"role": "system", "content": sys_prompt},
-                        {"role": "user", "content": f"User Input: {user_input}"},
-                    ],
-                    temperature=0.1,
-                    timeout=LEFT_BRAIN_SLOW_PATH_BUDGET_SECONDS,
+            source_event_candidate_token = None
+            if source_event_candidate_constraint_p4 is not None:
+                from uruha_compact_planner_p2 import _SOURCE_EVENT_CONSTRAINT
+
+                source_event_candidate_token = _SOURCE_EVENT_CONSTRAINT.set(
+                    source_event_candidate_constraint_p4
                 )
+            try:
+                with ucl.ledger_stage(self.compute_ledger, "leftbrain_general_plan"):
+                    response = self.client_logic.chat.completions.create(
+                        model="qwen2.5:7b",
+                        messages=[
+                            {"role": "system", "content": sys_prompt},
+                            {"role": "user", "content": f"User Input: {user_input}"},
+                        ],
+                        temperature=0.1,
+                        timeout=LEFT_BRAIN_SLOW_PATH_BUDGET_SECONDS,
+                    )
+            finally:
+                if source_event_candidate_token is not None:
+                    _SOURCE_EVENT_CONSTRAINT.reset(source_event_candidate_token)
             slow_path_elapsed = time.perf_counter() - slow_path_started
             budget_grace = min(
                 0.25,

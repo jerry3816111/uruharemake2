@@ -39,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     arm_parser.add_argument("--repair-cue-boundary", action="store_true")
     arm_parser.add_argument("--compact-json-schema", action="store_true")
     arm_parser.add_argument("--source-event-core-utility", action="store_true")
+    arm_parser.add_argument("--source-event-candidate-prompt", action="store_true")
     arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
     try:
         selected_port = base_launcher.validate_port(arm_args.product_port)
@@ -66,6 +67,11 @@ def main(argv: list[str] | None = None) -> int:
         product_start and arm_args.direct_act_arm == "control" and arm_args.compact_json_schema
     ):
         arm_parser.error("source-event core utility requires control product start with compact JSON schema")
+    if arm_args.source_event_candidate_prompt and not (
+        product_start and arm_args.direct_act_arm == "control"
+        and arm_args.compact_json_schema and arm_args.source_event_core_utility
+    ):
+        arm_parser.error("source-event candidate prompt requires control product start with compact schema and source-event utility")
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
     original_port = prior.base_controller.PORT
@@ -91,6 +97,8 @@ def main(argv: list[str] | None = None) -> int:
                 env["URUHA_P4_COMPACT_JSON_SCHEMA"] = "1"
             if arm_args.source_event_core_utility and port is not None:
                 env["URUHA_P4_SOURCE_EVENT_CORE_UTILITY"] = "1"
+            if arm_args.source_event_candidate_prompt and port is not None:
+                env["URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT"] = "1"
         return env
 
     # The base controller consistently uses PORT for prepared receipts,
@@ -118,6 +126,8 @@ def main(argv: list[str] | None = None) -> int:
                     env = {**env, "URUHA_P4_COMPACT_JSON_SCHEMA": "1"}
                 if arm_args.source_event_core_utility:
                     env = {**env, "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1"}
+                if arm_args.source_event_candidate_prompt:
+                    env = {**env, "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT": "1"}
                 return summary, env, layout, created, profile
 
             product_launcher.preflight_preference_fallback = same_arm_preflight
