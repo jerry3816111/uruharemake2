@@ -24,3 +24,5 @@ After：新增 `uruha_p4_b_resource_gate.py`，只有明確注入 `ComputeLedger
 本批對「人類反應方程式」的貢獻是提高未來產品實驗的**成本可歸因與防額外生成能力**；沒有增加語用理解、記憶或自然日文回答品質，也沒有證明優於強 LLM。原 P4 B 三個 hard-cap 項中只建好未綁產品的單 M21 機械攔截，token 真上界與 click→DOM 20s deadline 均 pending。即使未來綁進 child，也須在 turn terminal 檢 gate 狀態，因現有 M21 broad fallback 可能吞例外；不能把 gate 單元測試說成錯答不顯示或 no-write transaction。
 
 下一必要工程：只在同版 0.34.4／凍結模型／實際 B transformed request bytes 上完成零生成 prompt-render/tokenizer parity，產出可靠上界；再前瞻綁 opt-in child、turn terminal 檢查與非 B 題 Safari deadline 故障注入。A 作者自然日文／人格／不過度直抄三項真評分及外部 0600 receipt 仍缺，A 真 off/on 一次性條件未執行；只有 A on-only final visible gold PASS 且 B 送前三項機制證據全過，才可考慮 B 唯一 Safari Send。正式公平比較、人評、temporal holdout、P4／Goal 完成均 pending。
+
+送後只讀補核：Ollama 0.34.4 的非 B、兩訊息 fixture 在有／無 JSON Schema 時 rendered prompt 一致，同 runner tokenizer 為 **36 tokens**；這仍不是 B 的上界。更關鍵的是共用 daemon 的 tag／runner／模板可在「render→tokenize→真請求」間變動，前後各一次 SHA 並非原子身份保證。後續 oracle 設計要先解此 TOCTOU（如受控隔離 daemon／等價綁定），否則即使 fixture 36-token 一致也維持常閉；不得為省事把 debug usage=0 當 prompt tokens。該補核 0 generation／0 B 題／0 Safari。
