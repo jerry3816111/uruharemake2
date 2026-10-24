@@ -1,0 +1,18 @@
+# P4 f7d：雙隔離 root 的來源事件真產品入場
+
+狀態：**source-only prospective freeze；0 f7d provider generation／0 Safari Send**。f7a、f7b、f7c 題與 gold 不修改、不重送。f7c 的同 root 零輪→正式啟動與 admission journal 不相容，已記為 pre-Send FAIL，見 `analysis/p4_source_event_core_utility_f7c_presend_prewarm_failure_2026-10-24.md`。本項只修**入場隔離協定**；產品程式、f7 utility、model、prompt、schema、selector、guard、記憶、graph 與對照條件都保持已提交版本。這不是新的認知機制，也不把新題號算能力進展。
+
+## 新題與預先判準
+
+題目／visible gold 鎖在 `datasets/p4_source_event_core_utility_f7d_probe_2026-10-24.json`：`初めて自分でハーブの苗を植えた。今は一言だけ励まして。`。HEAD tracked 的完整句、`ハーブの苗`、`植えた` 皆 0 命中；與庭院長椅、木小箱、短曲的事件物件/動作不同，但仍共用「首次自己完成＋一句鼓勵」模板，是 developer-authored 診斷題，**非正式獨立 holdout**。source-only M29 `direct/brief_encouragement`、M33 not-applicable；有限 f7 grammar 對合成核心 `ハーブの苗を植えたの、いいね。` 可授 `grounded`。這不是 fresh candidate、可見回覆或品質證據。可見 gold 必須核「首次自己種下香草苗」＋短自然日文低壓鼓勵；泛稱、教學、追問、混語、捏造均 FAIL。
+
+沿用 `research/p4_source_event_core_utility_f7_design_2026-10-24.md` 的嚴格操弄／品質／圖／成本 gate：固定 control arm 加單一 f7 utility，M29 direct、M33 not-applicable、M21 full compact completed/3 candidates/no fallback；同一最終候選集舊/新 winner index 有變且 selected hash 相符、無後續 repair 才稱 utility 實際生效。全泛稱標 `no_grounded_candidate`；最後泡泡需與 raw/guard/graph utterance/隔離 episode 一致。圖須顯示 input→retrieval→decision→utterance→writeback 與來源事件證書／候選覆蓋／舊新選擇；native visual 無法保存就列未達。最多 1 Safari Send／0 retry、3 completed generations、2000 provider tokens、20s user wait；列實際 vector/背景/Web 成本，未 instrument 者 unknown。任何硬 gate 失敗保留 strict FAIL，不以中途或合成圖替代。
+
+## 單一協定修正：兩個 root，不重用 journal
+
+- 新 port **7937**，每個 controller call 明示 `--product-port 7937`。啟動前核 port vacant、f7d source manifest、既有 f7 product manifest 10/10、`qwen2.5:7b` frozen digest `845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e`、`.venv/product_checks/bin/python` 的 `gradio`＋product import/build_demo callable（只 import，不執行 demo）。兩次 `start --python` 均為此 venv 的**絕對路徑**。唯一 product child flags 同為 `--direct-act-arm control --turn-admission-journal --repair-cue-boundary --compact-json-schema --source-event-core-utility`；非 start calls 不加 child flags。
+- 零輪 root A：controller `prepare` 產生全新 0700 root；`p4_stateful_private_evidence.py cache` 從官方 SHA ONNX archive 複製獨立 inode，`warm` 1×384 finite、0 download；`start --mode product --prepared-runtime-root A`，核同 PID HTTP 200 **與** active receipt `brain_status=ready`、`active_db_status=available`、`active_db_path=<A>/memory_db`、reset0、tick0、finish0。再等最多 30 秒取得一組完整私有 admission journal `background_start/end`，兩行同本 PID/session、0 model call/write/error；不得只拿 HTTP ready 放行。其後 exact planned stop，核 PID exited、7937 vacant。A 的 journal/DB 留作原件，不刪不清。
+- 正式 root B：**重新** controller `prepare` 得到與 A 不同的全新 0700 root，獨立 cache/warm 與 ONNX inode；用相同 product flags `start --mode product --prepared-runtime-root B` **只啟動這一次**。同一正式 PID 核 HTTP、active receipt `brain_status=ready`、`active_db_status=available`、`active_db_path=<B>/memory_db`、reset0/tick0/finish0、隔離 episode/profile 0 row、Web log 0 行；T0 時 journal 尚不存在、sequence 0 可接受，若已有列則必須全部屬 B 的當前 PID/session。達標後才做私有 0600+fsync T0；Chroma 初始化檔存在不等於有 episode。絕不先 stop 再 `--reuse-runtime-root B`。若本段任一 gate 失敗，exact stop 並保留入場 FAIL，沒有 Safari Send。
+- 原生 Safari 只新開本輪 tab、預填凍結題；所有靜態檢查先於 Tpre。等待完整 background pair 後立即 Tpre→至多一次 Send，事後 journal 證明 Tpre end→human arrival ≤10s、0 background interleave、同 opaque ID 完整 delivered、finish0→1、DB/session/model 不漂移。若未達，不重送或改 gate。Tpost 私有快照與精確 planned stop、7937 vacant；只關本次新 tab。不可觸及正式 DB、原始 dirty checkout、無關 `output/`。
+
+在 product start 前先提交此 source-only freeze／SHA 與任務卡，並獨立只讀審查。預期任何成功僅支持本有限日文場景的既有選擇效用，不能證明一般人類理解、同模型 LLM 優勢、人評、temporal future prediction 或整體 P4 完成。若全泛稱，下一必要問題是候選生成；若已選 grounded 卻漏事件，下一必要問題是表面保真；若入場仍失敗，先定位協定，不假裝品質結果。
