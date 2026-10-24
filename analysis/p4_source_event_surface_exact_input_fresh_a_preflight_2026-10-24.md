@@ -15,8 +15,7 @@ runner WIP 中找到三個真執行前阻斷：一次性標記可由更換 priva
 
 本次只補 A 執行及其必要安全接線：`p4_source_event_surface_exact_input_fresh_a.py` 預設沒有執行模式，
 `--preflight-only` 以 fake 三候選驗來源、模型 digest、off/default/on、同一 post-M21 `logic+route_info`
-和相同認知後 surface 可讀狀態／event SHA，真 provider 0。`--execute` **目前先以
-`REVIEW_REQUIRED` 鎖閉**：凍結的 2000 provider total-token 上限尚無送前可證硬界。解鎖後仍另需兩個
+和相同認知後 surface 可讀狀態／event SHA，真 provider 0。`--execute` 仍另需兩個
 live prepared/current／HTTP ready 的不同 controller root、各自 run-bound child flag 證據、私有 0700 證據 parent 與一份
 **使用者提供的作者自然度／人格評分**的外部 0600 檔。缺其中一項不進真 M21；runner 不把合成
 assertion 冒充真人。兩臂事先各 claim 一次 permit；全機固定私有 0700 目錄的 O_EXCL A marker
@@ -56,16 +55,28 @@ controller 啟動時的 allowlisted child flags 綁 run ID／PID／port 存私�
 Web child 的完整執行、真 Browser graph 時序、持久 DB 或一般使用者輸入安全。runner 拒絕繼承
 `URUHA_*` import-time 環境，並核實實際 M21 request byte digest 與 fake preflight 相同；它仍
 不能證明所有非白名單設定與已啟動 Web child 完全相同。`max_tokens=256` 是 completion cap，
-`≤2000 provider total tokens` 原本只由 response usage **事後**判 FAIL，並非可在呼叫前保證的
+`≤2000 provider total tokens` 由 response usage **事後**判 FAIL，並非可在呼叫前保證的
 實耗硬上限；若 prompt 意外超支，成本已花掉。只讀資源審查量到固定 fake request canonical
 約 5414 UTF-8 bytes；本機 HF tokenizer 的 1024 prompt-token／加輸出 cap 1280 只是**代理估算**，
-沒有驗證它與 Ollama 伺服端 template/tokenizer 的精確上界相同。因此真 A 入口新增雙重拒絕：CLI
-在讀取真 root／permit／provider 之前直接回 `review_required`，內層 create 函式亦在發送前要求
-目前尚未存在的已審核 token-upper-bound verifier。不能用作者「可接受風險」直接改掉凍結硬上限；
-需先做 0-provider exact-tokenizer/template 設計核證或事前正式設計修訂。
+沒有驗證它與 Ollama 伺服端 template/tokenizer 的精確上界相同，不能充當成本保證。
 
-固定句的人類作者自然度／人格核尚未取得，無外部 0600 評分檔、無兩個真 ready root，且送前
-token 上界未證，故沒有執行真 A 或消耗 A 一次性 slot。真 A 若任何模型路由、相同 request、成本、off/on
+### 2026-10-24 設計判讀更正（真 A 前）
+
+兩份獨立只讀審查對照原凍結計畫階段 2 與 exact-input amendment：A 明寫一次真 M21、0 retry、
+`≤2000`，並把「超額」與 fallback／schema／gold 失敗一同列為**生成後停止、保留 FAIL、B 不送**；
+沒有寫送前精確 tokenizer 證明。計畫階段 3 另對 B 使用「硬安全上限」字樣。上一批新增的
+CLI 常閉鎖和內層 pre-send verifier 是超出 A 原規格的加嚴，曾阻止唯一下一必要實驗。現在只移除
+這兩處額外鎖，恢復原凍結的**實耗驗收門檻**：送前仍核固定 request SHA、模型 digest、真人固定句核、
+prepared root／capability 與一次性 marker；`max_tokens=256` 限輸出，拿到 usage 後若總量 >2000、
+缺 usage、超 20 秒或 finish 不完整即 terminal FAIL、0 retry、0 replay／Safari B。這不是放寬
+`≤2000` 的 PASS 條件，也不改 frozen gold／baseline／資料或 B 規格。代價是單次 A 若超額已無法
+追回成本；代理 1280-token 估值不是保證。更正後 runner 聚焦測試 **23/23 passed**，
+`py_compile`／`git diff --check` 通過；重新執行 `--preflight-only` 為 0 真 provider，
+固定 request SHA 仍為 `df9d2be6a6c2f8c1fc56cd495ac72df23aa2d400e0dc01868c6d76076d48b9af`，
+default＝off、on matched。這些不是 fresh model 或 Safari 驗收。真 A 仍 0 次，固定句尚無使用者作者評分。
+
+固定句的人類作者自然度／人格核尚未取得，無外部 0600 評分檔、無兩個真 ready root，故沒有執行真 A
+或消耗 A 一次性 slot。真 A 若任何模型路由、相同 request、成本、off/on
 visible gold 失敗，保留 FAIL，B 不送；即使 A 成功，還要核真回覆自然度才准 B 的一次原生
 Safari。正式強 LLM 公平對照、獨立人評、temporal holdout、一般安全、no-send transaction、
 VRM／Function Calling 一體產品與完整人類反應方程式均未由本項證明。
